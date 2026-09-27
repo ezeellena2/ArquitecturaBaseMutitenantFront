@@ -207,6 +207,18 @@ Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nC
   - a la derecha, un panel azul de la marca.
 - Títulos de 24 px, campos y botones de 40 px, código en casillas de 52 px. Los errores del servidor van en un mensaje de color arriba del botón.
 
+**Teléfono** (hasta 767 px)
+- Barra de arriba de 52 px:
+  - ☰ abre el mismo menú lateral por encima del contenido, con un velo;
+  - en el medio, la marca;
+  - el avatar abre los perfiles, la cuenta y «Salir» en una hoja desde abajo.
+- La banda del título se mantiene. El resumen va en una línea (con «…» si no entra), y la acción principal va a la derecha con un rótulo corto («+ Invitar»). Las que sobran van en ⋮.
+- Filtros: el buscador ocupa todo el ancho y las pastillas van debajo.
+- **Tablas:** solo las columnas que entran: el dato principal, el estado y el ⋮. El resto se ve al entrar a la fila. Nunca se apilan dos datos en una celda. La auditoría muestra la fecha y «Qué pasó».
+- Los diálogos se abren como hojas desde abajo. Las de un formulario ocupan casi toda la altura, con los campos en una columna y los botones a lo ancho abajo.
+- Al editar (usuario, rol, configuración, cuenta), «Cancelar» y «Guardar» van en una barra fija abajo.
+- Las pantallas públicas van en una columna, sin el panel de la marca.
+
 **Código**
 - Colores solo con tokens. Componentes propios en PascalCase; los de shadcn se generan con `npx shadcn@4.21.0 add`.
 - No se definen componentes dentro de otros. El estado derivado se calcula en el render, y en JSX va ternario en lugar de `&&`.
