@@ -144,7 +144,7 @@ src/
 │   │   ├── account/                                 [E3] la identidad: vale para todos los perfiles
 │   │   │   ├── api/account.ts
 │   │   │   ├── components/
-│   │   │   │   ├── AccountForm.tsx                  nombre, idioma, zona
+│   │   │   │   ├── AccountForm.tsx                  nombre, idioma y región, zona
 │   │   │   │   ├── LoginMethodsCard.tsx
 │   │   │   │   ├── VerifyDestinationDialog.tsx
 │   │   │   │   └── UnlinkWhatsAppDialog.tsx         [E8]
@@ -174,7 +174,7 @@ src/
 │   │   │   └── pages/
 │   │   │       ├── RolesPage.tsx
 │   │   │       ├── RolesPage.test.tsx
-│   │   │       ├── RoleEditorPage.tsx               formulario a la izquierda, asignados a la derecha
+│   │   │       ├── RoleEditorPage.tsx               una hoja: nombre, «Vale en», descripción y un desplegable de permisos por área
 │   │   │       └── RoleEditorPage.test.tsx
 │   │   ├── users/                                   [E6]
 │   │   │   ├── api/users.ts
@@ -184,14 +184,11 @@ src/
 │   │   │   ├── components/
 │   │   │   │   ├── UsersFilterBar.tsx
 │   │   │   │   ├── InviteUserDialog.tsx
-│   │   │   │   ├── EditUserDialog.tsx
-│   │   │   │   ├── UserRolesDialog.tsx              "Roles de X"
-│   │   │   │   ├── AddToCompanyDialog.tsx           "Sumar a una empresa"
-│   │   │   │   └── LastInvitationStrip.tsx
+│   │   │   │   └── UserCompaniesField.tsx           filas empresa + roles, con «Sumar otra empresa»
 │   │   │   └── pages/
 │   │   │       ├── UsersPage.tsx
 │   │   │       ├── UsersPage.test.tsx
-│   │   │       └── UserPage.tsx                     ficha a ancho completo
+│   │   │       └── UserPage.tsx                     editar el acceso: estado, roles de la organización y empresas; «Cambios sin guardar»
 │   │   ├── companies/                               [E6]
 │   │   │   ├── api/
 │   │   │   │   ├── companies.ts
@@ -204,12 +201,11 @@ src/
 │   │   │   │   ├── AddMemberDialog.tsx
 │   │   │   │   └── MemberRolesDialog.tsx
 │   │   │   ├── tabs/
-│   │   │   │   ├── CompanySummaryTab.tsx            Resumen
 │   │   │   │   ├── CompanyMembersTab.tsx            Miembros
-│   │   │   │   └── CompanyRolesTab.tsx              Roles
+│   │   │   │   └── ChildCompaniesTab.tsx            Empresas que dependen
 │   │   │   └── pages/
 │   │   │       ├── CompaniesPage.tsx
-│   │   │       └── CompanyPage.tsx                  pestañas en la cabecera; la acción cambia con la pestaña
+│   │   │       └── CompanyPage.tsx                  cabecera con los datos en una línea; pestañas debajo, con su acción en la barra de filtros
 │   │   ├── settings/                                [E6]
 │   │   │   ├── api/settings.ts
 │   │   │   └── pages/SettingsPage.tsx
@@ -364,20 +360,20 @@ src/
 │       ├── Banner.tsx
 │       ├── CheckboxField.tsx
 │       ├── ConfirmDialog.tsx
-│       ├── DataTable.tsx                            filas de 44 px; cada columna declara su type y la tabla usa ui/format
+│       ├── DataTable.tsx                            filas de 64 px con celdas de dos líneas; cada columna declara su type y la tabla usa ui/format
 │       │                                            (alineación, vacío y tooltip); carga, vacío, error con reintento
 │       ├── EmptyState.tsx
-│       ├── FilterBar.tsx                            buscador + segmentos + desplegables con conteos + chips
+│       ├── FilterBar.tsx                            buscador + filtros en pastilla con conteos + «Limpiar»
 │       ├── FormError.tsx
 │       ├── FormField.tsx
 │       ├── IconButton.tsx
 │       ├── MultiSelect.tsx
 │       ├── OtpInput.tsx
-│       ├── Page.tsx                                 banda de 56 px: título, acciones, backTo, pestañas
+│       ├── Page.tsx                                 título de 26 px, línea de resumen, acciones y backTo
 │       ├── Pagination.tsx                           "1–10 de 1.234" · "Página 1 de 124" · selector 10/20/50/100, 10 por defecto (números con useFormat)
 │       ├── LoadMore.tsx                             paginado por cursor
 │       ├── RadioGroupField.tsx
-│       ├── RowActions.tsx                           íconos con tooltip; menú ⋮ cuando son muchas
+│       ├── RowActions.tsx                           menú ⋮ por fila; las destructivas al final, en rojo
 │       ├── SearchInput.tsx
 │       ├── SegmentedControl.tsx
 │       ├── Spinner.tsx
