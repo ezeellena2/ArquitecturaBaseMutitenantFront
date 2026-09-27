@@ -49,6 +49,8 @@ Cada tipo de dato tiene **un** formateador y **un** componente. Los ejemplos cor
 | Tamaño de archivo | bytes | `<FileSizeText>` | `1,5 MB` | `1.5 MB` | |
 | Duración | segundos | `<DurationText>` | `2 h 15 min` | `2 h 15 min` | |
 | Teléfono | E.164 | `<PhoneText>` | `011 5555-1234` (si es del país de la cultura) · `+1 202 555 0100` | internacional | `libphonenumber-js` |
+| Zona horaria | ID IANA (`America/Argentina/Buenos_Aires`) | `<TimeZoneText>` / `TimeZoneSelect` | `Buenos Aires (GMT−3)` | `Buenos Aires (GMT−3)` | Nunca el ID crudo. La ciudad sale del catálogo `GET /api/time-zones` (traducido) y el desfase se calcula para hoy. En un selector, agrupado por país |
+| Idioma y región | `es-AR` | `<CultureText>` | `Español (Argentina)` | `Spanish (Argentina)` | Nunca el código crudo |
 | CUIT / id fiscal | dígitos | `<TaxIdText>` | `20-12345678-9` | `20-12345678-9` | |
 | Enum o estado | `"Active"` | `<EnumText enum="UserStatus">` / `<StatusBadge>` | `Activo` | `Active` | Clave i18n `enums.<Enum>.<Valor>`; el color del estado sale de un mapa central (`statusTones.ts`) |
 | Booleano | `true`/`false` | `<BooleanText>` | `Sí` / `No` | `Yes` / `No` | En tablas, una columna de estado va mejor como `StatusDot` |
