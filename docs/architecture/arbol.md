@@ -316,8 +316,13 @@ src/
 │   │   ├── useMediaQuery.ts
 │   │   └── useCountdown.ts
 │   ├── lib/
-│   │   ├── utils.ts                                 cn
-│   │   └── countries.ts
+│   │   └── utils.ts                                 cn
+│   ├── phone/                                       [E1] países y teléfonos (rules/telefonos.md)
+│   │   ├── countries.ts                             lista completa de libphonenumber-js + nombres con Intl.DisplayNames
+│   │   ├── priorityCountries.ts                     AR, UY, CL, PY, BR, BO, PE, MX, ES, US arriba
+│   │   ├── CountryFlag.tsx                          bandera SVG (country-flag-icons), carga diferida; nunca emoji
+│   │   ├── CountrySelect.tsx                        combobox con buscador por nombre, ISO o prefijo
+│   │   └── countries.test.ts
 │   └── ui/                                          [E0]
 │       ├── format/                                  [E1] cómo se VE cada dato (siempre por acá)
 │       │   ├── DateText.tsx                         kind: date | dateTime | time | long | relative; <time dateTime>
@@ -340,7 +345,7 @@ src/
 │       │   ├── NumberField.tsx
 │       │   ├── MoneyField.tsx                       importe + moneda (por defecto, la de la organización)
 │       │   ├── PercentField.tsx                     12,5 → 0.125
-│       │   └── PhoneField.tsx                       → E.164
+│       │   └── PhoneField.tsx                       CountrySelect + número con AsYouType → { country, number }
 │       ├── badge.tsx                                shadcn (minúscula, `npx shadcn@4.21.0 add`)
 │       ├── button.tsx
 │       ├── checkbox.tsx

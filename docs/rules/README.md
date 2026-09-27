@@ -8,6 +8,7 @@ Mismo formato que las del back: **Regla · Cómo se hace · Prohibido · Copiá 
 | [datos-y-api](datos-y-api.md) | httpClient, TanStack Query, tipos generados |
 | [errores](errores.md) | `ApiError`, decidir por `code`, errores de formulario |
 | [formatos](formatos.md) | fechas, números, moneda, %, vacíos (resumen de `architecture/formatos.md`) |
+| [telefonos](telefonos.md) | `PhoneField` (país con bandera, búsqueda, formato al escribir) y `PhoneText` |
 | [paginado-y-listados](paginado-y-listados.md) | `usePagination`, `DataTable`, filtros, cursor |
 | [formularios](formularios.md) | diálogo o pantalla, fields, validación |
 | [textos-y-traducciones](textos-y-traducciones.md) | i18n, namespaces, voseo, enums |

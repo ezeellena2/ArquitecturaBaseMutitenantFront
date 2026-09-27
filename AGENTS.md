@@ -10,6 +10,7 @@ SPA del multitenant. La arquitectura canónica está en [`docs/architecture/fron
 |---|---|
 | mostrar una fecha, número, monto, % o vacío | [formatos](docs/rules/formatos.md) |
 | hacer un listado | [paginado-y-listados](docs/rules/paginado-y-listados.md) |
+| pedir o mostrar un teléfono | [telefonos](docs/rules/telefonos.md) |
 | llamar a la API o tipar un dato | [datos-y-api](docs/rules/datos-y-api.md) |
 | manejar un error | [errores](docs/rules/errores.md) |
 | hacer un formulario o diálogo | [formularios](docs/rules/formularios.md) |

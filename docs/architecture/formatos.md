@@ -48,7 +48,7 @@ Cada tipo de dato tiene **un** formateador y **un** componente. Los ejemplos cor
 | Compacto | número | `kind="compact"` | `1,3 M` | `1.3M` | **Solo** en tarjetas de KPI, con tooltip del valor completo |
 | Tamaño de archivo | bytes | `<FileSizeText>` | `1,5 MB` | `1.5 MB` | |
 | Duración | segundos | `<DurationText>` | `2 h 15 min` | `2 h 15 min` | |
-| Teléfono | E.164 | `<PhoneText>` | `011 5555-1234` (si es del país de la cultura) · `+1 202 555 0100` | internacional | `libphonenumber-js` |
+| Teléfono | E.164 | `<PhoneText>` / carga con `PhoneField` (país con bandera SVG, buscador, formato al escribir) | `011 15-2345-6789` (si es del país de la cultura) · `+598 94 123 456` | internacional | `libphonenumber-js` + `country-flag-icons`. Detalle: [rules/telefonos.md](../rules/telefonos.md) |
 | Zona horaria | ID IANA (`America/Argentina/Buenos_Aires`) | `<TimeZoneText>` / `TimeZoneSelect` | `Buenos Aires (GMT−3)` | `Buenos Aires (GMT−3)` | Nunca el ID crudo. La ciudad sale del catálogo `GET /api/time-zones` (traducido) y el desfase se calcula para hoy. En un selector, agrupado por país |
 | Idioma y región | `es-AR` | `<CultureText>` | `Español (Argentina)` | `Spanish (Argentina)` | Nunca el código crudo |
 | CUIT / id fiscal | dígitos | `<TaxIdText>` | `20-12345678-9` | `20-12345678-9` | |
