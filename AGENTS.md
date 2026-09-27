@@ -20,7 +20,7 @@ SPA del multitenant. La arquitectura canónica está en [`docs/architecture/fron
 | hacer un formulario o diálogo | [formularios](docs/rules/formularios.md) |
 | escribir un texto | [textos-y-traducciones](docs/rules/textos-y-traducciones.md) |
 | decidir en qué acceso va una pantalla, u ocultar algo por permiso | [accesos-y-permisos](docs/rules/accesos-y-permisos.md) |
-| armar una pantalla | [pantallas-y-ui](docs/rules/pantallas-y-ui.md) (y dibujarla primero) |
+| armar una pantalla | [pantallas-y-ui](docs/rules/pantallas-y-ui.md) y el [tema](docs/architecture/tema.md): copiar el tablero aprobado del lienzo |
 | crear una feature | [estructura-y-features](docs/rules/estructura-y-features.md) |
 | escribir tests | [tests](docs/rules/tests.md) |
 
