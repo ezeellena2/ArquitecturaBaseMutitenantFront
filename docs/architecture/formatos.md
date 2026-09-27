@@ -51,7 +51,8 @@ Cada tipo de dato tiene **un** formateador y **un** componente. Los ejemplos cor
 | Teléfono | E.164 | `<PhoneText>` / carga con `PhoneField` (país con bandera SVG, buscador, formato al escribir) | `011 15-2345-6789` (si es del país de la cultura) · `+598 94 123 456` | internacional | `libphonenumber-js` + `country-flag-icons`. Detalle: [rules/telefonos.md](../rules/telefonos.md) |
 | Zona horaria | ID IANA (`America/Argentina/Buenos_Aires`) | `<TimeZoneText>` / `TimeZoneSelect` | `Buenos Aires (GMT−3)` | `Buenos Aires (GMT−3)` | Nunca el ID crudo. La ciudad sale del catálogo `GET /api/time-zones` (traducido) y el desfase se calcula para hoy. En un selector, agrupado por país |
 | Idioma y región | `es-AR` | `<CultureText>` | `Español (Argentina)` | `Spanish (Argentina)` | Nunca el código crudo |
-| CUIT / id fiscal | dígitos | `<TaxIdText>` | `20-12345678-9` | `20-12345678-9` | |
+| CUIT / id fiscal | `{ country, type, number }` (solo dígitos) | `<TaxIdText>` / carga con `TaxIdField` | `20-12345678-6` | `20-12345678-6` | Validado con el dígito verificador (`stdnum` en el front, el back decide). Detalle: `../ArquitecturaBaseMutitenant/docs/rules/identificacion-fiscal.md` |
+| Correo | texto normalizado (minúsculas) | texto; carga con `EmailField` | `juan@gmail.com` | `juan@gmail.com` | Trim y minúsculas al escribir; nunca se muestra con mayúsculas |
 | Enum o estado | `"Active"` | `<EnumText enum="UserStatus">` / `<StatusBadge>` | `Activo` | `Active` | Clave i18n `enums.<Enum>.<Valor>`; el color del estado sale de un mapa central (`statusTones.ts`) |
 | Booleano | `true`/`false` | `<BooleanText>` | `Sí` / `No` | `Yes` / `No` | En tablas, una columna de estado va mejor como `StatusDot` |
 | Vacío | `null` | `<EmptyValue>` | `—` | `—` | Raya larga en gris (`--color-content-muted`), con `aria-label` "Sin dato". Nunca "null", "N/A", "-" ni `0` |

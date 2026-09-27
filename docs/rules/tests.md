@@ -9,7 +9,10 @@
   - carga, vacío, sin coincidencias, error con reintento y sin permiso;
   - el recorrido de sus diálogos;
   - cada `code` de error que traduce la feature;
-  - el formato de sus datos en **es-AR y en-US**.
+  - el formato de sus datos en **es-AR y en-US**;
+  - **axe sin violaciones** ([accesibilidad](accesibilidad.md));
+  - la vista a **390 px** si tiene tabla o formulario ([responsive](responsive.md));
+  - en una edición, el **409 de concurrencia**; en un alta, que el reintento manda la **misma** `Idempotency-Key`.
 - Las consultas van por rol y por texto accesible (`getByRole("button", { name: … })`). Los desplegables de Radix se abren con teclado.
 
 ## Prohibido

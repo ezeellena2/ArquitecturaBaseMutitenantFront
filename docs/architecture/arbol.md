@@ -333,7 +333,7 @@ src/
 │       │   ├── FileSizeText.tsx
 │       │   ├── DurationText.tsx
 │       │   ├── PhoneText.tsx
-│       │   ├── TaxIdText.tsx                        20-12345678-9
+│       │   ├── TaxIdText.tsx                        20-12345678-6
 │       │   ├── EnumText.tsx                         enums.<Enum>.<Valor>
 │       │   ├── StatusBadge.tsx                      texto + tono desde statusTones
 │       │   ├── BooleanText.tsx                      Sí / No
@@ -397,4 +397,19 @@ src/
     │   └── currentUsers.ts                          fixtures: personal, business (admin y sin permisos), operador
     └── utils/
         └── renderWithProviders.tsx                  renderWithProviders + renderRouteWithProviders(path, { profile })
+```
+
+## Piezas de los estándares P1 a P10 (adoptados el 2026-09-27)
+
+```
+src/shared/api/useIdempotentMutation.ts (+ test)          [E1] P6  clave al montar, repetida en reintentos
+src/shared/ui/fields/EmailField.tsx                       [E1] P3  trim y minúsculas al escribir
+src/shared/ui/fields/TaxIdField.tsx                       [E1] P5  tipo + número, stdnum
+src/shared/ui/ConcurrencyBanner.tsx                       [E1] P1  "Otra persona cambió esto…" · Ver lo nuevo · Seguir editando
+src/shared/ui/Sheet.tsx                                   [E1] P10 panel inferior de filtros en el teléfono
+src/shared/ui/DataTable.tsx                               [E1] P10 tabla ↔ tarjetas según `mobile` de cada columna
+src/auth/useFeature.ts · Feature.tsx                      [E5] P8  módulos del perfil activo
+src/areas/public/legal/pages/AcceptTermsPage.tsx          [E3] P7  pantalla bloqueante de términos nuevos
+src/test/setup.ts                                         [E0] P9  vitest-axe/extend-expect
+src/shared/ui/columns-mobile.test.ts                      [E1] P10 toda definición de columnas declara `mobile`
 ```

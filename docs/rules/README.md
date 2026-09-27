@@ -15,3 +15,5 @@ Mismo formato que las del back: **Regla · Cómo se hace · Prohibido · Copiá 
 | [permisos-y-perfiles](permisos-y-perfiles.md) | `Can`, `AreaRoute`, selector de perfil |
 | [pantallas-y-ui](pantallas-y-ui.md) | `Page`, reglas de pantallas, tokens, shadcn |
 | [tests](tests.md) | Vitest, MSW, qué probar por pantalla |
+| [accesibilidad](accesibilidad.md) | WCAG AA, axe en cada test de pantalla, teclado y foco |
+| [responsive](responsive.md) | computadora, tablet y teléfono; tabla → tarjetas con `mobile` |

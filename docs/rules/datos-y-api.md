@@ -12,6 +12,9 @@
   ```
 - En la página: `useQuery({ queryKey, queryFn, placeholderData: keepPreviousData })`. Una mutación invalida `rolesQueryKeyRoot`.
 - Si cambió el contrato del back: `npm run contracts` y commitear `generated/`.
+- **Altas y envíos:** `useIdempotentMutation(fn)` en lugar de `useMutation`. Genera la `Idempotency-Key` al montar, la repite en los reintentos (también en el del `httpClient`) y la renueva después de un éxito. Un 409 `Request.InProgress` no es un error: espera y reintenta.
+- **Ediciones:** la `version` que trae la ficha viaja en el `PUT` o `DELETE` ([formularios](formularios.md), "Ediciones simultáneas").
+- **Módulos:** una query de un módulo apagado no se dispara; `useFeature("reportes")` lo dice ([permisos-y-perfiles](permisos-y-perfiles.md)).
 - **El front no calcula dinero ni reglas de negocio:** muestra lo que llega y los totales vienen del back.
 - Al cambiar de perfil, `queryClient.clear()` (lo hace `useSwitchProfile`).
 

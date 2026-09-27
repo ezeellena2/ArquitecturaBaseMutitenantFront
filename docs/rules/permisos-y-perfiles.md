@@ -6,6 +6,11 @@
 - **Ruta:** `<AreaRoute area="business"><ProtectedRoute permission="roles.read" /></AreaRoute>` en `app/routes.tsx`, y el mismo `permission` en `layouts/navigation/business.ts`.
 - **Acción:** `<Can permission="roles.manage">…</Can>`. Una acción de empresa usa `<CanInCompany companyId={id} permission="company.members.manage">`.
 - **Perfil activo:** `useActiveProfile()` (tipo y nombre). Para cambiarlo, `useSwitchProfile(id)`, que hace `signinSilent({ tenant })`, luego `queryClient.clear()` y navega al inicio del área.
+- **Módulos habilitados (features):** `GET /api/me` trae `features` del perfil activo.
+  - `useFeature("reportes")` y `<Feature name="reportes">` muestran u ocultan.
+  - Cada ruta y cada link de un módulo declaran **`feature`** además de `permission`. Si el módulo está apagado, el link no aparece y la ruta muestra `NotFoundPage`, igual que el 404 del back.
+  - Orden: primero el módulo (¿lo tiene la organización?), después el permiso (¿lo puede usar esta persona?).
+- **Términos nuevos:** si una respuesta trae `Legal.AcceptanceRequired`, se muestra la pantalla de aceptación (bloqueante) antes de seguir.
 - La cuenta (`/cuenta`) es de la identidad y se ve desde cualquier perfil.
 - El `companyId` sale de la URL (`useCompanyParam`); nunca hay una "empresa activa" guardada.
 

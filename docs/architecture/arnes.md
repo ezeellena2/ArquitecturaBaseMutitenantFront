@@ -23,6 +23,8 @@
 | `src/shared/format/` | **único** lugar que formatea | formatos | — |
 | `src/shared/ui/` | piezas genéricas; shadcn en minúscula y propios en PascalCase; sin lógica de negocio | pantallas-y-ui | `DataTable.tsx`, `Page.tsx` |
 | `src/shared/ui/format/`, `src/shared/ui/fields/` | cómo se ve y cómo se carga cada tipo de dato | formatos, formularios | `MoneyText.tsx`, `MoneyField.tsx` |
+| `src/shared/phone/` | países, banderas SVG y `CountrySelect`; `libphonenumber-js` solo acá y en `shared/format` | telefonos | `CountrySelect.tsx` |
+| `src/shared/ui/fields/` | un campo por tipo de dato (email, teléfono, CUIT, dinero, fecha…) | formularios, formatos, telefonos | `MoneyField.tsx` |
 | `src/shared/api/` | httpClient, errores y tipos generados (`generated/` no se edita) | datos-y-api, errores | — |
 | `src/locales/` | un namespace por módulo, es = en | textos-y-traducciones | `es/roles.json` |
 | `src/auth/`, `src/tenancy/` | sesión, permisos y perfiles | permisos-y-perfiles | — |

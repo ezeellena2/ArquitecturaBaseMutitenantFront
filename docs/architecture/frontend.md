@@ -223,11 +223,23 @@ Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nC
 - Colores solo con tokens. Componentes propios en PascalCase; los de shadcn se generan con `npx shadcn@4.21.0 add`.
 - No se definen componentes dentro de otros. El estado derivado se calcula en el render, y en JSX va ternario en lugar de `&&`.
 
+### Accesibilidad y diseño adaptable
+- **WCAG 2.2 AA.** Cada test de pantalla corre `vitest-axe` y falla con cualquier violación. Las piezas de `shared/ui` resuelven rótulos, nombres de botones, foco y teclado. Ficha: [accesibilidad](../rules/accesibilidad.md).
+- **Tres anchos: 390, 768 y 1440.** `DataTable` pasa a tarjetas en el teléfono según el `mobile` que declara cada columna; los filtros pasan a un panel inferior; los diálogos, a pantalla completa. El perfil personal (B2C) se piensa primero para el teléfono. Ficha: [responsive](../rules/responsive.md).
+
+### Módulos, ediciones simultáneas y altas sin duplicados
+- **Módulos habilitados:** `features` en `/api/me`, y `useFeature` / `<Feature>`. Rutas y links declaran `feature` además de `permission`; apagado = no existe (404).
+- **Ediciones simultáneas:** la `version` viaja en cada `PUT` o `DELETE`; un 409 `General.ConcurrencyConflict` muestra el aviso con "Ver lo nuevo" y "Seguir editando".
+- **Altas y envíos:** `useIdempotentMutation`, con la clave creada al abrir el formulario.
+- **Datos con forma propia:** `EmailField`, `PhoneField` y `TaxIdField`. Los largos de texto salen del contrato generado.
+- Fichas: [formularios](../rules/formularios.md), [datos-y-api](../rules/datos-y-api.md), [permisos-y-perfiles](../rules/permisos-y-perfiles.md).
+
 ### Tests
 - Colocalizados. MSW con `onUnhandledRequest: "error"` y fixtures de `/api/me` para perfil personal, organización (con y sin permisos) y operador.
 - Por pantalla se prueba:
   - carga, vacío, sin coincidencias, error con reintento y sin permiso;
   - el recorrido de los diálogos;
   - el `code` de cada error traducido;
-  - **el formato de sus datos en es-AR y en en-US**.
+  - **el formato de sus datos en es-AR y en en-US**;
+  - axe sin violaciones y, si tiene tabla o formulario, la vista a 390 px.
 - No se da nada por terminado sin `npm run build`, `npm run lint` y `npm test` limpios.
