@@ -205,7 +205,7 @@ src/
 │   │   │   │   └── ChildCompaniesTab.tsx            Empresas que dependen
 │   │   │   └── pages/
 │   │   │       ├── CompaniesPage.tsx
-│   │   │       └── CompanyPage.tsx                  cabecera con los datos en una línea; pestañas debajo, con su acción en la barra de filtros
+│   │   │       └── CompanyPage.tsx                  banda con los datos en una línea; pestañas debajo; la acción de la pestaña va en la banda
 │   │   ├── settings/                                [E6]
 │   │   │   ├── api/settings.ts
 │   │   │   └── pages/SettingsPage.tsx
@@ -360,7 +360,7 @@ src/
 │       ├── Banner.tsx
 │       ├── CheckboxField.tsx
 │       ├── ConfirmDialog.tsx
-│       ├── DataTable.tsx                            filas de 64 px con celdas de dos líneas; cada columna declara su type y la tabla usa ui/format
+│       ├── DataTable.tsx                            filas de 42 px, un dato por columna, encabezado gris; cada columna declara su type y la tabla usa ui/format
 │       │                                            (alineación, vacío y tooltip); carga, vacío, error con reintento
 │       ├── EmptyState.tsx
 │       ├── FilterBar.tsx                            buscador + filtros en pastilla con conteos + «Limpiar»
@@ -369,7 +369,7 @@ src/
 │       ├── IconButton.tsx
 │       ├── MultiSelect.tsx
 │       ├── OtpInput.tsx
-│       ├── Page.tsx                                 título de 26 px, línea de resumen, acciones y backTo
+│       ├── Page.tsx                                 banda blanca: ícono o backTo, título de 18 px, resumen y acciones (las que sobran, en ⋮)
 │       ├── Pagination.tsx                           "1–10 de 1.234" · "Página 1 de 124" · selector 10/20/50/100, 10 por defecto (números con useFormat)
 │       ├── LoadMore.tsx                             paginado por cursor
 │       ├── RadioGroupField.tsx

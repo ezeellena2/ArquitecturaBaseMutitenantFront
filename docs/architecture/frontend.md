@@ -141,30 +141,49 @@ Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nC
 - Los datos de ejemplo usan nombres neutros (Grupo Delta, Delta S.A.) y solo los roles y permisos que existen en la plantilla: nada de rubros, módulos ni roles de negocio que no se pidieron.
 - Ningún texto que nadie pidió: ni ayudas bajo cada campo, ni notas al pie, ni bajadas de relleno. Quedan los rótulos, los errores, los vacíos y las confirmaciones.
 
-**Página (`Page`)**
-- Título de 26 px/700. Debajo, en 14 px, una línea de resumen con conteos («11 usuarios · 7 activos · 3 invitaciones»). El botón principal va a la derecha.
-- En una ficha o un editor, arriba va el enlace «‹ Volver» (`backTo`). El aviso «Cambios sin guardar» va junto al título.
+**Densidad**
+- Todo es compacto:
+  - letra de 13 px en el texto y en las tablas;
+  - filas de 42 px;
+  - campos de 36 px con radio de 8;
+  - botones de 34 px;
+  - menú lateral de 232 px y barra superior de 52 px.
+- Nada de tamaños grandes que hagan ver la pantalla tosca.
+
+**Encabezado de página (`Page`)**
+- Es una **banda blanca de ancho completo**, pegada a la barra superior y con borde abajo. Lleva:
+  - a la izquierda, el ícono de la sección en un cuadrado azul claro; en una ficha o un editor, el botón «‹» para volver (`backTo`);
+  - el título de 18 px/700, con la pastilla de estado o el aviso «Cambios sin guardar» a su lado;
+  - debajo del título, una línea de resumen de 13 px («11 usuarios · 7 activos · 3 invitaciones»);
+  - a la derecha, **las acciones de la página**.
+- Botones de la página:
+  - la acción principal, azul, siempre al final a la derecha;
+  - se ven hasta tres botones; si hay más, los que sobran van en un botón ⋮ («Más acciones») a la izquierda de la principal, con las destructivas al final y en rojo;
+  - en una ficha con pestañas, la acción de la pestaña (por ejemplo «Agregar miembro») aparece solo con esa pestaña;
+  - la barra de filtros no lleva botones.
+- Debajo de la banda va el contenido, sobre el fondo gris: la barra de filtros y la tabla, cada una en su tarjeta. **Nunca todo junto en una sola tarjeta.**
 - **Sin bandas grises ni rótulos en mayúsculas.**
-- Letra de 14 px en el texto y en las tablas, y de 15 px en los campos.
 
 **Listados**
-- `FilterBar` (tarjeta de 14 px de radio) + `DataTable` + `Pagination`, con el estado en la URL.
-  - La barra lleva el buscador (40 px) y filtros en pastilla. Cada filtro abre un menú con el conteo de cada opción; con un valor elegido, la pastilla queda marcada. «Limpiar» aparece solo si hay filtros.
+- `FilterBar` (tarjeta con radio de 12) + `DataTable` + `Pagination`, con el estado en la URL.
+  - La barra lleva el buscador (32 px) y filtros en pastilla. Cada filtro abre un menú con el conteo de cada opción; con un valor elegido, la pastilla queda marcada. «Limpiar» aparece solo si hay filtros.
 - `DataTable`:
-  - encabezados de 13 px/600 sin mayúsculas;
-  - filas de 64 px con celdas de dos líneas: el dato en 14 px y el detalle en 13 px gris;
+  - **un dato por columna**: nombre, correo, rol, empresa, estado y vencimiento van en columnas propias; no se apilan dos datos en una celda;
+  - encabezado gris (12 px/600, sin mayúsculas);
+  - filas de 42 px en una sola línea;
   - el estado en `StatusBadge` (pastilla con punto);
-  - los roles en pastillas;
-  - los números a la derecha.
+  - los roles de la organización en pastillas;
+  - los números a la derecha;
+  - el vacío es «—» en gris.
 - Las acciones de cada fila van en un **menú ⋮** (`RowActions`): primero las comunes y, separadas al final, las destructivas en rojo. En las últimas filas el menú se abre hacia arriba. Las opciones dependen del estado: por ejemplo, una invitación ofrece «Reenviar» y «Revocar».
-- La auditoría usa «Cargar más» (`LoadMore`). En la columna «Cuándo» va la fecha y hora en una línea, y el detalle se abre en un diálogo de solo lectura.
+- La auditoría usa «Cargar más» (`LoadMore`). La primera columna es «Fecha y hora», en una línea, y el detalle se abre en un diálogo de solo lectura.
 
 **Fichas y formularios**
-- La ficha tiene una tarjeta de cabecera con el nombre, el estado en pastilla, los datos clave en una línea y las acciones.
-  - **Pestañas solo con dos o más tablas grandes**, debajo de la cabecera, con su conteo. La acción principal de cada pestaña va en su barra de filtros.
-  - No hay pestaña «Resumen»: los datos de la entidad están en la cabecera y se editan con un diálogo.
-- Un formulario es **una sola hoja** a ancho completo, en dos columnas, con secciones de título de 17 px. Nunca varias tarjetas sueltas.
-- Una pantalla de edición deja editar: tiene campos reales, «Cancelar» y «Guardar cambios», y el aviso de cambios sin guardar.
+- La ficha usa la misma banda: «‹», el nombre, la pastilla de estado y los datos clave en la línea de resumen. Las acciones van a la derecha.
+  - **Pestañas solo con dos o más tablas grandes**, debajo de la banda y con su conteo.
+  - No hay pestaña «Resumen»: los datos de la entidad están en la banda y se editan con un diálogo.
+- Un formulario es **una sola hoja** a ancho completo, en dos columnas, con secciones de título de 15 px. Nunca varias tarjetas sueltas.
+- Una pantalla de edición deja editar: tiene campos reales, «Cancelar» y «Guardar cambios» en la banda, y el aviso de cambios sin guardar.
 - Lo que es de la identidad (nombre, idioma y región, zona y métodos de ingreso) se edita en `/cuenta`, nunca en la ficha de un usuario de la organización.
 - Lo corto se edita en un **diálogo** y lo largo en una **pantalla propia** con `useUnsavedChangesGuard`. Nunca un diálogo sobre otro, una tabla dentro de un diálogo, un panel desplegable ni una fila que se expande.
 
@@ -174,19 +193,21 @@ Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nC
   - varias, `MultiSelect`;
   - lo que se repite, una fila de desplegables con «Sumar otra», como la empresa y sus roles.
 - Las opciones del `Select` y del `MultiSelect` tienen el nombre y, si hace falta, una descripción debajo. El `MultiSelect` suma una casilla por opción. «Todos» es un check junto al rótulo, nunca una opción más.
-- Campos de 44 px con radio de 10 y rótulo de 13 px/600 encima. Los obligatorios llevan un asterisco rojo.
-- Botones de 40 px (48 en las pantallas públicas). El principal es azul; el secundario, blanco con borde; el destructivo, rojo.
+- Campos de 36 px con radio de 8 y rótulo de 12 px/600 encima. Los obligatorios llevan un asterisco rojo.
+- Botones de 34 px (40 en las pantallas públicas). El principal es azul; el secundario, blanco con borde; el destructivo, rojo.
 
 **Diálogos y avisos**
-- Diálogos de 640 px (460 para confirmar), con fondo desenfocado y título de 19 px/600. Debajo del título puede ir el nombre de lo que se edita. Los campos van en dos columnas y la botonera, a la derecha.
+- Diálogos de 560 px (420 para confirmar), con fondo desenfocado y título de 16 px/600. Debajo del título puede ir el nombre de lo que se edita. Los campos van en dos columnas y la botonera, a la derecha.
 - Toda acción destructiva se confirma. En la plataforma, el motivo es obligatorio.
 - Los resultados se avisan con un toast abajo a la derecha. Los errores de una regla (por ejemplo, «Tiene que quedar al menos un Administrador general») van arriba del formulario o en el toast, según dónde se originan.
 
 **Pantallas públicas (`AuthLayout`)**
 - La pantalla va en dos mitades:
-  - a la izquierda, el formulario (420 px), con la marca arriba y, abajo, el idioma y los enlaces legales;
+  - a la izquierda, el formulario (380 px), con la marca arriba y, abajo, el idioma y los enlaces legales;
   - a la derecha, un panel azul de la marca.
-- Títulos de 28 px. Los errores del servidor van en un mensaje de color arriba del botón.
+- Títulos de 24 px, campos y botones de 40 px, código en casillas de 52 px. Los errores del servidor van en un mensaje de color arriba del botón.
+
+**Código**
 - Colores solo con tokens. Componentes propios en PascalCase; los de shadcn se generan con `npx shadcn@4.21.0 add`.
 - No se definen componentes dentro de otros. El estado derivado se calcula en el render, y en JSX va ternario en lugar de `&&`.
 
