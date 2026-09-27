@@ -78,7 +78,7 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 - **Inicio de cada área** (`/` con sesión de persona, `/org`): su contenido depende de cada producto. Hasta que el producto lo defina, queda vacío, con la barra y el menú lateral. Sin tableros ni resúmenes de relleno.
 - **Menú lateral:** el mismo armazón en las tres áreas; cambian los enlaces.
   - Persona: Inicio y Mi cuenta, más los módulos B2C del producto. **No muestra organizaciones.**
-  - Empresa: Inicio; Administración con el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Página pública, Configuración y Auditoría; más los módulos B2B del producto.
+  - Empresa: arriba, Inicio y los módulos B2B del producto. **Abajo de todo, «Administración»**, que abre un **segundo panel al lado del menú** (`AdminPanel`, se cierra con «‹» o tocando de nuevo «Administración»; abierto en cualquier ruta de administración) con el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Configuración, Página pública y Auditoría. En el teléfono no hay segundo panel: «Administración» se despliega dentro del menú.
   - Plataforma: Organizaciones, Cuentas, Auditoría y Configuración.
   - Cada enlace se muestra solo con su permiso (y su módulo, si es de un módulo).
 - **Menú de la cuenta** (`AccessMenu`, arriba a la derecha): el botón muestra el nombre de la persona y dónde está ("Personal" o el nombre de la organización). El menú tiene:
