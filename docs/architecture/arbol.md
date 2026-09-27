@@ -210,7 +210,7 @@ src/
 │   │   │   │   └── MemberRolesDialog.tsx
 │   │   │   ├── tabs/
 │   │   │   │   ├── CompanyMembersTab.tsx            Miembros
-│   │   │   │   └── ChildCompaniesTab.tsx            Empresas que dependen
+│   │   │   │   └── CompanyRolesTab.tsx              Roles que valen solo en esta empresa (alcance SpecificCompany)
 │   │   │   └── pages/
 │   │   │       ├── CompaniesPage.tsx
 │   │   │       └── CompanyPage.tsx                  banda con los datos en una línea; pestañas debajo; la acción de la pestaña va en la banda
