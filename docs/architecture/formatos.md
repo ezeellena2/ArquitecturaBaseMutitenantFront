@@ -6,8 +6,8 @@
 
 | Preferencia | Orden de resolución | Por defecto |
 |---|---|---|
-| **Cultura** (idioma + región: `es-AR`, `en-US`) | cuenta del usuario → organización o perfil (`TenantSettings.DefaultCulture`) → navegador, al registrarse | `es-AR` |
-| **Zona horaria** (IANA) | cuenta → empresa de la pantalla → organización o perfil | `America/Argentina/Buenos_Aires` |
+| **Cultura** (idioma + región: `es-AR`, `en-US`) | cuenta del usuario → organización, en el acceso B2B (`TenantSettings.DefaultCulture`) → navegador, al registrarse | `es-AR` |
+| **Zona horaria** (IANA) | cuenta → empresa de la pantalla → organización (en B2B) | `America/Argentina/Buenos_Aires` |
 | **Moneda** | la que trae el dato; `TenantSettings.DefaultCurrency` solo para cargar un importe nuevo | `ARS` |
 
 - La cultura decide dos cosas: el **idioma** de los textos (`es`) y el **formato** de fechas y números (`es-AR`).

@@ -14,7 +14,7 @@
   ```
 - **Formularios:** `applyApiErrorToForm(error, setError, fieldMap)`. Lo que no encaja en un campo va en `<FormError>` sobre la botonera.
 - **ConfirmDialog o acción de fila:** toast con el mensaje.
-- **Pantalla:** un 403 renderiza `ForbiddenPage`; un 404 en una ficha, `NotFoundPage` (también un id de otro perfil); `Tenancy.Tenant.Suspended` renderiza `ProfileSuspendedPage`.
+- **Pantalla:** un 403 renderiza `ForbiddenPage`; un 404 en una ficha, `NotFoundPage` (también un id de otra organización o de otro acceso); `Tenancy.Tenant.Suspended` renderiza `OrganizationSuspendedPage`, y `Tenancy.Access.Wrong` lleva al inicio del acceso correcto.
 - Query que maneja su error en pantalla: `meta: { silent: true }`.
 
 ## Prohibido

@@ -12,8 +12,8 @@ Mismo formato que las del back: **Regla · Cómo se hace · Prohibido · Copiá 
 | [paginado-y-listados](paginado-y-listados.md) | `usePagination`, `DataTable`, filtros, cursor |
 | [formularios](formularios.md) | diálogo o pantalla, fields, validación |
 | [textos-y-traducciones](textos-y-traducciones.md) | i18n, namespaces, voseo, enums |
-| [permisos-y-perfiles](permisos-y-perfiles.md) | `Can`, `AreaRoute`, selector de perfil |
+| [accesos-y-permisos](accesos-y-permisos.md) | accesos B2C, B2B y plataforma, rutas por host, `AccessRoute`, `Can`, módulos |
 | [pantallas-y-ui](pantallas-y-ui.md) | `Page`, reglas de pantallas, tokens, shadcn |
 | [tests](tests.md) | Vitest, MSW, qué probar por pantalla |
 | [accesibilidad](accesibilidad.md) | WCAG AA, axe en cada test de pantalla, teclado y foco |
-| [responsive](responsive.md) | computadora, tablet y teléfono; tabla → tarjetas con `mobile` |
+| [responsive](responsive.md) | computadora, tablet y teléfono; qué columnas quedan en el teléfono (`mobile`) |

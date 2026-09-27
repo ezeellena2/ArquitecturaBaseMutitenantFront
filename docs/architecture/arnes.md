@@ -15,7 +15,7 @@
 
 | Carpeta | Qué va / qué no | Fichas | Copiá de |
 |---|---|---|---|
-| `src/areas/` | una carpeta por área; ningún área importa de otra | estructura-y-features, permisos-y-perfiles | `areas/business/roles/` |
+| `src/areas/` | una carpeta por área; ningún área importa de otra | estructura-y-features, accesos-y-permisos | `areas/business/roles/` |
 | `src/areas/<área>/<feature>/api/` | query keys + funciones tipadas con `generated/`; sin interfaces a mano | datos-y-api, paginado-y-listados | `business/roles/api/roles.ts` |
 | `src/areas/<área>/<feature>/pages/` | una pantalla = un `Page`; datos con Query; estado del listado en la URL | pantallas-y-ui, paginado-y-listados, errores | `business/roles/pages/RolesPage.tsx` |
 | `src/areas/<área>/<feature>/components/` | diálogos y piezas propias de la feature; nada genérico (eso sube a `shared/ui`) | formularios, pantallas-y-ui | `business/users/components/InviteUserDialog.tsx` |
@@ -27,8 +27,8 @@
 | `src/shared/ui/fields/` | un campo por tipo de dato (email, teléfono, CUIT, dinero, fecha…) | formularios, formatos, telefonos | `MoneyField.tsx` |
 | `src/shared/api/` | httpClient, errores y tipos generados (`generated/` no se edita) | datos-y-api, errores | — |
 | `src/locales/` | un namespace por módulo, es = en | textos-y-traducciones | `es/roles.json` |
-| `src/auth/`, `src/tenancy/` | sesión, permisos y perfiles | permisos-y-perfiles | — |
-| `src/layouts/` | layouts por área y navegación declarativa | permisos-y-perfiles, pantallas-y-ui | `navigation/business.ts` |
+| `src/auth/`, `src/tenancy/` | sesión, accesos, cambio de acceso u organización, permisos | accesos-y-permisos | — |
+| `src/layouts/` | layouts por área y navegación declarativa | accesos-y-permisos, pantallas-y-ui | `navigation/business.ts` |
 | `src/test/` | setup, MSW, fixtures de `/api/me` | tests | `mocks/currentUsers.ts` |
 
 ## 3. "Si vas a tocar X, leé Y" (en el `AGENTS.md` raíz)
@@ -41,7 +41,7 @@
 | manejar un error | `errores.md` |
 | hacer un formulario o diálogo | `formularios.md` |
 | escribir un texto | `textos-y-traducciones.md` |
-| ocultar algo por permiso o perfil | `permisos-y-perfiles.md` |
+| decidir el acceso de una pantalla u ocultar algo por permiso | `accesos-y-permisos.md` |
 | armar una pantalla | `pantallas-y-ui.md` (y **dibujarla primero**) |
 | crear una feature | `estructura-y-features.md` |
 | escribir tests | `tests.md` |

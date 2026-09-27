@@ -12,14 +12,14 @@ SPA del multitenant. La arquitectura canónica está en [`docs/architecture/fron
 | hacer un listado | [paginado-y-listados](docs/rules/paginado-y-listados.md) |
 | pedir o mostrar un teléfono | [telefonos](docs/rules/telefonos.md) |
 | pedir un correo, un CUIT o DNI; evitar duplicados; manejar ediciones simultáneas | [formularios](docs/rules/formularios.md), [datos-y-api](docs/rules/datos-y-api.md) |
-| mostrar algo solo si la organización tiene el módulo | [permisos-y-perfiles](docs/rules/permisos-y-perfiles.md) |
+| mostrar algo solo si la organización tiene el módulo | [accesos-y-permisos](docs/rules/accesos-y-permisos.md) |
 | que se use con teclado y lector de pantalla | [accesibilidad](docs/rules/accesibilidad.md) |
 | que funcione en el teléfono | [responsive](docs/rules/responsive.md) |
 | llamar a la API o tipar un dato | [datos-y-api](docs/rules/datos-y-api.md) |
 | manejar un error | [errores](docs/rules/errores.md) |
 | hacer un formulario o diálogo | [formularios](docs/rules/formularios.md) |
 | escribir un texto | [textos-y-traducciones](docs/rules/textos-y-traducciones.md) |
-| ocultar algo por permiso o perfil | [permisos-y-perfiles](docs/rules/permisos-y-perfiles.md) |
+| decidir en qué acceso va una pantalla, u ocultar algo por permiso | [accesos-y-permisos](docs/rules/accesos-y-permisos.md) |
 | armar una pantalla | [pantallas-y-ui](docs/rules/pantallas-y-ui.md) (y dibujarla primero) |
 | crear una feature | [estructura-y-features](docs/rules/estructura-y-features.md) |
 | escribir tests | [tests](docs/rules/tests.md) |
@@ -39,6 +39,6 @@ Si una regla no está escrita, **preguntá antes de inventar**.
 5. Todo texto sale de i18n, en es y en. "Tenant" nunca en pantalla: se dice "Organización".
 6. **Todo dato se muestra con `shared/ui/format` y se carga con `shared/ui/fields`**, según [`docs/architecture/formatos.md`](docs/architecture/formatos.md): fechas, números, moneda, porcentajes, teléfonos y vacíos, iguales en todas las pantallas. Nada de `toLocaleString`, `toFixed` ni `Intl.` fuera de `shared/format`. El front no calcula dinero.
 7. Tokens solo en memoria. En localStorage va lo mínimo, con el prefijo `arquitecturabasemt.`.
-8. Hay tres áreas en `src/areas/`: `personal` (B2C), `business` (B2B) y `platform`, más `public`. Una feature no importa de otra, ni un área de otra: lo común sube a `shared/`. Al cambiar de perfil se hace `queryClient.clear()`.
+8. Las áreas de `src/areas/` son `public` (ingresos, registros y portada), `storefront` (página pública de una empresa, en su subdominio), `personal` (acceso B2C), `business` (acceso B2B) y `platform`. Una feature no importa de otra, ni un área de otra: lo común sube a `shared/`. Al cambiar de acceso u organización se hace `queryClient.clear()`. Una persona (B2C) nunca ve "crear empresa".
 9. Los permisos del front son solo experiencia de uso: decide el backend.
 10. Pantallas: ficha a ancho completo; pestañas solo con dos o más tablas; lo corto en diálogo y lo largo en pantalla propia; nunca diálogo sobre diálogo; sin textos que nadie pidió.

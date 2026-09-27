@@ -1,6 +1,11 @@
 # Arquitectura del front
 
-> Documento canónico del SPA. Copia las convenciones de `../ArquitecturaBaseFront` (su `CLAUDE.md` y `docs/design/visual-baseline.md`) y les suma tres áreas en una sola app: **personal (B2C)**, **organización (B2B)** y **plataforma**. Suma también el selector de perfil, las empresas, los tipos generados desde OpenAPI y **una sola forma de mostrar los datos** ([`formatos.md`](formatos.md)). El backend está en `../ArquitecturaBaseMutitenant` (`docs/architecture/backend.md`); el árbol completo, archivo por archivo, está en [`arbol.md`](arbol.md). El diseño de cada pantalla está en el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK), y la sección «UI y pantallas» resume sus reglas.
+> Documento canónico del SPA. Copia las convenciones de `../ArquitecturaBaseFront` (su `CLAUDE.md` y `docs/design/visual-baseline.md`) y les suma, en una sola app, el modelo de accesos de `../ArquitecturaBaseMutitenant/docs/architecture/multitenancy.md`:
+- **una cuenta con dos accesos que no se mezclan**: como persona (B2C) y como empresa (B2B);
+- el **sitio de la plataforma** y la **página pública de cada empresa en su subdominio**;
+- el **backoffice** de la plataforma.
+
+Suma también las empresas, los tipos generados desde OpenAPI y **una sola forma de mostrar los datos** ([`formatos.md`](formatos.md)). El backend está en `../ArquitecturaBaseMutitenant` (`docs/architecture/backend.md`); el árbol completo, archivo por archivo, está en [`arbol.md`](arbol.md). El diseño de cada pantalla está en el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK), y la sección «UI y pantallas» resume sus reglas.
 
 ## 1. Stack
 
@@ -24,14 +29,15 @@ Mismo stack y mismas versiones que ArquitecturaBaseFront. **El `node_modules` vi
 
 ```
 src/
-├─ app/          providers · router · routes (públicas + personal + business + platform)
-├─ auth/         AuthProvider · authConfig · SessionRecovery · ProtectedRoute · AreaRoute · useCurrentUser · usePermissions · Can
-├─ tenancy/      useActiveProfile · useProfiles · useSwitchProfile · ProfileSwitcher · useCompanyParam
-├─ layouts/      PersonalLayout · BusinessLayout · PlatformLayout (el mismo armazón: Sidebar + Topbar; cambia la navegación) · AuthLayout · navigation/ · components/
+├─ app/          providers · router · routes: elige el árbol de rutas por host (dominio principal o subdominio de empresa)
+├─ auth/         AuthProvider · authConfig · SessionRecovery · ProtectedRoute · AccessRoute · useCurrentUser · usePermissions · Can
+├─ tenancy/      useAccess · useSwitchAccess (persona ↔ empresa, y entre organizaciones) · AccessMenu · useCompanyParam · usePublicSite (subdominio)
+├─ layouts/      PersonalLayout · BusinessLayout · PlatformLayout (mismo armazón: Sidebar + Topbar) · SiteLayout (sitio y páginas públicas) · AuthLayout · navigation/ · components/
 ├─ areas/        una feature no importa de otra, ni un área de otra; lo común sube a shared/
-│  ├─ public/    auth (ingreso, registro, invitación) · errors
-│  ├─ personal/  home · account (la identidad, vale para todos los perfiles) · organizations · + módulos B2C del producto
-│  ├─ business/  home · roles (REFERENCIA) · users · companies · settings · audit · + módulos B2B del producto
+│  ├─ public/    auth (ingresar como persona o como empresa, registro de personas, «Registrá tu empresa», invitación) · site (portada y directorio de la plataforma) · errors
+│  ├─ storefront/ página pública de una empresa, en su subdominio + lo que publiquen los módulos del producto
+│  ├─ personal/  (acceso B2C) home · account (la cuenta, vale en los dos accesos) · + módulos B2C del producto
+│  ├─ business/  (acceso B2B) home · roles (REFERENCIA) · users · companies · settings · audit · public-page (mi página pública) · + módulos B2B del producto
 │  └─ platform/  home · tenants · accounts · operators · audit · settings · whatsapp
 ├─ locales/      {es,en}/<namespace>.json + parity.test.ts
 ├─ shared/
@@ -47,33 +53,49 @@ src/
 
 Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts/navigation/*.ts`.
 
-| Ruta | Pantalla | Área y permiso |
+**Dominio principal** (`plataforma.com`):
+
+| Ruta | Pantalla | Quién |
 |---|---|---|
-| `/login`, `/login/codigo`, `/login/enlace`, `/registro`, `/auth/callback`, `/invitacion` | ingreso, registro B2C e invitación | público |
-| `/`, `/cuenta`, `/mis-organizaciones` + las rutas B2C del producto | área personal | perfil personal |
-| `/org`, `/org/usuarios(/:id)`, `/org/roles(/nuevo, /:id)`, `/org/empresas(/:companyId)`, `/org/configuracion`, `/org/auditoria` + las rutas B2B del producto | área de la organización | perfil business + el permiso de cada pantalla |
-| `/plataforma/...` | backoffice | `account_kind=platform` + `platform.*` |
+| `/` | portada de la plataforma y directorio de empresas publicadas | cualquiera |
+| `/ingresar`, `/ingresar/codigo`, `/registro` | ingresar **como persona** y crear una cuenta | público |
+| `/empresas`, `/empresas/ingresar`, `/empresas/registro` | portal Empresas: ingresar **como empresa** y **«Registrá tu empresa»** | público |
+| `/invitacion`, `/auth/callback`, `/login/enlace` | aceptar una invitación, volver del servidor de ingreso, enlace del bot | público |
+| `/mi`, `/mi/cuenta` + las rutas B2C del producto (`/mi/<módulo>`) | **acceso B2C**: el espacio personal | `access=consumer` |
+| `/org`, `/org/usuarios(/:id)`, `/org/roles(/nuevo, /:id)`, `/org/empresas(/:companyId)`, `/org/configuracion`, `/org/auditoria`, `/org/pagina` + las rutas B2B del producto | **acceso B2B**: la organización | `access=business` + el permiso de cada pantalla |
+| `/plataforma/...` | backoffice | `access=platform` + `platform.*` |
 
-- **Área según el perfil:** `useActiveProfile` lee `accountKind` y `activeProfile.kind` de `/api/me`. `/` lleva al inicio de cada área: personal → `/`, business → `/org`, operador → `/plataforma`. `AreaRoute` redirige al inicio del área correcta cuando se entra con otro perfil, por ejemplo desde un enlace viejo.
-- **Inicio de cada área** (`/`, `/org`): su contenido depende de las funciones de cada producto. Hasta que el producto lo defina, la página queda vacía, con la barra y el menú lateral. No se arman tableros ni resúmenes de relleno.
-- **Menú lateral:** es el mismo en los tres perfiles; cambian los enlaces.
-  - Personal: Inicio, Mis organizaciones y Mi cuenta, más los módulos B2C del producto.
-  - Organización: Inicio; Administración con el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Configuración y Auditoría; más los módulos B2B del producto.
+**Subdominio de una empresa** (`<slug>.plataforma.com`):
+
+| Ruta | Pantalla | Quién |
+|---|---|---|
+| `/` | página pública de la empresa | cualquiera (lo publicado) |
+| `/<módulo>` | lo que publiquen los módulos del producto, y lo que una persona pide o contrata | cualquiera; para interactuar, `access=consumer` |
+
+- **Árbol de rutas por host:** `routes.tsx` mira el host. Con un subdominio de empresa arma las rutas de `storefront`; con el dominio principal, las demás. El subdominio **nunca** da acceso a la administración de la empresa: esa vive en `plataforma.com/org`.
+- **Área según el acceso:** `useAccess` lee `access` de `/api/me`. Después de ingresar se va al inicio del acceso: persona → `/mi`, empresa → `/org`, operador → `/plataforma`. `AccessRoute` manda al inicio correcto si se entra a una ruta de otro acceso (por ejemplo, un enlace viejo).
+- **Ingresar desde un subdominio:** "Ingresá para continuar" hace el ingreso **como persona** y vuelve a la misma página del subdominio.
+- **Inicio de cada área** (`/mi`, `/org`): su contenido depende de cada producto. Hasta que el producto lo defina, queda vacío, con la barra y el menú lateral. Sin tableros ni resúmenes de relleno.
+- **Menú lateral:** el mismo armazón en las tres áreas; cambian los enlaces.
+  - Persona: Inicio y Mi cuenta, más los módulos B2C del producto. **No muestra organizaciones.**
+  - Empresa: Inicio; Administración con el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Página pública, Configuración y Auditoría; más los módulos B2B del producto.
   - Plataforma: Organizaciones, Cuentas, Auditoría y Configuración.
-  - Cada enlace se muestra solo con su permiso: alguien que solo tiene un rol en una empresa ve el Inicio y los módulos que su rol le habilita.
-- **Selector de perfil** (en `UserMenu`, arriba a la derecha): el botón muestra el nombre de la persona y el perfil activo. El menú lista:
+  - Cada enlace se muestra solo con su permiso (y su módulo, si es de un módulo).
+- **Menú de la cuenta** (`AccessMenu`, arriba a la derecha): el botón muestra el nombre de la persona y dónde está ("Personal" o el nombre de la organización). El menú tiene:
   - la cabecera, con el nombre y el correo;
-  - «Personal» y las organizaciones, con el rol y un ✓ en la activa. Una organización suspendida aparece deshabilitada y con su estado;
-  - «Crear una organización», «Mi cuenta» y «Salir».
+  - **en el acceso B2C:** «Ir a mi empresa», solo si es miembro de alguna organización, con un submenú si son varias;
+  - **en el acceso B2B:** las organizaciones de las que es miembro (con su rol y un ✓ en la activa; las suspendidas, deshabilitadas), «Registrar otra empresa» e «Ir a mi espacio personal»;
+  - «Mi cuenta» y «Salir».
 
-  Al elegir un perfil:
-  1. se ve una pantalla completa con «Cambiando a …»;
-  2. `signinSilent({ extraQueryParams: { tenant: id } })`;
-  3. `queryClient.clear()`, **obligatorio**, para que no queden datos del perfil anterior;
-  4. navega al inicio del área nueva.
-- **La cuenta** (`/cuenta`: email, teléfono, cultura, zona, métodos de ingreso) es de la identidad y vale para todos los perfiles; también se llega desde el `UserMenu` de una organización.
-- **Empresas:** el `companyId` sale de la URL (`useCompanyParam`) y `CanInCompany` evalúa `permissions.companies[companyId]`. No hay una "empresa activa" global.
-- **Perfil suspendido:** el `code` `Tenancy.Tenant.Suspended` muestra `ProfileSuspendedPage`, con el selector para pasar a otro perfil.
+  **Al cambiar de acceso o de organización:**
+  1. pantalla completa «Cambiando a …»;
+  2. `signinSilent({ extraQueryParams: { access, tenant } })`;
+  3. `queryClient.clear()`, **obligatorio**;
+  4. el inicio del acceso nuevo.
+- **La cuenta** (`/mi/cuenta`: nombre, correo, teléfono, idioma y región, zona, métodos de ingreso) es de la identidad y vale en los dos accesos. Desde el acceso B2B se llega por «Mi cuenta» del menú, y se ve dentro del `BusinessLayout`.
+- **Una persona nunca ve "crear empresa":** eso está solo en el portal Empresas (`/empresas/registro`) y en el menú del acceso B2B.
+- **Empresas del grupo:** el `companyId` sale de la URL (`useCompanyParam`) y `CanInCompany` evalúa `permissions.companies[companyId]`.
+- **Organización suspendida:** el `code` `Tenancy.Tenant.Suspended` muestra `OrganizationSuspendedPage`, con el menú para cambiar de organización o ir al espacio personal.
 
 ## 4. Convenciones
 
@@ -102,22 +124,24 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - `ApiError` expone `code`, `detail`, `traceId`, `errors` y `retryAfterSeconds`. **Se decide por `code`, nunca por el texto.**
 - Global (`queryClient`): un error de red da un toast con "Reintentar"; un 5xx, un toast con el `traceId`; el resto muestra el `detail`, que ya viene traducido. Se saltean los 401/403 y las queries con `meta.silent`.
 - Por feature, `errors.ts` hace `switch (error.code)`. `applyApiErrorToForm` lleva los `errors` a los campos; lo que no encaja va en `<FormError>`.
-- Un 403 renderiza `ForbiddenPage`, y un 404 en una ficha, `NotFoundPage`. Un id de otro perfil también da 404.
+- Un 403 renderiza `ForbiddenPage`, y un 404 en una ficha, `NotFoundPage`. Un id de otra organización o de otro acceso también da 404.
 
 ### Auth
 - `authConfig`: `client_id: "web"`, `response_type: "code"`, `scope: "openid profile email offline_access api"`, `userStore: InMemoryWebStorage`, `automaticSilentRenew: false`, `silent_redirect_uri: /silent-renew.html`.
 - `SessionRecovery` hace `signinSilent()` después de un F5. El logout es `signoutRedirect()` con `beginSignOut`.
 - Los permisos del front son **solo experiencia de uso**; el backend decide.
-- **Ingreso** (`/login`):
+- **Dos puertas:** `/ingresar` (como persona) y `/empresas/ingresar` (como empresa). Son la misma pantalla con otro título y otro destino; el servidor emite el token con `access` según la puerta. Un operador entra por `/plataforma`.
+- **Ingreso** (`/ingresar`, `/empresas/ingresar`):
   - arriba, «Ingresar con Google»; debajo, un `SegmentedControl` Correo | WhatsApp y el campo;
   - el código va en `OtpInput`, con 6 casillas. Avanza sola, acepta pegar y retrocede con Backspace;
   - «Reenviar código» se habilita a los 60 s, y un 429 muestra la cuenta regresiva en el botón («Reintentá en 0:42»);
   - los estados salen del `code`: código incorrecto (con los intentos que quedan), vencido, sin intentos, cuenta bloqueada y cuenta suspendida;
   - pedir un código responde igual exista o no la cuenta.
 - **Operadores:** después del código pasan por la app de autenticación. La primera vez ven el QR y la clave, activan la app y guardan 8 códigos de recuperación. Después pueden entrar con un código de recuperación.
-- **Registro** (`/registro`): pide correo o WhatsApp y verifica el código. Si el correo ya tiene cuenta, la pantalla es la misma y el correo que llega trae un código para entrar. Con `ConsumerSignup` cerrado se ve «Por ahora no se pueden crear cuentas».
+- **«Registrá tu empresa»** (`/empresas/registro`): datos de la empresa (nombre, dirección del subdominio con su disponibilidad, CUIT opcional) y de quien la registra. Si ya tiene cuenta, ingresa con ella. Según `BusinessSignup`, queda activa o en «Espera aprobación».
+- **Registro de personas** (`/registro`): pide correo o WhatsApp y verifica el código. Si el correo ya tiene cuenta, la pantalla es la misma y el correo que llega trae un código para entrar. Con `ConsumerSignup` cerrado se ve «Por ahora no se pueden crear cuentas».
 - **Invitación** (`/invitacion`): muestra quién invita, la empresa, los roles y el vencimiento. Según el caso:
-  - sin cuenta: «Aceptar invitación» crea la cuenta y entra a la organización;
+  - sin cuenta: «Aceptar invitación» crea la cuenta y entra a la organización (acceso B2B);
   - con cuenta y sin sesión: «Ingresá para aceptar»;
   - con la sesión de otra persona: avisa y ofrece salir y seguir con la cuenta invitada;
   - vencida, que ya no sirve u organización suspendida: una pantalla de error propia.
@@ -130,7 +154,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 
 ### Fechas y zona
 - Los DTO traen `…AtUtc` en ISO con `Z`; las fechas civiles, `yyyy-MM-dd`.
-- `useEffectiveTimeZone(companyId?)` devuelve la zona de la cuenta; si no hay, la de la empresa; si no, la de la organización o el perfil. Las fechas civiles no se convierten.
+- `useEffectiveTimeZone(companyId?)` devuelve la zona de la cuenta; si no hay, la de la empresa; si no, la de la organización (en B2B) o la del navegador guardada al registrarse (en B2C). Las fechas civiles no se convierten.
 
 ### UI y pantallas
 Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK) y estas reglas. De `visual-baseline.md` se mantienen los tokens, la marca azul, el menú lateral y las migas; **lo que sigue lo reemplaza**.
@@ -211,7 +235,7 @@ Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nC
 - Barra de arriba de 52 px:
   - ☰ abre el mismo menú lateral por encima del contenido, con un velo;
   - en el medio, la marca;
-  - el avatar abre los perfiles, la cuenta y «Salir» en una hoja desde abajo.
+  - el avatar abre el menú de la cuenta (cambiar de acceso u organización, «Mi cuenta» y «Salir») en una hoja desde abajo.
 - La banda del título se mantiene. El resumen va en una línea (con «…» si no entra), y la acción principal va a la derecha con un rótulo corto («+ Invitar»). Las que sobran van en ⋮.
 - Filtros: el buscador ocupa todo el ancho y las pastillas van debajo.
 - **Tablas:** solo las columnas que entran: el dato principal, el estado y el ⋮. El resto se ve al entrar a la fila. Nunca se apilan dos datos en una celda. La auditoría muestra la fecha y «Qué pasó».
@@ -225,17 +249,17 @@ Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nC
 
 ### Accesibilidad y diseño adaptable
 - **WCAG 2.2 AA.** Cada test de pantalla corre `vitest-axe` y falla con cualquier violación. Las piezas de `shared/ui` resuelven rótulos, nombres de botones, foco y teclado. Ficha: [accesibilidad](../rules/accesibilidad.md).
-- **Tres anchos: 390, 768 y 1440.** `DataTable` pasa a tarjetas en el teléfono según el `mobile` que declara cada columna; los filtros pasan a un panel inferior; los diálogos, a pantalla completa. El perfil personal (B2C) se piensa primero para el teléfono. Ficha: [responsive](../rules/responsive.md).
+- **Tres anchos: 390, 768 y 1440.** En el teléfono, `DataTable` muestra solo las columnas `mobile` (el dato principal y el estado) y el ⋮; los filtros van debajo del buscador; los diálogos se abren como hojas desde abajo (ver "Teléfono" arriba). El acceso B2C y las páginas públicas se piensan primero para el teléfono. Ficha: [responsive](../rules/responsive.md).
 
 ### Módulos, ediciones simultáneas y altas sin duplicados
 - **Módulos habilitados:** `features` en `/api/me`, y `useFeature` / `<Feature>`. Rutas y links declaran `feature` además de `permission`; apagado = no existe (404).
 - **Ediciones simultáneas:** la `version` viaja en cada `PUT` o `DELETE`; un 409 `General.ConcurrencyConflict` muestra el aviso con "Ver lo nuevo" y "Seguir editando".
 - **Altas y envíos:** `useIdempotentMutation`, con la clave creada al abrir el formulario.
 - **Datos con forma propia:** `EmailField`, `PhoneField` y `TaxIdField`. Los largos de texto salen del contrato generado.
-- Fichas: [formularios](../rules/formularios.md), [datos-y-api](../rules/datos-y-api.md), [permisos-y-perfiles](../rules/permisos-y-perfiles.md).
+- Fichas: [formularios](../rules/formularios.md), [datos-y-api](../rules/datos-y-api.md), [accesos-y-permisos](../rules/accesos-y-permisos.md).
 
 ### Tests
-- Colocalizados. MSW con `onUnhandledRequest: "error"` y fixtures de `/api/me` para perfil personal, organización (con y sin permisos) y operador.
+- Colocalizados. MSW con `onUnhandledRequest: "error"` y fixtures de `/api/me` para persona (con y sin organizaciones), empresa (con y sin permisos) y operador.
 - Por pantalla se prueba:
   - carga, vacío, sin coincidencias, error con reintento y sin permiso;
   - el recorrido de los diálogos;

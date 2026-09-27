@@ -5,7 +5,7 @@
 ## Cómo se hace
 - Un namespace por módulo (`useTranslation("roles")`). Lo compartido va en `common:` y los enums en `enums:<Enum>.<Valor>`.
 - Plurales con `_one` / `_other`; interpolación con `{{count}}`.
-- Vocabulario: "Organización" (nunca tenant), "Administrador general" (TenantAdmin), "Administrador" (CompanyAdmin), "Personal" (el perfil B2C).
+- Vocabulario: "Organización" (nunca tenant), "Administrador general" (TenantAdmin), "Administrador" (CompanyAdmin), "Personal" (el acceso B2C, su espacio personal), "Registrá tu empresa" (el alta B2B), "Ingresá como empresa" (la puerta B2B).
 - El idioma y el formato salen de la cultura de la cuenta (`es-AR` / `en-US`). El `Accept-Language` lo pone `httpClient`.
 - Los errores del backend llegan traducidos; en el front solo se traducen los `code` que llevan un texto propio.
 
