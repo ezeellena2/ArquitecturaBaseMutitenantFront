@@ -60,7 +60,7 @@ src/
 │   ├── routes.tsx                                   árbol por host: dominio principal (public, personal, business, platform)
 │   │                                                o subdominio de empresa (storefront); lazy
 │   ├── routes.test.tsx                              cada ruta con su acceso, su permiso y su módulo
-│   └── routes-by-host.test.ts                       un subdominio no monta /org, /mi ni /plataforma
+│   └── routes-by-host.test.ts                       un subdominio no monta /org, /cuenta ni /plataforma
 │
 ├── auth/                                            [E3]
 │   ├── AuthProvider.tsx                             react-oidc-context + puente al httpClient
@@ -87,7 +87,7 @@ src/
 │   ├── useSwitchAccess.test.ts                      verifica el clear de la caché
 │   ├── AccessMenu.tsx                               «Ir a mi empresa» / organizaciones / «Ir a mi espacio personal»
 │   ├── AccessMenu.test.tsx                          en B2C nunca aparece «Registrar empresa»
-│   ├── accessHome.ts                                acceso → ruta de inicio (/mi, /org, /plataforma)
+│   ├── accessHome.ts                                acceso → ruta de inicio (/, /org, /plataforma)
 │   ├── usePublicSite.ts                             [E7] slug y datos públicos del subdominio
 │   └── useCompanyParam.ts                           [E6] companyId de la URL
 │
@@ -131,12 +131,12 @@ src/
 │   │   │   │   └── loginCodeState.ts
 │   │   │   ├── errors.ts                            códigos Auth.* → texto o campo
 │   │   │   └── pages/
-│   │   │       ├── LoginPage.tsx                    /ingresar (persona) y /empresas/ingresar (empresa): misma pantalla, otra puerta
+│   │   │       ├── LoginPage.tsx                    /login (persona) y /login/empresa (empresa): misma pantalla, otra puerta
 │   │   │       ├── LoginCodePage.tsx
 │   │   │       ├── LoginLinkPage.tsx
 │   │   │       ├── SignupPage.tsx                   /registro: crear cuenta de persona
 │   │   │       ├── BusinessPortalPage.tsx           [E6] /empresas: portal Empresas
-│   │   │       ├── BusinessSignupPage.tsx           [E6] /empresas/registro: «Registrá tu empresa»
+│   │   │       ├── BusinessSignupPage.tsx           [E6] /registro/empresa: «Registrá tu empresa»
 │   │   │       ├── RecoverAccountPage.tsx           [E5] «Recuperar mi cuenta» (ADR 0033)
 │   │   │       ├── CallbackPage.tsx
 │   │   │       └── AcceptInvitationPage.tsx
@@ -163,7 +163,7 @@ src/
 │   │   │   │   ├── VerifyDestinationDialog.tsx
 │   │   │   │   └── UnlinkWhatsAppDialog.tsx         [E8]
 │   │   │   ├── errors.ts
-│   │   │   └── pages/AccountPage.tsx                /mi/cuenta
+│   │   │   └── pages/AccountPage.tsx                /cuenta
 │   │   └── <módulo B2C del producto>/               misma forma que business/roles: api · columns · errors · components · pages
 │   │
 │   ├── business/                                    ACCESO B2B (la organización)

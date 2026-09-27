@@ -57,11 +57,11 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 
 | Ruta | Pantalla | Quién |
 |---|---|---|
-| `/` | portada de la plataforma y directorio de empresas publicadas | cualquiera |
-| `/ingresar`, `/ingresar/codigo`, `/registro` | ingresar **como persona** y crear una cuenta | público |
-| `/empresas`, `/empresas/ingresar`, `/empresas/registro` | portal Empresas: ingresar **como empresa** y **«Registrá tu empresa»** | público |
+| `/` | sin sesión: la portada de la plataforma (con «Para empresas» y el directorio de empresas publicadas). Con sesión de persona: su inicio personal | cualquiera |
+| `/login`, `/registro`, `/recuperar` | ingresar **como persona**, crear una cuenta y «Recuperar mi cuenta» | público |
+| `/login/empresa`, `/registro/empresa` | ingresar **como empresa** y **«Registrá tu empresa»** | público |
 | `/invitacion`, `/auth/callback`, `/login/enlace` | aceptar una invitación, volver del servidor de ingreso, enlace del bot | público |
-| `/mi`, `/mi/cuenta` + las rutas B2C del producto (`/mi/<módulo>`) | **acceso B2C**: el espacio personal | `access=consumer` |
+| `/` (con sesión), `/cuenta` + las rutas B2C del producto (`/<módulo>`) | **acceso B2C**: el lado Personal | `access=consumer` (`/cuenta`, también `business`) |
 | `/org`, `/org/usuarios(/:id)`, `/org/roles(/nuevo, /:id)`, `/org/empresas(/:companyId)`, `/org/configuracion`, `/org/auditoria`, `/org/pagina` + las rutas B2B del producto | **acceso B2B**: la organización | `access=business` + el permiso de cada pantalla |
 | `/plataforma/...` | backoffice | `access=platform` + `platform.*` |
 
@@ -73,9 +73,9 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 | `/<módulo>` | lo que publiquen los módulos del producto, y lo que una persona pide o contrata | cualquiera; para interactuar, `access=consumer` |
 
 - **Árbol de rutas por host:** `routes.tsx` mira el host. Con un subdominio de empresa arma las rutas de `storefront`; con el dominio principal, las demás. El subdominio **nunca** da acceso a la administración de la empresa: esa vive en `plataforma.com/org`.
-- **Área según el acceso:** `useAccess` lee `access` de `/api/me`. Después de ingresar se va al inicio del acceso: persona → `/mi`, empresa → `/org`, operador → `/plataforma`. `AccessRoute` manda al inicio correcto si se entra a una ruta de otro acceso (por ejemplo, un enlace viejo).
+- **Área según el acceso:** `useAccess` lee `access` de `/api/me`. Después de ingresar se va al inicio del acceso: persona → `/`, empresa → `/org`, operador → `/plataforma`. `AccessRoute` manda al inicio correcto si se entra a una ruta de otro acceso (por ejemplo, un enlace viejo).
 - **Ingresar desde un subdominio:** "Ingresá para continuar" hace el ingreso **como persona** y vuelve a la misma página del subdominio.
-- **Inicio de cada área** (`/mi`, `/org`): su contenido depende de cada producto. Hasta que el producto lo defina, queda vacío, con la barra y el menú lateral. Sin tableros ni resúmenes de relleno.
+- **Inicio de cada área** (`/` con sesión de persona, `/org`): su contenido depende de cada producto. Hasta que el producto lo defina, queda vacío, con la barra y el menú lateral. Sin tableros ni resúmenes de relleno.
 - **Menú lateral:** el mismo armazón en las tres áreas; cambian los enlaces.
   - Persona: Inicio y Mi cuenta, más los módulos B2C del producto. **No muestra organizaciones.**
   - Empresa: Inicio; Administración con el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Página pública, Configuración y Auditoría; más los módulos B2B del producto.
@@ -84,7 +84,7 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 - **Menú de la cuenta** (`AccessMenu`, arriba a la derecha): el botón muestra el nombre de la persona y dónde está ("Personal" o el nombre de la organización). El menú tiene:
   - la cabecera, con el nombre y el correo;
   - **en el acceso B2C:** «Ir a mi empresa», solo si es miembro de alguna organización, con un submenú si son varias;
-  - **en el acceso B2B:** las organizaciones de las que es miembro (con su rol y un ✓ en la activa; las suspendidas, deshabilitadas), «Registrar otra empresa» e «Ir a mi espacio personal»;
+  - **en el acceso B2B:** las organizaciones de las que es miembro (con su rol y un ✓ en la activa; las suspendidas, deshabilitadas), e «Ir a Personal»;
   - «Mi cuenta» y «Salir».
 
   **Al cambiar de acceso o de organización:**
@@ -92,8 +92,8 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
   2. `signinSilent({ extraQueryParams: { access, tenant } })`;
   3. `queryClient.clear()`, **obligatorio**;
   4. el inicio del acceso nuevo.
-- **La cuenta** (`/mi/cuenta`: nombre, correo, teléfono, idioma y región, zona, métodos de ingreso) es de la identidad y vale en los dos accesos. Desde el acceso B2B se llega por «Mi cuenta» del menú, y se ve dentro del `BusinessLayout`.
-- **Una persona nunca ve "crear empresa":** eso está solo en el portal Empresas (`/empresas/registro`) y en el menú del acceso B2B.
+- **La cuenta** (`/cuenta`: nombre, idioma y región, zona y **métodos de ingreso**, con el aviso de agregar uno personal) es de la identidad y vale en los dos accesos. Desde el acceso B2B se llega por «Mi cuenta» del menú, y se ve dentro del `BusinessLayout`.
+- **Una persona nunca ve "crear empresa":** «Registrá tu empresa» (`/registro/empresa`) está solo en la portada y en la puerta de empresas. Ni el lado Personal ni el menú de la cuenta lo ofrecen.
 - **Empresas del grupo:** el `companyId` sale de la URL (`useCompanyParam`) y `CanInCompany` evalúa `permissions.companies[companyId]`.
 - **Organización suspendida:** el `code` `Tenancy.Tenant.Suspended` muestra `OrganizationSuspendedPage`, con el menú para cambiar de organización o ir al espacio personal.
 
@@ -130,15 +130,17 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - `authConfig`: `client_id: "web"`, `response_type: "code"`, `scope: "openid profile email offline_access api"`, `userStore: InMemoryWebStorage`, `automaticSilentRenew: false`, `silent_redirect_uri: /silent-renew.html`.
 - `SessionRecovery` hace `signinSilent()` después de un F5. El logout es `signoutRedirect()` con `beginSignOut`.
 - Los permisos del front son **solo experiencia de uso**; el backend decide.
-- **Dos puertas:** `/ingresar` (como persona) y `/empresas/ingresar` (como empresa). Son la misma pantalla con otro título y otro destino; el servidor emite el token con `access` según la puerta. Un operador entra por `/plataforma`.
-- **Ingreso** (`/ingresar`, `/empresas/ingresar`):
+- **Dos puertas:** `/login` (como persona) y `/login/empresa` (como empresa). Son la misma pantalla con otro título y otro destino; el servidor emite el token con `access` según la puerta. No se vuelve "al último lado": se entra al lado de la puerta elegida. Desde cada puerta, un enlace chico abajo ofrece la otra. Un operador entra por `/plataforma`.
+- **Ingreso** (`/login`, `/login/empresa`):
   - arriba, «Ingresar con Google»; debajo, un `SegmentedControl` Correo | WhatsApp y el campo;
   - el código va en `OtpInput`, con 6 casillas. Avanza sola, acepta pegar y retrocede con Backspace;
   - «Reenviar código» se habilita a los 60 s, y un 429 muestra la cuenta regresiva en el botón («Reintentá en 0:42»);
   - los estados salen del `code`: código incorrecto (con los intentos que quedan), vencido, sin intentos, cuenta bloqueada y cuenta suspendida;
-  - pedir un código responde igual exista o no la cuenta.
+  - pedir un código responde igual exista o no la cuenta;
+  - por la puerta de empresas, una cuenta sin organizaciones ve «Tu cuenta no está en ninguna empresa todavía», con «Registrá tu empresa» e «Ingresá como persona»;
+  - abajo, «¿No podés entrar? Recuperá tu cuenta» (`/recuperar`): el método perdido, uno nuevo verificado con código, y el pedido queda para que lo revise un operador.
 - **Operadores:** después del código pasan por la app de autenticación. La primera vez ven el QR y la clave, activan la app y guardan 8 códigos de recuperación. Después pueden entrar con un código de recuperación.
-- **«Registrá tu empresa»** (`/empresas/registro`): datos de la empresa (nombre, dirección del subdominio con su disponibilidad, CUIT opcional) y de quien la registra. Si ya tiene cuenta, ingresa con ella. Según `BusinessSignup`, queda activa o en «Espera aprobación».
+- **«Registrá tu empresa»** (`/registro/empresa`): datos de la empresa (nombre, dirección del subdominio con su disponibilidad, CUIT opcional) y de quien la registra. Si ya tiene cuenta, ingresa con ella. Según `BusinessSignup`, queda activa o en «Espera aprobación».
 - **Registro de personas** (`/registro`): pide correo o WhatsApp y verifica el código. Si el correo ya tiene cuenta, la pantalla es la misma y el correo que llega trae un código para entrar. Con `ConsumerSignup` cerrado se ve «Por ahora no se pueden crear cuentas».
 - **Invitación** (`/invitacion`): muestra quién invita, la empresa, los roles y el vencimiento. Según el caso:
   - sin cuenta: «Aceptar invitación» crea la cuenta y entra a la organización (acceso B2B);
@@ -149,7 +151,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 
 ### Idioma y cultura
 - La cultura (`es-AR` por defecto, o `en-US`) define el idioma (`es`) y el formato. Un namespace por módulo; `common` para lo compartido; `enums` para los valores de enums y estados. `parity.test.ts` exige las mismas claves en los dos idiomas.
-- Español rioplatense con voseo. **"Tenant" nunca en pantalla**: se dice "Organización". `TenantAdmin` es "Administrador general" y `CompanyAdmin`, "Administrador".
+- Español rioplatense con voseo. **"Tenant" nunca en pantalla**: se dice "Organización". `TenantAdmin` es "Dueño" y `CompanyAdmin`, "Administrador". El lado B2C se llama "Personal".
 - La cultura se guarda en la cuenta (`PUT /api/me`) y gana sobre la de localStorage (`arquitecturabasemt.culture`).
 
 ### Fechas y zona
@@ -223,7 +225,7 @@ Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nC
 **Diálogos y avisos**
 - Diálogos de 560 px (420 para confirmar), con fondo desenfocado y título de 16 px/600. Debajo del título puede ir el nombre de lo que se edita. Los campos van en dos columnas y la botonera, a la derecha.
 - Toda acción destructiva se confirma. En la plataforma, el motivo es obligatorio.
-- Los resultados se avisan con un toast abajo a la derecha. Los errores de una regla (por ejemplo, «Tiene que quedar al menos un Administrador general») van arriba del formulario o en el toast, según dónde se originan.
+- Los resultados se avisan con un toast abajo a la derecha. Los errores de una regla (por ejemplo, «Tiene que quedar al menos un Dueño») van arriba del formulario o en el toast, según dónde se originan.
 
 **Pantallas públicas (`AuthLayout`)**
 - La pantalla va en dos mitades:

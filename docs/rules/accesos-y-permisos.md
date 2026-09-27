@@ -4,10 +4,10 @@
 
 ## Cómo se hace
 - **Ruta por acceso:**
-  - `<AccessRoute access="consumer">` para `/mi/…`;
+  - `<AccessRoute access="consumer">` para `/` con sesión, `/<módulo>` B2C;
   - `<AccessRoute access="business"><ProtectedRoute permission="roles.read" /></AccessRoute>` para `/org/…`;
   - `<AccessRoute access="platform">` para `/plataforma/…`;
-  - las rutas públicas (`/`, `/ingresar`, `/empresas/…`, las del subdominio) no llevan `AccessRoute`.
+  - las rutas públicas (`/` sin sesión, `/login…`, `/registro…`, `/recuperar`, las del subdominio) no llevan `AccessRoute`.
 - **Host:** con un subdominio de empresa, `routes.tsx` arma **solo** las rutas de `storefront`. `usePublicSite()` devuelve el slug y los datos públicos de esa empresa.
 - **Acción:** `<Can permission="roles.manage">…</Can>`. En una empresa del grupo: `<CanInCompany companyId={id} permission="company.members.manage">`.
 - **Acceso activo:** `useAccess()` devuelve `access`, la organización activa (en B2B), si la persona tiene espacio personal y sus organizaciones.
@@ -20,7 +20,7 @@
   - `useFeature("x")` y `<Feature name="x">` muestran u ocultan.
   - Las rutas y los enlaces de un módulo declaran `feature` además de `permission`. Apagado, el enlace no aparece y la ruta muestra `NotFoundPage`, como el 404 del back.
 - **Términos nuevos:** si una respuesta trae `Legal.AcceptanceRequired`, se muestra la pantalla de aceptación, que bloquea.
-- **La cuenta** (`/mi/cuenta`) es de la identidad y se ve desde los dos accesos.
+- **La cuenta** (`/cuenta`) es de la identidad y se ve desde los dos accesos.
 - El `companyId` sale de la URL (`useCompanyParam`); nunca hay una "empresa activa" guardada.
 
 ## Prohibido
