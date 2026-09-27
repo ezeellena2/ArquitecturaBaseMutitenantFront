@@ -16,11 +16,13 @@
 - **ConfirmDialog o acción de fila:** toast con el mensaje.
 - **Pantalla:** un 403 renderiza `ForbiddenPage`; un 404 en una ficha, `NotFoundPage` (también un id de otra organización o de otro acceso); `Tenancy.Tenant.Suspended` renderiza `OrganizationSuspendedPage`, y `Tenancy.Access.Wrong` lleva al inicio del acceso correcto.
 - Query que maneja su error en pantalla: `meta: { silent: true }`.
+- **Genéricos** (red, 5xx, 429 con cuenta regresiva, sesión vencida, 409, salir sin guardar, versión nueva, módulo apagado): los resuelven `shared/api` y el `AppShell`, como dice [frontend.md, "Errores"](../architecture/frontend.md#errores). Una pantalla no los reimplementa.
 
 ## Prohibido
 - `if (error.detail.includes(...))`.
 - Mostrar `error.message` crudo o el `traceId` fuera del toast de 5xx.
 - `try/catch` que se trague un error sin mostrarlo.
+- Reintentar solo un 429 o un 409.
 
 ## Copiá de
 - `src/areas/business/users/errors.ts` (E6) · `src/shared/api/formErrors.ts` (E1)

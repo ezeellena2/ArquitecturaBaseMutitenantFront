@@ -93,6 +93,7 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
   3. `queryClient.clear()`, **obligatorio**;
   4. el inicio del acceso nuevo.
 - **La cuenta** (`/cuenta`: nombre, idioma y región, zona y **métodos de ingreso**, con el aviso de agregar uno personal) es de la identidad y vale en los dos accesos. Desde el acceso B2B se llega por «Mi cuenta» del menú, y se ve dentro del `BusinessLayout`.
+- **Baja de la cuenta** (en `/cuenta`, sección Privacidad; diseño en `multitenancy.md` §3.2 del back): diálogo con motivo y código a su método principal, la sugerencia de exportar antes, los errores de la política (único Dueño, operador, bloqueos de módulos) y, al confirmar, sesión cerrada con "Tu cuenta se elimina el dd/mm/aaaa". En la organización, un usuario con la baja pedida se ve con el estado "Baja pedida"; en la plataforma, la cuenta también.
 - **Una persona nunca ve "crear empresa":** «Registrá tu empresa» (`/registro/empresa`) está solo en la portada y en la puerta de empresas. Ni el lado Personal ni el menú de la cuenta lo ofrecen.
 - **Empresas del grupo:** el `companyId` sale de la URL (`useCompanyParam`) y `CanInCompany` evalúa `permissions.companies[companyId]`.
 - **Organización suspendida:** el `code` `Tenancy.Tenant.Suspended` muestra `OrganizationSuspendedPage`, con el menú para cambiar de organización o ir al espacio personal.
@@ -125,6 +126,15 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - Global (`queryClient`): un error de red da un toast con "Reintentar"; un 5xx, un toast con el `traceId`; el resto muestra el `detail`, que ya viene traducido. Se saltean los 401/403 y las queries con `meta.silent`.
 - Por feature, `errors.ts` hace `switch (error.code)`. `applyApiErrorToForm` lleva los `errors` a los campos; lo que no encaja va en `<FormError>`.
 - Un 403 renderiza `ForbiddenPage`, y un 404 en una ficha, `NotFoundPage`. Un id de otra organización o de otro acceso también da 404.
+- **Casos genéricos** (como en cualquier aplicación; los resuelve `shared/api` y el `AppShell`, nunca cada pantalla):
+  - **Sin conexión o error de red:** toast "No pudimos conectarnos. Revisá tu conexión." con «Reintentar». Si el navegador está sin conexión (`navigator.onLine`), además una franja fija arriba, "Sin conexión", que se va sola al volver.
+  - **Error 5xx:** toast "Algo salió mal. Probá de nuevo en un rato." con el código de seguimiento (`traceId`) para copiar.
+  - **429, demasiados pedidos:** con `retryAfterSeconds`, el botón que disparó el pedido queda deshabilitado con la cuenta regresiva ("Reintentá en 0:42"), como en el ingreso. Si no vino de un botón, toast "Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos." **Nunca se reintenta solo.**
+  - **Sesión vencida:** si falla la renovación silenciosa, se limpia la sesión y `queryClient` y se va a `/login` (la puerta del acceso que tenía) con `returnUrl`. La pantalla de ingreso muestra "Tu sesión venció. Ingresá de nuevo." y, al volver, lleva a la misma ruta. Lo escrito en un formulario sin guardar se pierde, salvo que la pantalla lo guarde como borrador.
+  - **409, alguien cambió esto:** aviso sobre la pantalla con «Ver lo nuevo» y «Seguir editando», sin perder lo escrito ([formularios](../rules/formularios.md)).
+  - **Salir sin guardar:** con "Cambios sin guardar", navegar a otra ruta o cerrar la pestaña pregunta "¿Salir sin guardar?" (`useBlocker` y `beforeunload`).
+  - **Versión nueva del front:** si falla la carga de un chunk después de un despliegue, franja "Hay una versión nueva" con «Actualizar», que recarga la página. No se recarga solo.
+  - **Módulo apagado:** su ruta muestra `NotFoundPage`, igual que un 404.
 
 ### Auth
 - `authConfig`: `client_id: "web"`, `response_type: "code"`, `scope: "openid profile email offline_access api"`, `userStore: InMemoryWebStorage`, `automaticSilentRenew: false`, `silent_redirect_uri: /silent-renew.html`.
@@ -137,6 +147,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
   - «Reenviar código» se habilita a los 60 s, y un 429 muestra la cuenta regresiva en el botón («Reintentá en 0:42»);
   - los estados salen del `code`: código incorrecto (con los intentos que quedan), vencido, sin intentos, cuenta bloqueada y cuenta suspendida;
   - pedir un código responde igual exista o no la cuenta;
+  - **cuenta con la baja pedida** (`Identity.Account.PendingDeletion`): después del código, "Tu cuenta tiene la baja pedida · Se elimina el dd/mm/aaaa" con «Cancelar la baja y entrar» (`POST /api/auth/deletion/cancel` con el `cancelTicket`) y «Salir»;
   - por la puerta de empresas, una cuenta sin organizaciones ve «Tu cuenta no está en ninguna empresa todavía», con «Registrá tu empresa» e «Ingresá como persona»;
   - abajo, «¿No podés entrar? Recuperá tu cuenta» (`/recuperar`): el método perdido, uno nuevo verificado con código, y el pedido queda para que lo revise un operador.
 - **Operadores:** después del código pasan por la app de autenticación. La primera vez ven el QR y la clave, activan la app y guardan 8 códigos de recuperación. Después pueden entrar con un código de recuperación.
