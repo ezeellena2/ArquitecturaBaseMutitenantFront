@@ -1,0 +1,60 @@
+import type { ReactNode } from "react";
+import { cn } from "@/shared/lib/utils";
+
+export interface SegmentedOption {
+  key: string;
+  label: ReactNode;
+  pressed: boolean;
+  onSelect: () => void;
+}
+
+/// Un segmentado: pocas opciones fijas, a la vista y de un clic, en vez de un desplegable que pide dos. Lo usan
+/// el estado del listado de usuarios, el "Todos | Elegidos" del selector de permisos y el "Correo | WhatsApp" de
+/// la pantalla de ingreso.
+///
+/// Son botones con `aria-pressed` y no un grupo de radios porque cada uno actúa al apretarse, no al enviarse
+/// un formulario. El nombre del grupo es obligatorio: sin él, el lector anuncia botones sueltos ("Todos",
+/// "Activos") y no dice qué están eligiendo.
+///
+/// `fullWidth` lo estira al ancho de su contenedor, en partes iguales: es la forma que tiene en una tarjeta
+/// angosta, como la del ingreso, donde el segmentado encabeza el formulario. Sin eso, mide lo que sus textos.
+export function SegmentedControl({
+  options,
+  fullWidth = false,
+  "aria-label": label,
+}: {
+  options: readonly SegmentedOption[];
+  fullWidth?: boolean;
+  "aria-label": string;
+}): ReactNode {
+  return (
+    <div
+      role="group"
+      aria-label={label}
+      className={cn(
+        "h-9 shrink-0 divide-x divide-[var(--borde)] overflow-hidden rounded-[10px] border border-[var(--borde)] bg-[var(--lado-activo)]",
+        fullWidth ? "flex w-full" : "inline-flex",
+      )}
+    >
+      {options.map((option) => (
+        <button
+          key={option.key}
+          // Sin `type`, adentro de un formulario (el editor de un rol) el botón lo enviaría.
+          type="button"
+          aria-pressed={option.pressed}
+          onClick={option.onSelect}
+          className={cn(
+            // El contorno de foco va hacia adentro: el grupo recorta lo que sale de su borde.
+            "px-[13px] text-[13px] font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--foco)]",
+            fullWidth ? "flex-1" : "",
+            option.pressed
+              ? "bg-[var(--marca-t)] text-[var(--marca-tx)]"
+              : "text-[var(--t2)] hover:bg-[var(--s2)]",
+          )}
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
+  );
+}
