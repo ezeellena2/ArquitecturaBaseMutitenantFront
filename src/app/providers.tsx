@@ -6,6 +6,7 @@ import { queryClient } from "@/shared/api/queryClient";
 import { FormatProvider } from "@/shared/format/useFormat";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { Toaster } from "@/shared/ui/sonner";
+import { AppShell } from "@/layouts/AppShell";
 
 function ReferenceDataStartup() {
   const { data } = useReferenceData();
@@ -29,7 +30,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <ReferenceDataStartup />
         <FormatProvider>
-          <Suspense fallback={null}>{children}</Suspense>
+          <Suspense fallback={null}>
+            <AppShell>{children}</AppShell>
+          </Suspense>
         </FormatProvider>
         <Suspense fallback={null}><Toaster /></Suspense>
       </QueryClientProvider>
