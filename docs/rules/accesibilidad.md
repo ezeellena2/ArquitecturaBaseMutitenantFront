@@ -34,7 +34,7 @@
 - `src/areas/business/roles/pages/RolesPage.test.tsx` (E4).
 
 ## Lo verifica
-- `vitest-axe` en cada test de pantalla (`toHaveNoViolations`).
+- `vitest-axe` (E0) en cada test de pantalla (`toHaveNoViolations`).
 - Antes de cerrar una etapa: una pasada de axe en el navegador real, a 1440 y a 390, que cubre el contraste y no se puede hacer en jsdom.
 
 ## Detalle

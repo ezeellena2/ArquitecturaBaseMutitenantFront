@@ -30,7 +30,7 @@ Las carpetas que la feature no necesita no se crean (`settings/` puede tener sol
 
 ## Lo verifica
 - `tsc -b` estricto y `oxlint`.
-- `structure.test.ts`: sin imports entre features ni entre áreas (Pendiente: E0).
+- `structure.test.ts` (E0): sin imports entre features ni entre áreas.
 
 ## Detalle
 [frontend.md §2](../architecture/frontend.md#2-estructura) · [arbol.md](../architecture/arbol.md)

@@ -35,11 +35,11 @@
 - Un `DataTable` sin una columna `mobile: "primary"`.
 
 ## Copiá de
-- `src/areas/business/users/columns.tsx` (E6) · los tableros de 390 px del lienzo.
+- `src/areas/business/users/columns.tsx` (E6) · los tableros de 390 px del [lienzo versionado](../design/lienzo/README.md).
 
 ## Lo verifica
-- `DataTable.test.tsx`: a 390 px renderiza solo las columnas `primary` y `status`, y el ⋮.
-- `columns-mobile.test.ts`: toda definición de columnas tiene exactamente una `primary`.
+- `DataTable.test.tsx` (E1): a 390 px renderiza solo las columnas `primary` y `status`, y el ⋮.
+- `columns-mobile.test.ts` (E1): toda definición de columnas tiene exactamente una `primary`.
 - Capturas a 390 y 1440 comparadas contra el tablero antes de cerrar la etapa.
 
 ## Detalle

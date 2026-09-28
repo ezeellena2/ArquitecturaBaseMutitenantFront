@@ -21,8 +21,8 @@
 - `src/locales/es/roles.json` (E4)
 
 ## Lo verifica
-- `parity.test.ts`: mismas claves en es y en.
-- `oxlint` con la regla de literales en JSX (Pendiente: E0, configurar `react/jsx-no-literals`).
+- `parity.test.ts` (E1): mismas claves en es y en.
+- `oxlint` con la regla de literales en JSX (E0, `react/jsx-no-literals`).
 
 ## Detalle
 [frontend.md §4, "Idioma y cultura"](../architecture/frontend.md#idioma-y-cultura)

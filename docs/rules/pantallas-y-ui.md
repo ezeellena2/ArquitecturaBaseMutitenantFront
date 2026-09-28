@@ -1,6 +1,6 @@
 # Pantallas y UI
 
-**Regla:** **toda pantalla nueva se dibuja primero** en el lienzo del sistema visual, con las piezas reales de "Gestión de usuarios", y se programa recién cuando el usuario elige. Se arma solo con piezas de `shared/ui`.
+**Regla:** **toda pantalla nueva se dibuja primero** en el [lienzo versionado](../design/lienzo/README.md), con las piezas reales de "Gestión de usuarios", y se programa recién cuando el usuario elige. El tablero manda sobre cualquier descripción textual. Se arma solo con piezas de `shared/ui`.
 
 ## Cómo se hace
 - Toda pantalla usa `Page`: una banda blanca de ancho completo (64 px de alto mínimo, como `.banda-pag` del lienzo) con el ícono de la sección o «‹» (`backTo`), el título, la línea de resumen y, a la derecha, las acciones. Las pestañas, si corresponden, van debajo de la banda.
@@ -18,12 +18,12 @@
 - Programar una pantalla sin tablero.
 
 ## Copiá de
-- `src/areas/business/roles/pages/RolesPage.tsx` (E4) · `docs/architecture/tema.md` · los tableros Usuarios, Usuario, Roles y Rol del lienzo
+- el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (v35); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` (E4) y `docs/architecture/tema.md`
 
 ## Lo verifica
 - La revisión del usuario sobre el tablero, antes de programar.
 - Tests de pantalla (tests.md). `oxlint`.
-- `theme-tokens.test.ts` (tema.md): los tokens existen en `index.css`, ningún componente usa un color literal, y ninguna ficha ni componente usa una variable de color que no sea de tema.md (salvo los alias de shadcn en `index.css`).
+- `theme-tokens.test.ts` (E0): los tokens de tema.md existen en `index.css`, ningún componente usa un color literal, y ninguna ficha ni componente usa una variable de color que no sea de tema.md (salvo los alias de shadcn en `index.css`).
 
 ## Detalle
 [frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md)

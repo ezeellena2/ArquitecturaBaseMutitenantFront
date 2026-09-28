@@ -40,9 +40,9 @@
 - `../ArquitecturaBaseFront/src/shared/ui/PhoneField.tsx`: la accesibilidad del selector se conserva; la lista fija de 14 países se reemplaza.
 
 ## Lo verifica
-- `PhoneField.test.tsx`: busca por nombre y por prefijo, detecta el país al pegar, formatea mientras se escribe y filtra los países de WhatsApp.
-- `formatters.test.ts`: los casos de teléfono de `format-cases.json`, los mismos que el back.
-- `format-usage.test.ts`: `libphonenumber-js` solo en su lugar.
+- `PhoneField.test.tsx` (E1): busca por nombre y por prefijo, detecta el país al pegar y formatea mientras se escribe; el filtro de países WhatsApp se prueba desde E8.
+- `formatters.test.ts` (E1): los casos de teléfono de `format-cases.json`, los mismos que el back.
+- `format-usage.test.ts` (E1): `libphonenumber-js` solo en su lugar e `Intl.DisplayNames` en `shared/phone` solo para nombres de países.
 
 ## Detalle
 [formatos.md](../architecture/formatos.md) · back: `../ArquitecturaBaseMutitenant/docs/rules/telefonos.md`

@@ -22,7 +22,7 @@
 - `src/areas/business/roles/pages/RolesPage.tsx` (E4) · `src/areas/business/users/components/UsersFilterBar.tsx` (E6)
 
 ## Lo verifica
-- `usePagination.test.ts`: vuelve a la página 1, corrige una página fuera de rango y omite `pageSize=10` en la URL.
+- `usePagination.test.tsx` (E0): vuelve a la página 1, corrige una página fuera de rango y omite `pageSize=10` en la URL.
 - Tests de pantalla: sin coincidencias y cambio de página.
 
 ## Detalle

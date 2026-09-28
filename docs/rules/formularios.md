@@ -33,7 +33,7 @@
 
 ## Lo verifica
 - Tests de pantalla: el recorrido del diálogo y un error del servidor ubicado en su campo.
-- `parsers.test.ts`.
+- `parsers.test.ts` (E1).
 
 ## Detalle
-[frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · lienzo v33: tablero «Rol» (pantalla larga con «Cambios sin guardar») y nota «estilo» (lo corto en un diálogo de 560)
+[frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · [lienzo versionado v35](../design/lienzo/README.md): tablero «Rol» (pantalla larga con «Cambios sin guardar») y nota «estilo» (lo corto en un diálogo de 560)

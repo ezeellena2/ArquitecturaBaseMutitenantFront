@@ -14,7 +14,7 @@
 - **Estados:** `<StatusBadge enum="TenantStatus" value={s} />`; el tono (`success`, `warning`, `danger`, `neutral` o `pending`) sale de `statusTones.ts`, y sus colores, de los tokens de [tema.md](../architecture/tema.md).
 
 ## Prohibido
-- `toLocaleString`, `toLocaleDateString`, `toFixed`, `Intl.*` o `new Date(...)` para mostrar, fuera de `shared/format` y `shared/time`.
+- `toLocaleString`, `toLocaleDateString`, `toFixed`, `Intl.*` o `new Date(...)` para mostrar, fuera de `shared/format` y `shared/time`. En `shared/phone` se permite solo `Intl.DisplayNames` para el nombre del país.
 - `"N/A"`, `"-"` o `0` para un dato que falta.
 - Calcular montos o porcentajes en el front.
 - Mostrar un enum sin traducir.
@@ -23,9 +23,9 @@
 - `src/areas/business/roles/columns.tsx` (E4) · `src/shared/ui/format/` (E1)
 
 ## Lo verifica
-- `format-usage.test.ts`: formateo fuera de lugar.
-- `formatters.test.ts`: recorre el mismo `format-cases.json` que el back, así los dos lados producen el mismo texto.
-- `parsers.test.ts`.
+- `format-usage.test.ts` (E1): formateo fuera de lugar.
+- `formatters.test.ts` (E1): recorre el mismo `format-cases.json` que el back, así los dos lados producen el mismo texto.
+- `parsers.test.ts` (E1).
 
 ## Detalle
 **[architecture/formatos.md](../architecture/formatos.md)**: el catálogo completo, con ejemplos en es-AR y en-US.

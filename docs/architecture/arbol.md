@@ -8,7 +8,7 @@
 ArquitecturaBaseMutitenantFront/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                                   [E0] npm ci + contracts:check + build + lint + test
+│       └── ci.yml                                   [E0] npm ci + build + lint + test; contracts:check se suma en [E1]
 ├── docs/
 │   ├── architecture/
 │   │   ├── frontend.md                              arquitectura canónica
@@ -16,11 +16,13 @@ ArquitecturaBaseMutitenantFront/
 │   │   ├── tema.md                                  tema visual aprobado (tokens, marco arena, panel de Administración)
 │   │   ├── arnes.md                                 fichas, punteros por carpeta y verificación
 │   │   └── arbol.md                                 este archivo
+│   ├── design/lienzo/                               versión 35: 67 tableros .dc.html, support.js y ds/; fuente de las pantallas
+│   │   └── README.md                                cómo servir el lienzo y ver los estados
 │   ├── rules/                                       fichas del arnés: README + 13 temas
 │   ├── plans/                                       planes detallados de las etapas del front
 │   └── specs/
 ├── public/
-│   └── favicon.svg
+│   └── favicon.svg                                 [E0]
 ├── scripts/
 │   ├── generate-contracts.mjs                       [E1] openapi.json del back → src/shared/api/generated/schema.d.ts
 │   └── check-contracts.mjs                          [E1] falla si generated/ no coincide con el contrato
@@ -34,12 +36,12 @@ ArquitecturaBaseMutitenantFront/
 ├── components.json                                  [E0] shadcn new-york
 ├── index.html                                       [E0] lang="es"
 ├── silent-renew.html                                [E3]
-├── package.json                                     [E0] dev, build, lint, test, contracts, contracts:check
+├── package.json                                     [E0] dev, build, lint, test; contracts y contracts:check se suman en [E1]
 ├── package-lock.json
 ├── tsconfig.json
 ├── tsconfig.app.json                                alias @/* → src/*
 ├── tsconfig.node.json
-└── vite.config.ts                                   proxy /api /account /connect /.well-known /webhooks → Api (Aspire), igual en cada host (*.localtest.me): mismo origen, sin CORS; puerto 5174; la entrada silent-renew.html se suma en [E3]
+└── vite.config.ts                                   [E0] proxy /api /account /connect /.well-known /webhooks /signin-google → Api (Aspire), igual en cada host (*.localtest.me): mismo origen, sin CORS; puerto 5174; la entrada silent-renew.html se suma en [E3]
 ```
 
 ## src/
@@ -55,12 +57,12 @@ src/
 ├── vite-env.d.ts
 │
 ├── app/                                             [E0]
-│   ├── providers.tsx                                QueryClient + Auth + i18n + Toaster
+│   ├── providers.tsx                                [E0] solo QueryClientProvider con QueryClient mínimo local; la configuración de shared/api/queryClient, i18n y Toaster se suman en [E1], Auth en [E3]
 │   ├── router.tsx                                   createBrowserRouter
-│   ├── routes.tsx                                   árbol por host: dominio principal (public, personal, business, platform)
-│   │                                                o subdominio de empresa (storefront); lazy; AppShell como raíz
-│   ├── routes.test.tsx                              cada ruta con su acceso, su permiso y su módulo
-│   └── routes-by-host.test.ts                       un subdominio no monta /org, /cuenta ni /plataforma
+│   ├── routes.tsx                                   [E0] una ruta vacía; [E3] rutas por acceso y AppShell;
+│   │                                                [E7] árbol por host (dominio principal o subdominio de organización)
+│   ├── routes.test.tsx                              [E3] acceso de cada ruta; permiso en [E4] y módulo en [E5]
+│   └── routes-by-host.test.ts                       [E7] un subdominio no monta /org, /cuenta ni /plataforma
 │
 ├── auth/                                            [E3]
 │   ├── AuthProvider.tsx                             react-oidc-context + puente al httpClient
@@ -94,7 +96,7 @@ src/
 │   └── useCompanyParam.ts                           [E6] companyId de la URL
 │
 ├── layouts/
-│   ├── AppShell.tsx                                 [E1] raíz de los dos árboles de rutas (dominio principal y subdominio); envuelve a todos los layouts y resuelve los casos genéricos que no son de shared/api: franja "Sin conexión" y franja "Hay una versión nueva"; ante el 403 Legal.AcceptanceRequired muestra AcceptTermsPage, y ante Tenancy.Tenant.Suspended, PendingApproval o Closed, OrganizationUnavailablePage
+│   ├── AppShell.tsx                                 [E1] envuelve layouts y resuelve "Sin conexión" y "Hay una versión nueva"; [E3] muestra AcceptTermsPage u OrganizationUnavailablePage ante sus 403; [E7] envuelve también rutas del subdominio
 │   ├── AppShell.test.tsx                            [E1] casos del tablero Avisos: "Sin conexión" aparece sin red y se va sola al volver; si falla un chunk, "Hay una versión nueva" con «Actualizar», sin recargar sola
 │   ├── AuthLayout.tsx                               [E3]
 │   ├── PersonalLayout.tsx                           [E3] acceso B2C: Inicio, Mi cuenta + módulos B2C (sin organizaciones)
@@ -145,7 +147,7 @@ src/
 │   │   │       ├── LoginPage.tsx                    /login (persona) y /login/empresa (empresa): misma pantalla, otra puerta; el código es un paso de la pantalla (no hay /login/codigo); estados del tablero Ingreso, salvo los de WhatsApp [E8] y los de operador [E9]
 │   │   │       ├── LoginLinkPage.tsx                [E8] /login/enlace: enlace del bot (tablero Enlace)
 │   │   │       ├── SignupPage.tsx                   /registro: crear cuenta de persona
-│   │   │       ├── BusinessSignupPage.tsx           [E6] /registro/empresa: «Registrá tu empresa»
+│   │   │       ├── BusinessSignupPage.tsx           [E6] /registro/empresa: «Registrá tu empresa», con slug obligatorio y disponibilidad
 │   │   │       ├── RecoverAccountPage.tsx           [E5] «Recuperar mi cuenta» (ADR 0033)
 │   │   │       ├── CallbackPage.tsx
 │   │   │       └── AcceptInvitationPage.tsx
@@ -158,9 +160,9 @@ src/
 │   │       └── pages/
 │   │           ├── ForbiddenPage.tsx
 │   │           ├── NotFoundPage.tsx
-│   │           └── OrganizationUnavailablePage.tsx  [E6] 403 Tenancy.Tenant.Suspended, PendingApproval o Closed: Suspendida, Espera aprobación o Cerrada (tablero Perfil-Suspendido); «Elegí otro perfil»
+│   │           └── OrganizationUnavailablePage.tsx  [E3] 403 Tenancy.Tenant.Suspended, PendingApproval o Closed: Suspendida, Espera aprobación o Cerrada (tablero Perfil-Suspendido); «Elegí otro perfil»
 │   │
-│   ├── storefront/                                  [E7] SUBDOMINIO de una empresa: su página pública
+│   ├── storefront/                                  [E7] SUBDOMINIO de una organización: su página pública
 │   │   ├── pages/PublicPage.tsx                     nombre, logo, descripción, contacto (+ lo que publiquen los módulos)
 │   │   └── <módulo público del producto>/           lo que una persona ve y pide; interactuar pide el acceso B2C
 │   │
@@ -174,8 +176,8 @@ src/
 │   │   │   │   └── dataExport.ts                    [E10] POST /api/me/data-export, con useIdempotentMutation
 │   │   │   ├── components/
 │   │   │   │   ├── AccountForm.tsx                  nombre, idioma y región, zona
-│   │   │   │   ├── LoginMethodsSection.tsx          correos, teléfonos y Google; principal; administrados por una empresa
-│   │   │   │   ├── AddLoginMethodDialog.tsx         sumar un correo o teléfono y verificarlo
+│   │   │   │   ├── LoginMethodsSection.tsx          [E3] parte 3b: gestión de correo y Google; principal; administrados por una empresa; teléfono se suma con el canal de WhatsApp en [E8]
+│   │   │   │   ├── AddLoginMethodDialog.tsx         [E3] parte 3b: sumar y verificar un correo; teléfono se habilita en [E8] cuando se registra su canal
 │   │   │   │   ├── VerifyDestinationDialog.tsx
 │   │   │   │   ├── ConfirmLoginMethodChangeDialog.tsx quitar un método (o desvincular Google) o hacerlo principal, con código en otro método verificado (ReauthTicket de 5 min)
 │   │   │   │   ├── PrivacySection.tsx               Privacidad: «Dar de baja mi cuenta» y, en [E10], «Exportar mis datos»
@@ -186,8 +188,8 @@ src/
 │   │   └── <módulo B2C del producto>/               misma forma que business/roles: api · columns · errors · components · pages
 │   │
 │   ├── business/                                    ACCESO B2B (la organización)
-│   │   ├── home/                                    [E6]
-│   │   │   └── pages/BusinessHomePage.tsx
+│   │   ├── home/                                    [E3]
+│   │   │   └── pages/BusinessHomePage.tsx           /org: inicio vacío del tablero en [E3]; la administración se suma en [E6]
 │   │   ├── roles/                                   [E4] ← FEATURE DE REFERENCIA
 │   │   │   ├── api/roles.ts                         query keys + funciones tipadas con generated/
 │   │   │   ├── columns.tsx                          incluye "Vale en"
@@ -243,7 +245,7 @@ src/
 │   │   │   ├── columns.tsx
 │   │   │   ├── components/AuditFilterBar.tsx
 │   │   │   └── pages/AuditPage.tsx
-│   │   ├── public-page/                             [E6] /org/pagina: mi página pública (datos, subdominio, publicar)
+│   │   ├── public-page/                             [E6] /org/pagina: mi página pública (datos, cambio de slug, publicar)
 │   │   │   ├── api/publicPage.ts                    /api/public-site
 │   │   │   └── pages/PublicPageEditorPage.tsx       bloqueada por la plataforma: «Despublicada por la plataforma», con el motivo; publicar responde PublicSite.PublicPage.PublishBlocked
 │   │   └── <módulo B2B del producto>/               misma forma que roles/
@@ -333,9 +335,9 @@ src/
 │   │   ├── pagedResult.ts
 │   │   ├── useIdempotentMutation.ts                 P6 Idempotency-Key al montar, repetida en los reintentos
 │   │   ├── useIdempotentMutation.test.ts
+│   │   ├── types.ts                                 [E1] alias legibles escritos a mano; reexporta tipos de generated/schema.d.ts
 │   │   └── generated/                               NO SE EDITA A MANO
-│   │       ├── schema.d.ts                          salida de openapi-typescript
-│   │       └── types.ts                             alias legibles: type RoleRow = Schemas["RoleRow"]
+│   │       └── schema.d.ts                          [E1] única salida de openapi-typescript
 │   ├── i18n/                                        [E1]
 │   │   ├── index.ts
 │   │   └── i18n.test.tsx
@@ -344,43 +346,45 @@ src/
 │   │   ├── formatters.ts                            formatDate, formatDateTime, formatTime, formatDateLong, formatRelative,
 │   │   │                                            formatDateRange, formatInteger, formatDecimal, formatQuantity,
 │   │   │                                            formatPercent, formatMoney, formatCompact, formatFileSize,
-│   │   │                                            formatDuration, formatPhone, formatTaxId, EMPTY
+│   │   │                                            formatDuration, formatPhone, formatTaxId, formatTimeZone,
+│   │   │                                            formatCulture, EMPTY
 │   │   ├── parsers.ts                               entrada del usuario en su cultura → contrato de la API
 │   │   ├── useFormat.ts                             cultura + zona + moneda ya resueltas → formateadores
 │   │   ├── statusTones.ts                           estado → tono visual (success, warning, danger, neutral, pending); colores en tema.md
 │   │   ├── formatters.test.ts                       recorre ../ArquitecturaBaseMutitenant/docs/contracts/format-cases.json
 │   │   ├── parsers.test.ts
-│   │   └── format-usage.test.ts                     falla si hay toLocaleString, toFixed o Intl. fuera de shared/format
-│   ├── time/                                        [E3]
-│   │   ├── useEffectiveTimeZone.ts                  cuenta → empresa → organización (en B2B)
-│   │   ├── timeZones.ts                             GET /api/time-zones
-│   │   └── TimeZoneSelect.tsx
+│   │   └── format-usage.test.ts                     falla si se formatea fuera de shared/format y shared/time; en shared/phone solo permite Intl.DisplayNames para nombres de países
+│   ├── time/                                        [E1]
+│   │   ├── useEffectiveTimeZone.ts                  [E3] cuenta → empresa → organización (en B2B)
+│   │   ├── timeZones.ts                             [E1] GET /api/time-zones, catálogo traducido
+│   │   └── TimeZoneSelect.tsx                       [E1] agrupado por país
 │   ├── account/                                     [E3] lo de la cuenta que usan varias áreas (ADR 0033)
-│   │   ├── PersonalMethodBanner.tsx                 «Agregá un correo personal o tu WhatsApp…», con el botón que lleva a /cuenta; lo usan AcceptInvitationPage, PersonalHomePage y AccountPage
+│   │   ├── PersonalMethodBanner.tsx                 [E3] parte 3b: avisa que falta un método propio y lleva a /cuenta; ofrece correo; WhatsApp aparece si el canal llega en GET /api/auth/methods desde [E8]
 │   │   ├── needsPersonalMethod.ts                   true mientras la cuenta no tenga un método de ingreso propio verificado
 │   │   └── needsPersonalMethod.test.ts
-│   ├── hooks/                                       [E0] copiados de la base, cada uno con su test
-│   │   ├── usePagination.ts                         página, tamaño, orden y búsqueda en la URL; vuelve a la 1 al cambiar
+│   ├── hooks/                                       [E0] de la base solo los hooks sin dependencias de etapas posteriores; cada uno con su test
+│   │   ├── usePagination.ts                         [E0] de la base; página, tamaño, orden y búsqueda en la URL; vuelve a la 1 al cambiar
 │   │   │                                            búsqueda, filtro, orden o tamaño; corrige una página fuera de rango
-│   │   ├── useCursorList.ts                         useInfiniteQuery para auditoría y actividad ("Cargar más")
-│   │   ├── useDebouncedValue.ts                     300 ms para la búsqueda
-│   │   ├── useFilters.ts
-│   │   ├── useQueryUpdate.ts
-│   │   ├── useUnsavedChangesGuard.ts
-│   │   ├── useBreadcrumbLeaf.ts
-│   │   ├── useRestoreFocusOnClose.ts
-│   │   ├── useLocalStorage.ts                       prefijo arquitecturabasemt.
-│   │   ├── useMediaQuery.ts
-│   │   └── useCountdown.ts
-│   ├── lib/
-│   │   └── utils.ts                                 cn
+│   │   ├── usePagination.test.tsx                   [E0] desde la base; prueba URL y última página
+│   │   ├── useCursorList.ts                         [E1] se crea: useInfiniteQuery para auditoría y actividad ("Cargar más")
+│   │   ├── useDebouncedValue.ts                     [E1] se crea: 300 ms para la búsqueda
+│   │   ├── useFilters.ts                            [E0] de la base
+│   │   ├── useQueryUpdate.ts                        [E0] de la base
+│   │   ├── useUnsavedChangesGuard.ts                [E1] se adapta con ConfirmDialog
+│   │   ├── useBreadcrumbLeaf.ts                    [E0] de la base
+│   │   ├── useRestoreFocusOnClose.ts                [E0] de la base
+│   │   ├── useLocalStorage.ts                       [E0] de la base; prefijo arquitecturabasemt.
+│   │   ├── useMediaQuery.ts                         [E0] de la base
+│   │   └── useCountdown.ts                          [E0] de la base
+│   ├── lib/                                         [E0]
+│   │   └── utils.ts                                 [E0] de la base; cn; shared/lib/dateTime.ts no se copia (shared/format nace en [E1])
 │   ├── phone/                                       [E1] países y teléfonos (rules/telefonos.md)
 │   │   ├── countries.ts                             lista completa de libphonenumber-js + nombres con Intl.DisplayNames
 │   │   ├── priorityCountries.ts                     AR, UY, CL, PY, BR, BO, PE, MX, ES, US arriba
 │   │   ├── CountryFlag.tsx                          bandera SVG (country-flag-icons), carga diferida; nunca emoji
 │   │   ├── CountrySelect.tsx                        combobox con buscador por nombre, ISO o prefijo
 │   │   └── countries.test.ts
-│   └── ui/                                          [E0]
+│   └── ui/                                          [E0] solo primitivas shadcn independientes de la base y piezas nuevas sin dependencias posteriores; al copiarlas, --color-* pasa a los tokens de tema.md
 │       ├── format/                                  [E1] cómo se VE cada dato (siempre por acá)
 │       │   ├── DateText.tsx                         kind: date | dateTime | time | long | relative; <time dateTime>
 │       │   ├── DateRangeText.tsx
@@ -391,6 +395,8 @@ src/
 │       │   ├── DurationText.tsx
 │       │   ├── PhoneText.tsx
 │       │   ├── TaxIdText.tsx                        20-12345678-6
+│       │   ├── TimeZoneText.tsx                     [E1] ciudad traducida y desfase actual, nunca ID IANA crudo
+│       │   ├── CultureText.tsx                      [E1] nombre de idioma y región, nunca código crudo
 │       │   ├── EnumText.tsx                         enums.<Enum>.<Valor>
 │       │   ├── StatusBadge.tsx                      texto + tono desde statusTones
 │       │   ├── BooleanText.tsx                      Sí / No
@@ -402,10 +408,10 @@ src/
 │       │   ├── NumberField.tsx
 │       │   ├── MoneyField.tsx                       importe + moneda (por defecto, la de la organización)
 │       │   ├── PercentField.tsx                     12,5 → 0.125
-│       │   ├── PhoneField.tsx                       CountrySelect + número con AsYouType → { country, number }; usage="whatsapp": países del canal whatsapp en channels de GET /api/auth/methods
+│       │   ├── PhoneField.tsx                       [E1] CountrySelect + AsYouType → { country, number }; usage="whatsapp" filtra países del canal de GET /api/auth/methods desde [E8]
 │       │   ├── EmailField.tsx                       P3 trim y minúsculas al escribir
 │       │   └── TaxIdField.tsx                       P5 tipo + número, validado con stdnum
-│       ├── badge.tsx                                shadcn (minúscula, `npx shadcn@4.21.0 add`)
+│       ├── badge.tsx                                [E0] primitiva shadcn (minúscula, `npx shadcn@4.21.0 add`)
 │       ├── button.tsx
 │       ├── checkbox.tsx
 │       ├── dialog.tsx
@@ -420,48 +426,49 @@ src/
 │       ├── tabs.tsx
 │       ├── textarea.tsx
 │       ├── tooltip.tsx
-│       ├── Avatar.tsx                               propios (PascalCase)
-│       ├── Banner.tsx
-│       ├── CheckboxField.tsx
+│       ├── Avatar.tsx                               [E0] pieza nueva propia (PascalCase)
+│       ├── Banner.tsx                               [E1] de la base, adaptado a los tokens
+│       ├── CheckboxField.tsx                        [E1] después de i18n
 │       ├── ConcurrencyBanner.tsx                    [E1] P1 "Otra persona cambió esto…" · «Ver lo nuevo» · «Seguir editando»
-│       ├── ConfirmDialog.tsx
-│       ├── DataTable.tsx                            filas de 42 px, un dato por columna, encabezado gris; cada columna declara su type y la tabla usa ui/format
+│       ├── ConfirmDialog.tsx                        [E1] pieza propia, después de i18n
+│       ├── DataTable.tsx                            [E1] filas de 42 px, un dato por columna, encabezado gris; cada columna declara su type y la tabla usa ui/format
 │       │                                            (alineación, vacío y tooltip); carga, vacío, error con reintento;
 │       │                                            [E1] P10: en el teléfono solo las columnas `mobile` (primary y status) y el ⋮, nunca tarjetas;
 │       │                                            en la tablet, sin las `priority: "low"`
 │       ├── DataTable.test.tsx                       [E1] P10 a 390 px renderiza solo las columnas primary y status, y el ⋮
 │       ├── columns-mobile.test.ts                   [E1] P10 toda definición de columnas tiene exactamente una mobile: "primary"
-│       ├── EmptyState.tsx
-│       ├── FilterBar.tsx                            buscador + filtros en pastilla con conteos + «Limpiar»
-│       ├── FormError.tsx
-│       ├── FormField.tsx
-│       ├── IconButton.tsx
-│       ├── MultiSelect.tsx
-│       ├── OtpInput.tsx
-│       ├── Page.tsx                                 banda blanca: ícono o backTo, título de 18 px, resumen y acciones (las que sobran, en ⋮)
-│       ├── Pagination.tsx                           "1–10 de 1.234" · "Página 1 de 124" · selector 10/20/50/100, 10 por defecto (números con useFormat)
-│       ├── LoadMore.tsx                             paginado por cursor
-│       ├── RadioGroupField.tsx
-│       ├── RowActions.tsx                           menú ⋮ por fila; las destructivas al final, en rojo
-│       ├── SearchInput.tsx
-│       ├── SegmentedControl.tsx
+│       ├── EmptyState.tsx                           [E1] después de i18n
+│       ├── FilterBar.tsx                            [E0] pieza nueva; buscador + filtros en pastilla con conteos + «Limpiar» por props
+│       ├── FormError.tsx                            [E0] pieza nueva; mensaje recibido por props
+│       ├── FormField.tsx                            [E1] campos con i18n
+│       ├── IconButton.tsx                           [E1] de la base, adaptado a los tokens
+│       ├── MultiSelect.tsx                          [E1] de la base, adaptado a los tokens
+│       ├── OtpInput.tsx                             [E3] ingreso y verificación de códigos
+│       ├── Page.tsx                                 [E1] banda blanca: ícono o backTo, título de 18 px, resumen y acciones (las que sobran, en ⋮)
+│       ├── Pagination.tsx                           [E1] se copia y adapta de la base cuando existen pagedResult y shared/format; "1–10 de 1.234" · "Página 1 de 124" · selector 10/20/50/100
+│       ├── LoadMore.tsx                             [E1] paginado por cursor
+│       ├── RadioGroupField.tsx                     [E1] de la base, adaptado a los tokens
+│       ├── RowActions.tsx                           [E1] menú ⋮ por fila; las destructivas al final, en rojo
+│       ├── SearchInput.tsx                          [E1] de la base, adaptado a los tokens
+│       ├── SegmentedControl.tsx                     [E1] de la base, adaptado a los tokens
 │       ├── Sheet.tsx                                [E1] P10 hoja desde abajo en el teléfono: la forma del Dialog (el de un formulario, casi a toda altura) y del menú de la cuenta; nunca filtros
-│       ├── Spinner.tsx
-│       ├── StatusDot.tsx
-│       ├── Surface.tsx
-│       ├── VerificationBadge.tsx
-│       └── icons.tsx                                SVG propios, trazo 1.75
+│       ├── Spinner.tsx                              [E1] de la base, adaptado a los tokens
+│       ├── StatusDot.tsx                            [E0] pieza nueva
+│       ├── Surface.tsx                              [E0] pieza nueva
+│       ├── VerificationBadge.tsx                   [E1] de la base, adaptado a los tokens
+│       └── icons.tsx                                [E1] SVG propios, trazo 1.75
 │
 └── test/                                            [E0]
-    ├── harness.test.ts                              punteros por carpeta, enlaces vivos, fichas completas
-    ├── structure.test.ts                            sin imports entre features ni entre áreas
-    ├── setup.ts                                     MSW (onUnhandledRequest: error), namespaces precargados, stubs, vitest-axe/extend-expect (P9)
-    ├── mocks/
-    │   ├── server.ts
-    │   ├── handlers.ts                              /api/me y los métodos de ingreso por defecto
-    │   └── currentUsers.ts                          fixtures: persona sin organizaciones, persona con organizaciones, empresa admin, empresa sin permisos, operador
+    ├── HarnessStage.ts                              [E0] etapa cerrada única del arnés; se sube al cerrar cada etapa
+    ├── harness.test.ts                              [E0] punteros, enlaces y fichas; exige tests solo hasta HarnessStage
+    ├── structure.test.ts                            [E0] sin imports entre features ni entre áreas
+    ├── setup.ts                                     [E0] mínimo: jest-dom y vitest-axe, sin i18n; MSW y namespaces se suman en [E1]
+    ├── mocks/                                       [E1] no se copia en E0
+    │   ├── server.ts                                [E1] MSW con onUnhandledRequest: error
+    │   ├── handlers.ts                              [E1] handlers genéricos; /api/me y auth se suman en [E3]
+    │   └── currentUsers.ts                          [E3] fixtures: persona sin/con organizaciones, empresa admin/sin permisos y operador
     └── utils/
-        └── renderWithProviders.tsx                  renderWithProviders + renderRouteWithProviders(path, { as, host })
+        └── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]
 ```
 
 ## Piezas de los estándares P1 a P10 (adoptados el 2026-09-27)

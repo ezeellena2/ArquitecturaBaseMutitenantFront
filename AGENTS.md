@@ -1,6 +1,6 @@
 # ArquitecturaBaseMutitenantFront: reglas para agentes
 
-SPA del multitenant. La arquitectura canónica está en [`docs/architecture/frontend.md`](docs/architecture/frontend.md). Las convenciones de código se heredan de `../ArquitecturaBaseFront` (su `CLAUDE.md`). Lo visual lo definen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK) (versión 33), la sección [«UI y pantallas» de `frontend.md`](docs/architecture/frontend.md#ui-y-pantallas) y el [tema](docs/architecture/tema.md). Estos reemplazan los colores, la marca azul, los tokens `--color-*`, la banda de título y el menú de `../ArquitecturaBaseFront/docs/design/visual-baseline.md`, que no se copian. El backend y el plan de desarrollo están en `../ArquitecturaBaseMutitenant/docs/`.
+SPA del multitenant. La arquitectura canónica está en [`docs/architecture/frontend.md`](docs/architecture/frontend.md). Las convenciones de código se heredan de `../ArquitecturaBaseFront` (su `CLAUDE.md`). La fuente de las pantallas es el [lienzo versionado](docs/design/lienzo/README.md) (versión 35; 67 tableros `.dc.html`), junto con la sección [«UI y pantallas» de `frontend.md`](docs/architecture/frontend.md#ui-y-pantallas) y el [tema](docs/architecture/tema.md). El tablero manda sobre cualquier descripción textual. Estos reemplazan los colores, la marca azul, los tokens `--color-*`, la banda de título y el menú de `../ArquitecturaBaseFront/docs/design/visual-baseline.md`, que no se copian. El backend y el plan de desarrollo están en `../ArquitecturaBaseMutitenant/docs/`.
 
 ## Antes de escribir código: el arnés
 
@@ -20,7 +20,7 @@ SPA del multitenant. La arquitectura canónica está en [`docs/architecture/fron
 | hacer un formulario o diálogo | [formularios](docs/rules/formularios.md) |
 | escribir un texto | [textos-y-traducciones](docs/rules/textos-y-traducciones.md) |
 | decidir en qué acceso va una pantalla, u ocultar algo por permiso | [accesos-y-permisos](docs/rules/accesos-y-permisos.md) |
-| armar una pantalla | [pantallas-y-ui](docs/rules/pantallas-y-ui.md) y el [tema](docs/architecture/tema.md): copiar el tablero aprobado del lienzo |
+| armar una pantalla | [pantallas-y-ui](docs/rules/pantallas-y-ui.md), el [tema](docs/architecture/tema.md) y el [lienzo versionado](docs/design/lienzo/README.md): copiar el tablero aprobado |
 | crear una feature | [estructura-y-features](docs/rules/estructura-y-features.md) |
 | escribir tests | [tests](docs/rules/tests.md) |
 
@@ -28,12 +28,12 @@ Si una regla no está escrita, **preguntá antes de inventar**.
 
 ## Forma de trabajo
 - Commits chicos, en español, con conventional commits. Commitear al cerrar cada tarea.
-- **Toda pantalla nueva se dibuja primero** en el lienzo del sistema visual, con las piezas de "Gestión de usuarios" y los textos del contrato real. Se programa después de que el usuario la elige.
+- **Toda pantalla nueva se dibuja primero** en el [lienzo versionado](docs/design/lienzo/README.md), con las piezas de "Gestión de usuarios" y los textos del contrato real. Se programa después de que el usuario la elige.
 - No se da nada por terminado sin `npm run build`, `npm run lint` y `npm test` limpios.
 
 ## Reglas
 1. TS estricto: sin `any` ni `@ts-ignore`; `import type`.
-2. Los tipos de la API salen de `src/shared/api/generated/`, que se regenera con `npm run contracts` y no se edita a mano.
+2. Los tipos de la API salen de `src/shared/api/generated/schema.d.ts`, que se regenera con `npm run contracts` y no se edita a mano. Los alias escritos a mano van en `src/shared/api/types.ts`.
 3. Datos solo con TanStack Query y `httpClient`. Nada de `useEffect` con fetch.
 4. Los errores se deciden por `code`, nunca por el texto.
 5. Todo texto sale de i18n, en es y en. "Tenant" nunca en pantalla: se dice "Organización".

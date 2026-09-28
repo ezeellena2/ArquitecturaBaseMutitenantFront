@@ -25,7 +25,7 @@
 - `src/areas/business/roles/pages/RolesPage.test.tsx` (E4)
 
 ## Lo verifica
-- El CI (`npm test`) y `harness.test.ts`.
+- El CI (`npm test`) y `harness.test.ts` (E0), que usa `HarnessStage` para exigir solo los tests de etapas cerradas.
 
 ## Detalle
 [frontend.md §4, "Tests"](../architecture/frontend.md#tests)

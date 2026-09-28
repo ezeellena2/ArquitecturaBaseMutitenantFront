@@ -2,10 +2,10 @@
 
 > Documento canónico del SPA. Copia las convenciones de `../ArquitecturaBaseFront` (su `CLAUDE.md`; de `docs/design/visual-baseline.md`, solo las migas: los colores remiten a [tema.md](tema.md)) y les suma, en una sola app, el modelo de accesos de `../ArquitecturaBaseMutitenant/docs/architecture/multitenancy.md`:
 - **una cuenta con dos accesos que no se mezclan**: como persona (B2C) y como empresa (B2B);
-- el **sitio de la plataforma** y la **página pública de cada empresa en su subdominio**;
+- el **sitio de la plataforma** y la **página pública de cada organización en su subdominio**;
 - el **backoffice** de la plataforma.
 
-Suma también las empresas, los tipos generados desde OpenAPI y **una sola forma de mostrar los datos** ([`formatos.md`](formatos.md)). El backend está en `../ArquitecturaBaseMutitenant` (`docs/architecture/backend.md`); el árbol completo, archivo por archivo, está en [`arbol.md`](arbol.md). El diseño de cada pantalla está en el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK); los colores, la forma y el menú lateral están en el [tema](tema.md), y la sección «UI y pantallas» resume sus reglas.
+Suma también las empresas, los tipos generados desde OpenAPI y **una sola forma de mostrar los datos** ([`formatos.md`](formatos.md)). El backend está en `../ArquitecturaBaseMutitenant` (`docs/architecture/backend.md`); el árbol completo, archivo por archivo, está en [`arbol.md`](arbol.md). El diseño de cada pantalla está en el [lienzo versionado](../design/lienzo/README.md) (versión 35, 67 tableros): cada tablero manda sobre cualquier descripción textual. Los colores, la forma y el menú lateral están en el [tema](tema.md), y la sección «UI y pantallas» resume sus reglas.
 
 ## 1. Stack
 
@@ -29,19 +29,19 @@ Mismo stack y mismas versiones que ArquitecturaBaseFront. **El `node_modules` vi
 
 ```
 src/
-├─ app/          providers · router · routes: elige el árbol de rutas por host (dominio principal o subdominio de empresa)
+├─ app/          providers · router · routes: elige el árbol de rutas por host (dominio principal o subdominio de organización)
 ├─ auth/         AuthProvider · authConfig · SessionRecovery · ProtectedRoute · AccessRoute · useCurrentUser · usePermissions · Can
 ├─ tenancy/      useAccess · useSwitchAccess (persona ↔ empresa, y entre organizaciones) · AccessMenu · useCompanyParam · usePublicSite (subdominio)
 ├─ layouts/      PersonalLayout · BusinessLayout · PlatformLayout (mismo armazón: Sidebar + Topbar) · SiteLayout (sitio y páginas públicas) · AuthLayout · navigation/ · components/
 ├─ areas/        una feature no importa de otra, ni un área de otra; lo común sube a shared/
 │  ├─ public/    auth (ingresar como persona o como empresa, registro de personas, «Registrá tu empresa», invitación) · site (portada y directorio de la plataforma) · legal (términos, privacidad y la aceptación bloqueante de una versión nueva) · errors
-│  ├─ storefront/ página pública de una empresa, en su subdominio + lo que publiquen los módulos del producto
+│  ├─ storefront/ página pública de una organización, en su subdominio + lo que publiquen los módulos del producto
 │  ├─ personal/  (acceso B2C) home · account (la cuenta, vale en los dos accesos) · + módulos B2C del producto
 │  ├─ business/  (acceso B2B) home · roles (REFERENCIA) · users · companies · settings · audit · public-page (mi página pública) · + módulos B2B del producto
 │  └─ platform/  tenants (/plataforma) · accounts (personas y operadores) · recoveries · legal · audit · settings
 ├─ locales/      {es,en}/<namespace>.json + parity.test.ts
 ├─ shared/
-│  ├─ api/       httpClient · ApiError · queryClient · formErrors · generated/ (no se edita)
+│  ├─ api/       httpClient · ApiError · queryClient · formErrors · types.ts (alias) · generated/schema.d.ts (no se edita)
 │  ├─ format/    ÚNICO lugar que formatea fechas, números, moneda, porcentajes, teléfonos (formatos.md)
 │  ├─ time/      useEffectiveTimeZone · TimeZoneSelect
 │  ├─ i18n/ · hooks/ · lib/
@@ -66,18 +66,18 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 | `/org`, `/org/usuarios(/:id)`, `/org/roles(/nuevo, /:id)`, `/org/empresas(/:companyId)`, `/org/configuracion`, `/org/auditoria`, `/org/pagina` + las rutas B2B del producto | **acceso B2B**: la organización | `access=business` + el permiso de cada pantalla |
 | `/plataforma` (Organizaciones, el inicio), `/plataforma/organizaciones/:id`, `/plataforma/cuentas(/:id)` (cuentas y operadores), `/plataforma/recuperaciones`, `/plataforma/legales`, `/plataforma/auditoria`, `/plataforma/configuracion` | backoffice | `access=platform` + `platform.*` |
 
-**Subdominio de una empresa** (`<slug>.plataforma.com`):
+**Subdominio de una organización** (`<slug>.plataforma.com`):
 
 | Ruta | Pantalla | Quién |
 |---|---|---|
-| `/` | página pública de la empresa | cualquiera (lo publicado) |
+| `/` | página pública de la organización | cualquiera (lo publicado) |
 | `/<módulo>` | lo que publiquen los módulos del producto, y lo que una persona pide o contrata | cualquiera; para interactuar, `access=consumer` |
 | `/auth/callback` | volver del servidor de ingreso: el canje del código va al propio origen | público |
 
-- **Árbol de rutas por host:** `routes.tsx` mira el host. Con un subdominio de empresa arma las rutas de `storefront` (y `/auth/callback`); con el dominio principal, las demás. El subdominio **nunca** da acceso a la administración de la empresa: esa vive en `plataforma.com/org`.
+- **Árbol de rutas por host:** `routes.tsx` mira el host. Con un subdominio de organización arma las rutas de `storefront` (y `/auth/callback`); con el dominio principal, las demás. El subdominio **nunca** da acceso a la administración de la organización: esa vive en `plataforma.com/org`.
 - **Área según el acceso:** `useAccess` lee `access` de `/api/me`. Después de ingresar se va al inicio del acceso: persona → `/`, empresa → `/org`, operador → `/plataforma`. `AccessRoute` manda al inicio correcto si se entra a una ruta de otro acceso (por ejemplo, un enlace viejo).
 - **Ingresar desde un subdominio:** "Ingresá para continuar" hace el ingreso **como persona** y vuelve a la misma página del subdominio. El SPA y la Api se sirven desde el **mismo origen en cada host** (dominio principal y cada subdominio), así que no hay CORS. El issuer es fijo (el dominio principal): `authorize` y `logout` navegan al dominio principal, y el canje del código, la renovación y `userinfo` van a `/connect/*` del propio subdominio (ver "Auth").
-- **Inicio de cada área** (`/` con sesión de persona, `/org`): su contenido depende de cada producto. Hasta que el producto lo defina, queda vacío, con la barra y el menú lateral (en el inicio personal, solo el aviso de método propio cuando corresponde). Sin tableros ni resúmenes de relleno.
+- **Inicio de cada área** (`/` con sesión de persona, `/org`): su contenido depende de cada producto. En la Etapa 3 ya existen ambos inicios vacíos con su layout, barra y menú lateral, según sus tableros (en el inicio personal, solo el aviso de método propio cuando corresponde). La administración del área B2B se suma en la Etapa 6. Sin resúmenes de relleno.
 - **Menú lateral:** el mismo armazón en las tres áreas; cambian los enlaces.
   - Persona: Inicio y Mi cuenta, más los módulos B2C del producto. **No muestra organizaciones.**
   - Empresa: arriba, Inicio y los módulos B2B del producto. **Abajo de todo, «Administración»**, que abre un **segundo panel al lado del menú** (`AdminPanel`, se cierra con «‹» o tocando de nuevo «Administración»; abierto en cualquier ruta de administración) con el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Configuración, Página pública y Auditoría. En el teléfono no hay segundo panel: «Administración» se despliega dentro del menú.
@@ -94,8 +94,8 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
   3. `queryClient.clear()`, **obligatorio**;
   4. el inicio del acceso nuevo.
 - **La cuenta** (`/cuenta`: nombre, idioma y región, zona y **métodos de ingreso**, con el aviso de método propio) es de la identidad y vale en los dos accesos. Desde el acceso B2B se llega por «Mi cuenta» del menú, y se ve dentro del `BusinessLayout`.
-- **Aviso de método propio** (`multitenancy.md` §3.1 del back): «Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa». Se muestra mientras la cuenta no tenga un método de ingreso propio verificado, es decir, cuando todos sus métodos los administra una organización o solo tiene el correo con el que llegó por invitación. Aparece al aceptar una invitación, en `/cuenta` y en el inicio personal. Se va solo cuando se verifica un método propio.
-- **Métodos de ingreso** (en `/cuenta`; diseño en `multitenancy.md` §3.1 del back): sumar un correo o teléfono pide verificarlo con un código que llega a ese dato. Quitar un método, cambiarlo o elegir el principal pide un código en **otro** método ya verificado (`ReauthTicket`, válido 5 minutos). El diálogo muestra el destino enmascarado. Siempre tiene que quedar al menos un método propio o activo, y todo cambio se avisa en todos los métodos.
+- **Aviso de método propio** (`multitenancy.md` §3.1 del back): pide agregar un método propio verificado para no perder la cuenta al dejar la empresa. En E3 ofrece correo; WhatsApp se muestra si `GET /api/auth/methods` trae el canal desde E8. Aparece mientras todos los métodos los administra una organización o solo existe el correo de la invitación, al aceptar esa invitación, en `/cuenta` y en el inicio personal. Se va solo cuando se verifica un método propio.
+- **Métodos de ingreso** (en `/cuenta`; diseño en `multitenancy.md` §3.1 del back): en la Etapa 3 se gestionan correo y Google; `Phone` es solo modelo. Sumar y verificar un teléfono se habilita cuando el módulo WhatsApp registra su canal (Etapa 8); la opción aparece si `GET /api/auth/methods` trae ese canal. Sumar un método pide verificarlo con un código que llega a ese dato. Quitar un método, cambiarlo o elegir el principal pide un código en **otro** método ya verificado (`ReauthTicket`, válido 5 minutos). El diálogo muestra el destino enmascarado. Siempre tiene que quedar al menos un método propio o activo, y todo cambio se avisa en todos los métodos.
 - **Baja de la cuenta** (en `/cuenta`, sección Privacidad; diseño en `multitenancy.md` §3.2 del back): diálogo con motivo y código a su método principal, la sugerencia de exportar antes, los errores de la política (único Dueño, operador, bloqueos de módulos) y, al confirmar, sesión cerrada con "Tu cuenta se elimina el dd/mm/aaaa". En la organización, un usuario con la baja pedida se ve con el estado "Baja pedida"; en la plataforma, la cuenta también.
 - **Una persona nunca ve "crear empresa":** «Registrá tu empresa» (`/registro/empresa`, `BusinessSignupPage`) está en la portada, en la puerta de empresas (`/login/empresa`) y en «Crear cuenta» (`/registro`); nunca en el lado Personal ni en el menú de la cuenta.
 - **Empresas del grupo:** el `companyId` sale de la URL (`useCompanyParam`) y `CanInCompany` evalúa `permissions.companies[companyId]`.
@@ -105,7 +105,7 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 
 ### Datos y API
 - Todo pasa por `shared/api/httpClient`: `fetch`, rutas relativas, `Authorization: Bearer`, `Accept-Language` con la **cultura efectiva** (`es-AR`), una sola renovación silenciosa ante un 401 y reintento.
-- Los tipos **salen de `generated/`**. El `api/*.ts` de cada feature exporta query keys (`usersQueryKeyRoot`, `usersQueryKey(q)`, `userQueryKey(id)`) y funciones (`fetchUsers`, `createUser`) tipadas con el schema.
+- Los tipos **salen de `generated/schema.d.ts`**; los alias legibles escritos a mano viven en `shared/api/types.ts`, que reexporta desde `generated`. El `api/*.ts` de cada feature exporta query keys (`usersQueryKeyRoot`, `usersQueryKey(q)`, `userQueryKey(id)`) y funciones (`fetchUsers`, `createUser`) tipadas con el schema.
 - `useQuery` y `useMutation` se usan directo en las páginas, con `placeholderData: keepPreviousData` en los listados. Nada de `useEffect` con fetch. Una mutación invalida la raíz de su feature.
 - `npm run contracts` regenera los tipos, y el CI falla si difieren del contrato.
 
@@ -138,7 +138,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
   - **Salir sin guardar:** con "Cambios sin guardar", navegar a otra ruta o cerrar la pestaña pregunta "¿Salir sin guardar?" (`useBlocker` y `beforeunload`).
   - **Versión nueva del front:** si falla la carga de un chunk después de un despliegue, franja "Hay una versión nueva" con «Actualizar», que recarga la página. No se recarga solo.
   - **Módulo apagado:** su ruta muestra `NotFoundPage`, igual que un 404.
-  - **Términos nuevos:** si una respuesta trae 403 `Legal.AcceptanceRequired`, se muestra `AcceptTermsPage`, que bloquea el uso hasta aceptar. Lee `GET /api/legal/current` y muestra lo que cambió (los dos documentos, solo los términos o solo la privacidad). Se acepta con `POST /api/legal/accept`. Hasta entonces, el back responde ese 403 en toda `/api`, salvo `GET /api/me`, `GET /api/legal/*` y `POST /api/legal/accept` (back: `docs/rules/datos-personales.md`).
+  - **Términos nuevos:** si una respuesta autenticada trae 403 `Legal.AcceptanceRequired`, se muestra `AcceptTermsPage`, que bloquea el uso hasta aceptar. Lee `GET /api/legal/current` y muestra lo que cambió (los dos documentos, solo los términos o solo la privacidad). Se acepta con `POST /api/legal/accept`. Hasta entonces, el back responde ese 403 en las rutas autenticadas de `/api`, salvo `GET /api/me`, `GET /api/legal/*` y `POST /api/legal/accept`; las rutas anónimas no pasan por ese middleware (back: `docs/rules/datos-personales.md`).
 
 ### Auth
 - `authConfig`: `client_id: "web"`, `response_type: "code"`, `scope: "openid profile email offline_access api"`, `userStore: InMemoryWebStorage`, `automaticSilentRenew: false`, `silent_redirect_uri: /silent-renew.html`.
@@ -147,7 +147,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - Los permisos del front son **solo experiencia de uso**; el backend decide.
 - **Dos puertas:** `/login` (como persona) y `/login/empresa` (como empresa). Son la misma pantalla con otro título y otro destino; el servidor emite el token con `access` según la puerta. No se vuelve "al último lado": se entra al lado de la puerta elegida. Desde cada puerta, un enlace chico abajo ofrece la otra. El operador de la plataforma no tiene puerta propia: ingresa por la misma pantalla, por cualquiera de las dos puertas. Después del código pasa por la app de autenticación, el servidor le emite `access=platform` sin importar la puerta, y entra a `/plataforma`.
 - **Ingreso** (`/login`, `/login/empresa`):
-  - arriba, «Ingresar con Google»; debajo, un `SegmentedControl` Correo | WhatsApp y el campo;
+  - arriba, «Ingresar con Google»; debajo, Correo y el campo; WhatsApp y su `SegmentedControl` se suman si `GET /api/auth/methods` trae el canal (Etapa 8);
   - el código es un **paso de la misma pantalla**, sin ruta propia (no hay `/login/codigo`);
   - el código va en `OtpInput`, con 6 casillas. Avanza sola, acepta pegar y retrocede con Backspace;
   - «Reenviar código» se habilita a los 60 s, y un 429 muestra la cuenta regresiva en el botón («Reintentá en 0:42»);
@@ -160,8 +160,8 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
   - la Etapa 3 programa los estados del tablero Ingreso **salvo** los de WhatsApp (Etapa 8) y los cinco «Operador: …» (Etapa 9).
 - **Operadores** (Etapa 9; hasta entonces, el operador del seed entra sin segundo factor): después del código pasan por la app de autenticación. La primera vez ven el QR y la clave, activan la app y guardan 8 códigos de recuperación. Después pueden entrar con un código de recuperación.
 - **«Registrá tu empresa»** (`/registro/empresa`):
-  - la casilla «Acepto los Términos y la Política de privacidad» (también bloquea «Seguir con Google»); «Seguir con Google», o Correo | WhatsApp y el código. Con una sesión ya iniciada se empieza en el paso siguiente;
-  - «Tu organización» (quedás como Dueño): nombre de la organización, primera empresa y CUIT de la empresa (opcional, 11 números). La dirección del subdominio no se pide acá: se elige en «Página pública» (`/org/pagina`);
+  - la casilla «Acepto los Términos y la Política de privacidad» (también bloquea «Seguir con Google»); «Seguir con Google» o Correo y el código; WhatsApp se suma en la Etapa 8. Con una sesión ya iniciada se empieza en el paso siguiente;
+  - «Tu organización» (quedás como Dueño): nombre de la organización, primera empresa, CUIT de la empresa (opcional, 11 números) y slug obligatorio para el subdominio, con consulta de disponibilidad. El slug se puede cambiar después en «Página pública» (`/org/pagina`);
   - según `BusinessSignup`: abierto, «{Organización} está lista» con «Entrar a …»; con aprobación, «Recibimos el pedido» y la organización queda en «Espera aprobación»; cerrado, «Por ahora no se pueden registrar empresas»;
   - si la persona ya llegó al límite de organizaciones propias (`MaxOwnedOrganizations` de `PlatformSettings`): «Llegaste al límite de N organizaciones propias.»;
   - abajo, «¿Tu empresa ya está registrada? Ingresá como empresa».
@@ -185,7 +185,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - `useEffectiveTimeZone(companyId?)` devuelve la zona de la cuenta; si no hay, la de la empresa; si no, la de la organización (en B2B) o la del navegador guardada al registrarse (en B2C). Las fechas civiles no se convierten.
 
 ### UI y pantallas
-Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK), el [tema](tema.md) (tokens y colores: verde petróleo como marca y marco arena en el menú lateral y la barra superior; forma de tarjetas, botones y tablas; el `AdminPanel`) y estas reglas. De `visual-baseline.md` se mantienen solo las migas; **lo que sigue lo reemplaza**.
+Rigen los [tableros del lienzo versionado](../design/lienzo/README.md) (versión 35; mandan sobre cualquier descripción textual), el [tema](tema.md) (tokens y colores: verde petróleo como marca y marco arena en el menú lateral y la barra superior; forma de tarjetas, botones y tablas; el `AdminPanel`) y estas reglas. De `visual-baseline.md` se mantienen solo las migas; **lo que sigue lo reemplaza**.
 
 **Proceso y contenido**
 - **Toda pantalla nueva se dibuja primero** en el lienzo y se programa después de que el usuario la elige.

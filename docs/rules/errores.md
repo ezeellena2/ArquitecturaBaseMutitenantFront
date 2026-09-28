@@ -29,7 +29,7 @@
 
 ## Lo verifica
 - Tests de pantalla: cada `code` que traduce la feature tiene un test (tests.md).
-- `formErrors.test.ts`, `queryClient.test.ts`.
+- `formErrors.test.ts` (E1), `queryClient.test.ts` (E1).
 
 ## Detalle
 [frontend.md §4, "Errores"](../architecture/frontend.md#errores)

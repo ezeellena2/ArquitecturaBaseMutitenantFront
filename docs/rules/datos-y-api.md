@@ -1,11 +1,11 @@
 # Datos y API
 
-**Regla:** todo pasa por `shared/api/httpClient`. Los datos del servidor viven en TanStack Query. Los tipos salen de `shared/api/generated/`, que no se edita a mano.
+**Regla:** todo pasa por `shared/api/httpClient`. Los datos del servidor viven en TanStack Query. `generated/` contiene solo `schema.d.ts` y no se edita a mano; los alias escritos a mano viven en `shared/api/types.ts`, que reexporta desde ese schema.
 
 ## Cómo se hace
 - `api/<feature>.ts`:
   ```ts
-  import type { RoleRow, PagedResultOfRoleRow } from "@/shared/api/generated/types";
+  import type { RoleRow, PagedResultOfRoleRow } from "@/shared/api/types";
   export const rolesQueryKeyRoot = ["roles"] as const;
   export const rolesQueryKey = (q: RolesQuery) => [...rolesQueryKeyRoot, q] as const;
   export const fetchRoles = (q: RolesQuery) => api.get<PagedResultOfRoleRow>(`/api/roles?${toSearch(q)}`);
@@ -29,8 +29,8 @@
 - `src/areas/business/roles/api/roles.ts` (E4)
 
 ## Lo verifica
-- `contracts:check` en el CI: `generated/` al día con `openapi.json`.
-- `tsc` estricto; `httpClient.test.ts`.
+- `contracts:check` en el CI (E1): `generated/schema.d.ts` al día con `openapi.json`.
+- `tsc` estricto (E0); `httpClient.test.ts` (E1).
 
 ## Detalle
 [frontend.md §4, "Datos y API"](../architecture/frontend.md#datos-y-api)
