@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { parseReferenceData } from "@/shared/referenceData/referenceData";
 import { createFormatters } from "./formatters";
 
@@ -149,4 +149,53 @@ describe.skipIf(!backendPresent)("paridad con format-cases.json", () => {
       expect(renderCase(item, contract.now)).toBe(item.expected);
     });
   }
+});
+
+describe.skipIf(!backendPresent)("reloj del formateador", () => {
+  it("recalcula el offset al mostrar tras un cambio de horario de verano", () => {
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date("2026-01-15T15:00:00Z"));
+      const formatter = createFormatters({
+        referenceData: sourceCatalog("en-US"), culture: "en-US", timeZone: "America/New_York",
+        translate: translator("en-US"),
+      });
+      expect(formatter.formatTimeZone("America/New_York")).toBe("New York (GMT−5)");
+
+      vi.setSystemTime(new Date("2026-07-15T15:00:00Z"));
+      expect(formatter.formatTimeZone("America/New_York")).toBe("New York (GMT−4)");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("mantiene el instante explícito del contrato aunque avance el reloj real", () => {
+    vi.useFakeTimers();
+    try {
+      const formatter = createFormatters({
+        referenceData: sourceCatalog("en-US"), culture: "en-US", timeZone: "America/New_York",
+        now: "2026-01-15T15:00:00Z", translate: translator("en-US"),
+      });
+      vi.setSystemTime(new Date("2026-07-15T15:00:00Z"));
+      expect(formatter.formatTimeZone("America/New_York")).toBe("New York (GMT−5)");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("actualiza también los textos relativos cuando no se fijó now", () => {
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date("2026-01-15T15:00:00Z"));
+      const formatter = createFormatters({
+        referenceData: sourceCatalog("en-US"), culture: "en-US", timeZone: "America/New_York",
+        translate: translator("en-US"),
+      });
+      expect(formatter.formatRelative("2026-01-15T14:55:00Z")).toBe("5 minutes ago");
+      vi.setSystemTime(new Date("2026-01-16T15:00:00Z"));
+      expect(formatter.formatRelative("2026-01-15T14:55:00Z")).toBe("1 day ago");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });

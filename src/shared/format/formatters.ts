@@ -116,8 +116,9 @@ function findRow<T>(rows: readonly T[], key: string, select: (row: T) => string)
 /** Formateadores puros sobre el catálogo efectivo; useFormat les entrega preferencias y recursos. */
 export function createFormatters({ referenceData, culture, timeZone, now, translate }: FormatContext) {
   const profile = getCultureProfile(referenceData, culture);
-  const clock = now === undefined ? new Date() : new Date(now);
-  if (Number.isNaN(clock.getTime())) throw new Error("El instante actual no es válido.");
+  const fixedClock = now === undefined ? null : new Date(now);
+  if (fixedClock && Number.isNaN(fixedClock.getTime())) throw new Error("El instante actual no es válido.");
+  const clock = () => fixedClock ?? new Date();
   const number = (value: number, minimum: number, maximum: number) =>
     formatNumber(value, minimum, maximum, profile.decimalSeparator, profile.groupSeparator, culture);
   const date = (value: string, pattern: string) =>
@@ -132,7 +133,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
     if (!value.endsWith("Z")) throw new Error("Un instante relativo debe terminar en Z.");
     const instant = new Date(value);
     if (Number.isNaN(instant.getTime())) throw new Error("El instante no es válido.");
-    const elapsed = clock.getTime() - instant.getTime();
+    const elapsed = clock().getTime() - instant.getTime();
     if (elapsed < 0 || elapsed >= 7 * 24 * 3600 * 1000) return formatDate(value);
     if (elapsed < 60 * 1000) return translate("format:relative.justNow");
     const count = elapsed >= 24 * 3600 * 1000 ? Math.floor(elapsed / (24 * 3600 * 1000))
@@ -212,7 +213,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
     const zone = findRow(referenceData.timeZones, id, (item) => item.id);
     const offset = new Intl.DateTimeFormat(culture, {
       timeZone: id, timeZoneName: "longOffset", hour: "2-digit",
-    }).formatToParts(clock).find((part) => part.type === "timeZoneName")?.value;
+    }).formatToParts(clock()).find((part) => part.type === "timeZoneName")?.value;
     if (!offset) throw new Error(`No se pudo calcular el desfase de ${id}.`);
     const match = /^GMT([+-])(\d{2}):(\d{2})$/.exec(offset);
     const visible = offset === "GMT" ? "+0" : match
