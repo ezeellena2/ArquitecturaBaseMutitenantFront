@@ -7,7 +7,7 @@
 - `useQuery({ queryKey: rolesQueryKey({ ...p.query, ...filters.values }), queryFn, placeholderData: keepPreviousData })`.
 - Las columnas son ordenables con `sortable: true`, y su `id` es el campo del backend.
 - Cambiar la búsqueda (con 300 ms de debounce), un filtro, el orden o el tamaño vuelve a la página 1, y lo hace `usePagination`.
-- Si llega `items` vacío con `totalCount > 0`, `usePagination` salta solo a la última página.
+- Si llega `items` vacío con `totalCount > 0`, `usePagination` salta solo a la última página. Desde la E1 la corrección queda dentro del hook (puede usar un helper interno): no expone `correctPage` a quien lo llama.
 - Los conteos de los filtros salen de `GET …/filter-counts`, con los mismos filtros.
 - **Auditoría y actividad:** `useCursorList` + `<LoadMore />`, sin total.
 - Vacío, sin coincidencias, carga y error: los resuelve `DataTable` (`emptyTitle`, `emptyAction`).

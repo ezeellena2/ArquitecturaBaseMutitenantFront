@@ -46,4 +46,6 @@ La tabla vive solo en el [`AGENTS.md` raíz](../../AGENTS.md#antes-de-escribir-c
 - una ficha no tiene sus secciones;
 - un "Lo verifica" nombra un test cuya etapa `(E#)` ya cerró y que no existe. Los tests de etapas futuras pueden no existir todavía.
 
+Hasta que ambos repos estén en GitHub, cada CI usa solo su propio checkout. Los enlaces al repo hermano se verifican cuando ese checkout está presente; el checkout cruzado y su verificación obligatoria se incorporan cuando ambos repos estén en GitHub.
+
 Mantenimiento: igual que en el back ([arnes.md §6](../../../ArquitecturaBaseMutitenant/docs/architecture/arnes.md#6-mantenimiento)).
