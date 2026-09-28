@@ -1,6 +1,5 @@
-import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
-import { cn } from "@/shared/lib/utils";
+import { EmptyValue, FormatLoading } from "./EmptyValue";
 
 type DateKind = "date" | "dateTime" | "time" | "long" | "relative";
 
@@ -10,9 +9,8 @@ export function DateText({ value, kind = "date", className }: {
   className?: string;
 }) {
   const format = useFormat();
-  const { t } = useTranslation();
-  if (format.isLoading) return <span role="status" aria-label={t("states.loading")} className={className} />;
-  if (value == null) return <span className={cn("text-[var(--t3)]", className)}>{format.formatEmpty()}</span>;
+  if (format.isLoading) return <FormatLoading className={className} />;
+  if (value == null) return <EmptyValue className={className} />;
 
   const text = kind === "dateTime" ? format.formatDateTime(value)
     : kind === "time" ? format.formatTime(value)

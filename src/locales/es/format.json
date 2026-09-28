@@ -12,5 +12,6 @@
   "fileSize": { "B": " B", "KB": " KB", "MB": " MB", "GB": " GB", "TB": " TB" },
   "duration": { "hours": "{{count}} h", "minutes": "{{count}} min", "seconds": "{{count}} s" },
   "boolean": { "true": "Sí", "false": "No" },
-  "empty": "—"
+  "empty": "—",
+  "emptyLabel": "Sin dato"
 }
