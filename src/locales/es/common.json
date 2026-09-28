@@ -20,6 +20,16 @@
     "empty": "No hay nada para mostrar",
     "error": "Algo salió mal"
   },
+  "fields": {
+    "currency": "Moneda",
+    "selectCurrency": "Elegí una moneda",
+    "invalidDate": "Ingresá una fecha válida.",
+    "invalidDateTime": "Ingresá una fecha y hora válidas.",
+    "invalidTime": "Ingresá una hora válida.",
+    "invalidNumber": "Ingresá un número válido.",
+    "invalidMoney": "Ingresá un monto válido para la moneda elegida.",
+    "invalidPercent": "Ingresá un porcentaje válido."
+  },
   "errors": {
     "network": "No pudimos conectarnos. Revisá tu conexión.",
     "unexpected": "Ocurrió un error inesperado. Si el problema continúa, informá el código {{traceId}}.",

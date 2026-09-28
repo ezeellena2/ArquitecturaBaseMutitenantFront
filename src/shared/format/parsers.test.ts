@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { referenceDataFixture } from "@/test/mocks/handlers";
-import { parseDate, parseDecimal, parseMoney, parsePercent } from "./parsers";
+import { parseDate, parseDateTime, parseDecimal, parseMoney, parsePercent, parseTime } from "./parsers";
 
 const referenceData = referenceDataFixture();
 const spanish = referenceData.cultures[0];
@@ -56,5 +56,38 @@ describe("entrada según Cultures", () => {
     expect(() => parseDate("31/02/2026", spanish)).toThrow();
     expect(() => parseDate("02/29/2025", english)).toThrow();
     expect(() => parseDate("2026-09-27", spanish)).toThrow();
+  });
+
+  it("interpreta TimeOnly según TimePattern y emite HH:mm:ss sin zona", () => {
+    expect(parseTime("14:35", spanish)).toBe("14:35:00");
+    expect(parseTime("2:35 PM", english)).toBe("14:35:00");
+    expect(parseTime("12:05 AM", english)).toBe("00:05:00");
+    expect(parseTime("", spanish)).toBeNull();
+    expect(() => parseTime("24:00", spanish)).toThrow();
+    expect(() => parseTime("2:35", english)).toThrow();
+  });
+
+  it("convierte la fecha y hora de la cultura y zona efectiva a un instante UTC", () => {
+    const zone = "America/Argentina/Buenos_Aires";
+    expect(parseDateTime("27/09/2026 14:35", spanish, zone))
+      .toBe("2026-09-27T17:35:00Z");
+    expect(parseDateTime("09/27/2026 2:35 PM", english, zone))
+      .toBe("2026-09-27T17:35:00Z");
+    expect(parseDateTime("", spanish, zone)).toBeNull();
+    expect(() => parseDateTime("31/02/2026 14:35", spanish, zone)).toThrow();
+  });
+
+  it("rechaza una hora local inexistente o ambigua durante cambio horario", () => {
+    const zone = "America/New_York";
+    expect(() => parseDateTime("03/08/2026 2:30 AM", english, zone)).toThrow();
+    expect(() => parseDateTime("11/01/2026 1:30 AM", english, zone)).toThrow();
+    expect(parseDateTime("11/01/2026 2:30 AM", english, zone))
+      .toBe("2026-11-01T07:30:00Z");
+  });
+
+  it("admite el símbolo visible del porcentaje además de su valor numérico", () => {
+    expect(parsePercent("12,5 %", spanish)).toBe(0.125);
+    expect(parsePercent("12.5%", english)).toBe(0.125);
+    expect(() => parsePercent("%", spanish)).toThrow();
   });
 });

@@ -20,6 +20,16 @@
     "empty": "Nothing to show",
     "error": "Something went wrong"
   },
+  "fields": {
+    "currency": "Currency",
+    "selectCurrency": "Choose a currency",
+    "invalidDate": "Enter a valid date.",
+    "invalidDateTime": "Enter a valid date and time.",
+    "invalidTime": "Enter a valid time.",
+    "invalidNumber": "Enter a valid number.",
+    "invalidMoney": "Enter a valid amount for the selected currency.",
+    "invalidPercent": "Enter a valid percentage."
+  },
   "errors": {
     "network": "We couldn't connect. Check your connection.",
     "unexpected": "Something went wrong. If it keeps happening, report the code {{traceId}}.",

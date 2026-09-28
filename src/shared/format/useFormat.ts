@@ -5,7 +5,7 @@ import type { ReferenceData } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { getDefaultCultureProfile } from "./cultureProfiles";
 import { createFormatters } from "./formatters";
-import { parseDate, parseDecimal, parseMoney, parsePercent } from "./parsers";
+import { parseDate, parseDateTime, parseDecimal, parseMoney, parsePercent, parseTime } from "./parsers";
 import type { MoneyValue } from "./formatters";
 
 export type { DateRangeValue, MoneyValue } from "./formatters";
@@ -16,6 +16,8 @@ type BoundParsers = {
   parseMoney: (input: string, currency?: string) => MoneyValue | null;
   parsePercent: (input: string) => number | null;
   parseDate: (input: string) => string | null;
+  parseDateTime: (input: string) => string | null;
+  parseTime: (input: string) => string | null;
 };
 
 export type FormatState = Formatters & BoundParsers & (
@@ -61,6 +63,8 @@ const loadingState: FormatState = {
   parseMoney: () => null,
   parsePercent: () => null,
   parseDate: () => null,
+  parseDateTime: () => null,
+  parseTime: () => null,
 };
 
 const FormatContext = createContext<FormatState | undefined>(undefined);
@@ -119,6 +123,8 @@ export function FormatProvider({ children }: { children: ReactNode }) {
       parseMoney: (input, selectedCurrency = currency) => parseMoney(input, selectedCurrency, profile, data),
       parsePercent: (input) => parsePercent(input, profile),
       parseDate: (input) => parseDate(input, profile),
+      parseDateTime: (input) => parseDateTime(input, profile, timeZone),
+      parseTime: (input) => parseTime(input, profile),
     };
   }, [data, preferences, ready, t]);
 
