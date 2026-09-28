@@ -56,9 +56,9 @@ export function FilterBar({
     <Surface
       role="search"
       aria-label={label}
-      className={cn("flex flex-wrap items-center gap-2 p-2.5 sm:p-3", className)}
+      className={cn("flex flex-col items-stretch gap-2 p-2.5 md:flex-row md:flex-wrap md:items-center md:p-3", className)}
     >
-      <div className="relative w-full sm:w-[300px]">
+      <div className="relative w-full md:w-[300px]">
         <SearchIcon
           aria-hidden="true"
           className="pointer-events-none absolute top-2 left-2.5 size-4 text-[var(--t3)]"
@@ -72,6 +72,7 @@ export function FilterBar({
           className="h-8 bg-[var(--s2)] pl-8 text-[13px]"
         />
       </div>
+      <div data-slot="filter-pills" className="flex flex-wrap items-center gap-2">
       {filters.map((filter) => {
         const selected = filter.options.find((option) => option.value === filter.value);
 
@@ -83,7 +84,7 @@ export function FilterBar({
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "h-8 rounded-full px-3 text-[13px] shadow-none",
+                  "min-h-11 rounded-full px-3 text-[13px] shadow-none md:min-h-8",
                   filter.active
                     ? "border-[var(--marca)] bg-[var(--marca-t)] text-[var(--marca-tx)]"
                     : "border-[var(--borde)] bg-[var(--lado-activo)] text-[var(--t2)]",
@@ -117,11 +118,12 @@ export function FilterBar({
         <button
           type="button"
           onClick={onClear}
-          className="rounded-[8px] px-2 py-1.5 text-[13px] text-[var(--marca-tx)] hover:bg-[var(--marca-t)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]"
+          className="min-h-11 rounded-[8px] px-2 py-1.5 text-[13px] text-[var(--marca-tx)] hover:bg-[var(--marca-t)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] md:min-h-8"
         >
           {clearLabel}
         </button>
       ) : null}
+      </div>
     </Surface>
   );
 }

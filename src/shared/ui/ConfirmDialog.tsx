@@ -34,6 +34,7 @@ export function ConfirmDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         onCloseAutoFocus={restoreFocus}
+        className="md:max-w-[420px]"
       >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
