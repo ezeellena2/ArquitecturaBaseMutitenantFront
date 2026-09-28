@@ -24,7 +24,7 @@ SPA del multitenant. La arquitectura canónica está en [`docs/architecture/fron
 | crear una feature | [estructura-y-features](docs/rules/estructura-y-features.md) |
 | escribir tests | [tests](docs/rules/tests.md) |
 
-Si una regla no está escrita, **preguntá antes de inventar**.
+Si una regla no está escrita: **copiá cómo lo resuelve ArquitecturaBase** (`../ArquitecturaBase`, `../ArquitecturaBaseFront`); si tampoco está ahí, **decidí vos lo más simple y coherente con estos docs, anotalo en la sección «Decisiones tomadas» del informe de la etapa y seguí**. Frená y preguntá **solo** si la decisión cambia el producto (qué ve o puede hacer un usuario, una pantalla del lienzo, el modelo de accesos) o contradice una regla escrita. Una duda técnica menor nunca frena una etapa.
 
 ## Forma de trabajo
 - Commits chicos, en español, con conventional commits. Commitear al cerrar cada tarea.
