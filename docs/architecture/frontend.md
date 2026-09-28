@@ -20,7 +20,7 @@ Mismo stack y mismas versiones que ArquitecturaBaseFront. **El `node_modules` vi
 | Formularios | `react-hook-form` + `zod` en los formularios con reglas; `useState` con un draft en los diálogos simples |
 | UI | shadcn/ui (new-york) + `radix-ui` + Tailwind 4 (CSS-first, los tokens de [tema.md](tema.md) en `index.css`; las variables de shadcn, solo como alias), `sonner`, Inter Variable |
 | i18n | `i18next` + `react-i18next` + `i18next-resources-to-backend`, un namespace por módulo |
-| Formatos | `shared/format`: `Intl` con perfiles fijos por cultura, más `libphonenumber-js`. Sin librería de fechas |
+| Formatos | `shared/format`: `Intl` con patrones de `Cultures` (`GET /api/reference-data`), más `libphonenumber-js`. Sin perfiles fijos en código ni librería de fechas |
 | Contratos | `openapi-typescript` genera `src/shared/api/generated/schema.d.ts` desde `../ArquitecturaBaseMutitenant/docs/contracts/openapi.json` |
 | Tests | Vitest 5 + jsdom + Testing Library + user-event + MSW 2 |
 | Lint | `oxlint` (sin ESLint ni Prettier) |
@@ -43,9 +43,10 @@ src/
 ├─ shared/
 │  ├─ api/       httpClient · ApiError · queryClient · formErrors · types.ts (alias) · generated/schema.d.ts (no se edita)
 │  ├─ format/    ÚNICO lugar que formatea fechas, números, moneda, porcentajes, teléfonos (formatos.md)
-│  ├─ time/      useEffectiveTimeZone · TimeZoneSelect
+│  ├─ referenceData/ GET /api/reference-data, catálogos compartidos y patrones de cultura
+│  ├─ time/      useEffectiveTimeZone · cálculo del offset actual
 │  ├─ i18n/ · hooks/ · lib/
-│  └─ ui/        shadcn + propios + format/ (DateText, MoneyText…) + fields/ (DateField, MoneyField…)
+│  └─ ui/        shadcn + propios + format/ (DateText, MoneyText…) + fields/ (campos y selectores de referencia)
 └─ test/         setup · mocks · utils
 ```
 
@@ -107,16 +108,17 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 - Todo pasa por `shared/api/httpClient`: `fetch`, rutas relativas, `Authorization: Bearer`, `Accept-Language` con la **cultura efectiva** (`es-AR`), una sola renovación silenciosa ante un 401 y reintento.
 - Los tipos **salen de `generated/schema.d.ts`**; los alias legibles escritos a mano viven en `shared/api/types.ts`, que reexporta desde `generated`. El `api/*.ts` de cada feature exporta query keys (`usersQueryKeyRoot`, `usersQueryKey(q)`, `userQueryKey(id)`) y funciones (`fetchUsers`, `createUser`) tipadas con el schema.
 - `useQuery` y `useMutation` se usan directo en las páginas, con `placeholderData: keepPreviousData` en los listados. Nada de `useEffect` con fetch. Una mutación invalida la raíz de su feature.
-- `npm run contracts` regenera los tipos, y el CI falla si difieren del contrato.
+- `npm run contracts` regenera los tipos; `contracts:check` es obligatorio en local. Hasta que ambos repos estén en GitHub, el CI del front avisa y salta ese chequeo si falta el repo hermano; con ambos presentes, falla si `schema.d.ts` difiere del contrato.
+- `shared/referenceData` carga una vez los cinco catálogos habilitados y traducidos con TanStack Query (`staleTime: Infinity`) desde `GET /api/reference-data`; conserva el `ETag` para revalidar. Monedas, países, zonas, culturas y tipos fiscales no se enumeran en el código. E1 usa el adaptador JSON del back; E2 cambia a tablas sin alterar el contrato.
 
 ### Presentación de datos
-- **Todo dato se muestra con los componentes de `shared/ui/format` y se carga con los de `shared/ui/fields`.** El catálogo, los perfiles por cultura y las reglas están en [`formatos.md`](formatos.md).
+- **Todo dato se muestra con los componentes de `shared/ui/format` y se carga con los de `shared/ui/fields`.** Los selectores (`CurrencySelect`, `CountrySelect`, `TimeZoneSelect`, `CultureSelect` y `TaxIdField`) leen `shared/referenceData` y muestran carga hasta recibir opciones. Los patrones por cultura son datos de referencia; las reglas de presentación están en [`formatos.md`](formatos.md).
 - Las columnas de `DataTable` declaran el `type` (`date`, `dateTime`, `money`, `decimal`, `percent`, `enum`, `status`…), y la tabla resuelve el formato, la alineación y el vacío.
 - Está prohibido formatear fuera de `shared/format` (`toLocaleString`, `toFixed`, `Intl.`); lo verifica `format-usage.test.ts`.
 
 ### Paginado, orden y búsqueda
 El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado del front:
-- **Por páginas:** `usePagination` guarda `page`, `pageSize`, `sort` y `search` **en la URL**, y `useFilters(keys)` hace lo mismo con los filtros. Los dos escriben con `useQueryUpdate`: una escritura por tick y `replace: true`.
+- **Por páginas:** `usePagination(result?: { items; totalCount })` guarda `page`, `pageSize`, `sort` y `search` **en la URL**, y `useFilters(keys)` hace lo mismo con los filtros. Los dos escriben con `useQueryUpdate`: una escritura por tick y `replace: true`.
 - **Qué vuelve a la página 1:** cambiar la búsqueda, un filtro, el orden o el tamaño de página. La búsqueda se aplica con 300 ms de debounce.
 - **Página fuera de rango:** si llegan `items` vacíos con `totalCount > 0`, `usePagination` salta solo a la última, con `replace`, sin dejar una entrada en el historial. Desde la E1 lo hace internamente, sin exponer `correctPage`.
 - **`Pagination`:** muestra "1–10 de 1.234" y "Página 1 de 124", siempre con `useFormat`, y tiene un selector de 10, 20, 50 o 100 por página (**10 por defecto**; si la URL no trae `pageSize`, no se escribe).
@@ -133,11 +135,11 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
   - **Sin conexión o error de red:** toast "No pudimos conectarnos. Revisá tu conexión." con «Reintentar». Si el navegador está sin conexión (`navigator.onLine`), además una franja fija arriba, "Sin conexión", que se va sola al volver.
   - **Error 5xx:** toast "Algo salió mal. Probá de nuevo en un rato." con el código de seguimiento (`traceId`) para copiar.
   - **429, demasiados pedidos:** con `retryAfterSeconds`, el botón que disparó el pedido queda deshabilitado con la cuenta regresiva ("Reintentá en 0:42"), como en el ingreso. Si no vino de un botón, toast "Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos." **Nunca se reintenta solo.**
-  - **Sesión vencida:** si falla la renovación silenciosa, se limpia la sesión y `queryClient` y se va a `/login` (la puerta del acceso que tenía) con `returnUrl`. La pantalla de ingreso muestra "Tu sesión venció. Ingresá de nuevo." y, al volver, lleva a la misma ruta. Lo escrito en un formulario sin guardar se pierde, salvo que la pantalla lo guarde como borrador.
+  - **Sesión vencida (E3, con Auth):** si falla la renovación silenciosa, se limpia la sesión y `queryClient` y se va a `/login` (la puerta del acceso que tenía) con `returnUrl`. La pantalla de ingreso muestra "Tu sesión venció. Ingresá de nuevo." y, al volver, lleva a la misma ruta. Lo escrito en un formulario sin guardar se pierde, salvo que la pantalla lo guarde como borrador.
   - **409, alguien cambió esto:** aviso sobre la pantalla con «Ver lo nuevo» y «Seguir editando», sin perder lo escrito ([formularios](../rules/formularios.md)).
   - **Salir sin guardar:** con "Cambios sin guardar", navegar a otra ruta o cerrar la pestaña pregunta "¿Salir sin guardar?" (`useBlocker` y `beforeunload`).
   - **Versión nueva del front:** si falla la carga de un chunk después de un despliegue, franja "Hay una versión nueva" con «Actualizar», que recarga la página. No se recarga solo.
-  - **Módulo apagado:** su ruta muestra `NotFoundPage`, igual que un 404.
+  - **Módulo apagado (E5):** su ruta muestra `NotFoundPage`, igual que un 404.
   - **Términos nuevos:** si una respuesta autenticada trae 403 `Legal.AcceptanceRequired`, se muestra `AcceptTermsPage`, que bloquea el uso hasta aceptar. Lee `GET /api/legal/current` y muestra lo que cambió (los dos documentos, solo los términos o solo la privacidad). Se acepta con `POST /api/legal/accept`. Hasta entonces, el back responde ese 403 en las rutas autenticadas de `/api`, salvo `GET /api/me`, `GET /api/legal/*` y `POST /api/legal/accept`; las rutas anónimas no pasan por ese middleware (back: `docs/rules/datos-personales.md`).
 
 ### Auth
@@ -176,9 +178,9 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - **Estados de sesión**, a pantalla completa: «Iniciando sesión…», «Cambiando a …», «Cerrando sesión…» y «No pudimos iniciar tu sesión».
 
 ### Idioma y cultura
-- La cultura (`es-AR` por defecto, o `en-US`) define el idioma (`es`) y el formato. Un namespace por módulo; `common` para lo compartido; `enums` para los valores de enums y estados. `parity.test.ts` exige las mismas claves en los dos idiomas.
+- La cultura habilitada sale de `Cultures` en `GET /api/reference-data` y define el idioma (`es` para `es-AR`) y el formato. El catálogo inicial habilita `es-AR` y `en-US`; el fallback y la cultura por defecto son datos de sus filas. Un namespace por módulo; `common` para lo compartido; `enums` para los valores de enums y estados. `parity.test.ts` exige las mismas claves en todos los idiomas habilitados.
 - Español rioplatense con voseo. **"Tenant" nunca en pantalla**: se dice "Organización". `TenantAdmin` es "Dueño" y `CompanyAdmin`, "Administrador". El lado B2C se llama "Personal".
-- La cultura se guarda en la cuenta (`PUT /api/me`) y gana sobre la de localStorage (`arquitecturabasemt.culture`).
+- En E1 el proveedor usa la cultura de `localStorage` (`arquitecturabasemt.culture`) si está habilitada; si no, la marcada por defecto en `Cultures` (hoy `es-AR`, con Buenos Aires y ARS por las relaciones del catálogo). En E3 la cultura de la cuenta (`PUT /api/me`) gana sobre la local y se conecta a `/api/me`. No hay un array de culturas en el componente.
 
 ### Fechas y zona
 - Los DTO traen `…AtUtc` en ISO con `Z`; las fechas civiles, `yyyy-MM-dd`.

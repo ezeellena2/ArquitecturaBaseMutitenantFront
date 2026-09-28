@@ -23,16 +23,19 @@ Para una pantalla, el **«Copiá de» es el [tablero correspondiente del lienzo 
 | `src/areas/<área>/<feature>/components/` | diálogos y piezas propias de la feature; nada genérico (eso sube a `shared/ui`) | formularios, pantallas-y-ui | `business/users/components/InviteUserDialog.tsx` (E6) |
 | `src/areas/<área>/<feature>/` (raíz) | `columns.tsx` (columnas **tipadas**) y `errors.ts` (switch por `code`) | formatos, errores | `business/roles/columns.tsx`, `errors.ts` (E4) |
 | `src/shared/format/` | **único** lugar que formatea | formatos | — |
+| `src/shared/referenceData/` | carga los cinco catálogos y patrones de `GET /api/reference-data`; sin opciones fijas en código | datos-y-api, formatos, textos-y-traducciones | `useReferenceData.ts` (E1) |
 | `src/shared/ui/` | piezas genéricas; shadcn en minúscula y propios en PascalCase; sin lógica de negocio | pantallas-y-ui | `DataTable.tsx`, `Page.tsx` (E1) |
 | `src/shared/ui/format/` | cómo se ve cada tipo de dato (`DateText`, `MoneyText`, `PercentText`, `PhoneText`, `StatusBadge`, `EmptyValue`…); no formatea por su cuenta, usa `shared/format` | formatos, telefonos | `MoneyText.tsx` (E1) |
-| `src/shared/ui/fields/` | un campo por tipo de dato (email, teléfono, CUIT, dinero, fecha…) | formularios, formatos, telefonos | `MoneyField.tsx` (E1) |
-| `src/shared/phone/` | países, banderas SVG y `CountrySelect`; `libphonenumber-js` solo acá y en `shared/format` | telefonos | `CountrySelect.tsx` (E1) |
+| `src/shared/ui/fields/` | un campo por tipo y selectores de catálogos (`CurrencySelect`, `CountrySelect`, `TimeZoneSelect`, `CultureSelect`, `TaxIdField`); sin listas fijas | formularios, formatos, telefonos, datos-y-api | `MoneyField.tsx`, `CountrySelect.tsx` (E1) |
+| `src/shared/phone/` | interpretación telefónica y banderas SVG; los países salen de `shared/referenceData`; `libphonenumber-js` solo acá y en `shared/format` | telefonos | `CountryFlag.tsx` (E1) |
 | `src/shared/api/` | httpClient, errores y tipos generados (`generated/` no se edita) | datos-y-api, errores | — |
 | `src/shared/hooks/` | hooks compartidos, cada uno con su test (paginado y filtros en la URL, `useQueryUpdate`, cambios sin guardar, foco, debounce); no se reinventan en una feature | paginado-y-listados, formularios | `usePagination.ts` (E0); `useCursorList.ts` y `useDebouncedValue.ts` (E1) |
 | `src/locales/` | un namespace por módulo, es = en | textos-y-traducciones | `es/roles.json` (E4) |
 | `src/auth/`, `src/tenancy/` | sesión, accesos, cambio de acceso u organización, permisos | accesos-y-permisos | — |
 | `src/layouts/` | layouts por área y navegación declarativa | accesos-y-permisos, pantallas-y-ui | `navigation/business.ts` (E3) |
 | `src/test/` | setup mínimo en E0; MSW en E1 y fixtures de `/api/me` en E3 | tests | `mocks/currentUsers.ts` (E3) |
+
+La regla canónica de esos catálogos está en [datos de referencia del back](../../../ArquitecturaBaseMutitenant/docs/rules/datos-de-referencia.md) (ADR 0036). Los punteros de `shared/referenceData` y de los selectores se crean en E1 junto con sus carpetas.
 
 ## 3. "Si vas a tocar X, leé Y"
 

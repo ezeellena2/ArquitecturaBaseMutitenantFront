@@ -13,7 +13,7 @@
 - **Validación:** `react-hook-form` + `zod` cuando hay reglas; en un diálogo simple, un draft en `useState`. Los mensajes salen de i18n.
 - **Campos:** `FormField` (rótulo, control, error, `aria-describedby`) + el field del tipo (`MoneyField`, `DateField`, `PercentField`…). El control más simple para cada dato: pocas opciones → `Select`; varias a la vez → `MultiSelect`.
 - **Errores del servidor:** `applyApiErrorToForm`; lo general va en `<FormError>`.
-- **Campos por tipo de dato:** `EmailField` (trim y minúsculas al escribir), `PhoneField` ([telefonos](telefonos.md)), `TaxIdField` (tipo + número, validado con `stdnum`), `MoneyField`, `DateField`… El `maxLength` de cada texto sale del contrato generado (`TextLimits` del back), nunca de un número escrito a mano.
+- **Campos por tipo de dato:** `EmailField` (trim y minúsculas al escribir), `PhoneField` + `CountrySelect` ([telefonos](telefonos.md)), `MoneyField` + `CurrencySelect`, `TimeZoneSelect`, `CultureSelect`, `DateField`… Sus opciones salen de `shared/referenceData`; mientras carga el catálogo muestran estado de carga. `TaxIdField` toma los tipos de `TaxIdTypes`, valida en E1 solo con `stdnum` y emite `{ type, number }` con `type = TaxIdTypes.Code` (por ejemplo, `AR-CUIT`) y `number` sin separadores; el value object y el contrato de salida `{ country, type, number }` del back llegan en E6. El `maxLength` de cada texto sale del contrato generado (`TextLimits` del back), nunca de un número escrito a mano.
 - **Envío sin duplicados:** el guardado de un alta o un envío usa `useIdempotentMutation` ([datos-y-api](datos-y-api.md)). La clave nace al abrir el formulario.
 - **Ediciones simultáneas:** el formulario guarda la `version` que vino en la ficha y la manda al guardar. Si vuelve 409 `General.ConcurrencyConflict`:
   - aparece el `ConcurrencyBanner` debajo de la banda: "Otra persona cambió esto mientras lo editabas";
@@ -27,6 +27,7 @@
 - Paneles desplegables o filas que se expanden.
 - Textos de ayuda que nadie pidió.
 - `<input type="number">` para montos, o `<input type="date">` crudo.
+- Un array de opciones o decimales de moneda dentro de un componente; pertenecen a los [datos de referencia](../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md).
 
 ## Copiá de
 - `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4) · `src/areas/business/users/components/InviteUserDialog.tsx` (E6)
@@ -34,6 +35,7 @@
 ## Lo verifica
 - Tests de pantalla: el recorrido del diálogo y un error del servidor ubicado en su campo.
 - `parsers.test.ts` (E1).
+- `referenceData.test.ts` (E1) y tests de los selectores (E1): opciones del catálogo, carga y `{ type: "AR-CUIT", number }` sin separadores.
 
 ## Detalle
 [frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · [lienzo versionado v35](../design/lienzo/README.md): tablero «Rol» (pantalla larga con «Cambios sin guardar») y nota «estilo» (lo corto en un diálogo de 560)

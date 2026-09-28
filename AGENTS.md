@@ -9,6 +9,7 @@ SPA del multitenant. La arquitectura canónica está en [`docs/architecture/fron
 | Si vas a… | Leé |
 |---|---|
 | mostrar una fecha, número, monto, % o vacío | [formatos](docs/rules/formatos.md) |
+| elegir una moneda, país, zona, cultura o tipo fiscal | [datos de referencia](../ArquitecturaBaseMutitenant/docs/rules/datos-de-referencia.md), [datos-y-api](docs/rules/datos-y-api.md) y [formularios](docs/rules/formularios.md) |
 | hacer un listado | [paginado-y-listados](docs/rules/paginado-y-listados.md) |
 | pedir o mostrar un teléfono | [telefonos](docs/rules/telefonos.md) |
 | pedir un correo, un CUIT o DNI; evitar duplicados; manejar ediciones simultáneas | [formularios](docs/rules/formularios.md), [datos-y-api](docs/rules/datos-y-api.md) |
@@ -36,8 +37,8 @@ Si una regla no está escrita: **copiá cómo lo resuelve ArquitecturaBase** (`.
 2. Los tipos de la API salen de `src/shared/api/generated/schema.d.ts`, que se regenera con `npm run contracts` y no se edita a mano. Los alias escritos a mano van en `src/shared/api/types.ts`.
 3. Datos solo con TanStack Query y `httpClient`. Nada de `useEffect` con fetch.
 4. Los errores se deciden por `code`, nunca por el texto.
-5. Todo texto sale de i18n, en es y en. "Tenant" nunca en pantalla: se dice "Organización".
-6. **Todo dato se muestra con `shared/ui/format` y se carga con `shared/ui/fields`**, según [`docs/architecture/formatos.md`](docs/architecture/formatos.md): fechas, números, moneda, porcentajes, teléfonos y vacíos, iguales en todas las pantallas. Nada de `toLocaleString`, `toLocaleDateString`, `toFixed`, `Intl.` ni `new Date(` fuera de `shared/format` y `shared/time` (en `shared/phone`, solo `Intl.DisplayNames` para los nombres de países), según formatos.md §4. El front no calcula dinero.
+5. Todo texto de interfaz sale de i18n, en los idiomas habilitados; los nombres de datos de referencia vienen traducidos de la API. "Tenant" nunca en pantalla: se dice "Organización".
+6. **Todo dato se muestra con `shared/ui/format` y se carga con `shared/ui/fields`**, según [`docs/architecture/formatos.md`](docs/architecture/formatos.md): fechas, números, moneda, porcentajes, teléfonos y vacíos, iguales en todas las pantallas. Monedas, países, zonas, culturas, tipos fiscales y sus patrones salen de `shared/referenceData` (`GET /api/reference-data`), sin arrays fijos en código. Nada de `toLocaleString`, `toLocaleDateString`, `toFixed`, `Intl.` ni `new Date(` fuera de `shared/format` y `shared/time`, según formatos.md §4. El front no calcula dinero.
 7. Tokens solo en memoria. En localStorage va lo mínimo, con el prefijo `arquitecturabasemt.`.
 8. Las áreas de `src/areas/` son `public` (ingresos, registros y portada), `storefront` (la página pública de la organización, una por organización y no por empresa, en su subdominio `<slug>.plataforma.com`), `personal` (acceso B2C), `business` (acceso B2B) y `platform`. Una feature no importa de otra, ni un área de otra: lo común sube a `shared/`. Al cambiar de acceso u organización se hace `queryClient.clear()`. Una persona (B2C) nunca ve "crear empresa".
 9. Los permisos del front son solo experiencia de uso: decide el backend.

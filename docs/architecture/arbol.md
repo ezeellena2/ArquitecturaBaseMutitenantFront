@@ -342,22 +342,24 @@ src/
 │   │   ├── index.ts
 │   │   └── i18n.test.tsx
 │   ├── format/                                      [E1] ÚNICO lugar que formatea (formatos.md)
-│   │   ├── cultureProfiles.ts                       es-AR y en-US: patrones, 24/12 h, separadores, espacio antes de %
+│   │   ├── cultureProfiles.ts                       adapta patrones de Cultures (JSON E1, tabla E2); sin perfiles fijos
 │   │   ├── formatters.ts                            formatDate, formatDateTime, formatTime, formatDateLong, formatRelative,
 │   │   │                                            formatDateRange, formatInteger, formatDecimal, formatQuantity,
 │   │   │                                            formatPercent, formatMoney, formatCompact, formatFileSize,
 │   │   │                                            formatDuration, formatPhone, formatTaxId, formatTimeZone,
 │   │   │                                            formatCulture, EMPTY
 │   │   ├── parsers.ts                               entrada del usuario en su cultura → contrato de la API
-│   │   ├── useFormat.ts                             cultura + zona + moneda ya resueltas → formateadores
+│   │   ├── useFormat.ts                             defaults del catálogo + cultura localStorage en E1; /api/me en E3
 │   │   ├── statusTones.ts                           estado → tono visual (success, warning, danger, neutral, pending); colores en tema.md
 │   │   ├── formatters.test.ts                       recorre ../ArquitecturaBaseMutitenant/docs/contracts/format-cases.json
 │   │   ├── parsers.test.ts
-│   │   └── format-usage.test.ts                     falla si se formatea fuera de shared/format y shared/time; en shared/phone solo permite Intl.DisplayNames para nombres de países
-│   ├── time/                                        [E1]
-│   │   ├── useEffectiveTimeZone.ts                  [E3] cuenta → empresa → organización (en B2B)
-│   │   ├── timeZones.ts                             [E1] GET /api/time-zones, catálogo traducido
-│   │   └── TimeZoneSelect.tsx                       [E1] agrupado por país
+│   │   └── format-usage.test.ts                     falla si se formatea fuera de shared/format y shared/time o se fijan catálogos en código
+│   ├── time/                                        [E3] zona efectiva de cuenta/empresa/organización
+│   │   └── useEffectiveTimeZone.ts                  cuenta → empresa → organización (en B2B)
+│   ├── referenceData/                               [E1] cinco catálogos de GET /api/reference-data
+│   │   ├── referenceData.ts                         cliente tipado; opciones habilitadas y traducidas, ETag
+│   │   ├── useReferenceData.ts                      TanStack Query, staleTime: Infinity; carga única
+│   │   └── referenceData.test.ts                    catálogos, ausencia de listas fijas y estado de carga
 │   ├── account/                                     [E3] lo de la cuenta que usan varias áreas (ADR 0033)
 │   │   ├── PersonalMethodBanner.tsx                 [E3] parte 3b: avisa que falta un método propio y lleva a /cuenta; ofrece correo; WhatsApp aparece si el canal llega en GET /api/auth/methods desde [E8]
 │   │   ├── needsPersonalMethod.ts                   true mientras la cuenta no tenga un método de ingreso propio verificado
@@ -365,7 +367,7 @@ src/
 │   ├── hooks/                                       [E0] de la base solo los hooks sin dependencias de etapas posteriores; cada uno con su test
 │   │   ├── usePagination.ts                         [E0] de la base; página, tamaño, orden y búsqueda en la URL; vuelve a la 1 al cambiar
 │   │   │                                            búsqueda, filtro, orden o tamaño; [E1] corrige internamente una página fuera de rango, sin exponer `correctPage`
-│   │   ├── usePagination.test.tsx                   [E0] desde la base; prueba URL y última página
+│   │   ├── usePagination.test.tsx                   [E0] URL; [E1] corrige última página con result vacío y totalCount > 0
 │   │   ├── useCursorList.ts                         [E1] se crea: useInfiniteQuery para auditoría y actividad ("Cargar más")
 │   │   ├── useDebouncedValue.ts                     [E1] se crea: 300 ms para la búsqueda
 │   │   ├── useFilters.ts                            [E0] de la base
@@ -378,11 +380,9 @@ src/
 │   │   └── useCountdown.ts                          [E0] de la base
 │   ├── lib/                                         [E0]
 │   │   └── utils.ts                                 [E0] de la base; cn; shared/lib/dateTime.ts no se copia (shared/format nace en [E1])
-│   ├── phone/                                       [E1] países y teléfonos (rules/telefonos.md)
-│   │   ├── countries.ts                             lista completa de libphonenumber-js + nombres con Intl.DisplayNames
-│   │   ├── priorityCountries.ts                     AR, UY, CL, PY, BR, BO, PE, MX, ES, US arriba
+│   ├── phone/                                       [E1] interpretación telefónica; países desde shared/referenceData
+│   │   ├── countries.ts                             ordena/filtra Countries del catálogo; libphonenumber valida prefijos
 │   │   ├── CountryFlag.tsx                          bandera SVG (country-flag-icons), carga diferida; nunca emoji
-│   │   ├── CountrySelect.tsx                        combobox con buscador por nombre, ISO o prefijo
 │   │   └── countries.test.ts
 │   └── ui/                                          [E0] solo primitivas shadcn independientes de la base y piezas nuevas sin dependencias posteriores; al copiarlas, --color-* pasa a los tokens de tema.md
 │       ├── format/                                  [E1] cómo se VE cada dato (siempre por acá)
@@ -406,11 +406,15 @@ src/
 │       │   ├── DateTimeField.tsx                    zona efectiva → ISO UTC
 │       │   ├── TimeField.tsx
 │       │   ├── NumberField.tsx
-│       │   ├── MoneyField.tsx                       importe + moneda (por defecto, la de la organización)
+│       │   ├── MoneyField.tsx                       importe + CurrencySelect del catálogo
 │       │   ├── PercentField.tsx                     12,5 → 0.125
 │       │   ├── PhoneField.tsx                       [E1] CountrySelect + AsYouType → { country, number }; usage="whatsapp" filtra países del canal de GET /api/auth/methods desde [E8]
 │       │   ├── EmailField.tsx                       P3 trim y minúsculas al escribir
-│       │   └── TaxIdField.tsx                       P5 tipo + número, validado con stdnum
+│       │   ├── TaxIdField.tsx                       P5 { type: TaxIdTypes.Code, number } sin separadores, stdnum en E1
+│       │   ├── CurrencySelect.tsx                   monedas habilitadas, ordenadas por SortOrder y nombre
+│       │   ├── CountrySelect.tsx                    países habilitados; bandera, nombre traducido y CallingCode
+│       │   ├── TimeZoneSelect.tsx                   zonas habilitadas; SortOrder, offset actual y ciudad
+│       │   └── CultureSelect.tsx                    culturas habilitadas y traducidas
 │       ├── badge.tsx                                [E0] primitiva shadcn (minúscula, `npx shadcn@4.21.0 add`)
 │       ├── button.tsx
 │       ├── checkbox.tsx

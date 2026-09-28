@@ -14,6 +14,7 @@
   - la vista a **390 px** si tiene tabla o formulario ([responsive](responsive.md));
   - en una edición, el **409 de concurrencia**; en un alta, que el reintento manda la **misma** `Idempotency-Key`.
 - Las consultas van por rol y por texto accesible (`getByRole("button", { name: … })`). Los desplegables de Radix se abren con teclado.
+- `referenceData.test.ts` (E1) comprueba que los selectores tomen opciones habilitadas y traducciones de `GET /api/reference-data`, el estado de carga y el `ETag`; `formatters.test.ts` (E1) recorre los mismos casos que el back. Ningún test fija un array de países, monedas o zonas en un componente.
 
 ## Prohibido
 - `getByTestId` si existe un rol accesible.
