@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --marca: oklch(0.5 0.1 195);
+  --marca-2: oklch(0.58 0.11 170);
+  --marca-h: oklch(0.45 0.1 195);
+  --marca-t: oklch(0.955 0.025 185);
+  --marca-tx: oklch(0.43 0.09 195);
+  --fondo: oklch(0.985 0.004 80);
+  --s2: oklch(0.97 0.007 80);
+  --s3: oklch(0.945 0.009 80);
+  --borde: oklch(0.915 0.01 80);
+  --borde2: oklch(0.84 0.014 80);
+  --t1: oklch(0.24 0.012 60);
+  --t2: oklch(0.47 0.012 60);
+  --t3: oklch(0.62 0.01 60);
+  --lado: oklch(0.925 0.02 75);
+  --lado-borde: oklch(0.87 0.022 75);
+  --lado-hover: oklch(0.895 0.022 75);
+  --lado-activo: #fff;
+  --panel: oklch(0.905 0.022 75);
+  --fila-alterna: oklch(0.968 0.012 78);
+  --fila-hover: oklch(0.95 0.025 185);
+  --ok: oklch(0.44 0.12 155);
+  --ok-t: oklch(0.95 0.05 155);
+  --alerta: oklch(0.5 0.12 70);
+  --alerta-t: oklch(0.96 0.06 85);
+  --peligro: oklch(0.57 0.2 25);
+  --peligro-t: oklch(0.97 0.02 25);
+  --foco: var(--marca);
+  --foco-halo: oklch(0.51 0.099 195 / 0.15);
+
+  --radius-card: 16px;
+  --radius-control: 10px;
+  --shadow-card: 0 1px 2px oklch(0.24 0.012 60 / 0.05), 0 8px 24px -12px oklch(0.24 0.012 60 / 0.14);
+  --radius: var(--radius-control);
+
+  /* shadcn: los valores son alias del tema aprobado. */
+  --background: var(--fondo);
+  --foreground: var(--t1);
+  --card: var(--lado-activo);
+  --card-foreground: var(--t1);
+  --popover: var(--lado-activo);
+  --popover-foreground: var(--t1);
+  --primary: var(--marca);
+  --primary-foreground: var(--lado-activo);
+  --secondary: var(--s2);
+  --secondary-foreground: var(--t1);
+  --muted: var(--s2);
+  --muted-foreground: var(--t2);
+  --accent: var(--marca-t);
+  --accent-foreground: var(--marca-tx);
+  --destructive: var(--peligro);
+  --border: var(--borde);
+  --input: var(--borde);
+  --ring: var(--foco);
+  --sidebar: var(--lado);
+  --sidebar-foreground: var(--t1);
+  --sidebar-primary: var(--marca);
+  --sidebar-primary-foreground: var(--lado-activo);
+  --sidebar-accent: var(--lado-hover);
+  --sidebar-accent-foreground: var(--marca-tx);
+  --sidebar-border: var(--lado-borde);
+  --sidebar-ring: var(--foco);
+}
+
+@theme inline {
+  --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: 8px;
+  --radius-md: var(--radius-control);
+  --radius-lg: var(--radius-card);
+  --radius-xl: var(--radius-card);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--fondo);
+  color: var(--t1);
+}
