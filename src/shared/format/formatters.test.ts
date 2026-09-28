@@ -199,3 +199,31 @@ describe.skipIf(!backendPresent)("reloj del formateador", () => {
     }
   });
 });
+
+describe.skipIf(!backendPresent)("referencias históricas", () => {
+  it("muestra valores guardados aunque sus filas ya estén deshabilitadas", () => {
+    const source = sourceCatalog("en-US");
+    const culture = source.cultures.find((item) => item.code === "es-AR");
+    const taxIdType = source.taxIdTypes.find((item) => item.code === "AR-CUIT");
+    expect(culture).toBeDefined();
+    expect(taxIdType).toBeDefined();
+    const data = parseReferenceData({
+      ...source,
+      cultures: source.cultures.map((item) => item.code === "es-AR" ? { ...item, isEnabled: false } : item),
+      taxIdTypes: source.taxIdTypes.map((item) => item.code === "AR-CUIT" ? { ...item, isEnabled: false } : item),
+    });
+    expect(data.currencies.find((item) => item.code === "USD")?.isEnabled).toBe(false);
+    expect(data.timeZones.find((item) => item.id === "America/New_York")?.isEnabled).toBe(false);
+    expect(data.cultures.find((item) => item.code === "es-AR")?.isEnabled).toBe(false);
+    expect(data.taxIdTypes.find((item) => item.code === "AR-CUIT")?.isEnabled).toBe(false);
+
+    const formatter = createFormatters({
+      referenceData: data, culture: "en-US", timeZone: "America/New_York",
+      now: "2026-09-27T15:00:00Z", translate: translator("en-US"),
+    });
+    expect(formatter.formatMoney({ amount: 1234.5, currency: "USD" })).toBe("$1,234.50");
+    expect(formatter.formatTimeZone("America/New_York")).toBe("New York (GMT−4)");
+    expect(formatter.formatCulture("es-AR")).toBe("Spanish (Argentina)");
+    expect(formatter.formatTaxId({ type: "AR-CUIT", number: "20123456786" })).toBe("20-12345678-6");
+  });
+});

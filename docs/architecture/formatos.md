@@ -96,7 +96,7 @@ src/shared/format/
 src/shared/time/
 └── useEffectiveTimeZone.ts    [E3] cuenta → empresa → organización (en B2B)
 src/shared/referenceData/
-├── referenceData.ts           GET /api/reference-data: los cinco catálogos habilitados y traducidos
+├── referenceData.ts           GET /api/reference-data: todas las filas de los cinco catálogos, traducidas y con isEnabled
 ├── useReferenceData.ts        TanStack Query, staleTime: Infinity; ETag al revalidar
 └── referenceData.test.ts      opciones del catálogo y estado de carga
 src/shared/ui/format/

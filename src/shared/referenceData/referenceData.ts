@@ -87,8 +87,8 @@ export function parseReferenceData(raw: unknown): ReferenceData {
   return referenceDataSchema.parse(raw);
 }
 
-// El API devuelve solo habilitados hoy. Mantener el dato completo permite mostrar
-// referencias históricas si el contrato incorpora filas deshabilitadas en el futuro.
+// El API devuelve todas las filas. Los selectores ofrecen solo las habilitadas;
+// los formateadores conservan acceso a las deshabilitadas para valores guardados.
 export function enabledOptions<T extends { isEnabled: boolean }>(rows: readonly T[]): T[] {
   return rows.filter((row) => row.isEnabled);
 }
