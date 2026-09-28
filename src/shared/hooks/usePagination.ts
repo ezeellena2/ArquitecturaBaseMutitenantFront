@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
 import { useQueryUpdate } from "./useQueryUpdate";
 
@@ -8,8 +8,13 @@ interface PaginationOptions {
   readonly defaultSort?: string;
 }
 
+interface PaginationResult {
+  readonly items: readonly unknown[];
+  readonly totalCount: number;
+}
+
 /// Página, orden y búsqueda viven en la URL: el listado se puede compartir y el botón atrás funciona.
-export function usePagination({ defaultSort }: PaginationOptions = {}) {
+export function usePagination(result?: PaginationResult, { defaultSort }: PaginationOptions = {}) {
   const [params] = useSearchParams();
 
   const page = Number(params.get("page") ?? 1);
@@ -27,17 +32,15 @@ export function usePagination({ defaultSort }: PaginationOptions = {}) {
     [update],
   );
 
-  // El resultado llega después de armar la consulta con query. Si la página ya no existe,
-  // se reemplaza en la URL por la última disponible, sin agregar una entrada al historial.
-  const correctPage = useCallback(
-    (items: readonly unknown[], totalCount: number) => {
-      if (items.length > 0 || totalCount <= 0) return;
-
-      const lastPage = Math.max(1, Math.ceil(totalCount / pageSize));
-      if (page !== lastPage) setPage(lastPage);
-    },
-    [page, pageSize, setPage],
-  );
+  // El resultado llega después de consultar. Una página fuera de rango se reemplaza sin
+  // agregar historial; useQueryUpdate hace todas las escrituras con replace: true.
+  const itemCount = result?.items.length;
+  const totalCount = result?.totalCount;
+  useEffect(() => {
+    if (itemCount !== 0 || totalCount === undefined || totalCount <= 0) return;
+    const lastPage = Math.max(1, Math.ceil(totalCount / pageSize));
+    if (page !== lastPage) update({ page: lastPage === 1 ? undefined : String(lastPage) });
+  }, [itemCount, totalCount, page, pageSize, update]);
 
   // Cambiar la búsqueda o el orden vuelve a la primera página: si no, se puede quedar en una página que ya no existe.
   const setSearch = useCallback((next: string) => update({ search: next, page: undefined }), [update]);
@@ -50,7 +53,7 @@ export function usePagination({ defaultSort }: PaginationOptions = {}) {
   const query = useMemo(() => ({ page, pageSize, sort, search }), [page, pageSize, sort, search]);
 
   return useMemo(
-    () => ({ page, pageSize, sort, search, query, setPage, setPageSize, correctPage, setSearch, toggleSort }),
-    [page, pageSize, sort, search, query, setPage, setPageSize, correctPage, setSearch, toggleSort],
+    () => ({ page, pageSize, sort, search, query, setPage, setPageSize, setSearch, toggleSort }),
+    [page, pageSize, sort, search, query, setPage, setPageSize, setSearch, toggleSort],
   );
 }
