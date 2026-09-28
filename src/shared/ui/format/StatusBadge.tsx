@@ -22,6 +22,7 @@ export function StatusBadge({ enum: enumName, value, className }: {
   const tone = getStatusTone(enumName, value);
   return (
     <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium", toneClasses[tone], className)}>
+      <span data-slot="status-dot" aria-hidden="true" className="mr-1.5 inline-block size-1.5 shrink-0 rounded-full bg-current" />
       {format.formatEnum(enumName, value)}
     </span>
   );

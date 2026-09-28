@@ -21,5 +21,6 @@ describe("StatusBadge", () => {
     const badge = screen.getByText(`Estado ${tone}`);
     expect(badge.className).toContain(`text-[var(${ink})]`);
     expect(badge.className).toContain(`bg-[var(${background})]`);
+    expect(badge.querySelector('[data-slot="status-dot"]')).toHaveAttribute("aria-hidden", "true");
   });
 });
