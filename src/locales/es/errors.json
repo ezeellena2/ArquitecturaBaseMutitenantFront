@@ -1,0 +1,22 @@
+{
+  "offline": "Sin conexión",
+  "newVersion": "Hay una versión nueva",
+  "update": "Actualizar",
+  "network": "No pudimos conectarnos. Revisá tu conexión.",
+  "server": "Algo salió mal. Probá de nuevo en un rato.",
+  "traceId": "Código para reportar: {{traceId}}",
+  "rateLimited": "Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos.",
+  "retryIn": "Reintentá en {{time}}",
+  "concurrency": {
+    "title": "Alguien cambió esto",
+    "banner": "Otra persona cambió esto mientras lo editabas",
+    "seeNew": "Ver lo nuevo",
+    "continueEditing": "Seguir editando"
+  },
+  "unsaved": {
+    "title": "¿Salir sin guardar?",
+    "description": "Se pierde lo que cambiaste acá.",
+    "leave": "Salir sin guardar",
+    "continueEditing": "Seguir editando"
+  }
+}
