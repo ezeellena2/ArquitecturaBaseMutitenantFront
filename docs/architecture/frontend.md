@@ -1,6 +1,6 @@
 # Arquitectura del front
 
-> Documento canónico del SPA. Copia las convenciones de `../ArquitecturaBaseFront` (su `CLAUDE.md` y `docs/design/visual-baseline.md`) y les suma, en una sola app, el modelo de accesos de `../ArquitecturaBaseMutitenant/docs/architecture/multitenancy.md`:
+> Documento canónico del SPA. Copia las convenciones de `../ArquitecturaBaseFront` (su `CLAUDE.md`; de `docs/design/visual-baseline.md`, solo las migas: los colores remiten a [tema.md](tema.md)) y les suma, en una sola app, el modelo de accesos de `../ArquitecturaBaseMutitenant/docs/architecture/multitenancy.md`:
 - **una cuenta con dos accesos que no se mezclan**: como persona (B2C) y como empresa (B2B);
 - el **sitio de la plataforma** y la **página pública de cada empresa en su subdominio**;
 - el **backoffice** de la plataforma.
@@ -18,7 +18,7 @@ Mismo stack y mismas versiones que ArquitecturaBaseFront. **El `node_modules` vi
 | Datos | `@tanstack/react-query` 5. Sin Redux ni Zustand: el estado del servidor va en Query y el de la UI en la URL y en `useState` |
 | Auth | `oidc-client-ts` + `react-oidc-context`, Authorization Code + PKCE, tokens solo en memoria |
 | Formularios | `react-hook-form` + `zod` en los formularios con reglas; `useState` con un draft en los diálogos simples |
-| UI | shadcn/ui (new-york) + `radix-ui` + Tailwind 4 (CSS-first, tokens en `index.css`), `sonner`, Inter Variable |
+| UI | shadcn/ui (new-york) + `radix-ui` + Tailwind 4 (CSS-first, los tokens de [tema.md](tema.md) en `index.css`; las variables de shadcn, solo como alias), `sonner`, Inter Variable |
 | i18n | `i18next` + `react-i18next` + `i18next-resources-to-backend`, un namespace por módulo |
 | Formatos | `shared/format`: `Intl` con perfiles fijos por cultura, más `libphonenumber-js`. Sin librería de fechas |
 | Contratos | `openapi-typescript` genera `src/shared/api/generated/schema.d.ts` desde `../ArquitecturaBaseMutitenant/docs/contracts/openapi.json` |
@@ -38,7 +38,7 @@ src/
 │  ├─ storefront/ página pública de una empresa, en su subdominio + lo que publiquen los módulos del producto
 │  ├─ personal/  (acceso B2C) home · account (la cuenta, vale en los dos accesos) · + módulos B2C del producto
 │  ├─ business/  (acceso B2B) home · roles (REFERENCIA) · users · companies · settings · audit · public-page (mi página pública) · + módulos B2B del producto
-│  └─ platform/  tenants (/plataforma) · accounts (personas y operadores) · recoveries · legal · audit · settings · whatsapp
+│  └─ platform/  tenants (/plataforma) · accounts (personas y operadores) · recoveries · legal · audit · settings
 ├─ locales/      {es,en}/<namespace>.json + parity.test.ts
 ├─ shared/
 │  ├─ api/       httpClient · ApiError · queryClient · formErrors · generated/ (no se edita)
@@ -60,11 +60,11 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 | `/` | sin sesión: la portada de la plataforma (con «Para empresas» y el directorio de empresas publicadas). Con sesión de persona: su inicio personal | cualquiera |
 | `/login`, `/registro`, `/recuperar` | ingresar **como persona**, crear una cuenta y «Recuperar mi cuenta» | público |
 | `/login/empresa`, `/registro/empresa` | ingresar **como empresa** y **«Registrá tu empresa»** | público |
-| `/invitacion`, `/auth/callback`, `/login/enlace` | aceptar una invitación, volver del servidor de ingreso, enlace del bot | público |
+| `/invitacion`, `/auth/callback`, `/login/enlace` | aceptar una invitación, volver del servidor de ingreso, enlace del bot (Etapa 8) | público |
 | `/terminos`, `/privacidad` | «Términos y condiciones» y «Política de privacidad» vigentes (la versión publicada, en el idioma de la persona o, sin sesión, en el de la pantalla) | público |
 | `/` (con sesión), `/cuenta` + las rutas B2C del producto (`/<módulo>`) | **acceso B2C**: el lado Personal | `access=consumer` (`/cuenta`, también `business`) |
 | `/org`, `/org/usuarios(/:id)`, `/org/roles(/nuevo, /:id)`, `/org/empresas(/:companyId)`, `/org/configuracion`, `/org/auditoria`, `/org/pagina` + las rutas B2B del producto | **acceso B2B**: la organización | `access=business` + el permiso de cada pantalla |
-| `/plataforma/...` | backoffice | `access=platform` + `platform.*` |
+| `/plataforma` (Organizaciones, el inicio), `/plataforma/organizaciones/:id`, `/plataforma/cuentas(/:id)` (cuentas y operadores), `/plataforma/recuperaciones`, `/plataforma/legales`, `/plataforma/auditoria`, `/plataforma/configuracion` | backoffice | `access=platform` + `platform.*` |
 
 **Subdominio de una empresa** (`<slug>.plataforma.com`):
 
@@ -72,10 +72,11 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 |---|---|---|
 | `/` | página pública de la empresa | cualquiera (lo publicado) |
 | `/<módulo>` | lo que publiquen los módulos del producto, y lo que una persona pide o contrata | cualquiera; para interactuar, `access=consumer` |
+| `/auth/callback` | volver del servidor de ingreso: el canje del código va al propio origen | público |
 
-- **Árbol de rutas por host:** `routes.tsx` mira el host. Con un subdominio de empresa arma las rutas de `storefront`; con el dominio principal, las demás. El subdominio **nunca** da acceso a la administración de la empresa: esa vive en `plataforma.com/org`.
+- **Árbol de rutas por host:** `routes.tsx` mira el host. Con un subdominio de empresa arma las rutas de `storefront` (y `/auth/callback`); con el dominio principal, las demás. El subdominio **nunca** da acceso a la administración de la empresa: esa vive en `plataforma.com/org`.
 - **Área según el acceso:** `useAccess` lee `access` de `/api/me`. Después de ingresar se va al inicio del acceso: persona → `/`, empresa → `/org`, operador → `/plataforma`. `AccessRoute` manda al inicio correcto si se entra a una ruta de otro acceso (por ejemplo, un enlace viejo).
-- **Ingresar desde un subdominio:** "Ingresá para continuar" hace el ingreso **como persona** y vuelve a la misma página del subdominio.
+- **Ingresar desde un subdominio:** "Ingresá para continuar" hace el ingreso **como persona** y vuelve a la misma página del subdominio. El SPA y la Api se sirven desde el **mismo origen en cada host** (dominio principal y cada subdominio), así que no hay CORS. El issuer es fijo (el dominio principal): `authorize` y `logout` navegan al dominio principal, y el canje del código, la renovación y `userinfo` van a `/connect/*` del propio subdominio (ver "Auth").
 - **Inicio de cada área** (`/` con sesión de persona, `/org`): su contenido depende de cada producto. Hasta que el producto lo defina, queda vacío, con la barra y el menú lateral (en el inicio personal, solo el aviso de método propio cuando corresponde). Sin tableros ni resúmenes de relleno.
 - **Menú lateral:** el mismo armazón en las tres áreas; cambian los enlaces.
   - Persona: Inicio y Mi cuenta, más los módulos B2C del producto. **No muestra organizaciones.**
@@ -96,9 +97,9 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 - **Aviso de método propio** (`multitenancy.md` §3.1 del back): «Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa». Se muestra mientras la cuenta no tenga un método de ingreso propio verificado, es decir, cuando todos sus métodos los administra una organización o solo tiene el correo con el que llegó por invitación. Aparece al aceptar una invitación, en `/cuenta` y en el inicio personal. Se va solo cuando se verifica un método propio.
 - **Métodos de ingreso** (en `/cuenta`; diseño en `multitenancy.md` §3.1 del back): sumar un correo o teléfono pide verificarlo con un código que llega a ese dato. Quitar un método, cambiarlo o elegir el principal pide un código en **otro** método ya verificado (`ReauthTicket`, válido 5 minutos). El diálogo muestra el destino enmascarado. Siempre tiene que quedar al menos un método propio o activo, y todo cambio se avisa en todos los métodos.
 - **Baja de la cuenta** (en `/cuenta`, sección Privacidad; diseño en `multitenancy.md` §3.2 del back): diálogo con motivo y código a su método principal, la sugerencia de exportar antes, los errores de la política (único Dueño, operador, bloqueos de módulos) y, al confirmar, sesión cerrada con "Tu cuenta se elimina el dd/mm/aaaa". En la organización, un usuario con la baja pedida se ve con el estado "Baja pedida"; en la plataforma, la cuenta también.
-- **Una persona nunca ve "crear empresa":** «Registrá tu empresa» (`/registro/empresa`) está en la portada, en la puerta de empresas y en «Crear cuenta» (`/registro`); nunca en el lado Personal ni en el menú de la cuenta.
+- **Una persona nunca ve "crear empresa":** «Registrá tu empresa» (`/registro/empresa`, `BusinessSignupPage`) está en la portada, en la puerta de empresas (`/login/empresa`) y en «Crear cuenta» (`/registro`); nunca en el lado Personal ni en el menú de la cuenta.
 - **Empresas del grupo:** el `companyId` sale de la URL (`useCompanyParam`) y `CanInCompany` evalúa `permissions.companies[companyId]`.
-- **Organización suspendida, en espera de aprobación o cerrada:** `OrganizationSuspendedPage`, con los tres estados del tablero Perfil-Suspendido. El 403 `Tenancy.Tenant.Suspended` muestra «Suspendida», `Tenancy.Tenant.PendingApproval` muestra «Espera aprobación» y `Tenancy.Tenant.Closed` muestra «Cerrada». La página lleva el menú «Elegí otro perfil», con Personal y las otras organizaciones (en la espera no aparece la organización que se está revisando), y «Salir».
+- **Organización suspendida, en espera de aprobación o cerrada:** `OrganizationUnavailablePage`, con los tres estados del tablero Perfil-Suspendido. El 403 `Tenancy.Tenant.Suspended` muestra «Suspendida», `Tenancy.Tenant.PendingApproval` muestra «Espera aprobación» y `Tenancy.Tenant.Closed` muestra «Cerrada». La página lleva el menú «Elegí otro perfil», con Personal y las otras organizaciones (en la espera no aparece la organización que se está revisando), y «Salir».
 
 ## 4. Convenciones
 
@@ -127,7 +128,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - `ApiError` expone `code`, `detail`, `traceId`, `errors` y `retryAfterSeconds`. **Se decide por `code`, nunca por el texto.**
 - Global (`queryClient`): un error de red da un toast con "Reintentar"; un 5xx, un toast con el `traceId`; el resto muestra el `detail`, que ya viene traducido. Se saltean los 401/403 y las queries con `meta.silent`.
 - Por feature, `errors.ts` hace `switch (error.code)`. `applyApiErrorToForm` lleva los `errors` a los campos; lo que no encaja va en `<FormError>`.
-- Un 403 renderiza `ForbiddenPage`, salvo los códigos que resuelve el `AppShell`: `Legal.AcceptanceRequired` muestra la pantalla bloqueante de términos nuevos (`AcceptTermsPage`), y `Tenancy.Tenant.Suspended`, `Tenancy.Tenant.PendingApproval` y `Tenancy.Tenant.Closed` muestran `OrganizationSuspendedPage` (§3). Un 404 en una ficha muestra `NotFoundPage`. Un id de otra organización o de otro acceso también da 404.
+- Un 403 renderiza `ForbiddenPage`, salvo los códigos que resuelve el `AppShell`: `Legal.AcceptanceRequired` muestra la pantalla bloqueante de términos nuevos (`AcceptTermsPage`), y `Tenancy.Tenant.Suspended`, `Tenancy.Tenant.PendingApproval` y `Tenancy.Tenant.Closed` muestran `OrganizationUnavailablePage` (§3). Un 404 en una ficha muestra `NotFoundPage`. Un id de otra organización o de otro acceso también da 404.
 - **Casos genéricos** (como en cualquier aplicación; los resuelve `shared/api` y el `AppShell`, nunca cada pantalla):
   - **Sin conexión o error de red:** toast "No pudimos conectarnos. Revisá tu conexión." con «Reintentar». Si el navegador está sin conexión (`navigator.onLine`), además una franja fija arriba, "Sin conexión", que se va sola al volver.
   - **Error 5xx:** toast "Algo salió mal. Probá de nuevo en un rato." con el código de seguimiento (`traceId`) para copiar.
@@ -141,28 +142,32 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 
 ### Auth
 - `authConfig`: `client_id: "web"`, `response_type: "code"`, `scope: "openid profile email offline_access api"`, `userStore: InMemoryWebStorage`, `automaticSilentRenew: false`, `silent_redirect_uri: /silent-renew.html`.
+- **Issuer fijo:** `authority` es el issuer (el dominio principal), y `metadataSeed` apunta `token_endpoint`, `userinfo_endpoint` y `revocation_endpoint` a `/connect/*` del **origen propio**. Desde un subdominio, `authorize` y `logout` son navegaciones al dominio principal (donde vive la cookie de `/connect`), y el canje del código, la renovación y `userinfo` quedan en el mismo origen, sin CORS.
 - `SessionRecovery` hace `signinSilent()` después de un F5. El logout es `signoutRedirect()` con `beginSignOut`.
 - Los permisos del front son **solo experiencia de uso**; el backend decide.
 - **Dos puertas:** `/login` (como persona) y `/login/empresa` (como empresa). Son la misma pantalla con otro título y otro destino; el servidor emite el token con `access` según la puerta. No se vuelve "al último lado": se entra al lado de la puerta elegida. Desde cada puerta, un enlace chico abajo ofrece la otra. El operador de la plataforma no tiene puerta propia: ingresa por la misma pantalla, por cualquiera de las dos puertas. Después del código pasa por la app de autenticación, el servidor le emite `access=platform` sin importar la puerta, y entra a `/plataforma`.
 - **Ingreso** (`/login`, `/login/empresa`):
   - arriba, «Ingresar con Google»; debajo, un `SegmentedControl` Correo | WhatsApp y el campo;
+  - el código es un **paso de la misma pantalla**, sin ruta propia (no hay `/login/codigo`);
   - el código va en `OtpInput`, con 6 casillas. Avanza sola, acepta pegar y retrocede con Backspace;
   - «Reenviar código» se habilita a los 60 s, y un 429 muestra la cuenta regresiva en el botón («Reintentá en 0:42»);
   - los estados salen del `code`: código incorrecto (con los intentos que quedan), vencido, sin intentos, cuenta bloqueada y cuenta suspendida;
   - pedir un código responde igual exista o no la cuenta;
   - **cuenta con la baja pedida** (`Identity.Account.PendingDeletion`): después del código, "Tu cuenta tiene la baja pedida · Se elimina el dd/mm/aaaa" con «Cancelar la baja y entrar» (`POST /api/auth/deletion/cancel` con el `cancelTicket`) y «Salir»;
   - por la puerta de empresas, una cuenta sin organizaciones ve «Tu cuenta no está en ninguna empresa todavía», con «Registrá tu empresa» e «Ingresá como persona»;
-  - abajo, «¿No podés entrar? Recuperá tu cuenta» (`/recuperar`): el método perdido, uno nuevo verificado con código, y el pedido queda para que lo revise un operador.
-- **Operadores:** después del código pasan por la app de autenticación. La primera vez ven el QR y la clave, activan la app y guardan 8 códigos de recuperación. Después pueden entrar con un código de recuperación.
+  - por la puerta de empresas, si su única membresía está deshabilitada (`Tenancy.Member.Inactive`): «Tu acceso a <organización> está deshabilitado», con «Ingresá como persona» y «Registrá tu empresa»;
+  - abajo, «¿No podés entrar? Recuperá tu cuenta» (`/recuperar`): el método perdido, uno nuevo verificado con código, y el pedido queda para que lo revise un operador;
+  - la Etapa 3 programa los estados del tablero Ingreso **salvo** los de WhatsApp (Etapa 8) y los cinco «Operador: …» (Etapa 9).
+- **Operadores** (Etapa 9; hasta entonces, el operador del seed entra sin segundo factor): después del código pasan por la app de autenticación. La primera vez ven el QR y la clave, activan la app y guardan 8 códigos de recuperación. Después pueden entrar con un código de recuperación.
 - **«Registrá tu empresa»** (`/registro/empresa`):
   - la casilla «Acepto los Términos y la Política de privacidad» (también bloquea «Seguir con Google»); «Seguir con Google», o Correo | WhatsApp y el código. Con una sesión ya iniciada se empieza en el paso siguiente;
   - «Tu organización» (quedás como Dueño): nombre de la organización, primera empresa y CUIT de la empresa (opcional, 11 números). La dirección del subdominio no se pide acá: se elige en «Página pública» (`/org/pagina`);
   - según `BusinessSignup`: abierto, «{Organización} está lista» con «Entrar a …»; con aprobación, «Recibimos el pedido» y la organización queda en «Espera aprobación»; cerrado, «Por ahora no se pueden registrar empresas»;
   - si la persona ya llegó al límite de organizaciones propias (`MaxOwnedOrganizations` de `PlatformSettings`): «Llegaste al límite de N organizaciones propias.»;
   - abajo, «¿Tu empresa ya está registrada? Ingresá como empresa».
-- **Registro de personas** (`/registro`): pide correo o WhatsApp y verifica el código. Lleva la casilla de términos y privacidad, obligatoria también para registrarse con Google (sin ella, el back responde 400 `Validation.Failed` con el error en el campo `acceptedTerms`). Si el correo ya tiene cuenta, la pantalla es la misma y el correo que llega trae un código para entrar. Con `ConsumerSignup` cerrado se ve «Por ahora no se pueden crear cuentas».
-- **Invitación** (`/invitacion`): muestra quién invita, la empresa, los roles y el vencimiento. Según el caso:
-  - sin cuenta: «Aceptar invitación» crea la cuenta y entra a la organización (acceso B2B);
+- **Registro de personas** (`/registro`): pide correo o WhatsApp (el estado WhatsApp, en la Etapa 8) y verifica el código. Lleva la casilla de términos y privacidad, obligatoria también para registrarse con Google (sin ella, el back responde 400 `Validation.Failed` con el error en el campo `acceptedTerms`). Si el correo ya tiene cuenta, la pantalla es la misma y el correo que llega trae un código para entrar. Con `ConsumerSignup` cerrado se ve «Por ahora no se pueden crear cuentas».
+- **Invitación** (`/invitacion`): muestra quién invita, la empresa, los roles y el vencimiento, que lee con `POST /api/invitations/preview` (el token va en el cuerpo, nunca en la URL de la API). Se acepta con `POST /api/invitations/accept`. Según el caso:
+  - sin cuenta: «Aceptar invitación» crea la cuenta (sin espacio personal) y entra a la organización (acceso B2B);
   - con cuenta y sin sesión: «Ingresá para aceptar»;
   - con la sesión de la misma persona (la cuenta ya tiene el correo invitado): «Aceptar invitación» la suma a la organización sin volver a ingresar;
   - con la sesión de otra persona: avisa y ofrece salir y seguir con la cuenta invitada;
@@ -267,7 +272,7 @@ Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nC
 - Las pantallas públicas van en una columna, sin el panel de la marca.
 
 **Código**
-- Colores solo con tokens. Componentes propios en PascalCase; los de shadcn se generan con `npx shadcn@4.21.0 add`.
+- Colores solo con los tokens de [tema.md](tema.md); las variables de shadcn son alias de esos tokens. Componentes propios en PascalCase; los de shadcn se generan con `npx shadcn@4.21.0 add`.
 - No se definen componentes dentro de otros. El estado derivado se calcula en el render, y en JSX va ternario en lugar de `&&`.
 
 ### Accesibilidad y diseño adaptable

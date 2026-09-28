@@ -14,7 +14,7 @@
   ```
 - **Formularios:** `applyApiErrorToForm(error, setError, fieldMap)`. Lo que no encaja en un campo va en `<FormError>` sobre la botonera.
 - **ConfirmDialog o acción de fila:** toast con el mensaje.
-- **Pantalla:** un 403 renderiza `ForbiddenPage`; un 404 en una ficha, `NotFoundPage` (también un id de otra organización o de otro acceso); `Tenancy.Tenant.Suspended` renderiza `OrganizationSuspendedPage`, y `Tenancy.Access.Wrong` lleva al inicio del acceso correcto.
+- **Pantalla:** un 403 renderiza `ForbiddenPage`; un 404 en una ficha, `NotFoundPage` (también un id de otra organización o de otro acceso); `Tenancy.Tenant.Suspended`, `Tenancy.Tenant.PendingApproval` y `Tenancy.Tenant.Closed` renderizan `OrganizationUnavailablePage` con su estado (Suspendida, Espera aprobación o Cerrada), y `Tenancy.Access.Wrong` lleva al inicio del acceso correcto.
 - Query que maneja su error en pantalla: `meta: { silent: true }`.
 - **Genéricos** (red, 5xx, 429 con cuenta regresiva, sesión vencida, 409, salir sin guardar, versión nueva, módulo apagado): los resuelven `shared/api` y el `AppShell`, como dice [frontend.md, "Errores"](../architecture/frontend.md#errores). Una pantalla no los reimplementa.
 

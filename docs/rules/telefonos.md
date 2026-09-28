@@ -17,9 +17,9 @@
 - **País por defecto:** el del número si ya hay uno; si no, el de la región de la cultura (`es-AR` → AR); si no, el de la organización.
 - **Mientras escribe:** `AsYouType(país)` formatea en vivo (`11 2345-6789`). Si pega un número con `+` (`+54 9 11 …`), el país se detecta y el selector cambia solo.
 - **Uso:**
-  - `usage="whatsapp"` muestra solo los países de `whatsappCountries`, que devuelve `GET /api/auth/methods`;
+  - `usage="whatsapp"` muestra solo los países del canal `whatsapp` que devuelve `GET /api/auth/methods` en `channels` (`[{ key: "whatsapp", countries: [...] }]`; los aporta el módulo de WhatsApp);
   - `usage="mobile"` y `usage="any"` muestran todos.
-- **Validación en vivo** (solo guía): `isValidPhoneNumber`. El error definitivo lo manda el backend (`Users.Phone.*`) y lo ubica `applyApiErrorToForm`.
+- **Validación en vivo** (solo guía): `isValidPhoneNumber`. El error definitivo lo manda el backend (`Users.Phone.*`, o el del módulo de WhatsApp sobre el campo `phone` si el país no está habilitado) y lo ubica `applyApiErrorToForm`.
 - **Qué emite:** `{ country: "AR", number: "11 2345-6789" }`, que es lo que espera el contrato.
 - **Accesibilidad:** el selector se anuncia como "País: Argentina, +54", no "AR +54".
 

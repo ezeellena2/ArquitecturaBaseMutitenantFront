@@ -8,7 +8,7 @@
   - `<AccessRoute access="business"><ProtectedRoute permission="roles.read" /></AccessRoute>` para `/org/…`;
   - `<AccessRoute access="platform">` para `/plataforma/…`;
   - las rutas públicas (`/` sin sesión, `/login…`, `/registro…`, `/recuperar`, `/invitacion`, `/auth/callback`, `/terminos`, `/privacidad` y las del subdominio) no llevan `AccessRoute`.
-- **Host:** con el subdominio de una organización (`<slug>.plataforma.com`; una página pública por organización, no por empresa), `routes.tsx` arma **solo** las rutas de `storefront`. `usePublicSite()` devuelve el slug del subdominio y los datos públicos de esa organización.
+- **Host:** con el subdominio de una organización (`<slug>.plataforma.com`; una página pública por organización, no por empresa), `routes.tsx` arma **solo** las rutas de `storefront` (y `/auth/callback`: el ingreso desde el subdominio vuelve a su propio origen). `usePublicSite()` devuelve el slug del subdominio y los datos públicos de esa organización.
 - **Acción:** `<Can permission="roles.manage">…</Can>`. En una empresa del grupo: `<CanInCompany companyId={id} permission="company.members.manage">`.
 - **Acceso activo:** `useAccess()` devuelve `access`, la organización activa (en B2B), si la persona tiene espacio personal y sus organizaciones.
 - **Cambiar de acceso u organización:** `useSwitchAccess({ access, tenantId })`:

@@ -53,7 +53,7 @@ Cada tipo de dato tiene **un** formateador y **un** componente. Los ejemplos cor
 | Idioma y región | `es-AR` | `<CultureText>` | `Español (Argentina)` | `Spanish (Argentina)` | Nunca el código crudo |
 | CUIT / id fiscal | `{ country, type, number }` (solo dígitos) | `<TaxIdText>` / carga con `TaxIdField` | `20-12345678-6` | `20-12345678-6` | Validado con el dígito verificador (`stdnum` en el front, el back decide). Detalle: `../ArquitecturaBaseMutitenant/docs/rules/identificacion-fiscal.md` |
 | Correo | texto normalizado (minúsculas) | texto; carga con `EmailField` | `juan@gmail.com` | `juan@gmail.com` | Trim y minúsculas al escribir; nunca se muestra con mayúsculas |
-| Enum o estado | `"Active"` | `<EnumText enum="UserStatus">` / `<StatusBadge>` | `Activo` | `Active` | Clave i18n `enums.<Enum>.<Valor>`; el color del estado sale de un mapa central (`statusTones.ts`) |
+| Enum o estado | `"Active"` | `<EnumText enum="UserStatus">` / `<StatusBadge>` | `Activo` | `Active` | Clave i18n `enums.<Enum>.<Valor>`; el tono del estado sale de un mapa central (`statusTones.ts`) y sus colores, de [tema.md](tema.md) |
 | Booleano | `true`/`false` | `<BooleanText>` | `Sí` / `No` | `Yes` / `No` | En tablas, una columna de estado va mejor como `StatusDot` |
 | Vacío | `null` | `<EmptyValue>` | `—` | `—` | Raya larga en gris tenue (`--t3`), con `aria-label` "Sin dato". Nunca "null", "N/A", "-" ni `0` |
 | Nombre / texto | texto | texto | tal cual | tal cual | Un texto largo se trunca con `…` y tooltip |
@@ -87,7 +87,7 @@ src/shared/format/
 │                              "Buenos Aires (GMT−3)")
 ├── parsers.ts                 parseDecimal, parseMoney, parsePercent, parseDate (entrada del usuario → contrato)
 ├── useFormat.ts               cultura + zona + moneda por defecto ya resueltas → formateadores
-├── statusTones.ts             estado → tono visual (success, warning, danger, neutral)
+├── statusTones.ts             estado → tono visual (success, warning, danger, neutral, pending); colores en tema.md
 ├── formatters.test.ts         recorre format-cases.json (los mismos casos que el back)
 ├── parsers.test.ts
 └── format-usage.test.ts       prohíbe formatear fuera de shared/format

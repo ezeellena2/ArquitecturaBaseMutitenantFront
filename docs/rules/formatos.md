@@ -11,7 +11,7 @@
 - **En una ficha o un texto:** `<DateText value={x.createdAtUtc} kind="dateTime" />`, `<MoneyText value={x.total} />`, `<PercentText value={x.rate} />`, `<EnumText enum="UserStatus" value={x.status} />`, `<EmptyValue />`.
 - **En un formulario:** `DateField` (fecha civil, sin zona), `DateTimeField` (convierte la zona efectiva a UTC), `MoneyField`, `NumberField`, `PercentField` (12,5 → 0.125) y `PhoneField` (→ `{ country, number }`; el back lo pasa a E.164).
 - **Fuera de JSX** (por ejemplo, en el `aria-label` de un gráfico): `const f = useFormat(); f.money(x)`.
-- **Estados:** `<StatusBadge enum="TenantStatus" value={s} />`; el color sale de `statusTones.ts`.
+- **Estados:** `<StatusBadge enum="TenantStatus" value={s} />`; el tono (`success`, `warning`, `danger`, `neutral` o `pending`) sale de `statusTones.ts`, y sus colores, de los tokens de [tema.md](../architecture/tema.md).
 
 ## Prohibido
 - `toLocaleString`, `toLocaleDateString`, `toFixed`, `Intl.*` o `new Date(...)` para mostrar, fuera de `shared/format` y `shared/time`.

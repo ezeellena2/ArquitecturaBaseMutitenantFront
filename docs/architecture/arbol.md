@@ -39,7 +39,7 @@ ArquitecturaBaseMutitenantFront/
 ├── tsconfig.json
 ├── tsconfig.app.json                                alias @/* → src/*
 ├── tsconfig.node.json
-└── vite.config.ts                                   proxy /api /account /connect /.well-known /webhooks → Api (Aspire); puerto 5174; la entrada silent-renew.html se suma en [E3]
+└── vite.config.ts                                   proxy /api /account /connect /.well-known /webhooks → Api (Aspire), igual en cada host (*.localtest.me): mismo origen, sin CORS; puerto 5174; la entrada silent-renew.html se suma en [E3]
 ```
 
 ## src/
@@ -49,8 +49,8 @@ src/
 ├── main.tsx                                         [E0]
 ├── App.tsx                                          [E0] RouterProvider
 ├── App.test.tsx
-├── index.css                                        [E0] tokens de tema.md (marca, superficies, marco arena, filas, radios)
-├── theme-tokens.test.ts                             [E0] los tokens de tema.md existen en index.css; ningún color literal fuera de index.css
+├── index.css                                        [E0] tokens de tema.md (marca, superficies, marco arena, filas, estados, foco, radios); las variables de shadcn, solo como alias
+├── theme-tokens.test.ts                             [E0] los tokens de tema.md existen en index.css; ningún color literal fuera de index.css; ninguna ficha ni componente usa --color-* fuera de los alias de shadcn
 ├── silent-renew.ts                                  [E3]
 ├── vite-env.d.ts
 │
@@ -64,7 +64,7 @@ src/
 │
 ├── auth/                                            [E3]
 │   ├── AuthProvider.tsx                             react-oidc-context + puente al httpClient
-│   ├── authConfig.ts                                client_id web, code + PKCE, InMemoryWebStorage
+│   ├── authConfig.ts                                client_id web, code + PKCE, InMemoryWebStorage; authority = issuer fijo y metadataSeed con token, userinfo y revocation en el origen propio
 │   ├── authConfig.test.ts
 │   ├── SessionRecovery.tsx                          signinSilent después de un F5
 │   ├── SessionRecovery.test.tsx
@@ -94,7 +94,7 @@ src/
 │   └── useCompanyParam.ts                           [E6] companyId de la URL
 │
 ├── layouts/
-│   ├── AppShell.tsx                                 [E1] raíz de los dos árboles de rutas (dominio principal y subdominio); envuelve a todos los layouts y resuelve los casos genéricos que no son de shared/api: franja "Sin conexión" y franja "Hay una versión nueva"; ante el 403 Legal.AcceptanceRequired muestra AcceptTermsPage, y ante Tenancy.Tenant.Suspended, PendingApproval o Closed, OrganizationSuspendedPage
+│   ├── AppShell.tsx                                 [E1] raíz de los dos árboles de rutas (dominio principal y subdominio); envuelve a todos los layouts y resuelve los casos genéricos que no son de shared/api: franja "Sin conexión" y franja "Hay una versión nueva"; ante el 403 Legal.AcceptanceRequired muestra AcceptTermsPage, y ante Tenancy.Tenant.Suspended, PendingApproval o Closed, OrganizationUnavailablePage
 │   ├── AppShell.test.tsx                            [E1] casos del tablero Avisos: "Sin conexión" aparece sin red y se va sola al volver; si falla un chunk, "Hay una versión nueva" con «Actualizar», sin recargar sola
 │   ├── AuthLayout.tsx                               [E3]
 │   ├── PersonalLayout.tsx                           [E3] acceso B2C: Inicio, Mi cuenta + módulos B2C (sin organizaciones)
@@ -105,7 +105,7 @@ src/
 │   │   ├── types.ts                                 grupos, ramas, links con permiso
 │   │   ├── personal.ts
 │   │   ├── business.ts                              arriba Inicio + módulos B2B; abajo «Administración» (AdminPanel): «Gestión de usuarios» ▸ Usuarios, Roles y permisos · Empresas · Configuración · Página pública · Auditoría
-│   │   ├── platform.ts
+│   │   ├── platform.ts                              Organizaciones (el inicio) · Cuentas · Recuperaciones · Auditoría · Documentos legales · Configuración
 │   │   └── navigation.test.ts                       el permiso de cada link = el de su ruta
 │   └── components/
 │       ├── Sidebar.tsx                              colapsable, drawer en móvil; en el teléfono «Administración» se despliega adentro
@@ -127,10 +127,10 @@ src/
 │   │   ├── auth/                                    [E3]
 │   │   │   ├── api/
 │   │   │   │   ├── loginCode.ts
-│   │   │   │   ├── loginLink.ts
+│   │   │   │   ├── loginLink.ts                     [E8]
 │   │   │   │   ├── signup.ts                        registro de personas
 │   │   │   │   ├── businessSignup.ts                [E6] «Registrá tu empresa» + disponibilidad del slug
-│   │   │   │   ├── invitations.ts
+│   │   │   │   ├── invitations.ts                   POST /api/invitations/preview (el token en el cuerpo, nunca en la URL) y POST /api/invitations/accept
 │   │   │   │   └── deletionCancel.ts                POST /api/auth/deletion/cancel con el cancelTicket
 │   │   │   ├── components/
 │   │   │   │   ├── EmailCodeForm.tsx
@@ -139,12 +139,11 @@ src/
 │   │   │   │   └── PendingDeletionNotice.tsx        "Tu cuenta tiene la baja pedida · Se elimina el dd/mm/aaaa", con «Cancelar la baja y entrar» y «Salir»
 │   │   │   ├── lib/
 │   │   │   │   ├── returnUrl.ts
-│   │   │   │   └── loginCodeState.ts
+│   │   │   │   └── loginCodeState.ts                estado del paso del código: destino enmascarado, canal y segundos para reenviar
 │   │   │   ├── errors.ts                            códigos Auth.* → texto o campo; Identity.Account.PendingDeletion pasa LoginPage al estado de baja pedida
 │   │   │   └── pages/
-│   │   │       ├── LoginPage.tsx                    /login (persona) y /login/empresa (empresa): misma pantalla, otra puerta
-│   │   │       ├── LoginCodePage.tsx
-│   │   │       ├── LoginLinkPage.tsx
+│   │   │       ├── LoginPage.tsx                    /login (persona) y /login/empresa (empresa): misma pantalla, otra puerta; el código es un paso de la pantalla (no hay /login/codigo); estados del tablero Ingreso, salvo los de WhatsApp [E8] y los de operador [E9]
+│   │   │       ├── LoginLinkPage.tsx                [E8] /login/enlace: enlace del bot (tablero Enlace)
 │   │   │       ├── SignupPage.tsx                   /registro: crear cuenta de persona
 │   │   │       ├── BusinessSignupPage.tsx           [E6] /registro/empresa: «Registrá tu empresa»
 │   │   │       ├── RecoverAccountPage.tsx           [E5] «Recuperar mi cuenta» (ADR 0033)
@@ -159,7 +158,7 @@ src/
 │   │       └── pages/
 │   │           ├── ForbiddenPage.tsx
 │   │           ├── NotFoundPage.tsx
-│   │           └── OrganizationSuspendedPage.tsx    [E6] suspendida, espera aprobación o cerrada; «Elegí otro perfil»
+│   │           └── OrganizationUnavailablePage.tsx  [E6] 403 Tenancy.Tenant.Suspended, PendingApproval o Closed: Suspendida, Espera aprobación o Cerrada (tablero Perfil-Suspendido); «Elegí otro perfil»
 │   │
 │   ├── storefront/                                  [E7] SUBDOMINIO de una empresa: su página pública
 │   │   ├── pages/PublicPage.tsx                     nombre, logo, descripción, contacto (+ lo que publiquen los módulos)
@@ -182,7 +181,7 @@ src/
 │   │   │   │   ├── PrivacySection.tsx               Privacidad: «Dar de baja mi cuenta» y, en [E10], «Exportar mis datos»
 │   │   │   │   ├── DeleteAccountDialog.tsx          «Dar de baja mi cuenta»: motivo + código al método principal (ReauthTicket); errores de la política (único Dueño, operador, módulos); al confirmar, sesión cerrada y "Tu cuenta se elimina el dd/mm/aaaa"; la sugerencia de exportar antes se suma en [E10]
 │   │   │   │   └── ExportDataDialog.tsx             [E10] «Exportar mis datos»: te llega por correo
-│   │   │   ├── errors.ts                            también Legal.AccountDeletion.* (ReauthRequired, LastAdmin con sus organizaciones, PlatformOperator, AlreadyPending, Blocked)
+│   │   │   ├── errors.ts                            también Legal.AccountDeletion.* (ReauthRequired, PlatformOperator, AlreadyPending, Blocked; LastAdmin con sus organizaciones, desde [E4])
 │   │   │   └── pages/AccountPage.tsx                /cuenta: datos, métodos de ingreso y Privacidad
 │   │   └── <módulo B2C del producto>/               misma forma que business/roles: api · columns · errors · components · pages
 │   │
@@ -205,7 +204,7 @@ src/
 │   │   │       ├── RoleEditorPage.tsx               una hoja: nombre, «Vale en», descripción y un desplegable de permisos por área
 │   │   │       └── RoleEditorPage.test.tsx
 │   │   ├── users/                                   [E6]
-│   │   │   ├── api/users.ts
+│   │   │   ├── api/users.ts                         /api/users; invitar con POST /api/users/invitations (reenviar y revocar en /api/users/invitations/{id})
 │   │   │   ├── columns.tsx
 │   │   │   ├── errors.ts
 │   │   │   ├── testData.ts
@@ -245,8 +244,8 @@ src/
 │   │   │   ├── components/AuditFilterBar.tsx
 │   │   │   └── pages/AuditPage.tsx
 │   │   ├── public-page/                             [E6] /org/pagina: mi página pública (datos, subdominio, publicar)
-│   │   │   ├── api/publicPage.ts
-│   │   │   └── pages/PublicPageEditorPage.tsx
+│   │   │   ├── api/publicPage.ts                    /api/public-site
+│   │   │   └── pages/PublicPageEditorPage.tsx       bloqueada por la plataforma: «Despublicada por la plataforma», con el motivo; publicar responde PublicSite.PublicPage.PublishBlocked
 │   │   └── <módulo B2B del producto>/               misma forma que roles/
 │   │
 │   └── platform/                                    ÁREA PLATAFORMA [E5]
@@ -262,11 +261,11 @@ src/
 │       │   │   ├── OrganizationOwnersTab.tsx        Dueños
 │       │   │   ├── OrganizationModulesTab.tsx       Módulos (P8): Prender, Extender prueba (hasta una fecha) o Apagar, con motivo
 │       │   │   ├── OrganizationDomainTab.tsx        Dominio verificado: registro TXT, Verificar o Quitar, con motivo
-│       │   │   └── OrganizationPublicPageTab.tsx    Página pública: Ver página, Despublicar o Permitir publicar, con motivo
+│       │   │   └── OrganizationPublicPageTab.tsx    Página pública: Ver página, Despublicar (vuelve a borrador con el bloqueo) o Permitir publicar (levanta el bloqueo), con motivo: POST /api/platform/tenants/{id}/public-site/unpublish y …/allow-publish
 │       │   └── pages/
 │       │       ├── OrganizationsPage.tsx            /plataforma: el listado es el inicio del acceso platform (accessHome.ts)
-│       │       └── OrganizationPage.tsx             banda con el estado y sus acciones (y el motivo si está suspendida o cerrada); pestañas debajo
-│       ├── accounts/                                cuentas y operadores
+│       │       └── OrganizationPage.tsx             /plataforma/organizaciones/:id: banda con el estado y sus acciones (y el motivo si está suspendida o cerrada); pestañas debajo
+│       ├── accounts/                                /plataforma/cuentas: cuentas y operadores
 │       │   ├── api/
 │       │   │   ├── accounts.ts                      incluye POST /api/platform/accounts/{id}/deletion (ADR 0035)
 │       │   │   └── operators.ts                     invitar operador (PlatformOperatorsController)
@@ -292,16 +291,13 @@ src/
 │       │   └── pages/
 │       │       ├── LegalDocumentsPage.tsx
 │       │       └── PublishLegalVersionPage.tsx      hoja con «‹»: documento, vigente desde, texto en español y en inglés; «Cambios sin guardar» y confirmación antes de publicar (una versión publicada no se edita)
-│       ├── audit/
+│       ├── audit/                                   /plataforma/auditoria
 │       │   ├── api/securityEvents.ts
 │       │   ├── columns.tsx
 │       │   └── pages/SecurityAuditPage.tsx
-│       ├── settings/
-│       │   ├── api/platformSettings.ts
-│       │   └── pages/PlatformSettingsPage.tsx       ConsumerSignup, BusinessSignup, límite de organizaciones
-│       └── whatsapp/                                [E8]
-│           ├── api/whatsapp.ts
-│           └── pages/WhatsAppPage.tsx
+│       └── settings/                                /plataforma/configuracion
+│           ├── api/platformSettings.ts
+│           └── pages/PlatformSettingsPage.tsx       ConsumerSignup, BusinessSignup, límite de organizaciones y días de gracia de la baja
 │
 ├── locales/                                         un namespace por módulo; es y en con las mismas claves
 │   ├── es/
@@ -351,7 +347,7 @@ src/
 │   │   │                                            formatDuration, formatPhone, formatTaxId, EMPTY
 │   │   ├── parsers.ts                               entrada del usuario en su cultura → contrato de la API
 │   │   ├── useFormat.ts                             cultura + zona + moneda ya resueltas → formateadores
-│   │   ├── statusTones.ts                           estado → tono visual (success, warning, danger, neutral)
+│   │   ├── statusTones.ts                           estado → tono visual (success, warning, danger, neutral, pending); colores en tema.md
 │   │   ├── formatters.test.ts                       recorre ../ArquitecturaBaseMutitenant/docs/contracts/format-cases.json
 │   │   ├── parsers.test.ts
 │   │   └── format-usage.test.ts                     falla si hay toLocaleString, toFixed o Intl. fuera de shared/format
@@ -406,7 +402,7 @@ src/
 │       │   ├── NumberField.tsx
 │       │   ├── MoneyField.tsx                       importe + moneda (por defecto, la de la organización)
 │       │   ├── PercentField.tsx                     12,5 → 0.125
-│       │   ├── PhoneField.tsx                       CountrySelect + número con AsYouType → { country, number }
+│       │   ├── PhoneField.tsx                       CountrySelect + número con AsYouType → { country, number }; usage="whatsapp": países del canal whatsapp en channels de GET /api/auth/methods
 │       │   ├── EmailField.tsx                       P3 trim y minúsculas al escribir
 │       │   └── TaxIdField.tsx                       P5 tipo + número, validado con stdnum
 │       ├── badge.tsx                                shadcn (minúscula, `npx shadcn@4.21.0 add`)

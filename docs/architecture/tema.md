@@ -23,8 +23,23 @@ Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena
 | `--panel` | `oklch(0.905 0.022 75)` | segundo panel de Administración, un tono más oscuro que el marco |
 | `--fila-alterna` | `oklch(0.968 0.012 78)` | filas alternadas de las tablas |
 | `--fila-hover` | `oklch(0.95 0.025 185)` | fila al pasar el mouse |
+| `--ok` / `--ok-t` | `oklch(0.44 0.12 155)` / `oklch(0.95 0.05 155)` | estado correcto: texto y fondo tenue |
+| `--alerta` / `--alerta-t` | `oklch(0.5 0.12 70)` / `oklch(0.96 0.06 85)` | alerta: texto y fondo tenue |
+| `--peligro` / `--peligro-t` | `oklch(0.57 0.2 25)` / `oklch(0.97 0.02 25)` | peligro (errores, acciones destructivas): texto y fondo tenue |
+| `--foco` | `var(--marca)` | anillo de foco |
+| `--foco-halo` | `oklch(0.51 0.099 195 / 0.15)` | halo de 3 px alrededor del foco |
 
-Los colores de estado (ok, alerta, peligro) no cambian: son los de `statusTones`.
+Los nombres de esta tabla son los **únicos** que usan los componentes. Los `--color-*` de ArquitecturaBaseFront no se heredan. Las variables de shadcn (`--primary`, `--ring`, `--destructive`, `--border`, `--background`…) existen en `index.css` solo como **alias** de estos tokens: `--primary: var(--marca)`, `--ring: var(--foco)`, `--destructive: var(--peligro)`, `--border: var(--borde)`, `--background: var(--fondo)`.
+
+Los tonos de `statusTones` (texto sobre fondo):
+
+| Tono | Tokens |
+|---|---|
+| `success` | `--ok` sobre `--ok-t` |
+| `warning` | `--alerta` sobre `--alerta-t` |
+| `danger` | `--peligro` sobre `--peligro-t` |
+| `neutral` | `--t2` sobre `--s3` |
+| `pending` | `--marca-tx` sobre `--marca-t` (invitación pendiente, baja pedida) |
 
 ## Forma
 - Tarjetas (filtros y tablas) con radio de 16 px y sombra suave: `0 1px 2px oklch(0.24 0.012 60 / 0.05), 0 8px 24px -12px oklch(0.24 0.012 60 / 0.14)`.
@@ -42,4 +57,4 @@ Los colores de estado (ok, alerta, peligro) no cambian: son los de `statusTones`
 - **En el teléfono** no hay segundo panel: "Administración" se despliega dentro del mismo menú.
 
 ## Lo verifica
-- `theme-tokens.test.ts`: los tokens de esta tabla existen en `index.css`, y ningún componente usa un color literal fuera de `index.css`.
+- `theme-tokens.test.ts`: los tokens de esta tabla existen en `index.css`, ningún componente usa un color literal fuera de `index.css`, y ninguna ficha ni componente usa `--color-*` fuera de los alias de shadcn en `index.css`.

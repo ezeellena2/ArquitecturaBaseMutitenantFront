@@ -18,7 +18,7 @@
   - `EmptyValue` ("Sin dato");
   - `CountrySelect` ("País: Argentina, +54").
 - **Teclado:** todo lo que se hace con el mouse se hace con Tab, Enter, Espacio, Escape y las flechas. Los tests abren los desplegables con el teclado.
-- **Foco visible:** el anillo de foco usa el token `--ring` (en Tailwind, `--color-ring`: utilidades `ring-ring` y `outline-ring`), que en `index.css` apunta a `--marca`; no se quita nunca.
+- **Foco visible:** el anillo de foco usa el token `--foco` (que apunta a `--marca`) con el halo `--foco-halo` de 3 px ([tema.md](../architecture/tema.md)); `--ring` de shadcn es solo su alias en `index.css` (utilidades `ring-ring` y `outline-ring`). No se quita nunca.
 - **Contraste:** los tokens de `index.css` están definidos con contraste AA (4,5:1 para texto y 3:1 para bordes de controles e íconos). Un color nuevo se agrega como token y se mide.
 - **Movimiento:** las animaciones respetan `prefers-reduced-motion`.
 - **Idioma:** `<html lang>` sigue a la cultura (lo hace `shared/i18n`).
