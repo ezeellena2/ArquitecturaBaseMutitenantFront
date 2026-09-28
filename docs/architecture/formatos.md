@@ -44,7 +44,7 @@ Cada tipo de dato tiene **un** formateador y **un** componente. Los ejemplos cor
 | Decimal | número | `<NumberText kind="decimal" digits={2}>` | `1.234,50` | `1,234.50` | Decimales **fijos** según el dato, declarados en la columna |
 | Cantidad | número | `kind="quantity"` | `12,5` | `12.5` | De 0 a 3 decimales, sin ceros de más |
 | Porcentaje | fracción (`0.125`) | `<PercentText>` | `12,5 %` | `12.5%` | Hasta 2 decimales. En es-AR lleva espacio antes del `%` (lo agrega el perfil) |
-| Moneda | `{amount, currency}` | `<MoneyText>` | `$ 1.234,50` · `US$ 1.234,50` | `ARS 1,234.50` · `$1,234.50` | Decimales (`MinorUnits`), símbolo y nombre salen del catálogo de monedas. Si la moneda no es la de la cultura, se ve el código o el prefijo (US$) |
+| Moneda | `{amount, currency}` | `<MoneyText>` | `$ 1.234,50` · `US$ 1.234,50` | `ARS 1,234.50` · `$1,234.50` | Los decimales (`MinorUnits`) salen de `Currencies`; el símbolo visible sale de `CurrencyTranslations.DisplaySymbol` para la cultura y se aplica con el patrón de `Cultures`. El nombre también viene traducido del catálogo. Si la moneda no es la de la cultura, se ve el código o el prefijo (US$) |
 | Moneda negativa | ídem | ídem | `-$ 1.234,50` | `-ARS 1,234.50` | Nunca paréntesis. En rojo solo en reportes, con el token `--peligro` |
 | Compacto | número | `kind="compact"` | `1,3 M` | `1.3M` | **Solo** en tarjetas de KPI, con tooltip del valor completo |
 | Tamaño de archivo | bytes | `<FileSizeText>` | `1,5 MB` | `1.5 MB` | |

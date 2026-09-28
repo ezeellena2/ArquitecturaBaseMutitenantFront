@@ -3,7 +3,7 @@
 **Regla:** todo dato se **muestra** con `shared/ui/format` y se **carga** con `shared/ui/fields`. Solo `shared/format` formatea. Así una fecha o un monto se ven igual en todas las pantallas y en todas las culturas.
 
 ## Cómo se hace
-- **Origen de las opciones y patrones:** `shared/referenceData` lee los cinco catálogos habilitados y traducidos de `GET /api/reference-data`. `cultureProfiles.ts` adapta los patrones de `Cultures`; moneda y decimales vienen de `Currencies`, país de `Countries`, zona de `TimeZones` y tipo fiscal de `TaxIdTypes`. En E1 el back los lee de JSON; en E2, de tablas. [Diseño canónico](../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md).
+- **Origen de las opciones y patrones:** `shared/referenceData` lee los cinco catálogos habilitados y traducidos de `GET /api/reference-data`. `cultureProfiles.ts` adapta los patrones de `Cultures`; código y decimales (`MinorUnits`) vienen de `Currencies`, y el símbolo visible por cultura de `CurrencyTranslations.DisplaySymbol`. País, zona y tipo fiscal vienen de `Countries`, `TimeZones` y `TaxIdTypes`. En E1 el back los lee de JSON; en E2, de tablas. [Diseño canónico](../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md).
 - **En una tabla:** la columna declara el tipo y `DataTable` resuelve el formato, la alineación (números a la derecha, `tabular-nums`), el vacío (`—`) y el tooltip:
   ```tsx
   { id: "createdAtUtc", header: t("createdAt"), type: "date", value: (r) => r.createdAtUtc, sortable: true }
