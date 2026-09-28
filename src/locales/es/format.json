@@ -1,0 +1,16 @@
+{
+  "relative": {
+    "justNow": "hace un momento",
+    "minutesAgo_one": "hace {{count}} minuto",
+    "minutesAgo_other": "hace {{count}} minutos",
+    "hoursAgo_one": "hace {{count}} hora",
+    "hoursAgo_other": "hace {{count}} horas",
+    "daysAgo_one": "hace {{count}} día",
+    "daysAgo_other": "hace {{count}} días"
+  },
+  "compact": { "thousand": " mil", "million": " M", "billion": " mil M" },
+  "fileSize": { "B": " B", "KB": " KB", "MB": " MB", "GB": " GB", "TB": " TB" },
+  "duration": { "hours": "{{count}} h", "minutes": "{{count}} min", "seconds": "{{count}} s" },
+  "boolean": { "true": "Sí", "false": "No" },
+  "empty": "—"
+}

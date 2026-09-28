@@ -1,0 +1,16 @@
+{
+  "relative": {
+    "justNow": "just now",
+    "minutesAgo_one": "{{count}} minute ago",
+    "minutesAgo_other": "{{count}} minutes ago",
+    "hoursAgo_one": "{{count}} hour ago",
+    "hoursAgo_other": "{{count}} hours ago",
+    "daysAgo_one": "{{count}} day ago",
+    "daysAgo_other": "{{count}} days ago"
+  },
+  "compact": { "thousand": "K", "million": "M", "billion": "B" },
+  "fileSize": { "B": " B", "KB": " KB", "MB": " MB", "GB": " GB", "TB": " TB" },
+  "duration": { "hours": "{{count}} h", "minutes": "{{count}} min", "seconds": "{{count}} s" },
+  "boolean": { "true": "Yes", "false": "No" },
+  "empty": "—"
+}
