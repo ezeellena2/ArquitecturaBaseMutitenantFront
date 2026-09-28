@@ -4,6 +4,7 @@
 
 ## Cómo se hace
 - **Origen de las opciones y patrones:** `shared/referenceData` lee los cinco catálogos habilitados y traducidos de `GET /api/reference-data`. `cultureProfiles.ts` adapta los patrones de `Cultures`; código y decimales (`MinorUnits`) vienen de `Currencies`, y el símbolo visible por cultura de `CurrencyTranslations.DisplaySymbol`. País, zona y tipo fiscal vienen de `Countries`, `TimeZones` y `TaxIdTypes`. En E1 el back los lee de JSON; en E2, de tablas. [Diseño canónico](../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md).
+- **Moneda:** al aplicar `CurrencyPattern`, insertar el espacio monetario de CLDR si un `DisplaySymbol` alfabético quedaría contiguo al número; símbolos gráficos como `$` respetan el patrón. Los casos compartidos fijan el resultado exacto en ambas culturas.
 - **En una tabla:** la columna declara el tipo y `DataTable` resuelve el formato, la alineación (números a la derecha, `tabular-nums`), el vacío (`—`) y el tooltip:
   ```tsx
   { id: "createdAtUtc", header: t("createdAt"), type: "date", value: (r) => r.createdAtUtc, sortable: true }
