@@ -13,7 +13,21 @@ const apiTarget =
 // secure: false acepta el certificado de desarrollo.
 const backend = { target: apiTarget, changeOrigin: false, secure: false, ws: true };
 
-export default defineConfig({
+export function backendProxy(mode: string) {
+  return {
+    "/api": backend,
+    "/account": backend,
+    "/connect": backend,
+    "/signin-google": backend,
+    "/.well-known": backend,
+    "/webhooks": backend,
+    "/health": backend,
+    "/alive": backend,
+    ...(mode === "development" ? { "/swagger": backend, "/openapi": backend } : {}),
+  };
+}
+
+export default defineConfig(({ mode }) => ({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: { "@": path.resolve(import.meta.dirname, "./src") },
@@ -22,16 +36,7 @@ export default defineConfig({
     port: Number(process.env.PORT ?? 5174),
     strictPort: true,
     allowedHosts: [".localtest.me"],
-    proxy: {
-      "/api": backend,
-      "/account": backend,
-      "/connect": backend,
-      "/signin-google": backend,
-      "/.well-known": backend,
-      "/webhooks": backend,
-      "/health": backend,
-      "/alive": backend,
-    },
+    proxy: backendProxy(mode),
   },
   test: {
     environment: "jsdom",
@@ -42,4 +47,4 @@ export default defineConfig({
     // propios tests. Sin esta exclusión, "npm run test" corre también los de otra sesión y falla por eso.
     exclude: [...configDefaults.exclude, ".claude/**"],
   },
-});
+}));

@@ -21,6 +21,9 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Verificar contratos generados
+        run: npm run contracts:check
+
       - name: Compilar
         run: npm run build
 
