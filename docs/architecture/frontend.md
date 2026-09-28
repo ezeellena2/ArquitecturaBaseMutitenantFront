@@ -5,7 +5,7 @@
 - el **sitio de la plataforma** y la **página pública de cada empresa en su subdominio**;
 - el **backoffice** de la plataforma.
 
-Suma también las empresas, los tipos generados desde OpenAPI y **una sola forma de mostrar los datos** ([`formatos.md`](formatos.md)). El backend está en `../ArquitecturaBaseMutitenant` (`docs/architecture/backend.md`); el árbol completo, archivo por archivo, está en [`arbol.md`](arbol.md). El diseño de cada pantalla está en el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK), y la sección «UI y pantallas» resume sus reglas.
+Suma también las empresas, los tipos generados desde OpenAPI y **una sola forma de mostrar los datos** ([`formatos.md`](formatos.md)). El backend está en `../ArquitecturaBaseMutitenant` (`docs/architecture/backend.md`); el árbol completo, archivo por archivo, está en [`arbol.md`](arbol.md). El diseño de cada pantalla está en el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK); los colores, la forma y el menú lateral están en el [tema](tema.md), y la sección «UI y pantallas» resume sus reglas.
 
 ## 1. Stack
 
@@ -34,11 +34,11 @@ src/
 ├─ tenancy/      useAccess · useSwitchAccess (persona ↔ empresa, y entre organizaciones) · AccessMenu · useCompanyParam · usePublicSite (subdominio)
 ├─ layouts/      PersonalLayout · BusinessLayout · PlatformLayout (mismo armazón: Sidebar + Topbar) · SiteLayout (sitio y páginas públicas) · AuthLayout · navigation/ · components/
 ├─ areas/        una feature no importa de otra, ni un área de otra; lo común sube a shared/
-│  ├─ public/    auth (ingresar como persona o como empresa, registro de personas, «Registrá tu empresa», invitación) · site (portada y directorio de la plataforma) · errors
+│  ├─ public/    auth (ingresar como persona o como empresa, registro de personas, «Registrá tu empresa», invitación) · site (portada y directorio de la plataforma) · legal (términos, privacidad y la aceptación bloqueante de una versión nueva) · errors
 │  ├─ storefront/ página pública de una empresa, en su subdominio + lo que publiquen los módulos del producto
 │  ├─ personal/  (acceso B2C) home · account (la cuenta, vale en los dos accesos) · + módulos B2C del producto
 │  ├─ business/  (acceso B2B) home · roles (REFERENCIA) · users · companies · settings · audit · public-page (mi página pública) · + módulos B2B del producto
-│  └─ platform/  home · tenants · accounts · operators · audit · settings · whatsapp
+│  └─ platform/  tenants (/plataforma) · accounts (personas y operadores) · recoveries · legal · audit · settings · whatsapp
 ├─ locales/      {es,en}/<namespace>.json + parity.test.ts
 ├─ shared/
 │  ├─ api/       httpClient · ApiError · queryClient · formErrors · generated/ (no se edita)
@@ -61,6 +61,7 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 | `/login`, `/registro`, `/recuperar` | ingresar **como persona**, crear una cuenta y «Recuperar mi cuenta» | público |
 | `/login/empresa`, `/registro/empresa` | ingresar **como empresa** y **«Registrá tu empresa»** | público |
 | `/invitacion`, `/auth/callback`, `/login/enlace` | aceptar una invitación, volver del servidor de ingreso, enlace del bot | público |
+| `/terminos`, `/privacidad` | «Términos y condiciones» y «Política de privacidad» vigentes (la versión publicada, en el idioma de la persona o, sin sesión, en el de la pantalla) | público |
 | `/` (con sesión), `/cuenta` + las rutas B2C del producto (`/<módulo>`) | **acceso B2C**: el lado Personal | `access=consumer` (`/cuenta`, también `business`) |
 | `/org`, `/org/usuarios(/:id)`, `/org/roles(/nuevo, /:id)`, `/org/empresas(/:companyId)`, `/org/configuracion`, `/org/auditoria`, `/org/pagina` + las rutas B2B del producto | **acceso B2B**: la organización | `access=business` + el permiso de cada pantalla |
 | `/plataforma/...` | backoffice | `access=platform` + `platform.*` |
@@ -75,16 +76,15 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 - **Árbol de rutas por host:** `routes.tsx` mira el host. Con un subdominio de empresa arma las rutas de `storefront`; con el dominio principal, las demás. El subdominio **nunca** da acceso a la administración de la empresa: esa vive en `plataforma.com/org`.
 - **Área según el acceso:** `useAccess` lee `access` de `/api/me`. Después de ingresar se va al inicio del acceso: persona → `/`, empresa → `/org`, operador → `/plataforma`. `AccessRoute` manda al inicio correcto si se entra a una ruta de otro acceso (por ejemplo, un enlace viejo).
 - **Ingresar desde un subdominio:** "Ingresá para continuar" hace el ingreso **como persona** y vuelve a la misma página del subdominio.
-- **Inicio de cada área** (`/` con sesión de persona, `/org`): su contenido depende de cada producto. Hasta que el producto lo defina, queda vacío, con la barra y el menú lateral. Sin tableros ni resúmenes de relleno.
+- **Inicio de cada área** (`/` con sesión de persona, `/org`): su contenido depende de cada producto. Hasta que el producto lo defina, queda vacío, con la barra y el menú lateral (en el inicio personal, solo el aviso de método propio cuando corresponde). Sin tableros ni resúmenes de relleno.
 - **Menú lateral:** el mismo armazón en las tres áreas; cambian los enlaces.
   - Persona: Inicio y Mi cuenta, más los módulos B2C del producto. **No muestra organizaciones.**
   - Empresa: arriba, Inicio y los módulos B2B del producto. **Abajo de todo, «Administración»**, que abre un **segundo panel al lado del menú** (`AdminPanel`, se cierra con «‹» o tocando de nuevo «Administración»; abierto en cualquier ruta de administración) con el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Configuración, Página pública y Auditoría. En el teléfono no hay segundo panel: «Administración» se despliega dentro del menú.
-  - Plataforma: Organizaciones, Cuentas, Auditoría y Configuración.
+  - Plataforma: Organizaciones (es el inicio, `/plataforma`), Cuentas (personas y operadores), Recuperaciones, Auditoría, Documentos legales y Configuración.
   - Cada enlace se muestra solo con su permiso (y su módulo, si es de un módulo).
 - **Menú de la cuenta** (`AccessMenu`, arriba a la derecha): el botón muestra el nombre de la persona y dónde está ("Personal" o el nombre de la organización). El menú tiene:
   - la cabecera, con el nombre y el correo;
-  - **en el acceso B2C:** «Ir a mi empresa», solo si es miembro de alguna organización, con un submenú si son varias;
-  - **en el acceso B2B:** las organizaciones de las que es miembro (con su rol y un ✓ en la activa; las suspendidas, deshabilitadas), e «Ir a Personal»;
+  - la lista «Perfiles», igual en los dos accesos: Personal («Tu perfil personal») y cada organización de la que es miembro, con su rol y su estado, y un ✓ en la activa (las suspendidas, deshabilitadas). Elegir una cambia de acceso o de organización;
   - «Mi cuenta» y «Salir».
 
   **Al cambiar de acceso o de organización:**
@@ -92,11 +92,13 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
   2. `signinSilent({ extraQueryParams: { access, tenant } })`;
   3. `queryClient.clear()`, **obligatorio**;
   4. el inicio del acceso nuevo.
-- **La cuenta** (`/cuenta`: nombre, idioma y región, zona y **métodos de ingreso**, con el aviso de agregar uno personal) es de la identidad y vale en los dos accesos. Desde el acceso B2B se llega por «Mi cuenta» del menú, y se ve dentro del `BusinessLayout`.
+- **La cuenta** (`/cuenta`: nombre, idioma y región, zona y **métodos de ingreso**, con el aviso de método propio) es de la identidad y vale en los dos accesos. Desde el acceso B2B se llega por «Mi cuenta» del menú, y se ve dentro del `BusinessLayout`.
+- **Aviso de método propio** (`multitenancy.md` §3.1 del back): «Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa». Se muestra mientras la cuenta no tenga un método de ingreso propio verificado, es decir, cuando todos sus métodos los administra una organización o solo tiene el correo con el que llegó por invitación. Aparece al aceptar una invitación, en `/cuenta` y en el inicio personal. Se va solo cuando se verifica un método propio.
+- **Métodos de ingreso** (en `/cuenta`; diseño en `multitenancy.md` §3.1 del back): sumar un correo o teléfono pide verificarlo con un código que llega a ese dato. Quitar un método, cambiarlo o elegir el principal pide un código en **otro** método ya verificado (`ReauthTicket`, válido 5 minutos). El diálogo muestra el destino enmascarado. Siempre tiene que quedar al menos un método propio o activo, y todo cambio se avisa en todos los métodos.
 - **Baja de la cuenta** (en `/cuenta`, sección Privacidad; diseño en `multitenancy.md` §3.2 del back): diálogo con motivo y código a su método principal, la sugerencia de exportar antes, los errores de la política (único Dueño, operador, bloqueos de módulos) y, al confirmar, sesión cerrada con "Tu cuenta se elimina el dd/mm/aaaa". En la organización, un usuario con la baja pedida se ve con el estado "Baja pedida"; en la plataforma, la cuenta también.
-- **Una persona nunca ve "crear empresa":** «Registrá tu empresa» (`/registro/empresa`) está solo en la portada y en la puerta de empresas. Ni el lado Personal ni el menú de la cuenta lo ofrecen.
+- **Una persona nunca ve "crear empresa":** «Registrá tu empresa» (`/registro/empresa`) está en la portada, en la puerta de empresas y en «Crear cuenta» (`/registro`); nunca en el lado Personal ni en el menú de la cuenta.
 - **Empresas del grupo:** el `companyId` sale de la URL (`useCompanyParam`) y `CanInCompany` evalúa `permissions.companies[companyId]`.
-- **Organización suspendida:** el `code` `Tenancy.Tenant.Suspended` muestra `OrganizationSuspendedPage`, con el menú para cambiar de organización o ir al espacio personal.
+- **Organización suspendida, en espera de aprobación o cerrada:** `OrganizationSuspendedPage`, con los tres estados del tablero Perfil-Suspendido. El 403 `Tenancy.Tenant.Suspended` muestra «Suspendida», `Tenancy.Tenant.PendingApproval` muestra «Espera aprobación» y `Tenancy.Tenant.Closed` muestra «Cerrada». La página lleva el menú «Elegí otro perfil», con Personal y las otras organizaciones (en la espera no aparece la organización que se está revisando), y «Salir».
 
 ## 4. Convenciones
 
@@ -125,7 +127,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - `ApiError` expone `code`, `detail`, `traceId`, `errors` y `retryAfterSeconds`. **Se decide por `code`, nunca por el texto.**
 - Global (`queryClient`): un error de red da un toast con "Reintentar"; un 5xx, un toast con el `traceId`; el resto muestra el `detail`, que ya viene traducido. Se saltean los 401/403 y las queries con `meta.silent`.
 - Por feature, `errors.ts` hace `switch (error.code)`. `applyApiErrorToForm` lleva los `errors` a los campos; lo que no encaja va en `<FormError>`.
-- Un 403 renderiza `ForbiddenPage`, y un 404 en una ficha, `NotFoundPage`. Un id de otra organización o de otro acceso también da 404.
+- Un 403 renderiza `ForbiddenPage`, salvo los códigos que resuelve el `AppShell`: `Legal.AcceptanceRequired` muestra la pantalla bloqueante de términos nuevos (`AcceptTermsPage`), y `Tenancy.Tenant.Suspended`, `Tenancy.Tenant.PendingApproval` y `Tenancy.Tenant.Closed` muestran `OrganizationSuspendedPage` (§3). Un 404 en una ficha muestra `NotFoundPage`. Un id de otra organización o de otro acceso también da 404.
 - **Casos genéricos** (como en cualquier aplicación; los resuelve `shared/api` y el `AppShell`, nunca cada pantalla):
   - **Sin conexión o error de red:** toast "No pudimos conectarnos. Revisá tu conexión." con «Reintentar». Si el navegador está sin conexión (`navigator.onLine`), además una franja fija arriba, "Sin conexión", que se va sola al volver.
   - **Error 5xx:** toast "Algo salió mal. Probá de nuevo en un rato." con el código de seguimiento (`traceId`) para copiar.
@@ -135,12 +137,13 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
   - **Salir sin guardar:** con "Cambios sin guardar", navegar a otra ruta o cerrar la pestaña pregunta "¿Salir sin guardar?" (`useBlocker` y `beforeunload`).
   - **Versión nueva del front:** si falla la carga de un chunk después de un despliegue, franja "Hay una versión nueva" con «Actualizar», que recarga la página. No se recarga solo.
   - **Módulo apagado:** su ruta muestra `NotFoundPage`, igual que un 404.
+  - **Términos nuevos:** si una respuesta trae 403 `Legal.AcceptanceRequired`, se muestra `AcceptTermsPage`, que bloquea el uso hasta aceptar. Lee `GET /api/legal/current` y muestra lo que cambió (los dos documentos, solo los términos o solo la privacidad). Se acepta con `POST /api/legal/accept`. Hasta entonces, el back responde ese 403 en toda `/api`, salvo `GET /api/me`, `GET /api/legal/*` y `POST /api/legal/accept` (back: `docs/rules/datos-personales.md`).
 
 ### Auth
 - `authConfig`: `client_id: "web"`, `response_type: "code"`, `scope: "openid profile email offline_access api"`, `userStore: InMemoryWebStorage`, `automaticSilentRenew: false`, `silent_redirect_uri: /silent-renew.html`.
 - `SessionRecovery` hace `signinSilent()` después de un F5. El logout es `signoutRedirect()` con `beginSignOut`.
 - Los permisos del front son **solo experiencia de uso**; el backend decide.
-- **Dos puertas:** `/login` (como persona) y `/login/empresa` (como empresa). Son la misma pantalla con otro título y otro destino; el servidor emite el token con `access` según la puerta. No se vuelve "al último lado": se entra al lado de la puerta elegida. Desde cada puerta, un enlace chico abajo ofrece la otra. Un operador entra por `/plataforma`.
+- **Dos puertas:** `/login` (como persona) y `/login/empresa` (como empresa). Son la misma pantalla con otro título y otro destino; el servidor emite el token con `access` según la puerta. No se vuelve "al último lado": se entra al lado de la puerta elegida. Desde cada puerta, un enlace chico abajo ofrece la otra. El operador de la plataforma no tiene puerta propia: ingresa por la misma pantalla, por cualquiera de las dos puertas. Después del código pasa por la app de autenticación, el servidor le emite `access=platform` sin importar la puerta, y entra a `/plataforma`.
 - **Ingreso** (`/login`, `/login/empresa`):
   - arriba, «Ingresar con Google»; debajo, un `SegmentedControl` Correo | WhatsApp y el campo;
   - el código va en `OtpInput`, con 6 casillas. Avanza sola, acepta pegar y retrocede con Backspace;
@@ -151,13 +154,20 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
   - por la puerta de empresas, una cuenta sin organizaciones ve «Tu cuenta no está en ninguna empresa todavía», con «Registrá tu empresa» e «Ingresá como persona»;
   - abajo, «¿No podés entrar? Recuperá tu cuenta» (`/recuperar`): el método perdido, uno nuevo verificado con código, y el pedido queda para que lo revise un operador.
 - **Operadores:** después del código pasan por la app de autenticación. La primera vez ven el QR y la clave, activan la app y guardan 8 códigos de recuperación. Después pueden entrar con un código de recuperación.
-- **«Registrá tu empresa»** (`/registro/empresa`): datos de la empresa (nombre, dirección del subdominio con su disponibilidad, CUIT opcional) y de quien la registra. Si ya tiene cuenta, ingresa con ella. Según `BusinessSignup`, queda activa o en «Espera aprobación».
-- **Registro de personas** (`/registro`): pide correo o WhatsApp y verifica el código. Si el correo ya tiene cuenta, la pantalla es la misma y el correo que llega trae un código para entrar. Con `ConsumerSignup` cerrado se ve «Por ahora no se pueden crear cuentas».
+- **«Registrá tu empresa»** (`/registro/empresa`):
+  - la casilla «Acepto los Términos y la Política de privacidad» (también bloquea «Seguir con Google»); «Seguir con Google», o Correo | WhatsApp y el código. Con una sesión ya iniciada se empieza en el paso siguiente;
+  - «Tu organización» (quedás como Dueño): nombre de la organización, primera empresa y CUIT de la empresa (opcional, 11 números). La dirección del subdominio no se pide acá: se elige en «Página pública» (`/org/pagina`);
+  - según `BusinessSignup`: abierto, «{Organización} está lista» con «Entrar a …»; con aprobación, «Recibimos el pedido» y la organización queda en «Espera aprobación»; cerrado, «Por ahora no se pueden registrar empresas»;
+  - si la persona ya llegó al límite de organizaciones propias (`MaxOwnedOrganizations` de `PlatformSettings`): «Llegaste al límite de N organizaciones propias.»;
+  - abajo, «¿Tu empresa ya está registrada? Ingresá como empresa».
+- **Registro de personas** (`/registro`): pide correo o WhatsApp y verifica el código. Lleva la casilla de términos y privacidad, obligatoria también para registrarse con Google (sin ella, el back responde 400 `Validation.Failed` con el error en el campo `acceptedTerms`). Si el correo ya tiene cuenta, la pantalla es la misma y el correo que llega trae un código para entrar. Con `ConsumerSignup` cerrado se ve «Por ahora no se pueden crear cuentas».
 - **Invitación** (`/invitacion`): muestra quién invita, la empresa, los roles y el vencimiento. Según el caso:
   - sin cuenta: «Aceptar invitación» crea la cuenta y entra a la organización (acceso B2B);
   - con cuenta y sin sesión: «Ingresá para aceptar»;
+  - con la sesión de la misma persona (la cuenta ya tiene el correo invitado): «Aceptar invitación» la suma a la organización sin volver a ingresar;
   - con la sesión de otra persona: avisa y ofrece salir y seguir con la cuenta invitada;
-  - vencida, que ya no sirve u organización suspendida: una pantalla de error propia.
+  - vencida, que ya no sirve u organización suspendida: una pantalla de error propia;
+  - aceptada, si la cuenta queda solo con el correo de la empresa (sin otro método propio): «Te sumaste a …» con el aviso de método propio, «Agregar ahora» y «Más tarde» (`PersonalMethodBanner`).
 - **Estados de sesión**, a pantalla completa: «Iniciando sesión…», «Cambiando a …», «Cerrando sesión…» y «No pudimos iniciar tu sesión».
 
 ### Idioma y cultura
@@ -170,7 +180,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - `useEffectiveTimeZone(companyId?)` devuelve la zona de la cuenta; si no hay, la de la empresa; si no, la de la organización (en B2B) o la del navegador guardada al registrarse (en B2C). Las fechas civiles no se convierten.
 
 ### UI y pantallas
-Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK) y estas reglas. De `visual-baseline.md` se mantienen los tokens, la marca azul, el menú lateral y las migas; **lo que sigue lo reemplaza**.
+Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK), el [tema](tema.md) (tokens y colores: verde petróleo como marca y marco arena en el menú lateral y la barra superior; forma de tarjetas, botones y tablas; el `AdminPanel`) y estas reglas. De `visual-baseline.md` se mantienen solo las migas; **lo que sigue lo reemplaza**.
 
 **Proceso y contenido**
 - **Toda pantalla nueva se dibuja primero** en el lienzo y se programa después de que el usuario la elige.
@@ -189,30 +199,30 @@ Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nC
 
 **Encabezado de página (`Page`)**
 - Es una **banda blanca de ancho completo**, pegada a la barra superior y con borde abajo. Lleva:
-  - a la izquierda, el ícono de la sección en un cuadrado azul claro; en una ficha o un editor, el botón «‹» para volver (`backTo`);
+  - a la izquierda, el ícono de la sección en un cuadrado con el fondo tenue de la marca (`--marca-t`); en una ficha o un editor, el botón «‹» para volver (`backTo`);
   - el título de 18 px/700, con la pastilla de estado o el aviso «Cambios sin guardar» a su lado;
   - debajo del título, una línea de resumen de 13 px («11 usuarios · 7 activos · 3 invitaciones»);
   - a la derecha, **las acciones de la página**.
 - Botones de la página:
-  - la acción principal, azul, siempre al final a la derecha;
+  - la acción principal, con el color de la marca (`--marca`), siempre al final a la derecha;
   - se ven hasta tres botones; si hay más, los que sobran van en un botón ⋮ («Más acciones») a la izquierda de la principal, con las destructivas al final y en rojo;
   - en una ficha con pestañas, la acción de la pestaña (por ejemplo «Agregar miembro») aparece solo con esa pestaña;
   - la barra de filtros no lleva botones.
-- Debajo de la banda va el contenido, sobre el fondo gris: la barra de filtros y la tabla, cada una en su tarjeta. **Nunca todo junto en una sola tarjeta.**
+- Debajo de la banda va el contenido, sobre el fondo de la pantalla (`--fondo`): la barra de filtros y la tabla, cada una en su tarjeta. **Nunca todo junto en una sola tarjeta.**
 - **Sin bandas grises ni rótulos en mayúsculas.**
 
 **Listados**
-- `FilterBar` (tarjeta con radio de 12) + `DataTable` + `Pagination`, con el estado en la URL.
+- `FilterBar` (tarjeta con radio de 16 y la sombra suave del [tema](tema.md)) + `DataTable` + `Pagination`, con el estado en la URL.
   - La barra lleva el buscador (32 px) y filtros en pastilla. Cada filtro abre un menú con el conteo de cada opción; con un valor elegido, la pastilla queda marcada. «Limpiar» aparece solo si hay filtros.
 - `DataTable`:
   - **un dato por columna**: nombre, correo, rol, empresa, estado y vencimiento van en columnas propias; no se apilan dos datos en una celda;
-  - encabezado gris (12 px/600, sin mayúsculas);
+  - encabezado sobre `--s2` (12 px/600, sin mayúsculas) y filas alternadas;
   - filas de 42 px en una sola línea;
   - el estado en `StatusBadge` (pastilla con punto);
   - los roles de la organización en pastillas;
   - los números a la derecha;
   - el vacío es «—» en gris.
-- Las acciones de cada fila van en un **menú ⋮** (`RowActions`): primero las comunes y, separadas al final, las destructivas en rojo. En las últimas filas el menú se abre hacia arriba. Las opciones dependen del estado: por ejemplo, una invitación ofrece «Reenviar» y «Revocar».
+- Las acciones de cada fila van en un **menú ⋮** (`RowActions`): primero las comunes y, separadas al final, las destructivas en rojo. En las últimas filas el menú se abre hacia arriba. Las opciones dependen del estado: por ejemplo, una invitación ofrece «Reenviar invitación» y «Revocar invitación»; un usuario activo, «Deshabilitar», y uno deshabilitado, «Habilitar» (nunca «Activar»).
 - La auditoría usa «Cargar más» (`LoadMore`). La primera columna es «Fecha y hora», en una línea, y el detalle se abre en un diálogo de solo lectura.
 
 **Fichas y formularios**
@@ -231,7 +241,7 @@ Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nC
   - lo que se repite, una fila de desplegables con «Sumar otra», como la empresa y sus roles.
 - Las opciones del `Select` y del `MultiSelect` tienen el nombre y, si hace falta, una descripción debajo. El `MultiSelect` suma una casilla por opción. «Todos» es un check junto al rótulo, nunca una opción más.
 - Campos de 36 px con radio de 8 y rótulo de 12 px/600 encima. Los obligatorios llevan un asterisco rojo.
-- Botones de 34 px (40 en las pantallas públicas). El principal es azul; el secundario, blanco con borde; el destructivo, rojo.
+- Botones de 34 px (40 en las pantallas públicas). El principal lleva el color de la marca (`--marca`, ver [tema](tema.md)); el secundario, blanco con borde; el destructivo, rojo.
 
 **Diálogos y avisos**
 - Diálogos de 560 px (420 para confirmar), con fondo desenfocado y título de 16 px/600. Debajo del título puede ir el nombre de lo que se edita. Los campos van en dos columnas y la botonera, a la derecha.
@@ -241,7 +251,7 @@ Rigen el [lienzo del sistema visual](https://claude.ai/artifact/WzoVTM574QGka8nC
 **Pantallas públicas (`AuthLayout`)**
 - La pantalla va en dos mitades:
   - a la izquierda, el formulario (380 px), con la marca arriba y, abajo, el idioma y los enlaces legales;
-  - a la derecha, un panel azul de la marca.
+  - a la derecha, un panel con el color de la marca.
 - Títulos de 24 px, campos y botones de 40 px, código en casillas de 52 px. Los errores del servidor van en un mensaje de color arriba del botón.
 
 **Teléfono** (hasta 767 px)

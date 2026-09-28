@@ -13,11 +13,10 @@ ArquitecturaBaseMutitenantFront/
 │   ├── architecture/
 │   │   ├── frontend.md                              arquitectura canónica
 │   │   ├── formatos.md                              catálogo de formatos (es-AR / en-US)
+│   │   ├── tema.md                                  tema visual aprobado (tokens, marco arena, panel de Administración)
 │   │   ├── arnes.md                                 fichas, punteros por carpeta y verificación
 │   │   └── arbol.md                                 este archivo
-│   ├── rules/                                       fichas del arnés: README + 10 temas
-│   ├── design/
-│   │   └── visual-baseline.md                       [E0] contrato visual (heredado + reglas de pantallas)
+│   ├── rules/                                       fichas del arnés: README + 13 temas
 │   ├── plans/                                       planes detallados de las etapas del front
 │   └── specs/
 ├── public/
@@ -40,7 +39,7 @@ ArquitecturaBaseMutitenantFront/
 ├── tsconfig.json
 ├── tsconfig.app.json                                alias @/* → src/*
 ├── tsconfig.node.json
-└── vite.config.ts                                   proxy /api /account /connect /.well-known /webhooks → Api (Aspire); puerto 5174
+└── vite.config.ts                                   proxy /api /account /connect /.well-known /webhooks → Api (Aspire); puerto 5174; la entrada silent-renew.html se suma en [E3]
 ```
 
 ## src/
@@ -50,7 +49,8 @@ src/
 ├── main.tsx                                         [E0]
 ├── App.tsx                                          [E0] RouterProvider
 ├── App.test.tsx
-├── index.css                                        [E0] tokens de Tailwind 4 (marca, superficies, estados, radios)
+├── index.css                                        [E0] tokens de tema.md (marca, superficies, marco arena, filas, radios)
+├── theme-tokens.test.ts                             [E0] los tokens de tema.md existen en index.css; ningún color literal fuera de index.css
 ├── silent-renew.ts                                  [E3]
 ├── vite-env.d.ts
 │
@@ -58,7 +58,7 @@ src/
 │   ├── providers.tsx                                QueryClient + Auth + i18n + Toaster
 │   ├── router.tsx                                   createBrowserRouter
 │   ├── routes.tsx                                   árbol por host: dominio principal (public, personal, business, platform)
-│   │                                                o subdominio de empresa (storefront); lazy
+│   │                                                o subdominio de empresa (storefront); lazy; AppShell como raíz
 │   ├── routes.test.tsx                              cada ruta con su acceso, su permiso y su módulo
 │   └── routes-by-host.test.ts                       un subdominio no monta /org, /cuenta ni /plataforma
 │
@@ -79,91 +79,111 @@ src/
 │   ├── usePermissions.test.ts                       [E4]
 │   ├── Can.tsx                                      [E4]
 │   ├── CanInCompany.tsx                             [E6]
+│   ├── useFeature.ts                                [E5] P8 módulos del acceso activo (features de /api/me); apagado = 404
+│   ├── Feature.tsx                                  [E5] P8 muestra u oculta según el módulo
 │   └── useLanguagePreference.ts                     PUT /api/me con rollback
 │
 ├── tenancy/                                         [E3] accesos (B2C / B2B / plataforma)
 │   ├── useAccess.ts                                 acceso activo, organización activa, espacio personal, organizaciones
 │   ├── useSwitchAccess.ts                           signinSilent({ access, tenant }) → queryClient.clear() → inicio del acceso
 │   ├── useSwitchAccess.test.ts                      verifica el clear de la caché
-│   ├── AccessMenu.tsx                               «Ir a mi empresa» / organizaciones / «Ir a mi espacio personal»
-│   ├── AccessMenu.test.tsx                          en B2C nunca aparece «Registrar empresa»
+│   ├── AccessMenu.tsx                               menú de la cuenta entero: el botón (nombre y «Personal» o la organización; en el teléfono, el avatar); cabecera con nombre y correo; «Perfiles»: Personal y cada organización con su rol (✓ en el perfil activo; las suspendidas, deshabilitadas); «Mi cuenta»; «Salir»
+│   ├── AccessMenu.test.tsx                          en B2C nunca aparece «Registrá tu empresa»
 │   ├── accessHome.ts                                acceso → ruta de inicio (/, /org, /plataforma)
 │   ├── usePublicSite.ts                             [E7] slug y datos públicos del subdominio
 │   └── useCompanyParam.ts                           [E6] companyId de la URL
 │
 ├── layouts/
+│   ├── AppShell.tsx                                 [E1] raíz de los dos árboles de rutas (dominio principal y subdominio); envuelve a todos los layouts y resuelve los casos genéricos que no son de shared/api: franja "Sin conexión" y franja "Hay una versión nueva"; ante el 403 Legal.AcceptanceRequired muestra AcceptTermsPage, y ante Tenancy.Tenant.Suspended, PendingApproval o Closed, OrganizationSuspendedPage
+│   ├── AppShell.test.tsx                            [E1] casos del tablero Avisos: "Sin conexión" aparece sin red y se va sola al volver; si falla un chunk, "Hay una versión nueva" con «Actualizar», sin recargar sola
 │   ├── AuthLayout.tsx                               [E3]
 │   ├── PersonalLayout.tsx                           [E3] acceso B2C: Inicio, Mi cuenta + módulos B2C (sin organizaciones)
-│   ├── SiteLayout.tsx                               [E7] portada de la plataforma y página pública del subdominio
-│   ├── BusinessLayout.tsx                           [E3] sidebar + topbar con la organización
+│   ├── SiteLayout.tsx                               [E3] portada de la plataforma; en [E7], también el directorio y la página pública del subdominio
+│   ├── BusinessLayout.tsx                           [E3] sidebar + AdminPanel + topbar con la organización
 │   ├── PlatformLayout.tsx                           [E3]
 │   ├── navigation/
 │   │   ├── types.ts                                 grupos, ramas, links con permiso
 │   │   ├── personal.ts
-│   │   ├── business.ts                              "Gestión de usuarios" ▸ Usuarios, Roles y permisos
+│   │   ├── business.ts                              arriba Inicio + módulos B2B; abajo «Administración» (AdminPanel): «Gestión de usuarios» ▸ Usuarios, Roles y permisos · Empresas · Configuración · Página pública · Auditoría
 │   │   ├── platform.ts
 │   │   └── navigation.test.ts                       el permiso de cada link = el de su ruta
 │   └── components/
-│       ├── Sidebar.tsx                              colapsable, drawer en móvil
+│       ├── Sidebar.tsx                              colapsable, drawer en móvil; en el teléfono «Administración» se despliega adentro
 │       ├── Sidebar.test.tsx
-│       ├── Topbar.tsx
+│       ├── AdminPanel.tsx                           [E3] segundo panel de «Administración» (solo escritorio y solo B2B; 232 px, fondo --panel; tema.md): se abre en cualquier ruta de administración y se cierra con «‹» o tocando de nuevo «Administración»; vacío hasta [E6], que le suma sus enlaces de navigation/business.ts; en el teléfono no se monta
+│       ├── AdminPanel.test.tsx                      se abre en una ruta de administración; «‹» lo cierra; en el teléfono no se monta
+│       ├── Topbar.tsx                               migas + AccessMenu (menú de la cuenta); en el teléfono, ☰, la marca y el avatar
 │       ├── Breadcrumbs.tsx
 │       ├── Breadcrumbs.test.tsx
-│       ├── UserMenu.tsx                             cuenta, idioma, AccessMenu, salir
-│       └── UserMenu.test.tsx
+│       ├── OfflineBanner.tsx                        [E1] franja fija arriba "Sin conexión" (navigator.onLine + eventos online/offline), sobre shared/ui/Banner
+│       └── NewVersionBanner.tsx                     [E1] franja "Hay una versión nueva" · «Actualizar» recarga la página; nunca se recarga sola
 │
 ├── areas/
 │   ├── public/                                      dominio principal, sin sesión o con cualquier acceso
-│   │   ├── site/                                    [E7] portada de la plataforma + directorio de empresas publicadas
+│   │   ├── site/                                    [E3] portada de la plataforma (dominio principal, sin sesión)
+│   │   │   └── pages/
+│   │   │       ├── LandingPage.tsx                  / sin sesión: portada con «Para personas» y «Para empresas» (tablero Landing)
+│   │   │       └── DirectoryPage.tsx                [E7] directorio de empresas publicadas (tablero Directorio)
 │   │   ├── auth/                                    [E3]
 │   │   │   ├── api/
 │   │   │   │   ├── loginCode.ts
 │   │   │   │   ├── loginLink.ts
 │   │   │   │   ├── signup.ts                        registro de personas
 │   │   │   │   ├── businessSignup.ts                [E6] «Registrá tu empresa» + disponibilidad del slug
-│   │   │   │   └── invitations.ts
+│   │   │   │   ├── invitations.ts
+│   │   │   │   └── deletionCancel.ts                POST /api/auth/deletion/cancel con el cancelTicket
 │   │   │   ├── components/
 │   │   │   │   ├── EmailCodeForm.tsx
 │   │   │   │   ├── WhatsAppCodeForm.tsx             [E8]
-│   │   │   │   └── GoogleButton.tsx                 [E11]
+│   │   │   │   ├── GoogleButton.tsx                 [E3]
+│   │   │   │   └── PendingDeletionNotice.tsx        "Tu cuenta tiene la baja pedida · Se elimina el dd/mm/aaaa", con «Cancelar la baja y entrar» y «Salir»
 │   │   │   ├── lib/
 │   │   │   │   ├── returnUrl.ts
 │   │   │   │   └── loginCodeState.ts
-│   │   │   ├── errors.ts                            códigos Auth.* → texto o campo
+│   │   │   ├── errors.ts                            códigos Auth.* → texto o campo; Identity.Account.PendingDeletion pasa LoginPage al estado de baja pedida
 │   │   │   └── pages/
 │   │   │       ├── LoginPage.tsx                    /login (persona) y /login/empresa (empresa): misma pantalla, otra puerta
 │   │   │       ├── LoginCodePage.tsx
 │   │   │       ├── LoginLinkPage.tsx
 │   │   │       ├── SignupPage.tsx                   /registro: crear cuenta de persona
-│   │   │       ├── BusinessPortalPage.tsx           [E6] /empresas: portal Empresas
 │   │   │       ├── BusinessSignupPage.tsx           [E6] /registro/empresa: «Registrá tu empresa»
 │   │   │       ├── RecoverAccountPage.tsx           [E5] «Recuperar mi cuenta» (ADR 0033)
 │   │   │       ├── CallbackPage.tsx
 │   │   │       └── AcceptInvitationPage.tsx
+│   │   ├── legal/                                   [E3] P7
+│   │   │   ├── api/legal.ts                         GET /api/legal/current, POST /api/legal/accept
+│   │   │   └── pages/
+│   │   │       ├── LegalDocumentPage.tsx            /terminos y /privacidad: el documento vigente en el idioma de la persona
+│   │   │       └── AcceptTermsPage.tsx              pantalla bloqueante de términos nuevos (Legal.AcceptanceRequired)
 │   │   └── errors/                                  [E3]
 │   │       └── pages/
 │   │           ├── ForbiddenPage.tsx
 │   │           ├── NotFoundPage.tsx
-│   │           └── OrganizationSuspendedPage.tsx    con el menú para cambiar de organización o de acceso
+│   │           └── OrganizationSuspendedPage.tsx    [E6] suspendida, espera aprobación o cerrada; «Elegí otro perfil»
 │   │
 │   ├── storefront/                                  [E7] SUBDOMINIO de una empresa: su página pública
 │   │   ├── pages/PublicPage.tsx                     nombre, logo, descripción, contacto (+ lo que publiquen los módulos)
 │   │   └── <módulo público del producto>/           lo que una persona ve y pide; interactuar pide el acceso B2C
 │   │
 │   ├── personal/                                    ACCESO B2C (espacio personal)
-│   │   ├── home/                                    [E7]
-│   │   │   └── pages/PersonalHomePage.tsx           vacía hasta que el producto defina qué va
+│   │   ├── home/                                    [E3]
+│   │   │   └── pages/PersonalHomePage.tsx           / con acceso B2C (tablero Inicio-Personal); vacía hasta que el producto defina qué va; el aviso «Agregá un correo personal…» (ADR 0033) llega en la 3b; en [E7] queda lista para sumar los módulos B2C
 │   │   ├── account/                                 [E3] la cuenta: vale en los dos accesos
-│   │   │   ├── api/account.ts
+│   │   │   ├── api/
+│   │   │   │   ├── account.ts
+│   │   │   │   ├── deletion.ts                      POST /api/me/deletion: motivo + ReauthTicket, con useIdempotentMutation
+│   │   │   │   └── dataExport.ts                    [E10] POST /api/me/data-export, con useIdempotentMutation
 │   │   │   ├── components/
 │   │   │   │   ├── AccountForm.tsx                  nombre, idioma y región, zona
 │   │   │   │   ├── LoginMethodsSection.tsx          correos, teléfonos y Google; principal; administrados por una empresa
 │   │   │   │   ├── AddLoginMethodDialog.tsx         sumar un correo o teléfono y verificarlo
-│   │   │   │   ├── PersonalMethodBanner.tsx         «Agregá un correo personal…» (ADR 0033)
 │   │   │   │   ├── VerifyDestinationDialog.tsx
-│   │   │   │   └── UnlinkWhatsAppDialog.tsx         [E8]
-│   │   │   ├── errors.ts
-│   │   │   └── pages/AccountPage.tsx                /cuenta
+│   │   │   │   ├── ConfirmLoginMethodChangeDialog.tsx quitar un método (o desvincular Google) o hacerlo principal, con código en otro método verificado (ReauthTicket de 5 min)
+│   │   │   │   ├── PrivacySection.tsx               Privacidad: «Dar de baja mi cuenta» y, en [E10], «Exportar mis datos»
+│   │   │   │   ├── DeleteAccountDialog.tsx          «Dar de baja mi cuenta»: motivo + código al método principal (ReauthTicket); errores de la política (único Dueño, operador, módulos); al confirmar, sesión cerrada y "Tu cuenta se elimina el dd/mm/aaaa"; la sugerencia de exportar antes se suma en [E10]
+│   │   │   │   └── ExportDataDialog.tsx             [E10] «Exportar mis datos»: te llega por correo
+│   │   │   ├── errors.ts                            también Legal.AccountDeletion.* (ReauthRequired, LastAdmin con sus organizaciones, PlatformOperator, AlreadyPending, Blocked)
+│   │   │   └── pages/AccountPage.tsx                /cuenta: datos, métodos de ingreso y Privacidad
 │   │   └── <módulo B2C del producto>/               misma forma que business/roles: api · columns · errors · components · pages
 │   │
 │   ├── business/                                    ACCESO B2B (la organización)
@@ -178,7 +198,7 @@ src/
 │   │   │   │   └── systemRoles.ts
 │   │   │   ├── components/
 │   │   │   │   ├── PermissionPicker.tsx             desplegable por área con "Todos"
-│   │   │   │   └── RoleScopeField.tsx               Organización / Empresa
+│   │   │   │   └── RoleScopeField.tsx               Toda la organización / Cada empresa / Solo en <empresa>
 │   │   │   └── pages/
 │   │   │       ├── RolesPage.tsx
 │   │   │       ├── RolesPage.test.tsx
@@ -214,9 +234,11 @@ src/
 │   │   │   └── pages/
 │   │   │       ├── CompaniesPage.tsx
 │   │   │       └── CompanyPage.tsx                  banda con los datos en una línea; pestañas debajo; la acción de la pestaña va en la banda
-│   │   ├── settings/                                [E6]
+│   │   ├── settings/                                [E6] /org/configuracion
 │   │   │   ├── api/settings.ts
-│   │   │   └── pages/SettingsPage.tsx
+│   │   │   ├── api/emailDomain.ts                   dominio de correo: agregar, comprobar el registro TXT y quitar
+│   │   │   ├── components/EmailDomainSection.tsx    «Dominio de correo»: sin dominio (campo + «Verificar»); pendiente (registro TXT con «Copiar», «Comprobar» y «Quitar»); verificado (correos administrados y «Quitar» con ConfirmDialog y motivo)
+│   │   │   └── pages/SettingsPage.tsx               nombre de la organización, idioma y región, zona y moneda predeterminados, y dominio de correo
 │   │   ├── audit/                                   [E6]
 │   │   │   ├── api/audit.ts
 │   │   │   ├── columns.tsx
@@ -228,30 +250,48 @@ src/
 │   │   └── <módulo B2B del producto>/               misma forma que roles/
 │   │
 │   └── platform/                                    ÁREA PLATAFORMA [E5]
-│       ├── home/
-│       │   └── pages/PlatformHomePage.tsx
 │       ├── tenants/
-│       │   ├── api/tenants.ts
-│       │   ├── columns.tsx
+│       │   ├── api/tenants.ts                       estado, dueños, módulos, dominio verificado y página pública de una organización
+│       │   ├── columns.tsx                          ⋮ por fila: Ver ficha, Aprobar, Rechazar, Reintentar el alta (solo en «Falló el alta», directo y sin motivo), Reactivar, Suspender, Cerrar
 │       │   ├── errors.ts
 │       │   ├── components/
 │       │   │   ├── CreateOrganizationDialog.tsx
-│       │   │   └── ChangeStatusDialog.tsx           aprobar, suspender, reactivar o cerrar, con motivo
+│       │   │   └── ChangeStatusDialog.tsx           aprobar, rechazar, suspender, reactivar o cerrar, con motivo
+│       │   ├── tabs/
+│       │   │   ├── OrganizationHistoryTab.tsx       Historial: fecha y hora, qué pasó, quién y motivo (eventos de seguridad)
+│       │   │   ├── OrganizationOwnersTab.tsx        Dueños
+│       │   │   ├── OrganizationModulesTab.tsx       Módulos (P8): Prender, Extender prueba (hasta una fecha) o Apagar, con motivo
+│       │   │   ├── OrganizationDomainTab.tsx        Dominio verificado: registro TXT, Verificar o Quitar, con motivo
+│       │   │   └── OrganizationPublicPageTab.tsx    Página pública: Ver página, Despublicar o Permitir publicar, con motivo
 │       │   └── pages/
-│       │       ├── OrganizationsPage.tsx
-│       │       └── OrganizationPage.tsx
-│       ├── accounts/
-│       │   ├── api/accounts.ts
-│       │   ├── columns.tsx
-│       │   ├── components/ChangeAccountStatusDialog.tsx
+│       │       ├── OrganizationsPage.tsx            /plataforma: el listado es el inicio del acceso platform (accessHome.ts)
+│       │       └── OrganizationPage.tsx             banda con el estado y sus acciones (y el motivo si está suspendida o cerrada); pestañas debajo
+│       ├── accounts/                                cuentas y operadores
+│       │   ├── api/
+│       │   │   ├── accounts.ts                      incluye POST /api/platform/accounts/{id}/deletion (ADR 0035)
+│       │   │   └── operators.ts                     invitar operador (PlatformOperatorsController)
+│       │   ├── columns.tsx                          una sola tabla; Perfiles muestra «Operador»
+│       │   ├── components/
+│       │   │   ├── ChangeAccountStatusDialog.tsx    suspender o reactivar, con motivo
+│       │   │   ├── RevokeSessionsDialog.tsx         «Cerrar sesiones», con motivo
+│       │   │   ├── DeleteAccountDialog.tsx          «Dar de baja», con motivo; bloqueada si es el único Dueño de una organización no cerrada; la plataforma no puede cancelarla
+│       │   │   └── AddOperatorDialog.tsx            «Invitar operador»: correo y permisos de plataforma
 │       │   └── pages/
-│       │       ├── AccountsPage.tsx
-│       │       └── AccountPage.tsx                  identidad, sus métodos de ingreso y sus organizaciones
-│       ├── operators/
-│       │   ├── api/operators.ts
+│       │       ├── AccountsPage.tsx                 filtro Tipo (Personas | Operadores) y «Invitar operador»
+│       │       └── AccountPage.tsx                  /plataforma/cuentas/:id: pestañas Métodos de ingreso, Organizaciones e Historial de seguridad; estados Baja pedida, Baja iniciada por la plataforma y Eliminada (sin acciones)
+│       ├── recoveries/                              /plataforma/recuperaciones: pedidos de «Recuperar mi cuenta» (ADR 0033)
+│       │   ├── api/recoveries.ts                    pedidos; aprobar o rechazar
 │       │   ├── columns.tsx
-│       │   ├── components/AddOperatorDialog.tsx
-│       │   └── pages/OperatorsPage.tsx
+│       │   ├── errors.ts
+│       │   ├── components/ReviewRecoveryDialog.tsx  revisar el pedido: aprobar o rechazar, con motivo
+│       │   └── pages/RecoveriesPage.tsx             pedidos y estado vacío «Sin pedidos»
+│       ├── legal/                                   /plataforma/legales: términos y privacidad (P7)
+│       │   ├── api/legalDocuments.ts                documentos y publicación de una versión nueva
+│       │   ├── columns.tsx                          documento, vigente desde, versión vigente, versiones
+│       │   ├── errors.ts
+│       │   └── pages/
+│       │       ├── LegalDocumentsPage.tsx
+│       │       └── PublishLegalVersionPage.tsx      hoja con «‹»: documento, vigente desde, texto en español y en inglés; «Cambios sin guardar» y confirmación antes de publicar (una versión publicada no se edita)
 │       ├── audit/
 │       │   ├── api/securityEvents.ts
 │       │   ├── columns.tsx
@@ -269,14 +309,18 @@ src/
 │   │   ├── errors.json                              [E1]
 │   │   ├── auth.json                                [E3]
 │   │   ├── account.json                             [E3]
+│   │   ├── site.json                                [E3] portada; el directorio se suma en [E7]
+│   │   ├── legal.json                               [E3] /terminos, /privacidad y la aceptación bloqueante
 │   │   ├── roles.json                               [E4]
 │   │   ├── platform.json                            [E5]
 │   │   ├── users.json                               [E6]
 │   │   ├── companies.json                           [E6]
 │   │   ├── settings.json                            [E6]
 │   │   ├── audit.json                               [E6]
+│   │   ├── publicPage.json                          [E6] /org/pagina
 │   │   ├── enums.json                               [E1] enums.<Enum>.<Valor>: estados y tipos traducidos
-│   │   └── personal.json                            [E7]
+│   │   ├── personal.json                            [E3]
+│   │   └── storefront.json                          [E7] página pública del subdominio
 │   ├── en/                                          mismos archivos
 │   └── parity.test.ts                               [E1]
 │
@@ -291,6 +335,8 @@ src/
 │   │   ├── formErrors.ts                            applyApiErrorToForm
 │   │   ├── formErrors.test.ts
 │   │   ├── pagedResult.ts
+│   │   ├── useIdempotentMutation.ts                 P6 Idempotency-Key al montar, repetida en los reintentos
+│   │   ├── useIdempotentMutation.test.ts
 │   │   └── generated/                               NO SE EDITA A MANO
 │   │       ├── schema.d.ts                          salida de openapi-typescript
 │   │       └── types.ts                             alias legibles: type RoleRow = Schemas["RoleRow"]
@@ -313,6 +359,10 @@ src/
 │   │   ├── useEffectiveTimeZone.ts                  cuenta → empresa → organización (en B2B)
 │   │   ├── timeZones.ts                             GET /api/time-zones
 │   │   └── TimeZoneSelect.tsx
+│   ├── account/                                     [E3] lo de la cuenta que usan varias áreas (ADR 0033)
+│   │   ├── PersonalMethodBanner.tsx                 «Agregá un correo personal o tu WhatsApp…», con el botón que lleva a /cuenta; lo usan AcceptInvitationPage, PersonalHomePage y AccountPage
+│   │   ├── needsPersonalMethod.ts                   true mientras la cuenta no tenga un método de ingreso propio verificado
+│   │   └── needsPersonalMethod.test.ts
 │   ├── hooks/                                       [E0] copiados de la base, cada uno con su test
 │   │   ├── usePagination.ts                         página, tamaño, orden y búsqueda en la URL; vuelve a la 1 al cambiar
 │   │   │                                            búsqueda, filtro, orden o tamaño; corrige una página fuera de rango
@@ -356,7 +406,9 @@ src/
 │       │   ├── NumberField.tsx
 │       │   ├── MoneyField.tsx                       importe + moneda (por defecto, la de la organización)
 │       │   ├── PercentField.tsx                     12,5 → 0.125
-│       │   └── PhoneField.tsx                       CountrySelect + número con AsYouType → { country, number }
+│       │   ├── PhoneField.tsx                       CountrySelect + número con AsYouType → { country, number }
+│       │   ├── EmailField.tsx                       P3 trim y minúsculas al escribir
+│       │   └── TaxIdField.tsx                       P5 tipo + número, validado con stdnum
 │       ├── badge.tsx                                shadcn (minúscula, `npx shadcn@4.21.0 add`)
 │       ├── button.tsx
 │       ├── checkbox.tsx
@@ -375,9 +427,14 @@ src/
 │       ├── Avatar.tsx                               propios (PascalCase)
 │       ├── Banner.tsx
 │       ├── CheckboxField.tsx
+│       ├── ConcurrencyBanner.tsx                    [E1] P1 "Otra persona cambió esto…" · «Ver lo nuevo» · «Seguir editando»
 │       ├── ConfirmDialog.tsx
 │       ├── DataTable.tsx                            filas de 42 px, un dato por columna, encabezado gris; cada columna declara su type y la tabla usa ui/format
-│       │                                            (alineación, vacío y tooltip); carga, vacío, error con reintento
+│       │                                            (alineación, vacío y tooltip); carga, vacío, error con reintento;
+│       │                                            [E1] P10: en el teléfono solo las columnas `mobile` (primary y status) y el ⋮, nunca tarjetas;
+│       │                                            en la tablet, sin las `priority: "low"`
+│       ├── DataTable.test.tsx                       [E1] P10 a 390 px renderiza solo las columnas primary y status, y el ⋮
+│       ├── columns-mobile.test.ts                   [E1] P10 toda definición de columnas tiene exactamente una mobile: "primary"
 │       ├── EmptyState.tsx
 │       ├── FilterBar.tsx                            buscador + filtros en pastilla con conteos + «Limpiar»
 │       ├── FormError.tsx
@@ -392,6 +449,7 @@ src/
 │       ├── RowActions.tsx                           menú ⋮ por fila; las destructivas al final, en rojo
 │       ├── SearchInput.tsx
 │       ├── SegmentedControl.tsx
+│       ├── Sheet.tsx                                [E1] P10 hoja desde abajo en el teléfono: la forma del Dialog (el de un formulario, casi a toda altura) y del menú de la cuenta; nunca filtros
 │       ├── Spinner.tsx
 │       ├── StatusDot.tsx
 │       ├── Surface.tsx
@@ -401,26 +459,26 @@ src/
 └── test/                                            [E0]
     ├── harness.test.ts                              punteros por carpeta, enlaces vivos, fichas completas
     ├── structure.test.ts                            sin imports entre features ni entre áreas
-    ├── setup.ts                                     MSW (onUnhandledRequest: error), namespaces precargados, stubs
+    ├── setup.ts                                     MSW (onUnhandledRequest: error), namespaces precargados, stubs, vitest-axe/extend-expect (P9)
     ├── mocks/
     │   ├── server.ts
     │   ├── handlers.ts                              /api/me y los métodos de ingreso por defecto
-    │   └── currentUsers.ts                          fixtures: personal, business (admin y sin permisos), operador
+    │   └── currentUsers.ts                          fixtures: persona sin organizaciones, persona con organizaciones, empresa admin, empresa sin permisos, operador
     └── utils/
-        └── renderWithProviders.tsx                  renderWithProviders + renderRouteWithProviders(path, { profile })
+        └── renderWithProviders.tsx                  renderWithProviders + renderRouteWithProviders(path, { as, host })
 ```
 
 ## Piezas de los estándares P1 a P10 (adoptados el 2026-09-27)
 
+Cada pieza está en su carpeta del árbol, con su etapa.
+
 ```
-src/shared/api/useIdempotentMutation.ts (+ test)          [E1] P6  clave al montar, repetida en reintentos
-src/shared/ui/fields/EmailField.tsx                       [E1] P3  trim y minúsculas al escribir
-src/shared/ui/fields/TaxIdField.tsx                       [E1] P5  tipo + número, stdnum
-src/shared/ui/ConcurrencyBanner.tsx                       [E1] P1  "Otra persona cambió esto…" · Ver lo nuevo · Seguir editando
-src/shared/ui/Sheet.tsx                                   [E1] P10 panel inferior de filtros en el teléfono
-src/shared/ui/DataTable.tsx                               [E1] P10 tabla ↔ tarjetas según `mobile` de cada columna
-src/auth/useFeature.ts · Feature.tsx                      [E5] P8  módulos del acceso activo
-src/areas/public/legal/pages/AcceptTermsPage.tsx          [E3] P7  pantalla bloqueante de términos nuevos
-src/test/setup.ts                                         [E0] P9  vitest-axe/extend-expect
-src/shared/ui/columns-mobile.test.ts                      [E1] P10 toda definición de columnas declara `mobile`
+P1   src/shared/ui/ConcurrencyBanner.tsx
+P3   src/shared/ui/fields/EmailField.tsx
+P5   src/shared/ui/fields/TaxIdField.tsx
+P6   src/shared/api/useIdempotentMutation.ts
+P7   src/areas/public/legal/ · src/areas/platform/legal/
+P8   src/auth/useFeature.ts · src/auth/Feature.tsx · src/areas/platform/tenants/tabs/OrganizationModulesTab.tsx
+P9   src/test/setup.ts
+P10  src/shared/ui/Sheet.tsx · src/shared/ui/DataTable.tsx · src/shared/ui/DataTable.test.tsx · src/shared/ui/columns-mobile.test.ts
 ```

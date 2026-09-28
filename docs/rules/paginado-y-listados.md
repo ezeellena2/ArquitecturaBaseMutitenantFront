@@ -1,6 +1,6 @@
 # Paginado y listados
 
-**Regla:** un listado es `FilterBar` + `DataTable` + `Pagination` dentro de una `Surface`. El estado (página, tamaño, orden, búsqueda y filtros) vive **en la URL**, y el backend pagina: **10 filas por defecto**, con opciones de 10, 20, 50 y 100.
+**Regla:** un listado es `FilterBar` (que ya es su propia tarjeta) y, debajo, `DataTable` + `Pagination` dentro de una `Surface` aparte; nunca todo en una sola tarjeta. El estado (página, tamaño, orden, búsqueda y filtros) vive **en la URL**, y el backend pagina: **10 filas por defecto**, con opciones de 10, 20, 50 y 100.
 
 ## Cómo se hace
 - `const p = usePagination({ defaultSort: "name" })` y `const filters = useFilters(["status", "roleId"])`.

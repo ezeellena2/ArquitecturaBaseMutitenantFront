@@ -44,7 +44,7 @@ Cada tipo de dato tiene **un** formateador y **un** componente. Los ejemplos cor
 | Cantidad | número | `kind="quantity"` | `12,5` | `12.5` | De 0 a 3 decimales, sin ceros de más |
 | Porcentaje | fracción (`0.125`) | `<PercentText>` | `12,5 %` | `12.5%` | Hasta 2 decimales. En es-AR lleva espacio antes del `%` (lo agrega el perfil) |
 | Moneda | `{amount, currency}` | `<MoneyText>` | `$ 1.234,50` · `US$ 1.234,50` | `ARS 1,234.50` · `$1,234.50` | Siempre con los decimales de la moneda. Si la moneda no es la de la cultura, se ve el código o el prefijo (US$) |
-| Moneda negativa | ídem | ídem | `-$ 1.234,50` | `-ARS 1,234.50` | Nunca paréntesis. En rojo solo en reportes, con el token `--color-danger` |
+| Moneda negativa | ídem | ídem | `-$ 1.234,50` | `-ARS 1,234.50` | Nunca paréntesis. En rojo solo en reportes, con el token `--peligro` |
 | Compacto | número | `kind="compact"` | `1,3 M` | `1.3M` | **Solo** en tarjetas de KPI, con tooltip del valor completo |
 | Tamaño de archivo | bytes | `<FileSizeText>` | `1,5 MB` | `1.5 MB` | |
 | Duración | segundos | `<DurationText>` | `2 h 15 min` | `2 h 15 min` | |
@@ -55,21 +55,22 @@ Cada tipo de dato tiene **un** formateador y **un** componente. Los ejemplos cor
 | Correo | texto normalizado (minúsculas) | texto; carga con `EmailField` | `juan@gmail.com` | `juan@gmail.com` | Trim y minúsculas al escribir; nunca se muestra con mayúsculas |
 | Enum o estado | `"Active"` | `<EnumText enum="UserStatus">` / `<StatusBadge>` | `Activo` | `Active` | Clave i18n `enums.<Enum>.<Valor>`; el color del estado sale de un mapa central (`statusTones.ts`) |
 | Booleano | `true`/`false` | `<BooleanText>` | `Sí` / `No` | `Yes` / `No` | En tablas, una columna de estado va mejor como `StatusDot` |
-| Vacío | `null` | `<EmptyValue>` | `—` | `—` | Raya larga en gris (`--color-content-muted`), con `aria-label` "Sin dato". Nunca "null", "N/A", "-" ni `0` |
-| Nombre / email | texto | texto | tal cual | tal cual | Email en minúsculas. Un texto largo se trunca con `…` y tooltip |
+| Vacío | `null` | `<EmptyValue>` | `—` | `—` | Raya larga en gris tenue (`--t3`), con `aria-label` "Sin dato". Nunca "null", "N/A", "-" ni `0` |
+| Nombre / texto | texto | texto | tal cual | tal cual | Un texto largo se trunca con `…` y tooltip |
 
 ## 4. Reglas de uso
 
-1. **Prohibido formatear fuera de `shared/format`.** Un test (`format-usage.test.ts`) recorre `src/` y falla si encuentra `toLocaleString`, `toLocaleDateString`, `toFixed`, `Intl.` o `new Date(` fuera de esa carpeta y de `shared/time`.
+1. **Prohibido formatear fuera de `shared/format`.** Un test (`format-usage.test.ts`) recorre `src/` y falla si encuentra `toLocaleString`, `toLocaleDateString`, `toFixed`, `Intl.` o `new Date(` fuera de esa carpeta, de `shared/time` y de `shared/phone` (nombres de países con `Intl.DisplayNames`). El mismo test verifica que `libphonenumber-js` se importe solo en `shared/phone` y `shared/format`.
 2. **Las columnas declaran el tipo, no el formato:**
    ```tsx
    { id: "createdAtUtc", header: t("createdAt"), type: "date", value: (r) => r.createdAtUtc }
    ```
    `DataTable` elige el componente, la alineación (**números, montos y porcentajes a la derecha**, con `tabular-nums`), el vacío y el tooltip.
 3. **Las fichas y los formularios** usan los mismos componentes: `<DateText>`, `<MoneyText>` y el resto. Nunca un `format…()` suelto dentro de un JSX.
-4. **Campos de entrada con la misma regla:** `DateField`, `DateTimeField`, `TimeField`, `NumberField`, `MoneyField`, `PercentField` y `PhoneField` en `shared/ui`.
+4. **Campos de entrada con la misma regla:** `DateField`, `DateTimeField`, `TimeField`, `NumberField`, `MoneyField`, `PercentField` y `PhoneField` en `shared/ui/fields`.
    - Aceptan lo que el usuario escribe en su cultura (`1.234,5`) y emiten el contrato de la API (`1234.5`; `0.125` para un 12,5 %; ISO en UTC para un instante, convertido desde la zona efectiva).
    - Un `DateField` de fecha civil emite `DateOnly` sin convertir zona.
+   - `EmailField` (trim y minúsculas al escribir) y `TaxIdField` (tipo + número, validado con `stdnum`) también viven en `shared/ui/fields`.
 5. **El front no calcula dinero.** Solo muestra lo que llega; totales, impuestos y redondeos vienen del backend.
 6. **Los errores y textos del backend** que llevan números o fechas ya vienen formateados por `DisplayFormatter`, en la cultura del `Accept-Language`.
 7. **Accesibilidad:** las fechas se renderizan como `<time dateTime="ISO">`, y los montos llevan el código de moneda en `aria-label` cuando el símbolo es ambiguo.
@@ -81,17 +82,24 @@ src/shared/format/
 ├── cultureProfiles.ts         perfiles es-AR y en-US (patrones, 24/12 h, separadores, espacio antes del %)
 ├── formatters.ts              formatDate, formatDateTime, formatTime, formatDateLong, formatRelative, formatDateRange,
 │                              formatInteger, formatDecimal, formatQuantity, formatPercent, formatMoney, formatCompact,
-│                              formatFileSize, formatDuration, formatPhone, formatTaxId, EMPTY
+│                              formatFileSize, formatDuration, formatPhone, formatTaxId, formatTimeZone, formatCulture, EMPTY
+│                              (formatTimeZone toma la ciudad traducida del catálogo y calcula con Intl el desfase de hoy:
+│                              "Buenos Aires (GMT−3)")
 ├── parsers.ts                 parseDecimal, parseMoney, parsePercent, parseDate (entrada del usuario → contrato)
 ├── useFormat.ts               cultura + zona + moneda por defecto ya resueltas → formateadores
 ├── statusTones.ts             estado → tono visual (success, warning, danger, neutral)
 ├── formatters.test.ts         recorre format-cases.json (los mismos casos que el back)
 ├── parsers.test.ts
 └── format-usage.test.ts       prohíbe formatear fuera de shared/format
+src/shared/time/
+├── useEffectiveTimeZone.ts    cuenta → empresa → organización (en B2B)
+├── timeZones.ts               GET /api/time-zones (catálogo traducido)
+└── TimeZoneSelect.tsx         agrupado por país; nunca el ID IANA
 src/shared/ui/format/
 ├── DateText.tsx · DateRangeText.tsx · NumberText.tsx · MoneyText.tsx · PercentText.tsx
-├── FileSizeText.tsx · DurationText.tsx · PhoneText.tsx · TaxIdText.tsx
+├── FileSizeText.tsx · DurationText.tsx · PhoneText.tsx · TaxIdText.tsx · TimeZoneText.tsx · CultureText.tsx
 └── EnumText.tsx · StatusBadge.tsx · BooleanText.tsx · EmptyValue.tsx
 src/shared/ui/fields/
 └── DateField.tsx · DateTimeField.tsx · TimeField.tsx · NumberField.tsx · MoneyField.tsx · PercentField.tsx · PhoneField.tsx
+    · EmailField.tsx · TaxIdField.tsx
 ```

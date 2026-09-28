@@ -9,7 +9,7 @@
   { id: "total", header: t("total"), type: "money", value: (r) => r.total }
   ```
 - **En una ficha o un texto:** `<DateText value={x.createdAtUtc} kind="dateTime" />`, `<MoneyText value={x.total} />`, `<PercentText value={x.rate} />`, `<EnumText enum="UserStatus" value={x.status} />`, `<EmptyValue />`.
-- **En un formulario:** `DateField` (fecha civil, sin zona), `DateTimeField` (convierte la zona efectiva a UTC), `MoneyField`, `NumberField`, `PercentField` (12,5 → 0.125) y `PhoneField` (→ E.164).
+- **En un formulario:** `DateField` (fecha civil, sin zona), `DateTimeField` (convierte la zona efectiva a UTC), `MoneyField`, `NumberField`, `PercentField` (12,5 → 0.125) y `PhoneField` (→ `{ country, number }`; el back lo pasa a E.164).
 - **Fuera de JSX** (por ejemplo, en el `aria-label` de un gráfico): `const f = useFormat(); f.money(x)`.
 - **Estados:** `<StatusBadge enum="TenantStatus" value={s} />`; el color sale de `statusTones.ts`.
 

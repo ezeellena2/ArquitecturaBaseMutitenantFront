@@ -5,7 +5,8 @@
 ## Cómo se hace
 - Un namespace por módulo (`useTranslation("roles")`). Lo compartido va en `common:` y los enums en `enums:<Enum>.<Valor>`.
 - Plurales con `_one` / `_other`; interpolación con `{{count}}`.
-- Vocabulario: "Organización" (nunca tenant), "Dueño" (TenantAdmin), "Administrador" (CompanyAdmin), "Personal" (el acceso B2C, su espacio personal), "Registrá tu empresa" (el alta B2B), "Ingresá como empresa" (la puerta B2B).
+- Vocabulario: "Organización" (nunca tenant), "Dueño" (TenantAdmin; nunca "Administrador general"), "Administrador" (CompanyAdmin), "Personal" (el lado B2C, su espacio personal), "lado" (persona o empresa), "Empresa" (Company), "Usuario" (en Gestión de usuarios de la organización), "Miembro" (de una empresa), "Ingresá" (`/login`, la puerta de persona), "Ingresá como empresa" (`/login/empresa`, la puerta B2B), "Registrá tu empresa" (el alta B2B).
+- Acciones sobre usuarios: "Deshabilitar" / "Habilitar" (nunca "Activar"), "Revocar invitación". El estado de quien pidió la baja de su cuenta es "Baja pedida".
 - El idioma y el formato salen de la cultura de la cuenta (`es-AR` / `en-US`). El `Accept-Language` lo pone `httpClient`.
 - Los errores del backend llegan traducidos; en el front solo se traducen los `code` que llevan un texto propio.
 
@@ -14,6 +15,7 @@
 - Claves en un solo idioma.
 - Textos que nadie pidió: ayudas bajo cada campo, bajadas de diálogo, notas al pie.
 - Concatenar traducciones para armar frases.
+- Decir "Activar" o "Administrador general" en lugar de los términos del vocabulario.
 
 ## Copiá de
 - `src/locales/es/roles.json` (E4)

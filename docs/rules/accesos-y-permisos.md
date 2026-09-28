@@ -7,8 +7,8 @@
   - `<AccessRoute access="consumer">` para `/` con sesión, `/<módulo>` B2C;
   - `<AccessRoute access="business"><ProtectedRoute permission="roles.read" /></AccessRoute>` para `/org/…`;
   - `<AccessRoute access="platform">` para `/plataforma/…`;
-  - las rutas públicas (`/` sin sesión, `/login…`, `/registro…`, `/recuperar`, las del subdominio) no llevan `AccessRoute`.
-- **Host:** con un subdominio de empresa, `routes.tsx` arma **solo** las rutas de `storefront`. `usePublicSite()` devuelve el slug y los datos públicos de esa empresa.
+  - las rutas públicas (`/` sin sesión, `/login…`, `/registro…`, `/recuperar`, `/invitacion`, `/auth/callback`, `/terminos`, `/privacidad` y las del subdominio) no llevan `AccessRoute`.
+- **Host:** con el subdominio de una organización (`<slug>.plataforma.com`; una página pública por organización, no por empresa), `routes.tsx` arma **solo** las rutas de `storefront`. `usePublicSite()` devuelve el slug del subdominio y los datos públicos de esa organización.
 - **Acción:** `<Can permission="roles.manage">…</Can>`. En una empresa del grupo: `<CanInCompany companyId={id} permission="company.members.manage">`.
 - **Acceso activo:** `useAccess()` devuelve `access`, la organización activa (en B2B), si la persona tiene espacio personal y sus organizaciones.
 - **Cambiar de acceso u organización:** `useSwitchAccess({ access, tenantId })`:
@@ -25,7 +25,7 @@
 
 ## Prohibido
 - Mostrar "crear una empresa" en el acceso B2C, o mostrar organizaciones en el espacio personal.
-- Usar el subdominio para mostrar algo de la administración de la empresa.
+- Usar el subdominio para mostrar algo de la administración de la organización (esa vive en `/org`).
 - Preguntar por roles (`user.roles.includes("TenantAdmin")`).
 - Una ruta privada sin `AccessRoute`, o un permiso declarado en un solo lugar.
 - Cambiar de acceso sin limpiar la caché.
@@ -35,8 +35,8 @@
 - `src/app/routes.tsx` y `src/layouts/navigation/business.ts` (E3–E4) · `src/tenancy/useSwitchAccess.ts` (E3).
 
 ## Lo verifica
-- `routes.test.ts` y `navigation.test.ts`: el mismo permiso y el mismo módulo en los dos lugares.
-- `AccessRoute.test.tsx`, `useSwitchAccess.test.ts` (limpia la caché), `AccessMenu.test.tsx` (una persona sin organizaciones no ve «Ir a mi empresa»; en B2C nunca aparece «Registrar empresa»).
+- `routes.test.tsx` y `navigation.test.ts`: el mismo permiso y el mismo módulo en los dos lugares.
+- `AccessRoute.test.tsx`, `useSwitchAccess.test.ts` (limpia la caché), `AccessMenu.test.tsx` (una persona sin organizaciones no ve «Ir a mi empresa»; en B2C nunca aparece «Registrá tu empresa»).
 - `routes-by-host.test.ts`: un subdominio no monta rutas de `/org`.
 
 ## Detalle

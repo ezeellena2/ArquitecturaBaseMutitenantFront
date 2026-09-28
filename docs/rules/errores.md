@@ -7,7 +7,7 @@
   ```ts
   export function roleErrorMessage(error: ApiError, t: TFunction): string {
     switch (error.code) {
-      case "Roles.Role.HasUsers": return t("roles:errors.hasUsers", { count: error.extensions.userCount });
+      case "Roles.Role.HasUsers": return t("roles:errors.hasUsers", { count: error.problem.userCount });
       default: return error.detail;
     }
   }
@@ -22,7 +22,7 @@
 - `if (error.detail.includes(...))`.
 - Mostrar `error.message` crudo o el `traceId` fuera del toast de 5xx.
 - `try/catch` que se trague un error sin mostrarlo.
-- Reintentar solo un 429 o un 409.
+- Reintentar solo un 429 o un 409 `General.ConcurrencyConflict`. (El 409 `Request.InProgress` de un alta idempotente espera y reintenta: lo hace `useIdempotentMutation`.)
 
 ## Copiá de
 - `src/areas/business/users/errors.ts` (E6) · `src/shared/api/formErrors.ts` (E1)

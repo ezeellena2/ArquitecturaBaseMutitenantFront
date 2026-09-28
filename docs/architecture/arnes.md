@@ -22,29 +22,19 @@
 | `src/areas/<área>/<feature>/` (raíz) | `columns.tsx` (columnas **tipadas**) y `errors.ts` (switch por `code`) | formatos, errores | `business/roles/columns.tsx`, `errors.ts` |
 | `src/shared/format/` | **único** lugar que formatea | formatos | — |
 | `src/shared/ui/` | piezas genéricas; shadcn en minúscula y propios en PascalCase; sin lógica de negocio | pantallas-y-ui | `DataTable.tsx`, `Page.tsx` |
-| `src/shared/ui/format/`, `src/shared/ui/fields/` | cómo se ve y cómo se carga cada tipo de dato | formatos, formularios | `MoneyText.tsx`, `MoneyField.tsx` |
-| `src/shared/phone/` | países, banderas SVG y `CountrySelect`; `libphonenumber-js` solo acá y en `shared/format` | telefonos | `CountrySelect.tsx` |
+| `src/shared/ui/format/` | cómo se ve cada tipo de dato (`DateText`, `MoneyText`, `PercentText`, `PhoneText`, `StatusBadge`, `EmptyValue`…); no formatea por su cuenta, usa `shared/format` | formatos, telefonos | `MoneyText.tsx` |
 | `src/shared/ui/fields/` | un campo por tipo de dato (email, teléfono, CUIT, dinero, fecha…) | formularios, formatos, telefonos | `MoneyField.tsx` |
+| `src/shared/phone/` | países, banderas SVG y `CountrySelect`; `libphonenumber-js` solo acá y en `shared/format` | telefonos | `CountrySelect.tsx` |
 | `src/shared/api/` | httpClient, errores y tipos generados (`generated/` no se edita) | datos-y-api, errores | — |
+| `src/shared/hooks/` | hooks compartidos, cada uno con su test (paginado y filtros en la URL, `useQueryUpdate`, cambios sin guardar, foco, debounce); no se reinventan en una feature | paginado-y-listados, formularios | `usePagination.ts` |
 | `src/locales/` | un namespace por módulo, es = en | textos-y-traducciones | `es/roles.json` |
 | `src/auth/`, `src/tenancy/` | sesión, accesos, cambio de acceso u organización, permisos | accesos-y-permisos | — |
 | `src/layouts/` | layouts por área y navegación declarativa | accesos-y-permisos, pantallas-y-ui | `navigation/business.ts` |
 | `src/test/` | setup, MSW, fixtures de `/api/me` | tests | `mocks/currentUsers.ts` |
 
-## 3. "Si vas a tocar X, leé Y" (en el `AGENTS.md` raíz)
+## 3. "Si vas a tocar X, leé Y"
 
-| Si vas a… | Leé |
-|---|---|
-| mostrar una fecha, número, monto, % o vacío | `docs/rules/formatos.md` |
-| hacer un listado | `paginado-y-listados.md` |
-| llamar a la API o tipar un dato | `datos-y-api.md` |
-| manejar un error | `errores.md` |
-| hacer un formulario o diálogo | `formularios.md` |
-| escribir un texto | `textos-y-traducciones.md` |
-| decidir el acceso de una pantalla u ocultar algo por permiso | `accesos-y-permisos.md` |
-| armar una pantalla | `pantallas-y-ui.md` (y **dibujarla primero**) |
-| crear una feature | `estructura-y-features.md` |
-| escribir tests | `tests.md` |
+La tabla vive solo en el [`AGENTS.md` raíz](../../AGENTS.md#antes-de-escribir-código-el-arnés) y no se copia acá. Una ficha nueva suma su fila ahí, en el mismo commit.
 
 ## 4. Verificación del arnés
 
