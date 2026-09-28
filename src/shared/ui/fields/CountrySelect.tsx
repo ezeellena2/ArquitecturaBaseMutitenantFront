@@ -12,6 +12,7 @@ interface CountrySelectProps {
   placeholder: string;
   id?: string;
   disabled?: boolean;
+  allowedCountries?: readonly string[];
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
 }
@@ -25,18 +26,19 @@ function countryLabel(country: CountryReference): string {
 }
 
 /** Países seleccionables, con bandera y prefijo telefónico cuando existe. */
-export function CountrySelect({ value, onChange, placeholder, id, disabled, "aria-invalid": invalid,
+export function CountrySelect({ value, onChange, placeholder, id, disabled, allowedCountries, "aria-invalid": invalid,
   "aria-describedby": describedBy }: CountrySelectProps) {
   const { t } = useTranslation();
   const { data, isPending, isError } = useReferenceData();
   const [search, setSearch] = useState("");
   const query = searchable(search.trim());
   const options = enabledOptions(data?.countries ?? [])
+    .filter((country) => !allowedCountries || allowedCountries.includes(country.code))
     .filter((country) => query === "" || searchable(`${country.name} ${country.code} ${country.callingCode ?? ""}`).includes(query)
       || (country.callingCode !== null && `+${country.callingCode}`.includes(query)))
     .sort((left, right) => (left.sortOrder ?? Number.MAX_SAFE_INTEGER) - (right.sortOrder ?? Number.MAX_SAFE_INTEGER)
       || left.name.localeCompare(right.name, data?.culture));
-  const selected = data?.countries.find((country) => country.code === value);
+  const selected = options.find((country) => country.code === value);
   const selectedLabel = selected
     ? `${t("phone.country", { country: selected.name })}${selected.callingCode ? `, +${selected.callingCode}` : ""}`
     : undefined;

@@ -10,11 +10,12 @@ import { server } from "@/test/mocks/server";
 import { FormField } from "../FormField";
 import { CountrySelect } from "./CountrySelect";
 
-function renderSelect() {
+function renderSelect(allowedCountries?: readonly string[]) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   function Harness() {
     const [value, setValue] = useState("");
-    return <><FormField label="País"><CountrySelect value={value} onChange={setValue} placeholder="Elegí un país" /></FormField><output>{value}</output></>;
+    return <><FormField label="País"><CountrySelect value={value} onChange={setValue} placeholder="Elegí un país"
+      allowedCountries={allowedCountries} /></FormField><output>{value}</output></>;
   }
   return render(<QueryClientProvider client={client}><Harness /></QueryClientProvider>);
 }
@@ -80,5 +81,21 @@ describe("CountrySelect", () => {
     await waitFor(() => expect(release).toBeDefined());
     release?.();
     await waitFor(() => expect(select).toBeEnabled());
+  });
+
+  it("acepta una lista permitida para el uso telefónico sin cambiar el selector general", async () => {
+    const fixture = referenceDataFixture();
+    const argentina = fixture.countries[0];
+    server.use(http.get("/api/reference-data", () => HttpResponse.json({
+      ...fixture,
+      countries: [argentina, { ...argentina, code: "UY", name: "Uruguay", callingCode: "598" }],
+    })));
+    renderSelect(["UY"]);
+
+    const select = screen.getByRole("combobox", { name: "País" });
+    await waitFor(() => expect(select).toBeEnabled());
+    select.focus();
+    await userEvent.setup().keyboard("{Enter}");
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Uruguay (+598)"]);
   });
 });
