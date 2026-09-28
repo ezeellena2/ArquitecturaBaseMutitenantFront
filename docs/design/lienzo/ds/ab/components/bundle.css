@@ -1,0 +1,3002 @@
+/* 00-base.css */
+/* ArquitecturaBase UI: la base.
+   Los valores de respaldo van con especificidad cero (`:where(html)`): si el lienzo o la ficha cargan el
+   tokens.css de la biblioteca, que declara lo mismo en `:root`, gana ese y lo que se edite en la página de
+   tokens se ve. Si no lo cargan, la pieza igual se dibuja con los valores de `src/index.css` del front. */
+:where(html) {
+  --color-brand-50: oklch(0.97 0.02 250);
+  --color-brand-100: oklch(0.93 0.04 250);
+  --color-brand-500: oklch(0.62 0.16 250);
+  --color-brand-600: oklch(0.55 0.16 250);
+  --color-brand-700: oklch(0.48 0.14 250);
+  --color-surface: oklch(1 0 0);
+  --color-surface-muted: oklch(0.97 0.005 250);
+  --color-surface-header: oklch(0.945 0.008 250);
+  --color-surface-header-border: oklch(0.86 0.012 250);
+  --color-border: oklch(0.9 0.01 250);
+  --color-content: oklch(0.25 0.02 250);
+  --color-content-heading: oklch(0.32 0.02 250);
+  --color-content-muted: oklch(0.5 0.02 250);
+  --color-danger: oklch(0.58 0.2 25);
+  --color-success: oklch(0.6 0.14 150);
+  --color-warning: oklch(0.75 0.15 80);
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: var(--color-brand-600);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: var(--color-border);
+  --input: var(--color-border);
+  --ring: var(--color-brand-500);
+
+  --radius: 0.625rem;
+  --radius-card: 0.75rem;
+  --radius-control: 0.5rem;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-10: 40px;
+
+  --size-action: 32px;
+  --size-control: 36px;
+  --size-row: 44px;
+  --size-band: 56px;
+  --size-topbar: 64px;
+
+  --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Lo que el preflight de Tailwind le hace a toda la aplicación, acotado a las piezas de la biblioteca: sin
+   esto, un botón del lienzo traería el margen y la tipografía del navegador y no se parecería al del código. */
+:where([class^="ab-"], [class*=" ab-"], [class^="ab-"]::before, [class*=" ab-"]::before, [class^="ab-"]::after, [class*=" ab-"]::after) {
+  box-sizing: border-box;
+  /* El outline-ring/50 que index.css le pone a todo en @layer base. */
+  outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
+:where(button, input, textarea, select):where([class^="ab-"], [class*=" ab-"]) {
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+:where(h1, h2, h3, p, ul, ol):where([class^="ab-"], [class*=" ab-"]) {
+  margin: 0;
+  padding: 0;
+}
+
+/* La raíz de un tablero o de una ficha: la tipografía y el color de `body` en el front. El tamaño es el del
+   navegador (16 px): ni el preflight ni index.css lo cambian, y las piezas ponen el suyo. */
+.ab-root {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-content);
+}
+
+/* `sr-only` de Tailwind: se lee, no se ve. */
+.ab-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+@keyframes ab-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ab-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Las transiciones se apagan; el giro del indicador de carga no, porque es lo que dice que algo está pasando. */
+@media (prefers-reduced-motion: reduce) {
+  [class^="ab-"],
+  [class*=" ab-"] {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 05-menu.css */
+/* DropdownMenu y sus ítems: shared/ui/dropdown-menu.tsx (shadcn new-york sobre Radix). */
+.ab-menu-root {
+  position: relative;
+  display: inline-flex;
+}
+
+.ab-menu-root--block {
+  display: flex;
+  width: 100%;
+}
+
+/* El cursor de un botón en Tailwind v4 es el de siempre, no la mano. */
+.ab-menu-trigger {
+  cursor: default;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+}
+
+.ab-menu-root--block > .ab-menu-trigger {
+  width: 100%;
+}
+
+/* DropdownMenuContent: min-w-[8rem] rounded-md border bg-popover p-1 shadow-md, a 4 px del disparador. */
+.ab-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  z-index: 50;
+  min-width: 8rem;
+  max-height: 320px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--background);
+  padding: 4px;
+  color: var(--foreground);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  font-family: var(--font-sans);
+}
+
+.ab-menu--start {
+  left: 0;
+}
+
+.ab-menu--end {
+  right: 0;
+}
+
+.ab-menu--match {
+  width: 100%;
+}
+
+/* DropdownMenuItem: flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm, fondo accent con foco. */
+.ab-menu-item {
+  position: relative;
+  box-sizing: border-box;
+  text-decoration: none;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: calc(var(--radius) - 4px);
+  background: transparent;
+  padding: 6px 8px;
+  font-size: 14px;
+  line-height: 20px;
+  color: inherit;
+  text-align: left;
+  cursor: default;
+  user-select: none;
+  outline: none;
+}
+
+.ab-menu-item:hover,
+.ab-menu-item:focus-visible {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.ab-menu-item:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* La opción elegida de un filtro: el tinte de marca (UsersFilterBar, OptionRow). Con el puntero o el foco
+   encima gana el accent, como el focus:bg-accent de Radix en el código. */
+.ab-menu-item--selected {
+  background: var(--color-brand-50);
+  color: var(--color-brand-700);
+}
+
+.ab-menu-item--destructive {
+  color: var(--destructive);
+}
+
+.ab-menu-item--destructive:hover,
+.ab-menu-item--destructive:focus-visible {
+  background: color-mix(in oklab, var(--destructive) 10%, transparent);
+  color: var(--destructive);
+}
+
+.ab-menu-item__icon {
+  display: inline-flex;
+  color: var(--muted-foreground);
+}
+
+.ab-menu-item--destructive .ab-menu-item__icon {
+  color: var(--destructive);
+}
+
+.ab-menu-item__label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* El conteo de una opción: text-xs tabular-nums muted. */
+.ab-menu-item__trailing {
+  margin-left: 16px;
+  font-size: 12px;
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-content-muted);
+}
+
+/* DropdownMenuCheckboxItem y RadioItem: pl-8, con el indicador a 8 px del borde. En la casilla el ítem va
+   arriba (items-start) y el indicador queda en la línea del relleno; en la radio va centrado. */
+.ab-menu-item--inset {
+  padding-left: 32px;
+}
+
+.ab-menu-item--checkbox {
+  align-items: flex-start;
+}
+
+.ab-menu-item__indicator {
+  position: absolute;
+  left: 8px;
+  top: 6px;
+  display: flex;
+  width: 14px;
+  height: 14px;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.ab-menu-item--radio .ab-menu-item__indicator {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ab-menu-item__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: currentColor;
+}
+
+.ab-menu-item__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ab-menu-item__description {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-content-muted);
+}
+
+/* DropdownMenuLabel: px-2 py-1.5 text-sm font-medium. */
+.ab-menu-label {
+  padding: 6px 8px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+
+.ab-menu-label--caps {
+  font-size: 11px;
+  line-height: 1.5;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-content-heading);
+}
+
+/* DropdownMenuSeparator: -mx-1 my-1 h-px bg-border. */
+.ab-menu-separator {
+  height: 1px;
+  margin: 4px -4px;
+  background: var(--border);
+}
+
+/* 10-actions.css */
+/* Acciones y estado: Button, IconButton, RowActions, Badge, StatusDot, Avatar, Spinner, Skeleton y Tooltip.
+
+   Especificidad: 00-base.css le pone `font: inherit` y `color: inherit` a todo `button` con una clase `ab-`,
+   con un selector que pesa (0,1,1). Una regla de una sola clase (0,1,0) pierde contra eso, así que lo que
+   cambia letra o color de un botón va con dos clases, o con `button.` delante cuando es la base. */
+
+/* ------------------------------------------------------------------------------------------------------------
+   Button: shared/ui/button.tsx
+   inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap
+   transition-all outline-none, más el preflight de Tailwind (borde 0 sólido del color border-border, fondo
+   transparente, relleno 0). */
+.ab-btn,
+button.ab-btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0 solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+  transition-property: all;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 */
+.ab-btn svg {
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.ab-btn svg:not([class*="size-"]) {
+  width: 16px;
+  height: 16px;
+}
+
+/* Variantes */
+.ab-btn.ab-btn--default {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.ab-btn.ab-btn--default:hover {
+  background: color-mix(in oklab, var(--primary) 90%, transparent);
+}
+
+.ab-btn.ab-btn--destructive {
+  background: var(--destructive);
+  color: #fff;
+}
+
+.ab-btn.ab-btn--destructive:hover {
+  background: color-mix(in oklab, var(--destructive) 90%, transparent);
+}
+
+/* border bg-background shadow-xs; el texto hereda el color de alrededor. */
+.ab-btn.ab-btn--outline {
+  border: 1px solid var(--border);
+  background: var(--background);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.ab-btn.ab-btn--outline:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.ab-btn.ab-btn--secondary {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.ab-btn.ab-btn--secondary:hover {
+  background: color-mix(in oklab, var(--secondary) 80%, transparent);
+}
+
+.ab-btn.ab-btn--ghost {
+  background: transparent;
+}
+
+.ab-btn.ab-btn--ghost:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.ab-btn.ab-btn--link {
+  background: transparent;
+  color: var(--primary);
+  text-underline-offset: 4px;
+}
+
+.ab-btn.ab-btn--link:hover {
+  text-decoration: underline;
+}
+
+/* Tamaños. `has-[>svg]` achica el relleno horizontal cuando el botón lleva un ícono como hijo directo. */
+.ab-btn.ab-btn--size-default {
+  height: 36px;
+  padding: 8px 16px;
+}
+
+.ab-btn.ab-btn--size-default:has(> svg) {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.ab-btn.ab-btn--size-xs {
+  height: 24px;
+  gap: 4px;
+  padding: 0 8px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.ab-btn.ab-btn--size-xs:has(> svg) {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.ab-btn.ab-btn--size-sm {
+  height: 32px;
+  gap: 6px;
+  padding: 0 12px;
+}
+
+.ab-btn.ab-btn--size-sm:has(> svg) {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.ab-btn.ab-btn--size-lg {
+  height: 40px;
+  padding: 0 24px;
+}
+
+.ab-btn.ab-btn--size-lg:has(> svg) {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.ab-btn.ab-btn--size-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+.ab-btn.ab-btn--size-icon-xs {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+}
+
+.ab-btn.ab-btn--size-icon-sm {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.ab-btn.ab-btn--size-icon-lg {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+}
+
+/* xs e icon-xs: [&_svg:not([class*='size-'])]:size-3 */
+.ab-btn.ab-btn--size-xs svg:not([class*="size-"]),
+.ab-btn.ab-btn--size-icon-xs svg:not([class*="size-"]) {
+  width: 12px;
+  height: 12px;
+}
+
+/* focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50. El anillo de Tailwind se
+   suma a la sombra de la variante: por eso outline repite su shadow-xs. */
+.ab-btn:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
+.ab-btn.ab-btn--outline:focus-visible {
+  border-color: var(--ring);
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent),
+    0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.ab-btn.ab-btn--destructive:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent);
+}
+
+/* aria-invalid:border-destructive aria-invalid:ring-destructive/20 */
+.ab-btn[aria-invalid="true"],
+.ab-btn[aria-invalid="true"]:focus-visible {
+  border-color: var(--destructive);
+}
+
+.ab-btn[aria-invalid="true"]:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent);
+}
+
+.ab-btn.ab-btn--outline[aria-invalid="true"]:focus-visible {
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent),
+    0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.ab-btn:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   RowActions: shared/ui/RowActions.tsx
+   inline-flex rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)]
+   divide-x divide-[var(--color-border)].
+
+   Una diferencia con el código, a propósito, para dibujar lo que el código dice que hace: el código pone
+   `overflow-hidden` en el grupo, y eso recorta el tooltip, que sale por arriba: en la aplicación el tooltip
+   no se ve nunca. Acá el grupo no recorta y son el primer y el último botón los que llevan el radio (8 menos 1
+   de borde), así el fondo del hover no se sale de las esquinas.
+
+   Los divisores sí son iguales: el `divide-x` del grupo es el `border-inline-end` de cada botón menos el
+   último. Hasta el 2026-09-23 el código no los dibujaba, porque el `border-0` del botón le ganaba al
+   `divide-x` (que es `:where(...)`, especificidad 0); el botón ya no lleva borde propio. */
+.ab-row-actions {
+  display: inline-flex;
+  justify-content: flex-end;
+}
+
+.ab-row-actions__group {
+  display: inline-flex;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+}
+
+/* group/act relative inline-flex h-7 w-8 items-center justify-center bg-transparent
+   text-[var(--color-content-muted)] transition-colors cursor-pointer, más el preflight (borde 0 sólido) */
+.ab-row-actions__group > .ab-row-actions__button {
+  position: relative;
+  display: inline-flex;
+  width: 32px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border: 0 solid var(--color-border);
+  background: transparent;
+  padding: 0;
+  color: var(--color-content-muted);
+  cursor: pointer;
+  transition-property: color, background-color, border-color;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-row-actions__group > .ab-row-actions__button:not(:last-child) {
+  border-inline-end-width: 1px;
+}
+
+.ab-row-actions__group > .ab-row-actions__button:first-child {
+  border-start-start-radius: calc(var(--radius-control) - 1px);
+  border-end-start-radius: calc(var(--radius-control) - 1px);
+}
+
+.ab-row-actions__group > .ab-row-actions__button:last-child {
+  border-start-end-radius: calc(var(--radius-control) - 1px);
+  border-end-end-radius: calc(var(--radius-control) - 1px);
+}
+
+.ab-row-actions__group > .ab-row-actions__button:hover {
+  background: var(--color-brand-50);
+  color: var(--color-brand-700);
+}
+
+/* La destructiva: roja solo al interactuar. */
+.ab-row-actions__group > .ab-row-actions__button--destructive:hover {
+  background: color-mix(in oklab, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+}
+
+/* focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--color-brand-500)] */
+.ab-row-actions__group > .ab-row-actions__button:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: -2px;
+}
+
+.ab-row-actions__icon {
+  display: inline-flex;
+}
+
+/* El ícono va a 18 px aunque venga armado: en el código es `className="size-[18px]"`. */
+.ab-row-actions__icon > svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 whitespace-nowrap
+   rounded-md bg-[var(--color-content)] px-2 py-1.5 text-xs font-medium leading-none text-white opacity-0
+   transition-opacity */
+.ab-row-actions__tip {
+  pointer-events: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  translate: -50% 0;
+  white-space: nowrap;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--color-content);
+  padding: 6px 8px;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 500;
+  color: #fff;
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-row-actions__button:hover > .ab-row-actions__tip,
+.ab-row-actions__button:focus-visible > .ab-row-actions__tip,
+.ab-row-actions__tip.ab-row-actions__tip--open {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Badge: shared/ui/badge.tsx
+   inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border
+   border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-[color,box-shadow] */
+.ab-badge {
+  display: inline-flex;
+  width: fit-content;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition-property: color, box-shadow;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-badge:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
+/* destructive: focus-visible:ring-destructive/20. aria-invalid:border-destructive aria-invalid:ring-destructive/20 */
+.ab-badge.ab-badge--destructive:focus-visible,
+.ab-badge[aria-invalid="true"]:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent);
+}
+
+.ab-badge[aria-invalid="true"],
+.ab-badge[aria-invalid="true"]:focus-visible {
+  border-color: var(--destructive);
+}
+
+.ab-badge > svg {
+  pointer-events: none;
+  width: 12px;
+  height: 12px;
+}
+
+.ab-badge--default {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.ab-badge--secondary {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.ab-badge--destructive {
+  background: var(--destructive);
+  color: #fff;
+}
+
+.ab-badge--outline {
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.ab-badge--link {
+  color: var(--primary);
+  text-underline-offset: 4px;
+}
+
+/* La etiqueta de rol del listado: outline + text-[11px] font-medium text-[var(--color-content-muted)].
+   `text-[11px]` reemplaza a `text-xs` (el `cn` del proyecto se queda con la última), y como no trae
+   interlineado propio, el interlineado se hereda. */
+.ab-badge--role {
+  font-size: 11px;
+  line-height: inherit;
+  font-weight: 500;
+  color: var(--color-content-muted);
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   StatusDot: emailCell de features/users/columns.tsx
+   inline-flex min-w-0 items-center gap-2; punto size-1.5 shrink-0 rounded-full; texto truncate font-medium. */
+.ab-status-dot {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.ab-status-dot__dot {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: var(--color-content-muted);
+}
+
+.ab-status-dot__dot--active {
+  background: var(--color-success);
+}
+
+.ab-status-dot__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  color: var(--color-content);
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Avatar: Sidebar.tsx y UserMenu.tsx
+   flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-600)] text-sm
+   font-semibold text-white */
+.ab-avatar {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--color-brand-600);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Spinner: shared/ui/Spinner.tsx
+   inline-block size-5 animate-spin rounded-full border-2 border-[var(--color-border)]
+   border-t-[var(--color-brand-500)] */
+.ab-spinner__circle {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-brand-500);
+  border-radius: 9999px;
+  animation: ab-spin 1s linear infinite;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Skeleton: shared/ui/skeleton.tsx
+   animate-pulse rounded-md bg-accent */
+.ab-skeleton {
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--accent);
+  animation: ab-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Tooltip: shared/ui/tooltip.tsx
+   z-50 w-fit rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background, con la flecha
+   (size-2.5 rotate-45 rounded-[2px] bg-foreground). El ancho es el del texto: el envoltorio de Radix lleva
+   `min-width: max-content`.
+
+   Distancia: `sideOffset` es 0, pero Radix le suma el alto del envoltorio de la flecha (10 px, el `size-2.5`),
+   así que el rótulo queda a 10 px del disparador y la punta de la flecha, a 5. Medido en el navegador con
+   Radix y el CSS compilado del front.
+
+   Sin animación: las clases `animate-in fade-in-0 zoom-in-95 slide-in-from-*` son de tw-animate-css, que el
+   front no instala; Tailwind no genera nada para ellas y el tooltip aparece y desaparece de golpe. */
+.ab-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+.ab-tooltip__content {
+  position: absolute;
+  z-index: 50;
+  width: max-content;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--foreground);
+  padding: 6px 12px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  text-wrap: balance;
+  color: var(--background);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* La flecha: un cuadrado de 10 px girado, con el centro 2 px adentro del borde que mira al disparador
+   (translate-y-[calc(-50%_-_2px)] sobre la base de la flecha de Radix). */
+.ab-tooltip__arrow {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--foreground);
+  transform: rotate(45deg);
+}
+
+.ab-tooltip--top > .ab-tooltip__content {
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ab-tooltip--top > .ab-tooltip__content > .ab-tooltip__arrow {
+  left: calc(50% - 5px);
+  bottom: -3px;
+}
+
+.ab-tooltip--bottom > .ab-tooltip__content {
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ab-tooltip--bottom > .ab-tooltip__content > .ab-tooltip__arrow {
+  left: calc(50% - 5px);
+  top: -3px;
+}
+
+.ab-tooltip--right > .ab-tooltip__content {
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ab-tooltip--right > .ab-tooltip__content > .ab-tooltip__arrow {
+  top: calc(50% - 5px);
+  left: -3px;
+}
+
+.ab-tooltip--left > .ab-tooltip__content {
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ab-tooltip--left > .ab-tooltip__content > .ab-tooltip__arrow {
+  top: calc(50% - 5px);
+  right: -3px;
+}
+
+/* Visible: al pasar el mouse, al llegar con el teclado o con `open`. */
+.ab-tooltip:hover > .ab-tooltip__content,
+.ab-tooltip:has(:focus-visible) > .ab-tooltip__content,
+.ab-tooltip.ab-tooltip--open > .ab-tooltip__content {
+  visibility: visible;
+}
+
+/* 20-forms.css */
+/* Formularios: shared/ui/label, input, textarea, FormField, SearchInput, select, MultiSelect, checkbox,
+   CheckboxField y switch. Las sombras con anillo van como en Tailwind v4: el anillo primero y shadow-xs
+   después, porque el control no pierde su sombra al tomar el foco.
+
+   Especificidad: 00-base.css le pone `margin: 0`, `font: inherit` y `color: inherit` a todo `input`,
+   `textarea`, `select` y `button` con una clase `ab-`, con un selector que pesa (0,1,1). Una regla de una sola
+   clase (0,1,0) pierde contra eso: el campo quedaba con el interlineado de la raíz (21 px en vez de 20), los
+   placeholders del Select y del MultiSelect en el color del texto y la casilla de CheckboxField sin su margen.
+   Por eso lo que cambia letra, color o margen de uno de esos elementos va con el elemento delante
+   (`input.ab-input`), como en 10-actions.css. */
+
+/* Label: flex items-center gap-2 text-sm leading-none font-medium select-none. */
+.ab-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 500;
+  user-select: none;
+}
+
+/* peer-disabled:cursor-not-allowed peer-disabled:opacity-50: la casilla y el interruptor son el `peer`. */
+.ab-checkbox:disabled ~ .ab-label,
+.ab-switch:disabled ~ .ab-label {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Input: h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs
+   md:text-sm. El <select> nativo del perfil usa las mismas clases. h-9 es el alto de un control, 36 px: va
+   con su token, --size-control, en el campo, el disparador del Select y el del MultiSelect. */
+.ab-input,
+.ab-textarea,
+input.ab-input,
+select.ab-input,
+textarea.ab-textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--input);
+  border-radius: calc(var(--radius) - 2px);
+  background: transparent;
+  font-size: 16px;
+  line-height: 24px;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  outline: none;
+  transition-property: color, box-shadow;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-input {
+  height: var(--size-control);
+  padding: 4px 12px;
+}
+
+/* Textarea: flex field-sizing-content min-h-16 px-3 py-2; crece con el texto. */
+.ab-textarea {
+  display: flex;
+  field-sizing: content;
+  min-height: 64px;
+  padding: 8px 12px;
+  resize: vertical;
+}
+
+@media (min-width: 48rem) {
+  .ab-input,
+  .ab-textarea,
+  input.ab-input,
+  select.ab-input,
+  textarea.ab-textarea {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+.ab-input::placeholder,
+.ab-textarea::placeholder {
+  opacity: 1;
+  color: var(--muted-foreground);
+}
+
+.ab-input::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.ab-input::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+.ab-input:focus-visible,
+.ab-textarea:focus-visible,
+.ab-select__trigger:focus-visible,
+.ab-multiselect__trigger:focus-visible,
+.ab-checkbox:focus-visible,
+.ab-switch:focus-visible {
+  border-color: var(--ring);
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent),
+    0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+/* aria-invalid:border-destructive aria-invalid:ring-destructive/20: el anillo solo se ve con el foco. */
+.ab-input[aria-invalid="true"],
+.ab-textarea[aria-invalid="true"],
+.ab-select__trigger[aria-invalid="true"],
+.ab-checkbox[aria-invalid="true"] {
+  border-color: var(--destructive);
+}
+
+.ab-input[aria-invalid="true"]:focus-visible,
+.ab-textarea[aria-invalid="true"]:focus-visible,
+.ab-select__trigger[aria-invalid="true"]:focus-visible,
+.ab-checkbox[aria-invalid="true"]:focus-visible {
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent),
+    0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.ab-input:disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ab-textarea:disabled,
+.ab-select__trigger:disabled,
+.ab-checkbox:disabled,
+.ab-switch:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* El <select> del perfil no lleva pointer-events-none al deshabilitarse. */
+.ab-select--native:disabled {
+  pointer-events: auto;
+}
+
+/* FormField: flex flex-col gap-1.5; la ayuda y el error, text-sm en el mismo renglón. */
+.ab-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ab-field__message {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-content-muted);
+}
+
+.ab-field__message--error {
+  color: var(--color-danger);
+}
+
+/* El error del servidor sin campo, arriba de la botonera: text-sm text-[var(--color-danger)]. */
+.ab-form-error {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-danger);
+}
+
+/* Select: el disparador de select.tsx. flex w-fit items-center justify-between gap-2 rounded-md border
+   border-input bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs, h-9 (h-8 en sm). */
+/* La raíz mide lo que el disparador (w-fit): si una columna flex la estirara, la lista tomaría ese ancho. */
+.ab-select {
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+}
+
+.ab-select--block {
+  display: flex;
+  width: 100%;
+}
+
+.ab-select__trigger,
+button.ab-select__trigger {
+  display: flex;
+  width: fit-content;
+  height: var(--size-control);
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid var(--input);
+  border-radius: calc(var(--radius) - 2px);
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+  text-align: left;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  outline: none;
+  cursor: default;
+  transition-property: color, box-shadow;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-select--block > .ab-select__trigger {
+  width: 100%;
+}
+
+.ab-select__trigger.ab-select__trigger--sm {
+  height: 32px;
+}
+
+/* data-[placeholder]:text-muted-foreground */
+.ab-select__trigger--placeholder,
+button.ab-select__trigger--placeholder {
+  color: var(--muted-foreground);
+}
+
+.ab-select__value {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+/* ChevronDownIcon size-4 opacity-50, en text-muted-foreground. */
+.ab-select__chevron {
+  flex-shrink: 0;
+  pointer-events: none;
+  color: var(--muted-foreground);
+  opacity: 0.5;
+}
+
+/* SelectContent: las clases del menú, con el ancho del disparador como mínimo. La lista toma el foco cuando
+   el puntero sale de las opciones (como en Radix), y ahí no lleva contorno. */
+.ab-select__content {
+  min-width: max(8rem, 100%);
+  outline: none;
+}
+
+/* SelectItem: py-1.5 pr-8 pl-2 text-sm, fondo accent sobre la opción resaltada. El text-sm va con el elemento
+   delante: el de .ab-menu-item lo pisa la base y el ítem medía 33 px en vez de 32. */
+.ab-select__item,
+button.ab-select__item {
+  padding-right: 32px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.ab-select__item.ab-select__item--highlighted,
+.ab-select__item:focus {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* En Radix Select resalta el foco, no el puntero (el puntero lleva el foco). Sin esto, el :hover del menú
+   dejaba dos opciones resaltadas cuando el teclado se movía con el puntero quieto sobre otra. */
+.ab-select__item:not(.ab-select__item--highlighted):hover {
+  background: transparent;
+  color: inherit;
+}
+
+/* El tilde: absolute right-2 size-3.5, en text-muted-foreground. */
+.ab-select__indicator {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: flex;
+  width: 14px;
+  height: 14px;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--muted-foreground);
+}
+
+.ab-select__item-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* MultiSelect: flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input
+   bg-transparent px-3 text-left text-sm shadow-xs; el texto en content, o en content-muted sin elección. */
+.ab-multiselect__trigger,
+button.ab-multiselect__trigger {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  height: var(--size-control);
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid var(--input);
+  border-radius: calc(var(--radius) - 2px);
+  background: transparent;
+  padding: 0 12px;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: left;
+  color: var(--color-content);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  outline: none;
+  cursor: default;
+}
+
+.ab-multiselect__trigger--empty,
+button.ab-multiselect__trigger--empty {
+  color: var(--color-content-muted);
+}
+
+/* Las casillas del panel: text-sm (14/20) del DropdownMenuCheckboxItem. La base le pisa la letra a
+   .ab-menu-item (un botón), y cada opción crecía un píxel; acá se le devuelve dentro del MultiSelect. */
+.ab-multiselect .ab-menu-item {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.ab-multiselect__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ab-multiselect__chevron {
+  flex-shrink: 0;
+  color: var(--color-content-muted);
+}
+
+/* Checkbox: size-4 shrink-0 rounded-[4px] border border-input shadow-xs transition-shadow; marcada,
+   border-primary bg-primary text-primary-foreground. Va después del foco y del error: gana a los dos. */
+.ab-checkbox {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border: 1px solid var(--input);
+  border-radius: 4px;
+  background: transparent;
+  padding: 0;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  outline: none;
+  cursor: default;
+  transition-property: box-shadow;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-checkbox[aria-checked="true"] {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.ab-checkbox__indicator {
+  display: grid;
+  place-content: center;
+  color: currentColor;
+}
+
+/* CheckboxField: flex items-start gap-2; la casilla con mt-0.5; etiqueta font-normal y descripción text-xs. */
+.ab-checkbox-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ab-checkbox-field__control,
+button.ab-checkbox-field__control {
+  margin-top: 2px;
+}
+
+.ab-checkbox-field__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ab-checkbox-field__label {
+  font-weight: 400;
+}
+
+.ab-checkbox-field__description {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-content-muted);
+}
+
+/* Switch: inline-flex items-center rounded-full border border-transparent shadow-xs transition-all,
+   h-[1.15rem] w-8 (sm: h-3.5 w-6); bg-input apagado y bg-primary prendido. */
+.ab-switch {
+  display: inline-flex;
+  width: 32px;
+  height: 1.15rem;
+  flex-shrink: 0;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  background: var(--input);
+  padding: 0;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  outline: none;
+  cursor: default;
+  transition-property: all;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-switch--sm {
+  width: 24px;
+  height: 14px;
+}
+
+.ab-switch[aria-checked="true"] {
+  background: var(--primary);
+}
+
+/* La perilla: size-4 (sm: size-3) rounded-full bg-background, translate-x-[calc(100%-2px)] prendido. */
+.ab-switch__thumb {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--background);
+  pointer-events: none;
+  transform: translateX(0);
+  transition-property: transform;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-switch--sm .ab-switch__thumb {
+  width: 12px;
+  height: 12px;
+}
+
+.ab-switch[aria-checked="true"] .ab-switch__thumb {
+  transform: translateX(calc(100% - 2px));
+}
+
+/* 30-lists.css */
+/* Listados: Surface, Table y sus piezas, DataTable, Pagination y EmptyState.
+
+   Especificidad: 00-base.css le pone `font: inherit` y `color: inherit` a todo `button` con una clase `ab-`
+   (0,1,1), y 10-actions.css define los tamaños del botón con dos clases (0,2,0). El botón de un encabezado
+   ordenable pisa las dos cosas, así que va con tres clases. */
+
+/* ------------------------------------------------------------------------------------------------------------
+   Surface: la caja del listado en features/users/pages/UsersPage.tsx y features/roles/pages/RolesPage.tsx
+   overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] */
+.ab-surface {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Table: shared/ui/table.tsx
+   Contenedor: relative w-full overflow-x-auto. Tabla: w-full caption-bottom text-sm, más el preflight de
+   Tailwind para `table` (border-collapse: collapse, text-indent: 0, border-color: inherit): sin el colapso,
+   los bordes de las filas no se dibujan.
+
+   El interlineado de `text-sm` en Tailwind v4 es un factor, `calc(1.25 / 0.875)`, no 20 px. Importa por lo que
+   hereda: la etiqueta de rol (`text-[11px]`, sin interlineado propio) y el encabezado toman ese factor sobre sus
+   11 px, y con 20 px fijos la etiqueta saldría 4 px más alta que en la aplicación. */
+.ab-table-container {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ab-table {
+  width: 100%;
+  caption-side: bottom;
+  border-collapse: collapse;
+  border-color: inherit;
+  text-indent: 0;
+  font-size: 14px;
+  line-height: calc(1.25 / 0.875);
+}
+
+/* TableRow: border-b transition-colors hover:bg-muted/50 has-aria-expanded:bg-muted/50
+   data-[state=selected]:bg-muted. En DataTable, las de datos suman h-11 border-b-[var(--color-border)]/50.
+   El alto es el token de la densidad ("Tres alturas": 44 px para filas densas), no un número suelto. */
+.ab-table-row {
+  height: var(--size-row);
+  border: 0 solid var(--color-border);
+  border-bottom-width: 1px;
+  border-bottom-color: color-mix(in oklab, var(--color-border) 50%, transparent);
+  transition-property: color, background-color, border-color;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-table-row:hover,
+.ab-table-row:has([aria-expanded="true"]) {
+  background: color-mix(in oklab, var(--muted) 50%, transparent);
+}
+
+.ab-table-row[data-state="selected"] {
+  background: var(--muted);
+}
+
+/* TableBody: [&_tr:last-child]:border-0 */
+.ab-table-body tr:last-child {
+  border-width: 0;
+}
+
+/* La banda del encabezado (DataTable.tsx): bg-[var(--color-surface-header)]
+   border-b-[var(--color-surface-header-border)] hover:bg-[var(--color-surface-header)]. Sin alto propio: lo
+   pone el h-10 de sus celdas.
+
+   Se neutraliza solo el hover, como en el código: `has-aria-expanded:bg-muted/50` sigue en la fila de la banda
+   (DataTable no lo pisa) y en Tailwind la variante `has-*` va después de `hover`, así que gana. */
+.ab-table-row.ab-table-row--header {
+  height: auto;
+  border-bottom-color: var(--color-surface-header-border);
+  background: var(--color-surface-header);
+}
+
+.ab-table-row.ab-table-row--header:hover {
+  background: var(--color-surface-header);
+}
+
+.ab-table-row.ab-table-row--header:has([aria-expanded="true"]) {
+  background: color-mix(in oklab, var(--muted) 50%, transparent);
+}
+
+/* TableHead: h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground, con el rótulo de
+   DataTable encima (text-[11px] font-semibold tracking-[0.06em] uppercase
+   text-[var(--color-content-heading)]) y px-4. El `cn` del proyecto se queda con el último de cada grupo. */
+.ab-table-head {
+  height: 40px;
+  padding: 0 16px;
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-content-heading);
+}
+
+.ab-table-head.ab-table-head--right {
+  text-align: right;
+}
+
+/* El botón de una columna ordenable: Button ghost sm (h-8, px-3) con el mismo rótulo y -mx-2 px-2. El texto
+   pierde el text-sm y el font-medium del botón; el interlineado lo hereda del encabezado. El color no se toca:
+   hereda el del encabezado y el hover del fantasma lo cambia, como en el código. */
+.ab-table-head .ab-btn.ab-table-head__sort {
+  margin: 0 -8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  font-size: 11px;
+  line-height: inherit;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* TableCell: p-2 align-middle whitespace-nowrap, con px-4 de DataTable. */
+.ab-table-cell {
+  padding: 8px 16px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.ab-table-cell.ab-table-cell--right {
+  text-align: right;
+}
+
+.ab-table-cell.ab-table-cell--numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   DataTable: la carga es flex justify-center p-10 con el Spinner. */
+.ab-data-table__loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Pagination: shared/ui/Pagination.tsx
+   flex h-12 items-center justify-between gap-3 px-4 text-[13px] text-[var(--color-content-muted)]. El
+   interlineado se hereda. Las flechas son IconButton icon-sm (32 px, fantasma) y heredan el color apagado. */
+.ab-pagination {
+  display: flex;
+  height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 16px;
+  font-size: 13px;
+  color: var(--color-content-muted);
+}
+
+/* flex items-center gap-1 */
+.ab-pagination__pager {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ab-pagination__page {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   EmptyState: shared/ui/EmptyState.tsx
+   flex flex-col items-center gap-2 rounded-[var(--radius-card)] border border-dashed border-[var(--color-border)]
+   p-10 text-center; título text-base font-medium; descripción text-sm text-[var(--color-content-muted)]. */
+.ab-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-card);
+  padding: 40px;
+  text-align: center;
+}
+
+.ab-empty-state__title {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+}
+
+.ab-empty-state__description {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-content-muted);
+}
+
+/* 40-filters.css */
+/* Filtros: FilterBar, SegmentedControl, FilterSelect, MoreFilters y FilterChip.
+   Salen de features/users/components/UsersFilterBar.tsx y de shared/ui/SegmentedControl.tsx.
+
+   Especificidad: 00-base.css le pone `font: inherit` y `color: inherit` a todo `button` con una clase `ab-`
+   (0,1,1), y 05-menu.css le saca borde, fondo y relleno al disparador de un menú (`.ab-menu-trigger`). Lo que
+   cambia letra, color o caja de un botón de acá va con dos clases, para ganarles sin depender del orden. */
+
+/* ------------------------------------------------------------------------------------------------------------
+   FilterBar: mb-4 flex flex-col gap-3 rounded-[var(--radius-card)] border border-[var(--color-border)]
+   bg-[var(--color-surface)] px-4 py-3.5. El margen de abajo es el que la separa de la tabla: el contenido de
+   `Page` es un `p-6` sin separación entre hijos. */
+.ab-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  padding: 14px 16px;
+}
+
+/* La fila de los controles: flex flex-wrap items-center gap-2. */
+.ab-filter-bar__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* El buscador va en una caja w-60. */
+.ab-filter-bar__search {
+  width: 240px;
+}
+
+/* El total: ml-auto text-[13px] text-[var(--color-content-muted)]. */
+.ab-filter-bar__total {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--color-content-muted);
+}
+
+/* La fila de los chips: flex flex-wrap items-center gap-1.5 border-t border-[var(--color-border)] pt-3. */
+.ab-filter-bar__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+}
+
+/* "Limpiar todo": Button variant="link" size="sm" con h-auto p-0 text-[12.5px] text-[var(--color-content-muted)].
+   `text-[12.5px]` reemplaza al `text-sm` del botón, así que el interlineado no es el de 20 px: lo hereda. */
+.ab-filter-bar .ab-btn.ab-filter-bar__clear {
+  height: auto;
+  padding: 0;
+  font-size: 12.5px;
+  line-height: inherit;
+  color: var(--color-content-muted);
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   FilterChip: inline-flex h-7 items-center gap-1.5 rounded-full border border-[var(--color-brand-500)]/30
+   bg-[var(--color-brand-50)] py-0 pr-1 pl-2.5 text-[12.5px] text-[var(--color-brand-700)]. */
+.ab-filter-chip {
+  display: inline-flex;
+  height: 28px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid color-mix(in oklab, var(--color-brand-500) 30%, transparent);
+  border-radius: 9999px;
+  background: var(--color-brand-50);
+  padding: 0 4px 0 10px;
+  font-size: 12.5px;
+  color: var(--color-brand-700);
+}
+
+/* "Rótulo:" con opacity-70; el valor, font-semibold. */
+.ab-filter-chip__label {
+  opacity: 0.7;
+}
+
+.ab-filter-chip__value {
+  font-weight: 600;
+}
+
+/* La cruz: inline-flex size-[18px] items-center justify-center rounded-full
+   hover:bg-[var(--color-brand-500)]/20, con el preflight de un botón (sin borde, fondo ni relleno). Sin estilo
+   de foco propio: el del navegador, en el color de `outline-ring/50` que `index.css` le pone a todo. */
+.ab-filter-chip .ab-filter-chip__remove {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
+.ab-filter-chip .ab-filter-chip__remove:hover {
+  background: color-mix(in oklab, var(--color-brand-500) 20%, transparent);
+}
+
+/* text-[13px] leading-none */
+.ab-filter-chip__x {
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   SegmentedControl: shared/ui/SegmentedControl.tsx.
+   inline-flex h-9 shrink-0 divide-x divide-[var(--color-border)] overflow-hidden
+   rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)].
+   h-9 es el alto de un control (fundamento visual: "36 px para controles"), así que va con su token. */
+.ab-segmented {
+  display: inline-flex;
+  flex-shrink: 0;
+  height: var(--size-control);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+}
+
+/* Cada opción: px-3 text-[13px] font-medium whitespace-nowrap transition-colors, apagada y con
+   hover:bg-[var(--color-surface-muted)]; elegida, bg-[var(--color-brand-50)] text-[var(--color-brand-700)]. */
+.ab-segmented .ab-segmented__option {
+  border: 0;
+  background: transparent;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-content-muted);
+  transition-property: color, background-color, border-color;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* divide-x: un borde a la derecha de cada opción menos la última. */
+.ab-segmented .ab-segmented__option:not(:last-child) {
+  border-inline-end: 1px solid var(--color-border);
+}
+
+.ab-segmented .ab-segmented__option[aria-pressed="false"]:hover {
+  background: var(--color-surface-muted);
+}
+
+.ab-segmented .ab-segmented__option[aria-pressed="true"] {
+  background: var(--color-brand-50);
+  color: var(--color-brand-700);
+}
+
+/* focus-visible:outline-2 outline-offset-[-2px] outline-[var(--color-brand-500)]: el contorno va hacia
+   adentro porque el grupo recorta lo que sale de su borde. */
+.ab-segmented .ab-segmented__option:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: -2px;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   El disparador de FilterSelect y MoreFilters: la constante `control` de UsersFilterBar.tsx.
+   inline-flex h-9 items-center gap-2 rounded-[var(--radius-control)] border border-[var(--color-border)]
+   bg-[var(--color-surface)] px-3 text-sm text-[var(--color-content-muted)] transition-colors
+   hover:border-[var(--color-content-muted)]/50. Sin estilo de foco propio, como la cruz del chip.
+   El cursor es el de un botón del navegador: 05-menu.css le pone `pointer` a todo disparador, pero en el
+   código ni Tailwind v4 ni `index.css` lo cambian, y el disparador de Radix se ve con la flecha. */
+.ab-menu-trigger.ab-filter-control {
+  display: inline-flex;
+  height: var(--size-control);
+  cursor: default;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  padding: 0 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-content-muted);
+  outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+  transition-property: color, background-color, border-color;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-menu-trigger.ab-filter-control:hover {
+  border-color: color-mix(in oklab, var(--color-content-muted) 50%, transparent);
+}
+
+/* Con algo elegido (y siempre en "Más filtros"): text-[var(--color-content)]. */
+.ab-menu-trigger.ab-filter-control.ab-filter-control--filled {
+  color: var(--color-content);
+}
+
+/* El globo de "Más filtros": inline-flex size-[18px] items-center justify-center rounded-full
+   bg-[var(--color-brand-600)] text-[11px] font-semibold text-white. */
+.ab-filter-count {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--color-brand-600);
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   OptionRow: un DropdownMenuItem (px-2 py-1.5 text-sm) con justify-between gap-6. El conteo ya tiene su estilo
+   en 05-menu.css (text-xs tabular-nums muted); acá se le saca el margen, porque el espacio lo pone el gap de
+   24 px.
+
+   La letra y el color van de nuevo, con dos clases: el `font: inherit` y el `color: inherit` de 00-base.css
+   (0,1,1) le ganan a `.ab-menu-item` y a `.ab-menu-item--selected` (0,1,0), y sin esto la opción mide 33 px
+   (el interlineado de 1.5 de `.ab-root`) y la elegida pierde el `brand-700`. */
+.ab-menu-item.ab-filter-option {
+  gap: 24px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.ab-filter-option .ab-menu-item__trailing {
+  margin-left: 0;
+}
+
+/* La elegida: bg-[var(--color-brand-50)] text-[var(--color-brand-700)]. */
+.ab-menu-item.ab-filter-option.ab-menu-item--selected {
+  background: var(--color-brand-50);
+  color: var(--color-brand-700);
+}
+
+/* En el código, el tinte de la opción elegida es una clase suelta y el resaltado de Radix
+   (`focus:bg-accent focus:text-accent-foreground`) le gana: con el puntero encima, la elegida se ve como las
+   demás. Las que no están elegidas ya lo tienen en 05-menu.css (`.ab-menu-item:hover`, que pesa (0,2,0)). */
+.ab-menu-item.ab-filter-option.ab-menu-item--selected:hover,
+.ab-menu-item.ab-filter-option.ab-menu-item--selected:focus-visible {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* 50-layout.css */
+/* Estructura: AppShell, Sidebar, Topbar, Breadcrumbs, UserMenu, Page y AuthLayout.
+
+   Especificidad: 00-base.css le pone `font: inherit` y `color: inherit` a todo `button` con una clase `ab-`, y
+   `margin: 0; padding: 0` a los `p`, `ul`, `ol` y `h1`, con selectores que pesan (0,1,1). Lo que cambia letra,
+   color, margen o relleno de uno de esos elementos va con el elemento delante (`button.`, `p.`, `ul.`), que
+   pesa lo mismo y gana por venir después. */
+
+/* El foco de lo que no tiene uno propio (los enlaces del menú y de las migas, el padre de un grupo, los
+   idiomas del ingreso) es el anillo del navegador, como en el código. Pero en el código ese anillo no es del
+   color del navegador: `index.css` le pone `outline-ring/50` a todo (`* { outline-color: … }`), y el anillo
+   automático toma ese color. */
+.ab-sidebar__link,
+button.ab-sidebar__branch,
+.ab-breadcrumbs__link,
+button.ab-auth-layout__language {
+  outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   AppShell: layouts/AppLayout.tsx
+   Raíz `flex h-svh` (acá el alto lo da la prop `height`), con el fondo de `body` (surface-muted). La columna es
+   `flex min-h-0 min-w-0 flex-1 flex-col` y el `<main>`, `min-h-0 flex-1 overflow-y-auto`: el que scrollea es
+   él, no la página, y por eso la banda de `Page` queda adherida.
+
+   La letra es la de `body` en el código: 16 px (el front no le cambia el tamaño; Tailwind solo pone el
+   interlineado de 1.5). `.ab-root` dice 14, así que acá se corrige: lo que una pantalla escriba sin tamaño
+   propio adentro del `<main>` o de la tarjeta del ingreso sale como en la aplicación. */
+.ab-app-shell {
+  display: flex;
+  background: var(--color-surface-muted);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.ab-app-shell__column {
+  display: flex;
+  min-height: 0;
+  min-width: 0;
+  flex: 1 1 0%;
+  flex-direction: column;
+}
+
+.ab-app-shell__main {
+  min-height: 0;
+  flex: 1 1 0%;
+  overflow-y: auto;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Sidebar: layouts/components/Sidebar.tsx (escritorio)
+   relative flex flex-col border-r border-[var(--color-border)] bg-[var(--color-surface)] h-svh shrink-0
+   transition-[width] duration-200 z-30, w-[264px] o w-[72px]. El z-30 es por la flecha de contraer, que sale
+   por fuera del borde y quedaría tapada por la banda de `Page` (sticky z-20). */
+.ab-sidebar {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 264px;
+  height: 100%;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface);
+  transition-property: width;
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-sidebar--collapsed {
+  width: 72px;
+}
+
+/* flex h-16 items-center border-b px-3: el mismo alto exacto que el Topbar, para que la línea que cruza la
+   pantalla no se quiebre un píxel en el borde de la barra. */
+.ab-sidebar__head {
+  display: flex;
+  height: var(--size-topbar);
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 12px;
+}
+
+.ab-sidebar--collapsed .ab-sidebar__head {
+  justify-content: center;
+}
+
+/* size-8 shrink-0 rounded-lg bg-[var(--color-brand-600)] */
+.ab-sidebar__brand {
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  background: var(--color-brand-600);
+}
+
+/* El círculo de contraer: IconButton con absolute top-20 -right-3 z-20 size-6 rounded-full border
+   bg-[var(--color-surface)] shadow-sm hover:bg-[var(--color-surface-muted)]. Su eje es el centro de la banda de
+   `Page` (64 + 28 = 92), menos medio botón: 80. El ícono es ChevronLeft size-3.5, girado 180° contraída. */
+.ab-btn.ab-sidebar__toggle {
+  position: absolute;
+  top: 80px;
+  right: -12px;
+  z-index: 20;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.ab-sidebar .ab-btn.ab-sidebar__toggle:hover {
+  background: var(--color-surface-muted);
+}
+
+/* El anillo de foco del botón se suma a la sombra propia, como en Tailwind. */
+.ab-btn.ab-sidebar__toggle:focus-visible {
+  border-color: var(--ring);
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent),
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.ab-sidebar__toggle svg {
+  transition-property: transform, translate, scale, rotate;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-sidebar--collapsed .ab-sidebar__toggle svg {
+  rotate: 180deg;
+}
+
+/* flex-1 overflow-y-auto px-2 pb-3, pt-2.5 expandida y pt-2 contraída: el `pt` centra el primer ítem en el
+   eje 92 (expandido mide 36, contraído 40).
+
+   Contraída, acá no recorta: en el código el tooltip de cada ícono sale por un portal de Radix, y acá es CSS
+   dentro de la barra, así que con `overflow-y-auto` quedaría cortado en el borde de los 72 px. */
+.ab-sidebar__nav {
+  flex: 1 1 0%;
+  overflow-y: auto;
+  padding: 10px 8px 12px;
+}
+
+.ab-sidebar--collapsed .ab-sidebar__nav {
+  overflow: visible;
+  padding-top: 8px;
+}
+
+/* Cada grupo menos el primero lleva mt-4. */
+.ab-sidebar__group--spaced {
+  margin-top: 16px;
+}
+
+/* mb-1 px-3 text-xs font-semibold tracking-wide text-[var(--color-content-muted)] uppercase */
+p.ab-sidebar__group-label {
+  margin-bottom: 4px;
+  padding: 0 12px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  color: var(--color-content-muted);
+}
+
+/* Contraída, el rótulo es una línea corta: mx-auto mb-3 h-px w-8 bg-[var(--color-border)]. */
+.ab-sidebar__divider {
+  margin: 0 auto 12px;
+  width: 32px;
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* flex flex-col gap-1, e items-center contraída. */
+ul.ab-sidebar__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+}
+
+.ab-sidebar--collapsed ul.ab-sidebar__list {
+  align-items: center;
+}
+
+/* NavItem: flex items-center gap-3 rounded-[var(--radius-control)] px-3 py-2 text-sm font-medium
+   transition-colors; apagado con hover surface-muted, activo brand-50/brand-700. Es un enlace, así que el foco
+   es el del navegador, como en el código. */
+.ab-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: var(--radius-control);
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--color-content-muted);
+  text-decoration: none;
+  transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-sidebar__link:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-content);
+}
+
+.ab-sidebar__link--active,
+.ab-sidebar__link--active:hover {
+  background: var(--color-brand-50);
+  color: var(--color-brand-700);
+}
+
+/* Contraído: size-10 justify-center px-0, una caja de 40 con el ícono centrado. */
+.ab-sidebar__link--icon {
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.ab-sidebar__link-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* NavBranch: flex w-full items-center gap-3 rounded-[var(--radius-control)] px-3 py-2 text-sm font-medium
+   text-[var(--color-content-muted)] transition-colors hover:bg-[var(--color-surface-muted)]
+   hover:text-[var(--color-content)], sobre el preflight de un botón (sin borde ni fondo). */
+button.ab-sidebar__branch {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--color-content-muted);
+  transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button.ab-sidebar__branch:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-content);
+}
+
+/* min-w-0 flex-1 truncate text-left */
+.ab-sidebar__branch-label {
+  min-width: 0;
+  flex: 1 1 0%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+/* size-4 shrink-0 transition-transform, -rotate-90 plegado. */
+.ab-sidebar__chevron {
+  flex-shrink: 0;
+  transition-property: transform, translate, scale, rotate;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-sidebar__chevron--closed {
+  rotate: -90deg;
+}
+
+/* Los hijos: mt-1 ml-[22px] flex flex-col gap-1 border-l border-[var(--color-border)] pl-3. La guía arranca
+   bajo el centro del ícono del padre (12 de relleno más medio ícono de 20). */
+ul.ab-sidebar__children {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 4px 0 0 22px;
+  border-left: 1px solid var(--color-border);
+  padding: 0 0 0 12px;
+  list-style: none;
+}
+
+/* `/api/me` caído: mb-3 flex flex-col gap-2 rounded-[var(--radius-control)] border border-dashed p-2, con
+   items-center contraída. */
+.ab-sidebar__error {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-control);
+  padding: 8px;
+}
+
+.ab-sidebar__error--center {
+  align-items: center;
+}
+
+/* px-1 text-xs text-[var(--color-content-muted)] */
+p.ab-sidebar__error-text {
+  padding: 0 4px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-content-muted);
+}
+
+/* El pie: border-t p-3, y adentro flex items-center gap-2 (justify-center contraída). */
+.ab-sidebar__footer {
+  border-top: 1px solid var(--color-border);
+  padding: 12px;
+}
+
+.ab-sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ab-sidebar--collapsed .ab-sidebar__user {
+  justify-content: center;
+}
+
+.ab-sidebar__avatar-skeleton {
+  flex-shrink: 0;
+}
+
+.ab-sidebar__identity {
+  min-width: 0;
+  flex: 1 1 0%;
+}
+
+/* truncate text-sm font-medium text-[var(--color-content)] */
+p.ab-sidebar__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--color-content);
+}
+
+/* truncate text-xs text-[var(--color-content-muted)] */
+p.ab-sidebar__email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-content-muted);
+}
+
+/* Los renglones de carga: flex h-5 items-center y flex h-4 items-center, el alto de las dos líneas de texto. */
+.ab-sidebar__line {
+  display: flex;
+  align-items: center;
+}
+
+.ab-sidebar__line--name {
+  height: 20px;
+}
+
+.ab-sidebar__line--email {
+  height: 16px;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Topbar: layouts/components/Topbar.tsx
+   flex h-16 shrink-0 items-center justify-between gap-4 border-b bg-[var(--color-surface)] px-4, y a la
+   izquierda flex min-w-0 items-center gap-3 con el ☰ (IconButton, ícono size-5) y las migas. */
+.ab-topbar {
+  display: flex;
+  height: var(--size-topbar);
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: 0 16px;
+}
+
+.ab-topbar__start {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Breadcrumbs: layouts/components/Breadcrumbs.tsx
+   nav min-w-0; ol flex min-w-0 items-center gap-1.5 truncate text-sm; cada li truncate. Los enlaces van
+   apagados y se subrayan al pasar; el grupo, apagado y sin enlace; la actual, font-medium en el color del
+   contenido. */
+.ab-breadcrumbs {
+  min-width: 0;
+}
+
+ol.ab-breadcrumbs__list {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 20px;
+  list-style: none;
+}
+
+.ab-breadcrumbs__item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ab-breadcrumbs__separator,
+.ab-breadcrumbs__item--muted {
+  color: var(--color-content-muted);
+}
+
+.ab-breadcrumbs__item--current {
+  font-weight: 500;
+  color: var(--color-content);
+}
+
+.ab-breadcrumbs__link {
+  color: var(--color-content-muted);
+  text-decoration: none;
+}
+
+.ab-breadcrumbs__link:hover {
+  color: var(--color-content);
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   UserMenu: layouts/components/UserMenu.tsx
+   Disparador: flex shrink-0 items-center gap-1.5 rounded-full outline-none focus-visible:ring-[3px]
+   focus-visible:ring-ring/50, con el avatar de 32 y ChevronDown size-4 apagado. Panel: align="end" w-64.
+   El cursor es el de un botón en Tailwind v4 (`default`, no la mano): `.ab-menu-trigger` pone `pointer`. */
+button.ab-user-menu__trigger {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: default;
+}
+
+button.ab-user-menu__trigger:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
+.ab-user-menu__chevron {
+  color: var(--color-content-muted);
+}
+
+.ab-user-menu > .ab-menu {
+  width: 256px;
+}
+
+.ab-user-menu__skeleton {
+  flex-shrink: 0;
+}
+
+/* La identidad: DropdownMenuLabel con font-normal (px-2 py-1.5 text-sm). */
+.ab-menu-label.ab-user-menu__identity {
+  font-weight: 400;
+}
+
+/* truncate text-sm font-medium text-[var(--color-content)] */
+p.ab-user-menu__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--color-content);
+}
+
+/* truncate text-xs font-normal text-[var(--color-content-muted)] */
+p.ab-user-menu__email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  color: var(--color-content-muted);
+}
+
+/* El rótulo "Idioma": DropdownMenuLabel con text-xs font-normal tracking-wide text-[var(--color-content-muted)]
+   uppercase. No es el nivel "rótulo" de `MenuLabel caps` (11 px, semibold): es el que usa el código. */
+.ab-menu-label.ab-user-menu__section {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  color: var(--color-content-muted);
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Page: shared/ui/Page.tsx
+   Banda: sticky top-0 z-20 flex h-14 items-center justify-between gap-5 border-b
+   border-[var(--color-surface-header-border)] bg-[var(--color-surface-header)] px-6. Cuerpo: p-6. */
+.ab-page__band {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  height: var(--size-band);
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--color-surface-header-border);
+  background: var(--color-surface-header);
+  padding: 0 24px;
+}
+
+/* flex min-w-0 items-center gap-3 */
+.ab-page__heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+/* inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-brand-100)]
+   text-[var(--color-brand-700)], con el ícono size-4. */
+.ab-page__icon {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  background: var(--color-brand-100);
+  color: var(--color-brand-700);
+}
+
+/* La vuelta de una pantalla hija: inline-flex size-8 shrink-0 items-center justify-center
+   rounded-[var(--radius-control)] border bg-[var(--color-surface)] text-[var(--color-content-heading)]
+   transition-colors hover:bg-[var(--color-surface-muted)] focus-visible:outline-2 outline-offset-2
+   outline-[var(--color-brand-500)]. */
+.ab-page__back {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-content-heading);
+  text-decoration: none;
+  transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-page__back:hover {
+  background: var(--color-surface-muted);
+}
+
+.ab-page__back:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+/* truncate text-lg font-semibold text-[var(--color-content)] */
+h1.ab-page__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 600;
+  color: var(--color-content);
+}
+
+/* flex shrink-0 items-center gap-2, para el estado junto al título y para las acciones. */
+.ab-page__status,
+.ab-page__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.ab-page__body {
+  padding: 24px;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   AuthLayout: layouts/AuthLayout.tsx
+   flex min-h-svh flex-col items-center justify-center gap-6 bg-[var(--color-surface-muted)] px-4 py-10, con la
+   letra de `body` (16 px, como `AppShell`). */
+.ab-auth-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background: var(--color-surface-muted);
+  padding: 40px 16px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* size-8 rounded-lg bg-[var(--color-brand-600)] */
+.ab-auth-layout__brand {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  background: var(--color-brand-600);
+}
+
+/* w-full max-w-[28rem] rounded-[var(--radius-card)] border bg-[var(--color-surface)] p-6 shadow-sm sm:p-8 */
+.ab-auth-layout__card {
+  width: 100%;
+  max-width: 28rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  padding: 24px;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+@media (min-width: 640px) {
+  .ab-auth-layout__card {
+    padding: 32px;
+  }
+}
+
+/* flex items-center gap-2 text-sm text-[var(--color-content-muted)] */
+.ab-auth-layout__languages {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-content-muted);
+}
+
+/* Cada idioma es un botón con el preflight (sin borde, fondo ni relleno): el elegido va font-semibold en el
+   color del contenido y subrayado; el otro, apagado, y se subraya al pasar. */
+button.ab-auth-layout__language {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+button.ab-auth-layout__language:hover,
+button.ab-auth-layout__language--current {
+  color: var(--color-content);
+  text-decoration: underline;
+}
+
+button.ab-auth-layout__language--current {
+  font-weight: 600;
+}
+
+/* 60-overlays.css */
+/* Diálogos y avisos: Dialog, ConfirmDialog, Toast, Toaster y Banner.
+
+   Especificidad: 00-base.css le pone `font: inherit` y `color: inherit` a todo `button` con una clase `ab-`
+   (0,1,1). Lo que cambia letra o color de un botón de acá va con dos clases. */
+
+/* ------------------------------------------------------------------------------------------------------------
+   Dialog: shared/ui/dialog.tsx */
+
+/* DialogOverlay: fixed inset-0 z-50 bg-black/50.
+   Sin animación, como en el código: las clases `animate-in`, `fade-in-0` y `zoom-in-95` que trae shadcn son de
+   tw-animate-css, y el front no lo instala (`src/index.css` solo importa tailwindcss). Allá no hacen nada. */
+.ab-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgb(0 0 0 / 0.5);
+}
+
+/* DialogContent: grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-lg border bg-background p-6 shadow-lg
+   outline-none sm:max-w-lg. La letra y el color son los de `body` en el front: el diálogo va a un portal en
+   `document.body`, donde puede no haber un `.ab-root` del que heredarlos. */
+.ab-dialog {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  max-width: calc(100% - 2rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  padding: 24px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-content);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* fixed top-[50%] left-[50%] z-50 translate-x-[-50%] translate-y-[-50%]. El centrado va por `translate`, como
+   en Tailwind v4. `duration-200` y las clases de entrada no hacen nada en el front (ver el fondo, arriba). */
+.ab-dialog--modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 50;
+  translate: -50% -50%;
+}
+
+/* Dibujado en el lugar: la misma caja, sin fondo ni posición fija. */
+.ab-dialog--inline {
+  position: relative;
+  max-width: var(--ab-dialog-width, 32rem);
+}
+
+@media (min-width: 640px) {
+  .ab-dialog--modal {
+    max-width: var(--ab-dialog-width, 32rem);
+  }
+
+  .ab-dialog--modal.ab-dialog--banded {
+    max-width: var(--ab-dialog-width, 480px);
+  }
+}
+
+/* DialogHeader: flex flex-col gap-2 text-center sm:text-left. */
+.ab-dialog__header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+/* DialogTitle: text-lg leading-none font-semibold. */
+.ab-dialog__title {
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 600;
+}
+
+/* DialogDescription: text-sm text-muted-foreground. */
+.ab-dialog__description {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--muted-foreground);
+}
+
+/* El cuerpo es el formulario de UserFormDialog: flex flex-col gap-4. */
+.ab-dialog__body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* DialogFooter: flex flex-col-reverse gap-2 sm:flex-row sm:justify-end. */
+.ab-dialog__footer {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+}
+
+@media (min-width: 640px) {
+  .ab-dialog__header {
+    text-align: left;
+  }
+
+  .ab-dialog__footer {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+/* DialogClose: absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100
+   focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden, con el ícono de 16. El anillo es
+   con `:focus` y no `:focus-visible`, como en el código. */
+.ab-dialog .ab-dialog__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  opacity: 0.7;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ab-dialog .ab-dialog__close:hover {
+  opacity: 1;
+}
+
+.ab-dialog .ab-dialog__close:focus {
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}
+
+.ab-dialog .ab-dialog__close svg {
+  pointer-events: none;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+/* La forma de RoleFormDialog: `flex max-h-[min(720px,90svh)] flex-col gap-0 overflow-hidden p-0
+   sm:max-w-[480px]`. Encabezado `px-[18px] pt-[18px] pr-12`, cuerpo `gap-3.5 overflow-y-auto px-[18px] py-4`
+   y pie `border-t bg-[var(--color-surface-muted)] px-[18px] py-3`. */
+.ab-dialog--banded {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: min(720px, 90svh);
+  overflow: hidden;
+  padding: 0;
+}
+
+.ab-dialog--inline.ab-dialog--banded {
+  max-width: var(--ab-dialog-width, 480px);
+  max-height: 720px;
+}
+
+.ab-dialog--banded > .ab-dialog__header {
+  padding: 18px 48px 0 18px;
+}
+
+.ab-dialog--banded > .ab-dialog__body {
+  flex: 1 1 0%;
+  min-height: 0;
+  gap: 14px;
+  overflow-y: auto;
+  padding: 16px 18px;
+}
+
+.ab-dialog--banded > .ab-dialog__footer {
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  padding: 12px 18px;
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Toast y Toaster: sonner 2.0.8 (styles.css) con las variables de shared/ui/sonner.tsx. */
+
+/* [data-sonner-toast][data-styled=true]: padding 16, borde de 1, sombra 0 4px 12px, 13 px, gap 6.
+   La letra es la de sonner, no Inter: `[data-sonner-toaster]` declara su propia familia y en el front nada la
+   pisa, así que los avisos del código salen en la fuente del sistema. Se copia tal cual. */
+.ab-toast {
+  --ab-toast-bg: var(--popover, var(--background));
+  --ab-toast-text: var(--popover-foreground, var(--foreground));
+  --ab-toast-border: var(--border);
+  position: relative;
+  display: flex;
+  width: 356px;
+  max-width: 100%;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  border: 1px solid var(--ab-toast-border);
+  border-radius: var(--radius);
+  background: var(--ab-toast-bg);
+  padding: 16px;
+  color: var(--ab-toast-text);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans,
+    sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-size: 13px;
+  line-height: 1.5;
+  list-style: none;
+  outline: none;
+  overflow-wrap: anywhere;
+}
+
+.ab-toast:focus-visible {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+/* [data-icon]: 16 × 16, con -3 px a la izquierda y 4 a la derecha; el svg, -1 px más. */
+.ab-toast__icon {
+  position: relative;
+  display: flex;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: -3px;
+  margin-right: 4px;
+}
+
+.ab-toast__icon svg {
+  flex-shrink: 0;
+  margin-left: -1px;
+  margin-right: 0;
+}
+
+/* [data-content]: columna con 2 px entre título y descripción, que toma el ancho que queda. */
+.ab-toast__content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ab-toast__title {
+  font-weight: 500;
+  line-height: 1.5;
+  color: inherit;
+}
+
+/* El gris de la descripción es un valor fijo de sonner (#3f3f3f), no un token. */
+.ab-toast__description {
+  font-weight: 400;
+  line-height: 1.4;
+  color: #3f3f3f;
+}
+
+/* [data-button]: la acción ("Reintentar" en el error de red). Radio 4, 24 de alto, 12 px, colores invertidos. */
+.ab-toast .ab-toast__button {
+  display: flex;
+  height: 24px;
+  flex-shrink: 0;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 0;
+  border: none;
+  border-radius: 4px;
+  background: var(--ab-toast-text);
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ab-toast-bg);
+  cursor: pointer;
+  outline: none;
+  transition: opacity 0.4s, box-shadow 0.2s;
+}
+
+.ab-toast .ab-toast__button:focus-visible {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4);
+}
+
+/* [data-close-button]: el círculo de 20 px montado sobre la esquina superior izquierda. */
+.ab-toast .ab-toast__close {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ab-toast-border);
+  border-radius: 50%;
+  background: var(--ab-toast-bg);
+  padding: 0;
+  color: var(--ab-toast-text);
+  cursor: pointer;
+  transform: translate(-35%, -35%);
+  transition: opacity 0.1s, background 0.2s, border-color 0.2s;
+}
+
+.ab-toast .ab-toast__close:hover {
+  background: hsl(0, 0%, 97.3%);
+  border-color: hsl(0, 0%, 90.9%);
+}
+
+.ab-toast .ab-toast__close:focus-visible {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+/* [data-sonner-toaster]: fija abajo a la derecha, a 24 px (VIEWPORT_OFFSET), de 356 px (TOAST_WIDTH), con 14
+   de espacio entre avisos (GAP). */
+.ab-toaster {
+  --ab-toast-gap: 14px;
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 999999999;
+  width: 356px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  outline: none;
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans,
+    sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  transition: transform 0.4s ease;
+}
+
+.ab-toaster--contained {
+  position: absolute;
+}
+
+/* [data-sonner-toast] dentro de la pila, anclado abajo: entra desde abajo y los de atrás suben 14 px cada uno
+   y se achican un 5 %. */
+.ab-toast--stacked {
+  --y: translateY(100%);
+  --lift: -1;
+  --lift-amount: calc(var(--lift) * var(--ab-toast-gap));
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-index);
+  opacity: 0;
+  transform: var(--y);
+  touch-action: none;
+  transition: transform 0.4s, opacity 0.4s, height 0.4s, box-shadow 0.2s;
+}
+
+.ab-toast--stacked > * {
+  transition: opacity 0.4s;
+}
+
+.ab-toast--stacked[data-expanded="true"]::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  height: calc(var(--ab-toast-gap) + 1px);
+}
+
+.ab-toast--stacked[data-mounted="true"] {
+  --y: translateY(0);
+  opacity: 1;
+}
+
+.ab-toast--stacked[data-expanded="false"][data-front="false"] {
+  --scale: var(--toasts-before) * 0.05 + 1;
+  --y: translateY(calc(var(--lift-amount) * var(--toasts-before))) scale(calc(-1 * var(--scale)));
+  height: var(--front-toast-height);
+}
+
+.ab-toast--stacked[data-expanded="false"][data-front="false"] > * {
+  opacity: 0;
+}
+
+.ab-toast--stacked[data-visible="false"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ab-toast--stacked[data-mounted="true"][data-expanded="true"] {
+  --y: translateY(calc(var(--lift) * var(--offset)));
+  height: var(--initial-height);
+}
+
+.ab-toast--stacked[data-removed="true"][data-front="true"] {
+  --y: translateY(calc(var(--lift) * -100%));
+  opacity: 0;
+}
+
+.ab-toast--stacked[data-removed="true"][data-front="false"][data-expanded="true"] {
+  --y: translateY(calc(var(--lift) * var(--offset) + var(--lift) * -100%));
+  opacity: 0;
+}
+
+.ab-toast--stacked[data-removed="true"][data-front="false"][data-expanded="false"] {
+  --y: translateY(40%);
+  opacity: 0;
+  transition: transform 0.5s, opacity 0.2s;
+}
+
+/* MOBILE_VIEWPORT_OFFSET: en pantallas de hasta 600 px la pila va a 16 px de cada borde y ocupa el ancho. */
+@media (max-width: 600px) {
+  .ab-toaster {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    width: 100%;
+  }
+
+  .ab-toaster .ab-toast--stacked {
+    right: 0;
+    left: 0;
+    width: calc(100% - 32px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ab-toast--stacked,
+  .ab-toast--stacked > * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------------------
+   Banner: la "banda de pantalla" del tablero Avisos. Fondo del tono al 14 %, borde al 40 %, radio de 10,
+   relleno 11 × 14, gap 10. El ícono y el texto van en versiones oscuras del tono: en el tablero, para warning,
+   oklch(0.52 0.12 80) y oklch(0.42 0.1 80). Esos dos no tienen token, así que salen del tono con la misma
+   receta (luminosidad fija, croma al 80 % y a dos tercios); los primeros valores de cada regla son el respaldo
+   para un navegador sin colores relativos. */
+.ab-banner {
+  --ab-banner-tone: var(--color-warning);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid color-mix(in oklab, var(--ab-banner-tone) 40%, transparent);
+  border-radius: var(--radius);
+  background: color-mix(in oklab, var(--ab-banner-tone) 14%, transparent);
+  padding: 11px 14px;
+}
+
+.ab-banner--info {
+  --ab-banner-tone: var(--color-brand-500);
+}
+
+.ab-banner--danger {
+  --ab-banner-tone: var(--color-danger);
+}
+
+.ab-banner--titled {
+  align-items: flex-start;
+}
+
+.ab-banner__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.ab-banner--titled .ab-banner__icon {
+  margin-top: 1px;
+}
+
+.ab-banner__body {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.ab-banner__title {
+  font-size: 13px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+.ab-banner__action {
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* Respaldo por tono. */
+.ab-banner--warning .ab-banner__icon {
+  color: oklch(0.52 0.12 80);
+}
+
+.ab-banner--warning .ab-banner__body {
+  color: oklch(0.42 0.1 80);
+}
+
+.ab-banner--info .ab-banner__icon,
+.ab-banner--info .ab-banner__body {
+  color: var(--color-brand-700);
+}
+
+.ab-banner--danger .ab-banner__icon,
+.ab-banner--danger .ab-banner__body {
+  color: var(--color-danger);
+}
+
+/* La receta: luminosidad 0.52 y 0.42, croma al 80 % y a dos tercios del tono. Va dentro de `@supports` y no
+   solo después del respaldo: como lleva `var()`, un navegador sin colores relativos no la descarta al leerla
+   sino al calcularla, y ahí no vuelve a la regla anterior, hereda el color. */
+@supports (color: oklch(from red l c h)) {
+  .ab-banner .ab-banner__icon {
+    color: oklch(from var(--ab-banner-tone) 0.52 calc(c * 0.8) h);
+  }
+
+  .ab-banner .ab-banner__body {
+    color: oklch(from var(--ab-banner-tone) 0.42 calc(c * 2 / 3) h);
+  }
+}
