@@ -29,6 +29,17 @@ export function backendProxy(mode: string) {
 
 export default defineConfig(({ mode }) => ({
   plugins: [react(), tailwindcss()],
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            { name: "react", test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/ },
+          ],
+        },
+      },
+    },
+  },
   resolve: {
     alias: { "@": path.resolve(import.meta.dirname, "./src") },
   },
