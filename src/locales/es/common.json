@@ -76,7 +76,10 @@
     "range": "{{from}}–{{to}} de {{total}}",
     "page": "Página {{page}} de {{totalPages}}",
     "previous": "Página anterior",
-    "next": "Página siguiente"
+    "next": "Página siguiente",
+    "rowsPerPage": "Filas por página",
+    "perPage": "{{size}} por página",
+    "loadMore": "Cargar más"
   },
   "notifications": {
     "label": "Notificaciones",
