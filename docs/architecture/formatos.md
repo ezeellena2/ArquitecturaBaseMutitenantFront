@@ -13,6 +13,7 @@
 - La cultura decide dos cosas: el **idioma** de los textos (`es`) y el **formato** de fechas y números (`es-AR`).
 - `useFormat()` resuelve las tres preferencias una sola vez y toma los patrones de `Cultures`, cargados por `shared/referenceData` desde `GET /api/reference-data`. Ningún componente lee preferencias ni arma patrones por su cuenta.
 - **E1:** antes de `/api/me`, el proveedor toma los valores por defecto y sus relaciones del JSON de referencia (hoy `es-AR`, `America/Argentina/Buenos_Aires` y `ARS`) y la cultura guardada en `localStorage` (`arquitecturabasemt.culture`) si está habilitada. **E3:** conecta las preferencias de cuenta y organización a `/api/me`. No hay constantes ni listas de opciones en el componente.
+- **E3a:** `useEffectiveTimeZone` lee `timeZoneId` efectivo de `/api/me`; el argumento `companyId` se conecta a los datos de empresa cuando existan en E6. La precedencia cuenta → empresa → organización o navegador se mantiene en un helper probado desde E3a.
 
 ## 2. Patrones de formato por cultura (datos, no código)
 

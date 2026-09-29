@@ -185,6 +185,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 ### Fechas y zona
 - Los DTO traen `…AtUtc` en ISO con `Z`; las fechas civiles, `yyyy-MM-dd`.
 - `useEffectiveTimeZone(companyId?)` devuelve la zona de la cuenta; si no hay, la de la empresa; si no, la de la organización (en B2B) o la del navegador guardada al registrarse (en B2C). Las fechas civiles no se convierten.
+- En 3a, `/api/me` entrega la zona efectiva para el acceso activo y el hook usa ese valor. Cuando nazcan las pantallas de empresa en E6, `companyId` conectará la zona propia de la empresa. La precedencia completa se verifica desde 3a con un helper puro.
 
 ### UI y pantallas
 Rigen los [tableros del lienzo versionado](../design/lienzo/README.md) (versión 35; mandan sobre cualquier descripción textual), el [tema](tema.md) (tokens y colores: verde petróleo como marca y marco arena en el menú lateral y la barra superior; forma de tarjetas, botones y tablas; el `AdminPanel`) y estas reglas. De `visual-baseline.md` se mantienen solo las migas; **lo que sigue lo reemplaza**.
