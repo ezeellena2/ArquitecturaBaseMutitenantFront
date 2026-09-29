@@ -1,4 +1,5 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
+import { StrictMode } from "react";
 import type { User } from "oidc-client-ts";
 import type { AuthContextProps } from "react-oidc-context";
 import { createMemoryRouter, RouterProvider } from "react-router";
@@ -16,7 +17,7 @@ const auth = {
 
 vi.mock("react-oidc-context", () => ({ useAuth: () => auth as unknown as AuthContextProps }));
 
-function renderPrivateRoute() {
+function renderPrivateRoute(strict = false) {
   const router = createMemoryRouter([
     { path: "/login/empresa", element: <main aria-label="Ingreso de empresa" /> },
     { element: <SessionRecovery />, children: [
@@ -25,7 +26,8 @@ function renderPrivateRoute() {
       ] },
     ] },
   ], { initialEntries: ["/org"] });
-  render(<RouterProvider router={router} />);
+  const route = <RouterProvider router={router} />;
+  render(strict ? <StrictMode>{route}</StrictMode> : route);
   return router;
 }
 
@@ -71,5 +73,12 @@ describe("SessionRecovery", () => {
 
     expect(await screen.findByRole("main", { name: "Inicio de organización" })).toBeInTheDocument();
     expect(signinSilent).not.toHaveBeenCalled();
+  });
+
+  it("no duplica el canje de cookie en StrictMode", async () => {
+    signinSilent.mockImplementation(() => new Promise<User>(() => undefined));
+    renderPrivateRoute(true);
+
+    await waitFor(() => expect(signinSilent).toHaveBeenCalledOnce());
   });
 });
