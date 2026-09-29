@@ -1,6 +1,7 @@
 {
   "offline": "Sin conexión",
   "newVersion": "Hay una versión nueva",
+  "loadFailed": "No pudimos abrir esta pantalla",
   "update": "Actualizar",
   "network": "No pudimos conectarnos. Revisá tu conexión.",
   "server": "Algo salió mal. Probá de nuevo en un rato.",

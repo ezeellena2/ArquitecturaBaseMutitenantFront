@@ -17,6 +17,7 @@
 - **Pantalla:** un 403 renderiza `ForbiddenPage`; un 404 en una ficha, `NotFoundPage` (también un id de otra organización o de otro acceso); `Tenancy.Tenant.Suspended`, `Tenancy.Tenant.PendingApproval` y `Tenancy.Tenant.Closed` renderizan `OrganizationUnavailablePage` con su estado (Suspendida, Espera aprobación o Cerrada), y `Tenancy.Access.Wrong` lleva al inicio del acceso correcto.
 - Query que maneja su error en pantalla: `meta: { silent: true }`.
 - Si falla el catálogo inicial, `AppProviders` muestra el error y un botón «Reintentar»; el Toaster sigue montado aunque el contenido principal espere datos o traducciones.
+- Si Vite emite `vite:preloadError`, `AppShell` muestra la franja de versión nueva sin cancelar el evento. Los fallos de render y de ruta se contienen en una pantalla traducida con «Actualizar»; la recarga sucede solo al pulsarlo.
 - **Genéricos:** `shared/api` y `AppShell` resuelven red, 5xx, 429 (`retryAfterSeconds` y cuenta regresiva en el botón, sin reintento automático), 409, salir sin guardar y versión nueva en E1. La sesión vencida requiere Auth y se conecta en E3; módulo apagado, en E5. Una pantalla no los reimplementa ([frontend.md, "Errores"](../architecture/frontend.md#errores)).
 
 ## Prohibido

@@ -1,6 +1,7 @@
 {
   "offline": "Offline",
   "newVersion": "A new version is available",
+  "loadFailed": "We couldn't open this page",
   "update": "Update",
   "network": "We couldn't connect. Check your connection.",
   "server": "Something went wrong. Try again in a little while.",

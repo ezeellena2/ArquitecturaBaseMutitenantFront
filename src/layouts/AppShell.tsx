@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { AppErrorBoundary } from "./AppErrorBoundary";
 import { NewVersionBanner } from "./components/NewVersionBanner";
 import { OfflineBanner } from "./components/OfflineBanner";
 
@@ -15,10 +16,8 @@ export function AppShell({ children, onReload = () => window.location.reload() }
   useEffect(() => {
     const onOffline = () => setOffline(true);
     const onOnline = () => setOffline(false);
-    const onPreloadError = (event: VitePreloadErrorEvent) => {
-      // Vite rechaza un chunk viejo tras un despliegue. Su comportamiento por defecto deja el error sin manejar;
-      // el usuario elige cuándo recargar para no perder un formulario abierto.
-      event.preventDefault();
+    const onPreloadError = () => {
+      // Vite propaga el fallo de precarga; la persona decide cuándo recargar.
       setNewVersion(true);
     };
 
@@ -38,7 +37,7 @@ export function AppShell({ children, onReload = () => window.location.reload() }
         {offline ? <OfflineBanner /> : null}
         {newVersion ? <NewVersionBanner onUpdate={onReload} /> : null}
       </div>
-      <div className="min-h-0 flex-1">{children}</div>
+      <div className="min-h-0 flex-1"><AppErrorBoundary onReload={onReload}>{children}</AppErrorBoundary></div>
     </div>
   );
 }
