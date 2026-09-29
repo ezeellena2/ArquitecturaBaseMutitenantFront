@@ -1,6 +1,7 @@
 import { ApiError } from "./ApiError";
 import { isProblemDetails, type ProblemDetails } from "./problemDetails";
 import { effectiveCulture } from "@/shared/i18n";
+import { clearAccessError, publishAccessError } from "./accessErrorStore";
 
 interface HttpClientOptions {
   getAccessToken?: () => string | undefined;
@@ -17,6 +18,7 @@ export function configureHttpClient(next: HttpClientOptions): void {
 
 export function resetHttpClient(): void {
   options = defaults;
+  clearAccessError();
 }
 
 async function readProblem(response: Response): Promise<ProblemDetails> {
@@ -77,7 +79,10 @@ async function receive(path: string, init: RequestInit, allowNotModified = false
   }
 
   if (!response.ok && !(allowNotModified && response.status === 304)) {
-    throw new ApiError(response.status, await readProblem(response));
+    const error = new ApiError(response.status, await readProblem(response));
+    // Los errores propios de ingreso se traducen en sus formularios; el resto de 403 bloquea la vista.
+    if (error.status === 403 && !path.startsWith("/api/auth/")) publishAccessError(error);
+    throw error;
   }
 
   return response;

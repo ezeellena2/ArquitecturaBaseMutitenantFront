@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import type { AccessKind } from "@/auth/AccessRoute";
 import { accessHome } from "./accessHome";
+import { clearAccessError } from "@/shared/api/accessErrorStore";
 
 export type SwitchTarget = { access: AccessKind; tenantId?: string };
 
@@ -30,6 +31,7 @@ export function useSwitchAccess() {
       if (!user) throw new Error("Silent sign-in returned no user");
 
       queryClient.clear();
+      clearAccessError();
       navigate(accessHome(target.access), { replace: true });
     } catch {
       setHasError(true);

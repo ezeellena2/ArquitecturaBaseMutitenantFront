@@ -44,6 +44,7 @@ describe("soporte HTTP y componentes", () => {
   it("ofrece un router de memoria sin requerir auth", async () => {
     const { router } = renderRouteWithProviders("/");
     expect(router.state.location.pathname).toBe("/");
+    expect(await screen.findByRole("heading", { name: "Para vos y para tu empresa." })).toBeInTheDocument();
     expect(await screen.findByRole("main")).toBeInTheDocument();
   });
 

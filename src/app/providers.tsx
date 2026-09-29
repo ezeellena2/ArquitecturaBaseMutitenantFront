@@ -6,7 +6,6 @@ import { queryClient } from "@/shared/api/queryClient";
 import { FormatProvider } from "@/shared/format/useFormat";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { Toaster } from "@/shared/ui/sonner";
-import { AppShell } from "@/layouts/AppShell";
 import { Button } from "@/shared/ui/button";
 import { safeStorageGet } from "@/shared/hooks/safeStorage";
 import { AppAuthProvider } from "@/auth/AuthProvider";
@@ -42,7 +41,7 @@ export function AppProviders({ children, client = queryClient, authContext }: { 
     <ReferenceDataStartup>
       <FormatProvider>
         <Suspense fallback={null}>
-          <AppShell>{children}</AppShell>
+          {children}
         </Suspense>
       </FormatProvider>
     </ReferenceDataStartup>

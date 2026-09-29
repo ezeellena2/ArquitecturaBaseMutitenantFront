@@ -5,6 +5,7 @@ import { server } from "@/test/mocks/server";
 import { ApiError } from "./ApiError";
 import { api, configureHttpClient, resetHttpClient } from "./httpClient";
 import type { PagedResult } from "./pagedResult";
+import { getAccessError, clearAccessError } from "./accessErrorStore";
 
 beforeAll(async () => {
   await configureI18n([
@@ -17,6 +18,7 @@ describe("httpClient", () => {
   beforeEach(() => resetHttpClient());
   afterEach(async () => {
     resetHttpClient();
+    clearAccessError();
     await changeCulture("es-AR");
   });
 
@@ -121,5 +123,17 @@ describe("httpClient", () => {
     const caught = await api.get("/api/test-client").catch((error: unknown) => error);
     expect(caught).toBeInstanceOf(ApiError);
     expect(caught).toMatchObject({ status: 0, isNetworkError: true });
+  });
+
+  it("publica 403 protegidos para AppShell y deja los de ingreso a la pantalla", async () => {
+    server.use(
+      http.get("/api/me", () => HttpResponse.json({ code: "Tenancy.Tenant.Suspended", organizationName: "Beta S.R.L.", tenantId: "beta" }, { status: 403 })),
+      http.post("/api/auth/login-code/verify", () => HttpResponse.json({ code: "Tenancy.Member.Inactive" }, { status: 403 })),
+    );
+    await expect(api.get("/api/me")).rejects.toMatchObject({ status: 403, code: "Tenancy.Tenant.Suspended" });
+    expect(getAccessError()?.problem).toMatchObject({ organizationName: "Beta S.R.L.", tenantId: "beta" });
+    clearAccessError();
+    await expect(api.post("/api/auth/login-code/verify", {})).rejects.toMatchObject({ status: 403 });
+    expect(getAccessError()).toBeNull();
   });
 });

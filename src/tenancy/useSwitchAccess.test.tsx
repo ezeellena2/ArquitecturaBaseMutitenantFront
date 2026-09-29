@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import type { AuthContextProps } from "react-oidc-context";
 import { MemoryRouter, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ApiError } from "@/shared/api/ApiError";
+import { clearAccessError, getAccessError, publishAccessError } from "@/shared/api/accessErrorStore";
 import { accessHome } from "./accessHome";
 import { useSwitchAccess } from "./useSwitchAccess";
 
@@ -24,10 +26,11 @@ function setup() {
 }
 
 describe("useSwitchAccess", () => {
-  beforeEach(() => signinSilent.mockReset());
+  beforeEach(() => { signinSilent.mockReset(); clearAccessError(); });
 
   it("fuerza authorize con access y tenant, limpia caché y llega al inicio B2B", async () => {
     signinSilent.mockResolvedValue({ access_token: "nuevo" } as User);
+    publishAccessError(new ApiError(403, { code: "Tenancy.Tenant.Suspended" }));
     const { client, result } = setup();
     let switching = Promise.resolve();
 
@@ -42,6 +45,7 @@ describe("useSwitchAccess", () => {
 
     await act(async () => { await switching; });
     expect(client.getQueryData(["private", "empresa-a"])).toBeUndefined();
+    expect(getAccessError()).toBeNull();
     expect(result.current.location.pathname).toBe("/org");
   });
 

@@ -1,11 +1,17 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { I18nextProvider } from "react-i18next";
-import { createMemoryRouter, RouterProvider } from "react-router";
+import { createMemoryRouter, MemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthContext, type AuthContextProps } from "react-oidc-context";
+import { HttpResponse, http } from "msw";
 import { routes } from "@/app/routes";
+import { ApiError } from "@/shared/api/ApiError";
+import { publishAccessError, clearAccessError } from "@/shared/api/accessErrorStore";
 import i18n, { configureI18n } from "@/shared/i18n";
+import { server } from "@/test/mocks/server";
 import { AppShell } from "./AppShell";
 
 beforeAll(async () => {
@@ -15,7 +21,7 @@ beforeAll(async () => {
   ]);
 });
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => { vi.restoreAllMocks(); clearAccessError(); });
 
 function renderShell(onReload = vi.fn()) {
   render(
@@ -84,5 +90,47 @@ describe("AppShell", () => {
 
     expect(await screen.findByRole("heading", { name: "No pudimos abrir esta pantalla" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Actualizar" })).toBeInTheDocument();
+  });
+
+  it("muestra la organización suspendida con su nombre del ProblemDetails", () => {
+    const client = new QueryClient();
+    const auth = { isAuthenticated: true, user: { profile: { access: "business" } } } as unknown as AuthContextProps;
+    render(<I18nextProvider i18n={i18n}><AuthContext.Provider value={auth}><QueryClientProvider client={client}>
+      <MemoryRouter><AppShell><main>{"Contenido"}</main></AppShell></MemoryRouter>
+    </QueryClientProvider></AuthContext.Provider></I18nextProvider>);
+    act(() => publishAccessError(new ApiError(403, { code: "Tenancy.Tenant.Suspended", organizationName: "Beta S.R.L.", tenantId: "beta" })));
+    expect(screen.getByRole("heading", { name: "Beta S.R.L. está suspendida" })).toBeVisible();
+    expect(screen.queryByText("Contenido")).not.toBeInTheDocument();
+  });
+
+  it("carga los otros perfiles desde /api/me pese al 403 de organización suspendida", async () => {
+    server.use(http.get("/api/me", () => HttpResponse.json({
+      id: "ana", displayName: "Ana", email: "ana@example.test", access: "business",
+      activeTenantId: "beta", hasPersonalSpace: true, permissions: [], culture: "es-AR",
+      timeZoneId: "America/Argentina/Buenos_Aires", currencyCode: "ARS",
+      organizations: [
+        { id: "beta", name: "Beta S.R.L.", roleName: null, status: "Suspended" },
+        { id: "delta", name: "Grupo Delta", roleName: null, status: "Active" },
+      ],
+    })));
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const auth = { isAuthenticated: true, user: { profile: { access: "business" } } } as unknown as AuthContextProps;
+    render(<I18nextProvider i18n={i18n}><AuthContext.Provider value={auth}><QueryClientProvider client={client}>
+      <MemoryRouter><AppShell><main>{"Contenido"}</main></AppShell></MemoryRouter>
+    </QueryClientProvider></AuthContext.Provider></I18nextProvider>);
+    act(() => publishAccessError(new ApiError(403, { code: "Tenancy.Tenant.Suspended", organizationName: "Beta S.R.L.", tenantId: "beta" })));
+    expect(await screen.findByRole("button", { name: /Grupo Delta/ })).toBeVisible();
+    expect(screen.getByRole("button", { name: /Personal.*Tu perfil personal/ })).toBeVisible();
+    expect(screen.queryByRole("button", { name: /Beta S.R.L./ })).not.toBeInTheDocument();
+  });
+
+  it("muestra un 403 genérico y limpia el bloqueo al volver al inicio", async () => {
+    render(<I18nextProvider i18n={i18n}><MemoryRouter>
+      <AppShell><main>{"Contenido"}</main></AppShell>
+    </MemoryRouter></I18nextProvider>);
+    act(() => publishAccessError(new ApiError(403, { code: "Authorization.Forbidden" })));
+    expect(screen.getByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
+    await userEvent.click(screen.getByRole("link", { name: "Ir al inicio" }));
+    expect(screen.getByText("Contenido")).toBeVisible();
   });
 });
