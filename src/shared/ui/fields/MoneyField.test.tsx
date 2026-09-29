@@ -15,28 +15,49 @@ describe("NumberField y MoneyField", () => {
 
   it("interpreta un decimal según Cultures y no emite una cadena localizada", async () => {
     const onChange = vi.fn();
-    render(<AppProviders><FormField label="Cantidad"><NumberField value={1234.5} onChange={onChange} /></FormField></AppProviders>);
+    const onValidityChange = vi.fn();
+    render(<AppProviders><FormField label="Cantidad"><NumberField value={1234.5} onChange={onChange}
+      onValidityChange={onValidityChange} /></FormField></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Cantidad" });
     await waitFor(() => expect(input).toBeEnabled());
     expect(input).toHaveValue("1.234,5");
     fireEvent.change(input, { target: { value: "1.234,75" } });
     expect(onChange).toHaveBeenLastCalledWith(1234.75);
     fireEvent.change(input, { target: { value: "1,234.75" } });
+    expect(onChange).toHaveBeenLastCalledWith(null);
+    expect(onValidityChange).toHaveBeenLastCalledWith(false);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    fireEvent.blur(input);
     expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByRole("alert")).toHaveTextContent("Ingresá un número válido.");
+    fireEvent.change(input, { target: { value: "1.234,75" } });
+    expect(onChange).toHaveBeenLastCalledWith(1234.75);
+    expect(onValidityChange).toHaveBeenLastCalledWith(true);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("emite Money con moneda del catálogo y respeta sus unidades menores", async () => {
     const onChange = vi.fn();
-    render(<AppProviders><FormField label="Monto"><MoneyField value={null} onChange={onChange} /></FormField></AppProviders>);
+    const onValidityChange = vi.fn();
+    render(<AppProviders><FormField label="Monto"><MoneyField value={null} onChange={onChange}
+      onValidityChange={onValidityChange} /></FormField></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Monto" });
     await waitFor(() => expect(input).toBeEnabled());
     expect(screen.getByRole("combobox", { name: "Moneda" })).toHaveValue("ARS");
     fireEvent.change(input, { target: { value: "1.234,50" } });
     expect(onChange).toHaveBeenLastCalledWith({ amount: 1234.5, currency: "ARS" });
     fireEvent.change(input, { target: { value: "1.234,567" } });
-    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(onChange).toHaveBeenLastCalledWith(null);
+    expect(onValidityChange).toHaveBeenLastCalledWith(false);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect((input as HTMLInputElement).checkValidity()).toBe(false);
-    expect(onChange).toHaveBeenCalledTimes(1);
+    fireEvent.blur(input);
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByRole("alert")).toHaveTextContent("Ingresá un monto válido");
+    fireEvent.change(input, { target: { value: "1.234,50" } });
+    expect(onChange).toHaveBeenLastCalledWith({ amount: 1234.5, currency: "ARS" });
+    expect(onValidityChange).toHaveBeenLastCalledWith(true);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("usa una precisión de cero decimales tomada de Currencies", async () => {

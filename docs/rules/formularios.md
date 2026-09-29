@@ -12,6 +12,7 @@
   - el formulario es una sola hoja a ancho completo, en dos columnas, y lo asignado va debajo, en su tarjeta (como los permisos en el editor de roles).
 - **Validación:** `react-hook-form` + `zod` cuando hay reglas; en un diálogo simple, un draft en `useState`. Los mensajes salen de i18n.
 - **Campos:** `FormField` (rótulo, control, error, `aria-describedby`) + el field del tipo (`MoneyField`, `DateField`, `PercentField`…). El control más simple para cada dato: pocas opciones → `Select`; varias a la vez → `MultiSelect`.
+- **Edición inválida:** `MoneyField`, `NumberField`, `PercentField`, `DateField`, `DateTimeField` y `TimeField` conservan el texto escrito para corregirlo, pero emiten `onChange(null)` y `onValidityChange(false)` apenas falla el parseo, para que el formulario no conserve el valor anterior. El control queda inválido para el envío; el mensaje y el estado visual aparecen después de salir del campo. Al corregirlo emiten el valor parseado y `onValidityChange(true)` y retiran el error.
 - **Errores del servidor:** `applyApiErrorToForm`; lo general va en `<FormError>`.
 - **Campos por tipo de dato:** `EmailField` (trim y minúsculas al escribir), `PhoneField` + `CountrySelect` ([telefonos](telefonos.md)), `MoneyField` + `CurrencySelect`, `TimeZoneSelect`, `CultureSelect`, `DateField`… Sus opciones salen de `shared/referenceData`; mientras carga el catálogo muestran estado de carga. `TaxIdField` toma los tipos de `TaxIdTypes`, valida en E1 solo con `stdnum` y emite `{ type, number }` con `type = TaxIdTypes.Code` (por ejemplo, `AR-CUIT`) y `number` sin separadores; el value object y el contrato de salida `{ country, type, number }` del back llegan en E6. El `maxLength` de cada texto sale del contrato generado (`TextLimits` del back), nunca de un número escrito a mano.
 - **Envío sin duplicados:** el guardado de un alta o un envío usa `useIdempotentMutation` ([datos-y-api](datos-y-api.md)). La clave nace al abrir el formulario.
@@ -36,6 +37,7 @@
 - Tests de pantalla: el recorrido del diálogo y un error del servidor ubicado en su campo.
 - `parsers.test.ts` (E1).
 - `referenceData.test.ts` (E1) y tests de los selectores (E1): opciones del catálogo, carga y `{ type: "AR-CUIT", number }` sin separadores.
+- Tests de `shared/ui/fields`: borrado del valor anterior ante texto inválido, aviso tras blur y recuperación de validez al corregir.
 
 ## Detalle
 [frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · [lienzo versionado v35](../design/lienzo/README.md): tablero «Rol» (pantalla larga con «Cambios sin guardar») y nota «estilo» (lo corto en un diálogo de 560)

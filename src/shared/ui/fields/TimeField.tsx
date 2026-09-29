@@ -6,6 +6,7 @@ import { Input } from "../input";
 interface TimeFieldProps {
   value: string | null;
   onChange: (value: string | null) => void;
+  onValidityChange?: (isValid: boolean) => void;
   id?: string;
   name?: string;
   disabled?: boolean;
@@ -16,7 +17,7 @@ interface TimeFieldProps {
 }
 
 /** TimeOnly representa una hora civil y no se convierte a UTC. */
-export function TimeField({ value, onChange, id, name, disabled, required, placeholder,
+export function TimeField({ value, onChange, onValidityChange, id, name, disabled, required, placeholder,
   "aria-invalid": externalInvalid, "aria-describedby": externalDescription }: TimeFieldProps) {
   const format = useFormat();
   const { t } = useTranslation();
@@ -24,6 +25,7 @@ export function TimeField({ value, onChange, id, name, disabled, required, place
   const inputRef = useRef<HTMLInputElement>(null);
   const [draft, setDraft] = useState<string | null>(null);
   const [invalid, setInvalid] = useState(false);
+  const [touched, setTouched] = useState(false);
   const displayed = !format.isLoading && value !== null ? format.formatTime(value) : "";
   const inputValue = draft ?? displayed;
 
@@ -33,20 +35,24 @@ export function TimeField({ value, onChange, id, name, disabled, required, place
       const parsed = format.parseTime(input);
       inputRef.current?.setCustomValidity("");
       setInvalid(false);
+      onValidityChange?.(true);
       onChange(parsed);
     } catch {
       inputRef.current?.setCustomValidity(t("fields.invalidTime"));
       setInvalid(true);
+      onValidityChange?.(false);
+      onChange(null);
     }
   }
 
-  const description = [externalDescription, invalid ? messageId : undefined].filter(Boolean).join(" ") || undefined;
+  const showError = invalid && touched;
+  const description = [externalDescription, showError ? messageId : undefined].filter(Boolean).join(" ") || undefined;
   return <>
     <Input ref={inputRef} id={id} name={name} type="text" inputMode="numeric" value={inputValue}
-      onBlur={() => { if (!invalid) setDraft(null); }}
+      onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
       onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
-      aria-invalid={externalInvalid || invalid} aria-describedby={description} />
-    {invalid && <p id={messageId} role="alert" className="text-sm text-[var(--peligro)]">{t("fields.invalidTime")}</p>}
+      aria-invalid={externalInvalid || showError} aria-describedby={description} />
+    {showError && <p id={messageId} role="alert" className="text-sm text-[var(--peligro)]">{t("fields.invalidTime")}</p>}
   </>;
 }

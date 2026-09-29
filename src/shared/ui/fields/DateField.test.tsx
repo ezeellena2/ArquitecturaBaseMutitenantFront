@@ -24,13 +24,22 @@ describe("DateField", () => {
 
   it("marca el calendario imposible sin emitir un contrato incorrecto", async () => {
     const onChange = vi.fn();
-    render(<AppProviders><FormField label="Fecha"><DateField value={null} onChange={onChange} /></FormField></AppProviders>);
+    const onValidityChange = vi.fn();
+    render(<AppProviders><FormField label="Fecha"><DateField value={null} onChange={onChange}
+      onValidityChange={onValidityChange} /></FormField></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Fecha" });
     await waitFor(() => expect(input).toBeEnabled());
     fireEvent.change(input, { target: { value: "31/02/2026" } });
-    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(onChange).toHaveBeenLastCalledWith(null);
+    expect(onValidityChange).toHaveBeenLastCalledWith(false);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect((input as HTMLInputElement).checkValidity()).toBe(false);
+    fireEvent.blur(input);
+    expect(input).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByRole("alert")).toHaveTextContent("Ingresá una fecha válida.");
-    expect(onChange).not.toHaveBeenCalled();
+    fireEvent.change(input, { target: { value: "28/02/2026" } });
+    expect(onChange).toHaveBeenLastCalledWith("2026-02-28");
+    expect(onValidityChange).toHaveBeenLastCalledWith(true);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });

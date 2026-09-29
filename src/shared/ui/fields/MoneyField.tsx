@@ -9,6 +9,7 @@ import { CurrencySelect } from "./CurrencySelect";
 interface MoneyFieldProps {
   value: MoneyValue | null;
   onChange: (value: MoneyValue | null) => void;
+  onValidityChange?: (isValid: boolean) => void;
   id?: string;
   name?: string;
   disabled?: boolean;
@@ -19,7 +20,7 @@ interface MoneyFieldProps {
 }
 
 /** Importe y código ISO viajan juntos; precisión y opciones vienen de Currencies. */
-export function MoneyField({ value, onChange, id, name, disabled, required, placeholder,
+export function MoneyField({ value, onChange, onValidityChange, id, name, disabled, required, placeholder,
   "aria-invalid": externalInvalid, "aria-describedby": externalDescription }: MoneyFieldProps) {
   const format = useFormat();
   const { t } = useTranslation();
@@ -28,6 +29,7 @@ export function MoneyField({ value, onChange, id, name, disabled, required, plac
   const inputRef = useRef<HTMLInputElement>(null);
   const [draft, setDraft] = useState<string | null>(null);
   const [invalid, setInvalid] = useState(false);
+  const [touched, setTouched] = useState(false);
   const [currencyOverride, setCurrencyOverride] = useState<{ base: string | null; selected: string } | null>(null);
   const currency = currencyOverride?.base === (value?.currency ?? null)
     ? currencyOverride.selected : value?.currency ?? (format.isLoading ? "" : format.currency);
@@ -44,20 +46,24 @@ export function MoneyField({ value, onChange, id, name, disabled, required, plac
       const parsed = format.parseMoney(input, selected);
       inputRef.current?.setCustomValidity("");
       setInvalid(false);
+      onValidityChange?.(true);
       onChange(parsed);
     } catch {
       inputRef.current?.setCustomValidity(t("fields.invalidMoney"));
       setInvalid(true);
+      onValidityChange?.(false);
+      onChange(null);
     }
   }
 
-  const description = [externalDescription, invalid ? messageId : undefined].filter(Boolean).join(" ") || undefined;
+  const showError = invalid && touched;
+  const description = [externalDescription, showError ? messageId : undefined].filter(Boolean).join(" ") || undefined;
   return <div className="flex flex-col gap-2">
     <Input ref={inputRef} id={id} name={name} type="text" inputMode="decimal" value={inputValue}
-      onBlur={() => { if (!invalid) setDraft(null); }}
+      onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
       onChange={(event) => change(event.target.value, currency)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
-      aria-invalid={externalInvalid || invalid} aria-describedby={description} />
+      aria-invalid={externalInvalid || showError} aria-describedby={description} />
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={currencyId}>{t("fields.currency")}</Label>
       <CurrencySelect id={currencyId} value={currency} placeholder={t("fields.selectCurrency")}
@@ -65,8 +71,8 @@ export function MoneyField({ value, onChange, id, name, disabled, required, plac
           setCurrencyOverride({ base: value?.currency ?? null, selected });
           if (inputValue !== "") change(inputValue, selected);
         }}
-        disabled={disabled} aria-invalid={externalInvalid || invalid} />
+        disabled={disabled} aria-invalid={externalInvalid || showError} />
     </div>
-    {invalid && <p id={messageId} role="alert" className="text-sm text-[var(--peligro)]">{t("fields.invalidMoney")}</p>}
+    {showError && <p id={messageId} role="alert" className="text-sm text-[var(--peligro)]">{t("fields.invalidMoney")}</p>}
   </div>;
 }

@@ -6,6 +6,7 @@ import { Input } from "../input";
 interface NumberFieldProps {
   value: number | null;
   onChange: (value: number | null) => void;
+  onValidityChange?: (isValid: boolean) => void;
   digits?: number;
   id?: string;
   name?: string;
@@ -17,7 +18,7 @@ interface NumberFieldProps {
 }
 
 /** Cantidad cultural; digits fija la escala si el contrato lo requiere. */
-export function NumberField({ value, onChange, digits, id, name, disabled, required, placeholder,
+export function NumberField({ value, onChange, onValidityChange, digits, id, name, disabled, required, placeholder,
   "aria-invalid": externalInvalid, "aria-describedby": externalDescription }: NumberFieldProps) {
   const format = useFormat();
   const { t } = useTranslation();
@@ -25,6 +26,7 @@ export function NumberField({ value, onChange, digits, id, name, disabled, requi
   const inputRef = useRef<HTMLInputElement>(null);
   const [draft, setDraft] = useState<string | null>(null);
   const [invalid, setInvalid] = useState(false);
+  const [touched, setTouched] = useState(false);
   const displayed = !format.isLoading && value !== null
     ? digits === undefined ? format.formatQuantity(value) : format.formatDecimal(value, digits) : "";
   const inputValue = draft ?? displayed;
@@ -35,20 +37,24 @@ export function NumberField({ value, onChange, digits, id, name, disabled, requi
       const parsed = format.parseDecimal(input);
       inputRef.current?.setCustomValidity("");
       setInvalid(false);
+      onValidityChange?.(true);
       onChange(parsed);
     } catch {
       inputRef.current?.setCustomValidity(t("fields.invalidNumber"));
       setInvalid(true);
+      onValidityChange?.(false);
+      onChange(null);
     }
   }
 
-  const description = [externalDescription, invalid ? messageId : undefined].filter(Boolean).join(" ") || undefined;
+  const showError = invalid && touched;
+  const description = [externalDescription, showError ? messageId : undefined].filter(Boolean).join(" ") || undefined;
   return <>
     <Input ref={inputRef} id={id} name={name} type="text" inputMode="decimal" value={inputValue}
-      onBlur={() => { if (!invalid) setDraft(null); }}
+      onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
       onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
-      aria-invalid={externalInvalid || invalid} aria-describedby={description} />
-    {invalid && <p id={messageId} role="alert" className="text-sm text-[var(--peligro)]">{t("fields.invalidNumber")}</p>}
+      aria-invalid={externalInvalid || showError} aria-describedby={description} />
+    {showError && <p id={messageId} role="alert" className="text-sm text-[var(--peligro)]">{t("fields.invalidNumber")}</p>}
   </>;
 }

@@ -20,4 +20,25 @@ describe("PercentField", () => {
     fireEvent.change(input, { target: { value: "" } });
     expect(onChange).toHaveBeenLastCalledWith(null);
   });
+
+  it("invalida un porcentaje mal escrito y avisa después de salir", async () => {
+    const onChange = vi.fn();
+    const onValidityChange = vi.fn();
+    render(<AppProviders><FormField label="Porcentaje"><PercentField value={0.125} onChange={onChange}
+      onValidityChange={onValidityChange} /></FormField></AppProviders>);
+    const input = await screen.findByRole("textbox", { name: "Porcentaje" });
+    await waitFor(() => expect(input).toBeEnabled());
+
+    fireEvent.change(input, { target: { value: "12.5" } });
+    expect(onChange).toHaveBeenLastCalledWith(null);
+    expect(onValidityChange).toHaveBeenLastCalledWith(false);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    fireEvent.blur(input);
+    expect(screen.getByRole("alert")).toHaveTextContent("Ingresá un porcentaje válido.");
+
+    fireEvent.change(input, { target: { value: "12,5" } });
+    expect(onChange).toHaveBeenLastCalledWith(0.125);
+    expect(onValidityChange).toHaveBeenLastCalledWith(true);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
 });
