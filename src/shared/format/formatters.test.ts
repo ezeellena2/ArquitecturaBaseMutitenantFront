@@ -249,3 +249,20 @@ describe("designadores horarios del catálogo", () => {
     expect(formatter.formatDateTime("2026-09-27T14:35:00Z")).toBe("09/27/2026 2:35 p. m.");
   });
 });
+
+describe.skipIf(!backendPresent)("redondeo antes de signo y unidad", () => {
+  for (const [culture, money, compact, fileSize] of [
+    ["es-AR", "$ 0,00", "1 M", "1 MB"],
+    ["en-US", "ARS 0.00", "1M", "1 MB"],
+  ]) {
+    it(culture, () => {
+      const formatter = createFormatters({
+        referenceData: sourceCatalog(culture), culture, timeZone: "UTC",
+        translate: translator(culture),
+      });
+      expect(formatter.formatMoney({ amount: -0.001, currency: "ARS" })).toBe(money);
+      expect(formatter.formatCompact(999950)).toBe(compact);
+      expect(formatter.formatFileSize(999950)).toBe(fileSize);
+    });
+  }
+});

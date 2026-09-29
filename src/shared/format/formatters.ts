@@ -105,7 +105,16 @@ function formatNumber(value: number, minimumDigits: number, maximumDigits: numbe
   const integer = parts.find((part) => part.type === "integer")?.value ?? "0";
   const fraction = parts.find((part) => part.type === "fraction")?.value;
   const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, groupSeparator);
-  return (value < 0 ? "-" : "") + grouped + (fraction === undefined ? "" : decimalSeparator + fraction);
+  const roundedIsZero = !/[1-9]/.test(integer + (fraction ?? ""));
+  return (value < 0 && !roundedIsZero ? "-" : "") + grouped + (fraction === undefined ? "" : decimalSeparator + fraction);
+}
+
+function roundedForDisplay(value: number, maximumFractionDigits: number): number {
+  return Number(new Intl.NumberFormat("en", {
+    useGrouping: false,
+    numberingSystem: "latn",
+    maximumFractionDigits,
+  }).format(value));
 }
 
 function findRow<T>(rows: readonly T[], key: string, select: (row: T) => string): T {
@@ -164,14 +173,18 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
       ? profile.currencyPattern.replace("{symbol}{number}", "{symbol} {number}")
       : profile.currencyPattern;
     const positive = pattern.replace("{symbol}", symbol).replace("{number}", amount);
-    return value.amount < 0 ? `-${positive}` : positive;
+    return value.amount < 0 && roundedForDisplay(Math.abs(value.amount), currency.minorUnits) !== 0
+      ? `-${positive}` : positive;
   }
 
   function formatCompact(value: number): string {
     const magnitude = Math.abs(value);
-    const divisor = magnitude >= 1_000_000_000 ? 1_000_000_000
+    let divisor = magnitude >= 1_000_000_000 ? 1_000_000_000
       : magnitude >= 1_000_000 ? 1_000_000
         : magnitude >= 1_000 ? 1_000 : 1;
+    if (divisor < 1_000_000_000 && roundedForDisplay(magnitude / divisor, divisor === 1 ? 0 : 1) >= 1_000) {
+      divisor *= 1_000;
+    }
     const suffix = divisor === 1_000_000_000 ? "billion"
       : divisor === 1_000_000 ? "million"
         : divisor === 1_000 ? "thousand" : null;
@@ -181,10 +194,13 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
 
   function formatFileSize(bytes: number): string {
     const magnitude = Math.abs(bytes);
-    const divisor = magnitude >= 1_000_000_000_000 ? 1_000_000_000_000
+    let divisor = magnitude >= 1_000_000_000_000 ? 1_000_000_000_000
       : magnitude >= 1_000_000_000 ? 1_000_000_000
         : magnitude >= 1_000_000 ? 1_000_000
           : magnitude >= 1_000 ? 1_000 : 1;
+    if (divisor < 1_000_000_000_000 && roundedForDisplay(magnitude / divisor, divisor === 1 ? 0 : 1) >= 1_000) {
+      divisor *= 1_000;
+    }
     const unit = divisor === 1_000_000_000_000 ? "TB"
       : divisor === 1_000_000_000 ? "GB"
         : divisor === 1_000_000 ? "MB"
