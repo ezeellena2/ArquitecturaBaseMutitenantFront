@@ -21,6 +21,8 @@ import { GoogleButton } from "../components/GoogleButton";
 import { loginCodeErrorKey } from "../errors";
 import { safeReturnUrl } from "../lib/returnUrl";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
+import { effectiveCulture } from "@/shared/i18n";
+import { browserTimeZone } from "@/shared/time/browserTimeZone";
 
 const schema = z.object({ email: z.email(), acceptedTerms: z.literal(true) });
 type SignupFields = z.infer<typeof schema>;
@@ -41,8 +43,8 @@ export function SignupPage() {
     defaultValues: { email: "", acceptedTerms: false as true },
   });
   const acceptedTerms = useWatch({ control, name: "acceptedTerms" });
-  const request = useIdempotentMutation((email: string, key) => requestSignup({ email, acceptedTerms: true }, key));
-  const verify = useIdempotentMutation((input: { email: string; code: string; acceptedTerms: true }, key) => verifySignup(input, key));
+  const request = useIdempotentMutation((email: string, key) => requestSignup({ email, acceptedTerms: true, culture: effectiveCulture() ?? navigator.language, timeZoneId: browserTimeZone() }, key));
+  const verify = useIdempotentMutation((input: { email: string; code: string; acceptedTerms: true }, key) => verifySignup({ ...input, culture: effectiveCulture() ?? navigator.language, timeZoneId: browserTimeZone() }, key));
   const resend = useCountdown(0);
   const retry = useRetryAfterCountdown();
 

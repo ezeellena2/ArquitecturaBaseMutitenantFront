@@ -1,14 +1,16 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
 import type { ReactNode } from "react";
 import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { MemoryRouter } from "react-router";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import { configureI18n } from "@/shared/i18n";
+import { changeCulture, configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
 import { SignupPage } from "./SignupPage";
+
+vi.mock("@/shared/time/browserTimeZone", () => ({ browserTimeZone: () => "America/Argentina/Buenos_Aires" }));
 
 beforeAll(async () => {
   await configureI18n([
@@ -67,7 +69,7 @@ describe("SignupPage", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: " MARIANA@Example.com " } });
     fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
     expect(await screen.findByRole("heading", { name: "Revisá tu correo" })).toBeVisible();
-    expect(body).toEqual({ email: "mariana@example.com", acceptedTerms: true });
+    expect(body).toEqual({ email: "mariana@example.com", acceptedTerms: true, culture: "es-AR", timeZoneId: "America/Argentina/Buenos_Aires" });
     expect(screen.getByRole("group", { name: "Código" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Verificar y crear la cuenta" })).toBeDisabled();
   });
@@ -99,7 +101,25 @@ describe("SignupPage", () => {
     fireEvent.paste(within(group).getByRole("textbox", { name: "Código 1" }), { clipboardData: { getData: () => "123456" } });
     fireEvent.click(screen.getByRole("button", { name: "Verificar y crear la cuenta" }));
     await waitFor(() => expect(signinRedirect).toHaveBeenCalledWith({ extraQueryParams: { access: "consumer" }, state: { returnTo: "/catalogo" } }));
-    expect(lastVerify).toEqual({ email: "mariana@example.com", code: "123456", acceptedTerms: true });
+    expect(lastVerify).toEqual({ email: "mariana@example.com", code: "123456", acceptedTerms: true, culture: "es-AR", timeZoneId: "America/Argentina/Buenos_Aires" });
+  });
+
+  it("envía la cultura activa al registro sin agregar controles", async () => {
+    await act(async () => { await changeCulture("en-US"); });
+    let body: unknown;
+    server.use(http.post("/api/auth/signup", async ({ request }) => {
+      body = await request.json();
+      return HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 });
+    }));
+    try {
+      show();
+      fireEvent.click(screen.getByRole("checkbox", { name: /I accept the Terms/ }));
+      fireEvent.change(screen.getByRole("textbox", { name: "Email address" }), { target: { value: "ana@example.test" } });
+      fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+      await waitFor(() => expect(body).toMatchObject({ culture: "en-US" }));
+    } finally {
+      await act(async () => { await changeCulture("es-AR"); });
+    }
   });
 
   it("muestra Registro cerrado sin formulario ni Google cuando responde Auth.Signup.Closed", async () => {
