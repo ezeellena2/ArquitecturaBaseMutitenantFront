@@ -429,6 +429,13 @@ export interface components {
             status?: null | number;
             detail?: null | string;
             instance?: null | string;
+            code: string;
+            traceId: string;
+            errors?: {
+                [key: string]: string[];
+            };
+            /** Format: int32 */
+            retryAfter?: null | number;
         };
         ReferenceDataHttpResponse: {
             culture: string;
