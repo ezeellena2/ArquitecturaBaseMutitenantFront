@@ -15,7 +15,7 @@
 - Si cambió el contrato del back: `npm run contracts` y commitear `generated/`.
 - `npm run contracts:check` es obligatorio en local. En el CI del front, si falta el checkout de `../ArquitecturaBaseMutitenant`, el comando lo omite con un aviso visible; si está presente, compara `schema.d.ts` con `openapi.json` y falla ante diferencias. El checkout cruzado se suma cuando ambos repos estén en GitHub.
 - El `.npmrc` de la raíz mantiene `legacy-peer-deps=true` porque `openapi-typescript` 7.13 declara TypeScript 5 como peer y la plantilla usa TypeScript 6. Se retira solo cuando el generador declare compatibilidad con TypeScript 6 y pasen `npm ci` sin ese ajuste, `npm run build`, `npm test` y `contracts:check`.
-- **Altas y envíos:** `useIdempotentMutation(fn)` en lugar de `useMutation`. Genera la `Idempotency-Key` al montar, la repite en los reintentos (también en el del `httpClient`) y la renueva después de un éxito. Un 409 `Request.InProgress` no es un error: espera y reintenta.
+- **Altas y envíos:** `useIdempotentMutation(fn)` en lugar de `useMutation`. Genera la `Idempotency-Key` al montar y la conserva ante red o 5xx. La renueva después de un éxito o de un 4xx definitivo para que un formulario corregido pueda enviarse con otro cuerpo. Un 409 `Request.InProgress` conserva la clave, espera y reintenta hasta 30 veces; al desmontar cancela la espera y no vuelve a enviar.
 - **Ediciones:** la `version` que trae la ficha viaja en el `PUT` o `DELETE` ([formularios](formularios.md), "Ediciones simultáneas").
 - **Módulos:** una query de un módulo apagado no se dispara; `useFeature("reportes")` lo dice ([accesos-y-permisos](accesos-y-permisos.md)).
 - **El front no calcula dinero ni reglas de negocio:** muestra lo que llega y los totales vienen del back.

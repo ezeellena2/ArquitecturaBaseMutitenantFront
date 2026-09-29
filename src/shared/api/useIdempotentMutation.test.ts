@@ -62,6 +62,28 @@ describe("useIdempotentMutation", () => {
     client.clear();
   });
 
+  it.each([400, 422])("renueva la clave tras un %i definitivo para permitir corregir el cuerpo", async (status) => {
+    const keys: string[] = [];
+    const bodies: string[] = [];
+    const { result, client } = renderMutation(async (body: { name: string }, key) => {
+      keys.push(key);
+      bodies.push(body.name);
+      if (bodies.length === 1) throw new ApiError(status, { code: "Validation.Failed" });
+      return { id: "created" };
+    });
+
+    await act(async () => {
+      await expect(result.current.mutateAsync({ name: "Incorrecto" })).rejects.toMatchObject({ status });
+    });
+    await act(async () => {
+      await expect(result.current.mutateAsync({ name: "Corregido" })).resolves.toEqual({ id: "created" });
+    });
+
+    expect(bodies).toEqual(["Incorrecto", "Corregido"]);
+    expect(keys[1]).not.toBe(keys[0]);
+    client.clear();
+  });
+
   it("espera y reintenta Request.InProgress con la misma clave", async () => {
     vi.useFakeTimers();
     const keys: string[] = [];
@@ -84,6 +106,48 @@ describe("useIdempotentMutation", () => {
     expect(keys).toHaveLength(2);
     expect(keys[1]).toBe(keys[0]);
     client.clear();
+  });
+
+  it("limita Request.InProgress a treinta reintentos", async () => {
+    vi.useFakeTimers();
+    const keys: string[] = [];
+    const fn = vi.fn(async (_body: { name: string }, key: string) => {
+      keys.push(key);
+      if (keys.length <= 31) throw new ApiError(409, { code: "Request.InProgress", retryAfter: 1 });
+      return { id: "unexpected" };
+    });
+    const { result, client } = renderMutation(fn);
+    let request: Promise<{ id: string }> | undefined;
+    act(() => { request = result.current.mutateAsync({ name: "Acme" }); });
+    const outcome = request!.then(() => "resolved", (error: unknown) =>
+      error instanceof ApiError ? error.code : "unexpected-error");
+
+    await act(async () => { await vi.advanceTimersByTimeAsync(31_000); });
+    expect(await outcome).toBe("Request.InProgress");
+    expect(fn).toHaveBeenCalledTimes(31);
+    expect(new Set(keys).size).toBe(1);
+    client.clear();
+  });
+
+  it("cancela la espera y no reintenta después de desmontar el formulario", async () => {
+    vi.useFakeTimers();
+    const fn = vi.fn(async () => {
+      if (fn.mock.calls.length === 1) throw new ApiError(409, { code: "Request.InProgress", retryAfter: 1 });
+      return { id: "unexpected" };
+    });
+    const hook = renderMutation(fn);
+    let request: Promise<{ id: string }> | undefined;
+    act(() => { request = hook.result.current.mutateAsync({ name: "Acme" }); });
+    const outcome = request!.then(() => "resolved", (error: unknown) =>
+      error !== null && typeof error === "object" && "name" in error ? error.name : "unexpected-error");
+    await act(async () => { await Promise.resolve(); });
+    expect(fn).toHaveBeenCalledTimes(1);
+
+    hook.unmount();
+    await act(async () => { await vi.advanceTimersByTimeAsync(1_000); });
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(await outcome).toBe("AbortError");
+    hook.client.clear();
   });
 
   it("no reintenta un 409 que no sea Request.InProgress", async () => {
