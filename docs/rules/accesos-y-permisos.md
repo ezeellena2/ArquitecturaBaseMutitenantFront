@@ -13,7 +13,7 @@
 - **Acceso activo:** `useAccess()` devuelve `access`, la organización activa (en B2B), si la persona tiene espacio personal y sus organizaciones.
 - **Cambiar de acceso u organización:** `useSwitchAccess({ access, tenantId })`:
   1. pantalla «Cambiando a …»;
-  2. `signinSilent({ extraQueryParams: { access, tenant } })`;
+  2. `signinSilent({ forceIframeAuth: true, extraQueryParams: { access, tenant } })`: `oidc-client-ts` usa el refresh token si existe e ignora esos parámetros; el iframe fuerza `authorize` para emitir el token del acceso solicitado;
   3. `queryClient.clear()`;
   4. el inicio del acceso nuevo.
 - **Módulos habilitados:** `GET /api/me` trae `features` del acceso activo.
