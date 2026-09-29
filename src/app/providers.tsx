@@ -10,6 +10,7 @@ import { AppShell } from "@/layouts/AppShell";
 import { Button } from "@/shared/ui/button";
 import { safeStorageGet } from "@/shared/hooks/safeStorage";
 import { AppAuthProvider } from "@/auth/AuthProvider";
+import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 
 function ReferenceDataStartup({ children }: { children: ReactNode }) {
@@ -36,20 +37,22 @@ function ReferenceDataStartup({ children }: { children: ReactNode }) {
   return children;
 }
 
-export function AppProviders({ children, client = queryClient }: { children: ReactNode; client?: QueryClient }) {
+export function AppProviders({ children, client = queryClient, authContext }: { children: ReactNode; client?: QueryClient; authContext?: AuthContextProps }) {
+  const content = <QueryClientProvider client={client}>
+    <ReferenceDataStartup>
+      <FormatProvider>
+        <Suspense fallback={null}>
+          <AppShell>{children}</AppShell>
+        </Suspense>
+      </FormatProvider>
+    </ReferenceDataStartup>
+    <Toaster />
+  </QueryClientProvider>;
+
   return (
     <I18nextProvider i18n={i18n}>
       <AppAuthProvider>
-        <QueryClientProvider client={client}>
-          <ReferenceDataStartup>
-            <FormatProvider>
-              <Suspense fallback={null}>
-                <AppShell>{children}</AppShell>
-              </Suspense>
-            </FormatProvider>
-          </ReferenceDataStartup>
-          <Toaster />
-        </QueryClientProvider>
+        {authContext ? <AuthContext.Provider value={authContext}>{content}</AuthContext.Provider> : content}
       </AppAuthProvider>
     </I18nextProvider>
   );

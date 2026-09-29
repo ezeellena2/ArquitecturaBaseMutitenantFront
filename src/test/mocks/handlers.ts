@@ -1,5 +1,10 @@
 import { http, HttpResponse, type RequestHandler } from "msw";
 import type { ReferenceData } from "@/shared/referenceData/referenceData";
+import type { MeResponse } from "@/shared/api/types";
+
+export function meHandlerFor(user: MeResponse): RequestHandler {
+  return http.get("/api/me", () => HttpResponse.json(user));
+}
 
 // Fixture solo para tests: los datos del producto llegan de los JSON del backend.
 export function referenceDataFixture(culture = "es-AR"): ReferenceData {
@@ -47,7 +52,6 @@ export function referenceDataFixture(culture = "es-AR"): ReferenceData {
   };
 }
 
-// /api/me y autenticación se incorporan en E3.
 export const handlers: RequestHandler[] = [
   http.get("/api/reference-data", ({ request }) => {
     const culture = request.headers.get("accept-language") === "en-US" ? "en-US" : "es-AR";
