@@ -9,6 +9,7 @@ export type ApiProblemDetails = ApiSchemas["ProblemDetails"];
 export interface OrganizationSummary {
   readonly id: string;
   readonly name: string;
+  readonly roleName: string | null;
   readonly status: string;
 }
 

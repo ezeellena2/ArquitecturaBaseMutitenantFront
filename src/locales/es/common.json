@@ -104,11 +104,13 @@
       "collapse": "Contraer menú",
       "expand": "Expandir menú",
       "closeDrawer": "Cerrar menú",
+      "closeAdministration": "Cerrar Administración",
       "loadError": "No pudimos cargar tu menú.",
       "retryLoad": "Reintentar cargar el menú"
     },
     "topbar": {
-      "toggle": "Menú de navegación"
+      "toggle": "Menú de navegación",
+      "openOrCollapse": "Abrir o contraer navegación"
     },
     "breadcrumbs": {
       "label": "Migas de pan"
@@ -119,5 +121,14 @@
       "signOut": "Cerrar sesión"
     },
     "signingOut": "Cerrando sesión…"
+  },
+  "accessMenu": {
+    "personal": "Personal",
+    "personalDetail": "Tu perfil personal",
+    "profiles": "Perfiles",
+    "signOut": "Salir",
+    "suspended": "Suspendida",
+    "accountAndProfiles": "Tu cuenta y tus perfiles",
+    "menuFor": "Menú de {{name}}"
   }
 }
