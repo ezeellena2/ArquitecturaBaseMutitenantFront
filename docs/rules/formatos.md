@@ -27,7 +27,7 @@
 
 ## Lo verifica
 - `format-usage.test.ts` (E1): formateo fuera de lugar.
-- `formatters.test.ts` (E1): recorre el mismo `format-cases.json` que el back, así los dos lados producen el mismo texto.
+- `formatters.test.ts` (E1): recorre el mismo `format-cases.json` que el back; ambos lados producen el mismo texto en casos válidos y rechazan los casos con `error`.
 - `referenceData.test.ts` (E1): selectores y patrones consumen catálogos, sin listas fijas.
 - `parsers.test.ts` (E1).
 

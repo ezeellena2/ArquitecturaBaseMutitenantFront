@@ -241,7 +241,32 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
     return displayed;
   }
 
-  function formatEmail(value: string): string { return value.trim().toLowerCase(); }
+  function formatEmail(value: string): string {
+    const normalized = value.trim().normalize("NFC").toLowerCase();
+    const at = normalized.indexOf("@");
+    if (at < 1 || at !== normalized.lastIndexOf("@")) throw new Error("El correo no es válido.");
+
+    const local = normalized.slice(0, at);
+    const domain = normalized.slice(at + 1);
+    if (local.startsWith(".") || local.endsWith(".") || local.includes("..")
+      || /[,;<>()[\]"\\:\s\p{Cc}\p{Cf}\p{Cs}]/u.test(local)
+      || new TextEncoder().encode(local).length > 64) {
+      throw new Error("El correo no es válido.");
+    }
+
+    let asciiDomain: string;
+    try {
+      asciiDomain = new URL(`http://${domain}`).hostname;
+    } catch {
+      throw new Error("El correo no es válido.");
+    }
+    if (!asciiDomain.includes(".") || asciiDomain.split(".").some((label) =>
+      label.length > 63 || !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(label))
+      || new TextEncoder().encode(`${local}@${asciiDomain}`).length > 254) {
+      throw new Error("El correo no es válido.");
+    }
+    return `${local}@${domain}`;
+  }
   function formatEnum(enumName: string, value: string): string {
     return translate(`enums:${enumName}.${value}`);
   }

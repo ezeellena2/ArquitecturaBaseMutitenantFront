@@ -10,7 +10,8 @@ type FormatCase = {
   culture: string;
   timeZone: string;
   input: unknown;
-  expected: string;
+  expected?: string;
+  error?: string;
 };
 
 type FormatContract = { now: string; cases: FormatCase[] };
@@ -146,7 +147,11 @@ describe.skipIf(!backendPresent)("paridad con format-cases.json", () => {
 
   for (const item of contract.cases) {
     it(item.id, () => {
-      expect(renderCase(item, contract.now)).toBe(item.expected);
+      if (item.error) {
+        expect(() => renderCase(item, contract.now)).toThrow();
+      } else {
+        expect(renderCase(item, contract.now)).toBe(item.expected);
+      }
     });
   }
 });
