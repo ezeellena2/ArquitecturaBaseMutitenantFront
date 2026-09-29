@@ -10,7 +10,7 @@ export const authConfig: UserManagerSettings = {
   metadataSeed: {
     token_endpoint: `${origin}/connect/token`,
     userinfo_endpoint: `${origin}/connect/userinfo`,
-    revocation_endpoint: `${origin}/connect/revocation`,
+    revocation_endpoint: `${origin}/connect/revoke`,
   },
   client_id: "web",
   redirect_uri: `${origin}/auth/callback`,
