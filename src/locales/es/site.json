@@ -1,0 +1,20 @@
+{
+  "brand": "ArquitecturaBase",
+  "navigation": {
+    "label": "Secciones",
+    "people": "Personas",
+    "businesses": "Empresas",
+    "getStarted": "Cómo empezar",
+    "businessLogin": "Ingresá como empresa",
+    "login": "Ingresar"
+  },
+  "footer": { "copyright": "© 2026 ArquitecturaBase", "terms": "Términos", "privacy": "Privacidad", "help": "Ayuda" },
+  "landing": {
+    "hero": { "kicker": "Para personas y para empresas", "line1": "Para vos", "line2": "y para tu empresa.", "detail": "Como persona, creá tu cuenta con tu correo o tu WhatsApp. Si tenés una empresa o un grupo, registralo y sumá a tu equipo con sus roles." },
+    "createAccount": "Crear mi cuenta", "login": "Ingresá",
+    "preview": { "initial": "L", "name": "Lucía Fernández", "email": "lucia.fernandez@delta.ejemplo.com", "profiles": "Perfiles", "personalInitial": "P", "personal": "Personal", "personalDetail": "Tu perfil personal", "groupInitial": "GD", "group": "Grupo Delta", "groupDetail": "3 empresas · 11 usuarios", "otherInitial": "OS", "other": "Omega S.A.", "otherDetail": "Solo lectura" },
+    "sides": { "title": "Dos lados separados", "detail": "Con la misma cuenta podés estar en los dos, pero cada uno ve solo lo suyo.", "people": { "title": "Para personas", "point1": "Entrás sin contraseña, con un código por correo o WhatsApp.", "point2": "Tu perfil personal no se mezcla con tu trabajo." }, "business": { "title": "Para empresas", "point1": "Todas las empresas del grupo en un solo lugar.", "point2": "Usuarios con roles por organización y por empresa.", "point3": "Auditoría de quién hizo qué y cuándo." } },
+    "steps": { "title": "Tu empresa, en tres pasos", "1": { "title": "Registrá tu empresa", "detail": "Con tu correo o tu WhatsApp y el nombre de tu organización. Quedás como Dueño." }, "2": { "title": "Sumá las otras empresas", "detail": "Todas las del grupo en un solo lugar." }, "3": { "title": "Invitá a tu equipo", "detail": "Cada persona entra con su cuenta y los roles que le des." } },
+    "final": { "title": "Probalo hoy", "detail": "Lleva un minuto." }
+  }
+}

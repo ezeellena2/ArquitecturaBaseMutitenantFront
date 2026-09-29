@@ -1,0 +1,20 @@
+{
+  "brand": "ArquitecturaBase",
+  "navigation": {
+    "label": "Sections",
+    "people": "People",
+    "businesses": "Businesses",
+    "getStarted": "How to get started",
+    "businessLogin": "Sign in as a business",
+    "login": "Sign in"
+  },
+  "footer": { "copyright": "© 2026 ArquitecturaBase", "terms": "Terms", "privacy": "Privacy", "help": "Help" },
+  "landing": {
+    "hero": { "kicker": "For people and businesses", "line1": "For you", "line2": "and for your business.", "detail": "As a person, create your account with email or WhatsApp. If you have a business or a group, register it and invite your team with their roles." },
+    "createAccount": "Create my account", "login": "Sign in",
+    "preview": { "initial": "L", "name": "Lucía Fernández", "email": "lucia.fernandez@delta.example.com", "profiles": "Profiles", "personalInitial": "P", "personal": "Personal", "personalDetail": "Your personal profile", "groupInitial": "GD", "group": "Grupo Delta", "groupDetail": "3 companies · 11 users", "otherInitial": "OS", "other": "Omega S.A.", "otherDetail": "Read only" },
+    "sides": { "title": "Two separate sides", "detail": "You can use both with the same account, but each side only sees its own data.", "people": { "title": "For people", "point1": "Sign in without a password, using a code by email or WhatsApp.", "point2": "Your personal profile stays separate from your work." }, "business": { "title": "For businesses", "point1": "All group companies in one place.", "point2": "Users with roles by organization and company.", "point3": "An audit trail of who did what and when." } },
+    "steps": { "title": "Your business, in three steps", "1": { "title": "Register your business", "detail": "With your email or WhatsApp and your organization name. You become the Owner." }, "2": { "title": "Add the other companies", "detail": "All group companies in one place." }, "3": { "title": "Invite your team", "detail": "Each person uses their account and the roles you assign." } },
+    "final": { "title": "Try it today", "detail": "It only takes a minute." }
+  }
+}
