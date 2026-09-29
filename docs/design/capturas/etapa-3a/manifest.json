@@ -1336,6 +1336,362 @@
         "readySelector": "h1",
         "readyText": "Tu sesión venció. Ingresá de nuevo."
       }
+    },
+    {
+      "id": "registro-correo",
+      "pair": "registro-correo",
+      "group": "registro",
+      "board": "Registro",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Correo"
+      },
+      "app": {
+        "path": "/registro",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "registro-correo-movil",
+      "pair": "registro-correo",
+      "group": "registro",
+      "board": "M-Registro",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Correo"
+      },
+      "app": {
+        "path": "/registro",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "registro-correo-invalido",
+      "pair": "registro-correo-invalido",
+      "group": "registro",
+      "board": "Registro",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Correo inválido"
+      },
+      "app": {
+        "path": "/registro",
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los Términos y la Política de privacidad"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "registro-correo-invalido-movil",
+      "pair": "registro-correo-invalido",
+      "group": "registro",
+      "board": "M-Registro",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Correo inválido"
+      },
+      "app": {
+        "path": "/registro",
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los Términos y la Política de privacidad"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "registro-cerrado",
+      "pair": "registro-cerrado",
+      "group": "registro",
+      "board": "Registro",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Registro cerrado"
+      },
+      "app": {
+        "path": "/registro?error=Auth.Signup.Closed",
+        "readyText": "Por ahora no se pueden crear cuentas"
+      }
+    },
+    {
+      "id": "registro-cerrado-movil",
+      "pair": "registro-cerrado",
+      "group": "registro",
+      "board": "M-Registro",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Registro cerrado"
+      },
+      "app": {
+        "path": "/registro?error=Auth.Signup.Closed",
+        "readyText": "Por ahora no se pueden crear cuentas"
+      }
+    },
+    {
+      "id": "registro-codigo-enviado",
+      "pair": "registro-codigo-enviado",
+      "group": "registro",
+      "board": "Registro",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Código enviado"
+      },
+      "app": {
+        "path": "/registro",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/signup",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los Términos y la Política de privacidad"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          }
+        ],
+        "readyText": "Revisá tu correo"
+      }
+    },
+    {
+      "id": "registro-codigo-enviado-movil",
+      "pair": "registro-codigo-enviado",
+      "group": "registro",
+      "board": "M-Registro",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Código enviado"
+      },
+      "app": {
+        "path": "/registro",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/signup",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los Términos y la Política de privacidad"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          }
+        ],
+        "readyText": "Revisá tu correo"
+      }
+    },
+    {
+      "id": "registro-codigo-incorrecto",
+      "pair": "registro-codigo-incorrecto",
+      "group": "registro",
+      "board": "Registro",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Código incorrecto"
+      },
+      "app": {
+        "path": "/registro",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/signup",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/signup/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.Invalid",
+              "traceId": "capture",
+              "attemptsLeft": 4
+            }
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los Términos y la Política de privacidad"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar y crear la cuenta"
+          }
+        ],
+        "readyText": "El código no es válido."
+      }
+    },
+    {
+      "id": "registro-codigo-incorrecto-movil",
+      "pair": "registro-codigo-incorrecto",
+      "group": "registro",
+      "board": "M-Registro",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Código incorrecto"
+      },
+      "app": {
+        "path": "/registro",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/signup",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/signup/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.Invalid",
+              "traceId": "capture",
+              "attemptsLeft": 4
+            }
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los Términos y la Política de privacidad"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar y crear la cuenta"
+          }
+        ],
+        "readyText": "El código no es válido."
+      }
     }
   ]
 }

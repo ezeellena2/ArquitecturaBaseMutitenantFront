@@ -50,6 +50,14 @@ test("Ingreso cubre sus estados 3a en ambas puertas sin estados de etapas futura
   assert.equal(cases.length, expected.length * 2);
 });
 
+test("Registro cubre todos los estados aprobados de 3a en escritorio y móvil", () => {
+  const cases = validateManifest(manifest, lienzo).filter((item) => item.group === "registro");
+  const expected = ["Correo", "Correo inválido", "Registro cerrado", "Código enviado", "Código incorrecto"];
+  assert.deepEqual([...new Set(cases.map((item) => item.props.estado))].sort(), expected.sort());
+  assert.equal(cases.length, expected.length * 2);
+  assert.ok(cases.every((item) => item.board === (item.viewport.width === 390 ? "M-Registro" : "Registro")));
+});
+
 test("la verificación falla si falta la app o el tablero del mismo caso", () => {
   const directory = mkdtempSync(path.join(os.tmpdir(), "codex-3a-captures-"));
   const cases = [{ id: "ingreso-correo", group: "ingreso", viewport: { width: 390, height: 844 } }];

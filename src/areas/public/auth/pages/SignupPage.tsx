@@ -5,6 +5,7 @@ import { useAuth } from "react-oidc-context";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 import { z } from "zod";
+import { ChevronLeft, LockKeyhole } from "lucide-react";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { ApiError } from "@/shared/api/ApiError";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
@@ -101,8 +102,8 @@ export function SignupPage() {
 
   return <AuthLayout access="consumer">
     {closed ? <div className="flex flex-col items-center gap-[22px] text-center">
-      <div aria-hidden="true" className="flex size-10 items-center justify-center rounded-full bg-[var(--s3)] text-[var(--t2)]">{"⌑"}</div>
-      <div><h1 className="text-[26px] font-bold leading-tight">{t("signup.closedTitle")}</h1>
+      <div aria-hidden="true" className="flex size-[52px] items-center justify-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><LockKeyhole size={18} /></div>
+      <div><h1 className="text-[22px] font-bold leading-tight">{t("signup.closedTitle")}</h1>
         <p className="mt-2 text-sm text-[var(--t2)]">{t("signup.closedDetail")}</p>
       </div>
       <Link to="/login" className="inline-flex h-10 w-full items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("signup.backToLogin")}</Link>
@@ -122,11 +123,11 @@ export function SignupPage() {
         <FormError message={error ? t(loginCodeErrorKey(error)) : null} />
         <Button type="submit" size="lg" className="w-full" disabled={!acceptedTerms || request.isPending || retry.isRunning}>{retry.label ?? t("signup.create")}</Button>
       </form>
-      <div className="flex flex-col gap-2 text-[13px] text-[var(--t2)]">
+      <div className="flex flex-col gap-2 text-center text-[13px] text-[var(--t2)]">
         <div>{t("signup.haveAccount")} <Link to="/login" className="font-semibold text-[var(--marca)] hover:underline">{t("signup.login")}</Link></div>
       </div>
     </div> : <div className="flex flex-col gap-[22px]">
-      <button type="button" onClick={() => { setStep(null); setCode(""); setError(null); }} className="self-start text-[13px] font-semibold text-[var(--marca)] hover:underline">{t("login.otherEmail")}</button>
+      <button type="button" onClick={() => { setStep(null); setCode(""); setError(null); }} className="inline-flex items-center gap-1 self-start text-[13px] font-semibold text-[var(--marca)] hover:underline"><ChevronLeft size={16} aria-hidden="true" />{t("login.otherEmail")}</button>
       <div><h1 className="text-[26px] font-bold leading-tight">{t("login.checkEmail")}</h1>
         <p id="signup-code-hint" className="mt-2 text-sm text-[var(--t2)]">{t("login.sentCode", { email: step.email })}</p>
       </div>

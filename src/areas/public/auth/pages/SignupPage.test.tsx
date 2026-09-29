@@ -93,6 +93,7 @@ describe("SignupPage", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: "mariana@example.com" } });
     fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
     const group = await screen.findByRole("group", { name: "Código" });
+    expect(screen.getByRole("button", { name: "Usar otro correo" }).querySelector("svg")).not.toBeNull();
     fireEvent.paste(within(group).getByRole("textbox", { name: "Código 1" }), { clipboardData: { getData: () => "999999" } });
     fireEvent.click(screen.getByRole("button", { name: "Verificar y crear la cuenta" }));
     expect(await screen.findByText("El código no es válido.")).toBeVisible();
@@ -130,6 +131,7 @@ describe("SignupPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
 
     expect(await screen.findByRole("heading", { name: "Por ahora no se pueden crear cuentas" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Por ahora no se pueden crear cuentas" }).parentElement?.previousElementSibling?.querySelector("svg")).not.toBeNull();
     expect(screen.getByText("Si te invitaron a una organización, entrá con el enlace de la invitación.")).toBeVisible();
     expect(screen.getByRole("link", { name: "Ir al ingreso" })).toHaveAttribute("href", "/login");
     expect(screen.queryByRole("button", { name: "Registrarte con Google" })).not.toBeInTheDocument();
