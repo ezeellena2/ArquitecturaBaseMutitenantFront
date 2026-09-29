@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { safeStorageGet, safeStorageSet } from "./safeStorage";
 
 const storageKeyPrefix = "arquitecturabasemt.";
 
@@ -10,7 +11,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
 
   const [value, setValue] = useState<T>(() => {
     try {
-      const stored = globalThis.localStorage.getItem(storageKey);
+      const stored = safeStorageGet(storageKey);
 
       return stored === null ? initialValue : (JSON.parse(stored) as T);
     } catch {
@@ -24,7 +25,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
         const resolved = typeof next === "function" ? (next as (previous: T) => T)(previous) : next;
 
         try {
-          globalThis.localStorage.setItem(storageKey, JSON.stringify(resolved));
+          safeStorageSet(storageKey, JSON.stringify(resolved));
         } catch {
           // Modo privado u otra restricción: el valor sigue viviendo en el estado del componente.
         }

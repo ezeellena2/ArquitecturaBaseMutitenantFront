@@ -1,5 +1,6 @@
 import i18n, { type Resource } from "i18next";
 import { initReactI18next } from "react-i18next";
+import { safeStorageGet, safeStorageSet } from "@/shared/hooks/safeStorage";
 
 export type CultureLocale = {
   code: string;
@@ -67,7 +68,7 @@ export async function configureI18n(cultures: readonly CultureLocale[]): Promise
 
   enabledCultures = new Map(enabled.map((culture) => [culture.code, culture]));
   defaultCulture = defaults[0].code;
-  const stored = globalThis.localStorage?.getItem(cultureStorageKey);
+  const stored = safeStorageGet(cultureStorageKey);
   const chosen = stored && enabledCultures.has(stored) ? stored : defaultCulture;
 
   const resources: Resource = {};
@@ -89,7 +90,7 @@ export async function configureI18n(cultures: readonly CultureLocale[]): Promise
 export async function changeCulture(culture: string): Promise<void> {
   if (!enabledCultures.has(culture)) throw new Error(`La cultura ${culture} no está habilitada`);
   await i18n.changeLanguage(culture);
-  globalThis.localStorage?.setItem(cultureStorageKey, culture);
+  safeStorageSet(cultureStorageKey, culture);
 }
 
 export default i18n;

@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { Suspense } from "react";
 import { I18nextProvider, useTranslation } from "react-i18next";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import i18n, {
   changeCulture,
   configureI18n,
@@ -100,6 +100,21 @@ describe("i18n basado en Cultures", () => {
     expect(effectiveCulture()).toBe("en-US");
     expect(document.documentElement.lang).toBe("en");
     await expect(changeCulture("fr-FR")).rejects.toThrow();
+  });
+
+  it("sigue con cultura por defecto y permite cambiarla en memoria si localStorage falla", async () => {
+    const getItem = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new Error("bloqueado"); });
+    const setItem = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("bloqueado"); });
+    try {
+      await configureI18n(cultures);
+      expect(effectiveCulture()).toBe("es-AR");
+      await changeCulture("en-US");
+      expect(effectiveCulture()).toBe("en-US");
+      expect(document.documentElement.lang).toBe("en");
+    } finally {
+      getItem.mockRestore();
+      setItem.mockRestore();
+    }
   });
 
   it("traduce avisos y el estado TestStatus del contrato compartido", async () => {

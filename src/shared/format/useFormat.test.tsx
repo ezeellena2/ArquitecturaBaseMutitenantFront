@@ -1,6 +1,6 @@
 import { renderHook, screen, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { http, HttpResponse } from "msw";
 import { AppProviders } from "@/app/providers";
 import { resetHttpClient } from "@/shared/api/httpClient";
@@ -95,5 +95,17 @@ describe("contexto de formato E1", () => {
     const now = new Date("2026-09-27T15:00:00Z");
     expect(timeZoneOffsetMinutes("America/Argentina/Buenos_Aires", now)).toBe(-180);
     expect(timeZoneOffsetMinutes("UTC", now)).toBe(0);
+  });
+
+  it("arranca y toma preferencias por defecto cuando localStorage rechaza lecturas", async () => {
+    const getItem = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new Error("bloqueado"); });
+    try {
+      const { result } = renderHook(() => useFormat(), { wrapper });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(result.current.culture).toBe("es-AR");
+      expect(result.current.currency).toBe("ARS");
+    } finally {
+      getItem.mockRestore();
+    }
   });
 });

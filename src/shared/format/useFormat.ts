@@ -1,6 +1,7 @@
 import { createContext, createElement, Fragment, useContext, useMemo, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { cultureStorageKey } from "@/shared/i18n";
+import { safeStorageGet } from "@/shared/hooks/safeStorage";
 import type { ReferenceData } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { getDefaultCultureProfile } from "./cultureProfiles";
@@ -71,7 +72,7 @@ const FormatContext = createContext<FormatState | undefined>(undefined);
 
 function effectivePreferences(data: ReferenceData) {
   const defaultCulture = getDefaultCultureProfile(data);
-  const stored = globalThis.localStorage?.getItem(cultureStorageKey);
+  const stored = safeStorageGet(cultureStorageKey);
   const culture = data.cultures.find((item) => item.isEnabled && item.code === stored)?.code
     ?? defaultCulture.code;
 

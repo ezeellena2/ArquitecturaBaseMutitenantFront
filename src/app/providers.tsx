@@ -8,6 +8,7 @@ import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { Toaster } from "@/shared/ui/sonner";
 import { AppShell } from "@/layouts/AppShell";
 import { Button } from "@/shared/ui/button";
+import { safeStorageGet } from "@/shared/hooks/safeStorage";
 
 function ReferenceDataStartup({ children }: { children: ReactNode }) {
   const { data, isError, refetch } = useReferenceData();
@@ -15,7 +16,7 @@ function ReferenceDataStartup({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!data) return;
-    const stored = globalThis.localStorage?.getItem(cultureStorageKey);
+    const stored = safeStorageGet(cultureStorageKey);
     const chosen = data.cultures.find((culture) => culture.isEnabled && culture.code === stored)?.code
       ?? data.cultures.find((culture) => culture.isEnabled && culture.isDefault)?.code;
     // Repetir init en cada montaje suspende los controles mientras cargan namespaces.

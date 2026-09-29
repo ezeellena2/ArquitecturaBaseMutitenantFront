@@ -79,6 +79,17 @@ describe("datos de referencia", () => {
     expect(initialLanguage).toBe("und");
   });
 
+  it("pide el catálogo sin preferencia cuando localStorage bloquea lecturas", async () => {
+    const getItem = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new Error("bloqueado"); });
+    try {
+      const { Wrapper } = testClient();
+      const { result } = renderHook(() => useReferenceData(), { wrapper: Wrapper });
+      await waitFor(() => expect(result.current.data?.culture).toBe("es-AR"));
+    } finally {
+      getItem.mockRestore();
+    }
+  });
+
   it("revalida con ETag y conserva los datos ante 304", async () => {
     const received: Array<string | null> = [];
     server.use(http.get("/api/reference-data", ({ request }) => {
