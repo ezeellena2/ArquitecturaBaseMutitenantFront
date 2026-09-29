@@ -38,7 +38,7 @@ export function CountrySelect({ value, onChange, placeholder, id, disabled, allo
       || (country.callingCode !== null && `+${country.callingCode}`.includes(query)))
     .sort((left, right) => (left.sortOrder ?? Number.MAX_SAFE_INTEGER) - (right.sortOrder ?? Number.MAX_SAFE_INTEGER)
       || left.name.localeCompare(right.name, data?.culture));
-  const selected = options.find((country) => country.code === value);
+  const selected = data?.countries.find((country) => country.code === value);
   const selectedLabel = selected
     ? `${t("phone.country", { country: selected.name })}${selected.callingCode ? `, +${selected.callingCode}` : ""}`
     : undefined;
@@ -47,7 +47,7 @@ export function CountrySelect({ value, onChange, placeholder, id, disabled, allo
   return (
     <div className="flex flex-col gap-2">
       <Input type="search" value={search} onChange={(event) => setSearch(event.target.value)}
-        aria-label={t("actions.search")} placeholder={t("actions.search")} disabled={unavailable} />
+        aria-label={t("fields.searchCountry")} placeholder={t("fields.searchCountry")} disabled={unavailable} />
       <Select value={value} onValueChange={onChange} disabled={unavailable}>
         <SelectTrigger id={id} aria-busy={isPending} aria-invalid={invalid} aria-describedby={describedBy}
           aria-label={selectedLabel} className="w-full text-[var(--t1)]">

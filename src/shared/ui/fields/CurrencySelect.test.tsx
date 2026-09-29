@@ -77,4 +77,22 @@ describe("CurrencySelect", () => {
     release?.();
     await waitFor(() => expect(screen.getByRole("combobox", { name: "Moneda" })).toBeEnabled());
   });
+
+  it("conserva la moneda elegida al filtrar otra y nombra el buscador", async () => {
+    const fixture = referenceDataFixture();
+    const peso = fixture.currencies[0];
+    server.use(http.get("/api/reference-data", () => HttpResponse.json({
+      ...fixture,
+      currencies: [peso, { ...peso, code: "EUR", name: "Euro" }],
+    })));
+    renderSelect();
+
+    const select = await screen.findByRole("combobox", { name: "Moneda" });
+    await waitFor(() => expect(select).toBeEnabled());
+    fireEvent.change(select, { target: { value: "ARS" } });
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "eur" } });
+
+    expect((select as HTMLSelectElement).selectedOptions[0]).toHaveTextContent("Peso argentino");
+    expect(screen.getByRole("searchbox", { name: "Buscar moneda" })).toBeInTheDocument();
+  });
 });

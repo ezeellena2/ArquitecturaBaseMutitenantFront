@@ -32,18 +32,21 @@ export function TimeZoneSelect({ value, onChange, placeholder, id, disabled, "ar
     .sort((left, right) => (left.sortOrder ?? Number.MAX_SAFE_INTEGER) - (right.sortOrder ?? Number.MAX_SAFE_INTEGER)
       || timeZoneOffsetMinutes(left.id) - timeZoneOffsetMinutes(right.id)
       || left.city.localeCompare(right.city, data?.culture));
+  const selected = data?.timeZones.find((zone) => zone.id === value);
   const waiting = isPending || format.isLoading;
   const unavailable = disabled || !data || format.isLoading;
 
   return (
     <div className="flex flex-col gap-2">
       <Input type="search" value={search} onChange={(event) => setSearch(event.target.value)}
-        aria-label={t("actions.search")} placeholder={t("actions.search")} disabled={unavailable} />
+        aria-label={t("fields.searchTimeZone")} placeholder={t("fields.searchTimeZone")} disabled={unavailable} />
       <select id={id} value={value} onChange={(event) => onChange(event.target.value)}
         disabled={unavailable} aria-busy={waiting} aria-invalid={invalid} aria-describedby={describedBy}
         className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm text-[var(--t1)] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50"
       >
         <option value="">{waiting ? t("states.loading") : isError ? t("states.error") : placeholder}</option>
+        {!format.isLoading && selected && !options.some((zone) => zone.id === value)
+          ? <option value={selected.id} hidden data-country-codes={selected.countryCodes.join(",")}>{format.formatTimeZone(selected.id)}</option> : null}
         {!format.isLoading && options.map((zone) => (
           <option key={zone.id} value={zone.id} data-country-codes={zone.countryCodes.join(",")}>
             {format.formatTimeZone(zone.id)}

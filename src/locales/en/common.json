@@ -23,6 +23,10 @@
   "fields": {
     "currency": "Currency",
     "selectCurrency": "Choose a currency",
+    "searchCountry": "Search country",
+    "searchCurrency": "Search currency",
+    "searchTimeZone": "Search time zone",
+    "searchCulture": "Search culture",
     "invalidDate": "Enter a valid date.",
     "invalidDateTime": "Enter a valid date and time.",
     "invalidTime": "Enter a valid time.",

@@ -53,4 +53,17 @@ describe("CultureSelect", () => {
     fireEvent.change(select, { target: { value: "en-US" } });
     expect(screen.getByRole("status")).toHaveTextContent("en-US");
   });
+
+  it("conserva la cultura elegida al filtrar otra y nombra el buscador", async () => {
+    server.use(http.get("/api/reference-data", () => HttpResponse.json(referenceDataFixture())));
+    renderSelect();
+
+    const select = await screen.findByRole("combobox", { name: "Cultura" });
+    await waitFor(() => expect(select).toBeEnabled());
+    fireEvent.change(select, { target: { value: "es-AR" } });
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "en-us" } });
+
+    expect((select as HTMLSelectElement).selectedOptions[0]).toHaveTextContent("Español (Argentina)");
+    expect(screen.getByRole("searchbox", { name: "Buscar cultura" })).toBeInTheDocument();
+  });
 });

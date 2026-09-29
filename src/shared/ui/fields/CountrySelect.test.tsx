@@ -98,4 +98,25 @@ describe("CountrySelect", () => {
     await userEvent.setup().keyboard("{Enter}");
     expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Uruguay (+598)"]);
   });
+
+  it("conserva el país elegido al buscar otro y da nombre propio al buscador", async () => {
+    const fixture = referenceDataFixture();
+    const argentina = fixture.countries[0];
+    server.use(http.get("/api/reference-data", () => HttpResponse.json({
+      ...fixture,
+      countries: [argentina, { ...argentina, code: "UY", name: "Uruguay", callingCode: "598" }],
+    })));
+    renderSelect();
+
+    const select = await screen.findByRole("combobox", { name: "País" });
+    await waitFor(() => expect(select).toBeEnabled());
+    select.focus();
+    await userEvent.setup().keyboard("{Enter}{Home}{Enter}");
+    expect(screen.getByRole("status")).toHaveTextContent("AR");
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "uru" } });
+
+    expect(select).toHaveTextContent("Argentina (+54)");
+    expect(screen.getByRole("combobox", { name: "País: Argentina, +54" })).toBeInTheDocument();
+    expect(screen.getByRole("searchbox", { name: "Buscar país" })).toBeInTheDocument();
+  });
 });

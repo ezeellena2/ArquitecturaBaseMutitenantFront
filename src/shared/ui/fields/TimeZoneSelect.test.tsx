@@ -72,4 +72,23 @@ describe("TimeZoneSelect", () => {
     release?.();
     await waitFor(() => expect(select).toBeEnabled());
   });
+
+  it("conserva la zona elegida al buscar otra y nombra el buscador", async () => {
+    const fixture = referenceDataFixture();
+    server.use(http.get("/api/reference-data", () => HttpResponse.json({
+      ...fixture,
+      timeZones: [...fixture.timeZones, {
+        id: "UTC", city: "UTC", countryCodes: [], isEnabled: true, sortOrder: null,
+      }],
+    })));
+    renderSelect();
+
+    const select = await screen.findByRole("combobox", { name: "Zona horaria" });
+    await waitFor(() => expect(select).toBeEnabled());
+    fireEvent.change(select, { target: { value: "America/Argentina/Buenos_Aires" } });
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "utc" } });
+
+    expect((select as HTMLSelectElement).selectedOptions[0]).toHaveTextContent("Buenos Aires (GMT−3)");
+    expect(screen.getByRole("searchbox", { name: "Buscar zona horaria" })).toBeInTheDocument();
+  });
 });

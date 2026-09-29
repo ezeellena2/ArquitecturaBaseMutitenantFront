@@ -22,6 +22,7 @@
 - **Validación en vivo** (solo guía): `isValidPhoneNumber`. El error definitivo lo manda el backend (`Users.Phone.*`, o el del módulo de WhatsApp sobre el campo `phone` si el país no está habilitado) y lo ubica `applyApiErrorToForm`.
 - **Qué emite:** `{ country: "AR", number: "11 2345-6789" }`, que es lo que espera el contrato.
 - **Accesibilidad:** el selector se anuncia como "País: Argentina, +54", no "AR +54".
+- El buscador se anuncia como "Buscar país". Mientras se filtra, el país elegido sigue visible en el control aunque no coincida con la búsqueda.
 
 ### `PhoneText` (en `shared/ui/format`)
 - Si el número es **del `CountryCode` de la cultura**, formato **nacional** (`011 15-2345-6789`); si es de otro país, **internacional** (`+598 94 123 456`). El texto exacto se fija en `format-cases.json` y coincide con el back.
