@@ -228,7 +228,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
 
   function formatTimeZone(id: string): string {
     const zone = findRow(referenceData.timeZones, id, (item) => item.id);
-    const offset = new Intl.DateTimeFormat(culture, {
+    const offset = new Intl.DateTimeFormat("en", {
       timeZone: id, timeZoneName: "longOffset", hour: "2-digit",
     }).formatToParts(clock()).find((part) => part.type === "timeZoneName")?.value;
     if (!offset) throw new Error(`No se pudo calcular el desfase de ${id}.`);

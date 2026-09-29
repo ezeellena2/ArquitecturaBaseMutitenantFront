@@ -266,3 +266,22 @@ describe.skipIf(!backendPresent)("redondeo antes de signo y unidad", () => {
     });
   }
 });
+
+describe.skipIf(!backendPresent)("offset independiente de la cultura visible", () => {
+  for (const culture of ["fr-FR", "sv-SE"]) {
+    it(culture, () => {
+      const data = sourceCatalog("en-US");
+      const english = data.cultures.find((row) => row.code === "en-US")!;
+      const referenceData = {
+        ...data,
+        cultures: [...data.cultures, { ...english, code: culture, languageCode: culture.slice(0, 2) }],
+      };
+      const formatter = createFormatters({
+        referenceData, culture, timeZone: "UTC", now: "2026-09-27T15:00:00Z",
+        translate: translator("en-US"),
+      });
+
+      expect(formatter.formatTimeZone("America/New_York")).toBe("New York (GMT−4)");
+    });
+  }
+});
