@@ -18,12 +18,12 @@ export function useLanguagePreference(): { change: (culture: string) => Promise<
     if (!user) return;
 
     try {
-      const updated = await updateMe({
+      await updateMe({
         displayName: user.displayName,
         culture,
         timeZoneId: user.timeZoneId,
       });
-      queryClient.setQueryData(currentUserQueryKey, updated);
+      await queryClient.invalidateQueries({ queryKey: currentUserQueryKey });
     } catch {
       await changeCulture(previous);
       toast.error(t("language.saveFailed"));
