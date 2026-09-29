@@ -1,15 +1,17 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Suspense, useEffect, type ReactNode } from "react";
-import { I18nextProvider } from "react-i18next";
+import { I18nextProvider, useTranslation } from "react-i18next";
 import i18n, { configureI18n, cultureStorageKey } from "@/shared/i18n";
 import { queryClient } from "@/shared/api/queryClient";
 import { FormatProvider } from "@/shared/format/useFormat";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { Toaster } from "@/shared/ui/sonner";
 import { AppShell } from "@/layouts/AppShell";
+import { Button } from "@/shared/ui/button";
 
-function ReferenceDataStartup() {
-  const { data } = useReferenceData();
+function ReferenceDataStartup({ children }: { children: ReactNode }) {
+  const { data, isError, refetch } = useReferenceData();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!data) return;
@@ -21,20 +23,26 @@ function ReferenceDataStartup() {
     void configureI18n(data.cultures);
   }, [data]);
 
-  return null;
+  if (isError) return <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-6">
+    <p role="alert">{t("states.error")}</p>
+    <Button onClick={() => void refetch()}>{t("actions.retry")}</Button>
+  </main>;
+
+  return children;
 }
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <I18nextProvider i18n={i18n}>
       <QueryClientProvider client={queryClient}>
-        <ReferenceDataStartup />
-        <FormatProvider>
-          <Suspense fallback={null}>
-            <AppShell>{children}</AppShell>
-          </Suspense>
-        </FormatProvider>
-        <Suspense fallback={null}><Toaster /></Suspense>
+        <ReferenceDataStartup>
+          <FormatProvider>
+            <Suspense fallback={null}>
+              <AppShell>{children}</AppShell>
+            </Suspense>
+          </FormatProvider>
+        </ReferenceDataStartup>
+        <Toaster />
       </QueryClientProvider>
     </I18nextProvider>
   );

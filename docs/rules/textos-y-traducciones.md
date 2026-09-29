@@ -8,6 +8,7 @@
 - Vocabulario: "Organización" (nunca tenant), "Dueño" (TenantAdmin; nunca "Administrador general"), "Administrador" (CompanyAdmin), "Personal" (el lado B2C, su espacio personal), "lado" (persona o empresa), "Empresa" (Company), "Usuario" (en Gestión de usuarios de la organización), "Miembro" (de una empresa), "Ingresá" (`/login`, la puerta de persona), "Ingresá como empresa" (`/login/empresa`, la puerta B2B), "Registrá tu empresa" (el alta B2B).
 - Acciones sobre usuarios: "Deshabilitar" / "Habilitar" (nunca "Activar"), "Revocar invitación". El estado de quien pidió la baja de su cuenta es "Baja pedida".
 - La lista de culturas habilitadas, su `LanguageCode`, su cultura de respaldo y la marcada por defecto salen de `Cultures`, no de una lista en el front. El catálogo inicial habilita `es-AR` y `en-US`; cada idioma habilitado tiene su carpeta de textos.
+- Los archivos de idioma empaquetados inicializan i18n antes de pedir `GET /api/reference-data`, para que los errores de arranque y sus acciones siempre tengan texto. Al recibir `Cultures`, su selección habilitada y `FallbackCulture` gobiernan el idioma efectivo.
 - En E1 la cultura local de `arquitecturabasemt.culture` gana sobre la marcada por defecto en el JSON de referencia; desde E3 gana la de la cuenta (`/api/me`). El `Accept-Language` lo pone `httpClient`. La caída es cultura pedida → `FallbackCulture` → cultura por defecto.
 - Los errores del backend llegan traducidos; en el front solo se traducen los `code` que llevan un texto propio.
 

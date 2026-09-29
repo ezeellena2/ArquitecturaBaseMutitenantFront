@@ -1,5 +1,4 @@
-import i18n from "i18next";
-import resourcesToBackend from "i18next-resources-to-backend";
+import i18n, { type Resource } from "i18next";
 import { initReactI18next } from "react-i18next";
 
 export type CultureLocale = {
@@ -14,7 +13,26 @@ export const cultureStorageKey = "arquitecturabasemt.culture";
 
 // Los archivos de interfaz son la fuente de idiomas disponibles. Las culturas y su fallback
 // llegan por Cultures desde shared/referenceData; ninguna lista de culturas vive acá.
-const localeFiles = import.meta.glob<Record<string, unknown>>("../../locales/*/*.json", { import: "default" });
+const localeFiles = import.meta.glob<Record<string, unknown>>("../../locales/*/*.json", {
+  import: "default", eager: true,
+});
+const packagedResources: Resource = {};
+for (const [path, content] of Object.entries(localeFiles)) {
+  const match = /\/([^/]+)\/([^/]+)\.json$/.exec(path);
+  if (match) (packagedResources[match[1]] ??= {})[match[2]] = content;
+}
+const documentLanguage = typeof document === "undefined" ? "es" : document.documentElement.lang.split("-")[0];
+const initialLanguage = packagedResources[documentLanguage] ? documentLanguage : "es";
+void i18n.use(initReactI18next).init({
+  resources: packagedResources,
+  lng: initialLanguage,
+  fallbackLng: initialLanguage,
+  ns: Object.keys(packagedResources[initialLanguage]),
+  defaultNS: "common",
+  initAsync: false,
+  interpolation: { escapeValue: false },
+  react: { useSuspense: true },
+});
 let enabledCultures = new Map<string, CultureLocale>();
 let defaultCulture: string | null = null;
 
@@ -42,7 +60,7 @@ export async function configureI18n(cultures: readonly CultureLocale[]): Promise
   if (defaults.length !== 1) throw new Error("Cultures debe tener una sola cultura predeterminada habilitada");
 
   for (const culture of enabled) {
-    if (localeFiles[`../../locales/${culture.languageCode}/common.json`] === undefined) {
+    if (packagedResources[culture.languageCode]?.common === undefined) {
       throw new Error(`Faltan traducciones para ${culture.code}`);
     }
   }
@@ -52,24 +70,20 @@ export async function configureI18n(cultures: readonly CultureLocale[]): Promise
   const stored = globalThis.localStorage?.getItem(cultureStorageKey);
   const chosen = stored && enabledCultures.has(stored) ? stored : defaultCulture;
 
-  await i18n
-    .use(resourcesToBackend(async (culture: string, namespace: string) => {
-      const language = enabledCultures.get(culture)?.languageCode;
-      const loader = localeFiles[`../../locales/${language}/${namespace}.json`];
-      if (!loader) throw new Error(`Falta ${namespace} para ${culture}`);
-      return loader();
-    }))
-    .use(initReactI18next)
-    .init({
-      lng: chosen,
-      fallbackLng: fallbackFor,
-      supportedLngs: [...enabledCultures.keys()],
-      load: "currentOnly",
-      ns: ["common"],
-      defaultNS: "common",
-      interpolation: { escapeValue: false },
-      react: { useSuspense: true },
-    });
+  const resources: Resource = {};
+  for (const culture of enabled) resources[culture.code] = packagedResources[culture.languageCode];
+  await i18n.init({
+    resources,
+    lng: chosen,
+    fallbackLng: fallbackFor,
+    supportedLngs: [...enabledCultures.keys()],
+    load: "currentOnly",
+    ns: Object.keys(resources[chosen]),
+    defaultNS: "common",
+    initAsync: false,
+    interpolation: { escapeValue: false },
+    react: { useSuspense: true },
+  });
 }
 
 export async function changeCulture(culture: string): Promise<void> {
