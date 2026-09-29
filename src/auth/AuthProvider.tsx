@@ -7,10 +7,12 @@ import { authConfig } from "./authConfig";
 let session: AuthContextProps | undefined;
 
 // El puente está listo antes de la primera consulta que hagan los hijos.
-configureHttpClient({
+const httpClientOptions = {
   getAccessToken: () => session?.user?.access_token,
   getCulture: () => i18n.language,
-});
+  renewAccessToken: async () => (await session?.signinSilent())?.access_token,
+};
+configureHttpClient(httpClientOptions);
 
 function onSigninCallback(): void {
   globalThis.history.replaceState({}, document.title, globalThis.location.pathname);
@@ -21,6 +23,7 @@ function HttpClientBridge({ children }: { children: ReactNode }) {
 
   useLayoutEffect(() => {
     session = auth;
+    configureHttpClient(httpClientOptions);
     return () => { session = undefined; };
   }, [auth]);
 

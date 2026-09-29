@@ -5,6 +5,7 @@ import { effectiveCulture } from "@/shared/i18n";
 interface HttpClientOptions {
   getAccessToken?: () => string | undefined;
   getCulture?: () => string | null | undefined;
+  renewAccessToken?: () => Promise<string | undefined>;
 }
 
 const defaults: HttpClientOptions = {};
@@ -51,11 +52,28 @@ async function send(path: string, init: RequestInit, token: string | undefined):
 
 async function receive(path: string, init: RequestInit, allowNotModified = false): Promise<Response> {
   let response: Response;
+  const token = options.getAccessToken?.();
 
   try {
-    response = await send(path, init, options.getAccessToken?.());
+    response = await send(path, init, token);
   } catch {
     throw ApiError.network();
+  }
+
+  if (response.status === 401 && token && options.renewAccessToken) {
+    let renewedToken: string | undefined;
+    try {
+      renewedToken = await options.renewAccessToken();
+    } catch {
+      // El 401 original conserva su código y traceId si la sesión ya no se puede renovar.
+    }
+    if (renewedToken) {
+      try {
+        response = await send(path, init, renewedToken);
+      } catch {
+        throw ApiError.network();
+      }
+    }
   }
 
   if (!response.ok && !(allowNotModified && response.status === 304)) {
