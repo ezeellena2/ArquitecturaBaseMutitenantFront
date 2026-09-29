@@ -380,13 +380,13 @@ export interface components {
             code: string;
             alpha3: string;
             numericCode: string;
-            callingCode: string;
-            defaultCurrencyCode: string;
-            defaultTimeZoneId: string;
+            callingCode?: null | string;
+            defaultCurrencyCode?: null | string;
+            defaultTimeZoneId?: null | string;
             name: string;
             isEnabled: boolean;
             /** Format: int32 */
-            sortOrder: null | number | string;
+            sortOrder?: null | number;
         };
         CultureReferenceHttpResponse: {
             code: string;
@@ -402,33 +402,33 @@ export interface components {
             groupSeparator: string;
             currencyPattern: string;
             percentPattern: string;
-            fallbackCulture: string;
+            fallbackCulture?: null | string;
             isDefault: boolean;
             name: string;
             isEnabled: boolean;
             /** Format: int32 */
-            sortOrder: null | number | string;
+            sortOrder?: null | number;
         };
         CurrencyReferenceHttpResponse: {
             code: string;
             numericCode: string;
             /** Format: int32 */
-            minorUnits: null | number | string;
+            minorUnits?: null | number;
             symbol: string;
             displaySymbol: string;
             name: string;
             namePlural: string;
             isEnabled: boolean;
             /** Format: int32 */
-            sortOrder: null | number | string;
+            sortOrder?: null | number;
         };
         ProblemDetails: {
-            type?: string;
-            title?: string;
+            type?: null | string;
+            title?: null | string;
             /** Format: int32 */
-            status?: null | number | string;
-            detail?: string;
-            instance?: string;
+            status?: null | number;
+            detail?: null | string;
+            instance?: null | string;
         };
         ReferenceDataHttpResponse: {
             culture: string;
@@ -448,15 +448,15 @@ export interface components {
             name: string;
             isEnabled: boolean;
             /** Format: int32 */
-            sortOrder: null | number | string;
+            sortOrder?: null | number;
         };
         TimeZoneReferenceHttpResponse: {
             id: string;
-            countryCodes: unknown[];
+            countryCodes: string[];
             city: string;
             isEnabled: boolean;
             /** Format: int32 */
-            sortOrder: null | number | string;
+            sortOrder?: null | number;
         };
     };
     responses: never;
