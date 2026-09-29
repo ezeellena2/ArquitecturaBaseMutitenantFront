@@ -44,6 +44,7 @@ describe("entrada según Cultures", () => {
   it("convierte el porcentaje visible a la fracción HTTP y preserva el vacío", () => {
     expect(parsePercent("12,5", spanish)).toBe(0.125);
     expect(parsePercent("12.5", english)).toBe(0.125);
+    expect(parsePercent("8,2", spanish)).toBe(0.082);
     expect(parsePercent("", spanish)).toBeNull();
     expect(() => parsePercent("12.5", spanish)).toThrow();
   });

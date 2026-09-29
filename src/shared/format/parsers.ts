@@ -1,5 +1,6 @@
 import type { CultureReference, ReferenceData } from "@/shared/referenceData/referenceData";
 import type { MoneyValue } from "./formatters";
+import { shiftDecimal } from "./decimalScale";
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -56,7 +57,7 @@ export function parsePercent(input: string, culture: CultureReference): number |
   const numeric = trimmed.replace(/\s*%$/, "");
   if (trimmed !== "" && numeric === "") throw new Error("El porcentaje no tiene un número.");
   const value = parseDecimal(numeric, culture);
-  return value === null ? null : value / 100;
+  return value === null ? null : shiftDecimal(value, -2);
 }
 
 function dateParts(input: string, pattern: string): { year: number; month: number; day: number } {

@@ -1,6 +1,7 @@
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import type { ReferenceData } from "@/shared/referenceData/referenceData";
 import { getCultureProfile } from "./cultureProfiles";
+import { shiftDecimal } from "./decimalScale";
 
 type Translate = (key: string, options?: { count?: number }) => string;
 
@@ -151,7 +152,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   function formatDecimal(value: number, digits: number): string { return number(value, digits, digits); }
   function formatQuantity(value: number): string { return number(value, 0, 3); }
   function formatPercent(value: number): string {
-    return profile.percentPattern.replace("{number}", number(value * 100, 0, 2));
+    return profile.percentPattern.replace("{number}", number(shiftDecimal(value, 2), 0, 2));
   }
 
   function formatMoney(value: MoneyValue): string {
