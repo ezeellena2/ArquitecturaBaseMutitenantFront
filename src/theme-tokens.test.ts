@@ -92,4 +92,15 @@ describe("tema aprobado", () => {
       expect(readFileSync(file, "utf8"), `Token viejo en ${file}`).not.toMatch(/--color-[a-z]/);
     }
   });
+
+  it("declara todos los tokens referenciados por componentes", () => {
+    const declared = new Set([...css.matchAll(/(--[a-z][a-z0-9-]*):/g)].map((match) => match[1]));
+    const sourceFiles = filesIn(srcDir).filter((file) => /\.(?:ts|tsx|css)$/.test(file) && !/\.test\.(?:ts|tsx)$/.test(file) && !file.endsWith("index.css"));
+    for (const file of sourceFiles) {
+      for (const match of readFileSync(file, "utf8").matchAll(/var\((--[a-z][a-z0-9-]*)\)/g)) {
+        if (match[1].startsWith("--radix-")) continue;
+        expect(declared.has(match[1]), `${path.relative(srcDir, file)} usa ${match[1]} sin declararlo`).toBe(true);
+      }
+    }
+  });
 });
