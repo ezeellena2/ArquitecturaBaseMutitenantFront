@@ -32,6 +32,94 @@
       }
     },
     {
+      "id": "legal-terms-escritorio",
+      "pair": "legal-terms",
+      "group": "publicas",
+      "board": "Legal",
+      "viewport": { "width": 1440, "height": 900 },
+      "props": { "documento": "Términos y condiciones" },
+      "app": {
+        "path": "/terminos",
+        "readySelector": "article",
+        "readyText": "DOCUMENTO DE DEMOSTRACIÓN.",
+        "responses": [{
+          "method": "GET", "path": "/api/legal/terms", "status": 200,
+          "body": {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "Terms", "version": 1,
+            "effectiveAtUtc": "2026-09-29T12:00:00Z", "culture": "es-AR",
+            "text": "DOCUMENTO DE DEMOSTRACIÓN. Esta plantilla no incluye términos legales. Reemplazá este texto antes de publicar."
+          }
+        }]
+      }
+    },
+    {
+      "id": "legal-terms-movil",
+      "pair": "legal-terms",
+      "group": "publicas",
+      "board": "M-Legal",
+      "viewport": { "width": 390, "height": 844 },
+      "props": { "documento": "Términos y condiciones" },
+      "app": {
+        "path": "/terminos",
+        "readySelector": "article",
+        "readyText": "DOCUMENTO DE DEMOSTRACIÓN.",
+        "responses": [{
+          "method": "GET", "path": "/api/legal/terms", "status": 200,
+          "body": {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "Terms", "version": 1,
+            "effectiveAtUtc": "2026-09-29T12:00:00Z", "culture": "es-AR",
+            "text": "DOCUMENTO DE DEMOSTRACIÓN. Esta plantilla no incluye términos legales. Reemplazá este texto antes de publicar."
+          }
+        }]
+      }
+    },
+    {
+      "id": "legal-privacy-escritorio",
+      "pair": "legal-privacy",
+      "group": "publicas",
+      "board": "Legal",
+      "viewport": { "width": 1440, "height": 900 },
+      "props": { "documento": "Política de privacidad" },
+      "app": {
+        "path": "/privacidad",
+        "readySelector": "article",
+        "readyText": "DOCUMENTO DE DEMOSTRACIÓN.",
+        "responses": [{
+          "method": "GET", "path": "/api/legal/privacy", "status": 200,
+          "body": {
+            "id": "00000000-0000-0000-0000-000000000002",
+            "kind": "Privacy", "version": 1,
+            "effectiveAtUtc": "2026-09-29T12:00:00Z", "culture": "es-AR",
+            "text": "DOCUMENTO DE DEMOSTRACIÓN. Esta plantilla no incluye una política de privacidad. Reemplazá este texto antes de publicar."
+          }
+        }]
+      }
+    },
+    {
+      "id": "legal-privacy-movil",
+      "pair": "legal-privacy",
+      "group": "publicas",
+      "board": "M-Legal",
+      "viewport": { "width": 390, "height": 844 },
+      "props": { "documento": "Política de privacidad" },
+      "app": {
+        "path": "/privacidad",
+        "readySelector": "article",
+        "readyText": "DOCUMENTO DE DEMOSTRACIÓN.",
+        "responses": [{
+          "method": "GET", "path": "/api/legal/privacy", "status": 200,
+          "body": {
+            "id": "00000000-0000-0000-0000-000000000002",
+            "kind": "Privacy", "version": 1,
+            "effectiveAtUtc": "2026-09-29T12:00:00Z", "culture": "es-AR",
+            "text": "DOCUMENTO DE DEMOSTRACIÓN. Esta plantilla no incluye una política de privacidad. Reemplazá este texto antes de publicar."
+          }
+        }]
+      }
+    },
+    {
       "id": "ingreso-persona-correo",
       "pair": "ingreso-persona-correo",
       "group": "ingreso",

@@ -30,11 +30,11 @@ export const routes: RouteObject[] = [
   }, errorElement: <AppErrorPage /> },
   { path: "/terminos", lazy: async () => {
     const { LegalDocumentPage } = await import("@/areas/public/legal/pages/LegalDocumentPage");
-    return { Component: () => <SiteLayout><LegalDocumentPage kind="terms" /></SiteLayout> };
+    return { Component: () => <SiteLayout variant="legal"><LegalDocumentPage kind="terms" /></SiteLayout> };
   }, errorElement: <AppErrorPage /> },
   { path: "/privacidad", lazy: async () => {
     const { LegalDocumentPage } = await import("@/areas/public/legal/pages/LegalDocumentPage");
-    return { Component: () => <SiteLayout><LegalDocumentPage kind="privacy" /></SiteLayout> };
+    return { Component: () => <SiteLayout variant="legal"><LegalDocumentPage kind="privacy" /></SiteLayout> };
   }, errorElement: <AppErrorPage /> },
   { path: "/sin-permiso", element: <ForbiddenRoute />, errorElement: <AppErrorPage /> },
   { element: <SessionRecovery />, children: [

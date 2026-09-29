@@ -32,7 +32,7 @@ afterEach(async () => { await changeCulture("es-AR"); });
 
 function show(kind: "terms" | "privacy") {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  const wrapper = ({ children }: { children: ReactNode }) => <QueryClientProvider client={client}><FormatProvider><MemoryRouter><SiteLayout>{children}</SiteLayout></MemoryRouter></FormatProvider></QueryClientProvider>;
+  const wrapper = ({ children }: { children: ReactNode }) => <QueryClientProvider client={client}><FormatProvider><MemoryRouter><SiteLayout variant="legal">{children}</SiteLayout></MemoryRouter></FormatProvider></QueryClientProvider>;
   return render(<LegalDocumentPage kind={kind} />, { wrapper });
 }
 

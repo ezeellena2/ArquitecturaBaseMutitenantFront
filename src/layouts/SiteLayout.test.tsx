@@ -24,4 +24,16 @@ describe("SiteLayout", () => {
     expect(screen.getByRole("link", { name: "Privacidad" })).toHaveAttribute("href", "/privacidad");
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it("en legales deja sólo marca, ingresos y enlaces legales del tablero", () => {
+    render(<MemoryRouter><SiteLayout variant="legal"><h1>{"Términos y condiciones"}</h1></SiteLayout></MemoryRouter>);
+
+    expect(screen.getByRole("link", { name: "ArquitecturaBase" })).toHaveAttribute("href", "/");
+    expect(screen.queryByRole("navigation", { name: "Secciones" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ingresá como empresa" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ingresar" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Términos" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Privacidad" })).toBeVisible();
+    expect(screen.queryByText("Ayuda")).not.toBeInTheDocument();
+  });
 });

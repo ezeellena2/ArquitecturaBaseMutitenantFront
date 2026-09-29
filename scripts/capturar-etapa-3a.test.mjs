@@ -58,6 +58,18 @@ test("Registro cubre todos los estados aprobados de 3a en escritorio y móvil", 
   assert.ok(cases.every((item) => item.board === (item.viewport.width === 390 ? "M-Registro" : "Registro")));
 });
 
+test("Portada y documentos legales tienen pares de escritorio y móvil", () => {
+  const cases = validateManifest(manifest, lienzo).filter((item) => item.group === "publicas");
+  assert.deepEqual([...new Set(cases.map((item) => item.pair))].sort(),
+    ["landing", "legal-terms", "legal-privacy"].sort());
+  assert.equal(cases.length, 6);
+  for (const item of cases.filter((entry) => entry.pair.startsWith("legal-"))) {
+    assert.equal(item.board, item.viewport.width === 390 ? "M-Legal" : "Legal");
+    assert.equal(item.app.responses?.[0]?.status, 200);
+    assert.match(item.app.responses[0].body.text, /^DOCUMENTO DE DEMOSTRACIÓN\./);
+  }
+});
+
 test("la verificación falla si falta la app o el tablero del mismo caso", () => {
   const directory = mkdtempSync(path.join(os.tmpdir(), "codex-3a-captures-"));
   const cases = [{ id: "ingreso-correo", group: "ingreso", viewport: { width: 390, height: 844 } }];
