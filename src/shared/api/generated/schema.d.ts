@@ -422,6 +422,17 @@ export interface components {
             /** Format: int32 */
             sortOrder?: null | number;
         };
+        PagedRequest: {
+            /** Format: int32 */
+            page?: number;
+            /**
+             * Format: int32
+             * @enum {integer}
+             */
+            pageSize?: 10 | 20 | 50 | 100;
+            sort?: null | string;
+            search?: null | string;
+        };
         ProblemDetails: {
             type?: null | string;
             title?: null | string;

@@ -1,6 +1,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { PagedResult } from "@/shared/api/pagedResult";
+import { pageSizes } from "@/shared/api/pageSizes";
 import { useFormat } from "@/shared/format/useFormat";
 import { Button } from "./button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
@@ -12,8 +13,6 @@ type PaginationProps = Pick<
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
 };
-
-const pageSizes = [10, 20, 50, 100] as const;
 
 // El rango y la navegación quedan en la misma superficie que la tabla.
 export function Pagination({

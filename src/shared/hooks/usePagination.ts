@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
+import { defaultPageSize, isPageSize } from "@/shared/api/pageSizes";
 import { useQueryUpdate } from "./useQueryUpdate";
-
-export const defaultPageSize = 10;
-const allowedPageSizes = new Set([10, 20, 50, 100]);
 
 function positiveInteger(value: string | null, fallback: number): number {
   if (value === null) return fallback;
@@ -28,7 +26,7 @@ export function usePagination(result?: PaginationResult, { defaultSort }: Pagina
   const rawPageSize = params.get("pageSize");
   const page = positiveInteger(rawPage, 1);
   const requestedSize = positiveInteger(rawPageSize, defaultPageSize);
-  const pageSize = allowedPageSizes.has(requestedSize) ? requestedSize : defaultPageSize;
+  const pageSize = isPageSize(requestedSize) ? requestedSize : defaultPageSize;
   const sort = params.get("sort") ?? defaultSort;
   const search = params.get("search") ?? undefined;
 

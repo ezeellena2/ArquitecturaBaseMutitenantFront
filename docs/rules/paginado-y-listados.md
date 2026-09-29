@@ -7,6 +7,7 @@
 - Las columnas son ordenables con `sortable: true`, y su `id` es el campo del backend.
 - Cambiar la búsqueda (con 300 ms de debounce), un filtro, el orden o el tamaño vuelve a la página 1, y lo hace `usePagination`.
 - `usePagination` normaliza `page` a un entero seguro desde 1 y `pageSize` a 10, 20, 50 o 100. Un valor inválido vuelve a 1/10; los valores por defecto se omiten de la URL y la corrección usa `replace`, sin agregar historial. Si el orden inicial es descendente (`-campo`), pulsar esa columna alterna a `campo` ascendente y de regreso al descendente.
+- Los tamaños disponibles viven una sola vez en `shared/api/pageSizes.ts`, tipados con el `PagedRequest` generado. El hook y `Pagination` los comparten; `pageSizes.test.ts` compara su lista y orden con el enum del OpenAPI del back.
 - Si llegan `items` vacíos con `totalCount > 0`, `usePagination` salta solo a la última página. Desde la E1 la corrección queda dentro del hook (puede usar un helper interno): no expone `correctPage` a quien lo llama y usa `replace` para no agregar historial.
 - Los conteos de los filtros salen de `GET …/filter-counts`, con los mismos filtros.
 - **Auditoría y actividad:** `useCursorList` + `<LoadMore />`, sin total.
@@ -23,6 +24,7 @@
 
 ## Lo verifica
 - `usePagination.test.tsx` (E0/E1): conserva el estado en la URL y vuelve a la página 1; desde E1 corrige una página fuera de rango solo con `items` vacíos y `totalCount > 0`, canoniza página/tamaño inválidos con `replace`, alterna el orden descendente predeterminado y omite `pageSize=10` en la URL.
+- `pageSizes.test.ts`: exige concordancia exacta con `PagedRequest.properties.pageSize.enum` del OpenAPI; el repo hermano es obligatorio en local y solo ese chequeo se omite con aviso en CI aislado.
 - Tests de pantalla: sin coincidencias y cambio de página.
 
 ## Detalle
