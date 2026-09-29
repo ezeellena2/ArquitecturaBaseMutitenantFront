@@ -31,6 +31,10 @@ export default defineConfig(({ mode }) => ({
   plugins: [react(), tailwindcss()],
   build: {
     rolldownOptions: {
+      input: {
+        main: path.resolve(import.meta.dirname, "index.html"),
+        silentRenew: path.resolve(import.meta.dirname, "silent-renew.html"),
+      },
       output: {
         codeSplitting: {
           groups: [
