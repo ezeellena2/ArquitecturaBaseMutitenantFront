@@ -6,6 +6,26 @@
   "network": "We couldn't connect. Check your connection.",
   "server": "Something went wrong. Try again in a little while.",
   "traceId": "Code to report: {{traceId}}",
+  "errorPage": {
+    "home": "Go to home",
+    "forbidden": {
+      "title": "You don't have permission to view this page",
+      "description": "If you need access, ask whoever manages users at {{organizationName}}."
+    },
+    "notFound": {
+      "title": "We couldn't find this page",
+      "description": "It may have been removed, or the address may be incorrect."
+    },
+    "unavailable": {
+      "suspendedTitle": "{{organizationName}} is suspended",
+      "suspendedDescription": "No one in this organization can sign in right now. Your other profiles still work.",
+      "pendingTitle": "We're reviewing {{organizationName}}",
+      "pendingDescription": "We'll email you once it's approved.",
+      "closedTitle": "{{organizationName}} is closed",
+      "closedDescription": "This organization is no longer available. Your other profiles still work.",
+      "otherProfile": "Choose another profile"
+    }
+  },
   "rateLimited": "You made too many requests. Try again in a few seconds.",
   "retryIn": "Try again in {{time}}",
   "concurrency": {

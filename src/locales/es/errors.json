@@ -6,6 +6,26 @@
   "network": "No pudimos conectarnos. Revisá tu conexión.",
   "server": "Algo salió mal. Probá de nuevo en un rato.",
   "traceId": "Código para reportar: {{traceId}}",
+  "errorPage": {
+    "home": "Ir al inicio",
+    "forbidden": {
+      "title": "No tenés permiso para ver esta página",
+      "description": "Si lo necesitás, pedíselo a quien administra los usuarios de {{organizationName}}."
+    },
+    "notFound": {
+      "title": "No encontramos esta página",
+      "description": "Puede que la hayan borrado o que la dirección esté mal."
+    },
+    "unavailable": {
+      "suspendedTitle": "{{organizationName}} está suspendida",
+      "suspendedDescription": "Nadie de la organización puede entrar por ahora. Tus otros perfiles siguen funcionando.",
+      "pendingTitle": "Estamos revisando {{organizationName}}",
+      "pendingDescription": "Te avisamos por correo cuando esté aprobada.",
+      "closedTitle": "{{organizationName}} está cerrada",
+      "closedDescription": "La organización ya no está disponible. Tus otros perfiles siguen funcionando.",
+      "otherProfile": "Elegí otro perfil"
+    }
+  },
   "rateLimited": "Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos.",
   "retryIn": "Reintentá en {{time}}",
   "concurrency": {
