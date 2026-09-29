@@ -60,6 +60,7 @@ export default defineConfig(({ mode }) => ({
     css: false,
     // Claude Code arma sus worktrees dentro de .claude/, así que ahí hay copias enteras del proyecto con sus
     // propios tests. Sin esta exclusión, "npm run test" corre también los de otra sesión y falla por eso.
-    exclude: [...configDefaults.exclude, ".claude/**"],
+    // Las pruebas Playwright usan node:test y navegador real, no el entorno jsdom de Vitest.
+    exclude: [...configDefaults.exclude, ".claude/**", "scripts/**/*.test.mjs"],
   },
 }));

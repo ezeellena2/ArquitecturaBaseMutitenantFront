@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "landing",
+      "pair": "landing",
+      "group": "publicas",
+      "board": "Landing",
+      "viewport": { "width": 1440, "height": 900 },
+      "props": {},
+      "app": { "path": "/", "readySelector": "main" }
+    },
+    {
+      "id": "landing-movil",
+      "pair": "landing",
+      "group": "publicas",
+      "board": "Landing-Movil",
+      "viewport": { "width": 390, "height": 844 },
+      "props": {},
+      "app": { "path": "/", "readySelector": "main" }
+    },
+    {
+      "id": "ingreso-persona-correo",
+      "pair": "ingreso-persona-correo",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": { "width": 1440, "height": 900 },
+      "props": { "estado": "Correo", "puerta": "Persona" },
+      "app": { "path": "/login?returnUrl=%2Fconnect%2Fauthorize", "readySelector": "h1" }
+    },
+    {
+      "id": "ingreso-persona-correo-movil",
+      "pair": "ingreso-persona-correo",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": { "width": 390, "height": 844 },
+      "props": { "estado": "Correo", "puerta": "Persona" },
+      "app": { "path": "/login?returnUrl=%2Fconnect%2Fauthorize", "readySelector": "h1" }
+    }
+  ]
+}
