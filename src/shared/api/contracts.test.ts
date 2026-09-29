@@ -51,7 +51,7 @@ describe("OpenAPI contracts", () => {
     writeFileSync(target, "stale");
 
     expect(run(checker, source, target).status).not.toBe(0);
-  });
+  }, 20_000);
 
   it("requires the backend checkout locally and warns when CI lacks it", () => {
     const { source, target } = fixture();
@@ -61,5 +61,5 @@ describe("OpenAPI contracts", () => {
     const ci = run(checker, missing, target, true);
     expect(ci.status).toBe(0);
     expect(ci.stdout + ci.stderr).toMatch(/omit|skip/i);
-  });
+  }, 20_000);
 });

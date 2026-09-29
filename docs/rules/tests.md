@@ -15,6 +15,8 @@
   - en una edición, el **409 de concurrencia**; en un alta, que el reintento manda la **misma** `Idempotency-Key`.
 - Las consultas van por rol y por texto accesible (`getByRole("button", { name: … })`). Los desplegables de Radix se abren con teclado.
 - `referenceData.test.ts` (E1) comprueba que los selectores tomen opciones habilitadas y traducciones de `GET /api/reference-data`, el estado de carga y el `ETag`; `formatters.test.ts` (E1) recorre los mismos casos que el back. Ningún test fija un array de países, monedas o zonas en un componente.
+- `renderWithProviders` entrega un QueryClient nuevo a todos los providers por cada render; el test comprueba que también aísla la carga inicial de referencias. `parity.test.ts` exige recursos para los idiomas de culturas habilitadas en el JSON del back (repo hermano obligatorio en local; solo ese chequeo se omite en CI aislado con aviso). `columns-mobile.test.ts` inspecciona automáticamente cada `areas/**/columns.tsx` real cuando nazcan en E4: cada definición exportada debe tener una sola columna `mobile: "primary"`. En E2 no existe ningún archivo de ese patrón; completar esta guardia con la receta de Roles en E4.
+- Los tests de generación de contratos lanzan Node en subprocesos; usan un límite de 20 segundos por caso para evitar fallos por carga de workers en Windows. Una ejecución aislada o con dos workers puede terminar bastante antes.
 
 ## Prohibido
 - `getByTestId` si existe un rol accesible.

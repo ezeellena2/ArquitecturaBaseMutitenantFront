@@ -1,4 +1,4 @@
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import { Suspense, useEffect, type ReactNode } from "react";
 import { I18nextProvider, useTranslation } from "react-i18next";
 import i18n, { configureI18n, cultureStorageKey } from "@/shared/i18n";
@@ -32,10 +32,10 @@ function ReferenceDataStartup({ children }: { children: ReactNode }) {
   return children;
 }
 
-export function AppProviders({ children }: { children: ReactNode }) {
+export function AppProviders({ children, client = queryClient }: { children: ReactNode; client?: QueryClient }) {
   return (
     <I18nextProvider i18n={i18n}>
-      <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={client}>
         <ReferenceDataStartup>
           <FormatProvider>
             <Suspense fallback={null}>

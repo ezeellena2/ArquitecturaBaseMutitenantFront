@@ -1,6 +1,18 @@
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const resources = import.meta.glob<Record<string, unknown>>("./*/*.json", { eager: true, import: "default" });
+const cultureSource = path.resolve(import.meta.dirname,
+  "../../../ArquitecturaBaseMutitenant/src/ArquitecturaBaseMultitenant.Infrastructure/Persistence/Seed/ReferenceData/cultures.json");
+const hasCultureSource = existsSync(cultureSource);
+
+if (!hasCultureSource && !process.env.CI) {
+  throw new Error("El repo hermano ArquitecturaBaseMutitenant es obligatorio para comprobar culturas habilitadas.");
+}
+if (!hasCultureSource) {
+  console.warn("Se omite la paridad cruzada de culturas en CI: falta el repo hermano ArquitecturaBaseMutitenant.");
+}
 
 function languages(): string[] {
   return [...new Set(Object.keys(resources).map((path) => path.split("/")[1]))].sort();
@@ -30,6 +42,18 @@ function placeholders(value: string): string[] {
 }
 
 describe("paridad de traducciones", () => {
+  it.skipIf(!hasCultureSource)("incluye textos para cada idioma habilitado por Cultures", () => {
+    const source = JSON.parse(readFileSync(cultureSource, "utf8")) as {
+      Cultures: Array<{ Code: string; LanguageCode: string; IsEnabled: boolean }>;
+    };
+    const required = [...new Set(source.Cultures.filter((row) => row.IsEnabled).map((row) => row.LanguageCode))].sort();
+    expect(required.length).toBeGreaterThan(0);
+    expect(languages()).toEqual(expect.arrayContaining(required));
+    for (const language of required) {
+      expect(namespaces(language), language).toEqual(expect.arrayContaining(["common", "errors", "enums"]));
+    }
+  });
+
   it("incluye common, errors y enums para cada idioma disponible", () => {
     expect(languages().length).toBeGreaterThan(0);
     for (const language of languages()) {
