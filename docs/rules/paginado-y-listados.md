@@ -24,7 +24,7 @@
 
 ## Lo verifica
 - `usePagination.test.tsx` (E0/E1): conserva el estado en la URL y vuelve a la página 1; desde E1 corrige una página fuera de rango solo con `items` vacíos y `totalCount > 0`, canoniza página/tamaño inválidos con `replace`, alterna el orden descendente predeterminado y omite `pageSize=10` en la URL.
-- `pageSizes.test.ts`: exige concordancia exacta con `PagedRequest.properties.pageSize.enum` del OpenAPI; el repo hermano es obligatorio en local y solo ese chequeo se omite con aviso en CI aislado.
+- `pageSizes.test.ts` (E2): exige concordancia exacta con `PagedRequest.properties.pageSize.enum` del OpenAPI; el repo hermano es obligatorio en local y solo ese chequeo se omite con aviso en CI aislado.
 - Tests de pantalla: sin coincidencias y cambio de página.
 
 ## Detalle
