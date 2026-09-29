@@ -14,7 +14,7 @@ export const authConfig: UserManagerSettings = {
   },
   client_id: "web",
   redirect_uri: `${origin}/auth/callback`,
-  post_logout_redirect_uri: `${origin}/login`,
+  post_logout_redirect_uri: `${origin}/`,
   silent_redirect_uri: `${origin}/silent-renew.html`,
   response_type: "code",
   scope: "openid profile email offline_access api",

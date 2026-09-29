@@ -13,4 +13,8 @@ describe("authConfig", () => {
     expect(authConfig.scope).toContain("offline_access");
     expect(authConfig.automaticSilentRenew).toBe(false);
   });
+
+  it("al salir vuelve a la portada pública", () => {
+    expect(authConfig.post_logout_redirect_uri).toBe(`${location.origin}/`);
+  });
 });
