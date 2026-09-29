@@ -25,11 +25,11 @@ Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena
 | `--fila-hover` | `oklch(0.95 0.025 185)` | fila al pasar el mouse |
 | `--ok` / `--ok-t` | `oklch(0.44 0.12 155)` / `oklch(0.95 0.05 155)` | estado correcto: texto y fondo tenue |
 | `--alerta` / `--alerta-t` | `oklch(0.5 0.12 70)` / `oklch(0.96 0.06 85)` | alerta: texto y fondo tenue |
-| `--peligro` / `--peligro-t` | `oklch(0.57 0.2 25)` / `oklch(0.97 0.02 25)` | peligro (errores, acciones destructivas): texto y fondo tenue |
+| `--peligro` / `--peligro-t` | `oklch(0.568 0.2 25)` / `oklch(0.97 0.02 25)` | peligro (errores, acciones destructivas): texto y fondo tenue |
 | `--foco` | `var(--marca)` | anillo de foco |
 | `--foco-halo` | `oklch(0.51 0.099 195 / 0.15)` | halo de 3 px alrededor del foco |
 
-Los nombres de esta tabla son los **únicos** que usan los componentes. Los `--color-*` de ArquitecturaBaseFront no se heredan. Las variables de shadcn (`--primary`, `--ring`, `--destructive`, `--border`, `--background`…) existen en `index.css` solo como **alias** de estos tokens: `--primary: var(--marca)`, `--ring: var(--foco)`, `--destructive: var(--peligro)`, `--border: var(--borde)`, `--background: var(--fondo)`.
+Los nombres de esta tabla son los **únicos** que usan los componentes. Los `--color-*` de ArquitecturaBaseFront no se heredan. Las variables de shadcn (`--primary`, `--ring`, `--destructive`, `--border`, `--input`, `--background`…) existen en `index.css` solo como **alias** de estos tokens: `--primary: var(--marca)`, `--ring: var(--foco)`, `--destructive: var(--peligro)`, `--border: var(--borde)`, `--input: var(--t3)`, `--background: var(--fondo)`. El borde de control alcanza al menos 3:1 sobre `--fondo` y `--peligro` sobre `--peligro-t` alcanza al menos 4,5:1.
 
 Los tonos de `statusTones` (texto sobre fondo):
 

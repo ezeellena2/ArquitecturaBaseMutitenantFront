@@ -27,7 +27,7 @@
   --ok-t: oklch(0.95 0.05 155);
   --alerta: oklch(0.5 0.12 70);
   --alerta-t: oklch(0.96 0.06 85);
-  --peligro: oklch(0.57 0.2 25);
+  --peligro: oklch(0.568 0.2 25);
   --peligro-t: oklch(0.97 0.02 25);
   --foco: var(--marca);
   --foco-halo: oklch(0.51 0.099 195 / 0.15);
@@ -54,7 +54,7 @@
   --accent-foreground: var(--marca-tx);
   --destructive: var(--peligro);
   --border: var(--borde);
-  --input: var(--borde);
+  --input: var(--t3);
   --ring: var(--foco);
   --sidebar: var(--lado);
   --sidebar-foreground: var(--t1);

@@ -1,10 +1,40 @@
 import { readFileSync, readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const srcDir = import.meta.dirname;
 const css = readFileSync(path.join(srcDir, "index.css"), "utf8");
 const theme = readFileSync(path.resolve(srcDir, "../docs/architecture/tema.md"), "utf8");
+
+function token(name: string): string {
+  const value = new RegExp(`^\\s*${name}:\\s*([^;]+);`, "m").exec(css)?.[1].trim();
+  if (!value) throw new Error(`Falta el token ${name}`);
+  const alias = /^var\((--[a-z0-9-]+)\)$/.exec(value);
+  return alias ? token(alias[1]) : value;
+}
+
+function luminance(name: string): number {
+  const match = /^oklch\(([\d.]+) ([\d.]+) ([\d.]+)\)$/.exec(token(name));
+  if (!match) throw new Error(`${name} debe ser un color OKLCH opaco`);
+  const [, lightness, chroma, hue] = match;
+  const radians = Number(hue) * Math.PI / 180;
+  const a = Number(chroma) * Math.cos(radians);
+  const b = Number(chroma) * Math.sin(radians);
+  const l = (Number(lightness) + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+  const m = (Number(lightness) - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+  const s = (Number(lightness) - 0.0894841775 * a - 1.291485548 * b) ** 3;
+  const clamp = (value: number) => Math.max(0, Math.min(1, value));
+  const red = clamp(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s);
+  const green = clamp(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s);
+  const blue = clamp(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s);
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
+
+function contrast(first: string, second: string): number {
+  const values = [luminance(first), luminance(second)].sort((left, right) => right - left);
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
 
 function filesIn(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -14,6 +44,17 @@ function filesIn(dir: string): string[] {
 }
 
 describe("tema aprobado", () => {
+  it("alcanza el contraste mínimo para borde de control y texto peligroso", () => {
+    expect(contrast("--input", "--fondo")).toBeGreaterThanOrEqual(3);
+    expect(contrast("--peligro", "--peligro-t")).toBeGreaterThanOrEqual(4.5);
+    expect(theme).toContain(`\`${token("--peligro")}\` / \`${token("--peligro-t")}\``);
+  });
+
+  it("ignora los artefactos de dist incluso antes de generarlos", () => {
+    const root = path.resolve(srcDir, "..");
+    expect(spawnSync("git", ["check-ignore", "-q", "dist/probe.js"], { cwd: root }).status).toBe(0);
+  });
+
   it("declara todos los tokens de color de tema.md", () => {
     const colorsSection = theme.split("## Colores")[1]?.split("## Forma")[0] ?? "";
     const tokens = colorsSection
