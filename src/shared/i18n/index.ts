@@ -55,7 +55,7 @@ export function effectiveCulture(): string | null {
 }
 
 // Se llama cuando llega el catálogo. Mientras tanto, la app muestra su estado de carga.
-export async function configureI18n(cultures: readonly CultureLocale[]): Promise<void> {
+export async function configureI18n(cultures: readonly CultureLocale[], preferredCulture?: string | null): Promise<void> {
   const enabled = cultures.filter((culture) => culture.isEnabled);
   const defaults = enabled.filter((culture) => culture.isDefault);
   if (defaults.length !== 1) throw new Error("Cultures debe tener una sola cultura predeterminada habilitada");
@@ -69,7 +69,9 @@ export async function configureI18n(cultures: readonly CultureLocale[]): Promise
   enabledCultures = new Map(enabled.map((culture) => [culture.code, culture]));
   defaultCulture = defaults[0].code;
   const stored = safeStorageGet(cultureStorageKey);
-  const chosen = stored && enabledCultures.has(stored) ? stored : defaultCulture;
+  const chosen = preferredCulture && enabledCultures.has(preferredCulture)
+    ? preferredCulture
+    : stored && enabledCultures.has(stored) ? stored : defaultCulture;
 
   const resources: Resource = {};
   for (const culture of enabled) resources[culture.code] = packagedResources[culture.languageCode];

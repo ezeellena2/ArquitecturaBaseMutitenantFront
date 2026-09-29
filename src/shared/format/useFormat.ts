@@ -4,6 +4,8 @@ import { cultureStorageKey } from "@/shared/i18n";
 import { safeStorageGet } from "@/shared/hooks/safeStorage";
 import type { ReferenceData } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
+import { useCurrentUser } from "@/auth/useCurrentUser";
+import type { MeResponse } from "@/shared/api/types";
 import { getDefaultCultureProfile } from "./cultureProfiles";
 import { createFormatters } from "./formatters";
 import { parseDate, parseDateTime, parseDecimal, parseMoney, parsePercent, parseTime } from "./parsers";
@@ -70,34 +72,34 @@ const loadingState: FormatState = {
 
 const FormatContext = createContext<FormatState | undefined>(undefined);
 
-function effectivePreferences(data: ReferenceData) {
+function effectivePreferences(data: ReferenceData, user: MeResponse | undefined) {
   const defaultCulture = getDefaultCultureProfile(data);
   const stored = safeStorageGet(cultureStorageKey);
-  const culture = data.cultures.find((item) => item.isEnabled && item.code === stored)?.code
+  const culture = data.cultures.find((item) => item.isEnabled && item.code === user?.culture)?.code
+    ?? data.cultures.find((item) => item.isEnabled && item.code === stored)?.code
     ?? defaultCulture.code;
 
-  // E1: la cultura local altera el idioma/formato. Zona y moneda conservan
-  // los defaults del país de Cultures.IsDefault hasta /api/me en E3.
+  // Sin sesión rigen el catálogo y la cultura local; /api/me devuelve las preferencias efectivas.
   const country = data.countries.find(
     (item) => item.code === defaultCulture.countryCode && item.isEnabled,
   );
-  const timeZone = country?.defaultTimeZoneId;
-  const currency = country?.defaultCurrencyCode;
+  const timeZone = user?.timeZoneId ?? country?.defaultTimeZoneId;
+  const currency = user?.currencyCode ?? country?.defaultCurrencyCode;
   if (!timeZone || !currency
-    || !data.timeZones.some((item) => item.id === timeZone && item.isEnabled)
-    || !data.currencies.some((item) => item.code === currency && item.isEnabled)) {
+    || !data.timeZones.some((item) => item.id === timeZone && (user || item.isEnabled))
+    || !data.currencies.some((item) => item.code === currency && (user || item.isEnabled))) {
     throw new Error("El catálogo no tiene zona y moneda habilitadas para la cultura predeterminada.");
   }
   return { culture, timeZone, currency };
 }
 
 /**
- * E1 usa referencia + preferencia local. En E3, sustituir effectivePreferences
- * por las preferencias de /api/me (cuenta → empresa → organización en B2B).
+ * Las preferencias efectivas de /api/me ganan sobre la cultura local.
  */
 export function FormatProvider({ children }: { children: ReactNode }) {
   const { data } = useReferenceData();
-  const preferences = useMemo(() => data ? effectivePreferences(data) : null, [data]);
+  const { data: user } = useCurrentUser();
+  const preferences = useMemo(() => data ? effectivePreferences(data, user) : null, [data, user]);
   const { t, ready } = useTranslation(["common", "format", "enums"], {
     lng: preferences?.culture,
     useSuspense: false,
