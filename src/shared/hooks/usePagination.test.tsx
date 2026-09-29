@@ -58,6 +58,37 @@ describe("usePagination", () => {
     expect(result.current.location.search).toBe("");
   });
 
+  it("alterna un orden predeterminado descendente hacia ascendente y de regreso", () => {
+    const { result } = renderPagination("/usuarios?page=2", "-createdAtUtc");
+
+    expect(result.current.pagination.sort).toBe("-createdAtUtc");
+    act(() => result.current.pagination.toggleSort("createdAtUtc"));
+    expect(result.current.pagination.sort).toBe("createdAtUtc");
+    expect(result.current.location.search).toBe("?sort=createdAtUtc");
+
+    act(() => result.current.pagination.toggleSort("createdAtUtc"));
+    expect(result.current.pagination.sort).toBe("-createdAtUtc");
+    expect(result.current.location.search).toBe("");
+  });
+
+  it.each([
+    ["?page=0&pageSize=15", ""],
+    ["?page=-2&pageSize=20.5", ""],
+    ["?page=1.5&pageSize=abc", ""],
+    ["?page=Infinity&pageSize=0", ""],
+    ["?page=01&pageSize=020", "?pageSize=20"],
+    ["?page=2.0&pageSize=20.0", "?page=2&pageSize=20"],
+  ])("normaliza %s a %s con replace sin agregar historial", (query, expected) => {
+    const { result } = renderPagination(`/usuarios${query}`, undefined, "/anterior");
+
+    expect(result.current.pagination.page).toBe(expected.includes("page=2") ? 2 : 1);
+    expect(result.current.pagination.pageSize).toBe(expected.includes("pageSize=20") ? 20 : 10);
+    expect(result.current.location.search).toBe(expected);
+
+    act(() => result.current.navigate(-1));
+    expect(result.current.location.pathname).toBe("/anterior");
+  });
+
   it("resets the page when size changes and omits the default size from the URL", () => {
     const { result } = renderPagination("/usuarios?page=3&pageSize=20");
 

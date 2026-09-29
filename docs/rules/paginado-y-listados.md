@@ -6,6 +6,7 @@
 - `usePagination(result?: { items; totalCount })` toma opcionalmente el resultado ya recibido por la query; `useFilters(keys)` mantiene los filtros en la URL. La query usa el estado de página, orden, búsqueda y filtros de esa URL, con `placeholderData: keepPreviousData`.
 - Las columnas son ordenables con `sortable: true`, y su `id` es el campo del backend.
 - Cambiar la búsqueda (con 300 ms de debounce), un filtro, el orden o el tamaño vuelve a la página 1, y lo hace `usePagination`.
+- `usePagination` normaliza `page` a un entero seguro desde 1 y `pageSize` a 10, 20, 50 o 100. Un valor inválido vuelve a 1/10; los valores por defecto se omiten de la URL y la corrección usa `replace`, sin agregar historial. Si el orden inicial es descendente (`-campo`), pulsar esa columna alterna a `campo` ascendente y de regreso al descendente.
 - Si llegan `items` vacíos con `totalCount > 0`, `usePagination` salta solo a la última página. Desde la E1 la corrección queda dentro del hook (puede usar un helper interno): no expone `correctPage` a quien lo llama y usa `replace` para no agregar historial.
 - Los conteos de los filtros salen de `GET …/filter-counts`, con los mismos filtros.
 - **Auditoría y actividad:** `useCursorList` + `<LoadMore />`, sin total.
@@ -21,7 +22,7 @@
 - `src/areas/business/roles/pages/RolesPage.tsx` (E4) · `src/areas/business/users/components/UsersFilterBar.tsx` (E6)
 
 ## Lo verifica
-- `usePagination.test.tsx` (E0/E1): conserva el estado en la URL y vuelve a la página 1; desde E1 corrige una página fuera de rango solo con `items` vacíos y `totalCount > 0`, usando `replace`, y omite `pageSize=10` en la URL.
+- `usePagination.test.tsx` (E0/E1): conserva el estado en la URL y vuelve a la página 1; desde E1 corrige una página fuera de rango solo con `items` vacíos y `totalCount > 0`, canoniza página/tamaño inválidos con `replace`, alterna el orden descendente predeterminado y omite `pageSize=10` en la URL.
 - Tests de pantalla: sin coincidencias y cambio de página.
 
 ## Detalle
