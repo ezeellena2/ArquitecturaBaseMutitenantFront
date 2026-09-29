@@ -9,6 +9,7 @@ import { Toaster } from "@/shared/ui/sonner";
 import { AppShell } from "@/layouts/AppShell";
 import { Button } from "@/shared/ui/button";
 import { safeStorageGet } from "@/shared/hooks/safeStorage";
+import { AppAuthProvider } from "@/auth/AuthProvider";
 
 function ReferenceDataStartup({ children }: { children: ReactNode }) {
   const { data, isError, refetch } = useReferenceData();
@@ -35,16 +36,18 @@ function ReferenceDataStartup({ children }: { children: ReactNode }) {
 export function AppProviders({ children, client = queryClient }: { children: ReactNode; client?: QueryClient }) {
   return (
     <I18nextProvider i18n={i18n}>
-      <QueryClientProvider client={client}>
-        <ReferenceDataStartup>
-          <FormatProvider>
-            <Suspense fallback={null}>
-              <AppShell>{children}</AppShell>
-            </Suspense>
-          </FormatProvider>
-        </ReferenceDataStartup>
-        <Toaster />
-      </QueryClientProvider>
+      <AppAuthProvider>
+        <QueryClientProvider client={client}>
+          <ReferenceDataStartup>
+            <FormatProvider>
+              <Suspense fallback={null}>
+                <AppShell>{children}</AppShell>
+              </Suspense>
+            </FormatProvider>
+          </ReferenceDataStartup>
+          <Toaster />
+        </QueryClientProvider>
+      </AppAuthProvider>
     </I18nextProvider>
   );
 }
