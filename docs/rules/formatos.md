@@ -5,6 +5,7 @@
 ## Cómo se hace
 - **Origen de las opciones y patrones:** `shared/referenceData` lee todas las filas traducidas de los cinco catálogos de `GET /api/reference-data`, con `isEnabled`. Los selectores filtran las habilitadas y los formateadores consultan cualquier fila para mostrar valores existentes. `cultureProfiles.ts` adapta los patrones de `Cultures`; código y decimales (`MinorUnits`) vienen de `Currencies`, y el símbolo visible por cultura de `CurrencyTranslations.DisplaySymbol`. País, zona y tipo fiscal vienen de `Countries`, `TimeZones` y `TaxIdTypes`. En E1 el back los lee de JSON; en E2, de tablas. [Diseño canónico](../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md).
 - **Moneda:** al aplicar `CurrencyPattern`, insertar el espacio monetario de CLDR si un `DisplaySymbol` alfabético quedaría contiguo al número; símbolos gráficos como `$` respetan el patrón. Los casos compartidos fijan el resultado exacto en ambas culturas.
+- **Entrada decimal:** `shared/format/parsers.ts` admite como máximo 15 dígitos significativos y comprueba que `Number` recomponga el valor canónico leído. Si perdería precisión, el field conserva el texto, emite `null` y marca invalidez; nunca envía un importe redondeado silenciosamente.
 - **En una tabla:** la columna declara el tipo y `DataTable` resuelve el formato, la alineación (números a la derecha, `tabular-nums`), el vacío (`—`) y el tooltip:
   ```tsx
   { id: "createdAtUtc", header: t("createdAt"), type: "date", value: (r) => r.createdAtUtc, sortable: true }
@@ -29,7 +30,7 @@
 - `format-usage.test.ts` (E1): formateo fuera de lugar.
 - `formatters.test.ts` (E1): recorre el mismo `format-cases.json` que el back; ambos lados producen el mismo texto en casos válidos y rechazan los casos con `error`.
 - `referenceData.test.ts` (E1): selectores y patrones consumen catálogos, sin listas fijas.
-- `parsers.test.ts` (E1).
+- `parsers.test.ts` (E1): precisión representable y rechazo del valor que `Number` redondearía; `MoneyField.test.tsx` comprueba que no se envía ese importe.
 
 ## Detalle
 **[architecture/formatos.md](../architecture/formatos.md)**: el catálogo completo, con ejemplos en es-AR y en-US.

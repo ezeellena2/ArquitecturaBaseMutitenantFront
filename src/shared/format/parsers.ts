@@ -23,9 +23,16 @@ function numericParts(input: string, culture: CultureReference): { value: number
   const canonical = trimmed
     .replaceAll(culture.groupSeparator, "")
     .replace(culture.decimalSeparator, ".");
+  const digits = canonical.replace(/^[+-]/, "").replace(".", "").replace(/^0+/, "");
+  if (digits.length > 15) throw new Error("El número excede la precisión admitida.");
   const value = Number(canonical);
   if (!Number.isFinite(value) || Math.abs(value) > Number.MAX_SAFE_INTEGER) {
     throw new Error("El número está fuera del rango admitido.");
+  }
+  const expectedUnits = digits === "" ? "0" : `${canonical.startsWith("-") ? "-" : ""}${digits}`;
+  const actualUnits = shiftDecimal(value, fraction?.length ?? 0);
+  if (!Number.isSafeInteger(actualUnits) || String(actualUnits) !== expectedUnits) {
+    throw new Error("El número no se puede representar sin pérdida de precisión.");
   }
   return { value, fractionDigits: fraction?.length ?? 0 };
 }

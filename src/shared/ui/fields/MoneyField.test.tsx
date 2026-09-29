@@ -81,4 +81,20 @@ describe("NumberField y MoneyField", () => {
     fireEvent.change(input, { target: { value: "1.234,5" } });
     expect((input as HTMLInputElement).checkValidity()).toBe(false);
   });
+
+  it("no emite un importe que perdería precisión al pasarlo a Number", async () => {
+    const onChange = vi.fn();
+    const onValidityChange = vi.fn();
+    render(<AppProviders><FormField label="Monto"><MoneyField value={null} onChange={onChange}
+      onValidityChange={onValidityChange} /></FormField></AppProviders>);
+    const input = await screen.findByRole("textbox", { name: "Monto" });
+    await waitFor(() => expect(input).toBeEnabled());
+
+    fireEvent.change(input, { target: { value: "123.456.789.012.345,67" } });
+    expect(onChange).toHaveBeenLastCalledWith(null);
+    expect(onValidityChange).toHaveBeenLastCalledWith(false);
+    expect((input as HTMLInputElement).checkValidity()).toBe(false);
+    fireEvent.blur(input);
+    expect(screen.getByRole("alert")).toHaveTextContent("Ingresá un monto válido");
+  });
 });

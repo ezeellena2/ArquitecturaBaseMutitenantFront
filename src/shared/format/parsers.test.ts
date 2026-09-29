@@ -33,6 +33,14 @@ describe("entrada según Cultures", () => {
     expect(() => parseMoney("1234,5", "ARS", spanish, noMinorUnits)).toThrow();
   });
 
+  it("rechaza decimales que Number no puede conservar sin redondeo silencioso", () => {
+    expect(parseMoney("1.234.567.890.123,45", "ARS", spanish, referenceData))
+      .toEqual({ amount: 1234567890123.45, currency: "ARS" });
+    expect(() => parseMoney("123.456.789.012.345,67", "ARS", spanish, referenceData)).toThrow();
+    expect(() => parseDecimal("123.456.789.012.345,67", spanish)).toThrow();
+    expect(() => parseDecimal(`0,${"0".repeat(323)}1`, spanish)).toThrow();
+  });
+
   it("no ofrece una moneda deshabilitada para un dato nuevo", () => {
     const disabled = {
       ...referenceData,
