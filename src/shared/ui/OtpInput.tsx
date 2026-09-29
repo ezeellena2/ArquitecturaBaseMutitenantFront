@@ -69,7 +69,7 @@ export function OtpInput({
   }
 
   return (
-    <div role="group" aria-label={label} aria-describedby={describedBy} className="flex justify-center gap-2">
+    <div role="group" aria-label={label} aria-describedby={describedBy} className="grid grid-cols-6 gap-2">
       {digits.map((digit, index) => (
         <Input
           // El índice es la identidad real de cada casillero.
@@ -89,7 +89,7 @@ export function OtpInput({
           onChange={(event) => handleChange(index, event)}
           onKeyDown={(event) => handleKeyDown(index, event)}
           onPaste={handlePaste}
-          className="size-[52px] border-[var(--t3)] p-0 text-center text-[26px] font-semibold"
+          className="h-[52px] w-full border-[var(--t3)] p-0 text-center text-[26px] font-semibold disabled:border-[var(--borde2)] disabled:bg-[var(--s2)] disabled:text-[var(--t3)] disabled:opacity-100"
         />
       ))}
     </div>

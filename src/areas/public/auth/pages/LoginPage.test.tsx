@@ -88,6 +88,13 @@ describe("LoginPage", () => {
     expect(screen.getByRole("textbox", { name: "Correo electrónico" })).toBeVisible();
   });
 
+  it("muestra el aviso del lienzo cuando vuelve de una sesión vencida", () => {
+    sessionStorage.setItem("arquitecturabasemt.sessionExpired", "1");
+    show("consumer", loginUrl);
+    expect(screen.getByRole("status")).toHaveTextContent("Tu sesión venció. Ingresá de nuevo.");
+    expect(sessionStorage.getItem("arquitecturabasemt.sessionExpired")).toBeNull();
+  });
+
   it("mantiene el código en la misma pantalla, lo verifica y vuelve al authorize original", async () => {
     let verifyBody: unknown;
     server.use(
@@ -151,6 +158,8 @@ describe("LoginPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
 
     expect(await screen.findByRole("heading", { name: title })).toBeVisible();
+    const icon = screen.getByRole("main").querySelector("svg");
+    expect(icon?.getAttribute("class")).toContain(code === "Tenancy.Access.NotMember" ? "lucide-building" : "lucide-ban");
     expect(screen.queryByText("Registrá tu empresa")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ingresá como persona" })).toHaveAttribute("href", "/login");
   });
@@ -175,6 +184,18 @@ describe("LoginPage", () => {
     expect(await screen.findByText(message)).toBeVisible();
     if (code === "Auth.LoginCode.TooManyAttempts" || code === "Identity.Account.LockedOut" || code === "Identity.Account.Suspended") {
       expect(screen.getByRole("button", { name: "Verificar" })).toBeDisabled();
+    }
+    if (code === "Auth.LoginCode.Expired" || code === "Auth.LoginCode.TooManyAttempts" || code === "Identity.Account.LockedOut") {
+      expect(screen.getByRole("button", { name: "Reenviar código" })).toBeEnabled();
+    }
+    if (code === "Auth.LoginCode.TooManyAttempts" || code === "Identity.Account.LockedOut") {
+      expect(screen.getByRole("textbox", { name: "Código 1" })).toBeDisabled();
+    }
+    if (code === "Identity.Account.LockedOut") {
+      expect(screen.getByRole("textbox", { name: "Código 1" })).toHaveValue("");
+    }
+    if (code === "Identity.Account.Suspended") {
+      expect(screen.getByRole("button", { name: "Reenviar código" })).toBeDisabled();
     }
   });
 });

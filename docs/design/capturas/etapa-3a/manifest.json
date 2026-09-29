@@ -6,36 +6,1336 @@
       "pair": "landing",
       "group": "publicas",
       "board": "Landing",
-      "viewport": { "width": 1440, "height": 900 },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
       "props": {},
-      "app": { "path": "/", "readySelector": "main" }
+      "app": {
+        "path": "/",
+        "readySelector": "main"
+      }
     },
     {
       "id": "landing-movil",
       "pair": "landing",
       "group": "publicas",
       "board": "Landing-Movil",
-      "viewport": { "width": 390, "height": 844 },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
       "props": {},
-      "app": { "path": "/", "readySelector": "main" }
+      "app": {
+        "path": "/",
+        "readySelector": "main"
+      }
     },
     {
       "id": "ingreso-persona-correo",
       "pair": "ingreso-persona-correo",
       "group": "ingreso",
       "board": "Ingreso",
-      "viewport": { "width": 1440, "height": 900 },
-      "props": { "estado": "Correo", "puerta": "Persona" },
-      "app": { "path": "/login?returnUrl=%2Fconnect%2Fauthorize", "readySelector": "h1" }
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
     },
     {
       "id": "ingreso-persona-correo-movil",
       "pair": "ingreso-persona-correo",
       "group": "ingreso",
       "board": "M-Ingreso",
-      "viewport": { "width": 390, "height": 844 },
-      "props": { "estado": "Correo", "puerta": "Persona" },
-      "app": { "path": "/login?returnUrl=%2Fconnect%2Fauthorize", "readySelector": "h1" }
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-empresa-correo",
+      "pair": "ingreso-empresa-correo",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Correo",
+        "puerta": "Empresa"
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-empresa-correo-movil",
+      "pair": "ingreso-empresa-correo",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Correo",
+        "puerta": "Empresa"
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-correo-invalido",
+      "pair": "ingreso-correo-invalido",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Correo inválido",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "ingreso-correo-invalido-movil",
+      "pair": "ingreso-correo-invalido",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Correo inválido",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "ingreso-espera",
+      "pair": "ingreso-espera",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Esperá para pedir otro código",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 429,
+            "body": {
+              "code": "Auth.LoginCode.ResendTooSoon",
+              "retryAfter": 42
+            }
+          }
+        ],
+        "readyText": "Esperá un momento antes de pedir otro código."
+      }
+    },
+    {
+      "id": "ingreso-espera-movil",
+      "pair": "ingreso-espera",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Esperá para pedir otro código",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 429,
+            "body": {
+              "code": "Auth.LoginCode.ResendTooSoon",
+              "retryAfter": 42
+            }
+          }
+        ],
+        "readyText": "Esperá un momento antes de pedir otro código."
+      }
+    },
+    {
+      "id": "ingreso-demasiados",
+      "pair": "ingreso-demasiados",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Demasiados pedidos",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 429,
+            "body": {
+              "code": "Auth.LoginCode.TooManyRequests",
+              "retryAfter": 840
+            }
+          }
+        ],
+        "readyText": "Pediste demasiados códigos. Probá de nuevo más tarde."
+      }
+    },
+    {
+      "id": "ingreso-demasiados-movil",
+      "pair": "ingreso-demasiados",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Demasiados pedidos",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 429,
+            "body": {
+              "code": "Auth.LoginCode.TooManyRequests",
+              "retryAfter": 840
+            }
+          }
+        ],
+        "readyText": "Pediste demasiados códigos. Probá de nuevo más tarde."
+      }
+    },
+    {
+      "id": "ingreso-google-error",
+      "pair": "ingreso-google-error",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "No pudimos entrar con Google",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize&error=Auth.Google.AccountNotFound",
+        "readySelector": "h1",
+        "readyText": "No pudimos completar el ingreso con Google."
+      }
+    },
+    {
+      "id": "ingreso-google-error-movil",
+      "pair": "ingreso-google-error",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "No pudimos entrar con Google",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize&error=Auth.Google.AccountNotFound",
+        "readySelector": "h1",
+        "readyText": "No pudimos completar el ingreso con Google."
+      }
+    },
+    {
+      "id": "ingreso-codigo-enviado",
+      "pair": "ingreso-codigo-enviado",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Código enviado",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          }
+        ],
+        "readyText": "Revisá tu correo"
+      }
+    },
+    {
+      "id": "ingreso-codigo-enviado-movil",
+      "pair": "ingreso-codigo-enviado",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Código enviado",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          }
+        ],
+        "readyText": "Revisá tu correo"
+      }
+    },
+    {
+      "id": "ingreso-codigo-incorrecto",
+      "pair": "ingreso-codigo-incorrecto",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Código incorrecto",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.Invalid",
+              "attemptsLeft": 3
+            }
+          }
+        ],
+        "readyText": "El código no es válido.",
+        "readyButtonEnabled": "Verificar"
+      }
+    },
+    {
+      "id": "ingreso-codigo-incorrecto-movil",
+      "pair": "ingreso-codigo-incorrecto",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Código incorrecto",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.Invalid",
+              "attemptsLeft": 3
+            }
+          }
+        ],
+        "readyText": "El código no es válido.",
+        "readyButtonEnabled": "Verificar"
+      }
+    },
+    {
+      "id": "ingreso-codigo-vencido",
+      "pair": "ingreso-codigo-vencido",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Código vencido",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.Expired"
+            }
+          }
+        ],
+        "readyText": "El código venció. Pedí uno nuevo.",
+        "readyButtonEnabled": "Verificar"
+      }
+    },
+    {
+      "id": "ingreso-codigo-vencido-movil",
+      "pair": "ingreso-codigo-vencido",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Código vencido",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.Expired"
+            }
+          }
+        ],
+        "readyText": "El código venció. Pedí uno nuevo.",
+        "readyButtonEnabled": "Verificar"
+      }
+    },
+    {
+      "id": "ingreso-sin-intentos",
+      "pair": "ingreso-sin-intentos",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Sin intentos",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.TooManyAttempts"
+            }
+          }
+        ],
+        "readyText": "Superaste los intentos para este código."
+      }
+    },
+    {
+      "id": "ingreso-sin-intentos-movil",
+      "pair": "ingreso-sin-intentos",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Sin intentos",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.TooManyAttempts"
+            }
+          }
+        ],
+        "readyText": "Superaste los intentos para este código."
+      }
+    },
+    {
+      "id": "ingreso-cuenta-bloqueada",
+      "pair": "ingreso-cuenta-bloqueada",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Cuenta bloqueada",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Identity.Account.LockedOut"
+            }
+          }
+        ],
+        "readyText": "Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos."
+      }
+    },
+    {
+      "id": "ingreso-cuenta-bloqueada-movil",
+      "pair": "ingreso-cuenta-bloqueada",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Cuenta bloqueada",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Identity.Account.LockedOut"
+            }
+          }
+        ],
+        "readyText": "Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos."
+      }
+    },
+    {
+      "id": "ingreso-cuenta-suspendida",
+      "pair": "ingreso-cuenta-suspendida",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Cuenta suspendida",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Identity.Account.Suspended"
+            }
+          }
+        ],
+        "readyText": "Tu cuenta está suspendida."
+      }
+    },
+    {
+      "id": "ingreso-cuenta-suspendida-movil",
+      "pair": "ingreso-cuenta-suspendida",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Cuenta suspendida",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Identity.Account.Suspended"
+            }
+          }
+        ],
+        "readyText": "Tu cuenta está suspendida."
+      }
+    },
+    {
+      "id": "ingreso-empresa-sin-perfil",
+      "pair": "ingreso-empresa-sin-perfil",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Empresa: la cuenta no está en ninguna empresa",
+        "puerta": "Empresa",
+        "cuenta": "Beto (sin organizaciones)"
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Tenancy.Access.NotMember"
+            }
+          }
+        ],
+        "readyText": "Tu cuenta no está en ninguna empresa todavía"
+      }
+    },
+    {
+      "id": "ingreso-empresa-sin-perfil-movil",
+      "pair": "ingreso-empresa-sin-perfil",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Empresa: la cuenta no está en ninguna empresa",
+        "puerta": "Empresa",
+        "cuenta": "Beto (sin organizaciones)"
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Tenancy.Access.NotMember"
+            }
+          }
+        ],
+        "readyText": "Tu cuenta no está en ninguna empresa todavía"
+      }
+    },
+    {
+      "id": "ingreso-empresa-inactiva",
+      "pair": "ingreso-empresa-inactiva",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Empresa: acceso deshabilitado",
+        "puerta": "Empresa",
+        "cuenta": "Lucía (miembro de Grupo Delta)"
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Tenancy.Member.Inactive",
+              "organizationName": "Grupo Delta"
+            }
+          }
+        ],
+        "readyText": "Tu acceso a Grupo Delta está deshabilitado"
+      }
+    },
+    {
+      "id": "ingreso-empresa-inactiva-movil",
+      "pair": "ingreso-empresa-inactiva",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Empresa: acceso deshabilitado",
+        "puerta": "Empresa",
+        "cuenta": "Lucía (miembro de Grupo Delta)"
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Tenancy.Member.Inactive",
+              "organizationName": "Grupo Delta"
+            }
+          }
+        ],
+        "readyText": "Tu acceso a Grupo Delta está deshabilitado"
+      }
+    },
+    {
+      "id": "ingreso-sesion-vencida",
+      "pair": "ingreso-sesion-vencida",
+      "group": "ingreso",
+      "board": "Ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Tu sesión venció",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize&session=expired",
+        "readySelector": "h1",
+        "readyText": "Tu sesión venció. Ingresá de nuevo."
+      }
+    },
+    {
+      "id": "ingreso-sesion-vencida-movil",
+      "pair": "ingreso-sesion-vencida",
+      "group": "ingreso",
+      "board": "M-Ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Tu sesión venció",
+        "puerta": "Persona"
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize&session=expired",
+        "readySelector": "h1",
+        "readyText": "Tu sesión venció. Ingresá de nuevo."
+      }
     }
   ]
 }

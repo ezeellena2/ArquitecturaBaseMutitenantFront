@@ -27,7 +27,7 @@ type FormValues = z.infer<typeof schema>;
 
 export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart }: EmailCodeFormProps) {
   const { t } = useTranslation("auth");
-  const [formError, setFormError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<{ message: string; tone: "danger" | "warning" } | null>(null);
   const { control, handleSubmit, setError, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { email: "" },
@@ -43,7 +43,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart }: EmailC
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
       if (!applyApiErrorToForm(caught, setError, { email: "email" })) {
-        setFormError(t(loginCodeErrorKey(caught)));
+        setFormError({ message: t(loginCodeErrorKey(caught)), tone: caught.code === "Auth.LoginCode.ResendTooSoon" ? "warning" : "danger" });
       }
       retry.startFromError(caught);
     }
@@ -59,7 +59,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart }: EmailC
           <EmailField name={field.name} ref={field.ref} onBlur={field.onBlur} value={field.value} onChange={field.onChange} />
         </FormField>
       )} />
-      <FormError message={formError ?? notice} />
+      <FormError message={formError?.message ?? notice} tone={formError?.tone} />
       <Button type="submit" size="lg" className="w-full" disabled={request.isPending || retry.isRunning}>
         {retry.label ?? t("login.sendCode")}
       </Button>

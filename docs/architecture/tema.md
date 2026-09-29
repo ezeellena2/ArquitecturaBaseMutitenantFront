@@ -10,6 +10,8 @@ Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena
 | `--marca` | `oklch(0.5 0.1 195)` | botón principal, enlaces fuertes, activo |
 | `--marca-2` | `oklch(0.58 0.11 170)` | segundo color del degradado del logo y del avatar |
 | `--marca-h` | `oklch(0.45 0.1 195)` | hover del botón principal |
+| `--auth-panel-start` / `--auth-panel-mid` / `--auth-panel-end` | `oklch(0.48 0.099 195)` / `oklch(0.36 0.087 195)` / `oklch(0.26 0.062 195)` | degradado del panel de Ingreso y Registro, copiado del lienzo |
+| `--auth-panel-grid` | `oklch(1 0 0 / 0.06)` | cuadrícula tenue del mismo panel |
 | `--marca-t` | `oklch(0.955 0.025 185)` | fondo tenue: ícono de la banda, pastilla "pendiente", fila al pasar el mouse |
 | `--marca-tx` | `oklch(0.43 0.09 195)` | texto sobre `--marca-t` y el ítem activo del menú |
 | `--fondo` | `oklch(0.985 0.004 80)` | fondo de la pantalla |

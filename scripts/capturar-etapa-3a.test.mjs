@@ -11,6 +11,8 @@ import {
   boardChoices,
   captureCase,
   capturePaths,
+  installApiMocks,
+  runAppActions,
   startCanvasServer,
   validateManifest,
 } from "./capturar-etapa-3a.mjs";
@@ -30,6 +32,22 @@ test("la matriz de 3a declara tablero real, estado aprobado y ambos tamaños", (
       assert.ok(choices[key].includes(value), `${item.id}: ${key}=${value} no figura en ${item.board}`);
     }
   }
+});
+
+test("Ingreso cubre sus estados 3a en ambas puertas sin estados de etapas futuras", () => {
+  const cases = validateManifest(manifest, lienzo).filter((item) => item.group === "ingreso");
+  const actual = new Set(cases.map((item) => `${item.props.estado}/${item.props.puerta}`));
+  const expected = [
+    "Correo/Persona", "Correo/Empresa", "Correo inválido/Persona",
+    "Esperá para pedir otro código/Persona", "Demasiados pedidos/Persona",
+    "No pudimos entrar con Google/Persona", "Código enviado/Persona",
+    "Código incorrecto/Persona", "Código vencido/Persona", "Sin intentos/Persona",
+    "Cuenta bloqueada/Persona", "Cuenta suspendida/Persona",
+    "Empresa: la cuenta no está en ninguna empresa/Empresa",
+    "Empresa: acceso deshabilitado/Empresa", "Tu sesión venció/Persona",
+  ];
+  assert.deepEqual([...actual].sort(), [...expected].sort());
+  assert.equal(cases.length, expected.length * 2);
 });
 
 test("la verificación falla si falta la app o el tablero del mismo caso", () => {
@@ -59,6 +77,58 @@ test("cada estado del manifest exige versión de escritorio y móvil", () => {
     viewport: { width: 1440, height: 900 }, props: {}, app: { path: "/" },
   }] }));
   assert.throws(() => validateManifest(oneSided, lienzo), /landing.*390x844/);
+});
+
+test("los pasos de app usan roles accesibles y completan el código de seis dígitos", async () => {
+  const calls = [];
+  const page = {
+    getByRole: (role, { name }) => ({
+      fill: async (value) => { calls.push(["fill", role, name, value]); },
+      click: async () => { calls.push(["click", role, name]); },
+    }),
+    keyboard: { type: async (value) => { calls.push(["type", value]); } },
+  };
+  await runAppActions(page, [
+    { type: "fill", role: "textbox", name: "Correo electrónico", value: "ana@example.test" },
+    { type: "click", role: "button", name: "Enviar código" },
+    { type: "otp", value: "123456" },
+  ]);
+  assert.deepEqual(calls, [
+    ["fill", "textbox", "Correo electrónico", "ana@example.test"],
+    ["click", "button", "Enviar código"],
+    ["click", "textbox", "Código 1"],
+    ["type", "123456"],
+  ]);
+});
+
+test("la respuesta simulada se aplica sólo al método y ruta elegidos", async () => {
+  let handler;
+  const context = { route: async (_, next) => { handler = next; } };
+  await installApiMocks(context, [{
+    method: "POST", path: "/api/auth/login-code", status: 202,
+    body: { resendAfterSeconds: 60 },
+  }]);
+  let fulfilled;
+  const matching = {
+    request: () => ({ method: () => "POST", url: () => "http://localhost/api/auth/login-code" }),
+    fulfill: async (response) => { fulfilled = response; },
+  };
+  await handler(matching);
+  assert.equal(fulfilled.status, 202);
+  assert.deepEqual(JSON.parse(fulfilled.body), { resendAfterSeconds: 60 });
+});
+
+test("no intercepta módulos Vite cuya carpeta contiene api", async () => {
+  let handler;
+  const context = { route: async (_, next) => { handler = next; } };
+  await installApiMocks(context);
+  let continued = false;
+  await handler({
+    request: () => ({ method: () => "GET", url: () => "http://localhost/src/shared/api/queryClient.ts" }),
+    continue: async () => { continued = true; },
+    fulfill: async () => { throw new Error("Interceptó un módulo de Vite"); },
+  });
+  assert.equal(continued, true);
 });
 
 test("Playwright fija el estado del tablero y captura app/lienzo al viewport pedido", async () => {

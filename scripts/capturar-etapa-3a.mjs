@@ -100,6 +100,59 @@ export async function startCanvasServer(canvasRoot = defaultCanvas) {
   return { url: `http://127.0.0.1:${server.address().port}`, close: () => new Promise((resolve) => server.close(resolve)) };
 }
 
+export async function runAppActions(page, actions = []) {
+  for (const action of actions) {
+    if (action.type === "fill") {
+      await page.getByRole(action.role, { name: action.name }).fill(action.value);
+    } else if (action.type === "click") {
+      await page.getByRole(action.role, { name: action.name }).click();
+    } else if (action.type === "otp") {
+      await page.getByRole("textbox", { name: "Código 1" }).click();
+      await page.keyboard.type(action.value);
+    } else {
+      throw new Error(`Acción visual desconocida: ${action.type}`);
+    }
+  }
+}
+
+export async function installApiMocks(context, responses = []) {
+  await context.route("**/api/**", async (route) => {
+    const request = route.request();
+    const requestPath = new URL(request.url()).pathname;
+    if (!requestPath.startsWith("/api/")) {
+      await route.continue();
+      return;
+    }
+    const response = responses.find((item) => item.path === requestPath && item.method === request.method());
+    if (response) {
+      await route.fulfill({
+        status: response.status,
+        contentType: "application/json",
+        body: JSON.stringify(response.body ?? {}),
+        headers: response.headers ?? {},
+      });
+      return;
+    }
+    if (requestPath === "/api/reference-data" && request.method() === "GET") {
+      const { referenceDataFixture } = await import("../src/test/mocks/handlers.ts");
+      const culture = request.headers()["accept-language"] === "en-US" ? "en-US" : "es-AR";
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(referenceDataFixture(culture)) });
+      return;
+    }
+    if (requestPath === "/api/auth/methods" && request.method() === "GET") {
+      await route.fulfill({
+        status: 200, contentType: "application/json",
+        body: JSON.stringify({ channels: [{ key: "email", countries: [] }, { key: "google", countries: [] }] }),
+      });
+      return;
+    }
+    await route.fulfill({
+      status: 501, contentType: "application/problem+json",
+      body: JSON.stringify({ code: "Capture.UnmockedRoute", traceId: "capture" }),
+    });
+  });
+}
+
 export async function captureCase(browser, entry, { canvasUrl, appUrl, outputRoot = defaultOutput }) {
   const files = capturePaths(outputRoot, entry);
   mkdirSync(path.dirname(files.board), { recursive: true });
@@ -110,13 +163,23 @@ export async function captureCase(browser, entry, { canvasUrl, appUrl, outputRoo
     await board.waitForFunction(() => typeof window.__dcSetProps === "function" && Boolean(window.__dcRootName?.()));
     await board.evaluate((props) => window.__dcSetProps(window.__dcRootName(), props), entry.props ?? {});
     await board.locator("[data-sc-name]").first().waitFor();
+    await board.waitForTimeout(100);
     await board.evaluate(() => document.fonts.ready);
+    await board.addStyleTag({ content: 'input[inputmode="numeric"][maxlength="1"] { -webkit-text-security: disc; }' });
     await board.screenshot({ path: files.board });
 
+    await installApiMocks(context, entry.app.responses);
     const app = await context.newPage();
     await app.goto(new URL(entry.app.path, appUrl).href, { waitUntil: "domcontentloaded" });
+    await runAppActions(app, entry.app.actions);
     await app.locator(entry.app.readySelector ?? "main").first().waitFor();
+    if (entry.app.readyText) await app.getByText(entry.app.readyText).first().waitFor();
+    if (entry.app.readyButtonEnabled) await app.waitForFunction((name) =>
+      [...document.querySelectorAll("button")].some((button) => button.textContent?.trim() === name && !button.disabled),
+    entry.app.readyButtonEnabled);
+    await app.waitForTimeout(200);
     await app.evaluate(() => document.fonts.ready);
+    await app.addStyleTag({ content: 'input[inputmode="numeric"][maxlength="1"] { -webkit-text-security: disc; }' });
     await app.screenshot({ path: files.app });
   } finally {
     await context.close();

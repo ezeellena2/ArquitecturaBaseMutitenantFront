@@ -5,11 +5,11 @@ import { axe } from "vitest-axe";
 import { OtpInput } from "./OtpInput";
 
 describe("OtpInput", () => {
-  it("presenta seis casillas de 52 px con nombre accesible", async () => {
+  it("distribuye seis casillas en todo el ancho como en el lienzo, con nombre accesible", async () => {
     const { container } = render(<OtpInput length={6} value="" onChange={vi.fn()} label="Código" />);
-    expect(screen.getByRole("group", { name: "Código" })).toBeVisible();
+    expect(screen.getByRole("group", { name: "Código" })).toHaveClass("grid-cols-6");
     expect(screen.getAllByRole("textbox")).toHaveLength(6);
-    expect(screen.getByRole("textbox", { name: "Código 1" })).toHaveClass("size-[52px]");
+    expect(screen.getByRole("textbox", { name: "Código 1" })).toHaveClass("h-[52px]", "w-full");
     expect(screen.getByRole("textbox", { name: "Código 1" })).toHaveAttribute("autocomplete", "one-time-code");
     expect(await axe(container, { rules: { region: { enabled: false } } })).toHaveNoViolations();
   });
@@ -41,5 +41,12 @@ describe("OtpInput", () => {
     expect(onChange).not.toHaveBeenCalled();
     rerender(<OtpInput length={6} value="482915" onChange={onChange} label="Código" invalid />);
     for (const box of screen.getAllByRole("textbox")) expect(box).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("usa superficie apagada del tablero cuando un código queda bloqueado", () => {
+    render(<OtpInput length={6} value="" onChange={vi.fn()} label="Código" disabled />);
+    const first = screen.getByRole("textbox", { name: "Código 1" });
+    expect(first).toBeDisabled();
+    expect(first).toHaveClass("disabled:bg-[var(--s2)]", "disabled:opacity-100");
   });
 });
