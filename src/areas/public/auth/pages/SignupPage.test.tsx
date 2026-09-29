@@ -139,7 +139,7 @@ describe("SignupPage", () => {
     show("/registro?returnUrl=%2Fcatalogo");
     expect(await screen.findByRole("button", { name: "Registrarte con Google" })).toBeDisabled();
     fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
-    expect(await screen.findByRole("link", { name: "Registrarte con Google" })).toHaveAttribute("href", "/api/auth/external/google?signup=true&acceptedTerms=true&returnTo=%2Fcatalogo");
+    expect(await screen.findByRole("link", { name: "Registrarte con Google" })).toHaveAttribute("href", "/api/auth/external/google?signup=true&acceptedTerms=true&returnTo=%2Fcatalogo&culture=es-AR&timeZoneId=America%2FArgentina%2FBuenos_Aires");
   });
 
   it("tras el callback técnico Google inicia OIDC sin nueva pantalla", async () => {

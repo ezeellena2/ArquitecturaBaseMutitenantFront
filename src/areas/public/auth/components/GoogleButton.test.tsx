@@ -1,10 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { configureI18n } from "@/shared/i18n";
+import { changeCulture, configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
 import { GoogleButton } from "./GoogleButton";
+
+vi.mock("@/shared/time/browserTimeZone", () => ({ browserTimeZone: () => "America/Argentina/Buenos_Aires" }));
 
 beforeAll(async () => {
   await configureI18n([
@@ -40,6 +42,20 @@ describe("GoogleButton", () => {
     expect(await screen.findByRole("button", { name: "Registrarte con Google" })).toBeDisabled();
     view.rerender(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><GoogleButton mode="signup" acceptedTerms returnTo="/catalogo?grupo=1" /></QueryClientProvider>);
     const link = await screen.findByRole("link", { name: "Registrarte con Google" });
-    expect(link).toHaveAttribute("href", "/api/auth/external/google?signup=true&acceptedTerms=true&returnTo=%2Fcatalogo%3Fgrupo%3D1");
+    expect(link).toHaveAttribute("href", "/api/auth/external/google?signup=true&acceptedTerms=true&returnTo=%2Fcatalogo%3Fgrupo%3D1&culture=es-AR&timeZoneId=America%2FArgentina%2FBuenos_Aires");
+  });
+
+  it("envía la cultura efectiva al alta Google sin alterar la puerta de ingreso", async () => {
+    server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "google", countries: [] }] })));
+    await act(async () => changeCulture("en-US"));
+    try {
+      show(<GoogleButton mode="signup" acceptedTerms returnTo="/" />);
+      const link = await screen.findByRole("link", { name: "Sign up with Google" });
+      const url = new URL(link.getAttribute("href")!, location.origin);
+      expect(url.searchParams.get("culture")).toBe("en-US");
+      expect(url.searchParams.get("timeZoneId")).toBe("America/Argentina/Buenos_Aires");
+    } finally {
+      await act(async () => changeCulture("es-AR"));
+    }
   });
 });

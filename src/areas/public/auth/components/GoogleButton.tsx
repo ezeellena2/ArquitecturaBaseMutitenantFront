@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shared/ui/button";
 import googleMark from "@/assets/google-mark.svg";
+import { effectiveCulture } from "@/shared/i18n";
+import { browserTimeZone } from "@/shared/time/browserTimeZone";
 import { getLoginMethods, loginMethodsQueryKey } from "../api/methods";
 
 export type GoogleButtonProps =
@@ -16,6 +18,11 @@ function googleUrl(props: GoogleButtonProps): string {
   const query = props.mode === "login"
     ? new URLSearchParams({ returnUrl: props.returnUrl, access: props.access })
     : new URLSearchParams({ signup: "true", acceptedTerms: "true", returnTo: props.returnTo });
+  if (props.mode === "signup") {
+    query.set("culture", effectiveCulture() ?? navigator.language);
+    const timeZoneId = browserTimeZone();
+    if (timeZoneId) query.set("timeZoneId", timeZoneId);
+  }
   return `/api/auth/external/google?${query}`;
 }
 
