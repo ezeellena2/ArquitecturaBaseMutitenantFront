@@ -1780,6 +1780,279 @@
         ],
         "readyText": "El código no es válido."
       }
+    },
+    {
+      "id": "inicio-personal-escritorio",
+      "pair": "inicio-personal",
+      "group": "inicios",
+      "board": "Inicio-Personal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "aviso": "Sin aviso"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "Lucía Fernández"
+      }
+    },
+    {
+      "id": "inicio-personal-movil",
+      "pair": "inicio-personal",
+      "group": "inicios",
+      "board": "M-Inicio-Personal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "aviso": "Sin aviso",
+        "vista": "Pantalla"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
+        "userFixture": "visual-personal",
+        "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]"
+      }
+    },
+    {
+      "id": "inicio-org-escritorio",
+      "pair": "inicio-org",
+      "group": "inicios",
+      "board": "Inicio-Org",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {},
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
+        "userFixture": "visual-business",
+        "readySelector": "main",
+        "readyText": "Lucía Fernández"
+      }
+    },
+    {
+      "id": "inicio-org-movil",
+      "pair": "inicio-org",
+      "group": "inicios",
+      "board": "M-Inicio-Org",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "vista": "Pantalla"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
+        "userFixture": "visual-business",
+        "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]"
+      }
+    },
+    {
+      "id": "perfiles-personal-escritorio",
+      "pair": "perfiles-personal",
+      "group": "inicios",
+      "board": "Inicio-Personal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "aviso": "Sin aviso"
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "selector": ".um-btn"
+        }
+      ],
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "Lucía Fernández",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Lucía Fernández, Personal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "perfiles-personal-movil",
+      "pair": "perfiles-personal",
+      "group": "inicios",
+      "board": "M-Inicio-Personal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "aviso": "Sin aviso",
+        "vista": "Perfiles abiertos"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
+        "userFixture": "visual-personal",
+        "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Tu cuenta y tus perfiles"
+          }
+        ]
+      }
+    },
+    {
+      "id": "perfiles-org-escritorio",
+      "pair": "perfiles-org",
+      "group": "inicios",
+      "board": "Inicio-Org",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {},
+      "boardActions": [
+        {
+          "type": "click",
+          "selector": ".um-btn"
+        }
+      ],
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
+        "userFixture": "visual-business",
+        "readySelector": "main",
+        "readyText": "Lucía Fernández",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Lucía Fernández, Grupo Delta"
+          }
+        ]
+      }
+    },
+    {
+      "id": "perfiles-org-movil",
+      "pair": "perfiles-org",
+      "group": "inicios",
+      "board": "M-Inicio-Org",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "vista": "Perfiles abiertos"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
+        "userFixture": "visual-business",
+        "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Tu cuenta y tus perfiles"
+          }
+        ]
+      }
+    },
+    {
+      "id": "lateral-personal-escritorio",
+      "pair": "lateral-personal",
+      "group": "inicios",
+      "board": "Inicio-Personal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "aviso": "Sin aviso"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "Lucía Fernández"
+      }
+    },
+    {
+      "id": "lateral-personal-movil",
+      "pair": "lateral-personal",
+      "group": "inicios",
+      "board": "M-Inicio-Personal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "aviso": "Sin aviso",
+        "vista": "Menú lateral abierto"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
+        "userFixture": "visual-personal",
+        "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Abrir o contraer navegación"
+          }
+        ]
+      }
+    },
+    {
+      "id": "lateral-org-escritorio",
+      "pair": "lateral-org",
+      "group": "inicios",
+      "board": "Inicio-Org",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {},
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
+        "userFixture": "visual-business",
+        "readySelector": "main",
+        "readyText": "Lucía Fernández"
+      }
+    },
+    {
+      "id": "lateral-org-movil",
+      "pair": "lateral-org",
+      "group": "inicios",
+      "board": "M-Inicio-Org",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "vista": "Menú lateral abierto"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
+        "userFixture": "visual-business",
+        "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Abrir o contraer navegación"
+          }
+        ]
+      }
     }
   ]
 }

@@ -42,7 +42,7 @@ function ProfileRow({ name, detail, checked, disabled, suspended, mobile, onSele
     {suspended ? <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--alerta-t)] px-2.5 py-[3px] text-[12.5px] font-medium text-[var(--alerta)] before:size-1.5 before:rounded-full before:bg-current before:content-['']">{statusLabel}</span> : null}
     {checked ? <Check size={16} strokeWidth={2.25} aria-hidden="true" /> : null}
   </>;
-  const rowClass = `flex min-h-10 w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm ${checked ? "bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]" : "text-[var(--t1)] hover:bg-[var(--s2)]"} ${disabled ? "cursor-default text-[var(--t3)]" : "cursor-pointer"}`;
+  const rowClass = `flex min-h-10 w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm ${checked ? "bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]" : "text-[var(--t1)] hover:bg-[var(--s2)]"} ${disabled ? "cursor-default data-[disabled]:opacity-100" : "cursor-pointer"}`;
 
   return mobile ? (
     <button type="button" disabled={disabled} aria-current={checked ? "true" : undefined} onClick={onSelect} className={rowClass}>
@@ -80,8 +80,8 @@ function MenuBody({ mobile, name, email, organizations, access, activeTenantId, 
   const itemClass = "flex min-h-10 w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-[var(--t1)] hover:bg-[var(--s2)]";
 
   return <>
-    <div className="flex items-center gap-3 px-3 py-2.5">
-      <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--marca)] text-base font-semibold text-[var(--lado-activo)]">{initials(name).slice(0, 1)}</span>
+    <div className={`flex items-center gap-3 py-2.5 ${mobile ? "px-[2px]" : "px-3"}`}>
+      <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--marca)] text-base font-semibold text-[var(--lado-activo)] md:size-10">{initials(name).slice(0, 1)}</span>
       <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
         <span className="truncate text-[15px] font-semibold text-[var(--t1)]">{name}</span>
         {email ? <span className="truncate text-[13px] text-[var(--t2)]">{email}</span> : null}
@@ -142,7 +142,7 @@ export function AccessMenu() {
   const currentOrganization = organizations.find((organization) => organization.id === activeTenantId);
   const activeName = access === "consumer" ? t("accessMenu.personal") : currentOrganization?.name ?? "";
   const menuTitle = t("accessMenu.menuFor", { name });
-  const avatar = <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{initials(name).slice(0, 1)}</span>;
+  const avatar = <span aria-hidden="true" className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)] md:size-8">{initials(name).slice(0, 1)}</span>;
 
   function onSwitch(target: SwitchTarget, destinationName: string) {
     setOpen(false);
@@ -197,7 +197,7 @@ export function AccessMenu() {
           <ChevronDown size={14} strokeWidth={2} className="text-[var(--t3)]" aria-hidden="true" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={6} aria-label={menuTitle} className="min-w-80 rounded-xl border-[var(--borde)] bg-[var(--lado-activo)] p-1.5 shadow-[var(--shadow-card)]">
+      <DropdownMenuContent align="end" alignOffset={8} sideOffset={6} aria-label={menuTitle} className="w-[330px] min-w-0 rounded-xl border-[var(--borde)] bg-[var(--lado-activo)] p-1.5 shadow-[var(--shadow-card)]">
         {menuBody}
       </DropdownMenuContent>
     </DropdownMenu>

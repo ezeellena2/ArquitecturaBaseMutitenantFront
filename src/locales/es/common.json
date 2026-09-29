@@ -101,6 +101,7 @@
   "layout": {
     "sidebar": {
       "navigation": "Navegación principal",
+      "organization": "Organización",
       "collapse": "Contraer menú",
       "expand": "Expandir menú",
       "closeDrawer": "Cerrar menú",

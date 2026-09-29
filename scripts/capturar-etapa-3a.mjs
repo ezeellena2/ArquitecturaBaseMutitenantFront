@@ -115,7 +115,7 @@ export async function runAppActions(page, actions = []) {
   }
 }
 
-export async function installApiMocks(context, responses = []) {
+export async function installApiMocks(context, responses = [], userFixture) {
   await context.route("**/api/**", async (route) => {
     const request = route.request();
     const requestPath = new URL(request.url()).pathname;
@@ -131,6 +131,13 @@ export async function installApiMocks(context, responses = []) {
         body: JSON.stringify(response.body ?? {}),
         headers: response.headers ?? {},
       });
+      return;
+    }
+    if (requestPath === "/api/me" && request.method() === "GET" && userFixture) {
+      const { currentUsers } = await import("../src/test/mocks/currentUsers.ts");
+      const user = currentUsers[userFixture];
+      if (!user) throw new Error(`Fixture de usuario desconocido: ${userFixture}`);
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(user) });
       return;
     }
     if (requestPath === "/api/reference-data" && request.method() === "GET") {
@@ -163,12 +170,16 @@ export async function captureCase(browser, entry, { canvasUrl, appUrl, outputRoo
     await board.waitForFunction(() => typeof window.__dcSetProps === "function" && Boolean(window.__dcRootName?.()));
     await board.evaluate((props) => window.__dcSetProps(window.__dcRootName(), props), entry.props ?? {});
     await board.locator("[data-sc-name]").first().waitFor();
+    for (const action of entry.boardActions ?? []) {
+      if (action.type !== "click") throw new Error(`Acción de tablero desconocida: ${action.type}`);
+      await board.locator(action.selector).click();
+    }
     await board.waitForTimeout(100);
     await board.evaluate(() => document.fonts.ready);
     await board.addStyleTag({ content: 'input[inputmode="numeric"][maxlength="1"] { -webkit-text-security: disc; }' });
     await board.screenshot({ path: files.board });
 
-    await installApiMocks(context, entry.app.responses);
+    await installApiMocks(context, entry.app.responses, entry.app.userFixture);
     const app = await context.newPage();
     await app.goto(new URL(entry.app.path, appUrl).href, { waitUntil: "domcontentloaded" });
     await runAppActions(app, entry.app.actions);

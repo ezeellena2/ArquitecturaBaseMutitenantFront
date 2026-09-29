@@ -6,7 +6,7 @@ import { PersonalLayout } from "@/layouts/PersonalLayout";
 import { configureI18n } from "@/shared/i18n";
 import { PersonalHomePage } from "./PersonalHomePage";
 
-vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: { displayName: null, email: "ana@example.com" } }) }));
+vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: { displayName: null, email: "ana@example.com", activeTenantId: null, organizations: [] } }) }));
 vi.mock("@/tenancy/AccessMenu", () => ({ AccessMenu: () => <button type="button">{"Cuenta"}</button> }));
 beforeAll(async () => { await configureI18n([{ code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true }]); });
 

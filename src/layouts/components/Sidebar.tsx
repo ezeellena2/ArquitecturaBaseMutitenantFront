@@ -8,6 +8,7 @@ import type { NavigationConfig } from "../navigation/types";
 export interface SidebarProps {
   navigation: NavigationConfig;
   account: { name: string; email: string | null } | null;
+  context: { title: string; detail: string } | null;
   isMobile: boolean;
   mobileOpen: boolean;
   collapsed: boolean;
@@ -17,7 +18,7 @@ export interface SidebarProps {
   onCloseMobile: () => void;
 }
 
-function SidebarBody({ navigation, account, isMobile, collapsed, administrationOpen, onToggleAdministration, onToggleCollapsed, onCloseMobile }: SidebarProps) {
+function SidebarBody({ navigation, account, context, isMobile, collapsed, administrationOpen, onToggleAdministration, onToggleCollapsed, onCloseMobile }: SidebarProps) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const [mobileAdministrationOpen, setMobileAdministrationOpen] = useState(false);
@@ -25,15 +26,18 @@ function SidebarBody({ navigation, account, isMobile, collapsed, administrationO
   const adminExpanded = isMobile ? mobileAdministrationOpen : administrationOpen;
 
   return <>
-    <div className="flex h-[52px] shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-4 text-sm font-bold text-[var(--t1)]">
-      <span aria-hidden="true" className="size-8 shrink-0 rounded-[9px] bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)]" />
+    <div className="flex h-[52px] shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]">
+      <span aria-hidden="true" className="flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[var(--shadow-card)]"><svg className="size-[18px] text-[var(--lado-activo)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg></span>
       {showLabels ? <span>{t("app.name")}</span> : null}
-      {isMobile ? <button type="button" aria-label={t("layout.sidebar.closeDrawer")} onClick={onCloseMobile} className="ml-auto flex size-11 items-center justify-center rounded-lg text-[var(--t2)]"><ChevronLeft size={18} aria-hidden="true" /></button> : null}
     </div>
+    {context && showLabels ? <div className="flex min-h-[56px] shrink-0 flex-col justify-center px-3 text-[13px] leading-[1.35]">
+      <span className="font-semibold text-[var(--t1)]">{context.title}</span>
+      <span className="mt-1 text-[var(--t3)]">{context.detail}</span>
+    </div> : null}
     {!isMobile && !administrationOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className="absolute -right-3.5 top-16 z-10 flex size-7 items-center justify-center rounded-full border border-[var(--lado-borde)] bg-[var(--lado)] text-[var(--t2)] shadow-sm">
       {collapsed ? <ChevronRight size={15} aria-hidden="true" /> : <ChevronLeft size={15} aria-hidden="true" />}
     </button> : null}
-    <nav aria-label={t("navigation.general")} className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-2">
+    <nav aria-label={t("navigation.general")} className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-[11px]">
       {navigation.links.map((entry) => {
         const Icon = entry.icon;
         const active = entry.to === pathname;
@@ -63,7 +67,7 @@ function SidebarBody({ navigation, account, isMobile, collapsed, administrationO
 export function Sidebar(props: SidebarProps) {
   const { t } = useTranslation();
   if (props.isMobile) return <Dialog open={props.mobileOpen} onOpenChange={(open) => { if (!open) props.onCloseMobile(); }}>
-    <DialogContent showCloseButton={false} aria-describedby={undefined} className="bottom-auto left-0 top-0 flex h-dvh max-h-dvh w-[232px] flex-col gap-0 rounded-none border-0 border-r border-[var(--lado-borde)] bg-[var(--lado)] p-0 shadow-none md:left-0 md:top-0 md:translate-x-0 md:translate-y-0 md:rounded-none">
+    <DialogContent showCloseButton={false} aria-describedby={undefined} className="bottom-auto left-0 top-0 flex h-dvh max-h-dvh w-[280px] flex-col gap-0 rounded-none border-0 border-r border-[var(--lado-borde)] bg-[var(--lado)] p-0 shadow-none md:left-0 md:top-0 md:translate-x-0 md:translate-y-0 md:rounded-none">
       <DialogTitle className="sr-only">{t("layout.sidebar.navigation")}</DialogTitle>
       <SidebarBody {...props} />
     </DialogContent>

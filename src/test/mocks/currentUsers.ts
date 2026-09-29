@@ -40,12 +40,33 @@ export const platformOperator: MeResponse = {
   permissions: ["platform.tenants.read"],
 };
 
+const visualOrganizations: MeResponse["organizations"] = [
+  { id: "grupo-delta", name: "Grupo Delta", roleName: "Dueño", status: "Active", memberStatus: "Active", isSelectable: true },
+  { id: "beta", name: "Beta S.R.L.", roleName: "Miembro", status: "Suspended", memberStatus: "Active", isSelectable: false },
+];
+
+export const visualPersonal: MeResponse = {
+  ...consumerWithoutOrganizations,
+  id: "lucia",
+  displayName: "Lucía Fernández",
+  email: "lucia.fernandez@delta.ejemplo.com",
+  organizations: visualOrganizations,
+};
+
+export const visualBusiness: MeResponse = {
+  ...visualPersonal,
+  access: "business",
+  activeTenantId: "grupo-delta",
+};
+
 export const currentUsers = {
   "consumer-empty": consumerWithoutOrganizations,
   "consumer-with-organizations": consumerWithOrganizations,
   "business-admin": businessUser,
   "business-no-permissions": businessWithoutPermissions,
   "platform-operator": platformOperator,
+  "visual-personal": visualPersonal,
+  "visual-business": visualBusiness,
 } satisfies Record<string, MeResponse>;
 
 export type CurrentUserFixture = keyof typeof currentUsers;

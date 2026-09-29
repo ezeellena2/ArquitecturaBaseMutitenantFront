@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Outlet } from "react-router";
+import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useIsSigningOut } from "@/auth/signOutStatus";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
@@ -13,10 +14,12 @@ import type { NavigationConfig } from "./navigation/types";
 
 interface PrivateLayoutFrameProps {
   navigation: NavigationConfig;
+  scope?: "personal" | "business";
   children?: ReactNode;
 }
 
-export function PrivateLayoutFrame({ navigation, children }: PrivateLayoutFrameProps) {
+export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayoutFrameProps) {
+  const { t } = useTranslation();
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isSigningOut = useIsSigningOut();
   const { data: user } = useCurrentUser();
@@ -25,6 +28,10 @@ export function PrivateLayoutFrame({ navigation, children }: PrivateLayoutFrameP
   const [administrationOpen, setAdministrationOpen] = useState(false);
   const name = user?.displayName || user?.email || "";
   const account = user ? { name, email: user.email ?? null } : null;
+  const activeOrganization = user?.organizations.find((item) => item.id === user.activeTenantId);
+  const context = scope === "personal" ? { title: t("accessMenu.personal"), detail: t("accessMenu.personalDetail") }
+    : scope === "business" && activeOrganization ? { title: activeOrganization.name, detail: t("layout.sidebar.organization") }
+      : null;
 
   if (isSigningOut) return <SessionStatusPage status="closing" />;
 
@@ -32,6 +39,7 @@ export function PrivateLayoutFrame({ navigation, children }: PrivateLayoutFrameP
     <Sidebar
       navigation={navigation}
       account={account}
+      context={context}
       isMobile={isMobile}
       mobileOpen={mobileOpen}
       collapsed={collapsed}

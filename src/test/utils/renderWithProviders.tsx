@@ -1,30 +1,14 @@
 import { QueryClient } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import type { ReactElement, ReactNode } from "react";
-import type { User } from "oidc-client-ts";
 import type { AuthContextProps } from "react-oidc-context";
 import { RouterProvider, createMemoryRouter } from "react-router";
 import { AppProviders } from "@/app/providers";
 import { routes } from "@/app/routes";
 import { currentUsers, type CurrentUserFixture } from "../mocks/currentUsers";
+import { fixtureAuth } from "../mocks/authContext";
 import { meHandlerFor } from "../mocks/handlers";
 import { server } from "../mocks/server";
-
-function fixtureAuth(as: CurrentUserFixture): AuthContextProps {
-  const fixture = currentUsers[as];
-  const user = {
-    access_token: `test-${as}`,
-    profile: { sub: fixture.id, access: fixture.access, tenant_id: fixture.activeTenantId },
-  } as unknown as User;
-  return {
-    isAuthenticated: true,
-    isLoading: false,
-    user,
-    signinSilent: async () => user,
-    signinRedirect: async () => {},
-    signoutRedirect: async () => {},
-  } as unknown as AuthContextProps;
-}
 
 function anonymousAuth(): AuthContextProps {
   return {

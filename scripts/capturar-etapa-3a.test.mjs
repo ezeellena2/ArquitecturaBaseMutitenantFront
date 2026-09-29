@@ -20,6 +20,7 @@ import {
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = path.join(root, "docs/design/capturas/etapa-3a/manifest.json");
 const lienzo = path.join(root, "docs/design/lienzo");
+const outputRoot = path.join(root, "docs/design/capturas/etapa-3a");
 
 test("la matriz de 3a declara tablero real, estado aprobado y ambos tamaños", () => {
   const cases = validateManifest(manifest, lienzo);
@@ -68,6 +69,15 @@ test("Portada y documentos legales tienen pares de escritorio y móvil", () => {
     assert.equal(item.app.responses?.[0]?.status, 200);
     assert.match(item.app.responses[0].body.text, /^DOCUMENTO DE DEMOSTRACIÓN\./);
   }
+});
+
+test("inicios y menús privados tienen pares de escritorio y móvil", () => {
+  const cases = validateManifest(manifest, lienzo).filter((entry) => entry.group === "inicios");
+  const expected = ["inicio-personal", "inicio-org", "perfiles-personal", "perfiles-org", "lateral-personal", "lateral-org"];
+  assert.deepEqual([...new Set(cases.map((entry) => entry.pair))].sort(), expected.sort());
+  assert.equal(cases.length, 12);
+  assert.ok(cases.every((entry) => entry.app.userFixture && entry.app.path.includes("visualApp.html")));
+  assertCapturedPairs(cases, outputRoot);
 });
 
 test("la verificación falla si falta la app o el tablero del mismo caso", () => {

@@ -3,5 +3,5 @@ import { PrivateLayoutFrame } from "./PrivateLayoutFrame";
 import { personalNavigation } from "./navigation/personal";
 
 export function PersonalLayout({ children }: { children?: ReactNode }) {
-  return <PrivateLayoutFrame navigation={personalNavigation}>{children}</PrivateLayoutFrame>;
+  return <PrivateLayoutFrame navigation={personalNavigation} scope="personal">{children}</PrivateLayoutFrame>;
 }

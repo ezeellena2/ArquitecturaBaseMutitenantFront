@@ -1,0 +1,21 @@
+import { QueryClient } from "@tanstack/react-query";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { createMemoryRouter, RouterProvider } from "react-router";
+import { AppProviders } from "@/app/providers";
+import { routes } from "@/app/routes";
+import { currentUsers, type CurrentUserFixture } from "./mocks/currentUsers";
+import { fixtureAuth } from "./mocks/authContext";
+import "@/index.css";
+
+const params = new URLSearchParams(window.location.search);
+const fixture = params.get("as") ?? "visual-personal";
+if (!(fixture in currentUsers)) throw new Error(`Fixture visual desconocido: ${fixture}`);
+const route = params.get("route") ?? "/";
+if (!route.startsWith("/") || route.startsWith("//")) throw new Error("Ruta visual inválida");
+const as = fixture as CurrentUserFixture;
+const router = createMemoryRouter(routes, { initialEntries: [route] });
+const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+const root = document.getElementById("root");
+if (!root) throw new Error("Falta raíz visual");
+createRoot(root).render(<StrictMode><AppProviders client={client} authContext={fixtureAuth(as)}><RouterProvider router={router} /></AppProviders></StrictMode>);

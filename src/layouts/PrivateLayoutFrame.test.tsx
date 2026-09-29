@@ -10,7 +10,7 @@ import { PrivateLayoutFrame } from "./PrivateLayoutFrame";
 
 const viewport = vi.hoisted(() => ({ mobile: false }));
 vi.mock("@/shared/hooks/useMediaQuery", () => ({ useMediaQuery: () => viewport.mobile }));
-vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: { displayName: "Ana", email: "ana@example.com" } }) }));
+vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: { displayName: "Ana", email: "ana@example.com", activeTenantId: "empresa-a", organizations: [{ id: "empresa-a", name: "Empresa A" }] } }) }));
 vi.mock("@/tenancy/AccessMenu", () => ({ AccessMenu: () => <button type="button">{"Cuenta"}</button> }));
 
 beforeAll(async () => {
@@ -19,12 +19,11 @@ beforeAll(async () => {
 afterEach(() => { viewport.mobile = false; cancelSignOut(); });
 
 describe("PrivateLayoutFrame", () => {
-  it("abre y cierra el segundo panel de Administración desde el menú escritorio", async () => {
-    render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation}><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
-    await userEvent.click(screen.getByRole("button", { name: "Administración" }));
-    expect(screen.getByRole("navigation", { name: "Administración" })).toBeVisible();
-    await userEvent.click(screen.getByRole("button", { name: "Cerrar Administración" }));
-    expect(screen.queryByRole("navigation", { name: "Administración" })).not.toBeInTheDocument();
+  it("muestra el contexto de empresa sin enlaces de Administración de etapas futuras", () => {
+    render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
+    expect(screen.getByText("Empresa A")).toBeVisible();
+    expect(screen.getByText("Organización")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Administración" })).not.toBeInTheDocument();
   });
 
   it("el botón de la barra abre el cajón móvil y lo cierra sin segundo panel", async () => {
