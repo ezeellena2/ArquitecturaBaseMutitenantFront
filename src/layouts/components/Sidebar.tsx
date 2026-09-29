@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
 import { Dialog, DialogContent, DialogTitle } from "@/shared/ui/dialog";
+import { BrandMark } from "@/shared/ui/BrandMark";
 import type { NavigationConfig } from "../navigation/types";
 
 export interface SidebarProps {
@@ -27,7 +28,7 @@ function SidebarBody({ navigation, account, context, isMobile, collapsed, admini
 
   return <>
     <div className="flex h-[52px] shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]">
-      <span aria-hidden="true" className="flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[var(--shadow-card)]"><svg className="size-[18px] text-[var(--lado-activo)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg></span>
+      <BrandMark />
       {showLabels ? <span>{t("app.name")}</span> : null}
     </div>
     {context && showLabels ? <div className="flex min-h-[56px] shrink-0 flex-col justify-center px-3 text-[13px] leading-[1.35]">

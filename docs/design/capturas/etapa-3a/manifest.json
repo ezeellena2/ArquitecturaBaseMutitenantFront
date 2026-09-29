@@ -2053,6 +2053,396 @@
           }
         ]
       }
+    },
+    {
+      "id": "error-org-403-escritorio",
+      "pair": "error-org-403",
+      "group": "errores",
+      "board": "Error-Org",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "caso": "Sin permiso (403)"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Fsin-permiso",
+        "userFixture": "visual-error-org",
+        "readySelector": "main",
+        "readyText": "Si lo necesitás, pedíselo a quien administra los usuarios de Grupo Delta."
+      }
+    },
+    {
+      "id": "error-org-403-movil",
+      "pair": "error-org-403",
+      "group": "errores",
+      "board": "Error-Org",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "caso": "Sin permiso (403)"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Fsin-permiso",
+        "userFixture": "visual-error-org",
+        "readySelector": "main",
+        "readyText": "Si lo necesitás, pedíselo a quien administra los usuarios de Grupo Delta."
+      },
+      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+    },
+    {
+      "id": "error-org-404-escritorio",
+      "pair": "error-org-404",
+      "group": "errores",
+      "board": "Error-Org",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "caso": "No encontrada (404)"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Fno-existe",
+        "userFixture": "visual-error-org",
+        "readySelector": "main",
+        "readyText": "No encontramos esta página"
+      }
+    },
+    {
+      "id": "error-org-404-movil",
+      "pair": "error-org-404",
+      "group": "errores",
+      "board": "Error-Org",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "caso": "No encontrada (404)"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Fno-existe",
+        "userFixture": "visual-error-org",
+        "readySelector": "main",
+        "readyText": "No encontramos esta página"
+      },
+      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+    },
+    {
+      "id": "perfil-suspendido-escritorio",
+      "pair": "perfil-suspendido",
+      "group": "errores",
+      "board": "Perfil-Suspendido",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Suspendida"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-unavailable-suspended&route=%2Forg&unavailable=suspended",
+        "userFixture": "visual-unavailable-suspended",
+        "readySelector": "main",
+        "readyText": "Beta S.R.L. está suspendida"
+      }
+    },
+    {
+      "id": "perfil-suspendido-movil",
+      "pair": "perfil-suspendido",
+      "group": "errores",
+      "board": "Perfil-Suspendido",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Suspendida"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-unavailable-suspended&route=%2Forg&unavailable=suspended",
+        "userFixture": "visual-unavailable-suspended",
+        "readySelector": "main",
+        "readyText": "Beta S.R.L. está suspendida"
+      },
+      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+    },
+    {
+      "id": "perfil-espera-escritorio",
+      "pair": "perfil-espera",
+      "group": "errores",
+      "board": "Perfil-Suspendido",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Espera aprobación"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-unavailable-pending&route=%2Forg&unavailable=pending",
+        "userFixture": "visual-unavailable-pending",
+        "readySelector": "main",
+        "readyText": "Estamos revisando Grupo Delta"
+      }
+    },
+    {
+      "id": "perfil-espera-movil",
+      "pair": "perfil-espera",
+      "group": "errores",
+      "board": "Perfil-Suspendido",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Espera aprobación"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-unavailable-pending&route=%2Forg&unavailable=pending",
+        "userFixture": "visual-unavailable-pending",
+        "readySelector": "main",
+        "readyText": "Estamos revisando Grupo Delta"
+      },
+      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+    },
+    {
+      "id": "perfil-cerrado-escritorio",
+      "pair": "perfil-cerrado",
+      "group": "errores",
+      "board": "Perfil-Suspendido",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Cerrada"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-unavailable-closed&route=%2Forg&unavailable=closed",
+        "userFixture": "visual-unavailable-closed",
+        "readySelector": "main",
+        "readyText": "Beta S.R.L. está cerrada"
+      }
+    },
+    {
+      "id": "perfil-cerrado-movil",
+      "pair": "perfil-cerrado",
+      "group": "errores",
+      "board": "Perfil-Suspendido",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Cerrada"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-unavailable-closed&route=%2Forg&unavailable=closed",
+        "userFixture": "visual-unavailable-closed",
+        "readySelector": "main",
+        "readyText": "Beta S.R.L. está cerrada"
+      },
+      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+    },
+    {
+      "id": "sesion-iniciando-escritorio",
+      "pair": "sesion-iniciando",
+      "group": "errores",
+      "board": "Sesion",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Iniciando sesión"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&session=starting",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "Iniciando sesión…"
+      }
+    },
+    {
+      "id": "sesion-iniciando-movil",
+      "pair": "sesion-iniciando",
+      "group": "errores",
+      "board": "Sesion",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Iniciando sesión"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&session=starting",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "Iniciando sesión…"
+      },
+      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+    },
+    {
+      "id": "sesion-grupo-delta-escritorio",
+      "pair": "sesion-grupo-delta",
+      "group": "errores",
+      "board": "Sesion",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Cambiando de lado: a Grupo Delta"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&session=switching-business",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "Cambiando a Grupo Delta…"
+      }
+    },
+    {
+      "id": "sesion-grupo-delta-movil",
+      "pair": "sesion-grupo-delta",
+      "group": "errores",
+      "board": "Sesion",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Cambiando de lado: a Grupo Delta"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&session=switching-business",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "Cambiando a Grupo Delta…"
+      },
+      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+    },
+    {
+      "id": "sesion-personal-escritorio",
+      "pair": "sesion-personal",
+      "group": "errores",
+      "board": "Sesion",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Cambiando de lado: a Personal"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&session=switching-personal",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "Cambiando a Personal…"
+      }
+    },
+    {
+      "id": "sesion-personal-movil",
+      "pair": "sesion-personal",
+      "group": "errores",
+      "board": "Sesion",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Cambiando de lado: a Personal"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&session=switching-personal",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "Cambiando a Personal…"
+      },
+      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+    },
+    {
+      "id": "sesion-cerrando-escritorio",
+      "pair": "sesion-cerrando",
+      "group": "errores",
+      "board": "Sesion",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "Cerrando sesión"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&session=closing",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "Cerrando sesión…"
+      }
+    },
+    {
+      "id": "sesion-cerrando-movil",
+      "pair": "sesion-cerrando",
+      "group": "errores",
+      "board": "Sesion",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "Cerrando sesión"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&session=closing",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "Cerrando sesión…"
+      },
+      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+    },
+    {
+      "id": "sesion-error-escritorio",
+      "pair": "sesion-error",
+      "group": "errores",
+      "board": "Sesion",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "props": {
+        "estado": "No pudimos iniciar tu sesión"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&session=error",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "No pudimos iniciar tu sesión"
+      }
+    },
+    {
+      "id": "sesion-error-movil",
+      "pair": "sesion-error",
+      "group": "errores",
+      "board": "Sesion",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "props": {
+        "estado": "No pudimos iniciar tu sesión"
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&session=error",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "No pudimos iniciar tu sesión"
+      },
+      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
     }
   ]
 }

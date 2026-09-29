@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useContext, useEffect, useState, type ReactNode } from "react";
+import { AuthContext } from "react-oidc-context";
 import { Outlet } from "react-router";
 import { ForbiddenPage } from "@/areas/public/errors/pages/ForbiddenPage";
 import { OrganizationUnavailablePage, type UnavailableCode } from "@/areas/public/errors/pages/OrganizationUnavailablePage";
@@ -6,6 +7,7 @@ import { useAccessError } from "@/shared/api/accessErrorStore";
 import { AppErrorBoundary } from "./AppErrorBoundary";
 import { NewVersionBanner } from "./components/NewVersionBanner";
 import { OfflineBanner } from "./components/OfflineBanner";
+import { BusinessLayout } from "./BusinessLayout";
 
 interface AppShellProps {
   children?: ReactNode;
@@ -14,6 +16,7 @@ interface AppShellProps {
 
 /// Armazón transversal de E1. Los estados del acceso y la organización se conectan en E3.
 export function AppShell({ children, onReload = () => window.location.reload() }: AppShellProps) {
+  const auth = useContext(AuthContext);
   const accessError = useAccessError();
   const [offline, setOffline] = useState(() => !navigator.onLine);
   const [newVersion, setNewVersion] = useState(false);
@@ -46,7 +49,9 @@ export function AppShell({ children, onReload = () => window.location.reload() }
   const content = unavailable
     ? <OrganizationUnavailablePage code={accessError.code as UnavailableCode} organizationName={organizationName} organizationId={tenantId} />
     : accessError
-      ? <main className="min-h-dvh bg-[var(--fondo)]"><ForbiddenPage organizationName={typeof organizationName === "string" ? organizationName : undefined} /></main>
+      ? auth?.user?.profile.access === "business"
+        ? <BusinessLayout><ForbiddenPage organizationName={typeof organizationName === "string" ? organizationName : undefined} /></BusinessLayout>
+        : <main className="min-h-dvh bg-[var(--fondo)]"><ForbiddenPage organizationName={typeof organizationName === "string" ? organizationName : undefined} homePath="/" /></main>
       : children ?? <Outlet />;
 
   return (

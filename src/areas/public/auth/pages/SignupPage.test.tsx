@@ -69,6 +69,7 @@ describe("SignupPage", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: " MARIANA@Example.com " } });
     fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
     expect(await screen.findByRole("heading", { name: "Revisá tu correo" })).toBeVisible();
+    expect(screen.getByText("mariana@example.com").tagName).toBe("STRONG");
     expect(body).toEqual({ email: "mariana@example.com", acceptedTerms: true, culture: "es-AR", timeZoneId: "America/Argentina/Buenos_Aires" });
     expect(screen.getByRole("group", { name: "Código" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Verificar y crear la cuenta" })).toBeDisabled();

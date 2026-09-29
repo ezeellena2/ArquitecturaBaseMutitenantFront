@@ -59,6 +59,34 @@ export const visualBusiness: MeResponse = {
   activeTenantId: "grupo-delta",
 };
 
+export const visualErrorOrganization: MeResponse = {
+  ...visualBusiness,
+  id: "valentina",
+  displayName: "Valentina Ruiz",
+  email: "valentina.ruiz@gmail.com",
+};
+
+export const visualUnavailableSuspended: MeResponse = {
+  ...visualBusiness,
+  activeTenantId: "beta",
+};
+
+export const visualUnavailablePending: MeResponse = {
+  ...visualBusiness,
+  organizations: [
+    { id: "grupo-delta", name: "Grupo Delta", roleName: "Dueño", status: "PendingApproval", memberStatus: "Active", isSelectable: false },
+    { id: "beta", name: "Beta S.R.L.", roleName: "Miembro", status: "Suspended", memberStatus: "Active", isSelectable: false },
+  ],
+};
+
+export const visualUnavailableClosed: MeResponse = {
+  ...visualUnavailableSuspended,
+  organizations: [
+    { id: "grupo-delta", name: "Grupo Delta", roleName: "Dueño", status: "Active", memberStatus: "Active", isSelectable: true },
+    { id: "beta", name: "Beta S.R.L.", roleName: "Miembro", status: "Closed", memberStatus: "Active", isSelectable: false },
+  ],
+};
+
 export const currentUsers = {
   "consumer-empty": consumerWithoutOrganizations,
   "consumer-with-organizations": consumerWithOrganizations,
@@ -67,6 +95,10 @@ export const currentUsers = {
   "platform-operator": platformOperator,
   "visual-personal": visualPersonal,
   "visual-business": visualBusiness,
+  "visual-error-org": visualErrorOrganization,
+  "visual-unavailable-suspended": visualUnavailableSuspended,
+  "visual-unavailable-pending": visualUnavailablePending,
+  "visual-unavailable-closed": visualUnavailableClosed,
 } satisfies Record<string, MeResponse>;
 
 export type CurrentUserFixture = keyof typeof currentUsers;

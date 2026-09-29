@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 import { z } from "zod";
 import { ChevronLeft, LockKeyhole } from "lucide-react";
@@ -129,7 +129,7 @@ export function SignupPage() {
     </div> : <div className="flex flex-col gap-[22px]">
       <button type="button" onClick={() => { setStep(null); setCode(""); setError(null); }} className="inline-flex items-center gap-1 self-start text-[13px] font-semibold text-[var(--marca)] hover:underline"><ChevronLeft size={16} aria-hidden="true" />{t("login.otherEmail")}</button>
       <div><h1 className="text-[26px] font-bold leading-tight">{t("login.checkEmail")}</h1>
-        <p id="signup-code-hint" className="mt-2 text-sm text-[var(--t2)]">{t("login.sentCode", { email: step.email })}</p>
+        <p id="signup-code-hint" className="mt-2 text-[13px] text-[var(--t2)]"><Trans ns="auth" i18nKey="login.sentCode" values={{ email: step.email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
       </div>
       <OtpInput length={6} value={code} onChange={(next) => { setCode(next); if (error?.code === "Auth.LoginCode.Invalid") setError(null); }} label={t("login.codeLabel")} invalid={error?.code === "Auth.LoginCode.Invalid"} disabled={verify.isPending} aria-describedby="signup-code-hint" />
       <FormError message={error ? <>{t(loginCodeErrorKey(error))}{attemptsLeft !== null ? <span className="block">{t("login.attemptsLeft", { count: attemptsLeft })}</span> : null}</> : null} />

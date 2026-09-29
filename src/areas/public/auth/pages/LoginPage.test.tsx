@@ -111,6 +111,8 @@ describe("LoginPage", () => {
     expect(await screen.findByRole("heading", { name: "Revisá tu correo" })).toBeVisible();
     expect(screen.queryByRole("heading", { name: "Ingresá a tu cuenta" })).not.toBeInTheDocument();
     expect(screen.getByText(/Te mandamos un código a/)).toHaveTextContent("ana@example.com");
+    expect(screen.getByText("ana@example.com").tagName).toBe("STRONG");
+    expect(screen.getByRole("heading", { name: "Revisá tu correo" })).toHaveClass("text-2xl");
     const group = screen.getByRole("group", { name: "Código" });
     expect(within(group).getAllByRole("textbox")).toHaveLength(6);
     expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toBeDisabled();

@@ -1,6 +1,7 @@
 import { CircleAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import { BrandMark } from "@/shared/ui/BrandMark";
 
 export type SessionStatusPageProps =
   | { status: "starting" | "closing"; targetName?: never; loginPath?: never }
@@ -21,7 +22,7 @@ export function SessionStatusPage(props: SessionStatusPageProps) {
     <main className="relative min-h-dvh bg-[var(--fondo)] text-[var(--t1)]">
       <div role="status" className="flex min-h-dvh flex-col items-center justify-center gap-5 px-6 text-center">
         <span className="absolute left-6 top-6 flex items-center gap-2.5 text-[17px] font-bold md:left-12 md:top-8">
-          <span className="block size-8 rounded-[9px] bg-[var(--marca)]" aria-hidden="true" />
+          <BrandMark />
           {t("brand")}
         </span>
         {isError ? (
@@ -38,7 +39,7 @@ export function SessionStatusPage(props: SessionStatusPageProps) {
         {isError ? (
           <Link
             to={props.loginPath ?? "/login"}
-            className="inline-flex h-12 w-[280px] max-w-full items-center justify-center rounded-xl bg-[var(--marca)] px-5 text-[15px] font-semibold text-[var(--lado-activo)] hover:bg-[var(--marca-h)]"
+            className="inline-flex h-12 w-[280px] max-w-full items-center justify-center rounded-xl bg-[var(--marca)] px-5 text-[15px] font-semibold text-[var(--lado-activo)] hover:bg-[var(--marca-h)] md:h-10 md:rounded-[10px]"
           >
             {t("session.error.backToLogin")}
           </Link>

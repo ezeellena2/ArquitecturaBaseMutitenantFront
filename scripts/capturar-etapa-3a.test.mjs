@@ -80,6 +80,19 @@ test("inicios y menús privados tienen pares de escritorio y móvil", () => {
   assertCapturedPairs(cases, outputRoot);
 });
 
+test("errores de organización y estados de sesión cubren toda la matriz 3a", () => {
+  const cases = validateManifest(manifest, lienzo).filter((entry) => entry.group === "errores");
+  const expected = [
+    "error-org-403", "error-org-404", "perfil-suspendido", "perfil-espera", "perfil-cerrado",
+    "sesion-iniciando", "sesion-grupo-delta", "sesion-personal", "sesion-cerrando", "sesion-error",
+  ];
+  assert.deepEqual([...new Set(cases.map((entry) => entry.pair))].sort(), expected.sort());
+  assert.equal(cases.length, expected.length * 2);
+  assert.ok(cases.filter((entry) => entry.viewport.width === 390).every((entry) =>
+    entry.mobileReference === "sin tablero móvil: pendiente de aprobación del usuario"));
+  assertCapturedPairs(cases, outputRoot);
+});
+
 test("la verificación falla si falta la app o el tablero del mismo caso", () => {
   const directory = mkdtempSync(path.join(os.tmpdir(), "codex-3a-captures-"));
   const cases = [{ id: "ingreso-correo", group: "ingreso", viewport: { width: 390, height: 844 } }];

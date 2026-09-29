@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import i18n, { changeCulture } from "@/shared/i18n";
 import { nativeLanguageName } from "@/shared/format/cultureName";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
+import { BrandMark } from "@/shared/ui/BrandMark";
 
 type AuthLayoutProps = { access: "consumer" | "business"; children: ReactNode };
 
@@ -20,7 +21,7 @@ export function AuthLayout({ access, children }: AuthLayoutProps) {
   return <div className="grid min-h-screen grid-cols-1 bg-[var(--lado-activo)] text-[var(--t1)] md:grid-cols-2">
     <div className="flex min-h-screen flex-col px-4 pb-4 pt-[18px] md:px-10 md:pb-[22px] md:pt-6">
       <Link to="/" className="inline-flex items-center gap-2.5 self-start text-[15px] font-bold tracking-tight text-[var(--t1)] no-underline">
-        <span aria-hidden="true" className="relative size-8 shrink-0 rounded-[9px] bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] after:absolute after:inset-2 after:-rotate-45 after:rounded-[3px] after:border-[2.5px] after:border-[var(--lado-activo)] after:border-r-transparent after:content-['']" />
+        <BrandMark />
         {t("brand")}
       </Link>
       <main className="flex min-h-0 flex-1 items-start justify-center pt-7 md:items-center md:pt-0">

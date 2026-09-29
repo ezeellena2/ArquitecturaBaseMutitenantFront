@@ -17,7 +17,7 @@ export function ErrorPageFrame({ icon, title, description, homePath = "/org", on
         <h1 className="text-2xl font-bold tracking-[-0.02em]">{title}</h1>
         <p className="mt-2 text-[15px] text-[var(--t2)]">{description}</p>
       </div>
-      <Link to={homePath} onClick={onHomeClick} className="inline-flex min-h-11 items-center justify-center rounded-[10px] bg-[var(--marca)] px-5 py-2.5 text-sm font-semibold text-[var(--lado-activo)] hover:bg-[var(--marca-h)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
+      <Link to={homePath} onClick={onHomeClick} className="inline-flex min-h-11 items-center justify-center rounded-[10px] bg-[var(--marca)] px-[14px] text-[13px] font-semibold text-[var(--lado-activo)] hover:bg-[var(--marca-h)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] md:min-h-[35px]">
         {t("errorPage.home")}
       </Link>
     </div>

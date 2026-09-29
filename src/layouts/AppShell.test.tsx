@@ -12,6 +12,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { publishAccessError, clearAccessError } from "@/shared/api/accessErrorStore";
 import i18n, { configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
+import { visualBusiness } from "@/test/mocks/currentUsers";
 import { AppShell } from "./AppShell";
 
 beforeAll(async () => {
@@ -132,5 +133,18 @@ describe("AppShell", () => {
     expect(screen.getByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
     await userEvent.click(screen.getByRole("link", { name: "Ir al inicio" }));
     expect(screen.getByText("Contenido")).toBeVisible();
+  });
+
+  it("conserva el layout de empresa cuando una petición devuelve 403", async () => {
+    server.use(http.get("/api/me", () => HttpResponse.json(visualBusiness)));
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const auth = { isAuthenticated: true, user: { profile: { access: "business", tenant_id: "grupo-delta" } } } as unknown as AuthContextProps;
+    render(<I18nextProvider i18n={i18n}><AuthContext.Provider value={auth}><QueryClientProvider client={client}>
+      <MemoryRouter initialEntries={["/org"]}><AppShell><main>{"Contenido"}</main></AppShell></MemoryRouter>
+    </QueryClientProvider></AuthContext.Provider></I18nextProvider>);
+    act(() => publishAccessError(new ApiError(403, { code: "Authorization.Forbidden", organizationName: "Grupo Delta" })));
+    expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
+    expect(screen.getByRole("complementary", { name: "Navegación principal" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/org");
   });
 });
