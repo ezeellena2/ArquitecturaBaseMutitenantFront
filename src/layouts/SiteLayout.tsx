@@ -9,8 +9,8 @@ export function SiteLayout({ children, variant = "landing" }: { children: ReactN
     <header className="h-[60px] border-b border-[var(--borde)] md:h-[72px]">
       <div className="mx-auto flex h-full max-w-[1280px] items-center gap-0 px-4 md:gap-8 md:px-10">
         <Link to="/" className="inline-flex shrink-0 items-center gap-2.5 text-base font-bold tracking-tight text-[var(--t1)] no-underline md:text-lg">
-          <span aria-hidden="true" className="relative flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[0_2px_6px_-1px_var(--marca-sombra)] md:size-8 md:rounded-[9px]">
-            <svg className="size-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+          <span aria-hidden="true" className="relative flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[var(--shadow-card)] md:size-8 md:rounded-[9px]">
+            <svg className="size-5 text-[var(--lado-activo)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
           </span>
           {t("brand")}
         </Link>
@@ -23,7 +23,7 @@ export function SiteLayout({ children, variant = "landing" }: { children: ReactN
           <Link to="/login/empresa" aria-label={t("navigation.businessLogin")} className="inline-flex h-9 items-center rounded-[8px] px-2 text-[var(--t2)] hover:bg-[var(--s2)] md:h-10 md:rounded-[10px] md:px-[18px]">
             <span className="hidden md:inline">{t("navigation.businessLogin")}</span><span className="md:hidden">{t("navigation.businesses")}</span>
           </Link>
-          <Link to="/login" className="inline-flex h-9 items-center rounded-[8px] bg-[var(--marca)] px-3 text-white hover:bg-[var(--marca-h)] md:h-10 md:rounded-[10px] md:bg-transparent md:px-[18px] md:text-[var(--t2)] md:hover:bg-[var(--s2)]">{t("navigation.login")}</Link>
+          <Link to="/login" className="inline-flex h-9 items-center rounded-[8px] bg-[var(--marca)] px-3 text-[var(--lado-activo)] hover:bg-[var(--marca-h)] md:h-10 md:rounded-[10px] md:bg-transparent md:px-[18px] md:text-[var(--t2)] md:hover:bg-[var(--s2)]">{t("navigation.login")}</Link>
         </div>
       </div>
     </header>

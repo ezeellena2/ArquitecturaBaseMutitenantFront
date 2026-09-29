@@ -25,7 +25,7 @@ type BoundParsers = {
 
 export type FormatState = Formatters & BoundParsers & (
   | { isLoading: true; culture: null; timeZone: null; currency: null; referenceData: null }
-  | { isLoading: false; culture: string; timeZone: string; currency: string; referenceData: ReferenceData }
+  | { isLoading: false; culture: string; timeZone: string; currency: string | null; referenceData: ReferenceData }
 );
 
 const emptyText = (): string => "";
@@ -84,10 +84,10 @@ function effectivePreferences(data: ReferenceData, user: MeResponse | undefined)
     (item) => item.code === defaultCulture.countryCode && item.isEnabled,
   );
   const timeZone = user?.timeZoneId ?? country?.defaultTimeZoneId;
-  const currency = user?.currencyCode ?? country?.defaultCurrencyCode;
-  if (!timeZone || !currency
+  const currency = user ? (user.currencyCode ?? null) : (country?.defaultCurrencyCode ?? null);
+  if (!timeZone
     || !data.timeZones.some((item) => item.id === timeZone && (user || item.isEnabled))
-    || !data.currencies.some((item) => item.code === currency && (user || item.isEnabled))) {
+    || (currency !== null && !data.currencies.some((item) => item.code === currency && (user || item.isEnabled)))) {
     throw new Error("El catálogo no tiene zona y moneda habilitadas para la cultura predeterminada.");
   }
   return { culture, timeZone, currency };
@@ -123,7 +123,7 @@ export function FormatProvider({ children }: { children: ReactNode }) {
         translate: (key, options) => t(key, options),
       }),
       parseDecimal: (input) => parseDecimal(input, profile),
-      parseMoney: (input, selectedCurrency = currency) => parseMoney(input, selectedCurrency, profile, data),
+      parseMoney: (input, selectedCurrency = currency ?? "") => parseMoney(input, selectedCurrency, profile, data),
       parsePercent: (input) => parsePercent(input, profile),
       parseDate: (input) => parseDate(input, profile),
       parseDateTime: (input) => parseDateTime(input, profile, timeZone),

@@ -1050,8 +1050,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @enum {unknown} */
-        Access: "Consumer" | "Business" | "Platform";
+        /** @enum {string} */
+        Access: "consumer" | "business" | "platform";
         CountryReferenceHttpResponse: {
             code: string;
             alpha3: string;
@@ -1105,7 +1105,9 @@ export interface components {
                 [key: string]: string[];
             };
         };
-        /** @enum {unknown} */
+        /** @description Correo normalizado para comparar y enviar; el dominio IDN se guarda en ASCII. */
+        Email: null | string;
+        /** @enum {string} */
         LegalDocumentKind: "Terms" | "Privacy";
         /** @description Versión y texto vigente de un documento legal en una cultura. */
         LegalDocumentRow: {
@@ -1115,7 +1117,7 @@ export interface components {
             /** Format: int32 */
             version: number;
             /** Format: date-time */
-            effectiveAtUtc: unknown;
+            effectiveAtUtc: string;
             culture: string;
             text: string;
         };
@@ -1127,14 +1129,14 @@ export interface components {
         LoginMethodsResponse: {
             channels: components["schemas"]["LoginChannelAvailability"][];
         };
-        /** @enum {unknown} */
+        /** @enum {string} */
         MemberStatus: "Invited" | "Active" | "Inactive" | "Removed";
         /** @description Cuenta, accesos y preferencias efectivas de la sesión actual. */
         MeResponse: {
             /** Format: uuid */
             id: string;
             displayName?: null | string;
-            email?: null | string;
+            email?: null | components["schemas"]["Email"];
             access: components["schemas"]["Access"];
             /** Format: uuid */
             activeTenantId?: null | string;
@@ -1220,7 +1222,7 @@ export interface components {
             /** Format: int32 */
             sortOrder?: null | number;
         };
-        /** @enum {unknown} */
+        /** @enum {string} */
         TenantStatus: "PendingApproval" | "Provisioning" | "Active" | "Suspended" | "Closed";
         TimeZoneReferenceHttpResponse: {
             id: string;

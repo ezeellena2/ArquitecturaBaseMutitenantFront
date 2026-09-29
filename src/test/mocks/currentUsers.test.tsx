@@ -15,10 +15,10 @@ describe("currentUsers", () => {
     expect(consumerWithOrganizations.access).toBe("consumer");
     expect(consumerWithOrganizations.organizations).toHaveLength(1);
     expect(businessWithoutPermissions.access).toBe("business");
-    expect(businessWithoutPermissions.permissions).toHaveLength(0);
+    expect(businessWithoutPermissions.permissions ?? []).toHaveLength(0);
     expect(platformOperator.access).toBe("platform");
-    expect(currentUsers["business-admin"].permissions).toContain("users.read");
-    expect(platformOperator.permissions).toContain("platform.tenants.read");
+    expect(currentUsers["business-admin"].permissions ?? []).toContain("users.read");
+    expect(platformOperator.permissions ?? []).toContain("platform.tenants.read");
   });
 
   it("renderiza una sesión y /api/me coherentes con el fixture seleccionado", async () => {

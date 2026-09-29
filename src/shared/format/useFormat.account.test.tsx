@@ -46,4 +46,29 @@ describe("formato con perfil de cuenta", () => {
     expect(result.current).toMatchObject({ timeZone: "UTC", currency: "USD" });
     expect(result.current.formatInteger(1234)).toBe("1,234");
   });
+
+  it("no inventa moneda cuando /api/me devuelve null", async () => {
+    const reference = referenceDataFixture();
+    server.use(http.get("/api/reference-data", () => HttpResponse.json({
+      ...reference,
+      currencies: [...reference.currencies, { ...reference.currencies[0], code: "USD" }],
+      countries: [...reference.countries, { ...reference.countries[0], code: "US", defaultCurrencyCode: "USD", defaultTimeZoneId: "UTC" }],
+      timeZones: [...reference.timeZones, { ...reference.timeZones[0], id: "UTC", countryCodes: ["US"] }],
+    })));
+    server.use(http.get("/api/me", () => HttpResponse.json({
+      id: "ana", access: "consumer", hasPersonalSpace: true,
+      organizations: [], effectivePermissions: { organization: [], companies: {} }, features: [],
+      culture: "en-US", timeZoneId: "UTC", currencyCode: null,
+    })));
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <AuthContext.Provider value={auth as AuthContextProps}>
+        <AppProviders client={client}>{children}</AppProviders>
+      </AuthContext.Provider>
+    );
+
+    const { result } = renderHook(() => useFormat(), { wrapper });
+    await waitFor(() => expect(result.current.culture).toBe("en-US"));
+    expect(result.current.currency).toBeNull();
+  });
 });

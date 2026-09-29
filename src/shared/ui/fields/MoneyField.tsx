@@ -32,7 +32,7 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
   const [touched, setTouched] = useState(false);
   const [currencyOverride, setCurrencyOverride] = useState<{ base: string | null; selected: string } | null>(null);
   const currency = currencyOverride?.base === (value?.currency ?? null)
-    ? currencyOverride.selected : value?.currency ?? (format.isLoading ? "" : format.currency);
+    ? currencyOverride.selected : value?.currency ?? (format.isLoading ? "" : format.currency ?? "");
   const currencyRow = format.isLoading ? null
     : format.referenceData.currencies.find((row) => row.code === value?.currency);
   const displayed = !format.isLoading && value !== null && currencyRow?.minorUnits !== null

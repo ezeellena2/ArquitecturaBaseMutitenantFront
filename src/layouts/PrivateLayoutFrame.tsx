@@ -24,7 +24,7 @@ export function PrivateLayoutFrame({ navigation, children }: PrivateLayoutFrameP
   const [mobileOpen, setMobileOpen] = useState(false);
   const [administrationOpen, setAdministrationOpen] = useState(false);
   const name = user?.displayName || user?.email || "";
-  const account = user ? { name, email: user.email } : null;
+  const account = user ? { name, email: user.email ?? null } : null;
 
   if (isSigningOut) return <SessionStatusPage status="closing" />;
 

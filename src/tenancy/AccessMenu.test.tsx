@@ -41,8 +41,8 @@ describe("AccessMenu", () => {
     const { user } = setup({
       ...businessUser,
       organizations: [
-        { id: "empresa-a", name: "Empresa A", roleName: "Dueño", status: "Active" },
-        { id: "empresa-b", name: "Empresa B", roleName: "Miembro", status: "Active" },
+        { id: "empresa-a", name: "Empresa A", roleName: "Dueño", status: "Active", memberStatus: "Active", isSelectable: true },
+        { id: "empresa-b", name: "Empresa B", roleName: "Miembro", status: "Active", memberStatus: "Active", isSelectable: true },
       ],
     });
 
@@ -77,7 +77,7 @@ describe("AccessMenu", () => {
       ...businessUser,
       organizations: [
         ...businessUser.organizations,
-        { id: "beta", name: "Beta S.R.L.", roleName: "Miembro", status: "Suspended" },
+        { id: "beta", name: "Beta S.R.L.", roleName: "Miembro", status: "Suspended", memberStatus: "Active", isSelectable: false },
       ],
     });
     screen.getByRole("button", { name: "Ana, Empresa A" }).focus();
@@ -87,6 +87,23 @@ describe("AccessMenu", () => {
     expect(suspended).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByText("Suspendida")).toBeVisible();
     await user.click(suspended);
+    expect(switchAccess).not.toHaveBeenCalled();
+  });
+
+  it("mantiene visible una membresía inactiva sin permitir entrar a ella", async () => {
+    const { user } = setup({
+      ...businessUser,
+      organizations: [
+        ...businessUser.organizations,
+        { id: "gamma", name: "Gamma S.A.", roleName: null, status: "Active", memberStatus: "Inactive", isSelectable: false },
+      ],
+    });
+    screen.getByRole("button", { name: "Ana, Empresa A" }).focus();
+    await user.keyboard("{Enter}");
+
+    const inactive = screen.getByRole("menuitem", { name: /Gamma S.A./ });
+    expect(inactive).toHaveAttribute("aria-disabled", "true");
+    await user.click(inactive);
     expect(switchAccess).not.toHaveBeenCalled();
   });
 

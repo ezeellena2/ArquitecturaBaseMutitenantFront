@@ -37,7 +37,7 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
   const description = t(`errors:errorPage.unavailable.${pending ? "pendingDescription" : closed ? "closedDescription" : "suspendedDescription"}`);
   const Icon = pending ? Clock3 : closed ? LockKeyhole : TriangleAlert;
   const iconTone = pending ? "bg-[var(--marca-t)] text-[var(--marca-tx)]" : closed ? "bg-[var(--s3)] text-[var(--t2)]" : "bg-[var(--alerta-t)] text-[var(--alerta)]";
-  const organizations = account?.organizations.filter((item) => item.id !== organizationId && item.status === "Active") ?? [];
+  const organizations = account?.organizations.filter((item) => item.id !== organizationId && item.status === "Active" && item.memberStatus === "Active" && item.isSelectable !== false) ?? [];
 
   function changeProfile(target: SwitchTarget, name: string): void {
     setTargetName(name);

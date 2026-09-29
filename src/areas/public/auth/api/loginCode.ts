@@ -1,8 +1,5 @@
 import { api } from "@/shared/api/httpClient";
-
-export interface RequestLoginCodeResponse { readonly resendAfterSeconds: number }
-export interface VerifyLoginCodeRequest { readonly email: string; readonly code: string; readonly returnUrl: string }
-export interface VerifyLoginCodeResponse { readonly returnUrl: string }
+import type { RequestLoginCodeResponse, VerifyLoginCodeRequest, VerifyLoginCodeResponse } from "@/shared/api/types";
 
 export const requestLoginCode = (email: string, key: string): Promise<RequestLoginCodeResponse> =>
   api.post<RequestLoginCodeResponse>("/api/auth/login-code", { email }, { headers: { "Idempotency-Key": key } });

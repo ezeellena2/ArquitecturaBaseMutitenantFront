@@ -14,8 +14,9 @@ const signoutRedirect = vi.fn(() => new Promise<void>(() => {}));
 vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: {
   displayName: "Ana", email: "ana@example.test", hasPersonalSpace: true, activeTenantId: "beta",
   organizations: [
-    { id: "beta", name: "Beta S.R.L.", roleName: null, status: "Suspended" },
-    { id: "delta", name: "Grupo Delta", roleName: "Dueño", status: "Active" },
+    { id: "beta", name: "Beta S.R.L.", roleName: null, status: "Suspended", memberStatus: "Active", isSelectable: false },
+    { id: "delta", name: "Grupo Delta", roleName: "Dueño", status: "Active", memberStatus: "Active", isSelectable: true },
+    { id: "gamma", name: "Gamma S.A.", roleName: null, status: "Active", memberStatus: "Inactive", isSelectable: false },
   ],
 } }) }));
 vi.mock("@/tenancy/useSwitchAccess", () => ({ useSwitchAccess: () => ({ isSwitching: false, hasError: false, switchAccess }) }));
@@ -37,6 +38,7 @@ describe("OrganizationUnavailablePage", () => {
     expect(screen.getByText("Nadie de la organización puede entrar por ahora. Tus otros perfiles siguen funcionando.")).toBeVisible();
     expect(screen.getByText("Elegí otro perfil")).toBeVisible();
     expect(screen.queryByRole("button", { name: /Beta S.R.L./ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Gamma S.A./ })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /Personal.*Tu perfil personal/ }));
     expect(switchAccess).toHaveBeenCalledWith({ access: "consumer" });
     expect(await axe(container)).toHaveNoViolations();

@@ -109,8 +109,8 @@ describe("AppShell", () => {
       activeTenantId: "beta", hasPersonalSpace: true, permissions: [], culture: "es-AR",
       timeZoneId: "America/Argentina/Buenos_Aires", currencyCode: "ARS",
       organizations: [
-        { id: "beta", name: "Beta S.R.L.", roleName: null, status: "Suspended" },
-        { id: "delta", name: "Grupo Delta", roleName: null, status: "Active" },
+        { id: "beta", name: "Beta S.R.L.", roleName: null, status: "Suspended", memberStatus: "Active", isSelectable: false },
+        { id: "delta", name: "Grupo Delta", roleName: null, status: "Active", memberStatus: "Active", isSelectable: true },
       ],
     })));
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });

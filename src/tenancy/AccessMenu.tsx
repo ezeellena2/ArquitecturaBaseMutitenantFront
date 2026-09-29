@@ -23,13 +23,14 @@ interface ProfileRowProps {
   name: string;
   detail: string | null;
   checked: boolean;
+  disabled: boolean;
   suspended: boolean;
   mobile: boolean;
   onSelect: () => void;
   statusLabel: string;
 }
 
-function ProfileRow({ name, detail, checked, suspended, mobile, onSelect, statusLabel }: ProfileRowProps) {
+function ProfileRow({ name, detail, checked, disabled, suspended, mobile, onSelect, statusLabel }: ProfileRowProps) {
   const content = <>
     <span aria-hidden="true" className={`inline-flex size-8 shrink-0 items-center justify-center rounded-[9px] text-[13px] font-bold ${checked ? "bg-[var(--lado-activo)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]"}`}>
       {initials(name)}
@@ -41,17 +42,17 @@ function ProfileRow({ name, detail, checked, suspended, mobile, onSelect, status
     {suspended ? <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--alerta-t)] px-2.5 py-[3px] text-[12.5px] font-medium text-[var(--alerta)] before:size-1.5 before:rounded-full before:bg-current before:content-['']">{statusLabel}</span> : null}
     {checked ? <Check size={16} strokeWidth={2.25} aria-hidden="true" /> : null}
   </>;
-  const rowClass = `flex min-h-10 w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm ${checked ? "bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]" : "text-[var(--t1)] hover:bg-[var(--s2)]"} ${suspended ? "cursor-default text-[var(--t3)]" : "cursor-pointer"}`;
+  const rowClass = `flex min-h-10 w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm ${checked ? "bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]" : "text-[var(--t1)] hover:bg-[var(--s2)]"} ${disabled ? "cursor-default text-[var(--t3)]" : "cursor-pointer"}`;
 
   return mobile ? (
-    <button type="button" disabled={suspended} aria-current={checked ? "true" : undefined} onClick={onSelect} className={rowClass}>
+    <button type="button" disabled={disabled} aria-current={checked ? "true" : undefined} onClick={onSelect} className={rowClass}>
       {content}
     </button>
   ) : (
     <DropdownMenuItem
-      role={suspended ? "menuitem" : "menuitemradio"}
-      aria-checked={suspended ? undefined : checked}
-      disabled={suspended}
+      role={disabled ? "menuitem" : "menuitemradio"}
+      aria-checked={disabled ? undefined : checked}
+      disabled={disabled}
       onSelect={onSelect}
       className={rowClass}
     >
@@ -93,6 +94,7 @@ function MenuBody({ mobile, name, email, organizations, access, activeTenantId, 
         name={personal}
         detail={t("accessMenu.personalDetail")}
         checked={access === "consumer"}
+        disabled={false}
         suspended={false}
         mobile={mobile}
         statusLabel=""
@@ -103,8 +105,9 @@ function MenuBody({ mobile, name, email, organizations, access, activeTenantId, 
       <ProfileRow
         key={organization.id}
         name={organization.name}
-        detail={organization.roleName}
+        detail={organization.roleName ?? null}
         checked={access === "business" && activeTenantId === organization.id}
+        disabled={organization.status !== "Active" || organization.memberStatus !== "Active" || organization.isSelectable === false}
         suspended={organization.status === "Suspended"}
         mobile={mobile}
         statusLabel={t("accessMenu.suspended")}
@@ -164,7 +167,7 @@ export function AccessMenu() {
   const menuBody = <MenuBody
     mobile={mobile}
     name={name}
-    email={account.email}
+    email={account.email ?? null}
     organizations={organizations}
     access={access}
     activeTenantId={activeTenantId}
