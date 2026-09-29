@@ -107,7 +107,7 @@ type LocalDateTime = { year: number; month: number; day: number; hour: number; m
 type DateTimeToken = "year" | "month" | "day" | "hour24" | "hour12" | "minute" | "meridiem";
 
 /** Lee los patrones CLDR del catálogo; no presupone el orden de día, mes ni hora. */
-function parsePattern(input: string, pattern: string, dateRequired: boolean): LocalDateTime {
+function parsePattern(input: string, pattern: string, culture: CultureReference, dateRequired: boolean): LocalDateTime {
   const tokens: DateTimeToken[] = [];
   const expression = [...pattern.matchAll(/'([^']*)'|yyyy|MM|M|dd|d|HH|H|hh|h|mm|m|tt|./g)]
     .map((match) => {
@@ -119,7 +119,10 @@ function parsePattern(input: string, pattern: string, dateRequired: boolean): Lo
       if (token === "HH" || token === "H") { tokens.push("hour24"); return token === "HH" ? "(\\d{2})" : "(\\d{1,2})"; }
       if (token === "hh" || token === "h") { tokens.push("hour12"); return token === "hh" ? "(\\d{2})" : "(\\d{1,2})"; }
       if (token === "mm" || token === "m") { tokens.push("minute"); return token === "mm" ? "(\\d{2})" : "(\\d{1,2})"; }
-      if (token === "tt") { tokens.push("meridiem"); return "(AM|PM)"; }
+      if (token === "tt") {
+        tokens.push("meridiem");
+        return `(${escapeRegExp(culture.amDesignator)}|${escapeRegExp(culture.pmDesignator)})`;
+      }
       return escapeRegExp(token);
     }).join("");
   const required: DateTimeToken[] = dateRequired
@@ -144,7 +147,7 @@ function parsePattern(input: string, pattern: string, dateRequired: boolean): Lo
     throw new Error("La hora civil no es válida.");
   }
   const hour = usesTwelveHours
-    ? rawHour % 12 + (values.meridiem?.toUpperCase() === "PM" ? 12 : 0) : rawHour;
+    ? rawHour % 12 + (values.meridiem?.toLowerCase() === culture.pmDesignator.toLowerCase() ? 12 : 0) : rawHour;
   const year = dateRequired ? Number(values.year) : 2000;
   const month = dateRequired ? Number(values.month) : 1;
   const day = dateRequired ? Number(values.day) : 1;
@@ -164,7 +167,7 @@ function parsePattern(input: string, pattern: string, dateRequired: boolean): Lo
 export function parseTime(input: string, culture: CultureReference): string | null {
   const trimmed = input.trim();
   if (trimmed === "") return null;
-  const { hour, minute } = parsePattern(trimmed, culture.timePattern, false);
+  const { hour, minute } = parsePattern(trimmed, culture.timePattern, culture, false);
   return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00`;
 }
 
@@ -197,7 +200,7 @@ function localParts(instant: Date, timeZone: string, culture: string): LocalDate
 export function parseDateTime(input: string, culture: CultureReference, timeZone: string): string | null {
   const trimmed = input.trim();
   if (trimmed === "") return null;
-  const desired = parsePattern(trimmed, culture.dateTimePattern, true);
+  const desired = parsePattern(trimmed, culture.dateTimePattern, culture, true);
   const wall = new Date(0);
   wall.setUTCFullYear(desired.year, desired.month - 1, desired.day);
   wall.setUTCHours(desired.hour, desired.minute, 0, 0);

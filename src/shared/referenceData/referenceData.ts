@@ -44,6 +44,8 @@ const cultureSchema = z.object({
   timePattern: z.string().min(1),
   dateTimePattern: z.string().min(1),
   longDatePattern: z.string().min(1),
+  amDesignator: z.string().min(1),
+  pmDesignator: z.string().min(1),
   decimalSeparator: z.string().min(1),
   groupSeparator: z.string().min(1),
   currencyPattern: z.string().min(1),

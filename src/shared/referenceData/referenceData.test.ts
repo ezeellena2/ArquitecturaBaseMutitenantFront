@@ -40,8 +40,12 @@ describe("datos de referencia", () => {
     expect(data.countries[0]).toMatchObject({ code: "AR", name: "Argentina" });
     expect(data.timeZones[0]).toMatchObject({ id: "America/Argentina/Buenos_Aires", city: "Buenos Aires" });
     expect(data.cultures[0]).toMatchObject({ code: "es-AR", name: "Spanish (Argentina)", datePattern: "dd/MM/yyyy" });
+    expect(data.cultures[1]).toMatchObject({ amDesignator: "AM", pmDesignator: "PM" });
     expect(data.taxIdTypes[0]).toMatchObject({ code: "AR-CUIT", name: "CUIT", countryCode: "AR" });
     expect(() => parseReferenceData({ ...referenceDataFixture(), currencies: [{ code: 123 }] })).toThrow();
+    expect(() => parseReferenceData({ ...referenceDataFixture(), cultures: referenceDataFixture().cultures.map((row) => ({
+      ...row, amDesignator: undefined, pmDesignator: undefined,
+    })) })).toThrow();
   });
 
   it("mantiene las referencias históricas y ofrece solo filas habilitadas para una selección nueva", () => {

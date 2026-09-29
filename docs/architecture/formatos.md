@@ -18,6 +18,8 @@
 
 Los valores por defecto de `Intl` y de .NET **no alcanzan**. Por ejemplo, `Intl` con `es-AR` da "02:35 p. m.", y en Argentina se usa 24 h. Los patrones están en `cultures.json` en E1 y en `platform.Cultures` desde E2; `shared/format/cultureProfiles.ts` adapta esos datos sin un `switch` ni un perfil escrito por cultura. `DisplayFormatter` usa los mismos datos. Las filas siguientes son ejemplos del catálogo inicial:
 
+Los designadores de mañana y tarde (`AmDesignator` y `PmDesignator`) también vienen de `Cultures`: `shared/format` los usa tanto para mostrar como para leer una hora de 12 h, sin heredar los del navegador.
+
 | Regla | `es-AR` | `en-US` |
 |---|---|---|
 | Fecha | `27/09/2026` (dd/MM/yyyy) | `09/27/2026` (MM/dd/yyyy) |

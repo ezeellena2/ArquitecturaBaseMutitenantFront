@@ -1,5 +1,5 @@
 import { parsePhoneNumberFromString } from "libphonenumber-js";
-import type { ReferenceData } from "@/shared/referenceData/referenceData";
+import type { CultureReference, ReferenceData } from "@/shared/referenceData/referenceData";
 import { getCultureProfile } from "./cultureProfiles";
 import { shiftDecimal } from "./decimalScale";
 
@@ -65,8 +65,8 @@ function parseCivil(value: string, timeZone: string, culture: string): CivilPart
   };
 }
 
-function applyDatePattern(pattern: string, parts: CivilParts, culture: string): string {
-  const monthName = () => new Intl.DateTimeFormat(culture, {
+function applyDatePattern(pattern: string, parts: CivilParts, profile: CultureReference): string {
+  const monthName = () => new Intl.DateTimeFormat(profile.code, {
     timeZone: "UTC", calendar: "gregory", month: "long",
   }).format(new Date(Date.UTC(parts.year, parts.month - 1, 1)));
   const pad = (value: number) => String(value).padStart(2, "0");
@@ -84,7 +84,7 @@ function applyDatePattern(pattern: string, parts: CivilParts, culture: string): 
     h: () => String(hour12),
     mm: () => pad(parts.minute),
     m: () => String(parts.minute),
-    tt: () => parts.hour < 12 ? "AM" : "PM",
+    tt: () => parts.hour < 12 ? profile.amDesignator : profile.pmDesignator,
   };
   return pattern.replace(/'([^']*)'|yyyy|MMMM|MM|M|dd|d|HH|H|hh|h|mm|m|tt/g, (token, quoted: string | undefined) =>
     quoted === undefined ? tokens[token]() : quoted);
@@ -123,7 +123,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   const number = (value: number, minimum: number, maximum: number) =>
     formatNumber(value, minimum, maximum, profile.decimalSeparator, profile.groupSeparator, culture);
   const date = (value: string, pattern: string) =>
-    applyDatePattern(pattern, parseCivil(value, timeZone, culture), culture);
+    applyDatePattern(pattern, parseCivil(value, timeZone, culture), profile);
 
   function formatDate(value: string): string { return date(value, profile.datePattern); }
   function formatDateTime(value: string): string { return date(value, profile.dateTimePattern); }

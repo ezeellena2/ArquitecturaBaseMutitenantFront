@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { parseReferenceData } from "@/shared/referenceData/referenceData";
+import { referenceDataFixture } from "@/test/mocks/handlers";
 import { createFormatters } from "./formatters";
 
 type FormatCase = {
@@ -230,5 +231,21 @@ describe.skipIf(!backendPresent)("referencias históricas", () => {
     expect(formatter.formatTimeZone("America/New_York")).toBe("New York (GMT−4)");
     expect(formatter.formatCulture("es-AR")).toBe("Spanish (Argentina)");
     expect(formatter.formatTaxId({ type: "AR-CUIT", number: "20123456786" })).toBe("20-12345678-6");
+  });
+});
+
+describe("designadores horarios del catálogo", () => {
+  it("muestra AM/PM según Cultures y no según la configuración del host", () => {
+    const data = referenceDataFixture("en-US");
+    const referenceData = {
+      ...data,
+      cultures: data.cultures.map((row) => row.code === "en-US"
+        ? { ...row, amDesignator: "a. m.", pmDesignator: "p. m." } : row),
+    };
+    const formatter = createFormatters({ referenceData, culture: "en-US", timeZone: "UTC",
+      translate: translator("en-US") });
+
+    expect(formatter.formatTime("14:35:00")).toBe("2:35 p. m.");
+    expect(formatter.formatDateTime("2026-09-27T14:35:00Z")).toBe("09/27/2026 2:35 p. m.");
   });
 });

@@ -76,6 +76,15 @@ describe("entrada según Cultures", () => {
     expect(() => parseTime("2:35", english)).toThrow();
   });
 
+  it("lee los designadores de Cultures y rechaza los del host cuando difieren", () => {
+    const custom = { ...english, amDesignator: "a. m.", pmDesignator: "p. m." };
+    expect(parseTime("2:35 p. m.", custom)).toBe("14:35:00");
+    expect(parseTime("12:05 a. m.", custom)).toBe("00:05:00");
+    expect(() => parseTime("2:35 PM", custom)).toThrow();
+    expect(parseDateTime("09/27/2026 2:35 p. m.", custom, "UTC"))
+      .toBe("2026-09-27T14:35:00Z");
+  });
+
   it("convierte la fecha y hora de la cultura y zona efectiva a un instante UTC", () => {
     const zone = "America/Argentina/Buenos_Aires";
     expect(parseDateTime("27/09/2026 14:35", spanish, zone))

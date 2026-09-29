@@ -24,6 +24,7 @@ export function referenceDataFixture(culture = "es-AR"): ReferenceData {
       {
         code: "es-AR", languageCode: "es", countryCode: "AR", datePattern: "dd/MM/yyyy",
         timePattern: "HH:mm", dateTimePattern: "dd/MM/yyyy HH:mm", longDatePattern: "d 'de' MMMM 'de' yyyy",
+        amDesignator: "a. m.", pmDesignator: "p. m.",
         decimalSeparator: ",", groupSeparator: ".", currencyPattern: "{symbol} {number}",
         percentPattern: "{number} %", fallbackCulture: null, isDefault: true,
         name: english ? "Spanish (Argentina)" : "Español (Argentina)", isEnabled: true, sortOrder: 1,
@@ -31,6 +32,7 @@ export function referenceDataFixture(culture = "es-AR"): ReferenceData {
       {
         code: "en-US", languageCode: "en", countryCode: "US", datePattern: "MM/dd/yyyy",
         timePattern: "h:mm tt", dateTimePattern: "MM/dd/yyyy h:mm tt", longDatePattern: "MMMM d, yyyy",
+        amDesignator: "AM", pmDesignator: "PM",
         decimalSeparator: ".", groupSeparator: ",", currencyPattern: "{symbol}{number}",
         percentPattern: "{number}%", fallbackCulture: "es-AR", isDefault: false,
         name: english ? "English (United States)" : "Inglés (Estados Unidos)", isEnabled: true, sortOrder: 2,

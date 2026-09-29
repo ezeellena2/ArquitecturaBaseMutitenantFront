@@ -396,6 +396,8 @@ export interface components {
             timePattern: string;
             dateTimePattern: string;
             longDatePattern: string;
+            amDesignator: string;
+            pmDesignator: string;
             decimalSeparator: string;
             groupSeparator: string;
             currencyPattern: string;
