@@ -35,6 +35,7 @@
   "cancel": "Cancelar",
   "sendCode": "Enviar código",
   "code": "Código",
+  "codeIncomplete": "Escribí los 6 números del código.",
   "chooseMethod": "Qué querés agregar",
   "verifyTitle": "Verificar tu correo",
   "sentHint": "Te mandamos un código a {{value}}.",

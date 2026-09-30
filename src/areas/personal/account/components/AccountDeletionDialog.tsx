@@ -25,18 +25,19 @@ export function AccountDeletionDialog({ graceDays, onClose, onComplete }: { grac
   const [confirming, setConfirming] = useState(false);
   const busy = confirming || reauth.isPending || request.isPending;
   async function confirm({ reason }: { reason: string }) {
+    if (reauth.code.length !== 6) { reauth.setFailure(t("codeIncomplete")); return; }
     reauth.setFailure(null); setConfirming(true);
     try { const result = await request.mutateAsync({ reason, reauthTicket: await reauth.getTicket() }); onComplete(result.scheduledForUtc); }
     catch (error) { if (!(error instanceof ApiError) || !applyApiErrorToForm(error, form.setError, { reason: "reason" })) reauth.showError(error); }
     finally { setConfirming(false); }
   }
   return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent className="account-dialog md:max-w-[420px]" onCloseAutoFocus={restoreFocus}>
-    <form onSubmit={(event) => { if (!reauth.proof) { event.preventDefault(); void reauth.send(); } else void form.handleSubmit(confirm)(event); }} className="flex flex-col gap-5">
+    <form onSubmit={(event) => { if (!reauth.proof) { event.preventDefault(); void reauth.send(); } else { if (reauth.code.length !== 6) reauth.setFailure(t("codeIncomplete")); void form.handleSubmit(confirm)(event); } }} className="flex flex-col gap-5">
       <DialogHeader><DialogTitle>{t("deletionTitle")}</DialogTitle><DialogDescription>{t("deletionHint", { days: graceDays })}</DialogDescription></DialogHeader>
       <FormField label={t("reason")} required error={form.formState.errors.reason?.message}><Textarea {...form.register("reason")} disabled={busy} /></FormField>
       {reauth.proof ? <div className="flex flex-col gap-2"><p className="text-[13px] font-semibold text-[var(--t2)]">{t("deletionCode", { destination: reauth.proof.destination })}</p><OtpInput length={6} value={reauth.code} onChange={(value) => { reauth.setCode(value); reauth.setFailure(null); }} label={t("code")} disabled={busy} invalid={!!reauth.failure} /></div> : null}
       <FormError message={reauth.failure} />
-      <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("cancel")}</Button><Button type="submit" variant="destructive" disabled={busy || reauth.retry.isRunning || (reauth.proof ? reauth.code.length !== 6 : !reauth.failure)}>{reauth.retry.label ?? t("deletion")}</Button></DialogFooter>
+      <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("cancel")}</Button><Button type="submit" variant="destructive" disabled={busy || reauth.retry.isRunning || (!reauth.proof && !reauth.failure)}>{reauth.retry.label ?? t("deletion")}</Button></DialogFooter>
     </form>
   </DialogContent></Dialog>;
 }

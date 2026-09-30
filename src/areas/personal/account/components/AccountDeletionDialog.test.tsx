@@ -26,7 +26,13 @@ it("exige motivo, confirma con código del principal y devuelve fecha", async ()
   );
   renderWithProviders(<AccountDeletionDialog graceDays={30} onClose={() => {}} onComplete={complete} />);
   expect(screen.queryByText(/exportar/i)).not.toBeInTheDocument();
-  await user.type(await screen.findByRole("textbox", { name: "Código 1" }), "123456");
+  const code = await screen.findByRole("textbox", { name: "Código 1" });
+  expect(screen.getByRole("button", { name: "Dar de baja mi cuenta" })).toBeEnabled();
+  await user.click(screen.getByRole("button", { name: "Dar de baja mi cuenta" }));
+  expect(await screen.findByText("Escribí los 6 números del código.")).toBeVisible();
+  expect(await screen.findByText("Escribí el motivo.")).toBeVisible();
+  expect(complete).not.toHaveBeenCalled();
+  await user.type(code, "123456");
   await user.click(screen.getByRole("button", { name: "Dar de baja mi cuenta" }));
   expect(await screen.findByText("Escribí el motivo.")).toBeVisible();
   expect(complete).not.toHaveBeenCalled();

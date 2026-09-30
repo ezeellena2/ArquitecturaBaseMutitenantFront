@@ -50,6 +50,7 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
     if (method && open && !started.current) { started.current = true; void send({ email: method.value ?? "" }); }
   });
   async function confirm() {
+    if (code.length !== 6) { setFailure(t("codeIncomplete")); return; }
     setFailure(null);
     try {
       await verify.mutateAsync(code);
@@ -59,7 +60,7 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
     } catch (error) { showError(error); }
   }
   return <Dialog open={open} onOpenChange={onOpenChange}>
-    <DialogContent className="md:max-w-[420px]" onCloseAutoFocus={restoreFocus} aria-describedby={methodId ? "method-code-hint" : undefined}>
+    <DialogContent className="account-dialog md:max-w-[420px]" onCloseAutoFocus={restoreFocus} aria-describedby={methodId ? "method-code-hint" : undefined}>
       <form noValidate onSubmit={(event) => { event.preventDefault(); if (methodId) void confirm(); else void form.handleSubmit(send)(event); }} className="flex flex-col gap-5">
         <DialogHeader><DialogTitle>{t(method ? "verifyTitle" : "add")}</DialogTitle>{methodId ? <DialogDescription id="method-code-hint">{t("sentHint", { value: form.getValues("email") })}</DialogDescription> : null}</DialogHeader>
         {methodId ? <OtpInput length={6} value={code} onChange={(value) => { setCode(value); setFailure(null); }} label={t("code")} autoFocus invalid={!!failure} disabled={busy} aria-describedby="method-code-hint" /> : <>
@@ -67,7 +68,7 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
           <Controller control={form.control} name="email" render={({ field }) => <FormField label={t("email")} error={form.formState.errors.email?.type === "server" ? form.formState.errors.email.message : form.formState.errors.email ? auth("login.emailInvalid") : undefined}><EmailField name={field.name} ref={field.ref} value={field.value} onChange={field.onChange} onBlur={field.onBlur} disabled={!!method || busy} /></FormField>} />
         </>}
         <FormError message={failure} />
-        <DialogFooter><Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("cancel")}</Button><Button type="submit" disabled={busy || retry.isRunning || (!!methodId && code.length !== 6)}>{retry.label ?? t(methodId ? "verify" : "sendCode")}</Button></DialogFooter>
+        <DialogFooter><Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("cancel")}</Button><Button type="submit" disabled={busy || retry.isRunning}>{retry.label ?? t(methodId ? "verify" : "sendCode")}</Button></DialogFooter>
       </form>
     </DialogContent>
   </Dialog>;

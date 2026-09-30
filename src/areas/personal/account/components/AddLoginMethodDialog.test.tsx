@@ -32,6 +32,10 @@ it("suma correo, conserva OTP incorrecto y verifica con claves idempotentes", as
   await user.type(screen.getByRole("textbox", { name: "Correo" }), "nuevo@example.test");
   await user.click(screen.getByRole("button", { name: "Enviar código" }));
   const first = await screen.findByRole("textbox", { name: "Código 1" });
+  expect(screen.getByRole("button", { name: "Verificar" })).toBeEnabled();
+  await user.click(screen.getByRole("button", { name: "Verificar" }));
+  expect(await screen.findByText("Escribí los 6 números del código.")).toBeVisible();
+  expect(attempts).toBe(0);
   await user.type(first, "123456");
   await user.click(screen.getByRole("button", { name: "Verificar" }));
   expect(await screen.findByRole("alert")).toHaveTextContent("Ese código no es correcto.");
