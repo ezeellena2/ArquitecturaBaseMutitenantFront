@@ -8,11 +8,12 @@ interface FormFieldProps {
   hint?: string;
   error?: string;
   required?: boolean;
+  variant?: "default" | "auth";
   children: ReactElement<{ id?: string; "aria-invalid"?: boolean; "aria-describedby"?: string }>;
 }
 
 /// Etiqueta, control y mensaje de error, atados entre sí para lectores de pantalla (sección 7.4).
-export function FormField({ label, htmlFor, hint, error, required, children }: FormFieldProps): ReactNode {
+export function FormField({ label, htmlFor, hint, error, required, variant = "default", children }: FormFieldProps): ReactNode {
   const generatedId = useId();
   const controlId = htmlFor ?? children.props.id ?? generatedId;
   const messageId = `${controlId}-message`;
@@ -20,7 +21,7 @@ export function FormField({ label, htmlFor, hint, error, required, children }: F
 
   return (
     <div className="flex flex-col gap-1.5">
-      <Label htmlFor={controlId}>
+      <Label htmlFor={controlId} className={variant === "auth" ? "text-[12px] font-semibold text-[var(--t2)]" : undefined}>
         {label}
         {required ? <span aria-hidden="true">{" *"}</span> : null}
       </Label>

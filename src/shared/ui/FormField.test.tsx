@@ -36,4 +36,14 @@ describe("FormField", () => {
 
     expect(screen.getByLabelText("Código")).toHaveAccessibleDescription("Te lo mandamos por email.");
   });
+
+  it("usa la etiqueta compacta y gris del lienzo en ingreso y registro", () => {
+    render(
+      <FormField label="Correo electrónico" variant="auth">
+        <Input />
+      </FormField>,
+    );
+
+    expect(screen.getByText("Correo electrónico")).toHaveClass("text-[12px]", "font-semibold", "text-[var(--t2)]");
+  });
 });

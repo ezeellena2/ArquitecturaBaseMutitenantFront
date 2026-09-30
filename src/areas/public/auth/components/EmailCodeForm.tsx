@@ -55,7 +55,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart }: EmailC
       void handleSubmit(submit)(event);
     }}>
       <Controller control={control} name="email" render={({ field }) => (
-        <FormField label={t("login.emailLabel")} error={errors.email?.type === "server" ? errors.email.message : errors.email ? t("login.emailInvalid") : undefined}>
+        <FormField label={t("login.emailLabel")} variant="auth" error={errors.email?.type === "server" ? errors.email.message : errors.email ? t("login.emailInvalid") : undefined}>
           <EmailField name={field.name} ref={field.ref} onBlur={field.onBlur} value={field.value} onChange={field.onChange} />
         </FormField>
       )} />
