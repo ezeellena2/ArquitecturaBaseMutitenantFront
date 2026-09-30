@@ -59,6 +59,35 @@ describe("httpClient con sesión", () => {
     expect(renewAccessToken).toHaveBeenCalledOnce();
   });
 
+  it("avisa una sola vez que la sesión venció cuando la renovación no entrega token", async () => {
+    server.use(http.get("/api/protected", () => HttpResponse.json({
+      code: "Http.Unauthorized", traceId: "trace-expired",
+    }, { status: 401 })));
+    const onSessionExpired = vi.fn(async () => {});
+    configureHttpClient({
+      getAccessToken: () => "old-token",
+      renewAccessToken: async () => undefined,
+      onSessionExpired,
+    });
+
+    await expect(api.get("/api/protected")).rejects.toMatchObject({ status: 401, traceId: "trace-expired" });
+    await expect(api.get("/api/protected")).rejects.toMatchObject({ status: 401, traceId: "trace-expired" });
+    expect(onSessionExpired).toHaveBeenCalledOnce();
+  });
+
+  it("también avisa si la renovación lanza invalid_grant", async () => {
+    server.use(http.get("/api/protected", () => HttpResponse.json({ code: "Http.Unauthorized" }, { status: 401 })));
+    const onSessionExpired = vi.fn(async () => {});
+    configureHttpClient({
+      getAccessToken: () => "old-token",
+      renewAccessToken: async () => { throw new Error("invalid_grant"); },
+      onSessionExpired,
+    });
+
+    await expect(api.get("/api/protected")).rejects.toMatchObject({ status: 401 });
+    expect(onSessionExpired).toHaveBeenCalledOnce();
+  });
+
   it("no intenta renovar una petición anónima", async () => {
     server.use(http.get("/api/protected", () => HttpResponse.json({ code: "Http.Unauthorized" }, { status: 401 })));
     const renewAccessToken = vi.fn(async () => "new-token");

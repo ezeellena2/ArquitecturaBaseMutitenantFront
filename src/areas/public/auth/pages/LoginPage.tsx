@@ -55,7 +55,13 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     if (redirectError) carryLoginRedirectError(redirectError);
     const destination = access === "business" ? "/org" : "/";
     const returnTo = safeReturnUrl(searchParams.get("returnUrl"), destination);
-    void auth.signinRedirect({ state: { returnTo }, extraQueryParams: { access } });
+    void auth.signinRedirect({
+      state: { returnTo },
+      extraQueryParams: {
+        access,
+        ...(searchParams.get("session") === "expired" ? { prompt: "login" } : {}),
+      },
+    });
   }, [access, auth, redirectError, returnUrl, searchParams]);
 
   useEffect(() => { if (returnUrl) forgetLoginRedirectError(); }, [returnUrl]);

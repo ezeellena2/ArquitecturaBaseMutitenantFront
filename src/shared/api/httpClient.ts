@@ -7,10 +7,12 @@ interface HttpClientOptions {
   getAccessToken?: () => string | undefined;
   getCulture?: () => string | null | undefined;
   renewAccessToken?: () => Promise<string | undefined>;
+  onSessionExpired?: () => Promise<void> | void;
 }
 
 const defaults: HttpClientOptions = {};
 let options: HttpClientOptions = defaults;
+let notifiedExpiredToken: string | undefined;
 
 export function configureHttpClient(next: HttpClientOptions): void {
   options = { ...defaults, ...next };
@@ -18,6 +20,7 @@ export function configureHttpClient(next: HttpClientOptions): void {
 
 export function resetHttpClient(): void {
   options = defaults;
+  notifiedExpiredToken = undefined;
   clearAccessError();
 }
 
@@ -74,6 +77,13 @@ async function receive(path: string, init: RequestInit, allowNotModified = false
         response = await send(path, init, renewedToken);
       } catch {
         throw ApiError.network();
+      }
+    } else if (options.onSessionExpired && notifiedExpiredToken !== token) {
+      notifiedExpiredToken = token;
+      try {
+        await options.onSessionExpired();
+      } catch {
+        // Conserva el ProblemDetails original aunque falle la salida de la sesión.
       }
     }
   }

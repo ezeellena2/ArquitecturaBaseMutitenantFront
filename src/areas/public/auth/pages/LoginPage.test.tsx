@@ -95,6 +95,25 @@ describe("LoginPage", () => {
     expect(sessionStorage.getItem("arquitecturabasemt.sessionExpired")).toBeNull();
   });
 
+  it("fuerza ingreso nuevo con cookie viva y conserva la ruta empresarial después de una sesión vencida", async () => {
+    show("business", "/login/empresa?returnUrl=%2Forg%3Ftab%3D1&session=expired");
+
+    await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
+    expect(signinRedirect).toHaveBeenCalledWith({
+      state: { returnTo: "/org?tab=1" },
+      extraQueryParams: { access: "business", prompt: "login" },
+    });
+  });
+
+  it("muestra el aviso al volver al formulario empresarial tras el authorize forzado", () => {
+    sessionStorage.setItem("arquitecturabasemt.sessionExpired", "1");
+    show("business", `/login/empresa?returnUrl=${encodeURIComponent(authorizeUrl)}`);
+
+    expect(screen.getByRole("status")).toHaveTextContent("Tu sesión venció. Ingresá de nuevo.");
+    expect(screen.getByRole("textbox", { name: "Correo electrónico" })).toBeVisible();
+    expect(sessionStorage.getItem("arquitecturabasemt.sessionExpired")).toBeNull();
+  });
+
   it("mantiene el código en la misma pantalla, lo verifica y vuelve al authorize original", async () => {
     let verifyBody: unknown;
     server.use(
