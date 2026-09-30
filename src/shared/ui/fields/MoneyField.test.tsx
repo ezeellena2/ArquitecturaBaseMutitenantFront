@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { http, HttpResponse } from "msw";
 import { AppProviders } from "@/app/providers";
@@ -7,8 +8,34 @@ import { queryClient } from "@/shared/api/queryClient";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { FormField } from "../FormField";
+import type { MoneyValue } from "@/shared/format/formatters";
 import { MoneyField } from "./MoneyField";
 import { NumberField } from "./NumberField";
+
+function renderControlledMoney() {
+  const fixture = referenceDataFixture();
+  const peso = fixture.currencies[0];
+  server.use(http.get("/api/reference-data", () => HttpResponse.json({
+    ...fixture,
+    currencies: [
+      peso,
+      { ...peso, code: "USD", numericCode: "840", name: "Dólar", minorUnits: 2 },
+      { ...peso, code: "EUR", numericCode: "978", name: "Euro", minorUnits: 2 },
+      { ...peso, code: "JPY", numericCode: "392", name: "Yen", minorUnits: 0 },
+    ],
+  })));
+
+  function Harness() {
+    const [value, setValue] = useState<MoneyValue | null>({ amount: 100, currency: "USD" });
+    return <>
+      <FormField label="Monto"><MoneyField value={value} onChange={setValue} /></FormField>
+      <output data-testid="money-value">{JSON.stringify(value)}</output>
+      <button type="button" onClick={() => setValue({ amount: 100, currency: "USD" })}>{"Restablecer"}</button>
+    </>;
+  }
+
+  render(<AppProviders><Harness /></AppProviders>);
+}
 
 describe("NumberField y MoneyField", () => {
   beforeEach(() => { queryClient.clear(); resetHttpClient(); localStorage.clear(); });
@@ -96,5 +123,46 @@ describe("NumberField y MoneyField", () => {
     expect((input as HTMLInputElement).checkValidity()).toBe(false);
     fireEvent.blur(input);
     expect(screen.getByRole("alert")).toHaveTextContent("Ingresá un monto válido");
+  });
+
+  it("conserva la moneda al borrar el importe y escribir uno nuevo", async () => {
+    renderControlledMoney();
+    const input = await screen.findByRole("textbox", { name: "Monto" });
+    await waitFor(() => expect(input).toBeEnabled());
+    const select = screen.getByRole("combobox", { name: "Moneda" });
+    expect(select).toHaveValue("USD");
+
+    fireEvent.change(input, { target: { value: "" } });
+    expect(screen.getByTestId("money-value")).toHaveTextContent("null");
+    expect(select).toHaveValue("USD");
+    fireEvent.change(input, { target: { value: "200" } });
+    expect(screen.getByTestId("money-value")).toHaveTextContent('{"amount":200,"currency":"USD"}');
+  });
+
+  it("conserva la moneda elegida aunque el importe sea inválido para ella", async () => {
+    renderControlledMoney();
+    const input = await screen.findByRole("textbox", { name: "Monto" });
+    await waitFor(() => expect(input).toBeEnabled());
+    const select = screen.getByRole("combobox", { name: "Moneda" });
+    fireEvent.change(input, { target: { value: "1.234,50" } });
+    fireEvent.change(select, { target: { value: "JPY" } });
+
+    expect(screen.getByTestId("money-value")).toHaveTextContent("null");
+    expect(select).toHaveValue("JPY");
+  });
+
+  it("restablece la moneda cuando llega un valor nuevo desde el padre", async () => {
+    renderControlledMoney();
+    const input = await screen.findByRole("textbox", { name: "Monto" });
+    await waitFor(() => expect(input).toBeEnabled());
+    const select = screen.getByRole("combobox", { name: "Moneda" });
+    fireEvent.change(select, { target: { value: "EUR" } });
+    expect(select).toHaveValue("EUR");
+    expect(screen.getByTestId("money-value")).toHaveTextContent('{"amount":100,"currency":"EUR"}');
+
+    fireEvent.click(screen.getByRole("button", { name: "Restablecer" }));
+    expect(select).toHaveValue("USD");
+    fireEvent.change(input, { target: { value: "200" } });
+    expect(screen.getByTestId("money-value")).toHaveTextContent('{"amount":200,"currency":"USD"}');
   });
 });

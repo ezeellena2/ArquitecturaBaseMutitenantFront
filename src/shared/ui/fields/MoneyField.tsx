@@ -19,6 +19,10 @@ interface MoneyFieldProps {
   "aria-describedby"?: string;
 }
 
+function sameMoney(left: MoneyValue | null | undefined, right: MoneyValue | null | undefined): boolean {
+  return left?.amount === right?.amount && left?.currency === right?.currency;
+}
+
 /** Importe y código ISO viajan juntos; precisión y opciones vienen de Currencies. */
 export function MoneyField({ value, onChange, onValidityChange, id, name, disabled, required, placeholder,
   "aria-invalid": externalInvalid, "aria-describedby": externalDescription }: MoneyFieldProps) {
@@ -30,9 +34,14 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
   const [draft, setDraft] = useState<string | null>(null);
   const [invalid, setInvalid] = useState(false);
   const [touched, setTouched] = useState(false);
-  const [currencyOverride, setCurrencyOverride] = useState<{ base: string | null; selected: string } | null>(null);
-  const currency = currencyOverride?.base === (value?.currency ?? null)
-    ? currencyOverride.selected : value?.currency ?? (format.isLoading ? "" : format.currency ?? "");
+  const [selectedCurrency, setSelectedCurrency] = useState(value?.currency ?? "");
+  const [previousValue, setPreviousValue] = useState(value);
+  const [lastEmitted, setLastEmitted] = useState<MoneyValue | null | undefined>(undefined);
+  if (!sameMoney(value, previousValue)) {
+    setPreviousValue(value);
+    if (value !== null && !sameMoney(value, lastEmitted)) setSelectedCurrency(value.currency);
+  }
+  const currency = selectedCurrency || (format.isLoading ? "" : format.currency ?? "");
   const currencyRow = format.isLoading ? null
     : format.referenceData.currencies.find((row) => row.code === value?.currency);
   const displayed = !format.isLoading && value !== null && currencyRow?.minorUnits !== null
@@ -47,11 +56,13 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
       inputRef.current?.setCustomValidity("");
       setInvalid(false);
       onValidityChange?.(true);
+      setLastEmitted(parsed);
       onChange(parsed);
     } catch {
       inputRef.current?.setCustomValidity(t("fields.invalidMoney"));
       setInvalid(true);
       onValidityChange?.(false);
+      setLastEmitted(null);
       onChange(null);
     }
   }
@@ -68,7 +79,7 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
       <Label htmlFor={currencyId}>{t("fields.currency")}</Label>
       <CurrencySelect id={currencyId} value={currency} placeholder={t("fields.selectCurrency")}
         onChange={(selected) => {
-          setCurrencyOverride({ base: value?.currency ?? null, selected });
+          setSelectedCurrency(selected);
           if (inputValue !== "") change(inputValue, selected);
         }}
         disabled={disabled} aria-invalid={externalInvalid || showError} />
