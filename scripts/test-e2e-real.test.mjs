@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { access, mkdtemp, readdir, readFile, rm, unlink } from "node:fs/promises";
+import { access, mkdtemp, readdir, readFile, rm, unlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -106,7 +106,7 @@ async function codeFromPickup(email, before) {
       catch (error) { if (error?.code === "ENOENT") continue; throw error; }
       if (!eml.toLowerCase().includes(email.toLowerCase())) continue;
       const code = plainTextBody(eml)?.match(/(?<!\d)\d{6}(?!\d)/)?.[0];
-      if (!code) throw new Error("Llegó un .eml sin código legible en el cuerpo de texto.");
+      if (!code) continue; // Los avisos de cuenta comparten pickup con los códigos.
       await unlink(file);
       return code;
     }
@@ -152,7 +152,57 @@ async function signOut(page, currentProfile) {
   }
 }
 
-test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pickup sin mocks", { timeout: 900_000 }, async () => {
+async function registerPerson(page) {
+  const email = `e2e-account-${randomUUID()}@example.test`;
+  await page.goto(new URL("/registro", baseUrl).href);
+  await page.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+  await page.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
+  const before = new Set(await pickupFiles());
+  await page.getByRole("button", { name: "Crear cuenta" }).click();
+  await page.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+  await enterCode(page, await codeFromPickup(email, before));
+  await page.getByRole("button", { name: "Verificar y crear la cuenta" }).click();
+  await expectPath(page, "/", "registro de cuenta 3b");
+  await expectProfile(page, "Personal", "registro de cuenta 3b");
+  return email;
+}
+
+async function openAccount(page) {
+  await page.goto(new URL("/cuenta", baseUrl).href);
+  try {
+    await page.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor({ timeout: 10_000 });
+  } catch {
+    throw new Error("La cuenta 3b: /cuenta no muestra la pantalla Mi cuenta.");
+  }
+}
+
+async function addPersonalEmail(page) {
+  const email = `e2e-personal-${randomUUID()}@example.test`;
+  await page.getByRole("button", { name: "Agregar correo o teléfono", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
+  const before = new Set(await pickupFiles());
+  await dialog.getByRole("button", { name: "Enviar código", exact: true }).click();
+  await enterCode(page, await codeFromPickup(email, before));
+  await dialog.getByRole("button", { name: "Verificar", exact: true }).click();
+  await dialog.waitFor({ state: "hidden" });
+  await page.getByText(email, { exact: true }).waitFor();
+  return email;
+}
+
+async function publishNewTerms(readyFile) {
+  const commandFile = readyFile.replace(/\.ready$/, ".legal.json");
+  await writeFile(commandFile, JSON.stringify({ kind: "Terms", version: 2 }), { flag: "wx" });
+  const deadline = Date.now() + 15_000;
+  while (Date.now() < deadline) {
+    try { await access(`${commandFile}.done`); return; }
+    catch (error) { if (error?.code !== "ENOENT") throw error; }
+    await delay(250);
+  }
+  throw new Error("La versión nueva no quedó publicada en la base propia del E2E.");
+}
+
+test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pickup sin mocks", { timeout: 1_800_000 }, async (t) => {
   const { stdout } = await aspire(["ps", "--format", "Json", "--non-interactive"]);
   assert.equal(JSON.parse(stdout).length, 0, "Detené el AppHost en ejecución antes de iniciar el E2E aislado.");
 
@@ -209,6 +259,85 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       await expectPath(page, "/", "cambio desde Perfiles");
       await expectProfile(page, "Personal", "cambio desde Perfiles");
       await signOut(page, "Personal");
+
+      // Cada recorrido usa una identidad/contexto propios; un fallo no saltea los otros.
+      const accountCases = [
+        ["3b: sumar correo personal con código leído del .eml", async (accountPage) => {
+          await registerPerson(accountPage);
+          await openAccount(accountPage);
+          await addPersonalEmail(accountPage);
+        }],
+        ["3b: quitar un método con código enviado a otro", async (accountPage) => {
+          const originalEmail = await registerPerson(accountPage);
+          await openAccount(accountPage);
+          const addedEmail = await addPersonalEmail(accountPage);
+          const before = new Set(await pickupFiles());
+          await accountPage.getByRole("button", { name: `Acciones de ${addedEmail}`, exact: true }).click();
+          await accountPage.getByRole("menuitem", { name: "Quitar", exact: true }).click();
+          await enterCode(accountPage, await codeFromPickup(originalEmail, before));
+          await accountPage.getByRole("dialog").getByRole("button", { name: "Quitar", exact: true }).click();
+          await accountPage.getByRole("dialog").waitFor({ state: "hidden" });
+          assert.equal(await accountPage.getByText(addedEmail, { exact: true }).count(), 0);
+        }],
+        ["3b: pedir baja y cancelarla ingresando durante la gracia", async (accountPage) => {
+          const email = await registerPerson(accountPage);
+          await openAccount(accountPage);
+          const before = new Set(await pickupFiles());
+          await accountPage.getByRole("button", { name: "Dar de baja", exact: true }).click();
+          const dialog = accountPage.getByRole("dialog");
+          await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Recorrido propio del E2E");
+          // El rótulo del código de baja incluye el destino enmascarado del lienzo.
+          const code = await codeFromPickup(email, before);
+          const boxes = dialog.locator('input[inputmode="numeric"]');
+          assert.equal(await boxes.count(), 6);
+          for (let index = 0; index < 6; index++) await boxes.nth(index).fill(code[index]);
+          await dialog.getByRole("button", { name: "Dar de baja mi cuenta", exact: true }).click();
+          await accountPage.getByRole("heading", { name: "Cerramos tu sesión" }).waitFor();
+          await accountPage.goto(new URL("/login", baseUrl).href);
+          await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
+          const loginBefore = new Set(await pickupFiles());
+          await accountPage.getByRole("button", { name: "Enviar código" }).click();
+          await accountPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+          await enterCode(accountPage, await codeFromPickup(email, loginBefore));
+          await accountPage.getByRole("button", { name: "Verificar", exact: true }).click();
+          await accountPage.getByRole("heading", { name: "Tu cuenta tiene la baja pedida" }).waitFor();
+          await accountPage.getByRole("button", { name: "Cancelar la baja y entrar" }).click();
+          await expectPath(accountPage, "/", "cancelar baja");
+          await expectProfile(accountPage, "Personal", "cancelar baja");
+        }],
+        ["3b: cambiar el idioma a en-US desde /cuenta", async (accountPage) => {
+          await registerPerson(accountPage);
+          await openAccount(accountPage);
+          await accountPage.getByRole("combobox", { name: "Idioma y región" }).selectOption("en-US");
+          await accountPage.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+          await accountPage.getByRole("heading", { name: "My account", exact: true }).waitFor();
+          await accountPage.reload();
+          await accountPage.getByRole("heading", { name: "My account", exact: true }).waitFor();
+          assert.equal(await accountPage.locator("html").getAttribute("lang"), "en-US");
+        }],
+        ["3b: aceptar versión nueva de términos que bloquea el ingreso", async (accountPage) => {
+          await registerPerson(accountPage);
+          await openAccount(accountPage);
+          await publishNewTerms(readyFile);
+          await accountPage.reload();
+          await accountPage.getByRole("heading", { name: "Actualizamos los términos" }).waitFor();
+          assert.equal(await accountPage.getByRole("button", { name: "Aceptar y seguir" }).isDisabled(), true);
+          await accountPage.getByRole("checkbox", { name: /Leí y acepto/ }).check();
+          await accountPage.getByRole("button", { name: "Aceptar y seguir" }).click();
+          await accountPage.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor();
+        }],
+      ];
+      for (const [name, journey] of accountCases) {
+        await t.test(name, { timeout: 180_000 }, async () => {
+          const accountContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          try { await journey(await accountContext.newPage()); }
+          catch (error) {
+            // Playwright puede incluir valores de controles/URLs; solo publicar el paso.
+            const known = error?.message?.startsWith("La cuenta 3b:") || error?.message?.startsWith("La versión nueva");
+            throw new Error(known ? error.message : `${name}: falló un paso del navegador real.`);
+          } finally { await accountContext.close(); }
+        });
+      }
     } finally {
       await browser.close();
     }
