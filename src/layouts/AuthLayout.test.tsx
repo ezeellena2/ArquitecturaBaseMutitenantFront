@@ -43,6 +43,17 @@ describe("AuthLayout", () => {
     expect(screen.getByText("Para empresas")).toBeInTheDocument();
     expect(screen.getByText("Tu grupo y todas sus empresas en un solo lugar.")).toBeInTheDocument();
     expect(screen.getByText("Usuarios con roles por organización y por empresa.")).toBeInTheDocument();
+    const panel = screen.getByTestId("auth-brand-panel");
+    expect(panel.querySelector("ul")).toHaveClass("font-normal", "text-[var(--lado-activo)]/90");
+    expect(panel.querySelector("li:first-child svg path")?.getAttribute("d"))
+      .toBe("M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16");
+  });
+
+  it("usa el candado simple del tablero para el acceso personal", () => {
+    show("consumer");
+    const lock = screen.getByTestId("auth-brand-panel").querySelector("li:nth-child(3) svg");
+    expect(lock?.querySelector("rect")?.getAttribute("x")).toBe("5");
+    expect(lock?.querySelector("rect")?.getAttribute("y")).toBe("10.5");
   });
 
   it("ofrece idiomas desde culturas habilitadas y aplica la cultura elegida", async () => {
