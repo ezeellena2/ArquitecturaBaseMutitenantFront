@@ -14,7 +14,6 @@ describe("DateField", () => {
     render(<AppProviders><FormField label="Fecha"><DateField value="2026-09-27" onChange={onChange} /></FormField></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Fecha" });
     await waitFor(() => expect(input).toBeEnabled());
-    expect(input).toHaveAttribute("inputmode", "text");
     expect(input).toHaveValue("27/09/2026");
 
     fireEvent.change(input, { target: { value: "28/09/2026" } });

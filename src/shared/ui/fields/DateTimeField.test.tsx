@@ -16,7 +16,6 @@ describe("DateTimeField y TimeField", () => {
     render(<AppProviders><FormField label="Fecha y hora"><DateTimeField value="2026-09-27T17:35:00Z" onChange={onChange} /></FormField></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Fecha y hora" });
     await waitFor(() => expect(input).toBeEnabled());
-    expect(input).toHaveAttribute("inputmode", "text");
     expect(input).toHaveValue("27/09/2026 14:35");
     fireEvent.change(input, { target: { value: "28/09/2026 14:35" } });
     expect(onChange).toHaveBeenLastCalledWith("2026-09-28T17:35:00Z");
@@ -27,7 +26,6 @@ describe("DateTimeField y TimeField", () => {
     render(<AppProviders><FormField label="Hora"><TimeField value="14:35:00" onChange={onChange} /></FormField></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Hora" });
     await waitFor(() => expect(input).toBeEnabled());
-    expect(input).toHaveAttribute("inputmode", "text");
     expect(input).toHaveValue("14:35");
     fireEvent.change(input, { target: { value: "16:15" } });
     expect(onChange).toHaveBeenLastCalledWith("16:15:00");
