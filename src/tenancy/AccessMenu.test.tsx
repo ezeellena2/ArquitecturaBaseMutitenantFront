@@ -10,7 +10,7 @@ import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { cancelSignOut } from "@/auth/signOutStatus";
 import { configureI18n } from "@/shared/i18n";
 import type { MeResponse } from "@/shared/api/types";
-import { businessUser, consumerWithoutOrganizations } from "@/test/mocks/currentUsers";
+import { businessUser, consumerWithoutOrganizations, platformOperator } from "@/test/mocks/currentUsers";
 import { AccessMenu } from "./AccessMenu";
 
 const switchAccess = vi.fn<({ access, tenantId }: { access: string; tenantId?: string }) => Promise<void>>();
@@ -70,6 +70,28 @@ describe("AccessMenu", () => {
     expect(within(menu).queryByText(/Registrá tu empresa/)).not.toBeInTheDocument();
     expect(within(menu).queryByRole("menuitemradio", { name: /Empresa/ })).not.toBeInTheDocument();
     expect(await axe(document.body, { rules: { region: { enabled: false } } })).toHaveNoViolations();
+  });
+
+  it("permite elegir Personal desde Empresa aunque el espacio todavía no exista", async () => {
+    const { user } = setup({ ...businessUser, hasPersonalSpace: false });
+
+    screen.getByRole("button", { name: "Ana, Empresa A" }).focus();
+    await user.keyboard("{Enter}");
+    const personal = within(await screen.findByRole("menu")).getByRole("menuitemradio", { name: /Personal.*Tu perfil personal/ });
+    await user.click(personal);
+
+    expect(switchAccess).toHaveBeenCalledWith({ access: "consumer" });
+  });
+
+  it("no ofrece Personal a un operador sin espacio propio", async () => {
+    const { user } = setup({ ...platformOperator, hasPersonalSpace: false });
+
+    const trigger = screen.getByRole("button", { name: /Ana/ });
+    trigger.focus();
+    await user.keyboard("{Enter}");
+
+    expect(within(await screen.findByRole("menu")).queryByRole("menuitemradio", { name: /Personal/ }))
+      .not.toBeInTheDocument();
   });
 
   it("muestra una organización suspendida, pero no deja elegirla", async () => {

@@ -89,7 +89,7 @@ function MenuBody({ mobile, name, email, organizations, access, activeTenantId, 
     </div>
     <div className="my-1 h-px bg-[var(--borde)]" aria-hidden="true" />
     <div className="px-3 pb-1 pt-2 text-[13px] font-semibold text-[var(--t3)]">{t("accessMenu.profiles")}</div>
-    {hasPersonalSpace ? (
+    {(hasPersonalSpace || access === "business") ? (
       <ProfileRow
         name={personal}
         detail={t("accessMenu.personalDetail")}
