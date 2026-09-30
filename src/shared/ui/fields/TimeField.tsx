@@ -48,7 +48,7 @@ export function TimeField({ value, onChange, onValidityChange, id, name, disable
   const showError = invalid && touched;
   const description = [externalDescription, showError ? messageId : undefined].filter(Boolean).join(" ") || undefined;
   return <>
-    <Input ref={inputRef} id={id} name={name} type="text" inputMode="numeric" value={inputValue}
+    <Input ref={inputRef} id={id} name={name} type="text" inputMode="text" value={inputValue}
       onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
       onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
