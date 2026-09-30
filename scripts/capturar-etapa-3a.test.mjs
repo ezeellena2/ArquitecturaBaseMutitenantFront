@@ -60,6 +60,14 @@ test("Registro cubre todos los estados aprobados de 3a en escritorio y móvil", 
   assert.ok(cases.every((item) => item.board === (item.viewport.width === 390 ? "M-Registro" : "Registro")));
 });
 
+test("la comparación declara el botón de Registro apagado y el desplazamiento real de Ingreso", () => {
+  const signup = readFileSync(path.join(outputRoot, "registro", "README.md"), "utf8");
+  const login = readFileSync(path.join(outputRoot, "ingreso", "README.md"), "utf8");
+  assert.match(signup, /Verificar y crear la cuenta.*deshabilitado/);
+  assert.match(login, /título.*baja.*tablero/);
+  assert.doesNotMatch(login, /controles quedan más arriba/);
+});
+
 test("Portada y documentos legales tienen pares de escritorio y móvil", () => {
   const cases = validateManifest(manifest, lienzo).filter((item) => item.group === "publicas");
   assert.deepEqual([...new Set(cases.map((item) => item.pair))].sort(),

@@ -8,7 +8,7 @@ Después de corregir la verificación empresarial y el ingreso del código (hall
 
 ## Diferencias justificadas con el tablero
 
-- **WhatsApp (E8):** no aparece la pestaña ni el envío de código por WhatsApp. El texto informativo aprobado del panel derecho se conserva. Al faltar la pestaña, algunos controles quedan más arriba que en el tablero.
+- **WhatsApp (E8):** no aparece la pestaña ni el envío de código por WhatsApp. El texto informativo aprobado del panel derecho se conserva. Como el formulario es más corto y está centrado verticalmente, su título baja respecto del tablero en escritorio; la posición de los controles siguientes también cambia.
 - **Recuperá tu cuenta (E5):** el enlace se oculta por decisión de producto.
 - **Registrá tu empresa (E6):** se ocultan los enlaces del Ingreso de empresa y de los estados sin empresa/acceso inactivo por decisión de producto.
 - **Estados de otras etapas:** el aviso de baja pedida nace en 3b, los cinco estados de operador con TOTP en E9 y el ingreso por WhatsApp en E8; por eso no tienen captura de la 3a. No se inventó un estado sustituto.
