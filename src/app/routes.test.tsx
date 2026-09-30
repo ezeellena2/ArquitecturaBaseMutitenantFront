@@ -17,6 +17,16 @@ describe("rutas de ingreso 3a", () => {
     expect(screen.getByRole("main")).toBeEmptyDOMElement();
   });
 
+  it.each([
+    ["visual-unavailable-suspended", "Beta S.R.L. está suspendida"],
+    ["visual-unavailable-pending", "Estamos revisando Grupo Delta"],
+    ["visual-unavailable-closed", "Beta S.R.L. está cerrada"],
+  ] as const)("/org muestra el estado real %s leído de /api/me aunque ninguna otra consulta falle", async (as, title) => {
+    renderRouteWithProviders("/org", { as });
+    expect(await screen.findByRole("heading", { name: title })).toBeVisible();
+    expect(screen.queryByRole("complementary", { name: "Navegación principal" })).not.toBeInTheDocument();
+  });
+
   it("corrige con replace una URL de otro acceso hacia su inicio", async () => {
     const consumer = renderRouteWithProviders("/org", { as: "consumer-with-organizations" });
     await waitFor(() => expect(consumer.router.state.location.pathname).toBe("/"));
