@@ -14,6 +14,7 @@ export function useAccountReauth(context: RequestReauthRequest) {
   const [code, setCode] = useState("");
   const ticket = useRef<string | null>(null);
   const started = useRef(false);
+  const retryRequest = useRef(false);
   const retry = useRetryAfterCountdown();
   const request = useIdempotentMutation((_: void, key) => requestReauth(context, key));
   const verify = useIdempotentMutation((value: string, key) => verifyReauth({ ...context, sourceMethodId: proof!.sourceMethodId, code: value }, key));
@@ -21,8 +22,21 @@ export function useAccountReauth(context: RequestReauthRequest) {
     retry.startFromError(error);
     setFailure(error instanceof ApiError ? error.detail ?? t(error.isNetworkError ? "network" : "server") : t("server"));
   }
-  async function send() { setFailure(null); try { setProof(await request.mutateAsync()); } catch (error) { showError(error); } }
-  useEffect(() => { if (!started.current) { started.current = true; void send(); } });
+  async function send() {
+    setFailure(null);
+    try { setProof(await request.mutateAsync()); }
+    catch (error) {
+      retryRequest.current = error instanceof ApiError && error.status === 429 && (error.retryAfterSeconds ?? 0) > 0;
+      showError(error);
+    }
+  }
+  useEffect(() => {
+    if (!started.current) { started.current = true; void send(); }
+    else if (retryRequest.current && !retry.isRunning && request.isError) {
+      retryRequest.current = false;
+      void send();
+    }
+  });
   async function getTicket() {
     ticket.current ??= (await verify.mutateAsync(code)).reauthTicket;
     return ticket.current;

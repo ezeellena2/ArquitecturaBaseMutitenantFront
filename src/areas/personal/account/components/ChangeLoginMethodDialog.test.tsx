@@ -32,3 +32,16 @@ it("pide prueba a otro método y entrega el ticket al quitar", async () => {
   await user.click(screen.getByRole("button", { name: "Quitar" }));
   await waitFor(() => expect(complete).toHaveBeenCalled());
 });
+
+it("espera el cooldown del destino y pide el código al terminar, sin dejar el diálogo bloqueado", async () => {
+  let requests = 0;
+  server.use(http.post("/api/me/reauth", () => {
+    requests++;
+    return requests === 1
+      ? HttpResponse.json({ code: "Auth.LoginCode.ResendTooSoon", detail: "Esperá para pedir otro código.", retryAfter: 1 }, { status: 429, headers: { "Retry-After": "1" } })
+      : HttpResponse.json({ sourceMethodId: "source", destination: "a***@example.test", resendAfterSeconds: 60 });
+  }));
+  renderWithProviders(<ChangeLoginMethodDialog action="remove" method={{ id: "target", type: "Email", value: "nuevo@example.test", isVerified: true, isPrimary: false, canRemove: true, canMakePrimary: true }} onClose={() => {}} onComplete={() => {}} />);
+  expect(await screen.findByRole("textbox", { name: "Código 1" }, { timeout: 2500 })).toBeVisible();
+  expect(requests).toBe(2);
+});
