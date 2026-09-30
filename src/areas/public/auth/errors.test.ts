@@ -10,6 +10,8 @@ describe("errores del código de ingreso", () => {
     ["Auth.LoginCode.TooManyAttempts", "login.tooManyAttempts"],
     ["Auth.LoginCode.ResendTooSoon", "login.resendTooSoon"],
     ["Auth.LoginCode.TooManyRequests", "login.tooManyRequests"],
+    ["Http.TooManyRequests", "login.networkRateLimited"],
+    ["Validation.Failed", "login.codeInvalid"],
   ])("elige el estado por código %s", (code, expected) => {
     expect(loginCodeErrorKey(new ApiError(400, { code, detail: "No usar el texto de la respuesta" }))).toBe(expected);
   });

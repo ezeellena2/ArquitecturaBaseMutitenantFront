@@ -169,6 +169,24 @@ describe("LoginPage", () => {
     expect(screen.queryByText("El código no es válido.")).not.toBeInTheDocument();
   });
 
+  it("cuenta el Retry-After también al verificar y bloquea otro intento mientras corre", async () => {
+    let verifies = 0;
+    server.use(
+      http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 })),
+      http.post("/api/auth/login-code/verify", () => { verifies++; return HttpResponse.json({ code: "Http.TooManyRequests", retryAfter: 30 }, { status: 429 }); }),
+    );
+    show("consumer", loginUrl);
+    fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: "ana@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+    const first = await screen.findByRole("textbox", { name: "Código 1" });
+    fireEvent.paste(first, { clipboardData: { getData: () => "123456" } });
+    fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
+
+    expect(await screen.findByText("Demasiadas solicitudes desde esta red.")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Reintentá en 0:30" })).toBeDisabled();
+    expect(verifies).toBe(1);
+  });
+
   it.each([
     ["Tenancy.Access.NotMember", {}, "Tu cuenta no está en ninguna empresa todavía"],
     ["Tenancy.Member.Inactive", { organizationName: "Grupo Delta" }, "Tu acceso a Grupo Delta está deshabilitado"],

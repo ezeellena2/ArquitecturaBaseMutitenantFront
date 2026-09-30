@@ -54,7 +54,8 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const resend = useIdempotentMutation((email: string, key) => requestLoginCode(email, key));
   const verify = useIdempotentMutation((input: { email: string; code: string; returnUrl: string }, key) => verifyLoginCode(input, key));
   const resendTimer = useCountdown(0);
-  const retry = useRetryAfterCountdown();
+  const verifyRetry = useRetryAfterCountdown();
+  const resendRetry = useRetryAfterCountdown();
 
   useEffect(() => {
     if (returnUrl || startedOidc.current) return;
@@ -100,6 +101,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       completeLogin(response.returnUrl);
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
+      verifyRetry.startFromError(caught);
       if (caught.code === "Auth.LoginCode.Expired" || caught.code === "Auth.LoginCode.TooManyAttempts" || caught.code === "Identity.Account.LockedOut") {
         resendTimer.restart(0);
       }
@@ -121,7 +123,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
       setError(caught);
-      retry.startFromError(caught);
+      resendRetry.startFromError(caught);
     }
   }
 
@@ -172,9 +174,9 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <OtpInput length={6} value={code} onChange={(next) => { setCode(next); if (wrongCode) setError(null); }} label={t("login.codeLabel")} invalid={wrongCode} disabled={verify.isPending || codeSpent || accountClosed} aria-describedby="login-code-hint" />
       <FormError message={errorKey ? <>{t(errorKey)}{attemptsLeft !== null ? <span className="block">{t("login.attemptsLeft", { count: attemptsLeft })}</span> : null}{codeSpent && error?.code === "Auth.LoginCode.TooManyAttempts" ? <span className="block">{t("login.requestNewCode")}</span> : null}{error?.code === "Identity.Account.LockedOut" ? <span className="block">{t("login.tryLater")}</span> : null}{accountClosed ? <span className="block">{t("login.contactSupport")}</span> : null}</> : null} />
       <div className="flex flex-col gap-2.5">
-        <Button type="button" size="lg" onClick={() => void submitCode()} disabled={code.length !== 6 || verify.isPending || codeSpent || accountClosed}>{t("login.verify")}</Button>
-        <Button type="button" size="lg" variant="outlineSurface" className="border-[var(--t3)]" onClick={() => void resendCode()} disabled={resendTimer.isRunning || retry.isRunning || resend.isPending || accountClosed}>
-          {accountClosed ? t("login.resendCode") : retry.label ?? (resendTimer.isRunning ? t("login.resendIn", { seconds: resendTimer.seconds }) : t("login.resendCode"))}
+        <Button type="button" size="lg" onClick={() => void submitCode()} disabled={code.length !== 6 || verify.isPending || verifyRetry.isRunning || codeSpent || accountClosed}>{verifyRetry.label ?? t("login.verify")}</Button>
+        <Button type="button" size="lg" variant="outlineSurface" className="border-[var(--t3)]" onClick={() => void resendCode()} disabled={resendTimer.isRunning || resendRetry.isRunning || resend.isPending || accountClosed}>
+          {accountClosed ? t("login.resendCode") : resendRetry.label ?? (resendTimer.isRunning ? t("login.resendIn", { seconds: resendTimer.seconds }) : t("login.resendCode"))}
         </Button>
       </div>
       {accountClosed ? <button type="button" onClick={backToEmail} className="self-center text-sm font-semibold text-[var(--marca)]">{t("login.backToLogin")}</button> : null}

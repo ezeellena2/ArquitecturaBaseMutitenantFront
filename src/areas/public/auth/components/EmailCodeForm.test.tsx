@@ -72,4 +72,14 @@ describe("EmailCodeForm", () => {
     expect(screen.getByText("Pediste demasiados códigos. Probá de nuevo más tarde.")).toBeVisible();
     expect(requests).toBe(2);
   });
+
+  it("muestra el límite por IP con el texto del mapa y el Retry-After", async () => {
+    server.use(http.post("/api/auth/login-code", () => HttpResponse.json({ code: "Http.TooManyRequests", retryAfter: 30 }, { status: 429 })));
+    renderForm();
+    fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: "ana@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+
+    expect(await screen.findByText("Demasiadas solicitudes desde esta red.")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Reintentá en 0:30" })).toBeDisabled();
+  });
 });
