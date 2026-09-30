@@ -4,6 +4,8 @@ import { ProtectedRoute } from "@/auth/ProtectedRoute";
 import { AccessRoute } from "@/auth/AccessRoute";
 import { BusinessHomePage } from "@/areas/business/home/pages/BusinessHomePage";
 import { BusinessLayout } from "@/layouts/BusinessLayout";
+import { PersonalHomePage } from "@/areas/personal/home/pages/PersonalHomePage";
+import { PersonalLayout } from "@/layouts/PersonalLayout";
 import { PlatformLayout } from "@/layouts/PlatformLayout";
 import { SiteLayout } from "@/layouts/SiteLayout";
 import { AppErrorPage } from "@/layouts/AppErrorBoundary";
@@ -38,7 +40,13 @@ export const routes: RouteObject[] = [
   }, errorElement: <AppErrorPage /> },
   { path: "/sin-permiso", element: <ForbiddenRoute />, errorElement: <AppErrorPage /> },
   { element: <SessionRecovery />, children: [
-    { path: "/", element: <HomeRoute />, errorElement: <AppErrorPage /> },
+    { path: "/", element: <HomeRoute />, errorElement: <AppErrorPage />, children: [
+      { element: <ProtectedRoute />, children: [
+        { element: <AccessRoute access="consumer" />, children: [
+          { index: true, element: <PersonalLayout><PersonalHomePage /></PersonalLayout> },
+        ] },
+      ] },
+    ] },
     { element: <ProtectedRoute />, children: [
       { element: <AccessRoute access="business" />, children: [
         { path: "/org", element: <BusinessLayout />, children: [{ index: true, element: <BusinessHomePage /> }] },

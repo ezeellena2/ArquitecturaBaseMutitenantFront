@@ -3,8 +3,23 @@ import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { routes } from "./routes";
+import { ProtectedRoute } from "@/auth/ProtectedRoute";
+import { AccessRoute } from "@/auth/AccessRoute";
 
 describe("rutas de ingreso 3a", () => {
+  it("declara la portada privada con ProtectedRoute y AccessRoute consumer", () => {
+    const app = routes[0];
+    const recovery = app.children?.find((route) => route.children?.some((child) => child.path === "/"));
+    const home = recovery?.children?.find((route) => route.path === "/");
+    const protectedHome = home?.children?.[0];
+    const consumerHome = protectedHome?.children?.[0];
+
+    expect(protectedHome?.element).toMatchObject({ type: ProtectedRoute });
+    expect(consumerHome?.element).toMatchObject({ type: AccessRoute, props: { access: "consumer" } });
+    expect(consumerHome?.children?.[0]?.index).toBe(true);
+  });
+
   it("/ con persona autenticada muestra el inicio personal; /org muestra el de empresa", async () => {
     const personal = renderRouteWithProviders("/", { as: "consumer-empty" });
     expect(await screen.findByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
