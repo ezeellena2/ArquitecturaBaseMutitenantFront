@@ -4,6 +4,8 @@ Se capturaron los inicios y los perfiles abiertos de ambos accesos a 1440×900 y
 
 Se contrastaron encabezado, marca, bloque de contexto del menú, orden de enlaces, estado activo, pie de cuenta y selector de perfiles. Los estados vacíos conservan el cuerpo vacío del tablero. La organización suspendida sigue visible y legible en «Perfiles», pero no se puede elegir.
 
+Se regeneraron los diez pares con Inter local para comparar la misma tipografía. El botón del lateral empieza a la altura del tablero, el enlace activo conserva su borde y sombra, y la capa de los menús móviles usa `--velo` (hallazgos 61 y 64). Los cambios de guardas de ruta y recuperación de sesión se comprueban en `routes.test.tsx` y `SessionRecovery.test.tsx`; el arnés de capturas sigue mostrando los estados dibujados.
+
 ## Diferencias justificadas
 
 - **Mi cuenta (3b):** se oculta del menú lateral personal y del selector de perfiles de ambos accesos, en escritorio y teléfono. Su ruta nace en 3b. En escritorio «Salir» queda más arriba que en el tablero; en teléfono el borde superior de la hoja queda más abajo mientras «Salir» conserva casi la misma posición vertical.
