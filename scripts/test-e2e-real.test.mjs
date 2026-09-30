@@ -96,7 +96,7 @@ function plainTextBody(eml) {
 }
 
 async function codeFromPickup(email, before) {
-  const deadline = Date.now() + 60_000;
+  const deadline = Date.now() + 95_000;
   while (Date.now() < deadline) {
     for (const name of await pickupFiles()) {
       if (before.has(name)) continue;
@@ -202,6 +202,22 @@ async function publishNewTerms(readyFile) {
   throw new Error("La versión nueva no quedó publicada en la base propia del E2E.");
 }
 
+async function sendLoginCode(page) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const responsePromise = page.waitForResponse((response) =>
+      new URL(response.url()).pathname === "/api/auth/login-code" && response.request().method() === "POST");
+    await page.getByRole("button", { name: "Enviar código", exact: true }).click();
+    const response = await responsePromise;
+    if (response.ok()) return;
+    const problem = await response.json();
+    if (response.status() !== 429 || typeof problem.retryAfter !== "number")
+      throw new Error(`El envío de ingreso falló (HTTP ${response.status()}).`);
+    // El límite es por destino, también después del código de baja; el recorrido lo respeta.
+    await delay((problem.retryAfter + 1) * 1000);
+  }
+  throw new Error("El envío de ingreso no terminó después de respetar el cooldown.");
+}
+
 test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pickup sin mocks", { timeout: 1_800_000 }, async (t) => {
   const { stdout } = await aspire(["ps", "--format", "Json", "--non-interactive"]);
   assert.equal(JSON.parse(stdout).length, 0, "Detené el AppHost en ejecución antes de iniciar el E2E aislado.");
@@ -254,6 +270,9 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       await page.reload();
       await expectPath(page, "/org", "F5 en empresa");
       await expectProfile(page, "Empresa E2E", "F5 en empresa");
+      await openAccount(page);
+      await page.reload();
+      await expectProfile(page, "Empresa E2E", "F5 en Mi cuenta desde empresa");
       await page.getByRole("button", { name: /, Empresa E2E$/ }).click();
       await page.getByRole("menuitemradio", { name: /Personal/ }).click();
       await expectPath(page, "/", "cambio desde Perfiles");
@@ -296,7 +315,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await accountPage.goto(new URL("/login", baseUrl).href);
           await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
           const loginBefore = new Set(await pickupFiles());
-          await accountPage.getByRole("button", { name: "Enviar código" }).click();
+          await sendLoginCode(accountPage);
           await accountPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
           await enterCode(accountPage, await codeFromPickup(email, loginBefore));
           await accountPage.getByRole("button", { name: "Verificar", exact: true }).click();
@@ -308,12 +327,14 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         ["3b: cambiar el idioma a en-US desde /cuenta", async (accountPage) => {
           await registerPerson(accountPage);
           await openAccount(accountPage);
-          await accountPage.getByRole("combobox", { name: "Idioma y región" }).selectOption("en-US");
+          await accountPage.getByRole("combobox", { name: "Idioma y región" }).click();
+          await accountPage.getByRole("option", { name: /^(English|Inglés) \(United States|Estados Unidos/ }).click();
           await accountPage.getByRole("button", { name: "Guardar cambios", exact: true }).click();
           await accountPage.getByRole("heading", { name: "My account", exact: true }).waitFor();
           await accountPage.reload();
           await accountPage.getByRole("heading", { name: "My account", exact: true }).waitFor();
-          assert.equal(await accountPage.locator("html").getAttribute("lang"), "en-US");
+          assert.equal(await accountPage.locator("html").getAttribute("lang"), "en");
+          assert.equal(await accountPage.evaluate(() => localStorage.getItem("arquitecturabasemt.culture")), "en-US");
         }],
         ["3b: aceptar versión nueva de términos que bloquea el ingreso", async (accountPage) => {
           await registerPerson(accountPage);
@@ -328,13 +349,21 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         }],
       ];
       for (const [name, journey] of accountCases) {
-        await t.test(name, { timeout: 180_000 }, async () => {
+        await t.test(name, { timeout: 240_000 }, async () => {
           const accountContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
-          try { await journey(await accountContext.newPage()); }
+          let lastFailure = "";
+          const accountPage = await accountContext.newPage();
+          accountPage.on("response", async (response) => {
+            if (response.status() < 400 || !new URL(response.url()).pathname.startsWith("/api/")) return;
+            let code;
+            try { code = (await response.json()).code; } catch { /* El estado basta si no hay ProblemDetails. */ }
+            lastFailure = `HTTP ${response.status()}${typeof code === "string" && /^[A-Za-z0-9.]+$/.test(code) ? ` ${code}` : ""}`;
+          });
+          try { await journey(accountPage); }
           catch (error) {
             // Playwright puede incluir valores de controles/URLs; solo publicar el paso.
             const known = error?.message?.startsWith("La cuenta 3b:") || error?.message?.startsWith("La versión nueva");
-            throw new Error(known ? error.message : `${name}: falló un paso del navegador real.`);
+            throw new Error(known ? error.message : `${name}: falló un paso del navegador real${lastFailure ? ` (${lastFailure})` : ""}.`);
           } finally { await accountContext.close(); }
         });
       }
