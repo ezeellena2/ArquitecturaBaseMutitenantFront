@@ -190,6 +190,29 @@ describe("LoginPage", () => {
   });
 
   it.each([
+    ["Tenancy.Tenant.Suspended", "Empresa A está suspendida", "Nadie de la organización puede entrar por ahora. Tus otros perfiles siguen funcionando."],
+    ["Tenancy.Tenant.PendingApproval", "Estamos revisando Empresa A", "Te avisamos por correo cuando esté aprobada."],
+    ["Tenancy.Tenant.Closed", "Empresa A está cerrada", "La organización ya no está disponible. Tus otros perfiles siguen funcionando."],
+  ])("muestra el estado terminal %s de la organización sin permitir gastar otra vez el código", async (code, title, description) => {
+    server.use(
+      http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 })),
+      http.post("/api/auth/login-code/verify", () => HttpResponse.json({ code, organizationName: "Empresa A", tenantId: "empresa-a" }, { status: 403 })),
+    );
+    show("business", `/login/empresa?returnUrl=${encodeURIComponent(authorizeUrl)}`);
+    fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: "ana@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+    const first = await screen.findByRole("textbox", { name: "Código 1" });
+    fireEvent.paste(first, { clipboardData: { getData: () => "123456" } });
+    fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
+
+    expect(await screen.findByRole("heading", { name: title })).toBeVisible();
+    expect(screen.getByText(description)).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ingresá como persona" })).toHaveAttribute("href", "/login");
+    expect(screen.queryByRole("button", { name: "Verificar" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Algo salió mal. Probá de nuevo en un rato.")).not.toBeInTheDocument();
+  });
+
+  it.each([
     ["Auth.LoginCode.Expired", "El código venció. Pedí uno nuevo."],
     ["Auth.LoginCode.TooManyAttempts", "Superaste los intentos para este código."],
     ["Identity.Account.LockedOut", "Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos."],

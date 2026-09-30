@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { Trans, useTranslation } from "react-i18next";
-import { Ban, Building2, ChevronLeft, Clock3 } from "lucide-react";
+import { Ban, Building2, ChevronLeft, Clock3, LockKeyhole, TriangleAlert } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { takeExpiredSessionNotice } from "@/auth/sessionExpiredNotice";
@@ -27,8 +27,15 @@ export interface LoginPageProps {
 
 const followAuthorize = (url: string) => globalThis.location.assign(url);
 
+const unavailableResults = {
+  "Tenancy.Tenant.Suspended": { title: "suspendedTitle", description: "suspendedDescription", Icon: TriangleAlert, tone: "bg-[var(--alerta-t)] text-[var(--alerta)]" },
+  "Tenancy.Tenant.PendingApproval": { title: "pendingTitle", description: "pendingDescription", Icon: Clock3, tone: "bg-[var(--marca-t)] text-[var(--marca-tx)]" },
+  "Tenancy.Tenant.Closed": { title: "closedTitle", description: "closedDescription", Icon: LockKeyhole, tone: "bg-[var(--s3)] text-[var(--t2)]" },
+} as const;
+type UnavailableCode = keyof typeof unavailableResults;
+
 export function LoginPage({ access, completeLogin = followAuthorize }: LoginPageProps) {
-  const { t } = useTranslation("auth");
+  const { t } = useTranslation(["auth", "errors"]);
   const auth = useAuth();
   const [searchParams] = useSearchParams();
   const returnUrl = authorizeReturnUrl(searchParams.get("returnUrl"));
@@ -43,7 +50,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const [step, setStep] = useState<CodeStep | null>(null);
   const [code, setCode] = useState("");
   const [error, setError] = useState<ApiError | null>(null);
-  const [result, setResult] = useState<"noBusiness" | "inactive" | null>(null);
+  const [result, setResult] = useState<"noBusiness" | "inactive" | UnavailableCode | null>(null);
   const resend = useIdempotentMutation((email: string, key) => requestLoginCode(email, key));
   const verify = useIdempotentMutation((input: { email: string; code: string; returnUrl: string }, key) => verifyLoginCode(input, key));
   const resendTimer = useCountdown(0);
@@ -99,6 +106,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       if (caught.code === "Identity.Account.LockedOut") setCode("");
       if (caught.code === "Tenancy.Access.NotMember") setResult("noBusiness");
       else if (caught.code === "Tenancy.Member.Inactive") { setError(caught); setResult("inactive"); }
+      else if (caught.code && caught.code in unavailableResults) { setError(caught); setResult(caught.code as UnavailableCode); }
       else setError(caught);
     }
   }
@@ -123,6 +131,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const codeSpent = error?.code === "Auth.LoginCode.TooManyAttempts" || error?.code === "Identity.Account.LockedOut";
   const accountClosed = error?.code === "Identity.Account.Suspended";
   const organizationName = typeof error?.problem.organizationName === "string" ? error.problem.organizationName : "";
+  const unavailable = result && result in unavailableResults ? unavailableResults[result as UnavailableCode] : null;
 
   return <AuthLayout access={access}>
     {result === "noBusiness" ? <div className="flex flex-col gap-[22px] text-center">
@@ -133,6 +142,13 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><Ban size={20} strokeWidth={1.75} /></span>
       <h1 className="text-2xl font-bold leading-tight">{t("login.inactiveBusiness", { organizationName })}</h1>
       <p className="text-sm text-[var(--t2)]">{t("login.askOwner")}</p>
+      <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("login.enterAsPerson")}</Link>
+    </div> : unavailable ? <div className="flex flex-col gap-[22px] text-center">
+      <span aria-hidden="true" className={`flex size-[52px] items-center justify-center self-center rounded-full ${unavailable.tone}`}><unavailable.Icon size={20} strokeWidth={1.75} /></span>
+      <div>
+        <h1 className="text-2xl font-bold leading-tight">{t(`errors:errorPage.unavailable.${unavailable.title}`, { organizationName })}</h1>
+        <p className="mt-2 text-sm text-[var(--t2)]">{t(`errors:errorPage.unavailable.${unavailable.description}`)}</p>
+      </div>
       <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("login.enterAsPerson")}</Link>
     </div> : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-2xl font-bold leading-tight">{access === "business" ? t("login.businessTitle") : t("login.personalTitle")}</h1>
