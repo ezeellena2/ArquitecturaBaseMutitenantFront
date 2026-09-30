@@ -3,13 +3,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppProviders } from "@/app/providers";
 import { resetHttpClient } from "@/shared/api/httpClient";
 import { queryClient } from "@/shared/api/queryClient";
-import i18n from "@/shared/i18n";
+import i18n, { configureI18n } from "@/shared/i18n";
+import { referenceDataFixture } from "@/test/mocks/handlers";
 import { FormField } from "../FormField";
 import { DateTimeField } from "./DateTimeField";
 import { TimeField } from "./TimeField";
 
 describe("DateTimeField y TimeField", () => {
-  beforeEach(() => { queryClient.clear(); resetHttpClient(); localStorage.clear(); });
+  beforeEach(async () => {
+    queryClient.clear();
+    resetHttpClient();
+    localStorage.clear();
+    await configureI18n(referenceDataFixture().cultures);
+  });
 
   it("muestra la zona efectiva y emite el instante ISO UTC", async () => {
     const onChange = vi.fn();

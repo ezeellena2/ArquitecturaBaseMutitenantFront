@@ -3,7 +3,6 @@ import { waitFor } from "@testing-library/react";
 import { useEffect } from "react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { queryClient as appQueryClient } from "@/shared/api/queryClient";
-import { referenceDataQueryKey } from "@/shared/referenceData/useReferenceData";
 import { renderWithProviders } from "./renderWithProviders";
 
 describe("renderWithProviders", () => {
@@ -21,11 +20,13 @@ describe("renderWithProviders", () => {
     }
 
     const first = renderWithProviders(<Probe />);
-    await waitFor(() => expect(clients[0]?.getQueryData(referenceDataQueryKey(null))).toBeDefined());
+    await waitFor(() => expect(clients[0]?.getQueriesData({ queryKey: ["reference-data"] })
+      .some(([, data]) => data !== undefined)).toBe(true));
     first.unmount();
 
     const second = renderWithProviders(<Probe />);
-    await waitFor(() => expect(clients[1]?.getQueryData(referenceDataQueryKey(null))).toBeDefined());
+    await waitFor(() => expect(clients[1]?.getQueriesData({ queryKey: ["reference-data"] })
+      .some(([, data]) => data !== undefined)).toBe(true));
     expect(clients[1]).not.toBe(clients[0]);
     second.unmount();
   });
