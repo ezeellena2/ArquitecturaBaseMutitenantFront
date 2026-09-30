@@ -28,6 +28,9 @@ describe("LandingPage", () => {
     expect(within(main).getByText("Lucía Fernández")).toBeVisible();
     expect(within(main).getByText("Grupo Delta")).toBeVisible();
     expect(within(main).getAllByRole("link", { name: "Crear mi cuenta" })).toHaveLength(3);
+    expect(within(main).getAllByRole("link", { name: "Crear mi cuenta" })[0]).toHaveClass("min-h-10");
+    expect(within(main).getAllByRole("link", { name: "Crear mi cuenta" })[2]).toHaveClass("min-h-10");
+    expect(within(main).getAllByRole("link", { name: "Crear mi cuenta" })[0]).toHaveClass("after:-inset-y-0.5");
     expect(within(main).getByRole("heading", { name: "Registrá tu empresa" })).toBeVisible();
     expect(within(main).queryByRole("link", { name: "Registrá tu empresa" })).not.toBeInTheDocument();
     expect(within(main).getAllByText("Registrá tu empresa")).toHaveLength(1);

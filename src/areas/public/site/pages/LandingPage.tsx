@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 const wrap = "mx-auto max-w-[1280px] px-4 md:px-10";
-const primary = "inline-flex min-h-12 items-center justify-center rounded-[10px] bg-[var(--marca)] px-6 text-[15px] font-semibold text-[var(--lado-activo)]";
+const primary = "relative inline-flex min-h-10 items-center justify-center rounded-[10px] bg-[var(--marca)] px-6 text-[15px] font-semibold text-[var(--lado-activo)] after:absolute after:-inset-y-0.5 after:inset-x-0 after:content-['']";
 const secondary = "inline-flex min-h-12 items-center justify-center rounded-[10px] border border-[var(--t3)] bg-[var(--lado-activo)] px-6 text-[15px] font-semibold text-[var(--marca)]";
 
 function ProfilePreview() {
@@ -37,7 +37,7 @@ export function LandingPage() {
       </div>
     </div></section>
     <section id="empezar" className="py-12 md:py-20"><div className={wrap}><h2 className="text-center text-[28px] leading-[1.15] font-bold tracking-[-0.025em] md:text-[36px]">{t("landing.steps.title")}</h2><div className="mt-7 grid gap-4 md:mt-12 md:grid-cols-3 md:gap-6">{([1, 2, 3] as const).map((number) => <div key={number} className="flex flex-col gap-2.5"><span className="flex size-9 items-center justify-center rounded-full bg-[var(--marca)] font-bold text-[var(--lado-activo)]">{number}</span><h3 className="mt-1.5 text-[19px] font-bold">{t(`landing.steps.${number}.title`)}</h3><p className="text-[var(--t2)]">{t(`landing.steps.${number}.detail`)}</p></div>)}</div></div></section>
-    <section className="mx-4 mb-10 rounded-[24px] bg-[linear-gradient(150deg,var(--marca),var(--marca-h))] px-5 py-9 text-center text-[var(--lado-activo)] md:mx-10 md:mb-20 md:p-16"><h2 className="text-[28px] font-bold tracking-[-0.025em] md:text-[38px]">{t("landing.final.title")}</h2><p className="mb-7 mt-3 text-[18px] text-[var(--lado-activo)]/85">{t("landing.final.detail")}</p><div className="flex flex-wrap justify-center gap-3"><Link to="/registro" className="inline-flex min-h-12 items-center justify-center rounded-[10px] bg-[var(--lado-activo)] px-6 text-[15px] font-semibold text-[var(--marca-tx)]">{t("landing.createAccount")}</Link></div></section>
+    <section className="mx-4 mb-10 rounded-[24px] bg-[linear-gradient(150deg,var(--marca),var(--marca-h))] px-5 py-9 text-center text-[var(--lado-activo)] md:mx-10 md:mb-20 md:p-16"><h2 className="text-[28px] font-bold tracking-[-0.025em] md:text-[38px]">{t("landing.final.title")}</h2><p className="mb-7 mt-3 text-[18px] text-[var(--lado-activo)]/85">{t("landing.final.detail")}</p><div className="flex flex-wrap justify-center gap-3"><Link to="/registro" className="relative inline-flex min-h-10 items-center justify-center rounded-[10px] bg-[var(--lado-activo)] px-6 text-[15px] font-semibold text-[var(--marca-tx)] after:absolute after:-inset-y-0.5 after:inset-x-0 after:content-['']">{t("landing.createAccount")}</Link></div></section>
   </>;
 }
 

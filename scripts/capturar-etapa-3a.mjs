@@ -8,6 +8,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const defaultManifest = path.join(root, "docs/design/capturas/etapa-3a/manifest.json");
 const defaultCanvas = path.join(root, "docs/design/lienzo");
 const defaultOutput = path.join(root, "docs/design/capturas/etapa-3a");
+const interFont = path.join(root, "node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2");
 const viewports = new Set(["1440x900", "390x844"]);
 const pendingMobileReference = "sin tablero móvil: pendiente de aprobación del usuario";
 
@@ -106,6 +107,11 @@ export async function startCanvasServer(canvasRoot = defaultCanvas) {
     let file;
     try {
       const url = new URL(request.url ?? "/", "http://127.0.0.1");
+      if (url.pathname === "/_fonts/inter-latin-wght-normal.woff2") {
+        if (!existsSync(interFont)) { response.writeHead(404).end(); return; }
+        response.writeHead(200, { "Content-Type": "font/woff2" }).end(readFileSync(interFont));
+        return;
+      }
       file = path.resolve(canvasRoot, `.${decodeURIComponent(url.pathname)}`);
     } catch {
       response.writeHead(400).end();
@@ -199,6 +205,8 @@ export async function captureCase(browser, entry, { canvasUrl, appUrl, outputRoo
         await board.locator(action.selector).click();
       }
       await board.waitForTimeout(100);
+      await board.addStyleTag({ content: '@font-face { font-family: Inter; src: url("/_fonts/inter-latin-wght-normal.woff2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }' });
+      await board.evaluate(() => document.fonts.load("700 54px Inter"));
       await board.evaluate(() => document.fonts.ready);
       await board.addStyleTag({ content: 'input[inputmode="numeric"][maxlength="1"] { -webkit-text-security: disc; }' });
       await board.screenshot({ path: files.board });

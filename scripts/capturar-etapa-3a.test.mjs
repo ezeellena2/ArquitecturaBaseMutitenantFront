@@ -72,6 +72,18 @@ test("Portada y documentos legales tienen pares de escritorio y móvil", () => {
   }
 });
 
+test("el servidor del lienzo ofrece Inter local para comparar la misma fuente que la app", async () => {
+  const canvas = await startCanvasServer();
+  try {
+    const font = await fetch(`${canvas.url}/_fonts/inter-latin-wght-normal.woff2`);
+    assert.equal(font.status, 200);
+    assert.match(font.headers.get("content-type"), /font\/woff2/);
+    assert.ok((await font.arrayBuffer()).byteLength > 0);
+  } finally {
+    await canvas.close();
+  }
+});
+
 test("inicios y perfiles tienen pares; los dos laterales abiertos solo tienen tablero móvil", () => {
   const cases = validateManifest(manifest, lienzo).filter((entry) => entry.group === "inicios");
   const expected = ["inicio-personal", "inicio-org", "perfiles-personal", "perfiles-org", "lateral-personal", "lateral-org"];
