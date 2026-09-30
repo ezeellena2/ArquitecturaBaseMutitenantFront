@@ -130,6 +130,7 @@
     "signOut": "Log out",
     "suspended": "Suspended",
     "accountAndProfiles": "Your account and profiles",
-    "menuFor": "{{name}}'s menu"
+    "menuFor": "{{name}}'s menu",
+    "myAccount": "My account"
   }
 }

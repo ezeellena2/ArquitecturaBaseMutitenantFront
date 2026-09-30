@@ -60,5 +60,7 @@
   "deletionDate": "Tu cuenta se elimina el {{date}}.",
   "goHome": "Ir al inicio",
   "googleFailed": "No pudimos vincular tu cuenta de Google.",
-  "nameTooLong": "El nombre es demasiado largo."
+  "nameTooLong": "El nombre es demasiado largo.",
+  "discardMobile": "Descartar",
+  "saveMobile": "Guardar"
 }

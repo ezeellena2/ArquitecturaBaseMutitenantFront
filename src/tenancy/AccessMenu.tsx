@@ -1,4 +1,5 @@
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, UserRound } from "lucide-react";
+import { Link } from "react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "react-oidc-context";
@@ -126,6 +127,11 @@ function MenuBody({ mobile, name, email, organizations, access, activeTenantId, 
       />
     ))}
     <div className="my-1 h-px bg-[var(--borde)]" aria-hidden="true" />
+    {mobile ? (
+      <Link to="/cuenta" onClick={onClose} className={itemClass}><UserRound size={16} aria-hidden="true" />{t("accessMenu.myAccount")}</Link>
+    ) : (
+      <DropdownMenuItem asChild className={itemClass}><Link to="/cuenta" onClick={onClose}><UserRound size={16} aria-hidden="true" />{t("accessMenu.myAccount")}</Link></DropdownMenuItem>
+    )}
     {mobile ? (
       <button type="button" onClick={onSignOut} className={itemClass}><SignOutIcon />{t("accessMenu.signOut")}</button>
     ) : (

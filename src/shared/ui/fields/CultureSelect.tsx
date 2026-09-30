@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { enabledOptions } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { Input } from "../input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../select";
 
 interface CultureSelectProps {
   value: string;
@@ -10,6 +11,7 @@ interface CultureSelectProps {
   placeholder: string;
   id?: string;
   disabled?: boolean;
+  variant?: "searchable" | "compact";
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
 }
@@ -19,7 +21,7 @@ function searchable(text: string): string {
 }
 
 /** Los nombres y culturas disponibles vienen de Cultures, ya traducidos por la API. */
-export function CultureSelect({ value, onChange, placeholder, id, disabled, "aria-invalid": invalid,
+export function CultureSelect({ value, onChange, placeholder, id, disabled, variant = "searchable", "aria-invalid": invalid,
   "aria-describedby": describedBy }: CultureSelectProps) {
   const { t } = useTranslation();
   const { data, isPending, isError } = useReferenceData();
@@ -31,6 +33,16 @@ export function CultureSelect({ value, onChange, placeholder, id, disabled, "ari
       || left.name.localeCompare(right.name, data?.culture));
   const selected = data?.cultures.find((row) => row.code === value);
   const unavailable = disabled || !data;
+
+  if (variant === "compact") return <Select value={value} onValueChange={onChange} disabled={unavailable}>
+    <SelectTrigger id={id} className="w-full" aria-busy={isPending} aria-invalid={invalid} aria-describedby={describedBy}>
+      <SelectValue placeholder={placeholder} />
+    </SelectTrigger>
+    <SelectContent position="popper">
+      {selected && !options.some((row) => row.code === value) ? <SelectItem value={selected.code} disabled>{selected.name}</SelectItem> : null}
+      {options.map((row) => <SelectItem key={row.code} value={row.code}>{row.name}</SelectItem>)}
+    </SelectContent>
+  </Select>;
 
   return (
     <div className="flex flex-col gap-2">

@@ -25,6 +25,7 @@ interface PageProps {
   actions?: ReactNode;
   moreActions?: { label: string; items: readonly PageOverflowAction[] };
   children: ReactNode;
+  bodyClassName?: string;
 }
 
 /// Banda de ancho completo y cuerpo con su propio margen. Las acciones adicionales se pasan ya
@@ -38,6 +39,7 @@ export function Page({
   actions,
   moreActions,
   children,
+  bodyClassName = "p-4 md:p-6",
 }: PageProps): ReactNode {
   const visibleMoreActions = moreActions?.items.filter((action) => !action.hidden) ?? [];
   const regularActions = visibleMoreActions.filter((action) => !action.destructive);
@@ -104,7 +106,7 @@ export function Page({
           </div>
         ) : null}
       </header>
-      <div className="p-4 md:p-6">{children}</div>
+      <div className={bodyClassName}>{children}</div>
     </>
   );
 }

@@ -14,6 +14,9 @@ export const consumerWithoutOrganizations: MeResponse = {
   culture: "es-AR",
   timeZoneId: "America/Argentina/Buenos_Aires",
   currencyCode: "ARS",
+  version: 42,
+  needsPersonalLoginMethod: false,
+  pendingLegalDocuments: [],
 };
 
 export const businessUser: MeResponse = {

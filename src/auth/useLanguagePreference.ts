@@ -22,6 +22,7 @@ export function useLanguagePreference(): { change: (culture: string) => Promise<
         displayName: user.displayName,
         culture,
         timeZoneId: user.timeZoneId,
+        version: user.version ?? 0,
       });
       await queryClient.invalidateQueries({ queryKey: currentUserQueryKey });
     } catch {

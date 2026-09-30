@@ -4,6 +4,7 @@ import { timeZoneOffsetMinutes, useFormat } from "@/shared/format/useFormat";
 import { enabledOptions } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { Input } from "../input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../select";
 
 interface TimeZoneSelectProps {
   value: string;
@@ -11,6 +12,7 @@ interface TimeZoneSelectProps {
   placeholder: string;
   id?: string;
   disabled?: boolean;
+  variant?: "searchable" | "compact";
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
 }
@@ -20,7 +22,7 @@ function searchable(text: string): string {
 }
 
 /** Zona IANA; el offset se calcula al mostrar y nunca forma parte del valor. */
-export function TimeZoneSelect({ value, onChange, placeholder, id, disabled, "aria-invalid": invalid,
+export function TimeZoneSelect({ value, onChange, placeholder, id, disabled, variant = "searchable", "aria-invalid": invalid,
   "aria-describedby": describedBy }: TimeZoneSelectProps) {
   const { t } = useTranslation();
   const { data, isPending, isError } = useReferenceData();
@@ -35,6 +37,17 @@ export function TimeZoneSelect({ value, onChange, placeholder, id, disabled, "ar
   const selected = data?.timeZones.find((zone) => zone.id === value);
   const waiting = isPending || format.isLoading;
   const unavailable = disabled || !data || format.isLoading;
+
+  if (variant === "compact") return <Select value={value} onValueChange={onChange} disabled={unavailable}>
+    <SelectTrigger id={id} className="w-full" aria-busy={waiting} aria-invalid={invalid} aria-describedby={describedBy}>
+      <SelectValue placeholder={placeholder} />
+    </SelectTrigger>
+    <SelectContent position="popper">
+      {!format.isLoading && selected && !options.some((zone) => zone.id === value)
+        ? <SelectItem value={selected.id} disabled>{format.formatTimeZone(selected.id)}</SelectItem> : null}
+      {!format.isLoading && options.map((zone) => <SelectItem key={zone.id} value={zone.id}>{format.formatTimeZone(zone.id)}</SelectItem>)}
+    </SelectContent>
+  </Select>;
 
   return (
     <div className="flex flex-col gap-2">

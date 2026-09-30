@@ -52,7 +52,7 @@ describe("AccessMenu", () => {
     expect(within(menu).getByText("Tu perfil personal")).toBeVisible();
     expect(within(menu).getByRole("menuitemradio", { name: /Empresa A.*Dueño/ })).toHaveAttribute("aria-checked", "true");
     expect(within(menu).getByRole("menuitemradio", { name: /Empresa B.*Miembro/ })).toHaveAttribute("aria-checked", "false");
-    expect(within(menu).queryByRole("menuitem", { name: "Mi cuenta" })).not.toBeInTheDocument();
+    expect(within(menu).getByRole("menuitem", { name: "Mi cuenta" })).toHaveAttribute("href", "/cuenta");
     expect(within(menu).getByRole("menuitem", { name: "Salir" })).toBeVisible();
 
     await user.click(within(menu).getByRole("menuitemradio", { name: /Empresa B.*Miembro/ }));

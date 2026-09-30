@@ -60,5 +60,7 @@
   "deletionDate": "Your account will be deleted on {{date}}.",
   "goHome": "Go to home",
   "googleFailed": "We couldn't link your Google account.",
-  "nameTooLong": "The name is too long."
+  "nameTooLong": "The name is too long.",
+  "discardMobile": "Discard",
+  "saveMobile": "Save"
 }

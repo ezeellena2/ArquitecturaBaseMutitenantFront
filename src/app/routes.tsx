@@ -4,6 +4,7 @@ import { ProtectedRoute } from "@/auth/ProtectedRoute";
 import { AccessRoute } from "@/auth/AccessRoute";
 import { BusinessHomePage } from "@/areas/business/home/pages/BusinessHomePage";
 import { BusinessLayout } from "@/layouts/BusinessLayout";
+import { AccountLayout } from "@/layouts/AccountLayout";
 import { PersonalHomePage } from "@/areas/personal/home/pages/PersonalHomePage";
 import { PersonalLayout } from "@/layouts/PersonalLayout";
 import { PlatformLayout } from "@/layouts/PlatformLayout";
@@ -48,6 +49,10 @@ export const routes: RouteObject[] = [
       ] },
     ] },
     { element: <ProtectedRoute />, children: [
+      { path: "/cuenta", lazy: async () => {
+        const { AccountPage } = await import("@/areas/personal/account/pages/AccountPage");
+        return { Component: () => <AccountLayout><AccountPage /></AccountLayout> };
+      }, errorElement: <AppErrorPage /> },
       { element: <AccessRoute access="business" />, children: [
         { path: "/org", element: <BusinessLayout />, children: [{ index: true, element: <BusinessHomePage /> }] },
       ] },

@@ -16,7 +16,7 @@ const me = {
   id: "ana", displayName: "Ana", email: "ana@example.com",
   access: "business", activeTenantId: "empresa-a", hasPersonalSpace: true,
   organizations: [], permissions: [], culture: "es-AR",
-  timeZoneId: "America/Argentina/Buenos_Aires", currencyCode: "ARS",
+  timeZoneId: "America/Argentina/Buenos_Aires", currencyCode: "ARS", version: 42,
 };
 
 beforeAll(async () => {
@@ -50,7 +50,7 @@ describe("useLanguagePreference", () => {
 
     await act(async () => { await result.current.change("en-US"); });
 
-    expect(body).toEqual({ displayName: "Ana", culture: "en-US", timeZoneId: me.timeZoneId });
+    expect(body).toEqual({ displayName: "Ana", culture: "en-US", timeZoneId: me.timeZoneId, version: 42 });
     expect(i18n.language).toBe("en-US");
     await waitFor(() => expect(client.getQueryData(currentUserQueryKey)).toMatchObject({ culture: "en-US" }));
     expect(profileReads).toBe(1);
