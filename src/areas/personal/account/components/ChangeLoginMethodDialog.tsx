@@ -19,6 +19,7 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete }:
   const title = action === "primary" ? google ? "primaryGoogleTitle" : "primaryEmailTitle" : google ? "removeGoogleTitle" : "removeEmailTitle";
   const label = action === "primary" ? "makePrimary" : google ? "unlink" : "remove";
   async function confirm() {
+    if (!reauth.proof) { await reauth.send(); return; }
     reauth.setFailure(null); setSaving(true);
     try {
       const request = { reauthTicket: await reauth.getTicket() };
@@ -29,12 +30,12 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete }:
     finally { setSaving(false); }
   }
   const busy = saving || reauth.isPending;
-  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent className="md:max-w-[420px]" onCloseAutoFocus={restoreFocus}>
+  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent className="account-dialog md:max-w-[420px]" onCloseAutoFocus={restoreFocus}>
     <form className="flex flex-col gap-5" onSubmit={(event) => { event.preventDefault(); void confirm(); }}>
       <DialogHeader><DialogTitle>{t(title)}</DialogTitle><DialogDescription>{reauth.proof ? t(action === "primary" ? "primaryHint" : "removeHint", { value: method.value, backup: reauth.proof.destination }) : null}</DialogDescription></DialogHeader>
       {reauth.proof ? <OtpInput length={6} value={reauth.code} onChange={(value) => { reauth.setCode(value); reauth.setFailure(null); }} label={t("code")} autoFocus invalid={!!reauth.failure} disabled={busy} /> : null}
       <FormError message={reauth.failure} />
-      <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("cancel")}</Button><Button type="submit" variant={action === "remove" ? "destructive" : "default"} disabled={busy || reauth.retry.isRunning || !reauth.proof || reauth.code.length !== 6}>{reauth.retry.label ?? t(label)}</Button></DialogFooter>
+      <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("cancel")}</Button><Button type="submit" variant={action === "remove" ? "destructive" : "default"} disabled={busy || reauth.retry.isRunning || (reauth.proof ? reauth.code.length !== 6 : !reauth.failure)}>{reauth.retry.label ?? t(label)}</Button></DialogFooter>
     </form>
   </DialogContent></Dialog>;
 }

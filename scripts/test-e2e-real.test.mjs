@@ -218,6 +218,22 @@ async function sendLoginCode(page) {
   throw new Error("El envío de ingreso no terminó después de respetar el cooldown.");
 }
 
+async function openReauthDialog(page, open, confirmLabel) {
+  const proofResponse = page.waitForResponse((response) =>
+    new URL(response.url()).pathname === "/api/me/reauth" && response.request().method() === "POST");
+  await open();
+  const response = await proofResponse;
+  if (response.ok()) return;
+  const problem = await response.json();
+  if (response.status() !== 429 || typeof problem.retryAfter !== "number")
+    throw new Error(`El pedido de reautenticación falló (HTTP ${response.status()}).`);
+  await delay((problem.retryAfter + 1) * 1000);
+  const retried = page.waitForResponse((reply) =>
+    new URL(reply.url()).pathname === "/api/me/reauth" && reply.request().method() === "POST");
+  await page.getByRole("dialog").getByRole("button", { name: confirmLabel, exact: true }).click();
+  assert.equal((await retried).ok(), true, "El reintento explícito debe enviar el código tras el cooldown.");
+}
+
 test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pickup sin mocks", { timeout: 1_800_000 }, async (t) => {
   const { stdout } = await aspire(["ps", "--format", "Json", "--non-interactive"]);
   assert.equal(JSON.parse(stdout).length, 0, "Detené el AppHost en ejecución antes de iniciar el E2E aislado.");
@@ -292,7 +308,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           const addedEmail = await addPersonalEmail(accountPage);
           const before = new Set(await pickupFiles());
           await accountPage.getByRole("button", { name: `Acciones de ${addedEmail}`, exact: true }).click();
-          await accountPage.getByRole("menuitem", { name: "Quitar", exact: true }).click();
+          await openReauthDialog(accountPage, () => accountPage.getByRole("menuitem", { name: "Quitar", exact: true }).click(), "Quitar");
           await enterCode(accountPage, await codeFromPickup(originalEmail, before));
           await accountPage.getByRole("dialog").getByRole("button", { name: "Quitar", exact: true }).click();
           await accountPage.getByRole("dialog").waitFor({ state: "hidden" });
@@ -302,7 +318,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           const email = await registerPerson(accountPage);
           await openAccount(accountPage);
           const before = new Set(await pickupFiles());
-          await accountPage.getByRole("button", { name: "Dar de baja", exact: true }).click();
+          await openReauthDialog(accountPage, () => accountPage.getByRole("button", { name: "Dar de baja", exact: true }).click(), "Dar de baja mi cuenta");
           const dialog = accountPage.getByRole("dialog");
           await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Recorrido propio del E2E");
           // El rótulo del código de baja incluye el destino enmascarado del lienzo.

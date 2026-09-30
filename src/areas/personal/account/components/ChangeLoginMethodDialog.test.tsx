@@ -33,7 +33,8 @@ it("pide prueba a otro método y entrega el ticket al quitar", async () => {
   await waitFor(() => expect(complete).toHaveBeenCalled());
 });
 
-it("espera el cooldown del destino y pide el código al terminar, sin dejar el diálogo bloqueado", async () => {
+it("espera el cooldown sin reintentar solo y permite pedir el código desde el mismo botón", async () => {
+  const user = userEvent.setup();
   let requests = 0;
   server.use(http.post("/api/me/reauth", () => {
     requests++;
@@ -42,6 +43,11 @@ it("espera el cooldown del destino y pide el código al terminar, sin dejar el d
       : HttpResponse.json({ sourceMethodId: "source", destination: "a***@example.test", resendAfterSeconds: 60 });
   }));
   renderWithProviders(<ChangeLoginMethodDialog action="remove" method={{ id: "target", type: "Email", value: "nuevo@example.test", isVerified: true, isPrimary: false, canRemove: true, canMakePrimary: true }} onClose={() => {}} onComplete={() => {}} />);
+  expect(await screen.findByRole("alert")).toHaveTextContent("Esperá para pedir otro código.");
+  await waitFor(() => expect(screen.getByRole("button", { name: "Quitar", exact: true })).toBeEnabled(), { timeout: 2500 });
+  expect(requests).toBe(1);
+  expect(screen.queryByRole("textbox", { name: "Código 1" })).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Quitar", exact: true }));
   expect(await screen.findByRole("textbox", { name: "Código 1" }, { timeout: 2500 })).toBeVisible();
   expect(requests).toBe(2);
 });
