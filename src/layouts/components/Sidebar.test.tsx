@@ -19,6 +19,8 @@ describe("Sidebar", () => {
     </MemoryRouter>);
     expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-[232px]");
     expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveClass("rounded-[8px]", "ring-1", "ring-[var(--borde)]", "shadow-sm");
+    expect(screen.getByRole("button", { name: "Contraer menú" })).toHaveClass("top-[78px]");
     expect(screen.getByText("Ana")).toBeVisible();
     expect(screen.getByText("ana@example.com")).toBeVisible();
     expect(screen.getByText("Empresa A")).toBeVisible();

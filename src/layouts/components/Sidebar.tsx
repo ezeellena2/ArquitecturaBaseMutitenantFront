@@ -35,7 +35,7 @@ function SidebarBody({ navigation, account, context, isMobile, collapsed, admini
       <span className="font-semibold text-[var(--t1)]">{context.title}</span>
       <span className="mt-1 text-[var(--t3)]">{context.detail}</span>
     </div> : null}
-    {!isMobile && !administrationOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className="absolute -right-3.5 top-16 z-10 flex size-7 items-center justify-center rounded-full border border-[var(--lado-borde)] bg-[var(--lado)] text-[var(--t2)] shadow-sm">
+    {!isMobile && !administrationOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className="absolute -right-3.5 top-[78px] z-10 flex size-7 items-center justify-center rounded-full border border-[var(--lado-borde)] bg-[var(--lado)] text-[var(--t2)] shadow-sm">
       {collapsed ? <ChevronRight size={15} aria-hidden="true" /> : <ChevronLeft size={15} aria-hidden="true" />}
     </button> : null}
     <nav aria-label={t("navigation.general")} className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-[11px]">
@@ -43,7 +43,7 @@ function SidebarBody({ navigation, account, context, isMobile, collapsed, admini
         const Icon = entry.icon;
         const active = entry.to === pathname;
         const content = <><Icon size={18} strokeWidth={1.75} aria-hidden="true" /><span className={showLabels ? "" : "sr-only"}>{t(entry.labelKey)}</span></>;
-        const rowClass = `flex min-h-[32px] items-center gap-2.5 rounded-lg px-2.5 text-[13px] ${active ? "bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)]" : "text-[var(--t2)] hover:bg-[var(--lado-hover)]"}`;
+        const rowClass = `flex min-h-[32px] items-center gap-2.5 rounded-[8px] px-2.5 text-[13px] ${active ? "bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm" : "text-[var(--t2)] hover:bg-[var(--lado-hover)]"}`;
         return entry.to ? <Link key={entry.labelKey} to={entry.to} aria-current={active ? "page" : undefined} onClick={isMobile ? onCloseMobile : undefined} className={rowClass}>{content}</Link>
           : <span key={entry.labelKey} aria-disabled="true" className={rowClass}>{content}</span>;
       })}
