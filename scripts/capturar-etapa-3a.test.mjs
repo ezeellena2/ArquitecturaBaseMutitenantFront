@@ -13,6 +13,7 @@ import {
   captureCase,
   capturePaths,
   installApiMocks,
+  otpMaskStyle,
   runAppActions,
   startCanvasServer,
   validateManifest,
@@ -22,6 +23,19 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = path.join(root, "docs/design/capturas/etapa-3a/manifest.json");
 const lienzo = path.join(root, "docs/design/lienzo");
 const outputRoot = path.join(root, "docs/design/capturas/etapa-3a");
+
+test("la captura oculta también la primera cifra OTP, que admite pegar seis dígitos", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.setContent('<input inputmode="numeric" maxlength="6" value="1"><input inputmode="numeric" maxlength="1" value="2">');
+    await page.addStyleTag({ content: otpMaskStyle });
+    assert.deepEqual(await page.locator("input").evaluateAll((inputs) => inputs.map((input) =>
+      getComputedStyle(input).webkitTextSecurity)), ["disc", "disc"]);
+  } finally {
+    await browser.close();
+  }
+});
 
 test("la matriz de 3a declara tablero real, estado aprobado y ambos tamaños", () => {
   const cases = validateManifest(manifest, lienzo);

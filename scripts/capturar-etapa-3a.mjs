@@ -11,6 +11,7 @@ const defaultOutput = path.join(root, "docs/design/capturas/etapa-3a");
 const interFont = path.join(root, "node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2");
 const viewports = new Set(["1440x900", "390x844"]);
 const pendingMobileReference = "sin tablero móvil: pendiente de aprobación del usuario";
+export const otpMaskStyle = 'input[inputmode="numeric"] { -webkit-text-security: disc; }';
 
 function hasComparableBoard(entry) {
   return entry.viewport.width !== 390 || entry.mobileReference !== pendingMobileReference;
@@ -208,7 +209,7 @@ export async function captureCase(browser, entry, { canvasUrl, appUrl, outputRoo
       await board.addStyleTag({ content: '@font-face { font-family: Inter; src: url("/_fonts/inter-latin-wght-normal.woff2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }' });
       await board.evaluate(() => document.fonts.load("700 54px Inter"));
       await board.evaluate(() => document.fonts.ready);
-      await board.addStyleTag({ content: 'input[inputmode="numeric"][maxlength="1"] { -webkit-text-security: disc; }' });
+      await board.addStyleTag({ content: otpMaskStyle });
       await board.screenshot({ path: files.board });
     }
 
@@ -223,7 +224,7 @@ export async function captureCase(browser, entry, { canvasUrl, appUrl, outputRoo
     entry.app.readyButtonEnabled);
     await app.waitForTimeout(200);
     await app.evaluate(() => document.fonts.ready);
-    await app.addStyleTag({ content: 'input[inputmode="numeric"][maxlength="1"] { -webkit-text-security: disc; }' });
+    await app.addStyleTag({ content: otpMaskStyle });
     await app.screenshot({ path: files.app });
   } finally {
     await context.close();

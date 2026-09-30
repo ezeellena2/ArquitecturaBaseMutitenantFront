@@ -4,7 +4,9 @@ El manifest define 15 estados de Ingreso, cada uno con el tablero y la app a 144
 
 Se compararon estructura, textos, orden, marca, panel derecho, controles, avisos y estados. La comparación detectó y permitió corregir el degradado y la cuadrícula del panel, los pictogramas, el aviso de sesión vencida, los mensajes de error, el ancho del código y los estados de reenvío.
 
-Después de corregir la verificación empresarial y el ingreso del código (hallazgos 25 y 29), se regeneraron y revisaron los 15 pares a ambas resoluciones. La nueva respuesta para una organización suspendida, pendiente de aprobación o cerrada toma el título y mensaje de `Perfil-Suspendido`; no existe una variante de Ingreso aprobada para ese punto exacto del flujo, por lo que se prueba como comportamiento en `LoginPage.test.tsx` sin atribuirle una comparación visual de Ingreso. La corrección de Backspace y autocompletado no altera el aspecto estático de los seis casilleros. Las variaciones de píxel en algunos pictogramas fueron de renderizado; se conservaron los PNG publicados.
+Después de corregir la verificación empresarial y el ingreso del código (hallazgos 25 y 29), se revisaron los 15 pares a ambas resoluciones. La nueva respuesta para una organización suspendida, pendiente de aprobación o cerrada toma el título y mensaje de `Perfil-Suspendido`; no existe una variante de Ingreso aprobada para ese punto exacto del flujo, por lo que se prueba como comportamiento en `LoginPage.test.tsx` sin atribuirle una comparación visual de Ingreso.
+
+Se regeneraron los 15 pares tras ajustar el tinte de código inválido, los pictogramas, los botones secundarios y la etiqueta «Correo electrónico» (hallazgos 58–60 y 67). Playwright carga el mismo Inter local en tablero y app; ambas capturas ocultan **las seis** cifras de demostración, incluida la primera casilla que admite pegar el código entero. Los cambios funcionales del 429 por IP se prueban en `EmailCodeForm.test.tsx` y `LoginPage.test.tsx`; el mapa deriva ese estado a `Enlace`, sin un tablero nuevo de Ingreso.
 
 ## Diferencias justificadas con el tablero
 

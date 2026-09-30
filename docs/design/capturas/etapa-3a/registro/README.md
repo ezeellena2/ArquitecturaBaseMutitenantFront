@@ -9,4 +9,4 @@ Se compararon los cinco estados de Registro de esta etapa con `Registro` y `M-Re
 - El contador de reenvío usa el tiempo real del estado simulado (60 s al iniciar); el lienzo fija una muestra de 54 s.
 - En «Código enviado», «Verificar y crear la cuenta» está deshabilitado en la app hasta que se ingresan los seis dígitos; el tablero estático lo dibuja activo con las casillas vacías. La validación del formulario exige ese estado.
 
-Los demás estados, textos, orden, botones, errores, tonos e íconos se contrastaron con los pares de PNG de esta carpeta.
+Se regeneraron los cinco pares tras igualar la etiqueta compacta de correo, el botón Google y el fondo de los códigos inválidos con el tablero. Las seis cifras de demostración quedan enmascaradas en lienzo y app, incluida la primera casilla que admite pegar el código entero. Los demás estados, textos, orden, botones, errores, tonos e íconos se contrastaron con los pares de PNG de esta carpeta. El cambio de seguridad del alta con Google usa un formulario `POST` con antiforgery sin alterar el control aprobado.
