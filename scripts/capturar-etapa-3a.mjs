@@ -48,6 +48,11 @@ export function validateManifest(manifestFile = defaultManifest, canvasRoot = de
     if (typeof entry.app?.path !== "string" || !entry.app.path.startsWith("/") || entry.app.path.startsWith("//")) {
       throw new Error(`${entry.id}: falta una ruta local de la app`);
     }
+    const usesHarness = entry.app.path.startsWith("/src/test/");
+    if (usesHarness !== (entry.app.captureMode === "harness") ||
+        (entry.app.captureMode !== undefined && entry.app.captureMode !== "harness")) {
+      throw new Error(`${entry.id}: declará captureMode=harness solo para el arnés visual`);
+    }
     const board = path.join(canvasRoot, `${entry.board}.dc.html`);
     if (!existsSync(board)) throw new Error(`${entry.id}: falta tablero ${board}`);
     const choices = boardChoices(board);

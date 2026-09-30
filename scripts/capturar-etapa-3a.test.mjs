@@ -81,6 +81,23 @@ test("inicios y menús privados tienen pares de escritorio y móvil", () => {
   assertCapturedPairs(cases, outputRoot);
 });
 
+test("cada captura del arnés visual se identifica y se distingue del recorrido real", () => {
+  const cases = validateManifest(manifest, lienzo);
+  const harnessCases = cases.filter((entry) => entry.app.path.startsWith("/src/test/"));
+  assert.equal(harnessCases.length, 32);
+  for (const entry of harnessCases) assert.equal(entry.app.captureMode, "harness", entry.id);
+  for (const entry of cases.filter((item) => !item.app.path.startsWith("/src/test/"))) {
+    assert.notEqual(entry.app.captureMode, "harness", entry.id);
+  }
+  for (const group of ["inicios", "errores"]) {
+    const readme = readFileSync(path.join(outputRoot, group, "README.md"), "utf8");
+    assert.match(readme, /visualApp\.html/);
+    assert.match(readme, /arnés/);
+  }
+  const errorsReadme = readFileSync(path.join(outputRoot, "errores", "README.md"), "utf8");
+  assert.doesNotMatch(errorsReadme, /aun con un 403 o 404 de la API/);
+});
+
 test("errores de organización y estados de sesión cubren toda la matriz 3a", () => {
   const cases = validateManifest(manifest, lienzo).filter((entry) => entry.group === "errores");
   const expected = [

@@ -31,7 +31,7 @@
 
 ## Lo verifica
 - El CI (`npm test`) y `harness.test.ts` (E0), que usa `HarnessStage` para exigir solo los tests de etapas cerradas.
-- `scripts/test-e2e-real.test.mjs` (E3a): ninguna etapa desde E3a se cierra si el recorrido real está rojo.
+- `scripts/test-e2e-real.test.mjs` (E3): ninguna etapa desde E3a se cierra si el recorrido real está rojo.
 
 ## Detalle
 [frontend.md §4, "Tests"](../architecture/frontend.md#tests)

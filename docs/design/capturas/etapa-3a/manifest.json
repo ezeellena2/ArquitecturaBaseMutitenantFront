@@ -1794,6 +1794,7 @@
         "aviso": "Sin aviso"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
         "userFixture": "visual-personal",
         "readySelector": "main",
@@ -1814,6 +1815,7 @@
         "vista": "Pantalla"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
         "userFixture": "visual-personal",
         "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]"
@@ -1830,6 +1832,7 @@
       },
       "props": {},
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
         "userFixture": "visual-business",
         "readySelector": "main",
@@ -1849,6 +1852,7 @@
         "vista": "Pantalla"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
         "userFixture": "visual-business",
         "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]"
@@ -1873,6 +1877,7 @@
         }
       ],
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
         "userFixture": "visual-personal",
         "readySelector": "main",
@@ -1900,6 +1905,7 @@
         "vista": "Perfiles abiertos"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
         "userFixture": "visual-personal",
         "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]",
@@ -1929,6 +1935,7 @@
         }
       ],
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
         "userFixture": "visual-business",
         "readySelector": "main",
@@ -1955,6 +1962,7 @@
         "vista": "Perfiles abiertos"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
         "userFixture": "visual-business",
         "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]",
@@ -1980,6 +1988,7 @@
         "aviso": "Sin aviso"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
         "userFixture": "visual-personal",
         "readySelector": "main",
@@ -2000,6 +2009,7 @@
         "vista": "Menú lateral abierto"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
         "userFixture": "visual-personal",
         "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]",
@@ -2023,6 +2033,7 @@
       },
       "props": {},
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
         "userFixture": "visual-business",
         "readySelector": "main",
@@ -2042,6 +2053,7 @@
         "vista": "Menú lateral abierto"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
         "userFixture": "visual-business",
         "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]",
@@ -2067,6 +2079,7 @@
         "caso": "Sin permiso (403)"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Fsin-permiso",
         "userFixture": "visual-error-org",
         "readySelector": "main",
@@ -2086,6 +2099,7 @@
         "caso": "Sin permiso (403)"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Fsin-permiso",
         "userFixture": "visual-error-org",
         "readySelector": "main",
@@ -2106,6 +2120,7 @@
         "caso": "No encontrada (404)"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Fno-existe",
         "userFixture": "visual-error-org",
         "readySelector": "main",
@@ -2125,6 +2140,7 @@
         "caso": "No encontrada (404)"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Fno-existe",
         "userFixture": "visual-error-org",
         "readySelector": "main",
@@ -2145,6 +2161,7 @@
         "estado": "Suspendida"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-unavailable-suspended&route=%2Forg&unavailable=suspended",
         "userFixture": "visual-unavailable-suspended",
         "readySelector": "main",
@@ -2164,6 +2181,7 @@
         "estado": "Suspendida"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-unavailable-suspended&route=%2Forg&unavailable=suspended",
         "userFixture": "visual-unavailable-suspended",
         "readySelector": "main",
@@ -2184,6 +2202,7 @@
         "estado": "Espera aprobación"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-unavailable-pending&route=%2Forg&unavailable=pending",
         "userFixture": "visual-unavailable-pending",
         "readySelector": "main",
@@ -2203,6 +2222,7 @@
         "estado": "Espera aprobación"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-unavailable-pending&route=%2Forg&unavailable=pending",
         "userFixture": "visual-unavailable-pending",
         "readySelector": "main",
@@ -2223,6 +2243,7 @@
         "estado": "Cerrada"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-unavailable-closed&route=%2Forg&unavailable=closed",
         "userFixture": "visual-unavailable-closed",
         "readySelector": "main",
@@ -2242,6 +2263,7 @@
         "estado": "Cerrada"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-unavailable-closed&route=%2Forg&unavailable=closed",
         "userFixture": "visual-unavailable-closed",
         "readySelector": "main",
@@ -2262,6 +2284,7 @@
         "estado": "Iniciando sesión"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&session=starting",
         "userFixture": "visual-personal",
         "readySelector": "main",
@@ -2281,6 +2304,7 @@
         "estado": "Iniciando sesión"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&session=starting",
         "userFixture": "visual-personal",
         "readySelector": "main",
@@ -2301,6 +2325,7 @@
         "estado": "Cambiando de lado: a Grupo Delta"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&session=switching-business",
         "userFixture": "visual-personal",
         "readySelector": "main",
@@ -2320,6 +2345,7 @@
         "estado": "Cambiando de lado: a Grupo Delta"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&session=switching-business",
         "userFixture": "visual-personal",
         "readySelector": "main",
@@ -2340,6 +2366,7 @@
         "estado": "Cambiando de lado: a Personal"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&session=switching-personal",
         "userFixture": "visual-personal",
         "readySelector": "main",
@@ -2359,6 +2386,7 @@
         "estado": "Cambiando de lado: a Personal"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&session=switching-personal",
         "userFixture": "visual-personal",
         "readySelector": "main",
@@ -2379,6 +2407,7 @@
         "estado": "Cerrando sesión"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&session=closing",
         "userFixture": "visual-personal",
         "readySelector": "main",
@@ -2398,6 +2427,7 @@
         "estado": "Cerrando sesión"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&session=closing",
         "userFixture": "visual-personal",
         "readySelector": "main",
@@ -2418,6 +2448,7 @@
         "estado": "No pudimos iniciar tu sesión"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&session=error",
         "userFixture": "visual-personal",
         "readySelector": "main",
@@ -2437,6 +2468,7 @@
         "estado": "No pudimos iniciar tu sesión"
       },
       "app": {
+        "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&session=error",
         "userFixture": "visual-personal",
         "readySelector": "main",
