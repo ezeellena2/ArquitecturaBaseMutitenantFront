@@ -47,7 +47,7 @@ export function Page({
 
   return (
     <>
-      <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-4 border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4 py-3 md:px-6">
+      <header className="sticky top-0 z-20 flex min-h-[60px] items-center justify-between gap-4 border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4 py-3 md:min-h-16 md:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {backTo ? (
             <Link
@@ -59,13 +59,13 @@ export function Page({
               <ChevronLeftIcon className="size-4" />
             </Link>
           ) : Icon ? (
-            <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--marca-t)] text-[var(--marca-tx)]">
+            <span aria-hidden="true" className="inline-flex size-8 shrink-0 items-center justify-center rounded-[9px] bg-[var(--marca-t)] text-[var(--marca-tx)] md:size-9 md:rounded-[10px]">
               <Icon className="size-5" />
             </span>
           ) : null}
           <div className="min-w-0">
             <div className="flex min-w-0 items-center gap-2">
-              <h1 className="truncate text-[18px] font-bold leading-tight text-[var(--t1)]">{title}</h1>
+              <h1 className="truncate text-[17px] font-bold leading-tight text-[var(--t1)] md:text-[18px]">{title}</h1>
               {status ? <span className="flex shrink-0 items-center gap-2">{status}</span> : null}
             </div>
             {summary === null || summary === undefined ? null : (

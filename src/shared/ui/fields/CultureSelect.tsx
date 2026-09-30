@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { culturePreview } from "@/shared/format/culturePreview";
 import { enabledOptions } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { Input } from "../input";
@@ -38,9 +39,9 @@ export function CultureSelect({ value, onChange, placeholder, id, disabled, vari
     <SelectTrigger id={id} className="w-full" aria-busy={isPending} aria-invalid={invalid} aria-describedby={describedBy}>
       <SelectValue placeholder={placeholder} />
     </SelectTrigger>
-    <SelectContent position="popper">
+    <SelectContent position="popper" align="start" style={{ minWidth: 206, width: 206 }}>
       {selected && !options.some((row) => row.code === value) ? <SelectItem value={selected.code} disabled>{selected.name}</SelectItem> : null}
-      {options.map((row) => <SelectItem key={row.code} value={row.code}>{row.name}</SelectItem>)}
+      {options.map((row) => <SelectItem key={row.code} value={row.code} className="text-[13px]" description={culturePreview(data!, row.code)}>{row.name}</SelectItem>)}
     </SelectContent>
   </Select>;
 

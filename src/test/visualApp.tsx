@@ -5,6 +5,8 @@ import { createMemoryRouter, RouterProvider } from "react-router";
 import { AppProviders } from "@/app/providers";
 import { routes } from "@/app/routes";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
+import { DeletionRequestedPage } from "@/areas/personal/account/components/DeletionRequestedPage";
+import { LoginPage } from "@/areas/public/auth/pages/LoginPage";
 import { ApiError } from "@/shared/api/ApiError";
 import { publishAccessError } from "@/shared/api/accessErrorStore";
 import { currentUsers, type CurrentUserFixture } from "./mocks/currentUsers";
@@ -32,6 +34,8 @@ if (unavailable) {
 }
 const session = params.get("session");
 const sessionPages = {
+  cancelled: <LoginPage access="consumer" completeLogin={() => {}} />,
+  deletion: <DeletionRequestedPage date="27/10/2026" />,
   starting: <SessionStatusPage status="starting" />,
   "switching-business": <SessionStatusPage status="switching" targetName="Grupo Delta" />,
   "switching-personal": <SessionStatusPage status="switching" targetName="Personal" />,
@@ -41,7 +45,7 @@ const sessionPages = {
 const sessionPage = session ? sessionPages[session as keyof typeof sessionPages] : undefined;
 if (session && !sessionPage) throw new Error("Estado visual de sesión inválido");
 const router = sessionPage
-  ? createMemoryRouter([{ path: "/", element: sessionPage }], { initialEntries: ["/"] })
+  ? createMemoryRouter([{ path: "*", element: sessionPage }], { initialEntries: [session === "cancelled" ? route : "/"] })
   : createMemoryRouter(routes, { initialEntries: [route] });
 const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
 const root = document.getElementById("root");

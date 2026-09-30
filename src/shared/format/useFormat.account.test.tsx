@@ -10,12 +10,12 @@ import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { useFormat } from "./useFormat";
 
-const auth = vi.hoisted(() => ({ isAuthenticated: true, user: { access_token: "token" } }));
+const auth = vi.hoisted(() => ({ isAuthenticated: true, user: { access_token: "token", profile: { sub: "ana", access: "consumer" } } }));
 
 vi.mock("react-oidc-context", async (importOriginal) => ({
   ...await importOriginal<typeof import("react-oidc-context")>(),
   AuthProvider: ({ children }: { children: ReactNode }) => children,
-  useAuth: () => auth as AuthContextProps,
+  useAuth: () => auth as unknown as AuthContextProps,
 }));
 
 describe("formato con perfil de cuenta", () => {
@@ -36,7 +36,7 @@ describe("formato con perfil de cuenta", () => {
     })));
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <AuthContext.Provider value={auth as AuthContextProps}>
+      <AuthContext.Provider value={auth as unknown as AuthContextProps}>
         <AppProviders client={client}>{children}</AppProviders>
       </AuthContext.Provider>
     );
@@ -62,7 +62,7 @@ describe("formato con perfil de cuenta", () => {
     })));
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <AuthContext.Provider value={auth as AuthContextProps}>
+      <AuthContext.Provider value={auth as unknown as AuthContextProps}>
         <AppProviders client={client}>{children}</AppProviders>
       </AuthContext.Provider>
     );

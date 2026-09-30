@@ -6,6 +6,7 @@ import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 import { routes } from "./routes";
 import { ProtectedRoute } from "@/auth/ProtectedRoute";
 import { AccessRoute } from "@/auth/AccessRoute";
+import { LegalAcceptanceGate } from "@/auth/LegalAcceptanceGate";
 
 describe("rutas de ingreso 3a", () => {
   it("declara la portada privada con ProtectedRoute y AccessRoute consumer", () => {
@@ -13,9 +14,11 @@ describe("rutas de ingreso 3a", () => {
     const recovery = app.children?.find((route) => route.children?.some((child) => child.path === "/"));
     const home = recovery?.children?.find((route) => route.path === "/");
     const protectedHome = home?.children?.[0];
-    const consumerHome = protectedHome?.children?.[0];
+    const legalGate = protectedHome?.children?.[0];
+    const consumerHome = legalGate?.children?.[0];
 
     expect(protectedHome?.element).toMatchObject({ type: ProtectedRoute });
+    expect(legalGate?.element).toMatchObject({ type: LegalAcceptanceGate });
     expect(consumerHome?.element).toMatchObject({ type: AccessRoute, props: { access: "consumer" } });
     expect(consumerHome?.children?.[0]?.index).toBe(true);
   });

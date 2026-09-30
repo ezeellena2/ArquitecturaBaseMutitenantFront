@@ -71,15 +71,15 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
       {mobile && dirty ? <div className="mb-3">{dirty}</div> : null}
       <ConcurrencyBanner error={failure} isDirty={isDirty} onSeeNew={() => { void reload(); }} onContinueEditing={() => setFailure(undefined)} />
       {failure && (!(failure instanceof ApiError) || failure.code !== "General.ConcurrencyConflict") ? <FormError className="mb-3" message={failure instanceof Error ? failure.message : errors("server")} /> : null}
-      <form id="account-profile" aria-label={t("title")} onSubmit={form.handleSubmit(save)} className="grid grid-cols-1 gap-3 rounded-xl border border-[var(--borde)] bg-[var(--lado-activo)] p-4 text-[13px] text-[var(--t1)] md:grid-cols-2 md:gap-x-5 md:gap-y-3.5 md:p-5">
-        <h2 className="col-span-full text-[15px] font-semibold">{t("data")}</h2>
+      <form id="account-profile" aria-label={t("title")} onSubmit={form.handleSubmit(save)} className="grid grid-cols-1 gap-3 rounded-xl border border-[var(--borde)] bg-[var(--lado-activo)] p-4 text-[13px] text-[var(--t1)] md:grid-cols-2 md:gap-x-5 md:gap-y-3.5 md:p-5 [&_label]:text-xs [&_label]:font-medium [&_label]:text-[var(--t2)] [&_input]:border-[var(--borde)] [&_input]:text-[13px] [&_[data-slot=select-trigger]]:border-[var(--borde)] [&_[data-slot=select-trigger]]:text-[13px]">
+        <h2 className="col-span-full mt-1 -mb-1 text-[15px] font-semibold">{t("data")}</h2>
         <div className="col-span-full"><FormField label={t("name")} error={form.formState.errors.displayName?.message}><Input {...form.register("displayName")} autoComplete="name" /></FormField></div>
         <Controller control={form.control} name="culture" render={({ field }) => <FormField label={t("culture")} error={form.formState.errors.culture?.message}><CultureSelect value={field.value} onChange={field.onChange} variant="compact" placeholder={t("culture")} /></FormField>} />
         <Controller control={form.control} name="timeZoneId" render={({ field }) => <FormField label={t("timeZone")} error={form.formState.errors.timeZoneId?.message}><TimeZoneSelect value={field.value} onChange={field.onChange} variant="compact" placeholder={t("timeZone")} /></FormField>} />
         {children}
       </form>
     </Page>
-    {mobile ? <div className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t border-[var(--borde)] bg-[var(--lado-activo)] px-3 py-2.5 [&>button]:flex-1">{actions}</div> : null}
+    {mobile ? <div data-account-actions className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t border-[var(--borde)] bg-[var(--lado-activo)] px-3 py-2.5 [&>button]:flex-1">{actions}</div> : null}
     <ConfirmDialog open={guard.isBlocked} onOpenChange={(open) => { if (!open) guard.stay(); }} title={errors("unsaved.title")} description={errors("unsaved.description")} confirmLabel={errors("unsaved.leave")} cancelLabel={errors("unsaved.continueEditing")} destructive onConfirm={guard.leave} />
   </>;
 }

@@ -66,7 +66,7 @@ export function AccountPage() {
     {mobile ? <div className="col-span-full flex flex-wrap gap-2"><Button type="button" variant="outline" onClick={() => setAddOpen(true)}><Plus size={16} />{t("account:add")}</Button>{methods.data?.canLinkGoogle ? <AccountGoogleButton /> : null}</div> : null}
     <div className="col-span-full my-1 h-px bg-[var(--borde)]" />
     <h2 className="col-span-full mt-1 text-[15px] font-semibold">{t("account:privacy")}</h2>
-    <div className="col-span-full flex items-center justify-between gap-3 rounded-xl border border-[var(--borde)] px-3 py-2.5"><span>{t("account:deletion")}</span><Button type="button" variant="destructive" size="sm" onClick={() => setDeletionOpen(true)}>{t("account:requestDeletion")}</Button></div>
+    <div className="col-span-full flex min-h-[42px] items-center justify-between gap-3 rounded-[16px] border border-[var(--borde)] px-4 py-1.5"><span>{t("account:deletion")}</span><Button type="button" variant="destructive" size="sm" onClick={() => setDeletionOpen(true)}>{t("account:requestDeletion")}</Button></div>
   </AccountProfileForm>
   {addOpen ? <AddLoginMethodDialog open onOpenChange={setAddOpen} onComplete={refresh} /> : null}
   {verifyMethod ? <VerifyLoginMethodDialog method={verifyMethod} open onOpenChange={(open) => { if (!open) setVerifyMethod(null); }} onComplete={refresh} /> : null}

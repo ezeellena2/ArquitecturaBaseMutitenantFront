@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { http, HttpResponse } from "msw";
@@ -9,16 +10,29 @@ import { server } from "@/test/mocks/server";
 import { FormField } from "../FormField";
 import { CultureSelect } from "./CultureSelect";
 
-function renderSelect() {
+function renderSelect(variant: "searchable" | "compact" = "searchable") {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   function Harness() {
     const [value, setValue] = useState("");
-    return <><FormField label="Cultura"><CultureSelect value={value} onChange={setValue} placeholder="Elegí una cultura" /></FormField><output>{value}</output></>;
+    return <><FormField label="Cultura"><CultureSelect value={value} onChange={setValue} placeholder="Elegí una cultura" variant={variant} /></FormField><output>{value}</output></>;
   }
   return render(<QueryClientProvider client={client}><Harness /></QueryClientProvider>);
 }
 
 describe("CultureSelect", () => {
+  it("ilustra fecha y número de cada cultura en el selector de cuenta", async () => {
+    const user = userEvent.setup();
+    renderSelect("compact");
+    const select = await screen.findByRole("combobox", { name: "Cultura" });
+    await waitFor(() => expect(select).toBeEnabled());
+    await user.click(select);
+    expect(await screen.findByText("27/09/2026 14:35 · 1.234,50")).toBeVisible();
+    expect(screen.getByText("09/27/2026 2:35 PM · 1,234.50")).toBeVisible();
+    await user.click(screen.getByRole("option", { name: /Inglés \(Estados Unidos\)/ }));
+    expect(screen.getByRole("status")).toHaveTextContent("en-US");
+    expect(select).toHaveTextContent("Inglés (Estados Unidos)");
+    expect(select).not.toHaveTextContent("1,234.50");
+  });
   beforeEach(async () => {
     localStorage.clear();
     await configureI18n(referenceDataFixture().cultures);

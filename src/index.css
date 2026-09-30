@@ -137,3 +137,28 @@ body {
   background-color: var(--fondo);
   color: var(--t1);
 }
+/* Geometría de los diálogos de Cuenta y M-Cuenta del lienzo aprobado. */
+.account-dialog { padding: 0; }
+.account-dialog > form { gap: 16px; }
+.account-dialog > form > :not([data-slot="dialog-header"]):not([data-slot="dialog-footer"]) { margin-inline: 20px; }
+.account-dialog [data-slot="dialog-header"] { padding: 16px 20px; border-bottom: 1px solid var(--borde); text-align: left; gap: 2px; }
+.account-dialog [data-slot="dialog-title"] { padding-right: 20px; font-size: 16px; line-height: 1.4; color: var(--t1); }
+.account-dialog [data-slot="dialog-description"] { font-size: 13px; line-height: 1.45; color: var(--t2); }
+.account-dialog [data-slot="dialog-footer"] { padding: 12px 20px; border-top: 1px solid var(--borde); gap: 8px; flex-direction: row; }
+.account-dialog [data-slot="dialog-footer"] > button { flex: 1; }
+@media (min-width: 768px) { .account-dialog [data-slot="dialog-footer"] > button { flex: initial; } }
+.account-dialog label { font-size: 12px; color: var(--t2); }
+.account-dialog input:not([inputmode="numeric"]), .account-dialog textarea { border-color: var(--borde); font-size: 13px; }
+.account-dialog input[inputmode="numeric"] { border-color: var(--borde2); border-radius: 10px; font-size: 22px; }
+.account-dialog input[aria-invalid="true"] { border-color: var(--peligro); }
+.account-dialog [role="alert"] { background: transparent; border: 0; padding: 0; border-radius: 0; color: var(--peligro); font-size: 13px; }
+.account-dialog [role="alert"] > svg { display: none; }
+.account-dialog textarea { resize: none; }
+@media (max-width: 767px) {
+  .account-dialog [data-slot="dialog-header"] { padding: 14px 16px; }
+  .account-dialog > form > :not([data-slot="dialog-header"]):not([data-slot="dialog-footer"]) { margin-inline: 16px; }
+  .account-dialog [data-slot="dialog-footer"] { padding: 12px 16px 16px; }
+  .account-dialog [data-slot="dialog-footer"] > button { height: 40px; }
+  body:has([data-account-actions]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 72px; }
+}
+body:has(.account-dialog) [data-slot="dialog-overlay"] { backdrop-filter: blur(4px); }

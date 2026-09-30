@@ -20,16 +20,15 @@ beforeAll(async () => {
 });
 
 describe("navegación por acceso en 3a", () => {
-  it("Personal muestra Inicio sin rutas futuras ni organizaciones", () => {
-    expect(personalNavigation.links.map((entry) => entry.labelKey)).toEqual(["navigation.dashboard"]);
-    expect(personalNavigation.links.map((entry) => entry.to)).toEqual(["/"]);
+  it("Personal muestra Inicio y Mi cuenta cuando existe su ruta en 3b", () => {
+    expect(personalNavigation.links.map((entry) => entry.to)).toEqual(["/", "/cuenta"]);
     expect(personalNavigation.administration).toBeNull();
     render(<MemoryRouter><PersonalLayout><h1>{"Inicio personal"}</h1></PersonalLayout></MemoryRouter>);
     expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-[232px]");
     expect(screen.getByRole("banner")).toHaveClass("h-[52px]");
     expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("href", "/");
     expect(screen.getByText("Tu perfil personal")).toBeVisible();
-    expect(screen.queryByText("Mi cuenta")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("href", "/cuenta");
     expect(screen.queryByText("Organizaciones")).not.toBeInTheDocument();
   });
 

@@ -1996,6 +1996,7 @@ export interface components {
             /** Format: date-time */
             scheduledForUtc: string;
         };
+        /** @description Describe disponibilidad y acciones de un método sin incluir su contacto completo en la representación de diagnóstico. */
         AccountLoginMethodResponse: {
             /** Format: uuid */
             id: string;
@@ -2010,6 +2011,7 @@ export interface components {
             canMakePrimary: boolean;
             backupDestination?: null | string;
         };
+        /** @description Entrega métodos de ingreso y capacidades de gestión de la cuenta sin exponer los objetos de persistencia. */
         AccountLoginMethodsResponse: {
             methods: components["schemas"]["AccountLoginMethodResponse"][];
             canLinkGoogle: boolean;
@@ -2084,6 +2086,7 @@ export interface components {
         };
         /** @description Correo normalizado para comparar y enviar; el dominio IDN se guarda en ASCII. */
         Email: null | string;
+        /** @description Entrega la URL del desafío Google al controller sin exponerla en la representación textual del objeto. */
         GoogleChallengeResponse: {
             redirectUrl: string;
         };
@@ -2173,6 +2176,7 @@ export interface components {
             sort?: null | string;
             search?: null | string;
         };
+        /** @description Expone la fecha programada y el comprobante temporal para cancelar una baja sin iniciar sesión. */
         PendingDeletionState: {
             /** Format: date-time */
             scheduledForUtc: string;
@@ -2206,6 +2210,7 @@ export interface components {
         };
         /** @enum {null|string} */
         ReauthAction: "RemoveMethod" | "MakePrimary" | "DeleteAccount" | "CancelDeletion" | null;
+        /** @description Informa a qué método de respaldo se envió el código, con el destino enmascarado y el tiempo hasta un nuevo pedido. */
         ReauthCodeResponse: {
             /** Format: uuid */
             sourceMethodId: string;
@@ -2213,6 +2218,7 @@ export interface components {
             /** Format: int32 */
             resendAfterSeconds: number;
         };
+        /** @description Devuelve el ticket temporal para completar una acción sensible sin mostrarlo en diagnósticos del objeto. */
         ReauthResponse: {
             reauthTicket: string;
         };

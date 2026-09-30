@@ -37,10 +37,13 @@ function show(access: "consumer" | "business", url: string, completeLogin = vi.f
 describe("LoginPage", () => {
   it("prueba el correo pendiente sin iniciar sesión y cancela antes de continuar", async () => {
     const completeLogin = vi.fn();
+    let finishCancellation!: () => void;
+    const cancellation = new Promise<void>((resolve) => { finishCancellation = resolve; });
     server.use(
       http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 60 })),
       http.post("/api/auth/login-code/verify", () => HttpResponse.json({ code: "Identity.Account.PendingDeletion", scheduledForUtc: "2026-10-30T12:00:00Z", cancelTicket: "opaque-cancel", timeZoneId: "America/Argentina/Buenos_Aires", returnUrl: authorizeUrl, cancelTicketExpiresAtUtc: "2026-09-30T13:00:00Z" }, { status: 403 })),
       http.post("/api/auth/deletion/cancel", async ({ request }) => {
+        await cancellation;
         expect(await request.json()).toEqual({ cancelTicket: "opaque-cancel" });
         expect(request.headers.get("Idempotency-Key")).toBeTruthy();
         return HttpResponse.json({ returnUrl: authorizeUrl });
@@ -55,6 +58,11 @@ describe("LoginPage", () => {
     expect(await screen.findByRole("heading", { name: "Tu cuenta tiene la baja pedida" })).toBeVisible();
     expect(completeLogin).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" }));
+    try {
+      await waitFor(() => expect(screen.getByRole("button", { name: "Cancelar la baja y entrar" })).toBeDisabled());
+      expect(screen.getByRole("button", { name: "Salir" })).toBeDisabled();
+      expect(completeLogin).not.toHaveBeenCalled();
+    } finally { finishCancellation(); }
     await waitFor(() => expect(completeLogin).toHaveBeenCalledWith(authorizeUrl));
   });
 
