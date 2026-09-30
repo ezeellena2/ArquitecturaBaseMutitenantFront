@@ -158,8 +158,8 @@ describe("AppShell", () => {
 
   it("quita el 403 de una consulta al navegar por otra ruta", async () => {
     render(<I18nextProvider i18n={i18n}><MemoryRouter initialEntries={["/org/usuarios"]}>
-      <Link to="/org">Ir a otra ruta</Link>
-      <AppShell><main>Contenido nuevo</main></AppShell>
+      <Link to="/org">{"Ir a otra ruta"}</Link>
+      <AppShell><main>{"Contenido nuevo"}</main></AppShell>
     </MemoryRouter></I18nextProvider>);
     act(() => publishAccessError(new ApiError(403, { code: "Authorization.Forbidden" })));
     expect(screen.getByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
