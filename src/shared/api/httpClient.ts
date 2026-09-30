@@ -13,6 +13,8 @@ interface HttpClientOptions {
 const defaults: HttpClientOptions = {};
 let options: HttpClientOptions = defaults;
 let notifiedExpiredToken: string | undefined;
+let renewalInFlight: Promise<string | undefined> | undefined;
+let lastRenewal: { previousToken: string; renewedToken: string } | undefined;
 
 export function configureHttpClient(next: HttpClientOptions): void {
   options = { ...defaults, ...next };
@@ -21,7 +23,25 @@ export function configureHttpClient(next: HttpClientOptions): void {
 export function resetHttpClient(): void {
   options = defaults;
   notifiedExpiredToken = undefined;
+  renewalInFlight = undefined;
+  lastRenewal = undefined;
   clearAccessError();
+}
+
+function currentOrRenewedToken(previousToken: string, renew: () => Promise<string | undefined>): Promise<string | undefined> {
+  const current = options.getAccessToken?.();
+  if (current && current !== previousToken) return Promise.resolve(current);
+  if (lastRenewal?.previousToken === previousToken) return Promise.resolve(lastRenewal.renewedToken);
+  if (renewalInFlight) return renewalInFlight;
+
+  const pending = Promise.resolve().then(renew).then((renewedToken) => {
+    if (renewedToken) lastRenewal = { previousToken, renewedToken };
+    return renewedToken;
+  }).finally(() => {
+    if (renewalInFlight === pending) renewalInFlight = undefined;
+  });
+  renewalInFlight = pending;
+  return pending;
 }
 
 async function readProblem(response: Response): Promise<ProblemDetails> {
@@ -65,10 +85,10 @@ async function receive(path: string, init: RequestInit, allowNotModified = false
     throw ApiError.network();
   }
 
-  if (response.status === 401 && token && options.renewAccessToken) {
+  if (response.status === 401 && token && options.renewAccessToken && notifiedExpiredToken !== token) {
     let renewedToken: string | undefined;
     try {
-      renewedToken = await options.renewAccessToken();
+      renewedToken = await currentOrRenewedToken(token, options.renewAccessToken);
     } catch {
       // El 401 original conserva su código y traceId si la sesión ya no se puede renovar.
     }
