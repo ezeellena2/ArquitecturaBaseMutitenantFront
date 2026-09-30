@@ -9,7 +9,7 @@ export function AdminPanel({ panel, open, isMobile, onClose }: { panel: Navigati
 
   return <nav aria-label={t(panel.labelKey)} className="relative flex h-full w-[232px] shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--panel)]">
     <div className="flex h-[52px] items-center border-b border-[var(--lado-borde)] px-4 text-sm font-bold text-[var(--t1)]">{t(panel.labelKey)}</div>
-    <button type="button" aria-label={t("layout.sidebar.closeAdministration")} onClick={onClose} className="absolute -right-3.5 top-16 z-10 flex size-7 items-center justify-center rounded-full border border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t1)] shadow-sm">
+    <button type="button" aria-label={t("layout.sidebar.closeAdministration")} onClick={onClose} className="absolute -right-3.5 top-16 z-30 flex size-7 items-center justify-center rounded-full border border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t1)] shadow-sm">
       <ChevronLeft size={15} aria-hidden="true" />
     </button>
     <div className="flex flex-col gap-0.5 px-2 py-3">

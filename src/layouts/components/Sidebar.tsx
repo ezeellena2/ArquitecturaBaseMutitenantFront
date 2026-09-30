@@ -35,7 +35,7 @@ function SidebarBody({ navigation, account, context, isMobile, collapsed, admini
       <span className="font-semibold text-[var(--t1)]">{context.title}</span>
       <span className="mt-1 text-[var(--t3)]">{context.detail}</span>
     </div> : null}
-    {!isMobile && !administrationOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className="absolute -right-3.5 top-[78px] z-10 flex size-7 items-center justify-center rounded-full border border-[var(--lado-borde)] bg-[var(--lado)] text-[var(--t2)] shadow-sm">
+    {!isMobile && !administrationOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className="absolute -right-3.5 top-[78px] z-30 flex size-7 items-center justify-center rounded-full border border-[var(--lado-borde)] bg-[var(--lado)] text-[var(--t2)] shadow-sm">
       {collapsed ? <ChevronRight size={15} aria-hidden="true" /> : <ChevronLeft size={15} aria-hidden="true" />}
     </button> : null}
     <nav aria-label={t("navigation.general")} className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-[11px]">
