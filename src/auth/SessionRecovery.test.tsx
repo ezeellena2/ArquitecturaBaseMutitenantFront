@@ -5,9 +5,10 @@ import type { AuthContextProps } from "react-oidc-context";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { AccessRoute } from "./AccessRoute";
 import { SessionRecovery } from "./SessionRecovery";
 
-const signinSilent = vi.fn<() => Promise<User | null>>();
+const signinSilent = vi.fn<(...args: unknown[]) => Promise<User | null>>();
 const auth = {
   isAuthenticated: false,
   isLoading: false,
@@ -17,15 +18,20 @@ const auth = {
 
 vi.mock("react-oidc-context", () => ({ useAuth: () => auth as unknown as AuthContextProps }));
 
-function renderPrivateRoute(strict = false) {
+function renderPrivateRoute(strict = false, path = "/org") {
   const router = createMemoryRouter([
     { path: "/login/empresa", element: <main aria-label="Ingreso de empresa" /> },
     { element: <SessionRecovery />, children: [
       { element: <ProtectedRoute />, children: [
-        { path: "/org", element: <main aria-label="Inicio de organización" /> },
+        { element: <AccessRoute access="business" />, children: [
+          { path: "/org", element: <main aria-label="Inicio de organización" /> },
+        ] },
+        { element: <AccessRoute access="platform" />, children: [
+          { path: "/plataforma", element: <main aria-label="Inicio de plataforma" /> },
+        ] },
       ] },
     ] },
-  ], { initialEntries: ["/org"] });
+  ], { initialEntries: [path] });
   const route = <RouterProvider router={router} />;
   render(strict ? <StrictMode>{route}</StrictMode> : route);
   return router;
@@ -43,7 +49,7 @@ describe("SessionRecovery", () => {
     let complete = (): void => { throw new Error("No se inició la recuperación"); };
     signinSilent.mockImplementation(() => new Promise<User>((resolve) => {
       complete = () => {
-        auth.user = { access_token: "token" } as User;
+        auth.user = { access_token: "token", profile: { access: "business" } } as unknown as User;
         auth.isAuthenticated = true;
         resolve(auth.user);
       };
@@ -51,6 +57,7 @@ describe("SessionRecovery", () => {
     const router = renderPrivateRoute();
 
     await waitFor(() => expect(signinSilent).toHaveBeenCalledOnce());
+    expect(signinSilent).toHaveBeenCalledWith({ extraQueryParams: { access: "business" } });
     expect(router.state.location.pathname).toBe("/org");
     await act(async () => { complete(); });
     expect(screen.getByRole("main", { name: "Inicio de organización" })).toBeInTheDocument();
@@ -66,8 +73,16 @@ describe("SessionRecovery", () => {
     expect(signinSilent).toHaveBeenCalledOnce();
   });
 
+  it("recupera el acceso de plataforma desde su ruta", async () => {
+    signinSilent.mockImplementation(() => new Promise<User>(() => undefined));
+    renderPrivateRoute(false, "/plataforma");
+
+    await waitFor(() => expect(signinSilent).toHaveBeenCalledOnce());
+    expect(signinSilent).toHaveBeenCalledWith({ extraQueryParams: { access: "platform" } });
+  });
+
   it("omite el iframe cuando ya hay un usuario en memoria", async () => {
-    auth.user = { access_token: "token" } as User;
+    auth.user = { access_token: "token", profile: { access: "business" } } as unknown as User;
     auth.isAuthenticated = true;
     renderPrivateRoute();
 
