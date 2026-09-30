@@ -1,6 +1,7 @@
 import type { RouteObject } from "react-router";
 import { SessionRecovery } from "@/auth/SessionRecovery";
 import { ProtectedRoute } from "@/auth/ProtectedRoute";
+import { LegalAcceptanceGate } from "@/auth/LegalAcceptanceGate";
 import { AccessRoute } from "@/auth/AccessRoute";
 import { BusinessHomePage } from "@/areas/business/home/pages/BusinessHomePage";
 import { BusinessLayout } from "@/layouts/BusinessLayout";
@@ -42,13 +43,18 @@ export const routes: RouteObject[] = [
   { path: "/sin-permiso", element: <ForbiddenRoute />, errorElement: <AppErrorPage /> },
   { element: <SessionRecovery />, children: [
     { path: "/", element: <HomeRoute />, errorElement: <AppErrorPage />, children: [
-      { element: <ProtectedRoute />, children: [
+      { element: <ProtectedRoute />, children: [{ element: <LegalAcceptanceGate />, children: [
         { element: <AccessRoute access="consumer" />, children: [
           { index: true, element: <PersonalLayout><PersonalHomePage /></PersonalLayout> },
         ] },
-      ] },
+      ] }] },
     ] },
     { element: <ProtectedRoute />, children: [
+      { path: "/aceptar-terminos", lazy: async () => {
+        const { AcceptTermsPage } = await import("@/areas/public/legal/pages/AcceptTermsPage");
+        return { Component: AcceptTermsPage };
+      }, errorElement: <AppErrorPage /> },
+      { element: <LegalAcceptanceGate />, children: [
       { path: "/cuenta", lazy: async () => {
         const { AccountPage } = await import("@/areas/personal/account/pages/AccountPage");
         return { Component: () => <AccountLayout><AccountPage /></AccountLayout> };
@@ -58,6 +64,7 @@ export const routes: RouteObject[] = [
       ] },
       { element: <AccessRoute access="platform" />, children: [
         { path: "/plataforma", element: <PlatformLayout /> },
+      ] },
       ] },
     ] },
   ] },

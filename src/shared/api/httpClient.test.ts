@@ -16,6 +16,11 @@ beforeAll(async () => {
 
 describe("httpClient", () => {
   beforeEach(() => resetHttpClient());
+  it("publica el bloqueo legal también en una escritura para abrir la aceptación", async () => {
+    server.use(http.put("/api/me", () => HttpResponse.json({ code: "Legal.AcceptanceRequired", traceId: "test" }, { status: 403 })));
+    await expect(api.put("/api/me", {})).rejects.toMatchObject({ code: "Legal.AcceptanceRequired" });
+    expect(getAccessError()?.code).toBe("Legal.AcceptanceRequired");
+  });
   afterEach(async () => {
     resetHttpClient();
     clearAccessError();

@@ -1,4 +1,16 @@
 {
-  "documents": { "terms": "Términos y condiciones", "privacy": "Política de privacidad" },
-  "meta": "Versión <version></version> · vigente desde <date></date>"
+  "documents": {
+    "terms": "Términos y condiciones",
+    "privacy": "Política de privacidad"
+  },
+  "meta": "Versión <version></version> · vigente desde <date></date>",
+  "accept": {
+    "termsChanged": "Cambiaron los <terms>Términos y condiciones</terms> (versión {{termsVersion}}).",
+    "privacyChanged": "Cambió la <privacy>Política de privacidad</privacy> (versión {{privacyVersion}}).",
+    "bothChanged": "Cambiaron los <terms>Términos y condiciones</terms> (versión {{termsVersion}}) y la <privacy>Política de privacidad</privacy> (versión {{privacyVersion}}).",
+    "agreement": "Leí y acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>",
+    "continue": "Aceptar y seguir",
+    "signOut": "Salir",
+    "title": "Actualizamos los términos"
+  }
 }

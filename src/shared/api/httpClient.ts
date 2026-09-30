@@ -111,7 +111,8 @@ async function receive(path: string, init: RequestInit, allowNotModified = false
   if (!response.ok && !(allowNotModified && response.status === 304)) {
     const error = new ApiError(response.status, await readProblem(response));
     // Solo una lectura protegida bloquea la vista; una mutación entrega el error al formulario.
-    if (error.status === 403 && init.method === "GET" && !path.startsWith("/api/auth/")) publishAccessError(error);
+    if (error.status === 403 && !path.startsWith("/api/auth/")
+      && (init.method === "GET" || error.code === "Legal.AcceptanceRequired")) publishAccessError(error);
     throw error;
   }
 

@@ -1,4 +1,16 @@
 {
-  "documents": { "terms": "Terms and Conditions", "privacy": "Privacy Policy" },
-  "meta": "Version <version></version> · effective since <date></date>"
+  "documents": {
+    "terms": "Terms and Conditions",
+    "privacy": "Privacy Policy"
+  },
+  "meta": "Version <version></version> · effective since <date></date>",
+  "accept": {
+    "termsChanged": "The <terms>Terms and conditions</terms> changed (version {{termsVersion}}).",
+    "privacyChanged": "The <privacy>Privacy policy</privacy> changed (version {{privacyVersion}}).",
+    "bothChanged": "The <terms>Terms and conditions</terms> changed (version {{termsVersion}}) and the <privacy>Privacy policy</privacy> changed (version {{privacyVersion}}).",
+    "agreement": "I read and accept the <terms>Terms</terms> and the <privacy>Privacy policy</privacy>",
+    "continue": "Accept and continue",
+    "signOut": "Sign out",
+    "title": "We updated the terms"
+  }
 }
