@@ -9,6 +9,11 @@ const defaultManifest = path.join(root, "docs/design/capturas/etapa-3a/manifest.
 const defaultCanvas = path.join(root, "docs/design/lienzo");
 const defaultOutput = path.join(root, "docs/design/capturas/etapa-3a");
 const viewports = new Set(["1440x900", "390x844"]);
+const pendingMobileReference = "sin tablero móvil: pendiente de aprobación del usuario";
+
+function hasComparableBoard(entry) {
+  return entry.viewport.width !== 390 || entry.mobileReference !== pendingMobileReference;
+}
 
 export function boardChoices(file) {
   const html = readFileSync(file, "utf8");
@@ -71,9 +76,12 @@ export function assertCapturedPairs(cases, outputRoot = defaultOutput) {
   const missing = [];
   for (const entry of cases) {
     const files = capturePaths(outputRoot, entry);
-    for (const [side, file] of Object.entries(files)) {
-      if (!existsSync(file) || statSync(file).size === 0) missing.push(`${entry.id} ${side}: ${file}`);
+    if (hasComparableBoard(entry)) {
+      if (!existsSync(files.board) || statSync(files.board).size === 0) missing.push(`${entry.id} board: ${files.board}`);
+    } else if (existsSync(files.board)) {
+      missing.push(`${entry.id}: hay una falsa referencia móvil sin tablero aprobado: ${files.board}`);
     }
+    if (!existsSync(files.app) || statSync(files.app).size === 0) missing.push(`${entry.id} app: ${files.app}`);
   }
   if (missing.length > 0) throw new Error(`Faltan capturas comparables:\n${missing.join("\n")}`);
 }
@@ -162,22 +170,24 @@ export async function installApiMocks(context, responses = [], userFixture) {
 
 export async function captureCase(browser, entry, { canvasUrl, appUrl, outputRoot = defaultOutput }) {
   const files = capturePaths(outputRoot, entry);
-  mkdirSync(path.dirname(files.board), { recursive: true });
+  mkdirSync(path.dirname(files.app), { recursive: true });
   const context = await browser.newContext({ viewport: entry.viewport, deviceScaleFactor: 1, locale: "es-AR" });
   try {
-    const board = await context.newPage();
-    await board.goto(`${canvasUrl}/${entry.board}.dc.html`, { waitUntil: "domcontentloaded" });
-    await board.waitForFunction(() => typeof window.__dcSetProps === "function" && Boolean(window.__dcRootName?.()));
-    await board.evaluate((props) => window.__dcSetProps(window.__dcRootName(), props), entry.props ?? {});
-    await board.locator("[data-sc-name]").first().waitFor();
-    for (const action of entry.boardActions ?? []) {
-      if (action.type !== "click") throw new Error(`Acción de tablero desconocida: ${action.type}`);
-      await board.locator(action.selector).click();
+    if (hasComparableBoard(entry)) {
+      const board = await context.newPage();
+      await board.goto(`${canvasUrl}/${entry.board}.dc.html`, { waitUntil: "domcontentloaded" });
+      await board.waitForFunction(() => typeof window.__dcSetProps === "function" && Boolean(window.__dcRootName?.()));
+      await board.evaluate((props) => window.__dcSetProps(window.__dcRootName(), props), entry.props ?? {});
+      await board.locator("[data-sc-name]").first().waitFor();
+      for (const action of entry.boardActions ?? []) {
+        if (action.type !== "click") throw new Error(`Acción de tablero desconocida: ${action.type}`);
+        await board.locator(action.selector).click();
+      }
+      await board.waitForTimeout(100);
+      await board.evaluate(() => document.fonts.ready);
+      await board.addStyleTag({ content: 'input[inputmode="numeric"][maxlength="1"] { -webkit-text-security: disc; }' });
+      await board.screenshot({ path: files.board });
     }
-    await board.waitForTimeout(100);
-    await board.evaluate(() => document.fonts.ready);
-    await board.addStyleTag({ content: 'input[inputmode="numeric"][maxlength="1"] { -webkit-text-security: disc; }' });
-    await board.screenshot({ path: files.board });
 
     await installApiMocks(context, entry.app.responses, entry.app.userFixture);
     const app = await context.newPage();
@@ -210,7 +220,8 @@ async function main(args) {
   if (selected.length === 0) throw new Error("No hay casos para ese filtro.");
   if (args.includes("--verify")) {
     assertCapturedPairs(selected);
-    console.log(`${selected.length} pares completos.`);
+    const comparable = selected.filter(hasComparableBoard).length;
+    console.log(`${comparable} pares comparables y ${selected.length - comparable} capturas de app sin tablero móvil aprobado.`);
     return;
   }
   const appUrl = option(args, "--app-url");
@@ -221,7 +232,7 @@ async function main(args) {
   try {
     for (const entry of selected) {
       await captureCase(browser, entry, { canvasUrl: canvas.url, appUrl });
-      console.log(`${entry.id}: lienzo y app, ${entry.viewport.width}×${entry.viewport.height}`);
+      console.log(`${entry.id}: ${hasComparableBoard(entry) ? "lienzo y app" : "solo app, sin tablero móvil"}, ${entry.viewport.width}×${entry.viewport.height}`);
     }
     assertCapturedPairs(selected);
   } finally {

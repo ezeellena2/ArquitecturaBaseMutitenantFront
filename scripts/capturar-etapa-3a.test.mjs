@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import os from "node:os";
 import path from "node:path";
@@ -91,6 +92,33 @@ test("errores de organización y estados de sesión cubren toda la matriz 3a", (
   assert.ok(cases.filter((entry) => entry.viewport.width === 390).every((entry) =>
     entry.mobileReference === "sin tablero móvil: pendiente de aprobación del usuario"));
   assertCapturedPairs(cases, outputRoot);
+});
+
+test("los diez estados móviles sin tablero aprobado tienen solo captura de app y se declaran pendientes", () => {
+  const cases = validateManifest(manifest, lienzo).filter((entry) =>
+    entry.group === "errores" && entry.viewport.width === 390);
+  assert.equal(cases.length, 10);
+  const readme = readFileSync(path.join(outputRoot, "errores", "README.md"), "utf8");
+  assert.match(readme, /sin tablero móvil: pendiente de aprobación del usuario/);
+  assert.match(readme, /no tienen referencia móvil comparable/i);
+  assert.doesNotMatch(readme, /recortad[ao].*referencia de textos y orden/i);
+  for (const entry of cases) {
+    const files = capturePaths(outputRoot, entry);
+    assert.equal(existsSync(files.board), false, `${entry.id} no tiene un tablero móvil aprobado`);
+    assert.equal(existsSync(files.app), true, `${entry.id} conserva su captura de app`);
+  }
+});
+
+test("los tableros comparables de errores no repiten el mismo PNG entre estados", () => {
+  const cases = validateManifest(manifest, lienzo).filter((entry) =>
+    entry.group === "errores" && entry.viewport.width === 1440);
+  const hashes = new Map();
+  for (const entry of cases) {
+    const board = capturePaths(outputRoot, entry).board;
+    const hash = createHash("sha256").update(readFileSync(board)).digest("hex");
+    assert.equal(hashes.has(hash), false, `${entry.id} repite la referencia de ${hashes.get(hash)}`);
+    hashes.set(hash, entry.id);
+  }
 });
 
 test("la verificación falla si falta la app o el tablero del mismo caso", () => {
