@@ -67,7 +67,10 @@ describe("OtpInput", () => {
     await userEvent.type(screen.getByRole("textbox", { name: "Código 1" }), "a");
     expect(onChange).not.toHaveBeenCalled();
     rerender(<OtpInput length={6} value="482915" onChange={onChange} label="Código" invalid />);
-    for (const box of screen.getAllByRole("textbox")) expect(box).toHaveAttribute("aria-invalid", "true");
+    for (const box of screen.getAllByRole("textbox")) {
+      expect(box).toHaveAttribute("aria-invalid", "true");
+      expect(box).toHaveClass("aria-invalid:bg-[var(--peligro-t)]");
+    }
   });
 
   it("usa superficie apagada del tablero cuando un código queda bloqueado", () => {
