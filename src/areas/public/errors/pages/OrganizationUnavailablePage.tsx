@@ -49,7 +49,8 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
     beginSignOut();
     queryClient.clear();
     try {
-      await auth.signoutRedirect();
+      const result: unknown = await auth.signoutRedirect();
+      if (result === null) cancelSignOut();
     } catch {
       cancelSignOut();
     }

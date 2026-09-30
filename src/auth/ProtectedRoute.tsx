@@ -9,7 +9,7 @@ export function ProtectedRoute() {
   const recovering = useIsRecoveringSession();
 
   if (recovering && !auth.isAuthenticated) return <Outlet />;
-  if (auth.isLoading) return null;
+  if (auth.isLoading && !auth.user) return null;
   if (!auth.isAuthenticated) {
     if (auth.user?.expired) rememberExpiredSessionNotice();
     const loginPath = location.pathname.startsWith("/org") ? "/login/empresa" : "/login";
