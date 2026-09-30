@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import i18n, { cultureStorageKey, effectiveCulture } from "@/shared/i18n";
 import { safeStorageGet } from "@/shared/hooks/safeStorage";
 import { fetchReferenceData, type ReferenceData } from "./referenceData";
@@ -7,6 +7,12 @@ import { fetchReferenceData, type ReferenceData } from "./referenceData";
 type ReferenceDataSnapshot = { data: ReferenceData; etag: string | null };
 
 export const referenceDataQueryKey = (culture: string | null) => ["reference-data", culture] as const;
+
+function lastCachedData(client: QueryClient, culture: string | null): ReferenceData | undefined {
+  const available = client.getQueriesData<ReferenceDataSnapshot>({ queryKey: ["reference-data"] })
+    .flatMap(([, snapshot]) => snapshot ? [snapshot.data] : []);
+  return available.find((data) => data.culture === culture) ?? available.at(-1);
+}
 
 export function useReferenceData() {
   const [requestedCulture, setRequestedCulture] = useState<string | null>(
@@ -24,7 +30,7 @@ export function useReferenceData() {
     return () => { i18n.off("languageChanged", onLanguageChanged); };
   }, [queryClient, requestedCulture]);
 
-  return useQuery({
+  const query = useQuery({
     queryKey: key,
     queryFn: async (): Promise<ReferenceDataSnapshot> => {
       const previous = queryClient.getQueryData<ReferenceDataSnapshot>(key);
@@ -37,6 +43,8 @@ export function useReferenceData() {
       return { data: response.data, etag: response.etag };
     },
     select: (snapshot) => snapshot.data,
+    placeholderData: keepPreviousData,
     staleTime: Infinity,
   });
+  return { ...query, data: query.data ?? lastCachedData(queryClient, requestedCulture) };
 }

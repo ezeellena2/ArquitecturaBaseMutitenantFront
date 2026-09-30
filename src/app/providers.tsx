@@ -29,7 +29,7 @@ function ReferenceDataStartup({ children }: { children: ReactNode }) {
     void configureI18n(data.cultures, chosen);
   }, [data, user?.culture]);
 
-  if (isError) return <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-6">
+  if (isError && data === undefined) return <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-6">
     <p role="alert">{t("states.error")}</p>
     <Button onClick={() => void refetch()}>{t("actions.retry")}</Button>
   </main>;

@@ -11,7 +11,7 @@ import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { http, HttpResponse } from "msw";
 import { enabledOptions, parseReferenceData } from "./referenceData";
-import { useReferenceData } from "./useReferenceData";
+import { referenceDataQueryKey, useReferenceData } from "./useReferenceData";
 
 function testClient() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -188,5 +188,31 @@ describe("datos de referencia", () => {
       getItem.mockRestore();
       setItem.mockRestore();
     }
+  });
+
+  it("conserva un formulario y los formatos si falla un refetch o la cultura nueva", async () => {
+    await configureI18n(referenceDataFixture().cultures);
+    let failing = false;
+    server.use(http.get("/api/reference-data", ({ request }) => {
+      if (failing) return new HttpResponse(null, { status: 503 });
+      const culture = request.headers.get("accept-language") === "en-US" ? "en-US" : "es-AR";
+      return HttpResponse.json(referenceDataFixture(culture));
+    }));
+    render(createElement(AppProviders, null, createElement("div", null,
+      createElement(CultureProbe),
+      createElement("input", { "aria-label": "Borrador", defaultValue: "sin guardar" }),
+    )));
+    await waitFor(() => expect(screen.getByTestId("effective-culture")).toHaveTextContent("es-AR|es-AR"));
+
+    failing = true;
+    await act(async () => { await queryClient.invalidateQueries({ queryKey: ["reference-data"] }); });
+    await waitFor(() => expect(queryClient.getQueryState(referenceDataQueryKey("es-AR"))?.status).toBe("error"));
+    expect(screen.getByRole("textbox", { name: "Borrador" })).toHaveValue("sin guardar");
+    expect(screen.getByTestId("effective-culture")).not.toHaveTextContent("loading");
+
+    await act(async () => { await changeCulture("en-US"); });
+    await waitFor(() => expect(queryClient.getQueryState(referenceDataQueryKey("en-US"))?.status).toBe("error"));
+    expect(screen.getByRole("textbox", { name: "Borrador" })).toHaveValue("sin guardar");
+    expect(screen.getByTestId("effective-culture")).not.toHaveTextContent("loading");
   });
 });
