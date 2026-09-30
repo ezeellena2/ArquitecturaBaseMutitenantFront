@@ -34,9 +34,9 @@ export function GoogleButton(props: GoogleButtonProps) {
   const label = props.mode === "signup" ? t("signup.google") : t("login.google");
   const className = "w-full border-[var(--t3)] text-[var(--t1)]";
   if (props.mode === "signup" && !props.acceptedTerms) {
-    return <Button type="button" variant="outline" size="lg" className={className} disabled><GoogleMark />{label}</Button>;
+    return <Button type="button" variant="outlineSurface" size="lg" className={className} disabled><GoogleMark />{label}</Button>;
   }
-  return <Button asChild variant="outline" size="lg" className={className}>
+  return <Button asChild variant="outlineSurface" size="lg" className={className}>
     <a href={googleUrl(props)}><GoogleMark />{label}</a>
   </Button>;
 }

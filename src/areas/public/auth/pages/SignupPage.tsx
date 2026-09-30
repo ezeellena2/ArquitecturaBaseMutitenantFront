@@ -135,7 +135,7 @@ export function SignupPage() {
       <FormError message={error ? <>{t(loginCodeErrorKey(error))}{attemptsLeft !== null ? <span className="block">{t("login.attemptsLeft", { count: attemptsLeft })}</span> : null}</> : null} />
       <div className="flex flex-col gap-2.5">
         <Button type="button" size="lg" onClick={() => void verifyCode()} disabled={code.length !== 6 || verify.isPending}>{t("signup.verify")}</Button>
-        <Button type="button" size="lg" variant="outline" className="border-[var(--t3)]" onClick={() => void resendCode()} disabled={resend.isRunning || retry.isRunning || request.isPending}>
+        <Button type="button" size="lg" variant="outlineSurface" className="border-[var(--t3)]" onClick={() => void resendCode()} disabled={resend.isRunning || retry.isRunning || request.isPending}>
           {retry.label ?? (resend.isRunning ? t("login.resendIn", { seconds: resend.seconds }) : t("login.resendCode"))}
         </Button>
       </div>

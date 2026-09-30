@@ -173,7 +173,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <FormError message={errorKey ? <>{t(errorKey)}{attemptsLeft !== null ? <span className="block">{t("login.attemptsLeft", { count: attemptsLeft })}</span> : null}{codeSpent && error?.code === "Auth.LoginCode.TooManyAttempts" ? <span className="block">{t("login.requestNewCode")}</span> : null}{error?.code === "Identity.Account.LockedOut" ? <span className="block">{t("login.tryLater")}</span> : null}{accountClosed ? <span className="block">{t("login.contactSupport")}</span> : null}</> : null} />
       <div className="flex flex-col gap-2.5">
         <Button type="button" size="lg" onClick={() => void submitCode()} disabled={code.length !== 6 || verify.isPending || codeSpent || accountClosed}>{t("login.verify")}</Button>
-        <Button type="button" size="lg" variant="outline" className="border-[var(--t3)]" onClick={() => void resendCode()} disabled={resendTimer.isRunning || retry.isRunning || resend.isPending || accountClosed}>
+        <Button type="button" size="lg" variant="outlineSurface" className="border-[var(--t3)]" onClick={() => void resendCode()} disabled={resendTimer.isRunning || retry.isRunning || resend.isPending || accountClosed}>
           {accountClosed ? t("login.resendCode") : retry.label ?? (resendTimer.isRunning ? t("login.resendIn", { seconds: resendTimer.seconds }) : t("login.resendCode"))}
         </Button>
       </div>

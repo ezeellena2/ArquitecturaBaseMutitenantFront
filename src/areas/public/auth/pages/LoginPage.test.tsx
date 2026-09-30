@@ -139,6 +139,8 @@ describe("LoginPage", () => {
     const group = screen.getByRole("group", { name: "Código" });
     expect(within(group).getAllByRole("textbox")).toHaveLength(6);
     expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toHaveClass("bg-[var(--lado-activo)]");
+    expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).not.toHaveClass("bg-background");
     expect(screen.getByRole("button", { name: "Verificar" })).toBeDisabled();
     fireEvent.paste(within(group).getByRole("textbox", { name: "Código 1" }), { clipboardData: { getData: () => "123456" } });
     fireEvent.click(screen.getByRole("button", { name: "Verificar" }));

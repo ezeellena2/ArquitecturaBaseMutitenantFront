@@ -72,6 +72,8 @@ describe("SignupPage", () => {
     expect(screen.getByText("mariana@example.com").tagName).toBe("STRONG");
     expect(body).toEqual({ email: "mariana@example.com", acceptedTerms: true, culture: "es-AR", timeZoneId: "America/Argentina/Buenos_Aires" });
     expect(screen.getByRole("group", { name: "Código" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toHaveClass("bg-[var(--lado-activo)]");
+    expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).not.toHaveClass("bg-background");
     expect(screen.getByRole("button", { name: "Verificar y crear la cuenta" })).toBeDisabled();
   });
 
