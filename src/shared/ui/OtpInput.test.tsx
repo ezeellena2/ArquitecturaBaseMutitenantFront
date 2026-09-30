@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
@@ -32,6 +32,33 @@ describe("OtpInput", () => {
     await userEvent.keyboard("{Backspace}");
     expect(onChange).toHaveBeenLastCalledWith("4");
     expect(boxes[1]).toHaveFocus();
+  });
+
+  it("borra con Backspace una casilla llena, incluso la última", async () => {
+    const onChange = vi.fn();
+    render(<OtpInput length={6} value="482194" onChange={onChange} label="Código" />);
+    const last = screen.getByRole("textbox", { name: "Código 6" });
+    last.focus();
+    await userEvent.keyboard("{Backspace}");
+    expect(onChange).toHaveBeenLastCalledWith("48219");
+  });
+
+  it("acepta los seis dígitos del autocompletado en la primera casilla", () => {
+    const onChange = vi.fn();
+    render(<OtpInput length={6} value="" onChange={onChange} label="Código" />);
+    const first = screen.getByRole("textbox", { name: "Código 1" });
+    expect(first).toHaveAttribute("maxLength", "6");
+    fireEvent.change(first, { target: { value: "482193" } });
+    expect(onChange).toHaveBeenLastCalledWith("482193");
+  });
+
+  it("no genera espacios ni un código válido si se escribe primero en otra casilla", () => {
+    const onChange = vi.fn();
+    render(<OtpInput length={6} value="" onChange={onChange} label="Código" />);
+    const third = screen.getByRole("textbox", { name: "Código 3" });
+    fireEvent.change(third, { target: { value: "5" } });
+    expect(onChange).toHaveBeenLastCalledWith("5");
+    expect(screen.getByRole("textbox", { name: "Código 2" })).toHaveFocus();
   });
 
   it("ignora letras y marca todas las casillas cuando el código falla", async () => {

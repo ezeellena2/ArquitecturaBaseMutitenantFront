@@ -30,30 +30,42 @@ export function OtpInput({
   "aria-describedby": describedBy,
 }: OtpInputProps) {
   const boxes = useRef<(HTMLInputElement | null)[]>([]);
-  const digits = value.padEnd(length, " ").slice(0, length).split("");
+  const normalizedValue = value.replace(/\D/gu, "").slice(0, length);
+  const digits = normalizedValue.padEnd(length, " ").split("");
 
   function focusBox(index: number) {
     boxes.current[Math.min(Math.max(index, 0), length - 1)]?.focus();
   }
 
   function handleChange(index: number, event: ChangeEvent<HTMLInputElement>) {
-    const digit = event.target.value.replace(/\D/gu, "").slice(-1);
+    const entered = event.target.value.replace(/\D/gu, "").slice(0, length);
 
-    if (!digit) {
+    if (entered.length > 1) {
+      onChange(entered);
+      focusBox(entered.length);
       return;
     }
 
-    const next = value.padEnd(index, " ").slice(0, index) + digit + value.slice(index + 1);
-    onChange(next.trimEnd());
-    focusBox(index + 1);
+    if (!entered) {
+      if (event.target.value === "" && index < normalizedValue.length) {
+        onChange(normalizedValue.slice(0, index) + normalizedValue.slice(index + 1));
+      }
+      return;
+    }
+
+    const writeIndex = Math.min(index, normalizedValue.length);
+    const next = normalizedValue.slice(0, writeIndex) + entered + normalizedValue.slice(writeIndex + 1);
+    onChange(next);
+    focusBox(writeIndex + 1);
   }
 
   function handleKeyDown(index: number, event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Backspace" && !digits[index]?.trim()) {
-      event.preventDefault();
-      onChange(value.slice(0, Math.max(index - 1, 0)));
-      focusBox(index - 1);
-    }
+    if (event.key !== "Backspace") return;
+    event.preventDefault();
+    const eraseIndex = Math.min(index, normalizedValue.length - 1);
+    if (eraseIndex < 0) return;
+    onChange(normalizedValue.slice(0, eraseIndex) + normalizedValue.slice(eraseIndex + 1));
+    focusBox(eraseIndex);
   }
 
   function handlePaste(event: ClipboardEvent<HTMLInputElement>) {
@@ -81,7 +93,7 @@ export function OtpInput({
           inputMode="numeric"
           autoComplete={index === 0 ? "one-time-code" : "off"}
           autoFocus={index === 0 ? autoFocus : undefined}
-          maxLength={1}
+          maxLength={index === 0 ? length : 1}
           disabled={disabled}
           aria-label={`${label} ${index + 1}`}
           aria-invalid={invalid ? true : undefined}
