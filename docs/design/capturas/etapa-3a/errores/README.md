@@ -4,6 +4,8 @@ Se capturaron diez estados, cada uno a 1440×900 y 390×844: `Error-Org` 403/404
 
 En escritorio se contrastaron estructura, marca, íconos, títulos, mensajes, orden, controles, tonos y tamaños. En móvil se verificó que la app adapte el contenido del tablero de escritorio según `responsive.md`; **no se declara una comparación visual aprobada a 390×844**. `Error-Org` conserva el layout de Empresa aun con un 403 o 404 de la API. `Perfil-Suspendido` ofrece los otros perfiles elegibles, mantiene legible la organización suspendida y permite salir. `Sesion` muestra los cinco mensajes y la acción de retorno cuando falla el ingreso.
 
+Se regeneraron y revisaron las capturas de `Perfil-Suspendido` y `Sesion` tras los hallazgos 27 y 28. Los cambios funcionales no alteraron el diseño estático: `navigationStatus.test.tsx` verifica que la transición de sesión permanece visible mientras OIDC marca `isLoading`, y `routes.test.tsx` verifica que `/org` presenta el estado de la organización obtenido de `/api/me`. Las variaciones de píxel fueron solo de la fase del spinner y del renderizado de pictogramas; se conservaron los PNG publicados. Las capturas de este manifest siguen usando los estados de demostración definidos allí; no sustituyen esas pruebas de navegación.
+
 ## Diferencias y estados pendientes
 
 - **Auditoría (E4):** `Error-Org` omite «Auditoría» de las migas del lienzo. Su ruta nace con la administración de la organización en E4; los controles futuros se ocultan hasta su etapa.
