@@ -59,8 +59,10 @@
   "closedSession": "You've been signed out",
   "deletionDate": "Your account will be deleted on {{date}}.",
   "goHome": "Go to home",
-  "googleFailed": "We couldn't link your Google account.",
+  "googleFailed": "We could not complete sign-in with Google.",
   "nameTooLong": "The name is too long.",
   "discardMobile": "Discard",
-  "saveMobile": "Save"
+  "saveMobile": "Save",
+  "googleAlreadyUsed": "This Google account is already associated with another account.",
+  "googleEmailNotVerified": "Your Google account does not have a verified email."
 }
