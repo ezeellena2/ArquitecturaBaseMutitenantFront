@@ -32,6 +32,7 @@ export function validateManifest(manifestFile = defaultManifest, canvasRoot = de
   }
   const ids = new Set();
   const pairs = new Map();
+  const mobileOnlyPairs = new Set();
   for (const entry of manifest.cases) {
     if (!/^[a-z0-9-]+$/.test(entry.id) || !/^[a-z0-9-]+$/.test(entry.pair) ||
         !/^[a-z0-9-]+$/.test(entry.group) ||
@@ -45,6 +46,12 @@ export function validateManifest(manifestFile = defaultManifest, canvasRoot = de
     if (pairSizes.has(size)) throw new Error(`${entry.pair}: tamaño ${size} repetido`);
     pairSizes.add(size);
     pairs.set(entry.pair, pairSizes);
+    if (entry.mobileOnly === true) {
+      if (entry.group !== "inicios" || !entry.id.startsWith("lateral-") || size !== "390x844") {
+        throw new Error(`${entry.id}: solo el lateral móvil sin tablero de escritorio puede ser mobileOnly`);
+      }
+      mobileOnlyPairs.add(entry.pair);
+    }
     if (typeof entry.app?.path !== "string" || !entry.app.path.startsWith("/") || entry.app.path.startsWith("//")) {
       throw new Error(`${entry.id}: falta una ruta local de la app`);
     }
@@ -61,7 +68,10 @@ export function validateManifest(manifestFile = defaultManifest, canvasRoot = de
     }
   }
   for (const [pair, sizes] of pairs) {
-    for (const size of viewports) {
+    if (mobileOnlyPairs.has(pair) && (sizes.size !== 1 || !sizes.has("390x844"))) {
+      throw new Error(`${pair}: mobileOnly exige solo 390x844`);
+    }
+    for (const size of mobileOnlyPairs.has(pair) ? ["390x844"] : viewports) {
       if (!sizes.has(size)) throw new Error(`Falta ${pair}: ${size}`);
     }
   }

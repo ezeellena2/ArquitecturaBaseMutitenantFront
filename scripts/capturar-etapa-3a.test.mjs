@@ -72,19 +72,42 @@ test("Portada y documentos legales tienen pares de escritorio y móvil", () => {
   }
 });
 
-test("inicios y menús privados tienen pares de escritorio y móvil", () => {
+test("inicios y perfiles tienen pares; los dos laterales abiertos solo tienen tablero móvil", () => {
   const cases = validateManifest(manifest, lienzo).filter((entry) => entry.group === "inicios");
   const expected = ["inicio-personal", "inicio-org", "perfiles-personal", "perfiles-org", "lateral-personal", "lateral-org"];
   assert.deepEqual([...new Set(cases.map((entry) => entry.pair))].sort(), expected.sort());
-  assert.equal(cases.length, 12);
+  assert.equal(cases.length, 10);
+  assert.ok(cases.filter((entry) => entry.id.startsWith("lateral-")).every((entry) => entry.mobileOnly === true));
   assert.ok(cases.every((entry) => entry.app.userFixture && entry.app.path.includes("visualApp.html")));
   assertCapturedPairs(cases, outputRoot);
+});
+
+test("el lateral móvil añade cobertura y solo los inicios móviles vacíos pueden repetirse", () => {
+  const cases = validateManifest(manifest, lienzo).filter((entry) => entry.group === "inicios");
+  assert.equal(cases.filter((entry) => entry.id.startsWith("lateral-") && entry.viewport.width === 1440).length, 0,
+    "el tablero de escritorio no dibuja el lateral contraído y los casos anteriores repetían el inicio");
+  for (const entry of cases.filter((item) => item.id.startsWith("lateral-"))) {
+    assert.equal(entry.viewport.width, 390);
+    assert.ok(entry.app.actions?.some((action) => action.type === "click" && action.name === "Abrir o contraer navegación"));
+  }
+  for (const kind of ["app", "board"]) {
+    const hashes = new Map();
+    for (const entry of cases) {
+      const hash = createHash("sha256").update(readFileSync(capturePaths(outputRoot, entry)[kind])).digest("hex");
+      const previous = hashes.get(hash);
+      if (previous) {
+        assert.deepEqual([previous, entry.id].sort(), ["inicio-org-movil", "inicio-personal-movil"].sort(),
+          `${entry.id} repite ${previous} sin representar otro acceso visible`);
+      }
+      hashes.set(hash, entry.id);
+    }
+  }
 });
 
 test("cada captura del arnés visual se identifica y se distingue del recorrido real", () => {
   const cases = validateManifest(manifest, lienzo);
   const harnessCases = cases.filter((entry) => entry.app.path.startsWith("/src/test/"));
-  assert.equal(harnessCases.length, 32);
+  assert.equal(harnessCases.length, 30);
   for (const entry of harnessCases) assert.equal(entry.app.captureMode, "harness", entry.id);
   for (const entry of cases.filter((item) => !item.app.path.startsWith("/src/test/"))) {
     assert.notEqual(entry.app.captureMode, "harness", entry.id);
@@ -157,7 +180,7 @@ test("nombra pares por grupo, caso y viewport sin sobrescribir otro estado", () 
   assert.notEqual(first.board, second.board);
 });
 
-test("cada estado del manifest exige versión de escritorio y móvil", () => {
+test("cada estado exige ambos tamaños salvo el lateral móvil declarado", () => {
   const directory = mkdtempSync(path.join(os.tmpdir(), "codex-3a-matrix-"));
   const oneSided = path.join(directory, "manifest.json");
   writeFileSync(oneSided, JSON.stringify({ version: 1, cases: [{
@@ -165,6 +188,13 @@ test("cada estado del manifest exige versión de escritorio y móvil", () => {
     viewport: { width: 1440, height: 900 }, props: {}, app: { path: "/" },
   }] }));
   assert.throws(() => validateManifest(oneSided, lienzo), /landing.*390x844/);
+  const mobileOnly = path.join(directory, "lateral.json");
+  writeFileSync(mobileOnly, JSON.stringify({ version: 1, cases: [{
+    id: "lateral-personal-movil", pair: "lateral-personal", group: "inicios", board: "M-Inicio-Personal",
+    mobileOnly: true, viewport: { width: 390, height: 844 }, props: {},
+    app: { path: "/src/test/visualApp.html", captureMode: "harness" },
+  }] }));
+  assert.doesNotThrow(() => validateManifest(mobileOnly, lienzo));
 });
 
 test("los pasos de app usan roles accesibles y completan el código de seis dígitos", async () => {

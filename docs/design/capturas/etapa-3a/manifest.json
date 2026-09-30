@@ -1976,29 +1976,10 @@
       }
     },
     {
-      "id": "lateral-personal-escritorio",
-      "pair": "lateral-personal",
-      "group": "inicios",
-      "board": "Inicio-Personal",
-      "viewport": {
-        "width": 1440,
-        "height": 900
-      },
-      "props": {
-        "aviso": "Sin aviso"
-      },
-      "app": {
-        "captureMode": "harness",
-        "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
-        "userFixture": "visual-personal",
-        "readySelector": "main",
-        "readyText": "Lucía Fernández"
-      }
-    },
-    {
       "id": "lateral-personal-movil",
       "pair": "lateral-personal",
       "group": "inicios",
+      "mobileOnly": true,
       "board": "M-Inicio-Personal",
       "viewport": {
         "width": 390,
@@ -2023,27 +2004,10 @@
       }
     },
     {
-      "id": "lateral-org-escritorio",
-      "pair": "lateral-org",
-      "group": "inicios",
-      "board": "Inicio-Org",
-      "viewport": {
-        "width": 1440,
-        "height": 900
-      },
-      "props": {},
-      "app": {
-        "captureMode": "harness",
-        "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
-        "userFixture": "visual-business",
-        "readySelector": "main",
-        "readyText": "Lucía Fernández"
-      }
-    },
-    {
       "id": "lateral-org-movil",
       "pair": "lateral-org",
       "group": "inicios",
+      "mobileOnly": true,
       "board": "M-Inicio-Org",
       "viewport": {
         "width": 390,
