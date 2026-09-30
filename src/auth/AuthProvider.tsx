@@ -5,6 +5,7 @@ import { queryClient } from "@/shared/api/queryClient";
 import i18n from "@/shared/i18n";
 import { authConfig } from "./authConfig";
 import { rememberExpiredSessionNotice } from "./sessionExpiredNotice";
+import { rememberRecoveryAccess } from "./recoveryAccess";
 
 let session: AuthContextProps | undefined;
 
@@ -39,6 +40,7 @@ function HttpClientBridge({ children }: { children: ReactNode }) {
 
   useLayoutEffect(() => {
     session = auth;
+    if (auth.isAuthenticated) rememberRecoveryAccess(auth.user?.profile.access);
     configureHttpClient(httpClientOptions);
     return () => { session = undefined; };
   }, [auth]);

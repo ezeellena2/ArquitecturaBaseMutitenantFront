@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { Outlet, useLocation } from "react-router";
 import { SessionRecoveryContext } from "./sessionRecoveryStatus";
+import { recoveryAccess } from "./recoveryAccess";
 
 export function SessionRecovery() {
   const auth = useAuth();
@@ -12,11 +13,7 @@ export function SessionRecovery() {
   useEffect(() => {
     if (!isRecovering || hasStarted.current) return;
     hasStarted.current = true;
-    const access = location.pathname === "/org" || location.pathname.startsWith("/org/")
-      ? "business"
-      : location.pathname === "/plataforma" || location.pathname.startsWith("/plataforma/")
-        ? "platform"
-        : "consumer";
+    const access = recoveryAccess(location.pathname);
     void auth.signinSilent({ extraQueryParams: { access } })
       .catch(() => undefined)
       .finally(() => setIsRecovering(false));

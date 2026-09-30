@@ -23,6 +23,7 @@ function renderPrivateRoute(strict = false, path = "/org") {
     { path: "/login/empresa", element: <main aria-label="Ingreso de empresa" /> },
     { element: <SessionRecovery />, children: [
       { element: <ProtectedRoute />, children: [
+        { path: "/cuenta", element: <main aria-label="Mi cuenta" /> },
         { element: <AccessRoute access="business" />, children: [
           { path: "/org", element: <main aria-label="Inicio de organización" /> },
         ] },
@@ -43,6 +44,14 @@ describe("SessionRecovery", () => {
     auth.user = undefined;
     auth.isLoading = false;
     signinSilent.mockReset();
+    sessionStorage.clear();
+  });
+
+  it("recupera la puerta previa al recargar la ruta global de cuenta", async () => {
+    sessionStorage.setItem("arquitecturabasemt.last-access", "business");
+    signinSilent.mockImplementation(() => new Promise<User>(() => undefined));
+    renderPrivateRoute(false, "/cuenta");
+    await waitFor(() => expect(signinSilent).toHaveBeenCalledWith({ extraQueryParams: { access: "business" } }));
   });
 
   it("canjea la cookie tras F5 y conserva la ruta privada", async () => {
