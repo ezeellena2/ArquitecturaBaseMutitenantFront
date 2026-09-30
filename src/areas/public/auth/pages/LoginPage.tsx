@@ -19,6 +19,11 @@ import { loginCodeErrorKey } from "../errors";
 import { carriedLoginRedirectError, carryLoginRedirectError, forgetLoginRedirectError } from "../lib/loginRedirectError";
 import type { CodeStep } from "../lib/loginCodeState";
 import { authorizeReturnUrl, safeReturnUrl } from "../lib/returnUrl";
+import type { PendingDeletionState } from "@/shared/api/types";
+import { accountErrorCodes, pendingDeletionFromProblem } from "@/shared/api/accountContract";
+import { getPendingDeletion, cancelAccountDeletion } from "../api/deletion";
+import { PendingDeletionPanel } from "../components/PendingDeletionPanel";
+import { toast } from "sonner";
 
 export interface LoginPageProps {
   access: "consumer" | "business";
@@ -56,11 +61,23 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const resendTimer = useCountdown(0);
   const verifyRetry = useRetryAfterCountdown();
   const resendRetry = useRetryAfterCountdown();
+  const [pending, setPending] = useState<PendingDeletionState | null>(null);
+  const [cancelFailure, setCancelFailure] = useState<string | null>(null);
+  const [googleProofExpired, setGoogleProofExpired] = useState(false);
+  const googleProofRequested = useRef(false);
+  const googlePending = googleError === accountErrorCodes.pendingDeletion && !googleProofExpired;
+  const cancel = useIdempotentMutation((ticket: string, key) => cancelAccountDeletion(ticket, key));
 
   useEffect(() => {
-    if (returnUrl || startedOidc.current) return;
+    if (!googlePending || googleProofRequested.current) return;
+    googleProofRequested.current = true;
+    void getPendingDeletion().then(setPending).catch(() => { setGoogleProofExpired(true); setGoogleError(null); forgetLoginRedirectError(); });
+  }, [googlePending]);
+
+  useEffect(() => {
+    if (returnUrl || pending || googlePending || startedOidc.current) return;
     startedOidc.current = true;
-    if (redirectError) carryLoginRedirectError(redirectError);
+    if (redirectError && !googleProofExpired) carryLoginRedirectError(redirectError);
     const destination = access === "business" ? "/org" : "/";
     const returnTo = safeReturnUrl(searchParams.get("returnUrl"), destination);
     void auth.signinRedirect({
@@ -70,11 +87,26 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
         ...(searchParams.get("session") === "expired" ? { prompt: "login" } : {}),
       },
     });
-  }, [access, auth, redirectError, returnUrl, searchParams]);
+  }, [access, auth, redirectError, returnUrl, searchParams, pending, googlePending, googleProofExpired]);
 
   useEffect(() => { if (returnUrl) forgetLoginRedirectError(); }, [returnUrl]);
 
-  if (!returnUrl) return null;
+  if (!returnUrl && !pending) return null;
+
+  async function cancelDeletion() {
+    if (!pending) return;
+    setCancelFailure(null);
+    try {
+      const response = await cancel.mutateAsync(pending.cancelTicket);
+      toast.success(t("deletion.cancelled"));
+      completeLogin(response.returnUrl);
+    } catch (caught) {
+      const message = caught instanceof ApiError ? caught.detail ?? t(caught.isNetworkError ? "errors:network" : "errors:server") : t("errors:server");
+      if (caught instanceof ApiError && caught.status >= 400 && caught.status < 500) {
+        setPending(null); setGoogleProofExpired(true); setGoogleError(null); forgetLoginRedirectError(); backToEmail(); toast.error(message);
+      } else setCancelFailure(message);
+    }
+  }
 
   function startCode(next: CodeStep) {
     setStep(next);
@@ -101,6 +133,8 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       completeLogin(response.returnUrl);
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
+      const deletion = pendingDeletionFromProblem(caught.problem);
+      if (deletion) { setPending(deletion); return; }
       verifyRetry.startFromError(caught);
       if (caught.code === "Auth.LoginCode.Expired" || caught.code === "Auth.LoginCode.TooManyAttempts" || caught.code === "Identity.Account.LockedOut") {
         resendTimer.restart(0);
@@ -136,7 +170,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const unavailable = result && result in unavailableResults ? unavailableResults[result as UnavailableCode] : null;
 
   return <AuthLayout access={access}>
-    {result === "noBusiness" ? <div className="flex flex-col gap-[22px] text-center">
+    {pending ? <PendingDeletionPanel pending={pending} onCancel={() => { void cancelDeletion(); }} busy={cancel.isPending} failure={cancelFailure} /> : result === "noBusiness" ? <div className="flex flex-col gap-[22px] text-center">
       <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><Building2 size={20} strokeWidth={1.75} /></span>
       <h1 className="text-2xl font-bold leading-tight">{t("login.noBusiness")}</h1>
       <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--t3)] text-sm font-semibold">{t("login.enterAsPerson")}</Link>
@@ -155,7 +189,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     </div> : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-2xl font-bold leading-tight">{access === "business" ? t("login.businessTitle") : t("login.personalTitle")}</h1>
       {sessionExpired ? <div role="status" className="flex items-start gap-2.5 rounded-xl bg-[var(--marca-t)] px-3.5 py-3 text-sm leading-normal text-[var(--marca-tx)]"><Clock3 aria-hidden="true" className="mt-0.5 shrink-0" size={18} strokeWidth={2} /><span>{t("login.sessionExpired")}</span></div> : null}
-      <GoogleButton mode="login" access={access} returnUrl={returnUrl} />
+      <GoogleButton mode="login" access={access} returnUrl={returnUrl!} />
       <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--t3)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--t3)]" /></div>
       <EmailCodeForm onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? <><span>{t("login.googleError")}</span><span className="block">{t("login.googleErrorHelp")}</span></> : undefined} />
       <div className="flex flex-col gap-2 text-center text-[13px] text-[var(--t2)]">

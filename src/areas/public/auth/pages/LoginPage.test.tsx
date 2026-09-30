@@ -35,6 +35,35 @@ function show(access: "consumer" | "business", url: string, completeLogin = vi.f
 }
 
 describe("LoginPage", () => {
+  it("prueba el correo pendiente sin iniciar sesión y cancela antes de continuar", async () => {
+    const completeLogin = vi.fn();
+    server.use(
+      http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 60 })),
+      http.post("/api/auth/login-code/verify", () => HttpResponse.json({ code: "Identity.Account.PendingDeletion", scheduledForUtc: "2026-10-30T12:00:00Z", cancelTicket: "opaque-cancel", timeZoneId: "America/Argentina/Buenos_Aires", returnUrl: authorizeUrl, cancelTicketExpiresAtUtc: "2026-09-30T13:00:00Z" }, { status: 403 })),
+      http.post("/api/auth/deletion/cancel", async ({ request }) => {
+        expect(await request.json()).toEqual({ cancelTicket: "opaque-cancel" });
+        expect(request.headers.get("Idempotency-Key")).toBeTruthy();
+        return HttpResponse.json({ returnUrl: authorizeUrl });
+      }),
+    );
+    show("consumer", loginUrl, completeLogin);
+    fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: "ana@example.test" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+    const code = await screen.findByRole("textbox", { name: "Código 1" });
+    fireEvent.change(code, { target: { value: "123456" } });
+    fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
+    expect(await screen.findByRole("heading", { name: "Tu cuenta tiene la baja pedida" })).toBeVisible();
+    expect(completeLogin).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" }));
+    await waitFor(() => expect(completeLogin).toHaveBeenCalledWith(authorizeUrl));
+  });
+
+  it("lee prueba de Google desde cookie segura sin iniciar OIDC antes de cancelar", async () => {
+    server.use(http.post("/api/auth/deletion/pending", () => HttpResponse.json({ scheduledForUtc: "2026-10-30T12:00:00Z", cancelTicket: "cookie-proof", timeZoneId: "America/Argentina/Buenos_Aires", returnUrl: authorizeUrl, expiresAtUtc: "2026-09-30T13:00:00Z" })));
+    show("business", "/login/empresa?error=Identity.Account.PendingDeletion");
+    expect(await screen.findByRole("heading", { name: "Tu cuenta tiene la baja pedida" })).toBeVisible();
+    expect(signinRedirect).not.toHaveBeenCalled();
+  });
   it("inicia OIDC una vez desde cada puerta y conserva el acceso elegido", async () => {
     const view = show("consumer", "/login");
     await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
@@ -267,3 +296,4 @@ describe("LoginPage", () => {
     }
   });
 });
+
