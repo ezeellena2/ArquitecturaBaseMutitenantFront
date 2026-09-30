@@ -58,7 +58,9 @@ describe("LoginPage", () => {
     expect(heading.compareDocumentPosition(google) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(google.compareDocumentPosition(email) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(email.compareDocumentPosition(send) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(within(main).getByRole("link", { name: "Creá una" })).toHaveAttribute("href", "/registro");
+    const signupLink = within(main).getByRole("link", { name: "Creá una" });
+    expect(signupLink).toHaveAttribute("href", "/registro");
+    expect(signupLink.parentElement?.parentElement).toHaveClass("text-center");
     expect(within(main).getByRole("link", { name: "Ingresá como empresa" })).toHaveAttribute("href", "/login/empresa");
     expect(within(main).queryByText("Recuperá tu cuenta")).not.toBeInTheDocument();
     expect(within(main).queryByText("Registrala")).not.toBeInTheDocument();
@@ -74,7 +76,9 @@ describe("LoginPage", () => {
       expect(within(main).getByRole("heading", { name: "Ingresá como empresa" })).toBeVisible();
       expect(within(main).queryByText("¿Tu empresa no está registrada?")).not.toBeInTheDocument();
       expect(within(main).queryByText("Registrala")).not.toBeInTheDocument();
-      expect(within(main).getByRole("link", { name: "Ingresá acá" })).toHaveAttribute("href", "/login");
+      const personalLink = within(main).getByRole("link", { name: "Ingresá acá" });
+      expect(personalLink).toHaveAttribute("href", "/login");
+      expect(personalLink.parentElement?.parentElement).toHaveClass("text-center");
       expect(await axe(container)).toHaveNoViolations();
     } finally {
       Object.defineProperty(window, "innerWidth", { configurable: true, value: originalWidth });

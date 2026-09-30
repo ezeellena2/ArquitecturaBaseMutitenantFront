@@ -9,6 +9,7 @@ Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena
 |---|---|---|
 | `--marca` | `oklch(0.5 0.1 195)` | botón principal, enlaces fuertes, activo |
 | `--marca-2` | `oklch(0.58 0.11 170)` | segundo color del degradado del logo y del avatar |
+| `--marca-sombra` | `oklch(0.5 0.1 195 / 0.3)` | sombra corta de la marca |
 | `--marca-h` | `oklch(0.45 0.1 195)` | hover del botón principal |
 | `--auth-panel-start` / `--auth-panel-mid` / `--auth-panel-end` | `oklch(0.48 0.099 195)` / `oklch(0.36 0.087 195)` / `oklch(0.26 0.062 195)` | degradado del panel de Ingreso y Registro, copiado del lienzo |
 | `--auth-panel-grid` | `oklch(1 0 0 / 0.06)` | cuadrícula tenue del mismo panel |
@@ -47,7 +48,7 @@ Los tonos de `statusTones` (texto sobre fondo):
 - Tarjetas (filtros y tablas) con radio de 16 px y sombra suave: `0 1px 2px oklch(0.24 0.012 60 / 0.05), 0 8px 24px -12px oklch(0.24 0.012 60 / 0.14)`.
 - Botones con radio de 10 px. El principal lleva un degradado vertical de `--marca` a `--marca-h` y un relieve de 1 px.
 - **Tablas:** encabezado sobre `--s2`, filas alternadas (`--fila-alterna` en las pares) y encabezados que bajan de línea en lugar de pisarse.
-- **Marca:** un cuadrado con degradado de `--marca` a `--marca-2` y el nombre del producto al lado. Lo mismo en el menú lateral y en las pantallas públicas.
+- **Marca:** un cuadrado con degradado de `--marca` a `--marca-2`, sombra `0 2px 6px -1px var(--marca-sombra)` y un cuadrado blanco abierto del lado derecho, rotado −45° como en el lienzo. Lleva el nombre del producto al lado. Lo mismo en el menú lateral y en las pantallas públicas.
 - Los rótulos de grupo del menú van sin mayúsculas ("Administración", no "ADMINISTRACIÓN").
 
 ## Menú lateral y panel de Administración

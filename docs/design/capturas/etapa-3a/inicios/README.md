@@ -6,7 +6,7 @@ Se contrastaron encabezado, marca, bloque de contexto del menú, orden de enlace
 
 ## Diferencias justificadas
 
-- **Mi cuenta (3b):** se oculta del menú lateral personal y del selector de perfiles de ambos accesos, en escritorio y teléfono. Su ruta nace en 3b. Por esa ausencia, «Salir» y el borde superior de la hoja móvil quedan más abajo que en el tablero.
+- **Mi cuenta (3b):** se oculta del menú lateral personal y del selector de perfiles de ambos accesos, en escritorio y teléfono. Su ruta nace en 3b. En escritorio «Salir» queda más arriba que en el tablero; en teléfono el borde superior de la hoja queda más abajo mientras «Salir» conserva casi la misma posición vertical.
 - **Administración de empresa (E4):** se oculta el menú de Administración y sus accesos a funciones posteriores. El inicio `/org` queda vacío en 3a, como su tablero.
 - **Bordes y tonos:** la aplicación usa los tokens de `tema.md`, incluidos los bordes de controles derivados de `--t3`; prevalecen sobre valores ilustrativos del HTML del lienzo.
 

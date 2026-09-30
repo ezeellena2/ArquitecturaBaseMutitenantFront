@@ -140,7 +140,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <GoogleButton mode="login" access={access} returnUrl={returnUrl} />
       <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--t3)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--t3)]" /></div>
       <EmailCodeForm onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? <><span>{t("login.googleError")}</span><span className="block">{t("login.googleErrorHelp")}</span></> : undefined} />
-      <div className="flex flex-col gap-2 text-[13px] text-[var(--t2)]">
+      <div className="flex flex-col gap-2 text-center text-[13px] text-[var(--t2)]">
         {access === "consumer" ? <>
           <div>{t("login.noAccount")} <Link to="/registro" className="font-semibold text-[var(--marca)] hover:underline">{t("login.createOne")}</Link></div>
           <div>{t("login.haveBusiness")} <Link to="/login/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("login.enterAsBusiness")}</Link></div>

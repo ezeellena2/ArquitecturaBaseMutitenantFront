@@ -60,6 +60,27 @@ describe("AccessMenu", () => {
     await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
   });
 
+  it("iguala las filas compactas, el texto del perfil activo y el ícono Salir del lienzo", async () => {
+    const { user } = setup({
+      ...businessUser,
+      organizations: [{ ...businessUser.organizations[0], roleName: "Dueño" }],
+    });
+    screen.getByRole("button", { name: "Ana, Empresa A" }).focus();
+    await user.keyboard("{Enter}");
+    const menu = await screen.findByRole("menu", { name: "Ana, Empresa A" });
+    const active = within(menu).getByRole("menuitemradio", { name: /Empresa A.*Dueño/ });
+    expect(active).toHaveClass("min-h-11", "gap-2", "px-2.5", "py-1.5");
+    expect(within(active).getByText("Empresa A")).toHaveClass("text-[13px]", "text-[var(--t1)]");
+    expect(within(active).getByText("Dueño")).toHaveClass("text-xs");
+    expect(active.querySelector("[aria-hidden='true']")).toHaveClass("size-7");
+    const signOutIcon = within(menu).getByRole("menuitem", { name: "Salir" }).querySelector("svg");
+    expect(Array.from(signOutIcon?.querySelectorAll("path") ?? [], (path) => path.getAttribute("d"))).toEqual([
+      "M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4",
+      "M10 16l-4-4 4-4",
+      "M6 12h10",
+    ]);
+  });
+
   it("en Personal sin organizaciones no ofrece empresa ni crearla; usa correo si falta nombre", async () => {
     const { user } = setup({ ...consumerWithoutOrganizations, displayName: null });
 

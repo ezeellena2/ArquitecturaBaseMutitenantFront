@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { BrandMark } from "@/shared/ui/BrandMark";
 
 export function SiteLayout({ children, variant = "landing" }: { children: ReactNode; variant?: "landing" | "legal" }) {
   const { t } = useTranslation("site");
@@ -9,9 +10,7 @@ export function SiteLayout({ children, variant = "landing" }: { children: ReactN
     <header className="h-[60px] border-b border-[var(--borde)] md:h-[72px]">
       <div className="mx-auto flex h-full max-w-[1280px] items-center gap-0 px-4 md:gap-8 md:px-10">
         <Link to="/" className="inline-flex shrink-0 items-center gap-2.5 text-base font-bold tracking-tight text-[var(--t1)] no-underline md:text-lg">
-          <span aria-hidden="true" className="relative flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-gradient-to-br from-[var(--marca)] to-[var(--marca-2)] shadow-[var(--shadow-card)] md:size-8 md:rounded-[9px]">
-            <svg className="size-5 text-[var(--lado-activo)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
-          </span>
+          <BrandMark className="md:size-8 md:rounded-[9px]" />
           {t("brand")}
         </Link>
         {variant === "landing" && <nav aria-label={t("navigation.label")} className="hidden items-center gap-7 text-[15px] font-medium md:flex">

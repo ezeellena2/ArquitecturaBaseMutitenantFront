@@ -1,4 +1,4 @@
-import { Check, ChevronDown, LogOut } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "react-oidc-context";
@@ -19,6 +19,14 @@ function initials(name: string): string {
   return name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("");
 }
 
+function SignOutIcon() {
+  return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4" />
+    <path d="M10 16l-4-4 4-4" />
+    <path d="M6 12h10" />
+  </svg>;
+}
+
 interface ProfileRowProps {
   name: string;
   detail: string | null;
@@ -32,17 +40,17 @@ interface ProfileRowProps {
 
 function ProfileRow({ name, detail, checked, disabled, suspended, mobile, onSelect, statusLabel }: ProfileRowProps) {
   const content = <>
-    <span aria-hidden="true" className={`inline-flex size-8 shrink-0 items-center justify-center rounded-[9px] text-[13px] font-bold ${checked ? "bg-[var(--lado-activo)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]"}`}>
+    <span aria-hidden="true" className={`inline-flex size-7 shrink-0 items-center justify-center rounded-lg text-[11.5px] font-bold ${checked ? "bg-[var(--lado-activo)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]"}`}>
       {initials(name)}
     </span>
     <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
-      <span className="truncate text-sm font-medium">{name}</span>
-      {detail ? <span className="text-[13px] text-[var(--t3)]">{detail}</span> : null}
+      <span className="truncate text-[13px] font-medium text-[var(--t1)]">{name}</span>
+      {detail ? <span className="text-xs text-[var(--t3)]">{detail}</span> : null}
     </span>
     {suspended ? <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--alerta-t)] px-2.5 py-[3px] text-[12.5px] font-medium text-[var(--alerta)] before:size-1.5 before:rounded-full before:bg-current before:content-['']">{statusLabel}</span> : null}
-    {checked ? <Check size={16} strokeWidth={2.25} aria-hidden="true" /> : null}
+    {checked ? <Check size={16} strokeWidth={2.25} className="text-[var(--t3)]" aria-hidden="true" /> : null}
   </>;
-  const rowClass = `flex min-h-10 w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm ${checked ? "bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]" : "text-[var(--t1)] hover:bg-[var(--s2)]"} ${disabled ? "cursor-default data-[disabled]:opacity-100" : "cursor-pointer"}`;
+  const rowClass = `flex min-h-11 w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-[13px] text-[var(--t1)] ${checked ? "bg-[var(--marca-t)] font-medium" : "hover:bg-[var(--s2)]"} ${disabled ? "cursor-default data-[disabled]:opacity-100" : "cursor-pointer"}`;
 
   return mobile ? (
     <button type="button" disabled={disabled} aria-current={checked ? "true" : undefined} onClick={onSelect} className={rowClass}>
@@ -77,10 +85,10 @@ interface MenuBodyProps {
 function MenuBody({ mobile, name, email, organizations, access, activeTenantId, hasPersonalSpace, onSwitch, onSignOut, onClose }: MenuBodyProps) {
   const { t } = useTranslation();
   const personal = t("accessMenu.personal");
-  const itemClass = "flex min-h-10 w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-[var(--t1)] hover:bg-[var(--s2)]";
+  const itemClass = `flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-[13px] text-[var(--t1)] hover:bg-[var(--s2)] ${mobile ? "min-h-11" : "min-h-[34px]"}`;
 
   return <>
-    <div className={`flex items-center gap-3 py-2.5 ${mobile ? "px-[2px]" : "px-3"}`}>
+    <div className={`flex items-center gap-3 ${mobile ? "px-[2px] py-2.5" : "px-2.5 py-2"}`}>
       <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--marca)] text-base font-semibold text-[var(--lado-activo)] md:size-10">{initials(name).slice(0, 1)}</span>
       <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
         <span className="truncate text-[15px] font-semibold text-[var(--t1)]">{name}</span>
@@ -88,7 +96,7 @@ function MenuBody({ mobile, name, email, organizations, access, activeTenantId, 
       </span>
     </div>
     <div className="my-1 h-px bg-[var(--borde)]" aria-hidden="true" />
-    <div className="px-3 pb-1 pt-2 text-[13px] font-semibold text-[var(--t3)]">{t("accessMenu.profiles")}</div>
+    <div className={`${mobile ? "px-3 pb-1 pt-2 text-[13px]" : "px-2.5 pb-0.5 pt-1.5 text-xs"} font-semibold text-[var(--t3)]`}>{t("accessMenu.profiles")}</div>
     {(hasPersonalSpace || access === "business") ? (
       <ProfileRow
         name={personal}
@@ -119,9 +127,9 @@ function MenuBody({ mobile, name, email, organizations, access, activeTenantId, 
     ))}
     <div className="my-1 h-px bg-[var(--borde)]" aria-hidden="true" />
     {mobile ? (
-      <button type="button" onClick={onSignOut} className={itemClass}><LogOut size={16} strokeWidth={1.75} aria-hidden="true" />{t("accessMenu.signOut")}</button>
+      <button type="button" onClick={onSignOut} className={itemClass}><SignOutIcon />{t("accessMenu.signOut")}</button>
     ) : (
-      <DropdownMenuItem onSelect={onSignOut} className={itemClass}><LogOut size={16} strokeWidth={1.75} aria-hidden="true" />{t("accessMenu.signOut")}</DropdownMenuItem>
+      <DropdownMenuItem onSelect={onSignOut} className={itemClass}><SignOutIcon />{t("accessMenu.signOut")}</DropdownMenuItem>
     )}
   </>;
 }

@@ -5,6 +5,7 @@
 :root {
   --marca: oklch(0.5 0.1 195);
   --marca-2: oklch(0.58 0.11 170);
+  --marca-sombra: oklch(0.5 0.1 195 / 0.3);
   --marca-h: oklch(0.45 0.1 195);
   --auth-panel-start: oklch(0.48 0.099 195);
   --auth-panel-mid: oklch(0.36 0.087 195);

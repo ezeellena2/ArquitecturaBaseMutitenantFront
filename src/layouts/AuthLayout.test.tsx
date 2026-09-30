@@ -30,7 +30,7 @@ describe("AuthLayout", () => {
     expect(screen.getByTestId("auth-brand-panel")).toHaveClass("hidden", "md:flex");
     expect(screen.getByRole("link", { name: "ArquitecturaBase" })).toHaveAttribute("href", "/");
     expect(screen.getByRole("link", { name: "ArquitecturaBase" }).firstElementChild).toHaveClass("size-7", "bg-gradient-to-br");
-    expect(screen.getByRole("link", { name: "ArquitecturaBase" }).querySelector("svg path")).toHaveAttribute("d", "m5 12.5 4.5 4.5L19 7.5");
+    expect(screen.getByRole("link", { name: "ArquitecturaBase" }).querySelector(".brand-mark > span")).toHaveClass("-rotate-45", "border-r-transparent");
     expect(screen.getByTestId("auth-brand-panel").querySelectorAll("li svg")).toHaveLength(3);
     expect(screen.getByRole("link", { name: "Términos" })).toHaveAttribute("href", "/terminos");
     expect(screen.getByRole("link", { name: "Privacidad" })).toHaveAttribute("href", "/privacidad");

@@ -35,7 +35,7 @@ describe("SessionStatusPage", () => {
 
   it("mantiene el estado de error accesible", async () => {
     const { container } = renderStatus({ status: "error" });
-    expect(container.querySelector(".brand-mark svg")).not.toBeNull();
+    expect(container.querySelector(".brand-mark > span")).not.toBeNull();
     expect(await axe(container)).toHaveNoViolations();
   });
 });

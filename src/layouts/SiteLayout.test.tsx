@@ -14,6 +14,7 @@ describe("SiteLayout", () => {
     const { container } = render(<MemoryRouter><SiteLayout><h1>{"Portada"}</h1></SiteLayout></MemoryRouter>);
 
     expect(screen.getByRole("link", { name: "ArquitecturaBase" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "ArquitecturaBase" }).querySelector(".brand-mark")).not.toBeNull();
     expect(screen.getByRole("navigation", { name: "Secciones" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Personas" })).toHaveAttribute("href", "#personas");
     expect(screen.getByRole("link", { name: "Empresas" })).toHaveAttribute("href", "#organizaciones");

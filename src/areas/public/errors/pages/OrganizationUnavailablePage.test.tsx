@@ -34,7 +34,7 @@ function setup(code: "Tenancy.Tenant.Suspended" | "Tenancy.Tenant.PendingApprova
 describe("OrganizationUnavailablePage", () => {
   it("suspendida: reproduce Perfil-Suspendido y ofrece solo perfiles disponibles", async () => {
     const { container, user } = setup("Tenancy.Tenant.Suspended");
-    expect(container.querySelector(".brand-mark svg")).not.toBeNull();
+    expect(container.querySelector(".brand-mark > span")).not.toBeNull();
     expect(screen.getByRole("heading", { name: "Beta S.R.L. está suspendida" })).toBeVisible();
     expect(screen.getByText("Nadie de la organización puede entrar por ahora. Tus otros perfiles siguen funcionando.")).toBeVisible();
     expect(screen.getByText("Elegí otro perfil")).toBeVisible();
