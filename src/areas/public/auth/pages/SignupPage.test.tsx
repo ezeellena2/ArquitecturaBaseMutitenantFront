@@ -20,7 +20,10 @@ beforeAll(async () => {
 });
 
 const signinRedirect = vi.fn(() => Promise.resolve());
-beforeEach(() => server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "google", countries: [] }] }))));
+beforeEach(() => server.use(
+  http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "google", countries: [] }] })),
+  http.get("/api/auth/external/google/antiforgery", () => HttpResponse.json({ requestToken: "test-form-token" })),
+));
 
 function show(url = "/registro") {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
@@ -144,7 +147,13 @@ describe("SignupPage", () => {
     show("/registro?returnUrl=%2Fcatalogo");
     expect(await screen.findByRole("button", { name: "Registrarte con Google" })).toBeDisabled();
     fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
-    expect(await screen.findByRole("link", { name: "Registrarte con Google" })).toHaveAttribute("href", "/api/auth/external/google?signup=true&acceptedTerms=true&returnTo=%2Fcatalogo&culture=es-AR&timeZoneId=America%2FArgentina%2FBuenos_Aires");
+    const google = await screen.findByRole("button", { name: "Registrarte con Google" });
+    await waitFor(() => expect(google).toBeEnabled());
+    const form = (google as HTMLButtonElement).form!;
+    expect(form).toHaveAttribute("method", "post");
+    expect(form).toHaveAttribute("action", "/api/auth/external/google");
+    expect(new FormData(form).get("__RequestVerificationToken")).toBe("test-form-token");
+    expect(new FormData(form).get("returnTo")).toBe("/catalogo");
   });
 
   it("tras el callback técnico Google inicia OIDC sin nueva pantalla", async () => {

@@ -424,6 +424,90 @@ export interface paths {
             };
         };
         put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/x-www-form-urlencoded": {
+                        ReturnUrl?: string;
+                        Access?: string;
+                        Signup?: boolean;
+                        AcceptedTerms?: boolean;
+                        ReturnTo?: string;
+                        Culture?: string;
+                        TimeZoneId?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Found */
+                302: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/external/google/antiforgery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["GoogleSignupAntiforgeryResponse"];
+                        "application/json": components["schemas"]["GoogleSignupAntiforgeryResponse"];
+                        "text/json": components["schemas"]["GoogleSignupAntiforgeryResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -1107,6 +1191,10 @@ export interface components {
         };
         /** @description Correo normalizado para comparar y enviar; el dominio IDN se guarda en ASCII. */
         Email: null | string;
+        /** @description Token de formulario de un solo origen para iniciar Registro con Google. */
+        GoogleSignupAntiforgeryResponse: {
+            requestToken: string;
+        };
         /** @enum {string} */
         LegalDocumentKind: "Terms" | "Privacy";
         /** @description Versión y texto vigente de un documento legal en una cultura. */

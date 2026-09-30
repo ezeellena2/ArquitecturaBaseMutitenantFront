@@ -8,6 +8,7 @@ export type OrganizationSummary = ApiSchemas["OrganizationSummary"];
 export type MeResponse = ApiSchemas["MeResponse"];
 export type UpdateMeRequest = ApiSchemas["UpdateMeHttpRequest"];
 export type LoginMethodsResponse = ApiSchemas["LoginMethodsResponse"];
+export type GoogleSignupAntiforgeryResponse = ApiSchemas["GoogleSignupAntiforgeryResponse"];
 export type RequestLoginCodeResponse = ApiSchemas["RequestLoginCodeResponse"];
 export type VerifyLoginCodeRequest = ApiSchemas["VerifyLoginCodeHttpRequest"];
 export type VerifyLoginCodeResponse = ApiSchemas["VerifyLoginCodeResponse"];
