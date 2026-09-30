@@ -2,13 +2,14 @@ import { useAuth } from "react-oidc-context";
 import { Navigate, Outlet, useLocation } from "react-router";
 import { useIsRecoveringSession } from "./sessionRecoveryStatus";
 import { rememberExpiredSessionNotice } from "./sessionExpiredNotice";
+import { SessionStatusPage } from "./SessionStatusPage";
 
 export function ProtectedRoute() {
   const auth = useAuth();
   const location = useLocation();
   const recovering = useIsRecoveringSession();
 
-  if (recovering && !auth.isAuthenticated) return <Outlet />;
+  if (recovering && !auth.isAuthenticated) return <SessionStatusPage status="starting" />;
   if (auth.isLoading && !auth.user) return null;
   if (!auth.isAuthenticated) {
     if (auth.user?.expired) rememberExpiredSessionNotice();

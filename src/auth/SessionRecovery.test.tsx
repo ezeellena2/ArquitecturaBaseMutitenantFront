@@ -59,6 +59,8 @@ describe("SessionRecovery", () => {
     await waitFor(() => expect(signinSilent).toHaveBeenCalledOnce());
     expect(signinSilent).toHaveBeenCalledWith({ extraQueryParams: { access: "business" } });
     expect(router.state.location.pathname).toBe("/org");
+    expect(screen.getByRole("heading", { name: "Iniciando sesión…" })).toBeVisible();
+    expect(screen.queryByRole("main", { name: "Inicio de organización" })).not.toBeInTheDocument();
     await act(async () => { complete(); });
     expect(screen.getByRole("main", { name: "Inicio de organización" })).toBeInTheDocument();
     expect(router.state.location.pathname).toBe("/org");
