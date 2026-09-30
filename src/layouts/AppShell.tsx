@@ -8,6 +8,8 @@ import { AppErrorBoundary } from "./AppErrorBoundary";
 import { NewVersionBanner } from "./components/NewVersionBanner";
 import { OfflineBanner } from "./components/OfflineBanner";
 import { BusinessLayout } from "./BusinessLayout";
+import { useDeletionRequestedDate } from "@/auth/deletionRequestStatus";
+import { DeletionRequestedPage } from "@/areas/personal/account/components/DeletionRequestedPage";
 
 interface AppShellProps {
   children?: ReactNode;
@@ -18,6 +20,7 @@ interface AppShellProps {
 export function AppShell({ children, onReload = () => window.location.reload() }: AppShellProps) {
   const auth = useContext(AuthContext);
   const accessError = useAccessError();
+  const deletionDate = useDeletionRequestedDate();
   const { pathname } = useLocation();
   const previousPathname = useRef(pathname);
   const [offline, setOffline] = useState(() => !navigator.onLine);
@@ -55,9 +58,9 @@ export function AppShell({ children, onReload = () => window.location.reload() }
   const tenantId = accessError?.problem.tenantId;
   const unavailable = accessError && unavailableCodes.includes(accessError.code as UnavailableCode)
     && typeof organizationName === "string" && typeof tenantId === "string";
-  const content = unavailable
+  const content = deletionDate ? <DeletionRequestedPage date={deletionDate} /> : unavailable
     ? <OrganizationUnavailablePage code={accessError.code as UnavailableCode} organizationName={organizationName} organizationId={tenantId} />
-    : accessError
+    : accessError && accessError.code !== "Legal.AcceptanceRequired"
       ? auth?.user?.profile.access === "business"
         ? <BusinessLayout><ForbiddenPage organizationName={typeof organizationName === "string" ? organizationName : undefined} /></BusinessLayout>
         : <main className="min-h-dvh bg-[var(--fondo)]"><ForbiddenPage organizationName={typeof organizationName === "string" ? organizationName : undefined} homePath="/" /></main>

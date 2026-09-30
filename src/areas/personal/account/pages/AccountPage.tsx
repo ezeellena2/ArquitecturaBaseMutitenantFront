@@ -19,6 +19,10 @@ import { AccountGoogleButton } from "../components/AccountGoogleButton";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
+import { useAuth } from "react-oidc-context";
+import { showDeletionRequested } from "@/auth/deletionRequestStatus";
+import { useFormat } from "@/shared/format/useFormat";
+import { AccountDeletionDialog } from "../components/AccountDeletionDialog";
 
 export function AccountPage() {
   const { t } = useTranslation();
@@ -31,7 +35,15 @@ export function AccountPage() {
   const mobile = useMediaQuery("(max-width: 767px)");
   const [params, setParams] = useSearchParams();
   const handledGoogle = useRef(false);
+  const auth = useAuth();
+  const format = useFormat();
+  const [deletionOpen, setDeletionOpen] = useState(false);
   function refresh() { void queryClient.invalidateQueries({ queryKey: accountMethodsQueryKey }); void queryClient.invalidateQueries({ queryKey: currentUserQueryKey }); }
+  async function deleted(scheduledForUtc: string) {
+    showDeletionRequested(format.formatDate(scheduledForUtc));
+    await auth.removeUser();
+    queryClient.clear();
+  }
   useEffect(() => {
     if (handledGoogle.current || (!params.has("google") && !params.has("error"))) return;
     handledGoogle.current = true;
@@ -52,9 +64,13 @@ export function AccountPage() {
     {methods.error ? <div className="col-span-full"><FormError message={methods.error.message} /><Button type="button" onClick={() => { void methods.refetch(); }}>{t("actions.retry")}</Button></div> : null}
     {methods.data ? <LoginMethodsTable methods={methods.data.methods} onAction={(action, method) => { if (action === "verify") setVerifyMethod(method); else setChange({ action, method }); }} /> : null}
     {mobile ? <div className="col-span-full flex flex-wrap gap-2"><Button type="button" variant="outline" onClick={() => setAddOpen(true)}><Plus size={16} />{t("account:add")}</Button>{methods.data?.canLinkGoogle ? <AccountGoogleButton /> : null}</div> : null}
+    <div className="col-span-full my-1 h-px bg-[var(--borde)]" />
+    <h2 className="col-span-full mt-1 text-[15px] font-semibold">{t("account:privacy")}</h2>
+    <div className="col-span-full flex items-center justify-between gap-3 rounded-xl border border-[var(--borde)] px-3 py-2.5"><span>{t("account:deletion")}</span><Button type="button" variant="destructive" size="sm" onClick={() => setDeletionOpen(true)}>{t("account:requestDeletion")}</Button></div>
   </AccountProfileForm>
   {addOpen ? <AddLoginMethodDialog open onOpenChange={setAddOpen} onComplete={refresh} /> : null}
   {verifyMethod ? <VerifyLoginMethodDialog method={verifyMethod} open onOpenChange={(open) => { if (!open) setVerifyMethod(null); }} onComplete={refresh} /> : null}
   {change ? <ChangeLoginMethodDialog {...change} onClose={() => setChange(null)} onComplete={refresh} /> : null}
+  {deletionOpen && methods.data ? <AccountDeletionDialog graceDays={methods.data.accountDeletionGraceDays} onClose={() => setDeletionOpen(false)} onComplete={(scheduled) => { void deleted(scheduled); }} /> : null}
   </>;
 }
