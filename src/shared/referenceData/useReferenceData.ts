@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import i18n, { cultureStorageKey } from "@/shared/i18n";
+import i18n, { cultureStorageKey, effectiveCulture } from "@/shared/i18n";
 import { safeStorageGet } from "@/shared/hooks/safeStorage";
 import { fetchReferenceData, type ReferenceData } from "./referenceData";
 
@@ -10,7 +10,7 @@ export const referenceDataQueryKey = (culture: string | null) => ["reference-dat
 
 export function useReferenceData() {
   const [requestedCulture, setRequestedCulture] = useState<string | null>(
-    () => safeStorageGet(cultureStorageKey),
+    () => safeStorageGet(cultureStorageKey) ?? effectiveCulture(),
   );
   const queryClient = useQueryClient();
   const key = referenceDataQueryKey(requestedCulture);

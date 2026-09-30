@@ -91,8 +91,8 @@ export async function configureI18n(cultures: readonly CultureLocale[], preferre
 
 export async function changeCulture(culture: string): Promise<void> {
   if (!enabledCultures.has(culture)) throw new Error(`La cultura ${culture} no está habilitada`);
-  await i18n.changeLanguage(culture);
   safeStorageSet(cultureStorageKey, culture);
+  await i18n.changeLanguage(culture);
 }
 
 export default i18n;

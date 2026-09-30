@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AppProviders } from "@/app/providers";
 import { resetHttpClient } from "@/shared/api/httpClient";
 import { queryClient } from "@/shared/api/queryClient";
+import { useFormat } from "@/shared/format/useFormat";
 import i18n, { changeCulture, configureI18n, cultureStorageKey } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
@@ -18,6 +19,12 @@ function testClient() {
     return createElement(QueryClientProvider, { client }, children);
   }
   return { client, Wrapper };
+}
+
+function CultureProbe() {
+  const format = useFormat();
+  return createElement("output", { "data-testid": "effective-culture" },
+    `${format.culture ?? "loading"}|${format.referenceData?.culture ?? "loading"}`);
 }
 
 describe("datos de referencia", () => {
@@ -146,6 +153,7 @@ describe("datos de referencia", () => {
   });
 
   it("el proveedor inicia una sola carga al arrancar y configura la cultura al recibirla", async () => {
+    await configureI18n(referenceDataFixture().cultures);
     const calls = vi.fn();
     server.use(http.get("/api/reference-data", () => {
       calls();
@@ -156,5 +164,29 @@ describe("datos de referencia", () => {
     expect(screen.getByTestId("app-ready")).toBeInTheDocument();
     await waitFor(() => expect(i18n.language).toBe("es-AR"));
     expect(calls).toHaveBeenCalledTimes(1);
+  });
+
+  it("mantiene el idioma elegido durante la sesión cuando localStorage está bloqueado", async () => {
+    await configureI18n(referenceDataFixture().cultures);
+    const getItem = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new Error("bloqueado"); });
+    const setItem = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("bloqueado"); });
+    const requested: string[] = [];
+    server.use(http.get("/api/reference-data", ({ request }) => {
+      const culture = request.headers.get("accept-language") === "en-US" ? "en-US" : "es-AR";
+      requested.push(culture);
+      return HttpResponse.json(referenceDataFixture(culture));
+    }));
+    try {
+      render(createElement(AppProviders, null, createElement(CultureProbe)));
+      await waitFor(() => expect(screen.getByTestId("effective-culture")).toHaveTextContent("es-AR|es-AR"));
+
+      await act(async () => { await changeCulture("en-US"); });
+      await waitFor(() => expect(requested).toContain("en-US"));
+      await waitFor(() => expect(screen.getByTestId("effective-culture")).toHaveTextContent("en-US|en-US"));
+      expect(i18n.language).toBe("en-US");
+    } finally {
+      getItem.mockRestore();
+      setItem.mockRestore();
+    }
   });
 });
