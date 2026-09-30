@@ -136,4 +136,11 @@ describe("httpClient", () => {
     await expect(api.post("/api/auth/login-code/verify", {})).rejects.toMatchObject({ status: 403 });
     expect(getAccessError()).toBeNull();
   });
+
+  it("deja el 403 de una mutación en su formulario sin bloquear toda la app", async () => {
+    server.use(http.post("/api/org/action", () => HttpResponse.json({ code: "Authorization.Forbidden" }, { status: 403 })));
+
+    await expect(api.post("/api/org/action", {})).rejects.toMatchObject({ status: 403, code: "Authorization.Forbidden" });
+    expect(getAccessError()).toBeNull();
+  });
 });

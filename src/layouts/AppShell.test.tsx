@@ -1,7 +1,7 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { I18nextProvider } from "react-i18next";
-import { createMemoryRouter, MemoryRouter, RouterProvider } from "react-router";
+import { createMemoryRouter, Link, MemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -10,7 +10,7 @@ import { HttpResponse, http } from "msw";
 import { routes } from "@/app/routes";
 import { ApiError } from "@/shared/api/ApiError";
 import { api } from "@/shared/api/httpClient";
-import { publishAccessError, clearAccessError } from "@/shared/api/accessErrorStore";
+import { publishAccessError, clearAccessError, getAccessError } from "@/shared/api/accessErrorStore";
 import i18n, { configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
 import { visualBusiness } from "@/test/mocks/currentUsers";
@@ -28,7 +28,7 @@ afterEach(() => { vi.restoreAllMocks(); clearAccessError(); });
 function renderShell(onReload = vi.fn()) {
   render(
     <I18nextProvider i18n={i18n}>
-      <AppShell onReload={onReload}><main>{"Contenido"}</main></AppShell>
+      <MemoryRouter><AppShell onReload={onReload}><main>{"Contenido"}</main></AppShell></MemoryRouter>
     </I18nextProvider>,
   );
   return onReload;
@@ -71,9 +71,9 @@ describe("AppShell", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     const onReload = vi.fn();
     function Broken(): never { throw new Error("chunk"); }
-    const { container } = render(<I18nextProvider i18n={i18n}>
+    const { container } = render(<I18nextProvider i18n={i18n}><MemoryRouter>
       <AppShell onReload={onReload}><Broken /></AppShell>
-    </I18nextProvider>);
+    </MemoryRouter></I18nextProvider>);
 
     expect(screen.getByRole("heading", { name: "No pudimos abrir esta pantalla" })).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
@@ -154,6 +154,20 @@ describe("AppShell", () => {
     expect(screen.getByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
     await userEvent.click(screen.getByRole("link", { name: "Ir al inicio" }));
     expect(screen.getByText("Contenido")).toBeVisible();
+  });
+
+  it("quita el 403 de una consulta al navegar por otra ruta", async () => {
+    render(<I18nextProvider i18n={i18n}><MemoryRouter initialEntries={["/org/usuarios"]}>
+      <Link to="/org">Ir a otra ruta</Link>
+      <AppShell><main>Contenido nuevo</main></AppShell>
+    </MemoryRouter></I18nextProvider>);
+    act(() => publishAccessError(new ApiError(403, { code: "Authorization.Forbidden" })));
+    expect(screen.getByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
+
+    await userEvent.click(screen.getByRole("link", { name: "Ir a otra ruta" }));
+
+    expect(screen.getByText("Contenido nuevo")).toBeVisible();
+    expect(getAccessError()).toBeNull();
   });
 
   it("conserva el layout de empresa cuando una petición devuelve 403", async () => {

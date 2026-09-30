@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState, type ReactNode } from "react";
+import { useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { AuthContext } from "react-oidc-context";
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import { ForbiddenPage } from "@/areas/public/errors/pages/ForbiddenPage";
 import { OrganizationUnavailablePage, type UnavailableCode } from "@/areas/public/errors/pages/OrganizationUnavailablePage";
-import { useAccessError } from "@/shared/api/accessErrorStore";
+import { clearAccessError, useAccessError } from "@/shared/api/accessErrorStore";
 import { AppErrorBoundary } from "./AppErrorBoundary";
 import { NewVersionBanner } from "./components/NewVersionBanner";
 import { OfflineBanner } from "./components/OfflineBanner";
@@ -18,8 +18,17 @@ interface AppShellProps {
 export function AppShell({ children, onReload = () => window.location.reload() }: AppShellProps) {
   const auth = useContext(AuthContext);
   const accessError = useAccessError();
+  const { pathname } = useLocation();
+  const previousPathname = useRef(pathname);
   const [offline, setOffline] = useState(() => !navigator.onLine);
   const [newVersion, setNewVersion] = useState(false);
+
+  useEffect(() => {
+    if (previousPathname.current !== pathname) {
+      previousPathname.current = pathname;
+      clearAccessError();
+    }
+  }, [pathname]);
 
   useEffect(() => {
     const onOffline = () => setOffline(true);
