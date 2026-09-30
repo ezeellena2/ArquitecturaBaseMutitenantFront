@@ -92,6 +92,7 @@ export const visualUnavailableClosed: MeResponse = {
 
 export const currentUsers = {
   "consumer-empty": consumerWithoutOrganizations,
+  "consumer-needs-personal-method": { ...consumerWithoutOrganizations, needsPersonalLoginMethod: true },
   "consumer-with-organizations": consumerWithOrganizations,
   "business-admin": businessUser,
   "business-no-permissions": businessWithoutPermissions,
