@@ -20,6 +20,7 @@ describe("Dialog mobile layout", () => {
     );
 
     const content = screen.getByRole("dialog", { name: "Editar" });
+    expect(document.querySelector('[data-slot="dialog-overlay"]')).toHaveClass("bg-[var(--velo)]");
     expect(content).toHaveClass("bottom-0", "md:top-1/2", "md:max-w-[560px]");
     expect(content).toHaveClass("max-h-[calc(100dvh-1rem)]");
     expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("min-h-11", "min-w-11");

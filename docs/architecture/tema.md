@@ -19,6 +19,7 @@ Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena
 | `--s2` / `--s3` | `oklch(0.97 0.007 80)` / `oklch(0.945 0.009 80)` | superficies tenues (buscador, controles segmentados) |
 | `--borde` / `--borde2` | `oklch(0.915 0.01 80)` / `oklch(0.84 0.014 80)` | bordes normal y fuerte |
 | `--t1` / `--t2` / `--t3` | `oklch(0.24 0.012 60)` / `oklch(0.47 0.012 60)` / `oklch(0.62 0.01 60)` | texto principal, secundario y tenue |
+| `--velo` | `oklch(0.2 0.014 78 / 0.42)` | velo detrás de diálogos y hojas móviles, igual al lienzo |
 | `--lado` | `oklch(0.925 0.02 75)` | **marco arena:** menú lateral y barra superior |
 | `--lado-borde` | `oklch(0.87 0.022 75)` | bordes del marco |
 | `--lado-hover` | `oklch(0.895 0.022 75)` | hover en el marco |
