@@ -12,6 +12,29 @@ import { referenceDataFixture } from "@/test/mocks/handlers";
 beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); });
 
 describe("Mi cuenta", () => {
+  it.each(["Agregar correo o teléfono", "Vincular Google"])("pide reautenticación antes de %s", async (label) => {
+    const user = userEvent.setup();
+    let additions = 0;
+    let action: unknown;
+    server.use(
+      http.get("/api/me/login-methods", () => HttpResponse.json({ methods: [], canLinkGoogle: true,
+        needsPersonalLoginMethod: false, accountDeletionGraceDays: 30 })),
+      http.post("/api/me/reauth", async ({ request }) => {
+        action = (await request.json() as { action: unknown }).action;
+        return HttpResponse.json({ sourceMethodId: "existing", destination: "a***@example.test", resendAfterSeconds: 60 });
+      }),
+      http.post("/api/me/login-methods", () => { additions++; return HttpResponse.json({ methodId: "new" }); }),
+      http.post("/api/me/external/google", () => { additions++; return HttpResponse.json({ redirectUrl: "/" }); }),
+    );
+    renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+    await user.click(await screen.findByRole("button", { name: label }));
+    expect(await screen.findByRole("textbox", { name: "Código 1" })).toBeVisible();
+    expect(action).toBe(label === "Vincular Google" ? "LinkGoogle" : "AddEmail");
+    expect(additions).toBe(0);
+    expect(screen.queryByRole("textbox", { name: "Correo" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /^Cancelar$/ }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
   it("guarda el idioma con versión y actualiza los textos sin cambiar de acceso", async () => {
     const user = userEvent.setup();
     let submitted: unknown;
@@ -22,8 +45,11 @@ describe("Mi cuenta", () => {
     }));
     const { router, container } = renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
     expect(await screen.findByRole("heading", { name: "Mi cuenta" })).toBeVisible();
-    await user.click(screen.getByRole("combobox", { name: "Idioma y región" }));
-    await user.click(await screen.findByRole("option", { name: "Inglés (Estados Unidos)" }));
+    const culture = screen.getByRole("combobox", { name: "Idioma y región" });
+    await waitFor(() => expect(culture).toBeEnabled());
+    culture.focus();
+    await user.keyboard("{ArrowDown}");
+    await user.click(await screen.findByRole("option", { name: /^Inglés \(Estados Unidos\)/ }));
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(submitted).toMatchObject({ culture: "en-US", version: 42 }));
     expect(await screen.findByRole("heading", { name: "My account" })).toBeVisible();

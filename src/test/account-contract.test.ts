@@ -11,17 +11,34 @@ describe("contrato funcional de cuenta entre repos", () => {
   it("usa las rutas y cuerpos de métodos, reauth, términos y baja publicados por el back", () => {
     const contract = readFront("src/shared/api/accountContract.ts");
     const schema = readFront("src/shared/api/generated/schema.d.ts");
-    const openapi = readBack("docs/contracts/openapi.json");
+    const openapiSource = readBack("docs/contracts/openapi.json");
+    const openapi = JSON.parse(openapiSource) as {
+      paths: Record<string, { post?: { requestBody?: { content?: Record<string, { schema?: { $ref?: string } }> } } }>;
+      components: { schemas: Record<string, { properties?: Record<string, unknown>; enum?: unknown[] }> };
+    };
     for (const route of ["/api/me", "/api/me/login-methods", "/api/me/reauth", "/api/me/reauth/verify",
       "/api/me/external/google", "/api/legal/accept", "/api/me/deletion", "/api/auth/deletion/pending", "/api/auth/deletion/cancel"]) {
       expect(contract).toContain(`"${route}"`);
-      expect(openapi).toContain(`"${route}"`);
+      expect(openapiSource).toContain(`"${route}"`);
       expect(schema).toContain(`"${route}"`);
     }
     for (const route of ["/api/me/login-methods/{methodId}/code", "/api/me/login-methods/{methodId}/verify", "/api/me/login-methods/{methodId}/primary"]) {
       expect(contract).toContain(route);
-      expect(openapi).toContain(`"${route}"`);
+      expect(openapiSource).toContain(`"${route}"`);
     }
+    expect(openapi.paths["/api/me/login-methods"].post?.requestBody?.content?.["application/json"]?.schema?.$ref)
+      .toBe("#/components/schemas/AddLoginEmailHttpRequest");
+    expect(openapi.components.schemas.AddLoginEmailHttpRequest.properties).toHaveProperty("reauthTicket");
+    expect(openapi.paths["/api/me/external/google"].post?.requestBody?.content?.["application/json"]?.schema?.$ref)
+      .toBe("#/components/schemas/ChangeLoginMethodHttpRequest");
+    expect(openapi.components.schemas.ChangeLoginMethodHttpRequest.properties).toHaveProperty("reauthTicket");
+    expect(openapi.components.schemas.ReauthAction.enum).toEqual(expect.arrayContaining(["AddEmail", "LinkGoogle"]));
+    expect(readFront("src/areas/personal/account/components/AddLoginMethodDialog.tsx"))
+      .toContain("addLoginEmail({ email, reauthTicket }, key)");
+    expect(readFront("src/areas/personal/account/api/loginMethods.ts"))
+      .toContain("linkGoogle(request: ChangeLoginMethodRequest)");
+    expect(readFront("src/areas/personal/account/components/ChangeLoginMethodDialog.tsx"))
+      .toContain('action === "addEmail" ? "AddEmail" : "LinkGoogle"');
     for (const field of ["version", "pendingLegalDocuments", "needsPersonalLoginMethod", "sourceMethodId", "targetMethodId",
       "reauthTicket", "cancelTicket", "scheduledForUtc", "timeZoneId", "returnUrl"]) expect(schema).toContain(`${field}`);
     expect(readBack("src/ArquitecturaBaseMultitenant.Api/Contracts/Account/UpdateMeHttpRequest.cs")).toContain("uint? Version");
@@ -50,5 +67,17 @@ describe("contrato funcional de cuenta entre repos", () => {
     expect(contract).toContain('"/cuenta"');
     expect(contract).toContain('"/login/empresa"');
     expect(readBack("src/ArquitecturaBaseMultitenant.Application/Services/Legal/AccountDeletionCanceller.cs")).toContain("ticket.ReturnUrl!");
+  });
+
+  it("preserva el claim de inicio en el token que el front envía como bearer", () => {
+    const keys = readBack("src/ArquitecturaBaseMultitenant.Application/Configuration/Auth/BrowserSessionKeys.cs");
+    const principal = readBack("src/ArquitecturaBaseMultitenant.Api/Authentication/OpenIdPrincipalFactory.cs");
+    const context = readBack("src/ArquitecturaBaseMultitenant.Api/RequestContext/CurrentUser.cs");
+    const frontAuth = readFront("src/auth/AuthProvider.tsx");
+    expect(keys).toContain('StartedAtUtc = "session_started_at"');
+    expect(principal).toContain("BrowserSessionKeys.StartedAtUtc");
+    expect(context).toContain("SessionStartedAtUtc");
+    expect(frontAuth).toContain("session?.user?.access_token");
+    expect(readFront("src/shared/api/httpClient.ts")).toContain("Bearer ${token}");
   });
 });

@@ -11,13 +11,14 @@ describe("clientes de la cuenta", () => {
   it("vincula Google con antiforgery por header y contenido de protocolo", async () => {
     server.use(
       http.get("/api/auth/external/google/antiforgery", () => HttpResponse.json({ requestToken: "csrf" })),
-      http.post("/api/me/external/google", ({ request }) => {
+      http.post("/api/me/external/google", async ({ request }) => {
         expect(request.headers.get("RequestVerificationToken")).toBe("csrf");
-        expect(request.headers.get("Content-Type")).toBe("application/x-www-form-urlencoded");
+        expect(request.headers.get("Content-Type")).toContain("application/json");
+        expect(await request.json()).toEqual({ reauthTicket: "opaque" });
         return HttpResponse.json({ redirectUrl: "https://accounts.google.com/authorize" });
       }),
     );
-    await expect(linkGoogle()).resolves.toEqual({ redirectUrl: "https://accounts.google.com/authorize" });
+    await expect(linkGoogle({ reauthTicket: "opaque" })).resolves.toEqual({ redirectUrl: "https://accounts.google.com/authorize" });
   });
 
   it("envía la versión y conserva el error real de concurrencia", async () => {
@@ -47,7 +48,7 @@ describe("clientes de la cuenta", () => {
       http.post("/api/me/deletion", reply(200, { scheduledForUtc: "2026-10-30T00:00:00Z" })),
     );
     expect((await fetchLoginMethods()).canLinkGoogle).toBe(true);
-    await addLoginEmail({ email: "personal@example.test" }, "add-key");
+    await addLoginEmail({ email: "personal@example.test", reauthTicket: "opaque" }, "add-key");
     await verifyLoginMethod("method-1", { code: "123456" }, "verify-key");
     await requestReauth({ action: "RemoveMethod", targetMethodId: "method-1" }, "reauth-key");
     await verifyReauth({ action: "RemoveMethod", targetMethodId: "method-1", sourceMethodId: "backup", code: "654321" }, "proof-key");
@@ -55,6 +56,7 @@ describe("clientes de la cuenta", () => {
     await makeLoginMethodPrimary("method-1", { reauthTicket: "opaque" });
     await requestAccountDeletion({ reason: "Ya no la uso", reauthTicket: "opaque" }, "deletion-key");
     expect(calls.map(call => call.key)).toEqual(["add-key", "verify-key", "reauth-key", "proof-key", null, null, "deletion-key"]);
+    expect(calls[0]).toEqual({ method: "POST", body: { email: "personal@example.test", reauthTicket: "opaque" }, key: "add-key" });
     expect(calls[4]).toEqual({ method: "DELETE", body: { reauthTicket: "opaque" }, key: null });
   });
 });

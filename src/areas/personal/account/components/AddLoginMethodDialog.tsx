@@ -17,6 +17,7 @@ import { EmailField } from "@/shared/ui/fields/EmailField";
 import { OtpInput } from "@/shared/ui/OtpInput";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { addLoginEmail, sendLoginMethodCode, verifyLoginMethod } from "../api/loginMethods";
+import { ChangeLoginMethodDialog } from "./ChangeLoginMethodDialog";
 
 interface Props { open: boolean; onOpenChange: (open: boolean) => void; onComplete: () => void; method?: AccountLoginMethod }
 const schema = z.object({ email: z.email() });
@@ -29,9 +30,10 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
   const [methodId, setMethodId] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [failure, setFailure] = useState<string | null>(null);
+  const [reauthTicket, setReauthTicket] = useState<string | null>(null);
   const form = useForm<{ email: string }>({ resolver: zodResolver(schema), defaultValues: { email: method?.value ?? "" } });
   const retry = useRetryAfterCountdown();
-  const request = useIdempotentMutation((email: string, key) => method ? sendLoginMethodCode(method.id, key) : addLoginEmail({ email }, key));
+  const request = useIdempotentMutation((email: string, key) => method ? sendLoginMethodCode(method.id, key) : addLoginEmail({ email, reauthTicket }, key));
   const verify = useIdempotentMutation((value: string, key) => verifyLoginMethod(methodId!, { code: value }, key));
   const busy = request.isPending || verify.isPending;
   const started = useRef(false);
@@ -59,6 +61,7 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
       onOpenChange(false);
     } catch (error) { showError(error); }
   }
+  if (!method && !reauthTicket && open) return <ChangeLoginMethodDialog action="addEmail" onClose={() => onOpenChange(false)} onAuthorized={setReauthTicket} />;
   return <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent className="account-dialog md:max-w-[420px]" onCloseAutoFocus={restoreFocus} aria-describedby={methodId ? "method-code-hint" : undefined}>
       <form noValidate onSubmit={(event) => { event.preventDefault(); if (methodId) void confirm(); else void form.handleSubmit(send)(event); }} className="flex flex-col gap-5">

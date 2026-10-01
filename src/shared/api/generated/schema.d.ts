@@ -1099,7 +1099,12 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ChangeLoginMethodHttpRequest"];
+                    "application/*+json": components["schemas"]["ChangeLoginMethodHttpRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -1114,6 +1119,15 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1205,6 +1219,15 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -2021,6 +2044,7 @@ export interface components {
         };
         AddLoginEmailHttpRequest: {
             email?: null | string;
+            reauthTicket?: null | string;
         };
         CancelAccountDeletionHttpRequest: {
             cancelTicket?: null | string;
@@ -2209,7 +2233,7 @@ export interface components {
             retryAfter?: null | number;
         };
         /** @enum {null|string} */
-        ReauthAction: "RemoveMethod" | "MakePrimary" | "DeleteAccount" | "CancelDeletion" | null;
+        ReauthAction: "RemoveMethod" | "MakePrimary" | "DeleteAccount" | "CancelDeletion" | "AddEmail" | "LinkGoogle" | null;
         /** @description Informa a qué método de respaldo se envió el código, con el destino enmascarado y el tiempo hasta un nuevo pedido. */
         ReauthCodeResponse: {
             /** Format: uuid */

@@ -16,9 +16,9 @@ export const removeLoginMethod = (id: string, request: ChangeLoginMethodRequest)
 export const makeLoginMethodPrimary = (id: string, request: ChangeLoginMethodRequest) =>
   api.put<void>(methodPath(accountPaths.methodPrimary, id), request);
 
-export async function linkGoogle(): Promise<GoogleChallengeResponse> {
+export async function linkGoogle(request: ChangeLoginMethodRequest): Promise<GoogleChallengeResponse> {
   const token = await api.get<GoogleSignupAntiforgeryResponse>("/api/auth/external/google/antiforgery");
-  return api.post<GoogleChallengeResponse>(accountPaths.google, undefined, {
-    headers: { "Content-Type": "application/x-www-form-urlencoded", RequestVerificationToken: token.requestToken },
+  return api.post<GoogleChallengeResponse>(accountPaths.google, request, {
+    headers: { RequestVerificationToken: token.requestToken },
   });
 }

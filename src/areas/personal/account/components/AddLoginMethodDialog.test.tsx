@@ -14,8 +14,16 @@ it("suma correo, conserva OTP incorrecto y verifica con claves idempotentes", as
   const complete = vi.fn();
   let attempts = 0;
   server.use(
+    http.post("/api/me/reauth", async ({ request }) => {
+      expect(await request.json()).toEqual({ action: "AddEmail" });
+      return HttpResponse.json({ sourceMethodId: "original", destination: "a***@example.test", resendAfterSeconds: 60 });
+    }),
+    http.post("/api/me/reauth/verify", async ({ request }) => {
+      expect(await request.json()).toEqual({ action: "AddEmail", sourceMethodId: "original", code: "123456" });
+      return HttpResponse.json({ reauthTicket: "opaque-ticket" });
+    }),
     http.post("/api/me/login-methods", async ({ request }) => {
-      expect(await request.json()).toEqual({ email: "nuevo@example.test" });
+      expect(await request.json()).toEqual({ email: "nuevo@example.test", reauthTicket: "opaque-ticket" });
       expect(request.headers.get("Idempotency-Key")).toBeTruthy();
       return HttpResponse.json({ methodId: "new", resendAfterSeconds: 60 });
     }),
@@ -29,6 +37,9 @@ it("suma correo, conserva OTP incorrecto y verifica con claves idempotentes", as
   );
   renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={complete} />);
   expect(screen.queryByRole("button", { name: "WhatsApp" })).not.toBeInTheDocument();
+  await user.type(await screen.findByRole("textbox", { name: "Código 1" }), "123456");
+  await user.click(screen.getByRole("button", { name: "Verificar" }));
+  await screen.findByRole("textbox", { name: "Correo" });
   await user.type(screen.getByRole("textbox", { name: "Correo" }), "nuevo@example.test");
   await user.click(screen.getByRole("button", { name: "Enviar código" }));
   const first = await screen.findByRole("textbox", { name: "Código 1" });
