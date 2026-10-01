@@ -655,6 +655,180 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/invitations/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PreviewInvitationHttpRequest"];
+                    "application/*+json": components["schemas"]["PreviewInvitationHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["InvitationPreviewResponse"];
+                        "application/json": components["schemas"]["InvitationPreviewResponse"];
+                        "text/json": components["schemas"]["InvitationPreviewResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/invitations/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AcceptInvitationHttpRequest"];
+                    "application/*+json": components["schemas"]["AcceptInvitationHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AcceptInvitationResponse"];
+                        "application/json": components["schemas"]["AcceptInvitationResponse"];
+                        "text/json": components["schemas"]["AcceptInvitationResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/login-code": {
         parameters: {
             query?: never;
@@ -2010,10 +2184,29 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description Acepta desde el cuerpo el token opaco y la aceptación legal requerida para una identidad nueva. */
+        AcceptInvitationHttpRequest: {
+            token?: null | string;
+            acceptedTerms: boolean;
+        };
+        AcceptInvitationResponse: {
+            /** Format: uuid */
+            organizationId: string;
+            createdAccount: boolean;
+            needsPersonalLoginMethod: boolean;
+        };
+        /**
+         * @description Recibe por HTTP la lista de documentos y versiones que la persona acepta. El controller la transforma en
+         *     la solicitud del servicio de aceptación legal.
+         */
         AcceptLegalHttpRequest: {
             documents?: null | components["schemas"]["LegalAcceptanceItem"][];
         };
-        /** @enum {string} */
+        /**
+         * @description Identifica con qué acceso opera la sesión: como persona, como empresa o como operador de plataforma. Las
+         *     rutas y las reglas lo usan para separar las operaciones permitidas.
+         * @enum {string}
+         */
         Access: "consumer" | "business" | "platform";
         AccountDeletionResponse: {
             /** Format: date-time */
@@ -2042,19 +2235,33 @@ export interface components {
             /** Format: int32 */
             accountDeletionGraceDays: number;
         };
+        /**
+         * @description Recibe el correo que se quiere agregar a la cuenta y lo entrega al flujo de validación. ToString oculta
+         *     los datos sensibles para que no se impriman al registrar la solicitud.
+         */
         AddLoginEmailHttpRequest: {
             email?: null | string;
             reauthTicket?: null | string;
         };
+        /**
+         * @description Recibe la prueba que permite cancelar una baja pendiente y devuelve el retorno del ingreso. El ticket se
+         *     conserva sin normalizar y se oculta en ToString.
+         */
         CancelAccountDeletionHttpRequest: {
             cancelTicket?: null | string;
         };
+        /** @description Indica al navegador dónde continuar después de cancelar la baja y completar el ingreso. */
         CancelAccountDeletionHttpResponse: {
             returnUrl: string;
         };
+        /**
+         * @description Recibe la prueba de titularidad para quitar o elegir como principal un método de ingreso. El método
+         *     objetivo llega en la ruta; el ticket se conserva sin normalizar y se oculta en ToString.
+         */
         ChangeLoginMethodHttpRequest: {
             reauthTicket?: null | string;
         };
+        /** @description Expone un país con sus códigos y referencias predeterminadas para los selectores. */
         CountryReferenceHttpResponse: {
             code: string;
             alpha3: string;
@@ -2067,6 +2274,7 @@ export interface components {
             /** Format: int32 */
             sortOrder?: null | number;
         };
+        /** @description Expone los patrones y separadores de una cultura para formatear fechas y números en el cliente. */
         CultureReferenceHttpResponse: {
             code: string;
             languageCode: string;
@@ -2088,6 +2296,7 @@ export interface components {
             /** Format: int32 */
             sortOrder?: null | number;
         };
+        /** @description Expone una moneda con su precisión, símbolos y nombre traducido para mostrar importes. */
         CurrencyReferenceHttpResponse: {
             code: string;
             numericCode: string;
@@ -2118,13 +2327,44 @@ export interface components {
         GoogleSignupAntiforgeryResponse: {
             requestToken: string;
         };
+        /** @description Solo datos presentables de la invitación autorizada; jamás hashes ni secretos. */
+        InvitationPreviewResponse: {
+            state: components["schemas"]["InvitationPreviewState"];
+            /** Format: uuid */
+            organizationId?: null | string;
+            organizationName?: null | string;
+            /** @description Correo normalizado para comparar y enviar; el dominio IDN se guarda en ASCII. */
+            email?: null | string;
+            inviterName?: null | string;
+            /** Format: date-time */
+            issuedAtUtc?: null | string;
+            /** Format: date-time */
+            expiresAtUtc?: null | string;
+            currentAccountEmail?: null | string;
+            /** @default false */
+            canUseEmailCode: boolean;
+            /** @default false */
+            canUseGoogle: boolean;
+            /** @default false */
+            needsPersonalLoginMethod: boolean;
+        };
+        /** @enum {string} */
+        InvitationPreviewState: "NoAccount" | "SignInRequired" | "Ready" | "WrongSession" | "Expired" | "Invalid" | "OrganizationSuspended" | "Accepted";
+        /**
+         * @description Identifica el documento y la versión exacta que una persona acepta. El servicio los compara con la versión
+         *     vigente antes de guardar la prueba de aceptación.
+         */
         LegalAcceptanceItem: {
             /** Format: uuid */
             id: string;
             /** Format: int32 */
             version: number;
         };
-        /** @enum {string} */
+        /**
+         * @description Distingue términos y condiciones de política de privacidad. Cada documento conserva sus propias
+         *     versiones, textos y aceptaciones.
+         * @enum {string}
+         */
         LegalDocumentKind: "Terms" | "Privacy";
         /** @description Versión y texto vigente de un documento legal en una cultura. */
         LegalDocumentRow: {
@@ -2142,6 +2382,10 @@ export interface components {
             key: string;
             countries: string[];
         };
+        /**
+         * @description Devuelve el método al que se envió un código y cuánto hay que esperar para reenviarlo. Permite
+         *     identificar el destino y controlar el botón de reenvío.
+         */
         LoginMethodCodeResponse: {
             /** Format: uuid */
             methodId: string;
@@ -2152,9 +2396,17 @@ export interface components {
         LoginMethodsResponse: {
             channels: components["schemas"]["LoginChannelAvailability"][];
         };
-        /** @enum {string} */
+        /**
+         * @description Identifica si un método de ingreso usa correo, teléfono o Google. El tipo determina cómo se interpreta
+         *     su valor y qué canal puede verificarlo.
+         * @enum {string}
+         */
         LoginMethodType: "Email" | "Phone" | "Google";
-        /** @enum {string} */
+        /**
+         * @description Indica si una membresía está invitada, activa, inactiva o retirada. Las reglas lo usan para decidir si
+         *     la persona puede operar en ese espacio.
+         * @enum {string}
+         */
         MemberStatus: "Invited" | "Active" | "Inactive" | "Removed";
         /** @description Cuenta, accesos y preferencias efectivas de la sesión actual. */
         MeResponse: {
@@ -2210,12 +2462,20 @@ export interface components {
             /** Format: date-time */
             expiresAtUtc: string;
         };
+        /**
+         * @description Identifica un documento legal y su versión pendiente de aceptación. Permite que el front solicite la
+         *     aceptación de la versión exacta.
+         */
         PendingLegalDocumentResponse: {
             /** Format: uuid */
             id: string;
             kind: components["schemas"]["LegalDocumentKind"];
             /** Format: int32 */
             version: number;
+        };
+        /** @description Token opaco recibido en el cuerpo; nunca se expone en la ruta, la query ni el diagnóstico. */
+        PreviewInvitationHttpRequest: {
+            token?: null | string;
         };
         ProblemDetails: {
             type?: null | string;
@@ -2246,6 +2506,10 @@ export interface components {
         ReauthResponse: {
             reauthTicket: string;
         };
+        /**
+         * @description Adapta los cinco catálogos de referencia al contrato JSON de la API. Cada FromModel copia explícitamente
+         *     los datos de Application para mantener separados los modelos internos y HTTP.
+         */
         ReferenceDataHttpResponse: {
             culture: string;
             currencies: components["schemas"]["CurrencyReferenceHttpResponse"][];
@@ -2254,6 +2518,10 @@ export interface components {
             cultures: components["schemas"]["CultureReferenceHttpResponse"][];
             taxIdTypes: components["schemas"]["TaxIdTypeReferenceHttpResponse"][];
         };
+        /**
+         * @description Recibe el motivo de baja y la prueba de titularidad necesaria para solicitarla. ToString oculta ambos
+         *     valores para evitar que se registren en logs.
+         */
         RequestAccountDeletionHttpRequest: {
             reason?: null | string;
             reauthTicket?: null | string;
@@ -2267,6 +2535,10 @@ export interface components {
             /** Format: int32 */
             resendAfterSeconds: number;
         };
+        /**
+         * @description Recibe la acción sensible y el método objetivo de una prueba de titularidad. Los campos nullable
+         *     permiten que la validación informe entradas faltantes o inválidas.
+         */
         RequestReauthHttpRequest: {
             action?: null | components["schemas"]["ReauthAction"];
             /** Format: uuid */
@@ -2279,6 +2551,7 @@ export interface components {
             culture?: null | string;
             timeZoneId?: null | string;
         };
+        /** @description Expone un tipo de identificación fiscal con país, máscara y criterio de validación. */
         TaxIdTypeReferenceHttpResponse: {
             code: string;
             countryCode: string;
@@ -2291,8 +2564,13 @@ export interface components {
             /** Format: int32 */
             sortOrder?: null | number;
         };
-        /** @enum {string} */
+        /**
+         * @description Describe el ciclo de vida de un espacio personal u organización, desde su preparación hasta el cierre.
+         *     Las reglas de acceso consultan este estado antes de permitir operaciones.
+         * @enum {string}
+         */
         TenantStatus: "PendingApproval" | "Provisioning" | "Active" | "Suspended" | "Closed";
+        /** @description Expone una zona IANA y sus países para elegir y presentar la zona horaria. */
         TimeZoneReferenceHttpResponse: {
             id: string;
             countryCodes: string[];
@@ -2319,9 +2597,17 @@ export interface components {
         VerifyLoginCodeResponse: {
             returnUrl: string;
         };
+        /**
+         * @description Recibe el código usado para verificar un método de ingreso pendiente. Conserva el texto original para
+         *     validarlo y oculta su valor en ToString.
+         */
         VerifyLoginMethodHttpRequest: {
             code?: null | string;
         };
+        /**
+         * @description Recibe la acción, los métodos involucrados y el código que demuestra titularidad. RawText conserva el
+         *     código recibido y ToString evita exponerlo en logs.
+         */
         VerifyReauthHttpRequest: {
             action?: null | components["schemas"]["ReauthAction"];
             /** Format: uuid */
