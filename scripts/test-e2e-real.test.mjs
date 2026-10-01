@@ -468,12 +468,14 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             const link = await invitationFromPickup(email, before);
             setStage("abre /invitacion y ve la vista previa");
             await invitationPage.goto(link);
-            await invitationPage.getByRole("heading", { name: "Te sumás a Empresa E2E", exact: true }).waitFor({ timeout: 15_000 });
-            await invitationPage.getByText(email, { exact: true }).first().waitFor();
+            await invitationPage.getByRole("heading", { name: existingAccount
+              ? /^Ya tenés una cuenta con /
+              : "Te sumás a Empresa E2E", exact: existingAccount ? undefined : true }).waitFor({ timeout: 15_000 });
+            await invitationPage.getByText(`La invitación es para ${email}.`, { exact: true }).waitFor();
             assert.equal(new URL(invitationPage.url()).hash, "", "El fragmento secreto debe retirarse antes de seguir.");
             if (existingAccount) {
               setStage("ingresa como la cuenta destinataria sin seleccionar acceso");
-              await invitationPage.getByRole("link", { name: "Ingresá para aceptar", exact: true }).click();
+              await invitationPage.getByRole("button", { name: "Ingresá para aceptar", exact: true }).click();
               await invitationPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
               const loginBefore = new Set(await pickupFiles());
               await sendLoginCode(invitationPage);
@@ -485,6 +487,9 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             setStage("acepta la invitación real");
             const acceptedResponse = invitationPage.waitForResponse((response) =>
               new URL(response.url()).pathname === "/api/invitations/accept" && response.request().method() === "POST");
+            if (!existingAccount) {
+              await invitationPage.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+            }
             await invitationPage.getByRole("button", { name: "Aceptar invitación", exact: true }).click();
             assert.equal((await acceptedResponse).ok(), true, "La aceptación real debe completar su transacción.");
             if (!existingAccount) {
@@ -496,6 +501,9 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               assert.equal(inspection.accepted, true);
               assert.equal(inspection.boundToIdentity, true);
               await invitationPage.getByRole("button", { name: "Más tarde", exact: true }).click();
+            } else {
+              await invitationPage.getByRole("heading", { name: "Te sumaste a Empresa E2E", exact: true }).waitFor();
+              await invitationPage.getByRole("button", { name: "Entrar a la organización", exact: true }).click();
             }
             setStage("entra a la organización con la membresía activa");
             await expectPath(invitationPage, "/org", "entrada luego de aceptar");
@@ -641,15 +649,31 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         await t.test(name, { timeout: 240_000 }, async () => {
           const accountContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
           let lastFailure = "";
+          let lastApiActivity = "";
+          let lastInvitationState = "";
+          let pageErrorName = "";
           let stage = "inicia el recorrido";
           const accountPage = await accountContext.newPage();
+          accountPage.on("pageerror", (error) => { pageErrorName = error?.name ?? "Error"; });
           accountPage.on("request", (request) => {
             const authorization = request.headers().authorization;
-            if (new URL(request.url()).pathname.startsWith("/api/") && authorization?.startsWith("Bearer "))
-              accountTokens.set(accountPage, authorization);
+            const requestUrl = new URL(request.url());
+            if (!requestUrl.pathname.startsWith("/api/")) return;
+            lastApiActivity = `${request.method()} ${requestUrl.pathname}`;
+            if (authorization?.startsWith("Bearer ")) accountTokens.set(accountPage, authorization);
           });
           accountPage.on("response", async (response) => {
-            if (response.status() < 400 || !new URL(response.url()).pathname.startsWith("/api/")) return;
+            const responseUrl = new URL(response.url());
+            if (!responseUrl.pathname.startsWith("/api/")) return;
+            lastApiActivity = `${response.request().method()} ${responseUrl.pathname} → ${response.status()}`;
+            if (responseUrl.pathname === "/api/invitations/preview" && response.status() === 200) {
+              try {
+                const payload = await response.json();
+                lastInvitationState = typeof payload?.state === "string" && /^[A-Za-z]+$/.test(payload.state)
+                  ? `preview ${payload.state}` : "preview recibido";
+              } catch { lastInvitationState = "preview recibido"; }
+            }
+            if (response.status() < 400) return;
             let code;
             try { code = (await response.json()).code; } catch { /* El estado basta si no hay ProblemDetails. */ }
             lastFailure = `HTTP ${response.status()}${typeof code === "string" && /^[A-Za-z0-9.]+$/.test(code) ? ` ${code}` : ""}`;
@@ -669,8 +693,10 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               || error?.message?.startsWith("No llegó el .eml")
               || error?.message?.startsWith("El código de registro respondió")
               || error?.message?.startsWith("registro de cuenta 3b:");
+            const diagnostics = [lastFailure, lastApiActivity && `última Api: ${lastApiActivity}`, lastInvitationState,
+              pageErrorName && `error de página: ${pageErrorName}`].filter(Boolean).join("; ");
             throw new Error(known ? error.message
-              : `${name}: falló en “${stage}”${lastFailure ? ` (${lastFailure})` : ""} [${error?.name ?? "Error"}]${safeDetail ? ` ${safeDetail}` : ""}.`);
+              : `${name}: falló en “${stage}”${diagnostics ? ` (${diagnostics})` : ""} [${error?.name ?? "Error"}]${safeDetail ? ` ${safeDetail}` : ""}.`);
           } finally { await accountContext.close(); }
         });
       }
