@@ -51,4 +51,8 @@ La tabla vive solo en el [`AGENTS.md` raíz](../../AGENTS.md#antes-de-escribir-c
 
 Hasta que ambos repos estén en GitHub, cada CI usa solo su propio checkout. Los enlaces al repo hermano se verifican cuando ese checkout está presente; el checkout cruzado y su verificación obligatoria se incorporan cuando ambos repos estén en GitHub.
 
+## 5. Cadencia de verificación
+
+Cada cambio coherente se cierra con un test focal rojo/verde cuando hay lógica y con las comprobaciones de build y lint del alcance afectado en verde antes del commit. La puerta de etapa y el CI ejecutan `npm run build`, `npm run lint`, `npm test` y `npm run contracts:check` completos. La puerta de etapa conserva además el E2E real desde E3a y la comparación visual con el tablero aprobado. Para una pantalla nueva, los tests cubren solo los estados y recorridos que realmente existen, además de los controles críticos aplicables de [tests](../rules/tests.md).
+
 Mantenimiento: igual que en el back ([arnes.md §6](../../../ArquitecturaBaseMutitenant/docs/architecture/arnes.md#6-mantenimiento)).

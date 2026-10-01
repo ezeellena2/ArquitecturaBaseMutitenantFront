@@ -291,10 +291,11 @@ Rigen los [tableros del lienzo versionado](../design/lienzo/README.md) (versión
 
 ### Tests
 - Colocalizados. MSW con `onUnhandledRequest: "error"` y fixtures de `/api/me` para persona (con y sin organizaciones), empresa (con y sin permisos) y operador.
-- Por pantalla se prueba:
-  - carga, vacío, sin coincidencias, error con reintento y sin permiso;
-  - el recorrido de los diálogos;
+- Por pantalla se prueban solo los estados y recorridos que realmente existen:
+  - carga, vacío, sin coincidencias, error con reintento y sin permiso, cuando aplican;
+  - el recorrido de los diálogos presentes;
   - el `code` de cada error traducido;
-  - **el formato de sus datos en es-AR y en en-US**;
+  - **el formato de los datos que muestra con es-AR y en-US**;
   - axe sin violaciones y, si tiene tabla o formulario, la vista a 390 px.
-- No se da nada por terminado sin `npm run build`, `npm run lint` y `npm test` limpios.
+- Por cada cambio coherente con lógica, escribir primero un test focal que falle y hacerlo pasar; verificar el build y lint del alcance afectado antes del commit.
+- Al cerrar una etapa y en CI, ejecutar `npm run build`, `npm run lint`, `npm test` y `npm run contracts:check` completos y limpios. La puerta de etapa conserva el E2E real desde E3a y la comparación visual con el lienzo aprobado.

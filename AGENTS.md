@@ -28,9 +28,9 @@ SPA del multitenant. La arquitectura canónica está en [`docs/architecture/fron
 Si una regla no está escrita: **copiá cómo lo resuelve ArquitecturaBase** (`../ArquitecturaBase`, `../ArquitecturaBaseFront`); si tampoco está ahí, **decidí vos lo más simple y coherente con estos docs, anotalo en la sección «Decisiones tomadas» del informe de la etapa y seguí**. Frená y preguntá **solo** si la decisión cambia el producto (qué ve o puede hacer un usuario, una pantalla del lienzo, el modelo de accesos) o contradice una regla escrita. Una duda técnica menor nunca frena una etapa.
 
 ## Forma de trabajo
-- Commits chicos, en español, con conventional commits. Commitear al cerrar cada tarea.
+- Commits chicos, en español, con conventional commits. Cada cambio coherente se commitea con sus tests focales y las verificaciones de build y lint del alcance afectado en verde.
 - **Toda pantalla nueva se dibuja primero** en el [lienzo versionado](docs/design/lienzo/README.md), con las piezas de "Gestión de usuarios" y los textos del contrato real. Se programa después de que el usuario la elige.
-- No se da nada por terminado sin `npm run build`, `npm run lint` y `npm test` limpios.
+- Donde hay lógica, escribir primero un test focal que falle y hacerlo pasar. Al cerrar una etapa y en CI, ejecutar `npm run build`, `npm run lint`, `npm test` y `npm run contracts:check` completos y limpios.
 
 ## Reglas
 1. TS estricto: sin `any` ni `@ts-ignore`; `import type`.
