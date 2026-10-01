@@ -6,7 +6,7 @@ import { chromium } from "playwright";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const defaultManifest = path.join(root, "docs/design/capturas/etapa-3a/manifest.json");
-const defaultCanvas = path.join(root, "docs/design/lienzo");
+const defaultCanvas = path.join(root, "docs/design/lienzo-v35");
 const defaultOutput = path.join(root, "docs/design/capturas/etapa-3a");
 const interFont = path.join(root, "node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2");
 const viewports = new Set(["1440x900", "390x844"]);

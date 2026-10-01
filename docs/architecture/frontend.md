@@ -5,7 +5,7 @@
 - el **sitio de la plataforma** y la **página pública de cada organización en su subdominio**;
 - el **backoffice** de la plataforma.
 
-Suma también las empresas, los tipos generados desde OpenAPI y **una sola forma de mostrar los datos** ([`formatos.md`](formatos.md)). El backend está en `../ArquitecturaBaseMutitenant` (`docs/architecture/backend.md`); el árbol completo, archivo por archivo, está en [`arbol.md`](arbol.md). El diseño de cada pantalla está en el [lienzo versionado](../design/lienzo/README.md) (versión 35, 67 tableros): cada tablero manda sobre cualquier descripción textual. Los colores, la forma y el menú lateral están en el [tema](tema.md), y la sección «UI y pantallas» resume sus reglas.
+Suma también las empresas, los tipos generados desde OpenAPI y **una sola forma de mostrar los datos** ([`formatos.md`](formatos.md)). El backend está en `../ArquitecturaBaseMutitenant` (`docs/architecture/backend.md`); el árbol completo, archivo por archivo, está en [`arbol.md`](arbol.md). El diseño de cada pantalla está en el [lienzo versionado](../design/lienzo/README.md) (versión 60, 109 tableros; se programa solo lo validado): cada tablero manda sobre cualquier descripción textual. Los colores, la forma y el menú lateral están en el [tema](tema.md), y la sección «UI y pantallas» resume sus reglas.
 
 ## 1. Stack
 
@@ -188,7 +188,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - En 3a, `/api/me` entrega la zona efectiva para el acceso activo y el hook usa ese valor. Cuando nazcan las pantallas de empresa en E6, `companyId` conectará la zona propia de la empresa. La precedencia completa se verifica desde 3a con un helper puro.
 
 ### UI y pantallas
-Rigen los [tableros del lienzo versionado](../design/lienzo/README.md) (versión 35; mandan sobre cualquier descripción textual), el [tema](tema.md) (tokens y colores: verde petróleo como marca y marco arena en el menú lateral y la barra superior; forma de tarjetas, botones y tablas; el `AdminPanel`) y estas reglas. De `visual-baseline.md` se mantienen solo las migas; **lo que sigue lo reemplaza**.
+Rigen los [tableros del lienzo versionado](../design/lienzo/README.md) (versión 60; los validados mandan sobre cualquier descripción textual), el [tema](tema.md) (tokens y colores: verde petróleo como marca y marco arena en el menú lateral y la barra superior; forma de tarjetas, botones y tablas; el `AdminPanel`) y estas reglas. De `visual-baseline.md` se mantienen solo las migas; **lo que sigue lo reemplaza**.
 
 **Proceso y contenido**
 - **Toda pantalla nueva se dibuja primero** en el lienzo y se programa después de que el usuario la elige.

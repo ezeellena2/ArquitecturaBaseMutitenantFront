@@ -1,6 +1,6 @@
 # Tema visual (aprobado el 2026-09-27)
 
-La fuente de cada pantalla es el [lienzo versionado "Sistema visual · Multitenant"](../design/lienzo/README.md), versión 35; sus tableros mandan sobre cualquier descripción textual. Estos tokens van en `src/index.css` como variables CSS, y los componentes los usan siempre por nombre, nunca con el valor. Reemplaza los colores, la marca y el menú lateral de `visual-baseline.md`. La densidad compacta, la banda de título, los listados y las migas siguen como dice la sección "UI y pantallas" de [`frontend.md`](frontend.md).
+La fuente de cada pantalla es el [lienzo versionado "Sistema visual · Multitenant"](../design/lienzo/README.md), versión 60; sus tableros mandan sobre cualquier descripción textual. Estos tokens van en `src/index.css` como variables CSS, y los componentes los usan siempre por nombre, nunca con el valor. Reemplaza los colores, la marca y el menú lateral de `visual-baseline.md`. La densidad compacta, la banda de título, los listados y las migas siguen como dice la sección "UI y pantallas" de [`frontend.md`](frontend.md).
 
 ## Colores
 Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena** (menú lateral y barra superior) un tono más marcado que el centro, para que se despegue.

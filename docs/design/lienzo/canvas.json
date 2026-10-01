@@ -2,535 +2,971 @@
   "v": 3,
   "attachments": {},
   "boards": {
+    "Aceptar-Terminos.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Aceptar términos nuevos (bloquea hasta aceptar)",
+      "w": 1440,
+      "x": 6080,
+      "y": 1280
+    },
     "Auditoria-Org.dc.html": {
       "h": 900,
       "is_interactive": true,
-      "title": "Auditoría · /org/auditoria",
+      "page": "org",
+      "title": "Auditoría · /org/auditoria · para aprobar",
       "w": 1440,
       "x": 4560,
-      "y": 6400
+      "y": 1280
     },
     "Auditoria-Plat.dc.html": {
       "h": 900,
       "is_interactive": true,
-      "title": "Auditoría de seguridad · /plataforma/auditoria",
-      "w": 1440,
-      "x": 4560,
-      "y": 7540
-    },
-    "Botones.dc.html": {
-      "h": 900,
-      "title": "Botones de la página",
-      "w": 1440,
-      "x": 1360,
-      "y": 8680
-    },
-    "Config-Plat.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Configuración de la plataforma · /plataforma/configuracion",
+      "page": "plataforma",
+      "title": "Auditoría de seguridad · /plataforma/auditoria · por refinar",
       "w": 1440,
       "x": 6080,
-      "y": 7540
-    },
-    "Configuracion.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Configuración · /org/configuracion",
-      "w": 1440,
-      "x": 3040,
-      "y": 6400
-    },
-    "Cuenta.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Mi cuenta · /cuenta",
-      "w": 1440,
-      "x": 1520,
-      "y": 4240
-    },
-    "Cuentas.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Cuentas y operadores · /plataforma/cuentas",
-      "w": 1440,
-      "x": 3040,
-      "y": 7540
-    },
-    "Empresa.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Ficha de empresa · /org/empresas/:id",
-      "w": 1440,
-      "x": 1520,
-      "y": 6400
-    },
-    "Empresas.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Empresas · /org/empresas",
-      "w": 1440,
-      "x": 0,
-      "y": 6400
-    },
-    "Enlace.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Enlace del bot de WhatsApp · /login/enlace (Etapa 8)",
-      "w": 1440,
-      "x": 6080,
-      "y": 3100
-    },
-    "Error-Org.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Sin permiso o no encontrada",
-      "w": 1440,
-      "x": 7600,
-      "y": 6400
-    },
-    "Ingreso.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Ingresá · /login y /login/empresa",
-      "w": 1440,
-      "x": 0,
-      "y": 3100
-    },
-    "Inicio-Miembro.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Inicio de alguien con roles en una empresa",
-      "w": 1440,
-      "x": 6080,
-      "y": 6400
-    },
-    "Inicio-Org.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Inicio · /org",
-      "w": 1440,
-      "x": 0,
-      "y": 5380
-    },
-    "Inicio-Personal.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Inicio personal · /",
-      "w": 1440,
-      "x": 0,
-      "y": 4240
-    },
-    "Invitacion.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Aceptar una invitación · /invitacion",
-      "w": 1440,
-      "x": 4560,
-      "y": 3100
-    },
-    "Landing-Movil.dc.html": {
-      "h": 2920,
-      "title": "Landing · teléfono",
-      "w": 390,
-      "x": 1520,
-      "y": 0
-    },
-    "Landing.dc.html": {
-      "h": 2050,
-      "title": "Landing",
-      "w": 1440,
-      "x": 0,
-      "y": 0
-    },
-    "M-Auditoria-Org.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Auditoría · teléfono",
-      "w": 390,
-      "x": 3760,
-      "y": 11260
-    },
-    "M-Auditoria-Plat.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Auditoría de seguridad · teléfono",
-      "w": 390,
-      "x": 940,
-      "y": 12260
-    },
-    "M-Config-Plat.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Configuración de la plataforma · teléfono",
-      "w": 390,
-      "x": 1410,
-      "y": 12260
-    },
-    "M-Configuracion.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Configuración · teléfono",
-      "w": 390,
-      "x": 3290,
-      "y": 11260
-    },
-    "M-Cuenta.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Mi cuenta · teléfono",
-      "w": 390,
-      "x": 2820,
-      "y": 10260
-    },
-    "M-Cuentas.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Cuentas · teléfono",
-      "w": 390,
-      "x": 470,
-      "y": 12260
-    },
-    "M-Empresa.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Ficha de empresa · teléfono",
-      "w": 390,
-      "x": 2820,
-      "y": 11260
-    },
-    "M-Empresas.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Empresas · teléfono",
-      "w": 390,
-      "x": 2350,
-      "y": 11260
-    },
-    "M-Enlace.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Enlace de WhatsApp · teléfono",
-      "w": 390,
-      "x": 1880,
-      "y": 10260
-    },
-    "M-Ingreso.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Ingresá · teléfono",
-      "w": 390,
-      "x": 0,
-      "y": 10260
-    },
-    "M-Inicio-Org.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Inicio · teléfono",
-      "w": 390,
-      "x": 0,
-      "y": 11260
-    },
-    "M-Inicio-Personal.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Inicio personal · teléfono",
-      "w": 390,
-      "x": 2350,
-      "y": 10260
-    },
-    "M-Invitacion.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Aceptar una invitación · teléfono",
-      "w": 390,
-      "x": 1410,
-      "y": 10260
-    },
-    "M-Organizaciones.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Organizaciones · teléfono",
-      "w": 390,
-      "x": 0,
-      "y": 12260
-    },
-    "M-Registro-Empresa.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Registrá tu empresa · teléfono",
-      "w": 390,
-      "x": 940,
-      "y": 10260
-    },
-    "M-Registro.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Crear cuenta · teléfono",
-      "w": 390,
-      "x": 470,
-      "y": 10260
-    },
-    "M-Rol.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Editar un rol · teléfono",
-      "w": 390,
-      "x": 1880,
-      "y": 11260
-    },
-    "M-Roles.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Roles y permisos · teléfono",
-      "w": 390,
-      "x": 1410,
-      "y": 11260
-    },
-    "M-Usuario.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Editar usuario · teléfono",
-      "w": 390,
-      "x": 940,
-      "y": 11260
-    },
-    "M-Usuarios.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Usuarios · teléfono",
-      "w": 390,
-      "x": 470,
-      "y": 11260
-    },
-    "Mapa-Ingreso.dc.html": {
-      "h": 1880,
-      "title": "Ingreso · todos los casos",
-      "w": 1600,
-      "x": 3670,
-      "y": 0
-    },
-    "Organizacion.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Ficha de una organización · /plataforma/organizaciones/:id",
-      "w": 1440,
-      "x": 1520,
-      "y": 7540
-    },
-    "Organizaciones.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Organizaciones · /plataforma",
-      "w": 1440,
-      "x": 0,
-      "y": 7540
-    },
-    "Palabras.dc.html": {
-      "h": 1300,
-      "title": "Palabras en pantalla",
-      "w": 1280,
-      "x": 0,
-      "y": 8680
-    },
-    "Perfil-Suspendido.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Organización no disponible (suspendida, en espera o cerrada)",
-      "w": 1440,
-      "x": 9120,
-      "y": 3100
-    },
-    "Recorridos.dc.html": {
-      "h": 1320,
-      "title": "Quién es quién y cómo entra",
-      "w": 1600,
-      "x": 1990,
-      "y": 0
-    },
-    "Registro-Empresa.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Registrá tu empresa · /registro/empresa",
-      "w": 1440,
-      "x": 3040,
-      "y": 3100
-    },
-    "Registro.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Crear cuenta · /registro",
-      "w": 1440,
-      "x": 1520,
-      "y": 3100
-    },
-    "Rol.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Editar un rol · /org/roles/:id",
-      "w": 1440,
-      "x": 6080,
-      "y": 5380
-    },
-    "Roles.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Roles y permisos · /org/roles",
-      "w": 1440,
-      "x": 4560,
-      "y": 5380
-    },
-    "Sesion.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Iniciando, cambiando de lado, cerrando",
-      "w": 1440,
-      "x": 7600,
-      "y": 3100
-    },
-    "Usuario.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Editar usuario · /org/usuarios/:id",
-      "w": 1440,
-      "x": 3040,
-      "y": 5380
-    },
-    "Usuarios.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Usuarios · /org/usuarios",
-      "w": 1440,
-      "x": 1520,
-      "y": 5380
-    },
-    "Pagina-Publica.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Página pública de una empresa · <slug>.plataforma.com",
-      "w": 1440,
-      "x": 5350,
-      "y": 0
-    },
-    "M-Pagina-Publica.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Página pública · teléfono",
-      "w": 390,
-      "x": 6870,
-      "y": 0
-    },
-    "Recuperar.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Recuperar mi cuenta · /recuperar",
-      "w": 1440,
-      "x": 10640,
-      "y": 3100
-    },
-    "Pagina-Org.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Página pública · /org/pagina",
-      "w": 1440,
-      "x": 9120,
-      "y": 6400
-    },
-    "M-Recuperar.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Recuperar mi cuenta · teléfono",
-      "w": 390,
-      "x": 3290,
-      "y": 10260
-    },
-    "Directorio.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Directorio de empresas · / (plataforma.com)",
-      "w": 1440,
-      "x": 7340,
-      "y": 0
-    },
-    "Legal.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Documento legal · /terminos y /privacidad",
-      "w": 1440,
-      "x": 12160,
-      "y": 3100
-    },
-    "Aceptar-Terminos.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Aceptar términos nuevos (bloquea hasta aceptar)",
-      "w": 1440,
-      "x": 13680,
-      "y": 3100
+      "y": 260
     },
     "Avisos.dc.html": {
       "h": 900,
       "is_interactive": true,
-      "title": "Avisos del sistema",
+      "page": "org",
+      "title": "Avisos del sistema · para aprobar",
       "w": 1440,
-      "x": 10640,
-      "y": 6400
+      "x": 3040,
+      "y": 2300
+    },
+    "Botones.dc.html": {
+      "h": 900,
+      "page": "archivo",
+      "title": "Botones de la página",
+      "w": 1440,
+      "x": 4560,
+      "y": 260
+    },
+    "Config-Plat.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Configuración de la plataforma · /plataforma/configuracion · por refinar",
+      "w": 1440,
+      "x": 0,
+      "y": 1280
+    },
+    "Configuracion.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Configuración · /org/configuracion · para aprobar",
+      "w": 1440,
+      "x": 3040,
+      "y": 1280
+    },
+    "Criterio-Avisos.dc.html": {
+      "h": 2300,
+      "page": "criterio",
+      "title": "Criterio · Avisos y errores",
+      "w": 1440,
+      "x": 6080,
+      "y": 260
+    },
+    "Criterio-Botones.dc.html": {
+      "h": 2080,
+      "page": "criterio",
+      "title": "Criterio · Botones",
+      "w": 1440,
+      "x": 0,
+      "y": 260
+    },
+    "Criterio-Dialogos.dc.html": {
+      "h": 2200,
+      "page": "criterio",
+      "title": "Criterio · Diálogos",
+      "w": 1440,
+      "x": 3040,
+      "y": 260
+    },
+    "Criterio-Formularios.dc.html": {
+      "h": 2440,
+      "page": "criterio",
+      "title": "Criterio · Formularios y campos",
+      "w": 1440,
+      "x": 4560,
+      "y": 260
+    },
+    "Criterio-Marco.dc.html": {
+      "h": 3170,
+      "page": "criterio",
+      "title": "Criterio · Marco y pantallas",
+      "w": 1440,
+      "x": 9120,
+      "y": 260
+    },
+    "Criterio-Menus.dc.html": {
+      "h": 2820,
+      "page": "criterio",
+      "title": "Criterio · Menús y desplegables",
+      "w": 1440,
+      "x": 7600,
+      "y": 260
+    },
+    "Criterio-Tablas.dc.html": {
+      "h": 2130,
+      "page": "criterio",
+      "title": "Criterio · Tablas y listas",
+      "w": 1440,
+      "x": 1520,
+      "y": 260
+    },
+    "Cuenta-A.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "archivo",
+      "title": "Mi cuenta · A · Filas y «Editar»",
+      "w": 1440,
+      "x": 0,
+      "y": 260
+    },
+    "Cuenta-B.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "archivo",
+      "title": "Mi cuenta · B · Cabecera y lista",
+      "w": 1440,
+      "x": 1520,
+      "y": 260
+    },
+    "Cuenta-C.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "archivo",
+      "title": "Mi cuenta · C · Formulario a medida",
+      "w": 1440,
+      "x": 3040,
+      "y": 260
     },
     "Cuenta-Plat.dc.html": {
       "h": 900,
       "is_interactive": true,
-      "title": "Ficha de una cuenta · /plataforma/cuentas/:id",
+      "page": "plataforma",
+      "title": "Ficha de una cuenta · /plataforma/cuentas/:id · por refinar",
       "w": 1440,
-      "x": 7600,
-      "y": 7540
+      "x": 4560,
+      "y": 260
     },
-    "Recuperaciones.dc.html": {
+    "Cuenta.dc.html": {
+      "x": 1520,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Mi cuenta · /cuenta",
+      "page": "personal",
+      "is_interactive": true
+    },
+    "Cuentas.dc.html": {
       "h": 900,
       "is_interactive": true,
-      "title": "Recuperaciones · /plataforma/recuperaciones",
+      "page": "plataforma",
+      "title": "Cuentas y operadores · /plataforma/cuentas · por refinar",
       "w": 1440,
-      "x": 9120,
-      "y": 7540
+      "x": 3040,
+      "y": 260
+    },
+    "Directorio.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "publico",
+      "title": "Directorio de empresas · / (plataforma.com) · por refinar",
+      "w": 1440,
+      "x": 3040,
+      "y": 260
+    },
+    "Empresa.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Ficha de empresa · /org/empresas/:id · para aprobar",
+      "w": 1440,
+      "x": 1520,
+      "y": 1280
+    },
+    "Empresas.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Empresas · /org/empresas · para aprobar",
+      "w": 1440,
+      "x": 0,
+      "y": 1280
+    },
+    "Enlace.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Enlace del bot de WhatsApp · /login/enlace (Etapa 8)",
+      "w": 1440,
+      "x": 6080,
+      "y": 260
+    },
+    "Error-Org.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Sin permiso o no encontrada · para aprobar",
+      "w": 1440,
+      "x": 0,
+      "y": 2300
+    },
+    "Ingreso.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Ingresá · /login y /login/empresa",
+      "w": 1440,
+      "x": 0,
+      "y": 260
+    },
+    "Inicio-Miembro.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Inicio de alguien con roles en una empresa · para aprobar",
+      "w": 1440,
+      "x": 6080,
+      "y": 1280
+    },
+    "Inicio-Org.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Inicio · /org · para aprobar",
+      "w": 1440,
+      "x": 0,
+      "y": 260
+    },
+    "Inicio-Personal.dc.html": {
+      "x": 0,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Inicio personal · /",
+      "page": "personal",
+      "is_interactive": true
+    },
+    "Invitacion.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Aceptar una invitación · /invitacion",
+      "w": 1440,
+      "x": 4560,
+      "y": 260
+    },
+    "Landing-Movil.dc.html": {
+      "h": 2920,
+      "page": "publico",
+      "title": "Landing · teléfono · por refinar",
+      "w": 390,
+      "x": 0,
+      "y": 2430
+    },
+    "Landing.dc.html": {
+      "h": 2050,
+      "page": "publico",
+      "title": "Landing · por refinar",
+      "w": 1440,
+      "x": 0,
+      "y": 260
+    },
+    "Legal.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Documento legal · /terminos y /privacidad",
+      "w": 1440,
+      "x": 4560,
+      "y": 1280
     },
     "Legales.dc.html": {
       "h": 900,
       "is_interactive": true,
-      "title": "Documentos legales · /plataforma/legales",
+      "page": "plataforma",
+      "title": "Documentos legales · /plataforma/legales · por refinar",
       "w": 1440,
-      "x": 10640,
-      "y": 7540
-    },
-    "Mensajes.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Correos y WhatsApp que manda el sistema",
-      "w": 1440,
-      "x": 3400,
-      "y": 8680
-    },
-    "M-Directorio.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Directorio · teléfono",
-      "w": 390,
-      "x": 3760,
-      "y": 10260
-    },
-    "M-Legal.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Documento legal · teléfono",
-      "w": 390,
-      "x": 4230,
-      "y": 10260
+      "x": 3040,
+      "y": 1280
     },
     "M-Aceptar-Terminos.dc.html": {
       "h": 844,
       "is_interactive": true,
+      "page": "ingreso",
       "title": "Aceptar términos · teléfono",
       "w": 390,
-      "x": 4700,
-      "y": 10260
+      "x": 3290,
+      "y": 2300
+    },
+    "M-Auditoria-Org.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Auditoría · teléfono · para aprobar",
+      "w": 390,
+      "x": 3760,
+      "y": 3320
+    },
+    "M-Auditoria-Plat.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Auditoría de seguridad · teléfono · por refinar",
+      "w": 390,
+      "x": 940,
+      "y": 2300
+    },
+    "M-Config-Plat.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Configuración de la plataforma · teléfono · por refinar",
+      "w": 390,
+      "x": 1410,
+      "y": 2300
+    },
+    "M-Configuracion.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Configuración · teléfono · para aprobar",
+      "w": 390,
+      "x": 3290,
+      "y": 3320
+    },
+    "M-Cuenta.dc.html": {
+      "x": 470,
+      "y": 1280,
+      "w": 390,
+      "h": 844,
+      "title": "Mi cuenta · teléfono",
+      "page": "personal"
+    },
+    "M-Cuentas.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Cuentas · teléfono · por refinar",
+      "w": 390,
+      "x": 470,
+      "y": 2300
+    },
+    "M-Directorio.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "publico",
+      "title": "Directorio · teléfono · por refinar",
+      "w": 390,
+      "x": 940,
+      "y": 2430
+    },
+    "M-Empresa.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Ficha de empresa · teléfono · para aprobar",
+      "w": 390,
+      "x": 2820,
+      "y": 3320
+    },
+    "M-Empresas.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Empresas · teléfono · para aprobar",
+      "w": 390,
+      "x": 2350,
+      "y": 3320
+    },
+    "M-Enlace.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Enlace de WhatsApp · teléfono",
+      "w": 390,
+      "x": 1880,
+      "y": 2300
+    },
+    "M-Ingreso.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Ingresá · teléfono",
+      "w": 390,
+      "x": 0,
+      "y": 2300
+    },
+    "M-Inicio-Org.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Inicio · teléfono · para aprobar",
+      "w": 390,
+      "x": 0,
+      "y": 3320
+    },
+    "M-Inicio-Personal.dc.html": {
+      "x": 0,
+      "y": 1280,
+      "w": 390,
+      "h": 844,
+      "title": "Inicio personal · teléfono",
+      "page": "personal"
+    },
+    "M-Invitacion.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Aceptar una invitación · teléfono",
+      "w": 390,
+      "x": 1410,
+      "y": 2300
+    },
+    "M-Legal.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Documento legal · teléfono",
+      "w": 390,
+      "x": 2820,
+      "y": 2300
+    },
+    "M-Organizaciones.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Organizaciones · teléfono · por refinar",
+      "w": 390,
+      "x": 0,
+      "y": 2300
+    },
+    "M-Pagina-Publica.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "publico",
+      "title": "Página pública · teléfono · por refinar",
+      "w": 390,
+      "x": 470,
+      "y": 2430
+    },
+    "M-Recuperar.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Recuperar mi cuenta · teléfono",
+      "w": 390,
+      "x": 2350,
+      "y": 2300
+    },
+    "M-Registro-Empresa.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Registrá tu empresa · teléfono",
+      "w": 390,
+      "x": 940,
+      "y": 2300
+    },
+    "M-Registro.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Crear cuenta · teléfono",
+      "w": 390,
+      "x": 470,
+      "y": 2300
+    },
+    "M-Rol.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Editar un rol · teléfono · para aprobar",
+      "w": 390,
+      "x": 1880,
+      "y": 3320
+    },
+    "M-Roles.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Roles y permisos · teléfono · para aprobar",
+      "w": 390,
+      "x": 1410,
+      "y": 3320
+    },
+    "M-Usuario.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Editar usuario · teléfono · para aprobar",
+      "w": 390,
+      "x": 940,
+      "y": 3320
+    },
+    "M-Usuarios.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Usuarios · teléfono · para aprobar",
+      "w": 390,
+      "x": 470,
+      "y": 3320
+    },
+    "Mapa-Ingreso.dc.html": {
+      "h": 1880,
+      "page": "mapa",
+      "title": "Ingreso · todos los casos",
+      "w": 1600,
+      "x": 1680,
+      "y": 260
+    },
+    "Mensajes.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "reglas",
+      "title": "Correos y WhatsApp que manda el sistema",
+      "w": 1440,
+      "x": 1360,
+      "y": 260
+    },
+    "Organizacion.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Ficha de una organización · /plataforma/organizaciones/:id · por refinar",
+      "w": 1440,
+      "x": 1520,
+      "y": 260
+    },
+    "Organizaciones.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Organizaciones · /plataforma · por refinar",
+      "w": 1440,
+      "x": 0,
+      "y": 260
+    },
+    "Pagina-Org.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Página pública · /org/pagina · para aprobar",
+      "w": 1440,
+      "x": 1520,
+      "y": 2300
+    },
+    "Pagina-Publica.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "publico",
+      "title": "Página pública de una empresa · <slug>.plataforma.com · por refinar",
+      "w": 1440,
+      "x": 1520,
+      "y": 260
+    },
+    "Palabras.dc.html": {
+      "h": 1300,
+      "page": "reglas",
+      "title": "Palabras en pantalla",
+      "w": 1280,
+      "x": 0,
+      "y": 260
+    },
+    "Perfil-Suspendido.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Organización no disponible (suspendida, en espera o cerrada)",
+      "w": 1440,
+      "x": 1520,
+      "y": 1280
+    },
+    "Recorridos.dc.html": {
+      "h": 1320,
+      "page": "mapa",
+      "title": "Quién es quién y cómo entra",
+      "w": 1600,
+      "x": 0,
+      "y": 260
+    },
+    "Recuperaciones.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Recuperaciones · /plataforma/recuperaciones · por refinar",
+      "w": 1440,
+      "x": 1520,
+      "y": 1280
+    },
+    "Recuperar.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Recuperar mi cuenta · /recuperar",
+      "w": 1440,
+      "x": 3040,
+      "y": 1280
+    },
+    "Registro-Empresa.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Registrá tu empresa · /registro/empresa",
+      "w": 1440,
+      "x": 3040,
+      "y": 260
+    },
+    "Registro.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Crear cuenta · /registro",
+      "w": 1440,
+      "x": 1520,
+      "y": 260
+    },
+    "Rol.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Editar un rol · /org/roles/:id · para aprobar",
+      "w": 1440,
+      "x": 6080,
+      "y": 260
+    },
+    "Roles.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Roles y permisos · /org/roles · para aprobar",
+      "w": 1440,
+      "x": 4560,
+      "y": 260
+    },
+    "Sesion.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Iniciando, cambiando de lado, cerrando",
+      "w": 1440,
+      "x": 0,
+      "y": 1280
+    },
+    "Usuario.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Editar usuario · /org/usuarios/:id · para aprobar",
+      "w": 1440,
+      "x": 3040,
+      "y": 260
+    },
+    "Usuarios.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Usuarios · /org/usuarios · para aprobar",
+      "w": 1440,
+      "x": 1520,
+      "y": 260
+    },
+    "WA-Chats.dc.html": {
+      "x": 0,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp › Chats (web)",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "WA-Contacto.dc.html": {
+      "x": 3040,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp › Ficha del contacto (web)",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "WA-Admin.dc.html": {
+      "x": 0,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Número (web)",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "WA-Admin-Vacio.dc.html": {
+      "x": 1520,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Número sin conectar (web)",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "WA-Admin-Editar.dc.html": {
+      "x": 4560,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Editar respuesta (web)",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Chats.dc.html": {
+      "x": 470,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Chats · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Conversacion.dc.html": {
+      "x": 940,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Conversación · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-24h.dc.html": {
+      "x": 1410,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Conversación pasadas 24 h · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Contacto.dc.html": {
+      "x": 1880,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Ficha del contacto · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Admin.dc.html": {
+      "x": 2350,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Respuestas automáticas · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Editar.dc.html": {
+      "x": 2820,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Editar respuesta · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "WA-Contactos.dc.html": {
+      "x": 1520,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp › Contactos (web)",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "WA-Respuestas.dc.html": {
+      "x": 3040,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Respuestas automáticas (web)",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "WA-Plantillas.dc.html": {
+      "x": 6080,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Plantillas (web)",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Menu.dc.html": {
+      "x": 0,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Menú abierto · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "Cuenta-Agregar.dc.html": {
+      "x": 3040,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Mi cuenta · agregar correo o teléfono",
+      "page": "personal",
+      "is_interactive": true
+    },
+    "Cuenta-Verificar.dc.html": {
+      "x": 4560,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Mi cuenta · verificar",
+      "page": "personal",
+      "is_interactive": true
+    },
+    "Cuenta-Baja.dc.html": {
+      "x": 6080,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Mi cuenta · dar de baja",
+      "page": "personal",
+      "is_interactive": true
+    },
+    "Cuenta-Anterior.dc.html": {
+      "x": 7120,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Mi cuenta (antes del criterio)",
+      "page": "archivo",
+      "is_interactive": true
+    },
+    "M-Cuenta-Anterior.dc.html": {
+      "x": 8640,
+      "y": 260,
+      "w": 390,
+      "h": 844,
+      "title": "Mi cuenta · teléfono (antes del criterio)",
+      "page": "archivo",
+      "is_interactive": true
+    },
+    "Configuracion-Dominio.dc.html": {
+      "x": 0,
+      "y": 4284,
+      "w": 1440,
+      "h": 900,
+      "title": "Configuración · agregar dominio · para aprobar",
+      "page": "org",
+      "is_interactive": true
+    },
+    "Configuracion-Verificar.dc.html": {
+      "x": 1520,
+      "y": 4284,
+      "w": 1440,
+      "h": 900,
+      "title": "Configuración · verificar dominio · para aprobar",
+      "page": "org",
+      "is_interactive": true
+    },
+    "Configuracion-Quitar.dc.html": {
+      "x": 3040,
+      "y": 4284,
+      "w": 1440,
+      "h": 900,
+      "title": "Configuración · quitar dominio · para aprobar",
+      "page": "org",
+      "is_interactive": true
+    },
+    "Pagina-Org-Despublicar.dc.html": {
+      "x": 4560,
+      "y": 4284,
+      "w": 1440,
+      "h": 900,
+      "title": "Página pública · despublicar · para aprobar",
+      "page": "org",
+      "is_interactive": true
+    },
+    "Configuracion-Anterior.dc.html": {
+      "x": 9110,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Configuración (antes del criterio)",
+      "page": "archivo",
+      "is_interactive": true
+    },
+    "Pagina-Org-Anterior.dc.html": {
+      "x": 10630,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Página pública (antes del criterio)",
+      "page": "archivo",
+      "is_interactive": true
+    },
+    "M-Configuracion-Anterior.dc.html": {
+      "x": 12150,
+      "y": 260,
+      "w": 390,
+      "h": 844,
+      "title": "Configuración · teléfono (antes del criterio)",
+      "page": "archivo",
+      "is_interactive": true
+    },
+    "Usuario-Anterior.dc.html": {
+      "x": 12620,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Editar usuario · /org/usuarios/:id (antes del criterio)",
+      "page": "archivo",
+      "is_interactive": true
+    },
+    "Rol-Anterior.dc.html": {
+      "x": 14140,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Editar un rol · /org/roles/:id (antes del criterio)",
+      "page": "archivo",
+      "is_interactive": true
+    },
+    "Avisos-Anterior.dc.html": {
+      "x": 15660,
+      "y": 260,
+      "w": 1440,
+      "h": 900,
+      "title": "Avisos del sistema (antes del criterio)",
+      "page": "archivo",
+      "is_interactive": true
+    },
+    "M-Usuario-Anterior.dc.html": {
+      "x": 17180,
+      "y": 260,
+      "w": 390,
+      "h": 844,
+      "title": "Editar usuario · teléfono (antes del criterio)",
+      "page": "archivo",
+      "is_interactive": true
+    },
+    "M-Rol-Anterior.dc.html": {
+      "x": 17650,
+      "y": 260,
+      "w": 390,
+      "h": 844,
+      "title": "Editar un rol · teléfono (antes del criterio)",
+      "page": "archivo",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -547,121 +983,155 @@
     }
   ],
   "launch": {
-    "view": "canvas"
+    "view": "canvas",
+    "page": "criterio"
   },
   "notes": {
     "estilo": {
       "color": "blue",
+      "page": "archivo",
       "text": "Estilo de todas las pantallas\n\n• Colores: fondo cálido, verde petróleo como marca, y el menú lateral y la barra de arriba en arena, para que se despeguen del centro.\n• Compacto: letra de 13, filas de 42, campos de 36 y botones de 34.\n• Encabezado: banda blanca con el ícono de la sección (o «‹» para volver), el título de 18, el resumen y las acciones a la derecha.\n• Tablas: un dato por columna, filas alternadas, estado en pastilla y menú ⋮ por fila.\n• Menú lateral: arriba, Inicio y los módulos del producto; abajo de todo, «Administración», que abre un segundo panel al lado con todas sus opciones (en el teléfono se despliega dentro del menú).\n• Filtros en pastilla con su conteo y «Limpiar»; la barra de filtros no lleva botones.\n• Lo corto en un diálogo de 560; lo largo en una pantalla con «Cambios sin guardar».\n• Listados con «1–10 de 11», 10/20/50/100 por página y «Página 1 de 2»; la auditoría, con «Cargar más».",
       "w": 440,
-      "x": 7600,
-      "y": 5380
+      "x": 6080,
+      "y": 260
     },
     "guia": {
       "color": "blue",
+      "page": "mapa",
       "text": "Propuesta para aprobar; todavía no hay nada programado.\n\nQuién es quién\n• Operador de la plataforma: el backoffice.\n• Dueño: registra su empresa o su grupo y tiene todos los permisos de la organización.\n• Usuarios de la organización: administradores o empleados; se diferencian por el rol.\n• Personas (B2C): usan la plataforma por su cuenta y piden o contratan lo que ofrece cada empresa en su página pública. Su lado, Personal, no muestra organizaciones.\n\nUna misma persona puede estar en los dos lados con la misma cuenta. Hay dos puertas: «Ingresá» (como persona) e «Ingresá como empresa». Después pasa de un lado al otro desde el menú de arriba a la derecha. Una persona nunca crea una empresa: eso es «Registrá tu empresa».\n\nCada organización puede publicar su página en su subdominio (delta.plataforma.com). Las empresas de una organización están al mismo nivel: no hay empresa matriz.\n\nFilas\n• Entrada: la landing, quién es quién, el mapa de todos los casos del ingreso y la página pública de una empresa.\n• Ingreso: cada pantalla pública, con cada estado en Tweaks, y Recuperar mi cuenta.\n• Perfil personal (B2C): inicio y mi cuenta.\n• Organización (B2B): lo que administra el Dueño (con su página pública), y el inicio de alguien que solo tiene roles en una empresa.\n• Plataforma: lo que ve un operador.\n• Teléfono: las mismas pantallas en 390 px.",
       "w": 620,
-      "x": 0,
-      "y": -780
+      "x": 3360,
+      "y": 260
     },
     "movil-nota": {
       "color": "blue",
+      "page": "archivo",
       "text": "En el teléfono\n\n• Arriba, ☰ abre el mismo menú lateral por encima y el avatar abre el menú de la cuenta desde abajo.\n• La banda del título queda igual; la acción principal, corta, a su derecha.\n• Las tablas muestran las columnas que entran (el dato principal, el estado y el ⋮); el resto se ve al entrar.\n• Los diálogos se abren como hojas desde abajo.\n• Al editar, «Cancelar» y «Guardar» van en una barra fija abajo.\n• En Inicio, Tweaks › vista abre el menú lateral o el menú de la cuenta.",
       "w": 440,
-      "x": 5170,
-      "y": 10260
+      "x": 6600,
+      "y": 260
     },
     "pendientes": {
       "color": "orange",
+      "page": "reglas",
       "text": "Sin inventar\n\n• Los inicios (personal, de la organización y de un miembro) quedan vacíos: su contenido depende de las funciones de cada producto.\n• Los roles de ejemplo usan solo los permisos de la plantilla. Los módulos de cada producto suman sus permisos y sus entradas en el menú.\n• Las empresas de ejemplo tienen nombres neutros porque no sabemos de qué rubro van a ser.",
       "w": 440,
-      "x": 4920,
-      "y": 8680
+      "x": 2880,
+      "y": 260
     },
     "personal-nota": {
       "color": "blue",
+      "page": "personal",
       "text": "El lado personal (B2C) no muestra organizaciones. Su inicio queda vacío hasta que el producto defina sus funciones.\n\nMi cuenta es de la persona y vale en los dos lados: el nombre, el idioma, la zona y cómo entra se cambian acá, no en cada organización.",
       "w": 440,
-      "x": 3040,
-      "y": 4240
+      "x": 7600,
+      "y": 260
     },
     "plat-nota": {
       "color": "blue",
+      "page": "plataforma",
       "text": "La plataforma ve metadatos, nunca los datos de una organización. Cada acción sobre una organización o una cuenta pide el motivo y queda en la auditoría de seguridad.",
       "w": 440,
-      "x": 12160,
-      "y": 7540
+      "x": 7600,
+      "y": 260
     },
     "probar": {
       "color": "green",
+      "page": "ingreso",
       "text": "Cómo probarlo\n\n• Play: escribí un correo y cualquier código de 6 números; 000000 es incorrecto.\n• Tweaks › puerta: «Ingresá» (como persona, va al inicio personal) o «Ingresá como empresa» (va a la organización). No se vuelve al último lado: se entra por la puerta que se elige.\n• Tweaks › cuenta: Lucía, Beto (sin empresas: por la puerta de empresas ve «Registrá tu empresa») y Martín, que pasa por la app de autenticación.\n• Tweaks › estado: cada error del servidor, tal como se ve.\n• En Registrá tu empresa, Tweaks › estado muestra el alta abierta, con aprobación, cerrada o con el límite alcanzado.\n• En Recuperar mi cuenta, Tweaks › paso.\n• Casi todas las pantallas tienen Tweaks con cada estado del flujo: organización en espera, suspendida o cerrada; página despublicada por la plataforma; dominio sin verificar, pendiente o verificado; baja de la cuenta; pedidos de recuperación; y otros.",
       "w": 440,
-      "x": 15200,
-      "y": 3100
+      "x": 7600,
+      "y": 260
+    },
+    "t-criterio": {
+      "kind": "title1",
+      "maxW": 8000,
+      "page": "criterio",
+      "text": "Criterio de diseño",
+      "w": 600,
+      "x": 0,
+      "y": 0
     },
     "t-entrada": {
       "kind": "title1",
-      "maxW": 6000,
-      "text": "Entrada",
+      "maxW": 4480,
+      "page": "publico",
+      "text": "Sitio público",
       "w": 600,
       "x": 0,
-      "y": -160
+      "y": 0
     },
     "t-ingreso": {
       "kind": "title1",
-      "maxW": 6000,
-      "text": "Ingreso",
+      "maxW": 7520,
+      "page": "ingreso",
+      "text": "Ingreso y registro",
       "w": 600,
       "x": 0,
-      "y": 2940
+      "y": 0
     },
     "t-org": {
       "kind": "title1",
-      "maxW": 6000,
-      "text": "Organización (B2B)",
+      "maxW": 7520,
+      "page": "org",
+      "text": "Organización",
       "w": 600,
       "x": 0,
-      "y": 5220
+      "y": 0
     },
     "t-palabras": {
       "kind": "title1",
-      "maxW": 6000,
-      "text": "Reglas y pendientes",
+      "maxW": 3320,
+      "page": "reglas",
+      "text": "Textos y mensajes",
       "w": 600,
       "x": 0,
-      "y": 8520
+      "y": 0
     },
     "t-personal": {
       "kind": "title1",
-      "maxW": 6000,
-      "text": "Perfil personal (B2C)",
+      "maxW": 8000,
+      "page": "personal",
+      "text": "Perfil personal",
       "w": 600,
       "x": 0,
-      "y": 4080
+      "y": 0
     },
     "t-plat": {
       "kind": "title1",
-      "maxW": 6000,
+      "maxW": 7520,
+      "page": "plataforma",
       "text": "Plataforma",
       "w": 600,
       "x": 0,
-      "y": 7380
+      "y": 0
     },
-    "t-telefono": {
+    "t-propuesta-cuenta": {
       "kind": "title1",
       "maxW": 6000,
-      "text": "Teléfono",
+      "page": "archivo",
+      "text": "Archivo · lo que reemplazó el criterio",
       "w": 600,
       "x": 0,
-      "y": 10100
+      "y": 0
     },
     "titulo": {
       "kind": "title1",
-      "maxW": 6000,
-      "text": "Multitenant · todas las pantallas",
+      "maxW": 3280,
+      "page": "mapa",
+      "text": "Mapa general",
       "w": 600,
       "x": 0,
-      "y": -900
+      "y": 0
+    },
+    "t-propuesta-whatsapp": {
+      "kind": "title1",
+      "x": 0,
+      "y": 0,
+      "w": 600,
+      "maxW": 7520,
+      "text": "Organización · WhatsApp",
+      "page": "propuesta-whatsapp"
     }
   },
   "order": [
@@ -731,8 +1201,91 @@
     "M-Organizaciones.dc.html",
     "M-Cuentas.dc.html",
     "M-Auditoria-Plat.dc.html",
-    "M-Config-Plat.dc.html"
+    "M-Config-Plat.dc.html",
+    "Cuenta-A.dc.html",
+    "Cuenta-B.dc.html",
+    "Cuenta-C.dc.html",
+    "Criterio-Botones.dc.html",
+    "Criterio-Tablas.dc.html",
+    "Criterio-Dialogos.dc.html",
+    "Criterio-Formularios.dc.html",
+    "Criterio-Avisos.dc.html",
+    "Criterio-Menus.dc.html",
+    "Criterio-Marco.dc.html",
+    "WA-Chats.dc.html",
+    "WA-Contacto.dc.html",
+    "WA-Admin.dc.html",
+    "WA-Admin-Vacio.dc.html",
+    "WA-Admin-Editar.dc.html",
+    "M-WA-Chats.dc.html",
+    "M-WA-Conversacion.dc.html",
+    "M-WA-24h.dc.html",
+    "M-WA-Contacto.dc.html",
+    "M-WA-Admin.dc.html",
+    "M-WA-Editar.dc.html",
+    "WA-Contactos.dc.html",
+    "WA-Respuestas.dc.html",
+    "WA-Plantillas.dc.html",
+    "M-WA-Menu.dc.html",
+    "Cuenta-Agregar.dc.html",
+    "Cuenta-Verificar.dc.html",
+    "Cuenta-Baja.dc.html",
+    "Cuenta-Anterior.dc.html",
+    "M-Cuenta-Anterior.dc.html",
+    "Configuracion-Dominio.dc.html",
+    "Configuracion-Verificar.dc.html",
+    "Configuracion-Quitar.dc.html",
+    "Pagina-Org-Despublicar.dc.html",
+    "Configuracion-Anterior.dc.html",
+    "Pagina-Org-Anterior.dc.html",
+    "M-Configuracion-Anterior.dc.html",
+    "Usuario-Anterior.dc.html",
+    "Rol-Anterior.dc.html",
+    "Avisos-Anterior.dc.html",
+    "M-Usuario-Anterior.dc.html",
+    "M-Rol-Anterior.dc.html"
   ],
-  "pages": [],
+  "pages": [
+    {
+      "id": "criterio",
+      "name": "Criterio de diseño"
+    },
+    {
+      "id": "mapa",
+      "name": "Mapa general"
+    },
+    {
+      "id": "publico",
+      "name": "Sitio público"
+    },
+    {
+      "id": "ingreso",
+      "name": "Ingreso y registro"
+    },
+    {
+      "id": "personal",
+      "name": "Perfil personal"
+    },
+    {
+      "id": "org",
+      "name": "Organización"
+    },
+    {
+      "id": "propuesta-whatsapp",
+      "name": "Organización · WhatsApp"
+    },
+    {
+      "id": "plataforma",
+      "name": "Plataforma"
+    },
+    {
+      "id": "reglas",
+      "name": "Textos y mensajes"
+    },
+    {
+      "id": "archivo",
+      "name": "Archivo"
+    }
+  ],
   "title": "Sistema visual · Multitenant"
 }

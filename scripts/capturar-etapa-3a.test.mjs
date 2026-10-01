@@ -21,7 +21,7 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = path.join(root, "docs/design/capturas/etapa-3a/manifest.json");
-const lienzo = path.join(root, "docs/design/lienzo");
+const lienzo = path.join(root, "docs/design/lienzo-v35");
 const outputRoot = path.join(root, "docs/design/capturas/etapa-3a");
 
 test("la captura oculta también la primera cifra OTP, que admite pegar seis dígitos", async () => {

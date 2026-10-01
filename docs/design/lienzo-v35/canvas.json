@@ -1,0 +1,738 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Auditoria-Org.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Auditoría · /org/auditoria",
+      "w": 1440,
+      "x": 4560,
+      "y": 6400
+    },
+    "Auditoria-Plat.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Auditoría de seguridad · /plataforma/auditoria",
+      "w": 1440,
+      "x": 4560,
+      "y": 7540
+    },
+    "Botones.dc.html": {
+      "h": 900,
+      "title": "Botones de la página",
+      "w": 1440,
+      "x": 1360,
+      "y": 8680
+    },
+    "Config-Plat.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Configuración de la plataforma · /plataforma/configuracion",
+      "w": 1440,
+      "x": 6080,
+      "y": 7540
+    },
+    "Configuracion.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Configuración · /org/configuracion",
+      "w": 1440,
+      "x": 3040,
+      "y": 6400
+    },
+    "Cuenta.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Mi cuenta · /cuenta",
+      "w": 1440,
+      "x": 1520,
+      "y": 4240
+    },
+    "Cuentas.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Cuentas y operadores · /plataforma/cuentas",
+      "w": 1440,
+      "x": 3040,
+      "y": 7540
+    },
+    "Empresa.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Ficha de empresa · /org/empresas/:id",
+      "w": 1440,
+      "x": 1520,
+      "y": 6400
+    },
+    "Empresas.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Empresas · /org/empresas",
+      "w": 1440,
+      "x": 0,
+      "y": 6400
+    },
+    "Enlace.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Enlace del bot de WhatsApp · /login/enlace (Etapa 8)",
+      "w": 1440,
+      "x": 6080,
+      "y": 3100
+    },
+    "Error-Org.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Sin permiso o no encontrada",
+      "w": 1440,
+      "x": 7600,
+      "y": 6400
+    },
+    "Ingreso.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Ingresá · /login y /login/empresa",
+      "w": 1440,
+      "x": 0,
+      "y": 3100
+    },
+    "Inicio-Miembro.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Inicio de alguien con roles en una empresa",
+      "w": 1440,
+      "x": 6080,
+      "y": 6400
+    },
+    "Inicio-Org.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Inicio · /org",
+      "w": 1440,
+      "x": 0,
+      "y": 5380
+    },
+    "Inicio-Personal.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Inicio personal · /",
+      "w": 1440,
+      "x": 0,
+      "y": 4240
+    },
+    "Invitacion.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Aceptar una invitación · /invitacion",
+      "w": 1440,
+      "x": 4560,
+      "y": 3100
+    },
+    "Landing-Movil.dc.html": {
+      "h": 2920,
+      "title": "Landing · teléfono",
+      "w": 390,
+      "x": 1520,
+      "y": 0
+    },
+    "Landing.dc.html": {
+      "h": 2050,
+      "title": "Landing",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "M-Auditoria-Org.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Auditoría · teléfono",
+      "w": 390,
+      "x": 3760,
+      "y": 11260
+    },
+    "M-Auditoria-Plat.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Auditoría de seguridad · teléfono",
+      "w": 390,
+      "x": 940,
+      "y": 12260
+    },
+    "M-Config-Plat.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Configuración de la plataforma · teléfono",
+      "w": 390,
+      "x": 1410,
+      "y": 12260
+    },
+    "M-Configuracion.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Configuración · teléfono",
+      "w": 390,
+      "x": 3290,
+      "y": 11260
+    },
+    "M-Cuenta.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Mi cuenta · teléfono",
+      "w": 390,
+      "x": 2820,
+      "y": 10260
+    },
+    "M-Cuentas.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Cuentas · teléfono",
+      "w": 390,
+      "x": 470,
+      "y": 12260
+    },
+    "M-Empresa.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Ficha de empresa · teléfono",
+      "w": 390,
+      "x": 2820,
+      "y": 11260
+    },
+    "M-Empresas.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Empresas · teléfono",
+      "w": 390,
+      "x": 2350,
+      "y": 11260
+    },
+    "M-Enlace.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Enlace de WhatsApp · teléfono",
+      "w": 390,
+      "x": 1880,
+      "y": 10260
+    },
+    "M-Ingreso.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Ingresá · teléfono",
+      "w": 390,
+      "x": 0,
+      "y": 10260
+    },
+    "M-Inicio-Org.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Inicio · teléfono",
+      "w": 390,
+      "x": 0,
+      "y": 11260
+    },
+    "M-Inicio-Personal.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Inicio personal · teléfono",
+      "w": 390,
+      "x": 2350,
+      "y": 10260
+    },
+    "M-Invitacion.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Aceptar una invitación · teléfono",
+      "w": 390,
+      "x": 1410,
+      "y": 10260
+    },
+    "M-Organizaciones.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Organizaciones · teléfono",
+      "w": 390,
+      "x": 0,
+      "y": 12260
+    },
+    "M-Registro-Empresa.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Registrá tu empresa · teléfono",
+      "w": 390,
+      "x": 940,
+      "y": 10260
+    },
+    "M-Registro.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Crear cuenta · teléfono",
+      "w": 390,
+      "x": 470,
+      "y": 10260
+    },
+    "M-Rol.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Editar un rol · teléfono",
+      "w": 390,
+      "x": 1880,
+      "y": 11260
+    },
+    "M-Roles.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Roles y permisos · teléfono",
+      "w": 390,
+      "x": 1410,
+      "y": 11260
+    },
+    "M-Usuario.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Editar usuario · teléfono",
+      "w": 390,
+      "x": 940,
+      "y": 11260
+    },
+    "M-Usuarios.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Usuarios · teléfono",
+      "w": 390,
+      "x": 470,
+      "y": 11260
+    },
+    "Mapa-Ingreso.dc.html": {
+      "h": 1880,
+      "title": "Ingreso · todos los casos",
+      "w": 1600,
+      "x": 3670,
+      "y": 0
+    },
+    "Organizacion.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Ficha de una organización · /plataforma/organizaciones/:id",
+      "w": 1440,
+      "x": 1520,
+      "y": 7540
+    },
+    "Organizaciones.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Organizaciones · /plataforma",
+      "w": 1440,
+      "x": 0,
+      "y": 7540
+    },
+    "Palabras.dc.html": {
+      "h": 1300,
+      "title": "Palabras en pantalla",
+      "w": 1280,
+      "x": 0,
+      "y": 8680
+    },
+    "Perfil-Suspendido.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Organización no disponible (suspendida, en espera o cerrada)",
+      "w": 1440,
+      "x": 9120,
+      "y": 3100
+    },
+    "Recorridos.dc.html": {
+      "h": 1320,
+      "title": "Quién es quién y cómo entra",
+      "w": 1600,
+      "x": 1990,
+      "y": 0
+    },
+    "Registro-Empresa.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Registrá tu empresa · /registro/empresa",
+      "w": 1440,
+      "x": 3040,
+      "y": 3100
+    },
+    "Registro.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Crear cuenta · /registro",
+      "w": 1440,
+      "x": 1520,
+      "y": 3100
+    },
+    "Rol.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Editar un rol · /org/roles/:id",
+      "w": 1440,
+      "x": 6080,
+      "y": 5380
+    },
+    "Roles.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Roles y permisos · /org/roles",
+      "w": 1440,
+      "x": 4560,
+      "y": 5380
+    },
+    "Sesion.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Iniciando, cambiando de lado, cerrando",
+      "w": 1440,
+      "x": 7600,
+      "y": 3100
+    },
+    "Usuario.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Editar usuario · /org/usuarios/:id",
+      "w": 1440,
+      "x": 3040,
+      "y": 5380
+    },
+    "Usuarios.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Usuarios · /org/usuarios",
+      "w": 1440,
+      "x": 1520,
+      "y": 5380
+    },
+    "Pagina-Publica.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Página pública de una empresa · <slug>.plataforma.com",
+      "w": 1440,
+      "x": 5350,
+      "y": 0
+    },
+    "M-Pagina-Publica.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Página pública · teléfono",
+      "w": 390,
+      "x": 6870,
+      "y": 0
+    },
+    "Recuperar.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Recuperar mi cuenta · /recuperar",
+      "w": 1440,
+      "x": 10640,
+      "y": 3100
+    },
+    "Pagina-Org.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Página pública · /org/pagina",
+      "w": 1440,
+      "x": 9120,
+      "y": 6400
+    },
+    "M-Recuperar.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Recuperar mi cuenta · teléfono",
+      "w": 390,
+      "x": 3290,
+      "y": 10260
+    },
+    "Directorio.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Directorio de empresas · / (plataforma.com)",
+      "w": 1440,
+      "x": 7340,
+      "y": 0
+    },
+    "Legal.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Documento legal · /terminos y /privacidad",
+      "w": 1440,
+      "x": 12160,
+      "y": 3100
+    },
+    "Aceptar-Terminos.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Aceptar términos nuevos (bloquea hasta aceptar)",
+      "w": 1440,
+      "x": 13680,
+      "y": 3100
+    },
+    "Avisos.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Avisos del sistema",
+      "w": 1440,
+      "x": 10640,
+      "y": 6400
+    },
+    "Cuenta-Plat.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Ficha de una cuenta · /plataforma/cuentas/:id",
+      "w": 1440,
+      "x": 7600,
+      "y": 7540
+    },
+    "Recuperaciones.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Recuperaciones · /plataforma/recuperaciones",
+      "w": 1440,
+      "x": 9120,
+      "y": 7540
+    },
+    "Legales.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Documentos legales · /plataforma/legales",
+      "w": 1440,
+      "x": 10640,
+      "y": 7540
+    },
+    "Mensajes.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Correos y WhatsApp que manda el sistema",
+      "w": 1440,
+      "x": 3400,
+      "y": 8680
+    },
+    "M-Directorio.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Directorio · teléfono",
+      "w": 390,
+      "x": 3760,
+      "y": 10260
+    },
+    "M-Legal.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Documento legal · teléfono",
+      "w": 390,
+      "x": 4230,
+      "y": 10260
+    },
+    "M-Aceptar-Terminos.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Aceptar términos · teléfono",
+      "w": 390,
+      "x": 4700,
+      "y": 10260
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-09-27T13:30:00Z",
+    "v": 1
+  },
+  "designSystems": [
+    {
+      "artifact": "https://claude.ai/artifact/Ew763kqorVHSYeUqE8CZ7h",
+      "copiedAt": "2026-09-27T13:30:00Z",
+      "namespace": "ab",
+      "title": "ArquitecturaBase UI",
+      "version": "1790467290-9622"
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "estilo": {
+      "color": "blue",
+      "text": "Estilo de todas las pantallas\n\n• Colores: fondo cálido, verde petróleo como marca, y el menú lateral y la barra de arriba en arena, para que se despeguen del centro.\n• Compacto: letra de 13, filas de 42, campos de 36 y botones de 34.\n• Encabezado: banda blanca con el ícono de la sección (o «‹» para volver), el título de 18, el resumen y las acciones a la derecha.\n• Tablas: un dato por columna, filas alternadas, estado en pastilla y menú ⋮ por fila.\n• Menú lateral: arriba, Inicio y los módulos del producto; abajo de todo, «Administración», que abre un segundo panel al lado con todas sus opciones (en el teléfono se despliega dentro del menú).\n• Filtros en pastilla con su conteo y «Limpiar»; la barra de filtros no lleva botones.\n• Lo corto en un diálogo de 560; lo largo en una pantalla con «Cambios sin guardar».\n• Listados con «1–10 de 11», 10/20/50/100 por página y «Página 1 de 2»; la auditoría, con «Cargar más».",
+      "w": 440,
+      "x": 7600,
+      "y": 5380
+    },
+    "guia": {
+      "color": "blue",
+      "text": "Propuesta para aprobar; todavía no hay nada programado.\n\nQuién es quién\n• Operador de la plataforma: el backoffice.\n• Dueño: registra su empresa o su grupo y tiene todos los permisos de la organización.\n• Usuarios de la organización: administradores o empleados; se diferencian por el rol.\n• Personas (B2C): usan la plataforma por su cuenta y piden o contratan lo que ofrece cada empresa en su página pública. Su lado, Personal, no muestra organizaciones.\n\nUna misma persona puede estar en los dos lados con la misma cuenta. Hay dos puertas: «Ingresá» (como persona) e «Ingresá como empresa». Después pasa de un lado al otro desde el menú de arriba a la derecha. Una persona nunca crea una empresa: eso es «Registrá tu empresa».\n\nCada organización puede publicar su página en su subdominio (delta.plataforma.com). Las empresas de una organización están al mismo nivel: no hay empresa matriz.\n\nFilas\n• Entrada: la landing, quién es quién, el mapa de todos los casos del ingreso y la página pública de una empresa.\n• Ingreso: cada pantalla pública, con cada estado en Tweaks, y Recuperar mi cuenta.\n• Perfil personal (B2C): inicio y mi cuenta.\n• Organización (B2B): lo que administra el Dueño (con su página pública), y el inicio de alguien que solo tiene roles en una empresa.\n• Plataforma: lo que ve un operador.\n• Teléfono: las mismas pantallas en 390 px.",
+      "w": 620,
+      "x": 0,
+      "y": -780
+    },
+    "movil-nota": {
+      "color": "blue",
+      "text": "En el teléfono\n\n• Arriba, ☰ abre el mismo menú lateral por encima y el avatar abre el menú de la cuenta desde abajo.\n• La banda del título queda igual; la acción principal, corta, a su derecha.\n• Las tablas muestran las columnas que entran (el dato principal, el estado y el ⋮); el resto se ve al entrar.\n• Los diálogos se abren como hojas desde abajo.\n• Al editar, «Cancelar» y «Guardar» van en una barra fija abajo.\n• En Inicio, Tweaks › vista abre el menú lateral o el menú de la cuenta.",
+      "w": 440,
+      "x": 5170,
+      "y": 10260
+    },
+    "pendientes": {
+      "color": "orange",
+      "text": "Sin inventar\n\n• Los inicios (personal, de la organización y de un miembro) quedan vacíos: su contenido depende de las funciones de cada producto.\n• Los roles de ejemplo usan solo los permisos de la plantilla. Los módulos de cada producto suman sus permisos y sus entradas en el menú.\n• Las empresas de ejemplo tienen nombres neutros porque no sabemos de qué rubro van a ser.",
+      "w": 440,
+      "x": 4920,
+      "y": 8680
+    },
+    "personal-nota": {
+      "color": "blue",
+      "text": "El lado personal (B2C) no muestra organizaciones. Su inicio queda vacío hasta que el producto defina sus funciones.\n\nMi cuenta es de la persona y vale en los dos lados: el nombre, el idioma, la zona y cómo entra se cambian acá, no en cada organización.",
+      "w": 440,
+      "x": 3040,
+      "y": 4240
+    },
+    "plat-nota": {
+      "color": "blue",
+      "text": "La plataforma ve metadatos, nunca los datos de una organización. Cada acción sobre una organización o una cuenta pide el motivo y queda en la auditoría de seguridad.",
+      "w": 440,
+      "x": 12160,
+      "y": 7540
+    },
+    "probar": {
+      "color": "green",
+      "text": "Cómo probarlo\n\n• Play: escribí un correo y cualquier código de 6 números; 000000 es incorrecto.\n• Tweaks › puerta: «Ingresá» (como persona, va al inicio personal) o «Ingresá como empresa» (va a la organización). No se vuelve al último lado: se entra por la puerta que se elige.\n• Tweaks › cuenta: Lucía, Beto (sin empresas: por la puerta de empresas ve «Registrá tu empresa») y Martín, que pasa por la app de autenticación.\n• Tweaks › estado: cada error del servidor, tal como se ve.\n• En Registrá tu empresa, Tweaks › estado muestra el alta abierta, con aprobación, cerrada o con el límite alcanzado.\n• En Recuperar mi cuenta, Tweaks › paso.\n• Casi todas las pantallas tienen Tweaks con cada estado del flujo: organización en espera, suspendida o cerrada; página despublicada por la plataforma; dominio sin verificar, pendiente o verificado; baja de la cuenta; pedidos de recuperación; y otros.",
+      "w": 440,
+      "x": 15200,
+      "y": 3100
+    },
+    "t-entrada": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Entrada",
+      "w": 600,
+      "x": 0,
+      "y": -160
+    },
+    "t-ingreso": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Ingreso",
+      "w": 600,
+      "x": 0,
+      "y": 2940
+    },
+    "t-org": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Organización (B2B)",
+      "w": 600,
+      "x": 0,
+      "y": 5220
+    },
+    "t-palabras": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Reglas y pendientes",
+      "w": 600,
+      "x": 0,
+      "y": 8520
+    },
+    "t-personal": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Perfil personal (B2C)",
+      "w": 600,
+      "x": 0,
+      "y": 4080
+    },
+    "t-plat": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Plataforma",
+      "w": 600,
+      "x": 0,
+      "y": 7380
+    },
+    "t-telefono": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Teléfono",
+      "w": 600,
+      "x": 0,
+      "y": 10100
+    },
+    "titulo": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Multitenant · todas las pantallas",
+      "w": 600,
+      "x": 0,
+      "y": -900
+    }
+  },
+  "order": [
+    "Landing.dc.html",
+    "Landing-Movil.dc.html",
+    "Recorridos.dc.html",
+    "Mapa-Ingreso.dc.html",
+    "Pagina-Publica.dc.html",
+    "M-Pagina-Publica.dc.html",
+    "Directorio.dc.html",
+    "Ingreso.dc.html",
+    "Registro.dc.html",
+    "Registro-Empresa.dc.html",
+    "Invitacion.dc.html",
+    "Enlace.dc.html",
+    "Sesion.dc.html",
+    "Perfil-Suspendido.dc.html",
+    "Recuperar.dc.html",
+    "Legal.dc.html",
+    "Aceptar-Terminos.dc.html",
+    "Inicio-Personal.dc.html",
+    "Cuenta.dc.html",
+    "Inicio-Org.dc.html",
+    "Usuarios.dc.html",
+    "Usuario.dc.html",
+    "Roles.dc.html",
+    "Rol.dc.html",
+    "Empresas.dc.html",
+    "Empresa.dc.html",
+    "Configuracion.dc.html",
+    "Auditoria-Org.dc.html",
+    "Inicio-Miembro.dc.html",
+    "Error-Org.dc.html",
+    "Pagina-Org.dc.html",
+    "Avisos.dc.html",
+    "Organizaciones.dc.html",
+    "Organizacion.dc.html",
+    "Cuentas.dc.html",
+    "Auditoria-Plat.dc.html",
+    "Config-Plat.dc.html",
+    "Cuenta-Plat.dc.html",
+    "Recuperaciones.dc.html",
+    "Legales.dc.html",
+    "Palabras.dc.html",
+    "Botones.dc.html",
+    "Mensajes.dc.html",
+    "M-Ingreso.dc.html",
+    "M-Registro.dc.html",
+    "M-Registro-Empresa.dc.html",
+    "M-Invitacion.dc.html",
+    "M-Enlace.dc.html",
+    "M-Inicio-Personal.dc.html",
+    "M-Cuenta.dc.html",
+    "M-Recuperar.dc.html",
+    "M-Directorio.dc.html",
+    "M-Legal.dc.html",
+    "M-Aceptar-Terminos.dc.html",
+    "M-Inicio-Org.dc.html",
+    "M-Usuarios.dc.html",
+    "M-Usuario.dc.html",
+    "M-Roles.dc.html",
+    "M-Rol.dc.html",
+    "M-Empresas.dc.html",
+    "M-Empresa.dc.html",
+    "M-Configuracion.dc.html",
+    "M-Auditoria-Org.dc.html",
+    "M-Organizaciones.dc.html",
+    "M-Cuentas.dc.html",
+    "M-Auditoria-Plat.dc.html",
+    "M-Config-Plat.dc.html"
+  ],
+  "pages": [],
+  "title": "Sistema visual · Multitenant"
+}

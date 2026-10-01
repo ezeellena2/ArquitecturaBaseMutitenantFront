@@ -157,7 +157,7 @@ for (const [key, label] of [["verificar-metodo", "Código para verificar un mét
 }
 mkdirSync(output, { recursive: true });
 writeFileSync(manifestFile, JSON.stringify({ version: 1, cases }, null, 2) + "\n");
-validateManifest(manifestFile, path.join(root, "docs/design/lienzo"));
+validateManifest(manifestFile, path.join(root, "docs/design/lienzo-v35"));
 if (process.argv.includes("--verify")) { assertCapturedPairs(cases, output); console.log(`${cases.length} pares visuales 3b completos.`); }
 else {
   const appUrl = process.argv[process.argv.indexOf("--app-url") + 1];

@@ -236,61 +236,13 @@
     .toast2 { position: absolute; z-index: 41; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 10px; padding: 12px 16px; max-width: 460px; background: #fff; border: 1px solid var(--borde); border-radius: 12px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); font-size: 14px; color: var(--t1); }
     .toast2 svg { flex-shrink: 0; }
 
-    .m { width: 390px; height: 844px; position: relative; overflow: hidden; background: var(--fondo); display: flex; flex-direction: column; font-size: 13px; line-height: 1.5; color: var(--t1); }
-    .m-top { height: 52px; flex-shrink: 0; display: flex; align-items: center; gap: 6px; padding: 0 10px 0 6px; background: #fff; border-bottom: 1px solid var(--borde); }
-    .m-top .marca { display: flex; align-items: center; gap: 8px; flex: 1; font-size: 14px; font-weight: 700; color: var(--t1); text-decoration: none; }
-    .m-top .brand { width: 24px; height: 24px; border-radius: 7px; }
-    .m-av { border: 0; background: transparent; padding: 0; cursor: pointer; }
-    .m-cuerpo { flex: 1; overflow-y: auto; min-height: 0; }
-    .m .banda-pag { padding: 12px 16px; min-height: 60px; gap: 10px; }
-    .m .banda-pag .ico { width: 32px; height: 32px; border-radius: 9px; }
-    .m .banda-pag h1 { font-size: 17px; }
-    .m .banda-pag .res { font-size: 12px; }
-    .m .banda-pag .b { height: 32px; padding: 0 12px; font-size: 12.5px; }
-    .m .pagina { padding: 12px; gap: 10px; }
-    .m .fb { padding: 8px; gap: 6px; border-radius: 10px; }
-    .m .fb-bus { flex: 1 1 100%; max-width: none; }
-    .m .pill-sel { flex-shrink: 0; height: 32px; padding: 0 10px; font-size: 12.5px; }
-    .m .tt-h, .m .tt-f { padding-left: 12px; padding-right: 8px; gap: 8px; }
-    .m .tt-f { min-height: 44px; }
-    .m .pie { padding: 8px 12px; }
-    .m .hoja { grid-template-columns: minmax(0, 1fr); padding: 16px; gap: 12px; }
-    .m .fila-emp { grid-template-columns: minmax(0, 1fr) 36px; }
-    .m .fila-emp > .campo2:nth-child(2) { grid-column: 1 / 2; }
-    .m .fila-perm { grid-template-columns: 28px minmax(0, 1fr) !important; }
-    .m .fila-perm > span:nth-child(3) { display: none; }
-    .m .tt-grupo { grid-template-columns: 28px minmax(0, 1fr) auto !important; padding: 6px 12px; column-gap: 8px; }
-    .m .tarjeta > .tt-h[style*="36px"] { display: none; }
-    .m .tabs2 { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
-    .m .banda-pag .izq > div { min-width: 0; }
-    .m .banda-pag .res { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .m .banda-pag h1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .m .tab2 { flex-shrink: 0; }
-    .m-barra { flex-shrink: 0; display: flex; gap: 8px; padding: 10px 12px; background: #fff; border-top: 1px solid var(--borde); }
-    .m-barra .b { flex: 1; height: 40px; }
-    .m-velo { position: absolute; inset: 0; z-index: 30; background: oklch(0.2 0.014 78 / 0.42); border: 0; padding: 0; cursor: default; }
-    .m-drawer { position: absolute; top: 0; bottom: 0; left: 0; z-index: 31; width: 280px; background: #fff; box-shadow: 8px 0 24px oklch(0.2 0.014 78 / 0.2); }
-    .m-drawer .ab-sidebar { width: 100%; border-right: 0; }
-    .m-drawer .ab-sidebar__toggle { display: none; }
-    .m-sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 41; background: #fff; border-radius: 16px 16px 0 0; box-shadow: 0 -8px 24px oklch(0.2 0.014 78 / 0.18); display: flex; flex-direction: column; font-size: 13px; }
-    .m-sheet .asa { width: 36px; height: 4px; border-radius: 4px; background: var(--borde2); margin: 8px auto 0; }
-    .m-sheet .cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 16px 12px; border-bottom: 1px solid var(--borde); }
-    .m-sheet .cab h2 { margin: 0; font-size: 15px; font-weight: 600; }
-    .m-sheet .cab p { margin: 2px 0 0; font-size: 12px; color: var(--t2); }
-    .m-sheet .cuerpo { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
-    .m-sheet .lista-acc { padding: 6px 8px 10px; display: flex; flex-direction: column; }
-    .m-sheet .lista-acc .menu-it { min-height: 44px; font-size: 14px; }
-    .m-sheet .pie-s { display: flex; gap: 8px; padding: 12px 16px 16px; border-top: 1px solid var(--borde); }
-    .m-sheet .pie-s .b { flex: 1; height: 40px; }
-    .m .velo { position: absolute; z-index: 45; align-items: flex-end; }
-    .m .velo .dlg { position: absolute; left: 0; right: 0; top: 56px; bottom: 0; width: auto; max-width: none; border-radius: 16px 16px 0 0; }
-    .m .velo .dlg.chico { top: auto; }
-    .m .dlg-h { padding: 14px 16px; }
-    .m .dlg-b { grid-template-columns: minmax(0, 1fr); flex: 1; align-content: start; padding: 14px 16px; }
-    .m .dlg-f { padding: 12px 16px 16px; }
-    .m .dlg-f .b { flex: 1; height: 40px; }
-    .m .toast2 { left: 12px; right: 12px; bottom: 72px; max-width: none; }
-    .m .vacio { padding: 24px 12px; }
+    .doc2 { width: 1440px; background: var(--fondo); padding: 36px 40px; box-sizing: border-box; font-size: 13px; line-height: 1.5; color: var(--t1); display: flex; flex-direction: column; gap: 22px; }
+    .doc2 h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .doc2 .reglas { margin: 0; padding-left: 18px; color: var(--t2); display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; }
+    .caso2 { display: flex; flex-direction: column; gap: 8px; }
+    .caso2 .rot { font-size: 12px; font-weight: 600; color: var(--t2); }
+    .marco { border: 1px solid var(--borde); border-radius: 12px; overflow: visible; background: #fff; box-shadow: 0 1px 2px oklch(0.24 0.014 78 / 0.04); }
+    .marco .banda-pag { border-radius: 12px; border-bottom: 0; }
 
     /* Compacto: medidas finales de todo el sistema (pisan las de arriba). */
     .pagina { padding: 20px 24px; gap: 14px; font-size: 13px; }
@@ -535,503 +487,277 @@
 .tt-f:hover { background: oklch(0.95 0.025 185) !important; }
 
   </style><!-- /tema -->
+  <style data-criterio="botones">
+.crit { width: 1440px; min-height: 2080px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+.crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
+.crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
+.g4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.g3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.g2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.pieza { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.pieza .muestra { display: flex; align-items: center; gap: 10px; min-height: 44px; flex-wrap: wrap; }
+.pieza strong { font-size: 15px; }
+.pieza p { margin: 0; color: var(--t2); font-size: 13.5px; }
+.pieza .ej { font-size: 12.5px; color: var(--t3); }
+.cb { height: 36px; box-sizing: border-box; padding: 0 14px; border-radius: 8px; border: 1px solid transparent; font-family: inherit; font-size: 14px; font-weight: 600; line-height: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; white-space: nowrap; text-decoration: none; }
+.cb svg { width: 16px; height: 16px; flex-shrink: 0; }
+.cb.ch { height: 32px; padding: 0 12px; font-size: 13px; }
+.cb.ch svg { width: 14px; height: 14px; }
+.cb.gr { height: 44px; padding: 0 18px; font-size: 15px; border-radius: 10px; }
+.cb-pri { background: var(--marca); color: #fff; }
+.cb-pri:hover, .cb-pri.h { background: var(--marca-h); }
+.cb-sec { background: #fff; border-color: var(--borde2); color: var(--t1); }
+.cb-sec:hover, .cb-sec.h { background: var(--s2); border-color: oklch(0.78 0.014 78); }
+.cb-pel { background: #fff; border-color: oklch(0.57 0.2 25 / 0.4); color: oklch(0.52 0.19 25); }
+.cb-pel:hover, .cb-pel.h { background: var(--peligro-t); }
+.cb-pel.lleno { background: oklch(0.55 0.2 25); border-color: oklch(0.55 0.2 25); color: #fff; }
+.cb-enl { height: auto; padding: 0; background: transparent; color: var(--marca-tx); }
+.cb-enl:hover, .cb-enl.h { text-decoration: underline; text-underline-offset: 3px; }
+.cb:disabled { opacity: 0.5; cursor: default; }
+.ib { width: 32px; height: 32px; box-sizing: border-box; border-radius: 8px; border: 1px solid transparent; background: transparent; color: var(--t2); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.ib:hover, .ib.h { background: #fff; border-color: var(--borde); color: var(--t1); }
+.medidas { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
+.medidas .cab { display: grid; grid-template-columns: 200px 150px minmax(0, 1fr) 420px; gap: 16px; align-items: center; min-height: 44px; padding: 0 18px; background: oklch(0.945 0.018 76); font-size: 13px; font-weight: 600; color: var(--t2); border-bottom: 1px solid oklch(0.89 0.02 76); }
+.medidas .fil { display: grid; grid-template-columns: 200px 150px minmax(0, 1fr) 420px; gap: 16px; align-items: center; min-height: 64px; padding: 10px 18px; border-bottom: 1px solid var(--borde); }
+.medidas .fil:last-child { border-bottom: 0; }
+.medidas .fil .muestra { display: flex; align-items: center; gap: 10px; }
+.caso { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.caso .rot { font-size: 13px; font-weight: 600; color: var(--t2); }
+.caso .nota { font-size: 12.5px; color: var(--t3); }
+.cuadro { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
+.cuadro .banda { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; padding: 0 18px; }
+.cuadro .banda h3 { margin: 0; font-size: 16px; font-weight: 700; white-space: nowrap; }
+.cuadro .cab-caja { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 8px 0 16px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 14px; font-weight: 600; }
+.cuadro .fila { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 8px 0 16px; font-size: 14px; }
+.cuadro .fila .dato { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
+.cuadro .pie { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--borde); }
+.cuadro .cuerpo { padding: 16px; color: var(--t2); font-size: 13.5px; }
+.cuadro .cuerpo strong { display: block; color: var(--t1); font-size: 16px; margin-bottom: 4px; }
+.filtros { display: flex; align-items: center; gap: 10px; padding: 12px 16px; }
+.filtros .bus { flex: 1; height: 36px; border: 1px solid var(--borde); border-radius: 8px; background: var(--s2); display: flex; align-items: center; padding: 0 12px; color: var(--t3); font-size: 13.5px; }
+.filtros .pil { height: 36px; box-sizing: border-box; border: 1px solid var(--borde); border-radius: 999px; padding: 0 14px; display: inline-flex; align-items: center; font-size: 13.5px; color: var(--t2); background: #fff; }
+.si-no { display: flex; flex-direction: column; gap: 12px; }
+.si-no .t { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
+.si-no .t.si { color: var(--ok); }
+.si-no .t.no { color: oklch(0.52 0.19 25); }
+.si-no .muestra { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.tachado { position: relative; opacity: 0.55; }
+.tachado::after { content: ""; position: absolute; left: -4px; right: -4px; top: 50%; border-top: 2px solid oklch(0.52 0.19 25); transform: rotate(-8deg); }
+.prohibido { margin: 0; padding-left: 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 32px; color: var(--t2); font-size: 14px; }
+.girar2 { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2px solid oklch(1 0 0 / 0.4); border-top-color: #fff; }
+  </style>
+
+  <style data-propuesta="whatsapp">
+body { margin: 0; }
+.w-app { display: flex; width: 1440px; height: 900px; overflow: hidden; background: var(--fondo); font-family: Inter, system-ui, sans-serif; font-size: 13px; color: var(--t1); position: relative; }
+.w-sb { width: 232px; flex-shrink: 0; background: oklch(0.925 0.02 75); border-right: 1px solid oklch(0.87 0.022 75); display: flex; flex-direction: column; }
+.w-mk { height: 52px; flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 0 14px; font-size: 14px; font-weight: 700; border-bottom: 1px solid oklch(0.87 0.022 75); }
+.w-br { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, oklch(0.5 0.1 195), oklch(0.58 0.11 170)); flex-shrink: 0; }
+.w-cx { padding: 12px 14px; line-height: 1.35; }
+.w-cx b { display: block; font-size: 14px; }
+.w-cx span { color: var(--t3); font-size: 12.5px; }
+.w-nav { display: flex; flex-direction: column; gap: 2px; padding: 4px 8px; }
+.w-ln { display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 10px; border-radius: 8px; color: oklch(0.42 0.018 60); }
+.w-ln svg { flex-shrink: 0; }
+.w-ln.on { background: #fff; color: oklch(0.43 0.09 195); font-weight: 600; box-shadow: 0 1px 2px oklch(0.24 0.012 60 / 0.08), 0 0 0 1px var(--borde); }
+.w-ln .cnt { margin-left: auto; font-size: 12px; font-weight: 600; color: oklch(0.43 0.09 195); }
+.w-ln.grupo { font-weight: 600; color: var(--t1); }
+.w-ln .fl { margin-left: auto; color: var(--t3); display: inline-flex; }
+.w-esp { flex: 1; }
+.w-abajo { border-top: 1px solid oklch(0.87 0.022 75); padding: 8px; }
+.w-us { border-top: 1px solid oklch(0.87 0.022 75); display: flex; align-items: center; gap: 10px; padding: 10px 14px; }
+.w-us .tx { display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
+.w-us .tx span { color: var(--t3); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-panel { width: 232px; flex-shrink: 0; background: oklch(0.905 0.022 75); border-right: 1px solid oklch(0.85 0.026 75); display: flex; flex-direction: column; }
+.w-panel .pc { height: 52px; display: flex; align-items: center; padding: 0 14px; font-size: 14px; font-weight: 700; border-bottom: 1px solid oklch(0.85 0.026 75); }
+.w-panel .w-nav { padding: 10px 8px; }
+.w-av { width: 32px; height: 32px; border-radius: 50%; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+.w-av.g { background: oklch(0.9 0.012 78); color: var(--t2); }
+.w-av.chico { width: 28px; height: 28px; font-size: 12px; }
+.w-co { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.w-tb { height: 52px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: oklch(0.925 0.02 75); border-bottom: 1px solid oklch(0.87 0.022 75); color: var(--t2); }
+.w-tb .um { display: inline-flex; align-items: center; gap: 10px; padding: 4px 8px 4px 4px; border-radius: 10px; }
+.w-tb .um .tx { display: flex; flex-direction: column; line-height: 1.25; }
+.w-tb .um b { color: var(--t1); font-size: 13px; }
+.w-tb .um span { font-size: 12px; }
+.w-bnd { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; box-sizing: border-box; padding: 10px 24px; background: #fff; border-bottom: 1px solid var(--borde); }
+.w-bnd .iz { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.w-bnd .ic { width: 36px; height: 36px; border-radius: 10px; background: var(--marca-t); color: var(--marca-tx); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.w-bnd .vol { width: 28px; height: 28px; box-sizing: border-box; border-radius: 7px; border: 1px solid var(--borde); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.w-bnd h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; }
+.w-bnd .res { margin: 2px 0 0; font-size: 13px; color: var(--t2); }
+.w-bnd .ac { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.w-est { display: inline-flex; align-items: center; gap: 6px; }
+.w-est::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); }
+.w-est.off::before { background: oklch(0.75 0.01 78); }
+.w-est.pend::before { background: oklch(0.72 0.15 70); }
+.w-body { flex: 1; min-height: 0; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; overflow: hidden; }
+.w-caja { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
+.w-cab { display: flex; align-items: center; justify-content: space-between; min-height: 40px; box-sizing: border-box; padding: 0 4px 0 16px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 13px; font-weight: 600; }
+.w-it { display: flex; align-items: center; gap: 12px; min-height: 56px; box-sizing: border-box; padding: 6px 8px 6px 16px; border-bottom: 1px solid var(--borde); }
+.w-it:last-child { border-bottom: 0; }
+.w-it .dato { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.35; }
+.w-it .dato b { font-weight: 500; }
+.w-it .dato span { font-size: 12px; color: var(--t3); }
+.w-sw { width: 36px; height: 20px; border-radius: 999px; background: var(--marca); position: relative; flex-shrink: 0; }
+.w-sw::after { content: ""; position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px oklch(0.2 0 0 / 0.2); }
+.w-sw.off { background: oklch(0.85 0.01 78); }
+.w-sw.off::after { right: auto; left: 2px; }
+.w-th, .w-tr { display: grid; grid-template-columns: 160px minmax(0, 1fr) 200px 120px 48px; gap: 16px; align-items: center; padding: 0 8px 0 16px; }
+.w-th { min-height: 40px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 13px; font-weight: 600; color: var(--t2); }
+.w-tr { min-height: 40px; border-bottom: 1px solid var(--borde); }
+.w-tr:nth-child(odd) { background: oklch(0.975 0.008 78); }
+.w-tr:last-child { border-bottom: 0; }
+.w-tr > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-tr .r { text-align: right; font-variant-numeric: tabular-nums; }
+.w-chat { flex: 1; min-height: 0; display: flex; background: #fff; border-top: 0; }
+.w-bandeja { width: 380px; flex-shrink: 0; border-right: 1px solid var(--borde); display: flex; flex-direction: column; }
+.w-bandeja .filtro { display: flex; gap: 8px; padding: 12px; border-bottom: 1px solid var(--borde); }
+.w-bus { flex: 1; height: 36px; box-sizing: border-box; border: 1px solid var(--borde); border-radius: 8px; background: var(--s2); display: flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--t3); }
+.w-pil { height: 36px; box-sizing: border-box; border: 1px solid var(--borde); border-radius: 999px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px; color: var(--t2); background: #fff; white-space: nowrap; }
+.w-conv { display: flex; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--borde); align-items: flex-start; }
+.w-conv.on { background: var(--marca-t); }
+.w-conv .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.w-conv .l1 { display: flex; justify-content: space-between; gap: 8px; }
+.w-conv .l1 b { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-conv .l1 span { font-size: 12px; color: var(--t3); flex-shrink: 0; }
+.w-conv .l2 { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--t3); }
+.w-conv .l2 span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-conv.nuevo .l1 b, .w-conv.nuevo .l2 span { font-weight: 600; color: var(--t1); }
+.w-conv.nuevo .l1 span { color: var(--marca-tx); font-weight: 600; }
+.w-punto { width: 8px; height: 8px; border-radius: 50%; background: var(--marca); flex-shrink: 0; margin-top: 5px; }
+.w-hilo { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.w-hilo .hc { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 12px; padding: 0 12px 0 16px; border-bottom: 1px solid var(--borde); }
+.w-hilo .hc .tx { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
+.w-hilo .hc .tx b { font-size: 14px; font-weight: 600; }
+.w-hilo .hc .tx span { font-size: 12.5px; color: var(--t3); }
+.w-msjs { flex: 1; min-height: 0; background: oklch(0.975 0.008 78); padding: 16px 24px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+.w-dia { align-self: center; font-size: 12px; color: var(--t3); background: #fff; border: 1px solid var(--borde); border-radius: 999px; padding: 2px 10px; }
+.w-m { max-width: 62%; display: flex; flex-direction: column; gap: 3px; }
+.w-m .gl { padding: 8px 12px; border-radius: 12px; font-size: 13.5px; line-height: 1.45; }
+.w-m .pie { font-size: 11.5px; color: var(--t3); padding: 0 4px; }
+.w-m.ent { align-self: flex-start; }
+.w-m.ent .gl { background: #fff; border: 1px solid var(--borde); border-top-left-radius: 4px; }
+.w-m.sal { align-self: flex-end; align-items: flex-end; }
+.w-m.sal .gl { background: var(--marca-t); color: oklch(0.3 0.05 195); border-top-right-radius: 4px; }
+.w-escr { flex-shrink: 0; display: flex; gap: 8px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--borde); background: #fff; }
+.w-escr .area { flex: 1; height: 40px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; display: flex; align-items: center; padding: 0 12px; color: var(--t3); }
+.w-cartel { display: flex; align-items: center; gap: 10px; min-height: 44px; box-sizing: border-box; padding: 6px 8px 6px 14px; border-radius: 10px; font-size: 13px; background: oklch(0.96 0.06 85); color: oklch(0.4 0.1 70); }
+.w-cartel .tx { flex: 1; }
+.w-cartel.info { background: var(--marca-t); color: var(--marca-tx); }
+.w-vacio { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 48px 16px; text-align: center; color: var(--t2); }
+.w-vacio .circ { width: 48px; height: 48px; border-radius: 50%; background: var(--s3); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; }
+.w-vacio b { color: var(--t1); font-size: 14px; }
+.w-oscuro { position: absolute; inset: 0; z-index: 5; background: oklch(0.3 0.014 78 / 0.5); display: flex; align-items: center; justify-content: center; }
+.w-dlg { width: 560px; background: #fff; border-radius: 12px; box-shadow: 0 24px 48px oklch(0.2 0.014 78 / 0.28); overflow: hidden; }
+.w-dlg .dc { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 8px 0 20px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 15px; font-weight: 600; }
+.w-dlg .db { padding: 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.w-dlg .df { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--borde); }
+.w-cmp { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.w-cmp .rt { font-size: 12.5px; font-weight: 600; color: var(--t2); }
+.w-cmp .ct { height: 36px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px; }
+.w-cmp .ct.area { height: 84px; align-items: flex-start; padding-top: 9px; line-height: 1.45; }
+.w-tel { width: 390px; height: 844px; overflow: hidden; background: var(--fondo); font-family: Inter, system-ui, sans-serif; font-size: 13px; color: var(--t1); display: flex; flex-direction: column; position: relative; }
+.w-tel .w-tb { padding: 0 12px; }
+.w-tel .w-bnd { padding: 10px 16px; }
+.w-tel .w-bnd h1 { font-size: 17px; }
+.w-tel .w-body { padding: 12px 16px; gap: 12px; }
+.w-tel .w-conv { padding: 12px 16px; }
+.w-tel .cb { height: 44px; }
+.w-tel .cb.ch { height: 36px; }
+.w-tel .ib { width: 44px; height: 44px; }
+.w-tel .w-escr { padding: 10px 12px 20px; }
+.w-tel .w-msjs { padding: 14px 12px; }
+.w-tel .w-m { max-width: 82%; }
+.w-hoja { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 16px 16px 0 0; display: flex; flex-direction: column; }
+.w-hoja .dc { display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 4px 0 16px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); border-radius: 16px 16px 0 0; font-size: 15px; font-weight: 600; }
+.w-hoja .db { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.w-hoja .df { display: flex; gap: 8px; padding: 12px 16px 24px; border-top: 1px solid var(--borde); }
+.w-hoja .df .cb { flex: 1; }
+.w-fija { margin-top: auto; flex-shrink: 0; }
+.w-hijos { margin-left: 18px; padding-left: 10px; border-left: 1px solid oklch(0.85 0.026 75); display: flex; flex-direction: column; gap: 2px; }
+.w-panel .w-hijos { border-left-color: oklch(0.82 0.03 75); }
+.w-th.c, .w-tr.c { grid-template-columns: minmax(0, 1fr) 220px 200px 140px 48px; }
+.w-th.p, .w-tr.p { grid-template-columns: minmax(0, 1fr) 180px 200px 200px 48px; }
+.w-pie { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 16px; border-top: 1px solid var(--borde); font-size: 13px; color: var(--t2); }
+.w-cajon { position: absolute; z-index: 6; left: 0; top: 0; bottom: 0; width: 300px; background: oklch(0.925 0.02 75); display: flex; flex-direction: column; box-shadow: 8px 0 24px oklch(0.2 0.014 78 / 0.2); }
+.w-cajon .w-ln { height: 38px; }
+:where(.w-app, .w-tel) a { text-decoration: none; color: inherit; cursor: pointer; }
+  </style>
+<style data-propuesta="perfil">
+.p-hoja { padding: 16px 20px 20px; display: flex; gap: 16px; flex-wrap: wrap; }
+.p-mov .p-hoja { flex-direction: column; padding: 14px 16px 16px; }
+.p-mov .w-cmp .ct { height: 44px; }
+.p-ic { color: var(--t3); display: inline-flex; width: 18px; justify-content: center; }
+.p-aviso { position: absolute; z-index: 8; right: 20px; bottom: 20px; width: 340px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); font-size: 13px; }
+.p-otp { display: flex; gap: 8px; }
+.p-otp span { width: 40px; height: 44px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; background: #fff; }
+.p-otp span.foco { border-color: var(--marca); box-shadow: 0 0 0 3px oklch(0.51 0.099 195 / 0.15); }
+.p-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); }
+.p-seg span { height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--t2); }
+.p-seg span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
+.p-dlg { position: absolute; z-index: 7; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 420px; background: #fff; border-radius: 12px; box-shadow: 0 24px 48px oklch(0.2 0.014 78 / 0.28); overflow: hidden; }
+.p-dlg.normal { width: 560px; }
+.p-dlg .dc { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 8px 0 20px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 15px; font-weight: 600; }
+.p-dlg .tx { padding: 16px 20px 0; font-size: 13.5px; line-height: 1.55; color: var(--t2); }
+.p-dlg .db { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
+.p-dlg .df { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--borde); }
+:where(.w-app, .w-tel) a { text-decoration: none; color: inherit; cursor: pointer; }
+</style>
+<style data-propuesta="org-formularios">
+.o-col { flex-direction: column; }
+.o-fila { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+.o-codigo .cb { font-family: Inter, system-ui, sans-serif; }
+.o-pre { display: flex; height: 36px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; overflow: hidden; background: #fff; }
+.o-pre span { display: flex; align-items: center; padding: 0 12px; font-size: 13px; }
+.o-pre span + span { background: var(--s2); color: var(--t2); border-left: 1px solid var(--borde); }
+.o-logo { display: flex; align-items: center; gap: 12px; }
+.o-logo .av { width: 56px; height: 56px; border-radius: 12px; background: var(--marca-t); color: var(--marca-tx); display: inline-flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
+.o-codigo { font-family: ui-monospace, Consolas, monospace; font-size: 13px; background: var(--s2); border: 1px solid var(--borde); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.w-tel .o-pre, .w-tel .w-cmp .ct { height: 44px; }
+.req { color: var(--peligro); }
+</style>
+  <style data-menu-usuario="">
+/* Tu menú, arriba a la derecha (criterio de menús): se abre al tocar tu nombre. */
+.w-umd { position: relative; }
+.w-umd > summary { list-style: none; cursor: pointer; }
+.w-umd > summary::-webkit-details-marker { display: none; }
+.w-umd > summary:hover, .w-umd[open] > summary { background: oklch(0.24 0.014 78 / 0.06); }
+.w-umd > summary.av-tel { display: inline-flex; border-radius: 50%; }
+.w-mn { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; width: 320px; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); padding: 4px; display: flex; flex-direction: column; font-size: 13px; color: var(--t1); text-align: left; }
+.w-mn .w-mn-it { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 10px; border-radius: 6px; white-space: nowrap; color: var(--t1); text-decoration: none; }
+.w-mn .w-mn-it:hover { background: var(--s2); }
+.w-mn .w-mn-it[role="menuitemradio"] { min-height: 44px; }
+.w-mn .w-mn-it svg { color: var(--t3); flex-shrink: 0; }
+.w-mn .w-mn-it.on { background: var(--marca-t); color: var(--marca-tx); }
+.w-mn .w-mn-it.on svg { color: var(--marca-tx); }
+.w-mn .w-mn-it.apag { color: var(--t3); }
+.w-mn .w-mn-sep { height: 1px; background: var(--borde); margin: 4px 0; }
+.w-mn .w-mn-tit { padding: 8px 10px 4px; font-size: 12.5px; font-weight: 600; color: var(--t3); }
+.w-mn .w-mn-cab { display: flex; align-items: center; gap: 10px; padding: 10px; }
+.w-mn .w-mn-perf { display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
+.w-mn .w-mn-perf b { font-weight: 600; }
+.w-mn .w-mn-perf .s { font-size: 12.5px; color: var(--t3); overflow: hidden; text-overflow: ellipsis; }
+.w-mn .w-mn-it.on .w-mn-perf .s { color: var(--marca-tx); }
+.w-mn .w-mn-ico { width: 28px; height: 28px; border-radius: 8px; background: var(--s3); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 700; flex-shrink: 0; }
+.w-mn .w-mn-it.on .w-mn-ico { background: #fff; color: var(--marca-tx); }
+.w-mn .w-mn-on { margin-left: auto; }
+.w-tel .w-mn { width: 300px; right: -4px; }
+  </style>
 </helmet>
 
-<div class="m ab-root">
-  <header class="m-top">
-    <button type="button" class="icon-btn" aria-label="Abrir el menú" onClick="{{alternarDrawer}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg></button>
-    <span class="marca"><span class="brand" aria-hidden="true"></span>ArquitecturaBase</span>
-    <button type="button" class="m-av" aria-label="Tu cuenta y tus perfiles" aria-haspopup="dialog" onClick="{{alternarUsuario}}"><span class="avatar" aria-hidden="true">L</span></button>
-  </header>
-  <div class="m-cuerpo">
-      <div class="banda-pag">
-        <div class="izq"><span class="ico" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10"/><circle cx="16" cy="6" r="2"/><path d="M4 12h4"/><path d="M12 12h8"/><circle cx="10" cy="12" r="2"/><path d="M4 18h12"/><circle cx="18" cy="18" r="2"/></svg></span><div style="min-width: 0;"><div class="tit"><h1>Configuración</h1></div></div></div>
-        <div class="acciones"></div>
-      </div>
-      <div class="pagina">
-        <sc-if value="{{sucio}}" hint-placeholder-val="{{no}}"><span class="sucio">Cambios sin guardar</span></sc-if>
-        <div class="hoja" role="form" aria-label="Configuración de la organización">
-            <div class="campo2">
-              <label class="et" for="f-Nombre">Nombre de la organización<span class="req" aria-hidden="true">*</span></label>
-              <input class="in2 {{malNombre}}" id="f-Nombre" type="text" autocomplete="off" placeholder="" value="{{Nombre}}" onChange="{{onNombre}}">
-              <sc-if value="{{errNombre}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errNombre}}</span></sc-if>
-            </div>
-            <div class="campo2 envoltura">
-              <span class="et" id="et-Cultura">Idioma y región predeterminados</span>
-              <button type="button" class="in2 {{malCultura}}" aria-haspopup="listbox" aria-expanded="{{expCultura}}" aria-labelledby="et-Cultura" onClick="{{alternarCultura}}" disabled="{{bloqCultura}}"><span class="val {{claseValCultura}}">{{textoCultura}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
-              <sc-if value="{{abiertoCultura}}" hint-placeholder-val="{{no}}">
-                <div class="menu lista" role="listbox" aria-labelledby="et-Cultura" style="top: 60px;">
-                  <sc-for list="{{opcionesCultura}}" as="o" hint-placeholder-count="3">
-                    <button type="button" role="option" aria-selected="{{o.sel}}" class="op2 {{o.clase}}" onClick="{{o.elegir}}"><span><span class="opn">{{o.n}}</span><sc-if value="{{o.d}}" hint-placeholder-val="{{no}}"><span class="opd">{{o.d}}</span></sc-if></span></button>
-                  </sc-for>
-                </div>
-              </sc-if>
-              <sc-if value="{{errCultura}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errCultura}}</span></sc-if>
-            </div>
-            <div class="campo2 envoltura">
-              <span class="et" id="et-Zona">Zona horaria predeterminada</span>
-              <button type="button" class="in2 {{malZona}}" aria-haspopup="listbox" aria-expanded="{{expZona}}" aria-labelledby="et-Zona" onClick="{{alternarZona}}" disabled="{{bloqZona}}"><span class="val {{claseValZona}}">{{textoZona}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
-              <sc-if value="{{abiertoZona}}" hint-placeholder-val="{{no}}">
-                <div class="menu lista" role="listbox" aria-labelledby="et-Zona" style="top: 60px;">
-                  <sc-for list="{{opcionesZona}}" as="o" hint-placeholder-count="3">
-                    <button type="button" role="option" aria-selected="{{o.sel}}" class="op2 {{o.clase}}" onClick="{{o.elegir}}"><span><span class="opn">{{o.n}}</span><sc-if value="{{o.d}}" hint-placeholder-val="{{no}}"><span class="opd">{{o.d}}</span></sc-if></span></button>
-                  </sc-for>
-                </div>
-              </sc-if>
-              <sc-if value="{{errZona}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errZona}}</span></sc-if>
-            </div>
-            <div class="campo2 envoltura">
-              <span class="et" id="et-Moneda">Moneda predeterminada</span>
-              <button type="button" class="in2 {{malMoneda}}" aria-haspopup="listbox" aria-expanded="{{expMoneda}}" aria-labelledby="et-Moneda" onClick="{{alternarMoneda}}" disabled="{{bloqMoneda}}"><span class="val {{claseValMoneda}}">{{textoMoneda}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
-              <sc-if value="{{abiertoMoneda}}" hint-placeholder-val="{{no}}">
-                <div class="menu lista" role="listbox" aria-labelledby="et-Moneda" style="top: 60px;">
-                  <sc-for list="{{opcionesMoneda}}" as="o" hint-placeholder-count="3">
-                    <button type="button" role="option" aria-selected="{{o.sel}}" class="op2 {{o.clase}}" onClick="{{o.elegir}}"><span><span class="opn">{{o.n}}</span><sc-if value="{{o.d}}" hint-placeholder-val="{{no}}"><span class="opd">{{o.d}}</span></sc-if></span></button>
-                  </sc-for>
-                </div>
-              </sc-if>
-              <sc-if value="{{errMoneda}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errMoneda}}</span></sc-if>
-            </div>
-
-            <div class="linea"></div>
-            <h2>Dominio de correo</h2>
-            <sc-if value="{{domSin}}" hint-placeholder-val="{{no}}">
-              <div class="campo2">
-                <label class="et" for="f-Dominio">Dominio</label>
-                <div style="display: flex; gap: 8px;">
-                  <input class="in2 {{malDominio}}" id="f-Dominio" type="text" autocomplete="off" placeholder="" value="{{Dominio}}" onChange="{{onDominio}}" style="flex: 1; min-width: 0;">
-                  <button type="button" class="b b-sec" style="height: auto; flex-shrink: 0;" onClick="{{agregarDominio}}">Verificar</button>
-                </div>
-                <sc-if value="{{errDominio}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errDominio}}</span></sc-if>
-              </div>
-            </sc-if>
-            <sc-if value="{{domPendiente}}" hint-placeholder-val="{{no}}">
-              <div class="campo2 ancho">
-                <span class="et">Dominio</span>
-                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;"><span style="font-size: 15px; font-weight: 500; color: var(--t1);">{{dominioTexto}}</span><span class="pill alerta">Pendiente</span></div>
-              </div>
-              <div class="campo2 ancho">
-                <label class="et" for="f-Txt"><span>Registro TXT a cargar en el DNS de {{dominioTexto}}</span></label>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                  <input class="in2" id="f-Txt" type="text" readonly="readonly" value="ab-verificacion=7f3c9a2e41b8d605" style="font-family: ui-monospace, SFMono-Regular, Consolas, monospace;">
-                  <button type="button" class="b b-sec" style="align-self: flex-start;" onClick="{{copiarTxt}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg> Copiar</button>
-                </div>
-              </div>
-              <sc-if value="{{errComprobar}}" hint-placeholder-val="{{no}}">
-                <div class="aviso-linea mal" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><span>{{errComprobar}}</span></div>
-              </sc-if>
-              <div style="grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap;">
-                <button type="button" class="b b-sec" onClick="{{comprobarDominio}}" disabled="{{comprobando}}">{{textoComprobar}}</button>
-                <button type="button" class="b b-gho" onClick="{{quitarDominio}}">Quitar</button>
-              </div>
-            </sc-if>
-            <sc-if value="{{domVerificado}}" hint-placeholder-val="{{si}}">
-              <div class="campo2">
-                <span class="et">Dominio</span>
-                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;"><span style="font-size: 15px; font-weight: 500; color: var(--t1);">{{dominioTexto}}</span><span class="pill ok">Verificado</span></div>
-              </div>
-              <div class="campo2">
-                <span class="et">Correos administrados</span>
-                <span style="font-size: 15px; color: var(--t1);">{{correosAdministrados}}</span>
-              </div>
-              <div style="grid-column: 1 / -1; display: flex; gap: 8px;">
-                <button type="button" class="b b-sec" onClick="{{quitarDominio}}">Quitar</button>
-              </div>
-            </sc-if>
-
-        </div>
-      </div>
-  </div>
-  <div class="m-barra"><button type="button" class="b b-sec" onClick="{{descartar}}" disabled="{{limpio}}">Descartar</button><button type="button" class="b b-pri" onClick="{{guardar}}" disabled="{{noGuardable}}">{{textoGuardar}}</button></div>
-
-  <sc-if value="{{hayAbierto}}" hint-placeholder-val="{{no}}"><button type="button" class="capa" tabindex="-1" aria-hidden="true" onClick="{{cerrarMenus}}"></button></sc-if>
-  <sc-if value="{{abiertoDrawer}}" hint-placeholder-val="{{no}}">
-    <button type="button" class="m-velo" aria-label="Cerrar el menú" onClick="{{cerrarMenus}}"></button>
-    <div class="m-drawer">  <aside class="ab-sidebar" aria-label="Navegación principal">
-    <div class="ab-sidebar__head"><span class="brand" aria-hidden="true"></span></div>
-    <button type="button" class="ab-btn ab-btn--ghost ab-btn--size-icon ab-sidebar__toggle" aria-label="Contraer navegación"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
-    <div class="scope">
-      <p class="scope-name">Grupo Delta</p>
-      <p class="scope-detail">Organización</p>
-    </div>
-    <nav class="ab-sidebar__nav" aria-label="Secciones">
-      <ul class="ab-sidebar__list">
-        <li><a class="ab-sidebar__link" href="M-Inicio-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span class="ab-sidebar__link-label">Inicio</span></a></li>
-      </ul>
-      <div class="admin-grupo">
-        <ul class="ab-sidebar__list">
-          <li>
-            <button type="button" class="ab-sidebar__branch" aria-expanded="true" aria-controls="menu-admin"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 5 6v5.5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6Z"/><path d="m9.5 12 1.8 1.8 3.4-3.6"/></svg><span class="ab-sidebar__branch-label">Administración</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__chevron"><path d="m6 9 6 6 6-6"></path></svg></button>
-            <ul class="ab-sidebar__children" id="menu-admin">
-          <li>
-            <button type="button" class="ab-sidebar__branch" aria-expanded="true" aria-controls="menu-usuarios"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"/><circle cx="10" cy="8" r="3.5"/><path d="M20 20v-1.5a3.5 3.5 0 0 0-2.6-3.4"/><path d="M15.5 4.7a3.5 3.5 0 0 1 0 6.6"/></svg><span class="ab-sidebar__branch-label">Gestión de usuarios</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__chevron"><path d="m6 9 6 6 6-6"></path></svg></button>
-            <ul class="ab-sidebar__children" id="menu-usuarios">
-              <li><a class="ab-sidebar__link" href="M-Usuarios.dc.html"><span class="ab-sidebar__link-label">Usuarios</span></a></li>
-              <li><a class="ab-sidebar__link" href="M-Roles.dc.html"><span class="ab-sidebar__link-label">Roles y permisos</span></a></li>
-            </ul>
-          </li>
-          <li><a class="ab-sidebar__link" href="M-Empresas.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16"/><path d="M15 9h4a1 1 0 0 1 1 1v11"/><path d="M3 21h18"/><path d="M8 8h3"/><path d="M8 12h3"/><path d="M8 16h3"/></svg><span class="ab-sidebar__link-label">Empresas</span></a></li>
-          <li><a class="ab-sidebar__link ab-sidebar__link--active" href="M-Configuracion.dc.html" aria-current="page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10"/><circle cx="16" cy="6" r="2"/><path d="M4 12h4"/><path d="M12 12h8"/><circle cx="10" cy="12" r="2"/><path d="M4 18h12"/><circle cx="18" cy="18" r="2"/></svg><span class="ab-sidebar__link-label">Configuración</span></a></li>
-          <li><a class="ab-sidebar__link" href="Pagina-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.4 2.6 3.5 5.5 3.5 8.5s-1.1 5.9-3.5 8.5c-2.4-2.6-3.5-5.5-3.5-8.5s1.1-5.9 3.5-8.5Z"/></svg><span class="ab-sidebar__link-label">Página pública</span></a></li>
-          <li><a class="ab-sidebar__link" href="M-Auditoria-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"/><path d="M15 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/><path d="M9 12h6"/><path d="M9 16h4"/></svg><span class="ab-sidebar__link-label">Auditoría</span></a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </nav>
-    <div class="ab-sidebar__footer"><div class="ab-sidebar__user"><span class="avatar" aria-hidden="true">L</span><div class="ab-sidebar__identity"><p class="ab-sidebar__name">Lucía Fernández</p><p class="ab-sidebar__email">lucia.fernandez@delta.ejemplo.com</p></div></div></div>
-  </aside>
-</div>
-  </sc-if>
-
-  <sc-if value="{{abiertoUsuario}}" hint-placeholder-val="{{no}}">
-    <button type="button" class="m-velo" aria-label="Cerrar" onClick="{{cerrarMenus}}"></button>
-    <div class="m-sheet" role="dialog" aria-modal="true" aria-label="Menú de Lucía Fernández">
-      <span class="asa" aria-hidden="true"></span>
-      <div class="menu-cab"><span class="avatar" aria-hidden="true" style="width: 36px; height: 36px; font-size: 14px;">L</span><span class="perfil-t"><span class="n1" style="font-size: 14px; font-weight: 600;">Lucía Fernández</span><span class="n2">lucia.fernandez@delta.ejemplo.com</span></span></div>
-      <div class="lista-acc"><div class="menu-tit">Perfiles</div><a class="menu-it" href="M-Inicio-Personal.dc.html"><span class="ico-perfil">P</span><span class="perfil-t"><span class="n1">Personal</span><span class="n2">Tu perfil personal</span></span></a><a class="menu-it on" href="M-Inicio-Org.dc.html"><span class="ico-perfil">GD</span><span class="perfil-t"><span class="n1">Grupo Delta</span><span class="n2">Dueño</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></a><span class="menu-it apagado" aria-disabled="true"><span class="ico-perfil">BS</span><span class="perfil-t"><span class="n1">Beta S.R.L.</span><span class="n2">Miembro</span></span><span class="pill alerta">Suspendida</span></span><div class="menu-sep"></div><a class="menu-it" href="M-Cuenta.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Mi cuenta</a><div class="menu-sep"></div><a class="menu-it" href="M-Ingreso.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Salir</a></div>
-    </div>
-  </sc-if>
-  <sc-if value="{{confirmacion}}" hint-placeholder-val="{{no}}">
-    <div class="velo">
-      <div class="dlg chico" role="alertdialog" aria-modal="true" aria-labelledby="conf-t">
-        <div class="dlg-h"><h2 id="conf-t">{{tituloConfirmacion}}</h2></div>
-        <div class="dlg-t">{{textoConfirmacion}}</div>
-        <sc-if value="{{hayMotivo}}" hint-placeholder-val="{{no}}">
-          <div class="dlg-b una" style="padding-top: 0;">
-            <div class="campo2"><label class="et" for="conf-motivo">Motivo<span class="req" aria-hidden="true">*</span></label><textarea class="in2 {{malMotivo}}" id="conf-motivo" value="{{motivo}}" onChange="{{onMotivo}}"></textarea><sc-if value="{{errMotivo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errMotivo}}</span></sc-if></div>
-          </div>
-        </sc-if>
-        <div class="dlg-f">
-          <button type="button" class="b b-sec" onClick="{{cancelarConfirmacion}}">Cancelar</button>
-          <button type="button" class="b {{claseConfirmar}}" onClick="{{confirmar}}">{{botonConfirmacion}}</button>
-        </div>
-      </div>
-    </div>
-  </sc-if>
-  <sc-if value="{{aviso}}" hint-placeholder-val="{{no}}">
-    <div class="toast2" role="status">
-      <sc-if value="{{avisoOk}}" hint-placeholder-val="{{si}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.13 155)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></svg></sc-if>
-      <sc-if value="{{avisoError}}" hint-placeholder-val="{{no}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.57 0.2 25)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg></sc-if>
-      <span>{{aviso}}</span>
-    </div>
-  </sc-if>
-
-</div>
+<div class="w-tel p-mov"><header class="w-tb"><span style="display: inline-flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><b style="font-size: 14px;">ArquitecturaBase</b><details class="w-umd"><summary class="av-tel" aria-label="Abrir tu menú"><span class="w-av chico">L</span></summary><div class="w-mn" role="menu" aria-label="Menú de Lucía Fernández"><div class="w-mn-cab"><span class="w-av" style="width: 36px; height: 36px; font-size: 15px;">L</span><span class="w-mn-perf"><b>Lucía Fernández</b><span class="s">lucia.fernandez@delta.ejemplo.com</span></span></div><div class="w-mn-sep" role="separator"></div><div class="w-mn-tit">Perfiles</div><a class="w-mn-it" role="menuitemradio" aria-checked="false" href="M-Inicio-Personal.dc.html"><span class="w-mn-ico">P</span><span class="w-mn-perf">Personal<span class="s">Tu perfil personal</span></span></a><a class="w-mn-it on" role="menuitemradio" aria-checked="true" href="M-Inicio-Org.dc.html"><span class="w-mn-ico">GD</span><span class="w-mn-perf">Grupo Delta<span class="s">Dueño</span></span><span class="w-mn-on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></a><a class="w-mn-it apag" role="menuitemradio" aria-checked="false" href="Perfil-Suspendido.dc.html"><span class="w-mn-ico">BS</span><span class="w-mn-perf">Beta S.R.L.<span class="s">Suspendida</span></span></a><div class="w-mn-sep" role="separator"></div><a class="w-mn-it" role="menuitem" href="M-Cuenta.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Mi cuenta</a><div class="w-mn-sep" role="separator"></div><a class="w-mn-it" role="menuitem" href="M-Ingreso.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Salir</a></div></details></header>
+      <div class="w-bnd"><div class="iz"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg></span><div><h1>Configuración</h1><p class="res"><span style="color: oklch(0.5 0.12 70); font-weight: 500;">Cambios sin guardar</span></p></div></div><div class="ac"></div></div>
+      <div class="w-body" style="overflow: hidden;"><div class="w-caja"><div class="w-cab"><span>Datos de la organización</span></div><div class="p-hoja o-col"><div class="o-fila"><div class="w-cmp"><span class="rt">Nombre de la organización <span class="req">*</span></span><div class="ct">Grupo Delta </div></div><div class="w-cmp"><span class="rt">Idioma y región predeterminados</span><div class="ct">Español (Argentina) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div></div><div class="w-cmp"><span class="rt">Zona horaria predeterminada</span><div class="ct">Buenos Aires (GMT−3) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div></div><div class="w-cmp"><span class="rt">Moneda predeterminada</span><div class="ct">Peso argentino (ARS) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div></div></div></div></div>
+      <div class="w-caja"><div class="w-cab"><span>Dominio de correo</span><button type="button" class="cb cb-sec ch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Agregar</button></div><div class="w-it"><span class="p-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.5 2.6 2.5 14.4 0 17"/><path d="M12 3.5c-2.5 2.6-2.5 14.4 0 17"/></svg></span><span class="dato"><b>delta.ejemplo.com</b><span>Verificado · 10 correos administrados</span></span><button type="button" class="ib" aria-label="Acciones de delta.ejemplo.com"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></div></div></div>
+      <div class="w-escr" style="padding: 12px 16px 20px;"><button type="button" class="cb cb-sec" style="flex: 1; height: 44px;">Descartar</button><button type="button" class="cb cb-pri" style="flex: 1; height: 44px;">Guardar</button></div></div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"dominio":{"editor":"enum","options":["Sin dominio","Pendiente","Verificado"],"default":"Verificado","section":"Estado"},"$preview":{"width":390,"height":844}}'>
-const ORG_ZONA = 'America/Argentina/Buenos_Aires';
-const ZONA_TEXTO = {
-  'America/Argentina/Buenos_Aires': 'Buenos Aires (GMT−3)',
-  'America/Argentina/Cordoba': 'Córdoba (GMT−3)',
-  'America/Argentina/Mendoza': 'Mendoza (GMT−3)',
-  'America/Argentina/Tucuman': 'Tucumán (GMT−3)',
-  'America/Montevideo': 'Montevideo (GMT−3)',
-  'America/Santiago': 'Santiago (GMT−3)',
-  'America/Asuncion': 'Asunción (GMT−3)',
-};
-const ZONAS = [
-  { v: null, n: 'La de la organización', d: ZONA_TEXTO[ORG_ZONA] },
-  ...['America/Argentina/Cordoba', 'America/Argentina/Mendoza', 'America/Argentina/Tucuman', 'America/Montevideo'].map((z) => ({ v: z, n: ZONA_TEXTO[z] })),
-];
-const ZONAS_TODAS = Object.keys(ZONA_TEXTO).map((z) => ({ v: z, n: ZONA_TEXTO[z] }));
-const IDIOMAS = [{ v: 'es-AR', n: 'Español (Argentina)', d: '27/09/2026 14:35 · 1.234,50' }, { v: 'en-US', n: 'English (United States)', d: '09/27/2026 2:35 PM · 1,234.50' }];
-const MONEDAS = [{ v: 'ARS', n: 'Peso argentino (ARS)', d: '$ 1.234,50' }, { v: 'USD', n: 'Dólar estadounidense (USD)', d: 'US$ 1.234,50' }];
-
-const DOMINIOS = { 'Sin dominio': 'sin', 'Pendiente': 'pendiente', 'Verificado': 'verificado' };
-const CORREOS_ADMINISTRADOS = 10;
-
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
-  constructor(props) {
-    super(props);
-    
-    this.state = { abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', guardado: { nombre: 'Grupo Delta', cultura: 'es-AR', zona: 'America/Argentina/Buenos_Aires', moneda: 'ARS' }, nombre: 'Grupo Delta', cultura: 'es-AR', zona: 'America/Argentina/Buenos_Aires', moneda: 'ARS', errNombre: '', guardando: false, claveDominio: props.dominio, domEstado: DOMINIOS[props.dominio ?? 'Verificado'], dominio: props.dominio === 'Sin dominio' ? '' : 'delta.ejemplo.com', dominioIn: '', errDominio: '', errComprobar: '', intentos: 0, comprobando: false };
-  }
-
-  avisar(texto, tipo = 'ok') {
-    this.setState({ aviso: texto, avisoTipo: tipo });
-    clearTimeout(this.timerAviso);
-    this.timerAviso = setTimeout(() => this.setState({ aviso: '' }), 4000);
-  }
-
-  alternarMenu(clave) {
-    this.setState({ abierto: this.state.abierto === clave ? null : clave });
-  }
-
-  // Un desplegable de una opción: clave del estado, opciones [{ v, n, d }] y texto cuando no hay nada elegido.
-  uno(clave, campo, opciones, vacio, extra = {}) {
-    const s = this.state;
-    const actual = opciones.find((o) => o.v === s[campo]);
-    const abierto = s.abierto === clave;
-
-    return {
-      ['abierto' + clave]: abierto,
-      ['exp' + clave]: abierto ? 'true' : 'false',
-      ['alternar' + clave]: () => this.alternarMenu(clave),
-      ['texto' + clave]: actual ? actual.n : vacio,
-      ['claseVal' + clave]: actual ? '' : 'vacio2',
-      ['mal' + clave]: extra.error ? 'mal' : '',
-      ['err' + clave]: extra.error || '',
-      ['bloq' + clave]: !!extra.bloqueado,
-      ['opciones' + clave]: opciones.map((o) => ({
-        n: o.n, d: o.d || '', sel: o.v === s[campo] ? 'true' : 'false', clase: o.v === s[campo] ? 'on' : '',
-        elegir: () => this.setState({ [campo]: o.v, abierto: null, ...(extra.alElegir ? extra.alElegir(o.v) : {}) }),
-      })),
-    };
-  }
-
-  // Un desplegable de varias opciones sobre una lista del estado.
-  varios(clave, campo, opciones, vacio, extra = {}) {
-    const s = this.state;
-    const lista = s[campo];
-    const abierto = s.abierto === clave;
-    const elegidos = opciones.filter((o) => lista.includes(o.v));
-    const poner = (nueva) => this.setState({ [campo]: nueva, ...(extra.alCambiar ? extra.alCambiar(nueva) : {}) });
-
-    return {
-      ['abierto' + clave]: abierto,
-      ['exp' + clave]: abierto ? 'true' : 'false',
-      ['alternar' + clave]: () => this.alternarMenu(clave),
-      ['texto' + clave]: elegidos.length === 0 ? vacio : elegidos.map((o) => o.n).join(', '),
-      ['claseVal' + clave]: elegidos.length === 0 ? 'vacio2' : '',
-      ['bloq' + clave]: !!extra.bloqueado,
-      ['todos' + clave]: opciones.length > 0 && elegidos.length === opciones.length,
-      ['alternarTodos' + clave]: () => {
-        const codigos = opciones.map((o) => o.v);
-        const resto = this.state[campo].filter((x) => !codigos.includes(x));
-        poner(elegidos.length === opciones.length ? resto : [...resto, ...codigos]);
-      },
-      ['opciones' + clave]: opciones.map((o) => ({
-        n: o.n, d: o.d || '', on: lista.includes(o.v),
-        alternar: () => {
-          const actual = this.state[campo];
-          poner(actual.includes(o.v) ? actual.filter((x) => x !== o.v) : [...actual, o.v]);
-        },
-      })),
-    };
-  }
-
-  // Filtro en pastilla: opciones [{ v, n }] con conteo calculado por `contar(v)`.
-  filtro(clave, campo, opciones, textoTodos, contar) {
-    const s = this.state;
-    const abierto = s.abierto === clave;
-    const actual = opciones.find((o) => o.v === s[campo]);
-
-    return {
-      ['abierto' + clave]: abierto,
-      ['exp' + clave]: abierto ? 'true' : 'false',
-      ['alternar' + clave]: () => this.alternarMenu(clave),
-      ['texto' + clave]: actual && actual.v !== null ? actual.corto || actual.n : textoTodos,
-      ['clase' + clave]: actual && actual.v !== null ? 'con' : '',
-      ['opciones' + clave]: opciones.map((o) => ({
-        n: o.n, c: String(contar(o.v)), sel: o.v === s[campo] ? 'true' : 'false', clase: o.v === s[campo] ? 'on' : '',
-        elegir: () => this.setState({ [campo]: o.v, abierto: null }),
-      })),
-    };
-  }
-
-  // Menú ⋮ de una fila.
-  // Paginado por páginas (usePagination): devuelve la página actual y los valores de paginacion(p).
-  paginar(lista, p = '') {
-    const s = this.state;
-    const tam = s['tam' + p] || 10;
-    const paginas = Math.max(1, Math.ceil(lista.length / tam));
-    const pag = Math.min(s['pag' + p] || 1, paginas);
-    const desde = lista.length === 0 ? 0 : (pag - 1) * tam + 1;
-    const hasta = Math.min(pag * tam, lista.length);
-    const clave = 'tam' + p;
-    const abierto = s.abierto === clave;
-
-    return {
-      items: lista.slice((pag - 1) * tam, pag * tam),
-      vals: {
-        [p + 'pagRango']: lista.length === 0 ? '0 de 0' : (desde === hasta ? String(desde) : desde + '–' + hasta) + ' de ' + lista.length,
-        [p + 'pagTexto']: 'Página ' + pag + ' de ' + paginas,
-        [p + 'pagSinAnterior']: pag <= 1,
-        [p + 'pagSinSiguiente']: pag >= paginas,
-        [p + 'pagAnterior']: () => this.setState({ ['pag' + p]: pag - 1 }),
-        [p + 'pagSiguiente']: () => this.setState({ ['pag' + p]: pag + 1 }),
-        [p + 'pagTamano']: String(tam),
-        [p + 'abiertoTamano']: abierto,
-        [p + 'expTamano']: abierto ? 'true' : 'false',
-        [p + 'alternarTamano']: () => this.alternarMenu(clave),
-        [p + 'opcionesTamano']: [10, 20, 50, 100].map((n) => ({ n: n + ' por página', sel: n === tam ? 'true' : 'false', clase: n === tam ? 'on' : '', elegir: () => this.setState({ ['tam' + p]: n, ['pag' + p]: 1, abierto: null }) })),
-      },
-    };
-  }
-
-  // Menú ⋮ de una fila; en las últimas filas de una lista larga se abre hacia arriba.
-  fila(id, nombre, i = 0, n = 0) {
-    const clave = 'fila:' + id;
-    const abierto = this.state.abierto === clave;
-
-    return { menu: abierto, exp: abierto ? 'true' : 'false', ariaMenu: 'Acciones de ' + nombre, alternar: () => this.alternarMenu(clave), claseMenu: n > 5 && i >= n - 3 ? 'arriba' : '' };
-  }
-
-  // Confirmación: { titulo, texto, boton, peligro, motivo (bool), accion(motivo) }.
-  pedirConfirmacion(c) {
-    this.setState({ abierto: null, confirmar: c, motivo: '', errMotivo: '' });
-  }
-
-  comunes() {
-    const s = this.state;
-    const c = s.confirmar;
-
-    return {
-      si: true,
-      no: false,
-      hayAbierto: s.abierto !== null,
-      cerrarMenus: () => this.setState({ abierto: null }),
-      abiertoDrawer: s.abierto === 'drawer',
-      alternarDrawer: () => this.alternarMenu('drawer'),
-      abiertoMas: s.abierto === 'mas',
-      expMas: s.abierto === 'mas' ? 'true' : 'false',
-      alternarMas: () => this.alternarMenu('mas'),
-      abiertoUsuario: s.abierto === 'usuario',
-      expUsuario: s.abierto === 'usuario' ? 'true' : 'false',
-      alternarUsuario: () => this.alternarMenu('usuario'),
-      aviso: s.aviso,
-      avisoOk: s.avisoTipo !== 'error',
-      avisoError: s.avisoTipo === 'error',
-      confirmacion: !!c,
-      tituloConfirmacion: c ? c.titulo : '',
-      textoConfirmacion: c ? c.texto : '',
-      botonConfirmacion: c ? c.boton : '',
-      claseConfirmar: c && c.peligro === false ? 'b-pri' : 'b-pel',
-      hayMotivo: !!(c && c.motivo),
-      motivo: s.motivo,
-      onMotivo: (e) => this.setState({ motivo: e.target.value, errMotivo: '' }),
-      malMotivo: s.errMotivo ? 'mal' : '',
-      errMotivo: s.errMotivo,
-      cancelarConfirmacion: () => this.setState({ confirmar: null }),
-      confirmar: () => {
-        if (c.motivo && s.motivo.trim() === '') {
-          this.setState({ errMotivo: 'Escribí el motivo.' });
-
-          return;
-        }
-
-        this.setState({ confirmar: null });
-        c.accion(s.motivo.trim());
-      },
-    };
-  }
-
-  // PUT /api/settings: TenantSettings (DefaultCulture, zona y DefaultCurrency). Cada persona puede usar su propio idioma y zona.
-  guardar() {
-    const s = this.state;
-    const nombre = s.nombre.trim();
-
-    if (nombre === '') {
-      this.setState({ errNombre: 'Escribí el nombre de la organización.', abierto: null });
-
-      return;
-    }
-
-    this.setState({ guardando: true, abierto: null });
-    setTimeout(() => {
-      const g = { nombre, cultura: s.cultura, zona: s.zona, moneda: s.moneda };
-      this.setState({ guardado: g, ...g, guardando: false });
-      this.avisar('Guardamos la configuración.');
-    }, 600);
-  }
-
-  componentDidUpdate() {
-    if (this.props.dominio !== this.state.claveDominio) this.setState({ claveDominio: this.props.dominio, domEstado: DOMINIOS[this.props.dominio ?? 'Sin dominio'], dominio: this.props.dominio === 'Sin dominio' ? '' : 'delta.ejemplo.com', dominioIn: '', errDominio: '', errComprobar: '', intentos: 0 });
-  }
-
-  // POST /api/settings/domains: la organización registra su dominio y recibe el registro TXT a cargar.
-  agregarDominio() {
-    const d = this.state.dominioIn.trim().toLowerCase();
-
-    if (d === '') {
-      this.setState({ errDominio: 'Escribí el dominio.' });
-
-      return;
-    }
-
-    if (!/^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(d)) {
-      this.setState({ errDominio: 'Revisá el dominio.' });
-
-      return;
-    }
-
-    this.setState({ domEstado: 'pendiente', dominio: d, dominioIn: '', errDominio: '', errComprobar: '', intentos: 0 });
-  }
-
-  // POST /api/settings/domains/{domain}/verify: busca el registro TXT en el DNS.
-  comprobarDominio() {
-    this.setState({ comprobando: true, errComprobar: '' });
-    setTimeout(() => {
-      const s = this.state;
-
-      if (s.intentos === 0) {
-        this.setState({ comprobando: false, intentos: 1, errComprobar: 'Todavía no encontramos el registro TXT en ' + s.dominio + '. Si recién lo cargaste, puede tardar un rato en aparecer.' });
-
-        return;
-      }
-
-      this.setState({ comprobando: false, domEstado: 'verificado', errComprobar: '' });
-      this.avisar('Verificamos ' + s.dominio + '.');
-    }, 600);
-  }
-
-  quitarDominio() {
-    const d = this.state.dominio;
-
-    if (this.state.domEstado === 'pendiente') {
-      this.setState({ domEstado: 'sin', dominio: '', errComprobar: '' });
-
-      return;
-    }
-
-    this.pedirConfirmacion({
-      titulo: '¿Quitar ' + d + '?',
-      texto: 'Los ' + CORREOS_ADMINISTRADOS + ' correos de ' + d + ' dejan de estar administrados por ' + this.state.guardado.nombre + '.',
-      boton: 'Quitar',
-      accion: () => { this.setState({ domEstado: 'sin', dominio: '' }); this.avisar('Quitamos ' + d + '.'); },
-    });
-  }
-
   renderVals() {
-    const s = this.state;
-    const g = s.guardado;
-    const sucio = s.nombre !== g.nombre || s.cultura !== g.cultura || s.zona !== g.zona || s.moneda !== g.moneda;
-
-    return {
-      ...this.comunes(),
-      nombreGuardado: g.nombre,
-      sucio,
-      limpio: !sucio,
-      noGuardable: !sucio || s.guardando,
-      textoGuardar: s.guardando ? 'Guardando…' : 'Guardar cambios',
-      guardar: () => this.guardar(),
-      descartar: () => this.setState({ nombre: g.nombre, cultura: g.cultura, zona: g.zona, moneda: g.moneda, errNombre: '', abierto: null }),
-      Nombre: s.nombre,
-      onNombre: (e) => this.setState({ nombre: e.target.value, errNombre: '' }),
-      malNombre: s.errNombre ? 'mal' : '',
-      errNombre: s.errNombre,
-      ...this.uno('Cultura', 'cultura', IDIOMAS, ''),
-      ...this.uno('Zona', 'zona', ZONAS_TODAS, ''),
-      ...this.uno('Moneda', 'moneda', MONEDAS, ''),
-      domSin: s.domEstado === 'sin',
-      domPendiente: s.domEstado === 'pendiente',
-      domVerificado: s.domEstado === 'verificado',
-      dominioTexto: s.dominio,
-      Dominio: s.dominioIn,
-      onDominio: (e) => this.setState({ dominioIn: e.target.value, errDominio: '' }),
-      malDominio: s.errDominio ? 'mal' : '',
-      errDominio: s.errDominio,
-      agregarDominio: () => this.agregarDominio(),
-      copiarTxt: () => { try { navigator.clipboard.writeText('ab-verificacion=7f3c9a2e41b8d605'); } catch (e) { /* sin portapapeles */ } this.avisar('Copiamos el registro TXT.'); },
-      comprobarDominio: () => this.comprobarDominio(),
-      comprobando: !!s.comprobando,
-      textoComprobar: s.comprobando ? 'Comprobando…' : 'Comprobar',
-      errComprobar: s.errComprobar,
-      quitarDominio: () => this.quitarDominio(),
-      correosAdministrados: String(CORREOS_ADMINISTRADOS),
-    };
+    return { si: true, no: false };
   }
 }
 </script>

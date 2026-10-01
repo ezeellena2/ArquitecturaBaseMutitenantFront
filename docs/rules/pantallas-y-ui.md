@@ -18,7 +18,7 @@
 - Programar una pantalla sin tablero.
 
 ## Copiá de
-- el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (v35); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` (E4) y `docs/architecture/tema.md`
+- el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (v60; solo los tableros validados); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` (E4) y `docs/architecture/tema.md`
 
 ## Lo verifica
 - La revisión del usuario sobre el tablero, antes de programar.

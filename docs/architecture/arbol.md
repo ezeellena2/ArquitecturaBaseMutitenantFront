@@ -16,7 +16,7 @@ ArquitecturaBaseMutitenantFront/
 │   │   ├── tema.md                                  tema visual aprobado (tokens, marco arena, panel de Administración)
 │   │   ├── arnes.md                                 fichas, punteros por carpeta y verificación
 │   │   └── arbol.md                                 este archivo
-│   ├── design/lienzo/                               versión 35: 67 tableros .dc.html, support.js y ds/; fuente de las pantallas
+│   ├── design/lienzo/                               versión 60: 109 tableros .dc.html, support.js, ds/ y generadores/; fuente de las pantallas
 │   │   └── README.md                                cómo servir el lienzo y ver los estados
 │   ├── rules/                                       fichas del arnés: README + 13 temas
 │   ├── plans/                                       planes detallados de las etapas del front

@@ -535,6 +535,62 @@
 .tt-f:hover { background: oklch(0.95 0.025 185) !important; }
 
   </style><!-- /tema -->
+  <style data-criterio="aplicado">
+/* Botones: 4 tipos y 2 tamaños (36 y 32); 44 solo en ingreso y registro. Esquinas de 8 (10 en los grandes). */
+.b { height: 36px !important; padding: 0 14px !important; border-radius: 8px !important; font-size: 14px !important; font-weight: 600 !important; gap: 6px !important; }
+.b-sm { height: 32px !important; padding: 0 12px !important; font-size: 13px !important; border-radius: 8px !important; }
+.b-lg, .b.lg { height: 44px !important; padding: 0 18px !important; font-size: 15px !important; border-radius: 10px !important; }
+.b-sec { border-color: var(--borde2) !important; }
+.b-pel { background: #fff !important; border: 1px solid oklch(0.57 0.2 25 / 0.4) !important; color: oklch(0.52 0.19 25) !important; }
+.dlg-f .b-pel, .velo .b-pel { background: oklch(0.55 0.2 25) !important; border-color: oklch(0.55 0.2 25) !important; color: #fff !important; }
+.b-google { height: 44px !important; border-radius: 10px !important; border-color: var(--borde2) !important; }
+.kebab, .ico-btn { width: 32px !important; height: 32px !important; border-radius: 8px !important; }
+/* Campos: 36 en la app; en ingreso y registro, a la altura de sus botones (44). El código, 44. */
+.in2 { height: 36px; border-radius: 8px !important; border-color: var(--borde2) !important; font-size: 13.5px !important; }
+.in2.lg { height: 44px !important; font-size: 15px !important; border-radius: 10px !important; }
+textarea.in2 { height: auto; min-height: 84px; }
+.otp input { height: 44px !important; border-radius: 8px !important; }
+.et { font-size: 12.5px !important; font-weight: 600 !important; color: var(--t2) !important; }
+.err2 { font-size: 12.5px !important; }
+/* Encabezados con color: arena, sin mayúsculas, 40 de alto en tablas y 48 en diálogos. */
+.tt-h, .tt-h.gris { background: oklch(0.945 0.018 76) !important; border-bottom-color: oklch(0.89 0.02 76) !important; text-transform: none !important; letter-spacing: 0 !important; min-height: 40px !important; height: 40px !important; font-size: 13px !important; }
+.tt-f { min-height: 40px !important; font-size: 13px !important; box-sizing: border-box !important; padding-top: 4px !important; padding-bottom: 4px !important; }
+.tt-h { box-sizing: border-box !important; }
+.dlg-h { background: oklch(0.945 0.018 76) !important; border-bottom-color: oklch(0.89 0.02 76) !important; padding-top: 12px !important; padding-bottom: 12px !important; }
+.dlg-h h2 { font-size: 15px !important; font-weight: 600 !important; }
+.dlg-h p { display: none !important; }
+/* Estados: punto de color y palabra, sin fondo ni etiqueta. */
+.pill { background: transparent !important; padding: 0 !important; color: var(--t1) !important; font-size: 13px !important; font-weight: 400 !important; }
+.pill::before { width: 8px !important; height: 8px !important; }
+.pill.ok::before { background: oklch(0.6 0.13 155) !important; }
+.pill.pend::before { background: var(--marca) !important; }
+.pill.alerta::before { background: oklch(0.72 0.15 70) !important; }
+.pill.mal::before { background: oklch(0.57 0.2 25) !important; }
+.pill.off { color: var(--t2) !important; }
+.pill.off::before { background: oklch(0.75 0.01 78) !important; }
+.rol, .rol.sis { background: transparent !important; padding: 0 !important; font-weight: 400 !important; color: var(--t1) !important; font-size: 13px !important; }
+.roles { gap: 0 !important; }
+.roles .rol + .rol::before { content: ", "; }
+/* Sin etiquetas con fondo: el rótulo chico del panel de la marca queda como texto. */
+.kicker { background: transparent !important; padding: 0 !important; border: 0 !important; font-size: 13px !important; font-weight: 600 !important; }
+/* Banda: al lado del título no va nada; estado, «De sistema» y «Cambios sin guardar» van en la segunda línea, separados por un punto medio. */
+.banda-pag .res { display: flex !important; align-items: center; flex-wrap: wrap; gap: 6px; }
+.banda-pag .res > :empty { display: none !important; }
+.banda-pag .res > * + *::before { content: "·"; color: var(--t3); margin-right: 6px; }
+.banda-pag .res .rol { color: var(--t2) !important; }
+.banda-pag .res .sucio { color: oklch(0.5 0.12 70) !important; font-weight: 500 !important; }
+/* La cantidad de una pestaña, en gris y sin fondo. */
+.cnt { background: transparent !important; padding: 0 !important; color: var(--t3) !important; font-weight: 500 !important; }
+/* El error de una acción directa: borde rojo y ✕; no se va solo. */
+.toast2.mal { border-color: oklch(0.57 0.2 25 / 0.45) !important; }
+/* Formularios: cada título de sección es un encabezado arena a lo ancho de la caja (el «colorcito»), sin líneas sueltas. */
+.hoja { overflow: hidden; }
+.hoja:has(> h2:first-child) { padding-top: 0 !important; }
+.hoja .campo2.ancho > input.in2 { max-width: 420px; }
+.hoja h2 { grid-column: 1 / -1; margin: 0 -20px !important; padding: 10px 20px !important; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 13.5px !important; font-weight: 600 !important; }
+.hoja h2:not(:first-child) { border-top: 1px solid oklch(0.89 0.02 76); margin-top: 6px !important; }
+.hoja .linea { display: none !important; }
+  </style>
 </helmet>
 
 <div class="m ab-root">
@@ -545,7 +601,7 @@
   </header>
   <div class="m-cuerpo">
       <div class="banda-pag">
-        <div class="izq"><a class="atras" href="M-Empresas.dc.html" aria-label="Volver a Empresas"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></a><div style="min-width: 0;"><div class="tit"><h1>{{nombre}}</h1><span class="pill {{pillEmpresa}}">{{estadoEmpresa}}</span></div><p class="res">{{meta}}</p></div></div>
+        <div class="izq"><a class="atras" href="M-Empresas.dc.html" aria-label="Volver a Empresas"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></a><div style="min-width: 0;"><div class="tit"><h1>{{nombre}}</h1></div><p class="res"><span class="pill {{pillEmpresa}}">{{estadoEmpresa}}</span><span>{{meta}}</span></p></div></div>
         <div class="acciones"><span class="envoltura">
           <button type="button" class="mas" aria-label="Más acciones" aria-haspopup="menu" aria-expanded="{{expMas}}" onClick="{{alternarMas}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
           <sc-if value="{{abiertoMas}}" hint-placeholder-val="{{no}}"><div class="menu der" role="menu"><button type="button" class="menu-it" role="menuitem" onClick="{{abrirEditar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 5.5 18.5 8.5 9 18H6v-3z"/></svg> Editar empresa</button><div class="menu-sep"></div><button type="button" class="menu-it {{claseAccionEstado}}" role="menuitem" onClick="{{cambiarEstado}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> {{accionEstado}}</button></div></sc-if>
@@ -654,7 +710,7 @@
     </div>
     <nav class="ab-sidebar__nav" aria-label="Secciones">
       <ul class="ab-sidebar__list">
-        <li><a class="ab-sidebar__link" href="M-Inicio-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span class="ab-sidebar__link-label">Inicio</span></a></li>
+        <li><a class="ab-sidebar__link" href="M-Inicio-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span class="ab-sidebar__link-label">Inicio</span></a></li><li><a class="ab-sidebar__link" href="M-WA-Chats.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"/></svg><span class="ab-sidebar__link-label">WhatsApp</span></a></li>
       </ul>
       <div class="admin-grupo">
         <ul class="ab-sidebar__list">
@@ -671,7 +727,7 @@
           <li><a class="ab-sidebar__link ab-sidebar__link--active" href="M-Empresas.dc.html" aria-current="page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16"/><path d="M15 9h4a1 1 0 0 1 1 1v11"/><path d="M3 21h18"/><path d="M8 8h3"/><path d="M8 12h3"/><path d="M8 16h3"/></svg><span class="ab-sidebar__link-label">Empresas</span></a></li>
           <li><a class="ab-sidebar__link" href="M-Configuracion.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10"/><circle cx="16" cy="6" r="2"/><path d="M4 12h4"/><path d="M12 12h8"/><circle cx="10" cy="12" r="2"/><path d="M4 18h12"/><circle cx="18" cy="18" r="2"/></svg><span class="ab-sidebar__link-label">Configuración</span></a></li>
           <li><a class="ab-sidebar__link" href="Pagina-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.4 2.6 3.5 5.5 3.5 8.5s-1.1 5.9-3.5 8.5c-2.4-2.6-3.5-5.5-3.5-8.5s1.1-5.9 3.5-8.5Z"/></svg><span class="ab-sidebar__link-label">Página pública</span></a></li>
-          <li><a class="ab-sidebar__link" href="M-Auditoria-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"/><path d="M15 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/><path d="M9 12h6"/><path d="M9 16h4"/></svg><span class="ab-sidebar__link-label">Auditoría</span></a></li>
+          <li><a class="ab-sidebar__link" href="M-WA-Admin.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"/></svg><span class="ab-sidebar__link-label">WhatsApp</span></a></li><li><a class="ab-sidebar__link" href="M-Auditoria-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"/><path d="M15 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/><path d="M9 12h6"/><path d="M9 16h4"/></svg><span class="ab-sidebar__link-label">Auditoría</span></a></li>
             </ul>
           </li>
         </ul>
@@ -687,7 +743,7 @@
     <div class="m-sheet" role="dialog" aria-modal="true" aria-label="Menú de Lucía Fernández">
       <span class="asa" aria-hidden="true"></span>
       <div class="menu-cab"><span class="avatar" aria-hidden="true" style="width: 36px; height: 36px; font-size: 14px;">L</span><span class="perfil-t"><span class="n1" style="font-size: 14px; font-weight: 600;">Lucía Fernández</span><span class="n2">lucia.fernandez@delta.ejemplo.com</span></span></div>
-      <div class="lista-acc"><div class="menu-tit">Perfiles</div><a class="menu-it" href="M-Inicio-Personal.dc.html"><span class="ico-perfil">P</span><span class="perfil-t"><span class="n1">Personal</span><span class="n2">Tu perfil personal</span></span></a><a class="menu-it on" href="M-Inicio-Org.dc.html"><span class="ico-perfil">GD</span><span class="perfil-t"><span class="n1">Grupo Delta</span><span class="n2">Dueño</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></a><span class="menu-it apagado" aria-disabled="true"><span class="ico-perfil">BS</span><span class="perfil-t"><span class="n1">Beta S.R.L.</span><span class="n2">Miembro</span></span><span class="pill alerta">Suspendida</span></span><div class="menu-sep"></div><a class="menu-it" href="M-Cuenta.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Mi cuenta</a><div class="menu-sep"></div><a class="menu-it" href="M-Ingreso.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Salir</a></div>
+      <div class="lista-acc"><div class="menu-tit">Perfiles</div><a class="menu-it" href="M-Inicio-Personal.dc.html"><span class="ico-perfil">P</span><span class="perfil-t"><span class="n1">Personal</span><span class="n2">Tu perfil personal</span></span></a><a class="menu-it on" href="M-Inicio-Org.dc.html"><span class="ico-perfil">GD</span><span class="perfil-t"><span class="n1">Grupo Delta</span><span class="n2">Dueño</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></a><a class="menu-it apagado" role="menuitem" href="Perfil-Suspendido.dc.html"><span class="ico-perfil">BS</span><span class="perfil-t"><span class="n1">Beta S.R.L.</span><span class="n2">Suspendida</span></span></a><div class="menu-sep"></div><a class="menu-it" href="M-Cuenta.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Mi cuenta</a><div class="menu-sep"></div><a class="menu-it" href="M-Ingreso.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Salir</a></div>
     </div>
   </sc-if>
 
@@ -821,10 +877,10 @@
     </div>
   </sc-if>
   <sc-if value="{{aviso}}" hint-placeholder-val="{{no}}">
-    <div class="toast2" role="status">
+    <div class="toast2 {{claseAviso}}" role="status">
       <sc-if value="{{avisoOk}}" hint-placeholder-val="{{si}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.13 155)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></svg></sc-if>
       <sc-if value="{{avisoError}}" hint-placeholder-val="{{no}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.57 0.2 25)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg></sc-if>
-      <span>{{aviso}}</span>
+      <span>{{aviso}}</span><sc-if value="{{avisoError}}" hint-placeholder-val="{{no}}"><button type="button" class="ico-btn" aria-label="Cerrar" onClick="{{cerrarAviso}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></sc-if>
     </div>
   </sc-if>
 
@@ -895,7 +951,7 @@ class Component extends DCLogic {
   avisar(texto, tipo = 'ok') {
     this.setState({ aviso: texto, avisoTipo: tipo });
     clearTimeout(this.timerAviso);
-    this.timerAviso = setTimeout(() => this.setState({ aviso: '' }), 4000);
+    if (tipo !== 'error') this.timerAviso = setTimeout(() => this.setState({ aviso: '' }), 4000);
   }
 
   alternarMenu(clave) {
@@ -1037,6 +1093,8 @@ class Component extends DCLogic {
       aviso: s.aviso,
       avisoOk: s.avisoTipo !== 'error',
       avisoError: s.avisoTipo === 'error',
+      claseAviso: s.avisoTipo === 'error' ? 'mal' : '',
+      cerrarAviso: () => this.setState({ aviso: '' }),
       confirmacion: !!c,
       tituloConfirmacion: c ? c.titulo : '',
       textoConfirmacion: c ? c.texto : '',

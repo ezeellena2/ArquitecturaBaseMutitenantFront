@@ -559,6 +559,44 @@
 .tt-f:hover { background: oklch(0.95 0.025 185) !important; }
 
   </style><!-- /tema -->
+  <style data-criterio="aplicado">
+/* Botones: 4 tipos y 2 tamaños (36 y 32); 44 solo en ingreso y registro. Esquinas de 8 (10 en los grandes). */
+.b { height: 36px !important; padding: 0 14px !important; border-radius: 8px !important; font-size: 14px !important; font-weight: 600 !important; gap: 6px !important; }
+.b-sm { height: 32px !important; padding: 0 12px !important; font-size: 13px !important; border-radius: 8px !important; }
+.b-lg, .b.lg { height: 44px !important; padding: 0 18px !important; font-size: 15px !important; border-radius: 10px !important; }
+.b-sec { border-color: var(--borde2) !important; }
+.b-pel { background: #fff !important; border: 1px solid oklch(0.57 0.2 25 / 0.4) !important; color: oklch(0.52 0.19 25) !important; }
+.dlg-f .b-pel, .velo .b-pel { background: oklch(0.55 0.2 25) !important; border-color: oklch(0.55 0.2 25) !important; color: #fff !important; }
+.b-google { height: 44px !important; border-radius: 10px !important; border-color: var(--borde2) !important; }
+.kebab, .ico-btn { width: 32px !important; height: 32px !important; border-radius: 8px !important; }
+/* Campos: 36 en la app; en ingreso y registro, a la altura de sus botones (44). El código, 44. */
+.in2 { height: 36px; border-radius: 8px !important; border-color: var(--borde2) !important; font-size: 13.5px !important; }
+.in2.lg { height: 44px !important; font-size: 15px !important; border-radius: 10px !important; }
+textarea.in2 { height: auto; min-height: 84px; }
+.otp input { height: 44px !important; border-radius: 8px !important; }
+.et { font-size: 12.5px !important; font-weight: 600 !important; color: var(--t2) !important; }
+.err2 { font-size: 12.5px !important; }
+/* Encabezados con color: arena, sin mayúsculas, 40 de alto en tablas y 48 en diálogos. */
+.tt-h, .tt-h.gris { background: oklch(0.945 0.018 76) !important; border-bottom-color: oklch(0.89 0.02 76) !important; text-transform: none !important; letter-spacing: 0 !important; min-height: 40px !important; height: 40px !important; font-size: 13px !important; }
+.tt-f { min-height: 40px !important; font-size: 13px !important; }
+.dlg-h { background: oklch(0.945 0.018 76) !important; border-bottom-color: oklch(0.89 0.02 76) !important; padding-top: 12px !important; padding-bottom: 12px !important; }
+.dlg-h h2 { font-size: 15px !important; font-weight: 600 !important; }
+.dlg-h p { display: none !important; }
+/* Estados: punto de color y palabra, sin fondo ni etiqueta. */
+.pill { background: transparent !important; padding: 0 !important; color: var(--t1) !important; font-size: 13px !important; font-weight: 400 !important; }
+.pill::before { width: 8px !important; height: 8px !important; }
+.pill.ok::before { background: oklch(0.6 0.13 155) !important; }
+.pill.pend::before { background: var(--marca) !important; }
+.pill.alerta::before { background: oklch(0.72 0.15 70) !important; }
+.pill.mal::before { background: oklch(0.57 0.2 25) !important; }
+.pill.off { color: var(--t2) !important; }
+.pill.off::before { background: oklch(0.75 0.01 78) !important; }
+.rol, .rol.sis { background: transparent !important; padding: 0 !important; font-weight: 400 !important; color: var(--t1) !important; font-size: 13px !important; }
+.roles { gap: 0 !important; }
+.roles .rol + .rol::before { content: ", "; }
+/* Sin etiquetas con fondo: el rótulo chico del panel de la marca queda como texto. */
+.kicker { background: transparent !important; padding: 0 !important; border: 0 !important; font-size: 13px !important; font-weight: 600 !important; }
+  </style>
 </helmet>
 <div class="auth auth-m acep">
   <div class="auth-form">
@@ -572,10 +610,10 @@
             <sc-if value="{{cambiaronTerminos}}" hint-placeholder-val="{{no}}"><p class="sub">Cambiaron los <a class="lnk" href="M-Legal.dc.html">Términos y condiciones</a> (versión 3).</p></sc-if>
             <sc-if value="{{cambioPrivacidad}}" hint-placeholder-val="{{no}}"><p class="sub">Cambió la <a class="lnk" href="M-Legal.dc.html">Política de privacidad</a> (versión 2).</p></sc-if>
           </div>
-          <label class="chk"><input type="checkbox" checked="{{acepta}}" onChange="{{alternarAcepta}}"><span>Leí y acepto los <a class="lnk" href="M-Legal.dc.html">Términos</a> y la <a class="lnk" href="M-Legal.dc.html">Política de privacidad</a></span></label>
+          <label class="chk"><input type="checkbox" checked="{{acepta}}" onChange="{{alternarAcepta}}"><span>Leí y acepto los <a class="lnk" href="M-Legal.dc.html">Términos</a> y la <a class="lnk" href="M-Legal.dc.html">Política de privacidad</a></span></label><sc-if value="{{errAcepta}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errAcepta}}</span></sc-if>
           <div style="display: flex; flex-direction: column; gap: 10px;">
             <sc-if value="{{acepta}}" hint-placeholder-val="{{no}}"><a class="b b-pri lg" href="M-Inicio-Personal.dc.html">Aceptar y seguir</a></sc-if>
-            <sc-if value="{{sinAceptar}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-pri lg" disabled="{{si}}">Aceptar y seguir</button></sc-if>
+            <sc-if value="{{sinAceptar}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-pri lg" onClick="{{pedirAcepta}}">Aceptar y seguir</button></sc-if>
             <a class="b b-sec lg" href="Landing-Movil.dc.html">Salir</a>
           </div>
         </div>
@@ -609,7 +647,9 @@ class Component extends DCLogic {
       cambioPrivacidad: caso === 'Cambió la privacidad',
       acepta: this.state.acepta,
       sinAceptar: !this.state.acepta,
-      alternarAcepta: () => this.setState({ acepta: !this.state.acepta }),
+      alternarAcepta: () => this.setState({ acepta: !this.state.acepta, errAcepta: '' }),
+      errAcepta: this.state.errAcepta || '',
+      pedirAcepta: () => this.setState({ errAcepta: 'Aceptá los Términos y la Política de privacidad.' }),
     };
   }
 }
