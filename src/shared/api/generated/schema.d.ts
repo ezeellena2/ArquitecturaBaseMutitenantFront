@@ -2340,6 +2340,7 @@ export interface components {
             issuedAtUtc?: null | string;
             /** Format: date-time */
             expiresAtUtc?: null | string;
+            /** @description Correo normalizado para comparar y enviar; el dominio IDN se guarda en ASCII. */
             currentAccountEmail?: null | string;
             /** @default false */
             canUseEmailCode: boolean;
