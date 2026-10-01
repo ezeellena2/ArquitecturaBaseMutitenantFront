@@ -468,9 +468,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             const link = await invitationFromPickup(email, before);
             setStage("abre /invitacion y ve la vista previa");
             await invitationPage.goto(link);
-            await invitationPage.getByRole("heading", { name: existingAccount
-              ? /^Ya tenés una cuenta con /
-              : "Te sumás a Empresa E2E", exact: existingAccount ? undefined : true }).waitFor({ timeout: 15_000 });
+            await invitationPage.getByRole("heading", { name: "Te sumás a Empresa E2E", exact: true }).waitFor({ timeout: 15_000 });
             await invitationPage.getByText(`La invitación es para ${email}.`, { exact: true }).waitFor();
             assert.equal(new URL(invitationPage.url()).hash, "", "El fragmento secreto debe retirarse antes de seguir.");
             if (existingAccount) {

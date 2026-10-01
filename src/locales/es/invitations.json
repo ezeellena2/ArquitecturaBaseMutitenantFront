@@ -2,7 +2,7 @@
   "pageTitle": "Aceptar una invitación",
   "loading": "Cargando invitación…",
   "retry": "Reintentar",
-  "backHome": "Volver al inicio",
+  "backToSignIn": "Ir al ingreso",
   "organizationFallback": "la organización",
   "accountFallback": "tu cuenta",
   "panel": {
@@ -14,7 +14,6 @@
   },
   "join": {
     "title": "Te sumás a {{organization}}",
-    "signInTitle": "Ya tenés una cuenta con {{email}}",
     "forEmail": "La invitación es para {{email}}.",
     "invitedBy": "{{inviter}} te invitó",
     "expires": "Vence",
@@ -37,16 +36,16 @@
   },
   "states": {
     "Expired": {
-      "title": "La invitación venció",
-      "description": "Pedile a quien te invitó que te envíe otra."
+      "title": "Esta invitación venció",
+      "description": "Pedile a {{inviter}} que te mande otra."
     },
     "Invalid": {
       "title": "Esta invitación ya no sirve",
-      "description": "Pedile a quien te invitó que te envíe otra."
+      "description": "Puede que ya la hayas aceptado o que la hayan revocado. Si ya la aceptaste, entrá con tu correo."
     },
     "OrganizationSuspended": {
-      "title": "La organización está suspendida",
-      "description": "No podés aceptar la invitación mientras esté suspendida."
+      "title": "{{organization}} no está disponible",
+      "description": "La organización está suspendida por ahora. Probá más tarde."
     }
   }
 }

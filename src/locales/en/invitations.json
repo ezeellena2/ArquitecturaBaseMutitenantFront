@@ -2,7 +2,7 @@
   "pageTitle": "Accept an invitation",
   "loading": "Loading invitation…",
   "retry": "Try again",
-  "backHome": "Back to home",
+  "backToSignIn": "Go to sign in",
   "organizationFallback": "the organization",
   "accountFallback": "your account",
   "panel": {
@@ -14,7 +14,6 @@
   },
   "join": {
     "title": "Join {{organization}}",
-    "signInTitle": "You already have an account with {{email}}",
     "forEmail": "This invitation is for {{email}}.",
     "invitedBy": "{{inviter}} invited you",
     "expires": "Expires",
@@ -38,15 +37,15 @@
   "states": {
     "Expired": {
       "title": "This invitation has expired",
-      "description": "Ask the person who invited you to send another."
+      "description": "Ask {{inviter}} to send another."
     },
     "Invalid": {
       "title": "This invitation is no longer valid",
-      "description": "Ask the person who invited you to send another."
+      "description": "It may have been accepted or revoked. If you accepted it, sign in with your email."
     },
     "OrganizationSuspended": {
-      "title": "The organization is suspended",
-      "description": "You cannot accept this invitation while it is suspended."
+      "title": "{{organization}} is unavailable",
+      "description": "The organization is suspended right now. Try again later."
     }
   }
 }

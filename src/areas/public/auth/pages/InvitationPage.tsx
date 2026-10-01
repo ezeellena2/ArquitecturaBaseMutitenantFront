@@ -175,18 +175,17 @@ export function InvitationPage() {
         </div> : invitation.state === "Expired" || invitation.state === "Invalid" || invitation.state === "OrganizationSuspended" ? <div className="flex flex-col gap-[22px]">
           <span aria-hidden="true" className="flex size-[46px] items-center justify-center self-center rounded-full bg-[var(--alerta-t)] text-[var(--alerta)]"><TriangleAlert size={20} strokeWidth={1.75} /></span>
           <div className="text-center">
-            <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">{t(`states.${invitation.state}.title`)}</h1>
-            <p className="mt-2 text-[15px] leading-normal text-[var(--t2)]">{t(`states.${invitation.state}.description`)}</p>
+            <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">{t(`states.${invitation.state}.title`, { organization: organizationName, inviter })}</h1>
+            <p className="mt-2 text-[15px] leading-normal text-[var(--t2)]">{t(`states.${invitation.state}.description`, { organization: organizationName, inviter })}</p>
           </div>
-          <Link to="/" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--t3)] text-sm font-semibold text-[var(--t1)] hover:bg-[var(--s2)]">{t("backHome")}</Link>
+          <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--t3)] text-sm font-semibold text-[var(--t1)] hover:bg-[var(--s2)]">{t("backToSignIn")}</Link>
         </div> : <div className="flex flex-col gap-5">
           <div className="flex size-[46px] items-center justify-center self-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]" aria-hidden="true">
             <span className="text-sm font-bold">{initials(organizationName, "O")}</span>
           </div>
           <div className="text-center">
             <p className="text-[13px] font-semibold text-[var(--t2)]">{t("pageTitle")}</p>
-            <h1 className="mt-1 text-[26px] leading-tight font-bold tracking-[-0.02em]">{invitation.state === "SignInRequired"
-              ? t("join.signInTitle", { email }) : t("join.title", { organization: organizationName })}</h1>
+            <h1 className="mt-1 text-[26px] leading-tight font-bold tracking-[-0.02em]">{t("join.title", { organization: organizationName })}</h1>
             <p className="mt-2 break-all text-[15px] leading-normal text-[var(--t2)]">{t("join.forEmail", { email })}</p>
           </div>
           <div className="flex items-center gap-3 rounded-xl border border-[var(--borde2)] bg-[var(--lado-activo)] px-3.5 py-3">

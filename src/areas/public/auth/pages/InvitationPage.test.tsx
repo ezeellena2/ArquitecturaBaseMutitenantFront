@@ -146,7 +146,7 @@ describe("InvitationPage", () => {
   it("reabre el ingreso como persona con el retorno fijo a /invitacion y deja la invitación protegida", async () => {
     previewResponse = { ...basePreview, state: "SignInRequired", canUseEmailCode: true, canUseGoogle: true };
     const { container } = show({ entry: "/invitacion" });
-    expect(await screen.findByRole("heading", { name: "Ya tenés una cuenta con invitada@example.test" })).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "Te sumás a Grupo Delta" })).toBeVisible();
     const login = screen.getByRole("button", { name: "Ingresá para aceptar" });
     fireEvent.click(login);
     await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
@@ -200,14 +200,15 @@ describe("InvitationPage", () => {
   });
 
   it.each([
-    ["Expired", "La invitación venció"],
-    ["Invalid", "Esta invitación ya no sirve"],
-    ["OrganizationSuspended", "La organización está suspendida"],
-  ] as const)("presenta el estado %s con una salida clara", async (state, title) => {
+    ["Expired", "Esta invitación venció", "Pedile a Lucía Fernández que te mande otra."],
+    ["Invalid", "Esta invitación ya no sirve", "Puede que ya la hayas aceptado o que la hayan revocado. Si ya la aceptaste, entrá con tu correo."],
+    ["OrganizationSuspended", "Grupo Delta no está disponible", "La organización está suspendida por ahora. Probá más tarde."],
+  ] as const)("presenta el estado %s con una salida clara", async (state, title, description) => {
     previewResponse = { ...basePreview, state };
     const { container } = show({ entry: "/invitacion" });
     expect(await screen.findByRole("heading", { name: title })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Volver al inicio" })).toHaveAttribute("href", "/");
+    expect(screen.getByText(description)).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ir al ingreso" })).toHaveAttribute("href", "/login");
     expect(screen.queryByRole("button", { name: "Aceptar invitación" })).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -231,7 +232,7 @@ describe("InvitationPage", () => {
     previewResponse = { ...basePreview, state: "SignInRequired" };
     try {
       const { container } = show({ entry: "/invitacion" });
-      expect(await screen.findByRole("heading", { name: "You already have an account with invitada@example.test" })).toBeVisible();
+      expect(await screen.findByRole("heading", { name: "Join Grupo Delta" })).toBeVisible();
       expect(screen.getByRole("button", { name: "Sign in to accept" })).toBeVisible();
       expect(screen.getByText("Expires")).toBeVisible();
       expect(await axe(container)).toHaveNoViolations();
