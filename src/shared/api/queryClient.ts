@@ -1,6 +1,6 @@
 import { QueryCache, QueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import i18n from "@/shared/i18n";
+import { toastError } from "@/shared/ui/sonner";
 import { ApiError } from "./ApiError";
 
 export const queryClient = new QueryClient({
@@ -12,14 +12,14 @@ export const queryClient = new QueryClient({
       if (error.status === 401 || error.status === 403) return;
 
       if (error.isNetworkError) {
-        toast.error(i18n.t("network", { ns: "errors" }), {
+        toastError(i18n.t("network", { ns: "errors" }), {
           action: { label: i18n.t("actions.retry"), onClick: () => void query.fetch() },
         });
         return;
       }
 
       if (error.status >= 500) {
-        toast.error(i18n.t("server", { ns: "errors" }), error.traceId
+        toastError(i18n.t("server", { ns: "errors" }), error.traceId
           ? { description: i18n.t("traceId", { ns: "errors", traceId: error.traceId }) }
           : undefined);
         return;
@@ -28,11 +28,11 @@ export const queryClient = new QueryClient({
       // Las queries no tienen un botón iniciador para mostrar la cuenta regresiva.
       // En los formularios la cuenta regresiva usa retryAfterSeconds del ApiError.
       if (error.status === 429) {
-        toast.error(i18n.t("rateLimited", { ns: "errors" }));
+        toastError(i18n.t("rateLimited", { ns: "errors" }));
         return;
       }
 
-      toast.error(error.detail ?? i18n.t("states.error"));
+      toastError(error.detail ?? i18n.t("states.error"));
     },
   }),
   defaultOptions: {

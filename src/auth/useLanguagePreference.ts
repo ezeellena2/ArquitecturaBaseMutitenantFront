@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastError } from "@/shared/ui/sonner";
 import i18n, { changeCulture } from "@/shared/i18n";
 import { updateMe } from "@/areas/personal/account/api/account";
 import { currentUserQueryKey, useCurrentUser } from "./useCurrentUser";
@@ -27,7 +27,7 @@ export function useLanguagePreference(): { change: (culture: string) => Promise<
       await queryClient.invalidateQueries({ queryKey: currentUserQueryKey });
     } catch {
       await changeCulture(previous);
-      toast.error(t("language.saveFailed"));
+      toastError(t("language.saveFailed"));
     }
   }
 

@@ -21,6 +21,9 @@ afterEach(() => { viewport.mobile = false; cancelSignOut(); });
 describe("PrivateLayoutFrame", () => {
   it("muestra el contexto de empresa sin enlaces de Administración de etapas futuras", () => {
     render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
+    expect(screen.getByRole("banner")).toHaveClass("h-[52px]");
+    expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-[232px]");
+    expect(screen.getByRole("main")).toHaveClass("bg-[var(--fondo)]");
     expect(screen.getByText("Empresa A")).toBeVisible();
     expect(screen.getByText("Organización")).toBeVisible();
     expect(screen.queryByRole("button", { name: "Administración" })).not.toBeInTheDocument();

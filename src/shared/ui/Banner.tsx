@@ -52,7 +52,7 @@ export function Banner({ tone = "info", action, children }: BannerProps) {
           deja flotando entre los dos. */}
       <div className="flex min-w-0 flex-1 items-start gap-2.5">
         <Icon aria-hidden="true" className={cn("mt-0.5 size-[18px] shrink-0", iconClass)} />
-        <p className="min-w-0 text-sm leading-normal text-[var(--t1)]">{children}</p>
+        <p className="min-w-0 text-[13px] leading-normal text-[var(--t1)]">{children}</p>
       </div>
       {action ? <div className="ml-auto shrink-0">{action}</div> : null}
     </div>

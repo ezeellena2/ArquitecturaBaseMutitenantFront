@@ -15,5 +15,6 @@ describe("IconButton", () => {
     await userEvent.click(screen.getByRole("button", { name: "Cerrar" }));
 
     expect(onClick).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("size-8");
   });
 });

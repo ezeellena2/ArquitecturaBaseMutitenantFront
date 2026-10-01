@@ -24,6 +24,7 @@ import { accountErrorCodes, pendingDeletionFromProblem } from "@/shared/api/acco
 import { getPendingDeletion, cancelAccountDeletion } from "../api/deletion";
 import { PendingDeletionPanel } from "../components/PendingDeletionPanel";
 import { toast } from "sonner";
+import { toastError } from "@/shared/ui/sonner";
 
 export interface LoginPageProps {
   access: "consumer" | "business";
@@ -103,7 +104,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     } catch (caught) {
       const message = caught instanceof ApiError ? caught.detail ?? t(caught.isNetworkError ? "errors:network" : "errors:server") : t("errors:server");
       if (caught instanceof ApiError && caught.status >= 400 && caught.status < 500) {
-        setPending(null); setGoogleProofExpired(true); setGoogleError(null); forgetLoginRedirectError(); backToEmail(); toast.error(message);
+        setPending(null); setGoogleProofExpired(true); setGoogleError(null); forgetLoginRedirectError(); backToEmail(); toastError(message);
       } else setCancelFailure(message);
     }
   }

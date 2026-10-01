@@ -129,6 +129,10 @@
     "profiles": "Profiles",
     "signOut": "Log out",
     "suspended": "Suspended",
+    "pendingApproval": "Awaiting approval",
+    "closed": "Closed",
+    "inactiveMembership": "Inactive membership",
+    "unavailable": "Unavailable",
     "accountAndProfiles": "Your account and profiles",
     "menuFor": "{{name}}'s menu",
     "myAccount": "My account"

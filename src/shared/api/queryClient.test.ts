@@ -54,7 +54,11 @@ describe("queryClient", () => {
 
     expect(toastError).toHaveBeenCalledWith(
       i18n.t("network", { ns: "errors" }),
-      expect.objectContaining({ action: expect.objectContaining({ label: i18n.t("actions.retry") }) }),
+      expect.objectContaining({
+        action: expect.objectContaining({ label: i18n.t("actions.retry") }),
+        duration: Number.POSITIVE_INFINITY,
+        closeButton: true,
+      }),
     );
   });
 
@@ -64,9 +68,11 @@ describe("queryClient", () => {
       code: "General.Unexpected", detail: "Detalle interno", traceId: "trace-abc-123",
     }));
 
-    expect(toastError).toHaveBeenCalledWith(i18n.t("server", { ns: "errors" }), {
+    expect(toastError).toHaveBeenCalledWith(i18n.t("server", { ns: "errors" }), expect.objectContaining({
       description: i18n.t("traceId", { ns: "errors", traceId: "trace-abc-123" }),
-    });
+      duration: Number.POSITIVE_INFINITY,
+      closeButton: true,
+    }));
   });
 
   it("muestra un 429 sin reintento automático y conserva retryAfterSeconds", async () => {
@@ -79,12 +85,18 @@ describe("queryClient", () => {
     expect(call).toHaveBeenCalledTimes(1);
     expect(caught).toBeInstanceOf(ApiError);
     expect((caught as ApiError).retryAfterSeconds).toBe(42);
-    expect(toastError).toHaveBeenCalledWith(i18n.t("rateLimited", { ns: "errors" }));
+    expect(toastError).toHaveBeenCalledWith(i18n.t("rateLimited", { ns: "errors" }), expect.objectContaining({
+      duration: Number.POSITIVE_INFINITY,
+      closeButton: true,
+    }));
   });
 
   it("muestra el detail ya traducido de un error de negocio", async () => {
     const toastError = vi.spyOn(toast, "error");
     await failQuery("business", new ApiError(409, { code: "Users.Email.AlreadyTaken", detail: "Ese correo ya está en uso." }));
-    expect(toastError).toHaveBeenCalledWith("Ese correo ya está en uso.");
+    expect(toastError).toHaveBeenCalledWith("Ese correo ya está en uso.", expect.objectContaining({
+      duration: Number.POSITIVE_INFINITY,
+      closeButton: true,
+    }));
   });
 });

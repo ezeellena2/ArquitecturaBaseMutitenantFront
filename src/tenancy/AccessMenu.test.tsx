@@ -69,10 +69,10 @@ describe("AccessMenu", () => {
     await user.keyboard("{Enter}");
     const menu = await screen.findByRole("menu", { name: "Ana, Empresa A" });
     const active = within(menu).getByRole("menuitemradio", { name: /Empresa A.*Dueño/ });
-    expect(active).toHaveClass("min-h-11", "gap-2", "px-2.5", "py-1.5");
-    expect(within(active).getByText("Empresa A")).toHaveClass("text-[13px]", "text-[var(--t1)]");
-    expect(within(active).getByText("Dueño")).toHaveClass("text-xs");
-    expect(active.querySelector("[aria-hidden='true']")).toHaveClass("size-7");
+    expect(active).toHaveClass("min-h-9", "lg:min-h-9", "lg:gap-2.5", "px-2.5", "py-1.5");
+    expect(within(active).getByText("Empresa A")).toHaveClass("text-[13px]", "lg:text-[14px]");
+    expect(within(active).getByText("Dueño")).toHaveClass("text-[12px]", "lg:text-[13px]");
+    expect(active.querySelector("[aria-hidden='true']")).toHaveClass("size-7", "lg:size-8");
     const signOutIcon = within(menu).getByRole("menuitem", { name: "Salir" }).querySelector("svg");
     expect(Array.from(signOutIcon?.querySelectorAll("path") ?? [], (path) => path.getAttribute("d"))).toEqual([
       "M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4",
@@ -115,7 +115,7 @@ describe("AccessMenu", () => {
       .not.toBeInTheDocument();
   });
 
-  it("muestra una organización suspendida, pero no deja elegirla", async () => {
+  it("muestra el motivo en la segunda línea y abre el detalle al elegir una organización suspendida", async () => {
     const { user } = setup({
       ...businessUser,
       organizations: [
@@ -126,11 +126,11 @@ describe("AccessMenu", () => {
     screen.getByRole("button", { name: "Ana, Empresa A" }).focus();
     await user.keyboard("{Enter}");
 
-    const suspended = screen.getByRole("menuitem", { name: /Beta S.R.L..*Suspendida/ });
+    const suspended = screen.getByRole("menuitemradio", { name: /Beta S.R.L..*Suspendida/ });
     expect(suspended).toHaveAttribute("aria-disabled", "true");
-    expect(screen.getByText("Suspendida")).toBeVisible();
+    expect(within(suspended).getByText("Suspendida")).toBeVisible();
     await user.click(suspended);
-    expect(switchAccess).not.toHaveBeenCalled();
+    expect(switchAccess).toHaveBeenCalledWith({ access: "business", tenantId: "beta" });
   });
 
   it("mantiene visible una membresía inactiva sin permitir entrar a ella", async () => {
@@ -144,10 +144,10 @@ describe("AccessMenu", () => {
     screen.getByRole("button", { name: "Ana, Empresa A" }).focus();
     await user.keyboard("{Enter}");
 
-    const inactive = screen.getByRole("menuitem", { name: /Gamma S.A./ });
+    const inactive = screen.getByRole("menuitemradio", { name: /Gamma S.A..*Membresía inactiva/ });
     expect(inactive).toHaveAttribute("aria-disabled", "true");
     await user.click(inactive);
-    expect(switchAccess).not.toHaveBeenCalled();
+    expect(switchAccess).toHaveBeenCalledWith({ access: "business", tenantId: "gamma" });
   });
 
   it("en teléfono abre la hoja de perfiles desde el avatar", async () => {

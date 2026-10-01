@@ -32,36 +32,33 @@ interface ProfileRowProps {
   name: string;
   detail: string | null;
   checked: boolean;
-  disabled: boolean;
-  suspended: boolean;
+  unavailable: boolean;
   mobile: boolean;
   onSelect: () => void;
-  statusLabel: string;
 }
 
-function ProfileRow({ name, detail, checked, disabled, suspended, mobile, onSelect, statusLabel }: ProfileRowProps) {
+function ProfileRow({ name, detail, checked, unavailable, mobile, onSelect }: ProfileRowProps) {
   const content = <>
-    <span aria-hidden="true" className={`inline-flex size-7 shrink-0 items-center justify-center rounded-lg text-[11.5px] font-bold ${checked ? "bg-[var(--lado-activo)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]"}`}>
+    <span aria-hidden="true" className={`inline-flex size-7 shrink-0 items-center justify-center rounded-lg text-[11.5px] font-bold lg:size-8 ${checked ? "bg-[var(--lado-activo)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]"}`}>
       {initials(name)}
     </span>
     <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
-      <span className="truncate text-[13px] font-medium text-[var(--t1)]">{name}</span>
-      {detail ? <span className="text-xs text-[var(--t3)]">{detail}</span> : null}
+      <span className="truncate text-[13px] font-medium text-[var(--t1)] lg:text-[14px]">{name}</span>
+      {detail ? <span className="text-[12px] text-[var(--t3)] lg:text-[13px]">{detail}</span> : null}
     </span>
-    {suspended ? <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--alerta-t)] px-2.5 py-[3px] text-[12.5px] font-medium text-[var(--alerta)] before:size-1.5 before:rounded-full before:bg-current before:content-['']">{statusLabel}</span> : null}
     {checked ? <Check size={16} strokeWidth={2.25} className="text-[var(--t3)]" aria-hidden="true" /> : null}
   </>;
-  const rowClass = `flex min-h-11 w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-[13px] text-[var(--t1)] ${checked ? "bg-[var(--marca-t)] font-medium" : "hover:bg-[var(--s2)]"} ${disabled ? "cursor-default data-[disabled]:opacity-100" : "cursor-pointer"}`;
+  const rowClass = `flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-[13px] lg:min-h-9 lg:gap-2.5 lg:px-2.5 ${mobile ? "min-h-11" : "min-h-9"} ${checked ? "bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]" : unavailable ? "cursor-pointer text-[var(--t3)]" : "cursor-pointer text-[var(--t1)] hover:bg-[var(--s2)]"}`;
 
   return mobile ? (
-    <button type="button" disabled={disabled} aria-current={checked ? "true" : undefined} onClick={onSelect} className={rowClass}>
+    <button type="button" aria-disabled={unavailable || undefined} aria-current={checked ? "true" : undefined} onClick={onSelect} className={rowClass}>
       {content}
     </button>
   ) : (
     <DropdownMenuItem
-      role={disabled ? "menuitem" : "menuitemradio"}
-      aria-checked={disabled ? undefined : checked}
-      disabled={disabled}
+      role="menuitemradio"
+      aria-checked={checked}
+      aria-disabled={unavailable || undefined}
       onSelect={onSelect}
       className={rowClass}
     >
@@ -90,7 +87,7 @@ function MenuBody({ mobile, name, email, organizations, access, activeTenantId, 
 
   return <>
     <div className={`flex items-center gap-3 ${mobile ? "px-[2px] py-2.5" : "px-2.5 py-2"}`}>
-      <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--marca)] text-base font-semibold text-[var(--lado-activo)] md:size-10">{initials(name).slice(0, 1)}</span>
+      <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--marca)] text-base font-semibold text-[var(--lado-activo)]">{initials(name).slice(0, 1)}</span>
       <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
         <span className="truncate text-[15px] font-semibold text-[var(--t1)]">{name}</span>
         {email ? <span className="truncate text-[13px] text-[var(--t2)]">{email}</span> : null}
@@ -103,29 +100,34 @@ function MenuBody({ mobile, name, email, organizations, access, activeTenantId, 
         name={personal}
         detail={t("accessMenu.personalDetail")}
         checked={access === "consumer"}
-        disabled={false}
-        suspended={false}
+        unavailable={false}
         mobile={mobile}
-        statusLabel=""
         onSelect={() => { if (access === "consumer") onClose(); else onSwitch({ access: "consumer" }, personal); }}
       />
     ) : null}
-    {organizations.map((organization) => (
+    {organizations.map((organization) => {
+      const unavailable = organization.status !== "Active" || organization.memberStatus !== "Active" || organization.isSelectable === false;
+      const detail = organization.status === "Suspended" ? t("accessMenu.suspended")
+        : organization.status === "PendingApproval" ? t("accessMenu.pendingApproval")
+          : organization.status === "Closed" ? t("accessMenu.closed")
+            : organization.memberStatus !== "Active" ? t("accessMenu.inactiveMembership")
+              : organization.isSelectable === false ? t("accessMenu.unavailable") : organization.roleName ?? null;
+
+      return (
       <ProfileRow
         key={organization.id}
         name={organization.name}
-        detail={organization.roleName ?? null}
+        detail={detail}
         checked={access === "business" && activeTenantId === organization.id}
-        disabled={organization.status !== "Active" || organization.memberStatus !== "Active" || organization.isSelectable === false}
-        suspended={organization.status === "Suspended"}
+        unavailable={unavailable}
         mobile={mobile}
-        statusLabel={t("accessMenu.suspended")}
         onSelect={() => {
           if (access === "business" && activeTenantId === organization.id) onClose();
           else onSwitch({ access: "business", tenantId: organization.id }, organization.name);
         }}
       />
-    ))}
+      );
+    })}
     <div className="my-1 h-px bg-[var(--borde)]" aria-hidden="true" />
     {mobile ? (
       <Link to="/cuenta" onClick={onClose} className={itemClass}><UserRound size={16} aria-hidden="true" />{t("accessMenu.myAccount")}</Link>
@@ -212,7 +214,7 @@ export function AccessMenu() {
           <ChevronDown size={14} strokeWidth={2} className="text-[var(--t3)]" aria-hidden="true" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" alignOffset={8} sideOffset={6} aria-label={menuTitle} className="w-[330px] min-w-0 rounded-xl border-[var(--borde)] bg-[var(--lado-activo)] p-1.5 shadow-[var(--shadow-card)]">
+      <DropdownMenuContent align="end" alignOffset={8} sideOffset={6} aria-label={menuTitle} className="w-[320px] min-w-0 rounded-[10px] border-[var(--borde)] bg-[var(--lado-activo)] p-1 shadow-[var(--shadow-card)]">
         {menuBody}
       </DropdownMenuContent>
     </DropdownMenu>

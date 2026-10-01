@@ -69,7 +69,7 @@ export function FilterBar({
           onChange={(event) => onSearchChange(event.target.value)}
           aria-label={searchLabel}
           placeholder={searchLabel}
-          className="h-8 bg-[var(--s2)] pl-8 text-[13px]"
+          className="h-8 bg-[var(--s2)] pl-8 text-[13px] lg:h-9"
         />
       </div>
       <div data-slot="filter-pills" className="flex flex-wrap items-center gap-2">
@@ -82,9 +82,8 @@ export function FilterBar({
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
                 className={cn(
-                  "min-h-11 rounded-full px-3 text-[13px] shadow-none md:min-h-8",
+                  "h-8 rounded-full px-3 text-[13px] shadow-none lg:h-9",
                   filter.active
                     ? "border-[var(--marca)] bg-[var(--marca-t)] text-[var(--marca-tx)]"
                     : "border-[var(--borde)] bg-[var(--lado-activo)] text-[var(--t2)]",

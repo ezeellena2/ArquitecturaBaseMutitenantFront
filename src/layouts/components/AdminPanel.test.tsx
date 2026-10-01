@@ -16,7 +16,8 @@ describe("AdminPanel", () => {
   it("con un panel configurado abre y cierra con ‹", async () => {
     const onClose = vi.fn();
     render(<AdminPanel panel={futurePanel} open isMobile={false} onClose={onClose} />);
-    expect(screen.getByRole("navigation", { name: "Administración" })).toHaveClass("w-[232px]");
+    expect(screen.getByRole("navigation", { name: "Administración" })).toHaveClass("w-[232px]", "bg-[var(--panel)]");
+    expect(screen.getByRole("button", { name: "Cerrar Administración" })).toHaveClass("size-8");
     expect(screen.queryByRole("link", { name: "Usuarios" })).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Cerrar Administración" }));
     expect(onClose).toHaveBeenCalledOnce();

@@ -186,13 +186,13 @@ export function DataTable<TRow>({
               scope="col"
               aria-sort={ariaSort(column, sort)}
               className={cn(
-                "bg-[var(--s2)] px-3 text-[12px] font-semibold normal-case text-[var(--t2)]",
+                "bg-[var(--cab)] px-3 text-[13px] font-semibold normal-case text-[var(--t2)] whitespace-normal",
                 columnVisibility(column),
                 isNumericColumn(column) || column.mobile === "status" || column.type === "actions" ? "text-right tabular-nums" : undefined,
               )}
             >
               {column.sortable && onSortChange ? (
-                <Button type="button" variant="ghost" size="sm" onClick={() => onSortChange(column.id)} className="-mx-2 px-2 text-[12px] font-semibold normal-case">
+                <Button type="button" variant="ghost" size="sm" onClick={() => onSortChange(column.id)} className="-mx-2 px-2 text-[13px] font-semibold normal-case">
                   {column.header}
                 </Button>
               ) : column.header}
@@ -202,7 +202,7 @@ export function DataTable<TRow>({
       </TableHeader>
       <TableBody>
         {rows.map((row) => (
-          <TableRow key={rowKey(row)} className="h-[42px]">
+          <TableRow key={rowKey(row)} className="h-10">
             {columns.map((column) => (
               <TableCell
                 key={column.id}

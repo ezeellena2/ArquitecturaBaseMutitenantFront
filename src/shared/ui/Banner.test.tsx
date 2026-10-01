@@ -9,6 +9,7 @@ describe("Banner", () => {
     const banner = screen.getByRole("status");
     expect(banner).toHaveTextContent("Falta el correo.");
     expect(banner).toHaveClass("bg-[var(--marca-t)]");
+    expect(screen.getByText("Falta el correo.")).toHaveClass("text-[13px]");
     expect(banner).toContainElement(screen.getByRole("button", { name: "Agregar correo" }));
   });
 

@@ -19,6 +19,6 @@ describe("Sheet", () => {
     );
 
     expect(screen.getByRole("dialog", { name: "Cuenta" })).toHaveClass("bottom-0", "rounded-t-[16px]");
-    expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("min-h-11", "min-w-11");
+    expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("size-8");
   });
 });

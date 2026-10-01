@@ -23,9 +23,11 @@ describe("RowActions", () => {
     );
 
     const trigger = screen.getByRole("button", { name: "Acciones de Ana" });
+    expect(trigger).toHaveClass("size-8");
     expect(trigger.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
     trigger.focus();
     await userEvent.keyboard("{Enter}");
+    expect(await screen.findByRole("menu")).toHaveClass("min-w-[200px]", "lg:min-w-[220px]");
     await userEvent.click(await screen.findByRole("menuitem", { name: "Editar los roles de Ana" }));
 
     expect(onSelect).toHaveBeenCalledOnce();

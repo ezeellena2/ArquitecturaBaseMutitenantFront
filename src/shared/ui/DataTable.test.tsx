@@ -120,10 +120,19 @@ describe("DataTable", () => {
     expect(table).toHaveClass("opacity-60");
   });
 
-  it("usa encabezado gris, texto normal y filas de 42 px", () => {
+  it("usa encabezado arena de 13 px y filas compactas de 40 px", () => {
     render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} />);
-    expect(screen.getByRole("columnheader", { name: "Nombre" })).toHaveClass("bg-[var(--s2)]", "text-[12px]", "normal-case");
-    expect(screen.getAllByRole("row")[1]).toHaveClass("h-[42px]");
+    expect(screen.getByRole("columnheader", { name: "Nombre" })).toHaveClass("bg-[var(--cab)]", "text-[13px]", "normal-case", "whitespace-normal");
+    expect(screen.getAllByRole("row")[1]).toHaveClass("h-10", "odd:bg-[var(--fila-alterna)]");
+  });
+
+  it("muestra el estado con un punto y texto, sin pastilla", () => {
+    render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} />);
+
+    const state = screen.getByText("Activo");
+    expect(state).toHaveClass("inline-flex", "items-center");
+    expect(state).not.toHaveClass("rounded-full", "bg-[var(--ok-t)]");
+    expect(state?.querySelector('[data-slot="status-dot"]')).toHaveClass("size-2", "bg-[var(--ok)]");
   });
 
   it("a 390 px deja visibles el principal, estado y ⋮; a 768 oculta solo prioridad baja", () => {

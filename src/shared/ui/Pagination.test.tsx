@@ -42,10 +42,14 @@ describe("Pagination", () => {
     expect(screen.getByRole("navigation", { name: "Paginado" })).toBeInTheDocument();
     expect(screen.getByText("1–10 de 1.234")).toBeInTheDocument();
     expect(screen.getByText("Página 1 de 124")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Página anterior" })).toBeDisabled();
+    const previous = screen.getByRole("button", { name: "Página anterior" });
+    expect(previous).toBeDisabled();
+    expect(previous).toHaveClass("size-8");
+    expect(screen.getByRole("combobox", { name: "Filas por página" })).toHaveClass("h-7", "lg:h-8");
 
     await userEvent.click(screen.getByRole("button", { name: "Página siguiente" }));
     expect(onPageChange).toHaveBeenCalledWith(2);
+    expect(screen.getByRole("button", { name: "Página siguiente" })).not.toHaveClass("min-h-11");
   });
 
   it("ofrece 10, 20, 50 y 100 por página y avisa el tamaño elegido", async () => {

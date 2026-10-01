@@ -38,7 +38,7 @@ export function Pagination({
           <SelectTrigger
             size="sm"
             aria-label={t("pagination.rowsPerPage")}
-            className="min-h-11 rounded-full border-[var(--borde)] bg-[var(--lado-activo)] px-3 text-[13px] text-[var(--t2)] shadow-none md:min-h-8"
+            className="h-7 rounded-full border-[var(--borde)] bg-[var(--lado-activo)] px-2.5 text-[12px] text-[var(--t2)] shadow-none lg:h-8 lg:px-3 lg:text-[13px]"
           >
             <SelectValue />
           </SelectTrigger>
@@ -54,22 +54,22 @@ export function Pagination({
         <Button
           type="button"
           variant="ghost"
-          size="icon-xs"
+          size="icon-sm"
           aria-label={t("pagination.previous")}
           disabled={!hasPrevious}
           onClick={() => onPageChange(page - 1)}
-          className="min-h-11 min-w-11 text-[var(--t2)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)] md:min-h-8 md:min-w-8"
+          className="text-[var(--t2)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)]"
         >
           <ChevronLeftIcon aria-hidden="true" className="size-4" />
         </Button>
         <Button
           type="button"
           variant="ghost"
-          size="icon-xs"
+          size="icon-sm"
           aria-label={t("pagination.next")}
           disabled={!hasNext}
           onClick={() => onPageChange(page + 1)}
-          className="min-h-11 min-w-11 text-[var(--t2)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)] md:min-h-8 md:min-w-8"
+          className="text-[var(--t2)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)]"
         >
           <ChevronRightIcon aria-hidden="true" className="size-4" />
         </Button>

@@ -1,6 +1,6 @@
 # Formularios
 
-**Regla:** lo corto se edita en un **diálogo** y lo largo en una **pantalla propia**. Cada campo usa su field tipado de `shared/ui/fields` y el error del servidor se ubica en su campo.
+**Regla:** lo corto se edita en un **diálogo** y lo largo en una **pantalla propia**. Cada campo usa su field tipado de `shared/ui/fields` y el error del servidor se ubica en su campo. Mandan los tableros validados `Criterio-Formularios` y `Criterio-Dialogos`.
 
 ## Cómo se hace
 - **Diálogo:**
@@ -12,6 +12,8 @@
   - el formulario es una sola hoja a ancho completo, en dos columnas, y lo asignado va debajo, en su tarjeta (como los permisos en el editor de roles).
 - **Validación:** `react-hook-form` + `zod` cuando hay reglas; en un diálogo simple, un draft en `useState`. Los mensajes salen de i18n.
 - **Campos:** `FormField` (rótulo, control, error, `aria-describedby`) + el field del tipo (`MoneyField`, `DateField`, `PercentField`…). El control más simple para cada dato: pocas opciones → `Select`; varias a la vez → `MultiSelect`.
+- El campo regular mide 44 px en escritorio y 36 px en teléfono; el rótulo mide 13 px y 12 px, respectivamente. Cada control usa el ancho del dato y las cajas separan los campos por tema. No se muestran ayudas debajo salvo que el tablero de la pantalla las incluya; el error sí aparece debajo del control inválido.
+- Lo que no se edita se muestra como texto, no como control deshabilitado. En una edición, solo «Guardar cambios» se deshabilita si no hay diferencias; «Descartar cambios» sigue disponible.
 - **Edición inválida:** `MoneyField`, `NumberField`, `PercentField`, `DateField`, `DateTimeField` y `TimeField` conservan el texto escrito para corregirlo, pero emiten `onChange(null)` y `onValidityChange(false)` apenas falla el parseo, para que el formulario no conserve el valor anterior. El control queda inválido para el envío; el mensaje y el estado visual aparecen después de salir del campo. Al corregirlo emiten el valor parseado y `onValidityChange(true)` y retiran el error.
 - **Errores del servidor:** `applyApiErrorToForm`; lo general va en `<FormError>`.
 - **Campos por tipo de dato:** `EmailField` (trim y minúsculas al escribir), `PhoneField` + `CountrySelect` ([telefonos](telefonos.md)), `MoneyField` + `CurrencySelect`, `TimeZoneSelect`, `CultureSelect`, `DateField`… Sus opciones salen de `shared/referenceData`; mientras carga el catálogo muestran estado de carga. `TaxIdField` toma los tipos de `TaxIdTypes`, valida en E1 solo con `stdnum` y emite `{ type, number }` con `type = TaxIdTypes.Code` (por ejemplo, `AR-CUIT`) y `number` sin separadores; el value object y el contrato de salida `{ country, type, number }` del back llegan en E6. El `maxLength` de cada texto sale del contrato generado (`TextLimits` del back), nunca de un número escrito a mano.
@@ -26,6 +28,7 @@
 
 ## Prohibido
 - Un diálogo sobre otro, o una tabla dentro de un diálogo.
+- Una confirmación destructiva con botón de cierre ✕ o acción primaria que no sea sólida roja.
 - Paneles desplegables o filas que se expanden.
 - Textos de ayuda que nadie pidió.
 - `<input type="number">` para montos, o `<input type="date">` crudo.

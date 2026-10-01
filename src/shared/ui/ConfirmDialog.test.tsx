@@ -149,6 +149,8 @@ describe("ConfirmDialog", () => {
 
     expect(screen.getByText("Se van a borrar sus datos y no se puede deshacer.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Eliminar" })).toHaveAttribute("data-variant", "destructive");
+    expect(screen.getByRole("button", { name: "Eliminar" })).toHaveClass("bg-[var(--peligro)]");
+    expect(screen.queryByRole("button", { name: "Cerrar" })).not.toBeInTheDocument();
   });
 
   it("keeps the default variant when the confirmation is not destructive", () => {

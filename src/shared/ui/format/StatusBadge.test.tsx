@@ -5,22 +5,24 @@ import { StatusBadge } from "./StatusBadge";
 const getStatusTone = vi.hoisted(() => vi.fn((_name: string, value: string) => value));
 vi.mock("@/shared/format/statusTones", () => ({ getStatusTone }));
 vi.mock("@/shared/format/useFormat", () => ({
-  useFormat: () => ({ isLoading: false, formatEnum: (_name: string, value: string) => `Estado ${value}`, formatEmpty: () => "—" }),
+  useFormat: () => ({ isLoading: false, formatEnum: (_name: string, value: string) => "Estado " + value, formatEmpty: () => "—" }),
 }));
 
 describe("StatusBadge", () => {
   it.each([
-    ["success", "--ok", "--ok-t"],
-    ["warning", "--alerta", "--alerta-t"],
-    ["danger", "--peligro", "--peligro-t"],
-    ["neutral", "--t2", "--s3"],
-    ["pending", "--marca-tx", "--marca-t"],
-  ])("traduce el estado y usa los tokens del tono %s", (tone, ink, background) => {
+    ["success", "--ok"],
+    ["warning", "--alerta"],
+    ["danger", "--peligro"],
+    ["neutral", "--t2"],
+    ["pending", "--marca-tx"],
+  ])("traduce el estado y usa el punto del tono %s sin badge", (tone, dot) => {
     render(<StatusBadge enum="TestStatus" value={tone} />);
     expect(getStatusTone).toHaveBeenCalledWith("TestStatus", tone);
-    const badge = screen.getByText(`Estado ${tone}`);
-    expect(badge.className).toContain(`text-[var(${ink})]`);
-    expect(badge.className).toContain(`bg-[var(${background})]`);
-    expect(badge.querySelector('[data-slot="status-dot"]')).toHaveAttribute("aria-hidden", "true");
+    const state = screen.getByText("Estado " + tone);
+    const statusDot = state?.querySelector('[data-slot="status-dot"]');
+    expect(state).toHaveClass("inline-flex", "text-[13px]");
+    expect(state).not.toHaveClass("rounded-full");
+    expect(statusDot).toHaveClass("size-2", "bg-[var(" + dot + ")]");
+    expect(statusDot).toHaveAttribute("aria-hidden", "true");
   });
 });

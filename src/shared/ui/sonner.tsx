@@ -8,7 +8,13 @@ import {
   TriangleAlertIcon,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { Toaster as Sonner, type ToasterProps } from "sonner"
+import { Toaster as Sonner, toast, type ToasterProps } from "sonner"
+
+type ToastErrorOptions = Parameters<typeof toast.error>[1]
+
+export function toastError(message: string, options?: ToastErrorOptions): void {
+  toast.error(message, { ...options, duration: Number.POSITIVE_INFINITY, closeButton: true })
+}
 
 // La app usa tema claro. Los nombres accesibles de los avisos salen de i18n;
 // las opciones del caller se mezclan sin perder el rótulo de cierre traducido.
@@ -18,8 +24,10 @@ const Toaster = ({ toastOptions, ...props }: ToasterProps) => {
   return (
     <Sonner
       theme="light"
+      position="bottom-right"
+      richColors
       containerAriaLabel={t("notifications.label")}
-      toastOptions={{ closeButtonAriaLabel: t("notifications.close"), ...toastOptions }}
+      toastOptions={{ duration: 4000, closeButton: false, closeButtonAriaLabel: t("notifications.close"), ...toastOptions }}
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,
@@ -33,7 +41,19 @@ const Toaster = ({ toastOptions, ...props }: ToasterProps) => {
           "--normal-bg": "var(--popover)",
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
+          "--border-radius": "12px",
+          "--success-bg": "var(--ok-t)",
+          "--success-border": "var(--ok)",
+          "--success-text": "var(--ok)",
+          "--error-bg": "var(--peligro-t)",
+          "--error-border": "var(--peligro)",
+          "--error-text": "var(--peligro)",
+          "--warning-bg": "var(--alerta-t)",
+          "--warning-border": "var(--alerta)",
+          "--warning-text": "var(--alerta)",
+          "--info-bg": "var(--marca-t)",
+          "--info-border": "var(--marca)",
+          "--info-text": "var(--marca-tx)",
         } as React.CSSProperties
       }
       {...props}

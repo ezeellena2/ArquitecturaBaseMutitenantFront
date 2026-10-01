@@ -14,5 +14,6 @@ describe("FormError", () => {
   it("usa tono de aviso para una espera de reenvío", () => {
     render(<FormError message="Esperá un momento" tone="warning" />);
     expect(screen.getByRole("alert")).toHaveClass("bg-[var(--alerta-t)]");
+    expect(screen.getByRole("alert").querySelector("svg")).toHaveClass("text-[var(--alerta)]");
   });
 });

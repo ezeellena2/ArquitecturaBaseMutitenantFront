@@ -32,6 +32,9 @@ describe("FilterBar", () => {
 
     expect(bar).toHaveClass("flex-col", "md:flex-row");
     expect(searchContainer).toHaveClass("w-full", "md:w-[300px]");
+    expect(search).toHaveClass("h-8", "lg:h-9");
+    expect(filterTrigger).toHaveClass("h-8", "lg:h-9");
+    expect(filterTrigger).not.toHaveClass("min-h-11");
     expect(bar.firstElementChild).toBe(searchContainer);
     expect(container.querySelector('[data-slot="filter-pills"]')).toContainElement(filterTrigger);
   });

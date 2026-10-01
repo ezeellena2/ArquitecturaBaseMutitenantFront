@@ -54,7 +54,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "border-b transition-colors even:bg-[var(--fila-alterna)] hover:bg-[var(--fila-hover)] has-aria-expanded:bg-[var(--fila-hover)] data-[state=selected]:bg-[var(--marca-t)]",
+        "border-b transition-colors odd:bg-[var(--fila-alterna)] hover:bg-[var(--fila-hover)] has-aria-expanded:bg-[var(--fila-hover)] data-[state=selected]:bg-[var(--marca-t)]",
         className
       )}
       {...props}
@@ -67,7 +67,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "min-h-10 bg-[var(--s2)] px-2 py-1 text-left align-middle font-medium whitespace-normal text-[var(--t2)] [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "min-h-10 bg-[var(--cab)] px-2 py-1 text-left align-middle font-semibold whitespace-normal text-[13px] text-[var(--t2)] [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className
       )}
       {...props}

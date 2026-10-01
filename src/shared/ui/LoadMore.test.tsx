@@ -17,7 +17,10 @@ describe("LoadMore", () => {
     const onLoadMore = vi.fn();
     renderWithProviders(<LoadMore hasMore onLoadMore={onLoadMore} />);
 
-    await userEvent.click(screen.getByRole("button", { name: "Cargar más" }));
+    const loadMore = screen.getByRole("button", { name: "Cargar más" });
+    expect(loadMore).toHaveClass("h-7", "lg:h-8");
+    expect(loadMore).not.toHaveClass("min-h-11");
+    await userEvent.click(loadMore);
     expect(onLoadMore).toHaveBeenCalledOnce();
     expect(screen.queryByText(/\bde\s+\d/)).not.toBeInTheDocument();
   });

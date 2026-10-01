@@ -9,7 +9,7 @@ interface FormFieldProps {
   error?: string;
   required?: boolean;
   variant?: "default" | "auth";
-  children: ReactElement<{ id?: string; "aria-invalid"?: boolean; "aria-describedby"?: string }>;
+  children: ReactElement<{ id?: string; "aria-invalid"?: boolean; "aria-describedby"?: string; "aria-required"?: boolean }>;
 }
 
 /// Etiqueta, control y mensaje de error, atados entre sí para lectores de pantalla (sección 7.4).
@@ -20,8 +20,8 @@ export function FormField({ label, htmlFor, hint, error, required, variant = "de
   const message = error ?? hint;
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={controlId} className={variant === "auth" ? "text-[12px] font-semibold text-[var(--t2)]" : undefined}>
+    <div className="flex flex-col gap-1.5 lg:gap-2">
+      <Label htmlFor={controlId} className={variant === "auth" ? "text-[12px] font-semibold text-[var(--t2)]" : "text-[12px] font-semibold text-[var(--t2)] lg:text-[13px]"}>
         {label}
         {required ? <span aria-hidden="true">{" *"}</span> : null}
       </Label>
@@ -29,6 +29,7 @@ export function FormField({ label, htmlFor, hint, error, required, variant = "de
         id: controlId,
         "aria-invalid": error ? true : undefined,
         "aria-describedby": message ? messageId : undefined,
+        "aria-required": required ? true : undefined,
       })}
       {message ? (
         <p

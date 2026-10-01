@@ -37,6 +37,19 @@ describe("FormField", () => {
     expect(screen.getByLabelText("Código")).toHaveAccessibleDescription("Te lo mandamos por email.");
   });
 
+  it("announces a required field and uses the compact field label style", () => {
+    render(
+      <FormField label="Nombre" required>
+        <Input />
+      </FormField>,
+    );
+
+    const input = screen.getByLabelText("Nombre *");
+    expect(input).toHaveAttribute("aria-required", "true");
+    expect(input).toHaveClass("h-9", "lg:h-11", "text-[13.5px]", "lg:text-[15px]");
+    expect(screen.getByText("Nombre")).toHaveClass("text-[12px]", "lg:text-[13px]", "font-semibold", "text-[var(--t2)]");
+  });
+
   it("usa la etiqueta compacta y gris del lienzo en ingreso y registro", () => {
     render(
       <FormField label="Correo electrónico" variant="auth">

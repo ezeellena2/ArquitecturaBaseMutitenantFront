@@ -16,6 +16,7 @@ Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena
 | `--marca-t` | `oklch(0.955 0.025 185)` | fondo tenue: ícono de la banda, pastilla "pendiente", fila al pasar el mouse |
 | `--marca-tx` | `oklch(0.43 0.09 195)` | texto sobre `--marca-t` y el ítem activo del menú |
 | `--fondo` | `oklch(0.985 0.004 80)` | fondo de la pantalla |
+| `--cab` | `oklch(0.945 0.018 76)` | encabezados arena de tablas, cajas y diálogos |
 | `--s2` / `--s3` | `oklch(0.97 0.007 80)` / `oklch(0.945 0.009 80)` | superficies tenues (buscador, controles segmentados) |
 | `--borde` / `--borde2` | `oklch(0.915 0.01 80)` / `oklch(0.84 0.014 80)` | bordes normal y fuerte |
 | `--t1` / `--t2` / `--t3` | `oklch(0.24 0.012 60)` / `oklch(0.47 0.012 60)` / `oklch(0.62 0.01 60)` | texto principal, secundario y tenue |
@@ -47,8 +48,8 @@ Los tonos de `statusTones` (texto sobre fondo):
 
 ## Forma
 - Tarjetas (filtros y tablas) con radio de 16 px y sombra suave: `0 1px 2px oklch(0.24 0.012 60 / 0.05), 0 8px 24px -12px oklch(0.24 0.012 60 / 0.14)`.
-- Botones con radio de 10 px. El principal lleva un degradado vertical de `--marca` a `--marca-h` y un relieve de 1 px.
-- **Tablas:** encabezado sobre `--s2`, filas alternadas (`--fila-alterna` en las pares) y encabezados que bajan de línea en lugar de pisarse.
+- Botones normales de 36 px y 14 px de texto; los compactos, de 32 px y 13 px. Ambos usan radio de 8 px. El principal es sólido en `--marca` y el botón de una confirmación irreversible es sólido en `--peligro`.
+- **Tablas:** encabezado sobre `--cab`, filas alternadas (`--fila-alterna` desde la primera) y encabezados que bajan de línea en lugar de pisarse.
 - **Marca:** un cuadrado con degradado de `--marca` a `--marca-2`, sombra `0 2px 6px -1px var(--marca-sombra)` y un cuadrado blanco abierto del lado derecho, rotado −45° como en el lienzo. Lleva el nombre del producto al lado. Lo mismo en el menú lateral y en las pantallas públicas.
 - Los rótulos de grupo del menú van sin mayúsculas ("Administración", no "ADMINISTRACIÓN").
 

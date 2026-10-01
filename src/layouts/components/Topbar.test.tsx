@@ -19,6 +19,7 @@ describe("Topbar", () => {
     expect(screen.getByText("ArquitecturaBase")).toHaveClass("md:hidden");
     expect(screen.getByText("Inicio")).toBeVisible();
     expect(screen.getByRole("button", { name: "Cuenta" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Abrir o contraer navegación" })).toHaveClass("size-8");
     fireEvent.click(screen.getByRole("button", { name: "Abrir o contraer navegación" }));
     expect(onToggleNavigation).toHaveBeenCalledOnce();
   });

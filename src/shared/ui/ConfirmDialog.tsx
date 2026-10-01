@@ -33,13 +33,14 @@ export function ConfirmDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        showCloseButton={!destructive}
         onCloseAutoFocus={restoreFocus}
         className="md:max-w-[420px]"
       >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          {description ? <DialogDescription>{description}</DialogDescription> : null}
         </DialogHeader>
+        {description ? <DialogDescription className="px-5 py-4 text-[13px] leading-relaxed text-[var(--t2)]">{description}</DialogDescription> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {cancelLabel ?? t("actions.cancel")}

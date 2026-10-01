@@ -65,7 +65,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed bottom-0 left-0 z-50 grid max-h-[calc(100dvh-1rem)] w-full gap-4 overflow-y-auto rounded-t-[16px] border border-[var(--borde)] bg-[var(--lado-activo)] p-6 shadow-lg outline-none data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom md:bottom-auto md:left-1/2 md:top-1/2 md:max-w-[560px] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[16px] md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0",
+          "fixed bottom-0 left-0 z-50 grid max-h-[calc(100dvh-1rem)] w-full gap-0 overflow-y-auto rounded-t-[16px] border border-[var(--borde)] bg-[var(--lado-activo)] p-0 shadow-lg outline-none data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom md:bottom-auto md:left-1/2 md:top-1/2 md:max-w-[560px] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[12px] md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0",
           mobileFullHeight && "min-h-[calc(100dvh-1rem)] grid-rows-[auto_1fr_auto] md:min-h-0 md:grid-rows-none",
           className
         )}
@@ -75,7 +75,7 @@ function DialogContent({
         {showCloseButton ? (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="absolute top-2 right-2 flex min-h-11 min-w-11 items-center justify-center rounded-[8px] text-[var(--t2)] transition-colors hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+            className="absolute top-2 right-2 flex size-8 items-center justify-center rounded-[8px] text-[var(--t2)] transition-colors hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
           >
             <XIcon />
             <span className="sr-only">{t("actions.close")}</span>
@@ -90,7 +90,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
+      className={cn("flex min-h-12 flex-col justify-center gap-1 border-b border-[var(--borde)] bg-[var(--cab)] px-5 py-2 text-left", className)}
       {...props}
     />
   )
@@ -110,7 +110,7 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "sticky bottom-0 flex flex-col-reverse gap-2 bg-[var(--lado-activo)] [&_button]:w-full md:static md:flex-row md:justify-end md:[&_button]:w-auto",
+        "sticky bottom-0 flex flex-col-reverse gap-2 border-t border-[var(--borde)] bg-[var(--lado-activo)] px-5 py-3 [&_button]:w-full md:static md:flex-row md:justify-end md:[&_button]:w-auto",
         className
       )}
       {...props}
@@ -132,7 +132,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-lg leading-none font-semibold", className)}
+      className={cn("text-[15px] leading-tight font-semibold text-[var(--t1)]", className)}
       {...props}
     />
   )
@@ -145,7 +145,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("text-[13px] leading-normal text-[var(--t2)]", className)}
       {...props}
     />
   )

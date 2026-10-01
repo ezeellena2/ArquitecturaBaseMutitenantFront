@@ -19,6 +19,7 @@ import { AccountGoogleButton } from "../components/AccountGoogleButton";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
+import { toastError } from "@/shared/ui/sonner";
 import { useAuth } from "react-oidc-context";
 import { showDeletionRequested } from "@/auth/deletionRequestStatus";
 import { useFormat } from "@/shared/format/useFormat";
@@ -50,7 +51,7 @@ export function AccountPage() {
     if (params.get("google") === "linked") { toast.success(t("account:googleLinked")); refresh(); }
     else if (params.has("error")) {
       const key = params.get("error") === "Identity.Google.AlreadyUsed" ? "googleAlreadyUsed" : params.get("error") === "Auth.ExternalLogin.EmailNotVerified" ? "googleEmailNotVerified" : "googleFailed";
-      toast.error(t(`account:${key}`));
+      toastError(t(`account:${key}`));
     }
     const clean = new URLSearchParams(params); clean.delete("google"); clean.delete("error"); setParams(clean, { replace: true });
   });

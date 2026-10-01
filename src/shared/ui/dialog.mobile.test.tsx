@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, it } from "vitest";
 import { configureI18n } from "@/shared/i18n";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { Dialog, DialogContent, DialogFooter, DialogTitle } from "./dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
 
 beforeAll(async () => {
   await configureI18n([{ code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true }]);
@@ -13,7 +13,7 @@ describe("Dialog mobile layout", () => {
     render(
       <Dialog open>
         <DialogContent>
-          <DialogTitle>{"Editar"}</DialogTitle>
+          <DialogHeader><DialogTitle>{"Editar"}</DialogTitle></DialogHeader>
           <DialogFooter><button type="button">{"Guardar"}</button></DialogFooter>
         </DialogContent>
       </Dialog>,
@@ -23,7 +23,8 @@ describe("Dialog mobile layout", () => {
     expect(document.querySelector('[data-slot="dialog-overlay"]')).toHaveClass("bg-[var(--velo)]");
     expect(content).toHaveClass("bottom-0", "md:top-1/2", "md:max-w-[560px]");
     expect(content).toHaveClass("max-h-[calc(100dvh-1rem)]");
-    expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("min-h-11", "min-w-11");
+    expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("size-8");
+    expect(document.querySelector('[data-slot="dialog-header"]')).toHaveClass("bg-[var(--cab)]", "min-h-12");
     expect(screen.getByRole("button", { name: "Guardar" }).parentElement).toHaveClass("[&_button]:w-full", "md:[&_button]:w-auto");
   });
 

@@ -19,6 +19,20 @@ describe("Page", () => {
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
   });
 
+  it("uses the static 64 px band and shared page padding", () => {
+    const { container } = renderWithProviders(
+      <Page icon={UsersIcon} title="Usuarios">
+        <p>{"contenido"}</p>
+      </Page>,
+    );
+
+    const band = screen.getByRole("heading", { level: 1 }).closest("header");
+    const body = container.querySelector("[class*=p-5]");
+    expect(band).toHaveClass("min-h-16");
+    expect(band).not.toHaveClass("sticky");
+    expect(body).toHaveClass("p-5", "lg:px-8", "lg:pt-7", "lg:pb-6");
+  });
+
   it("hides the section icon from the screen reader", () => {
     const { container } = renderWithProviders(
       <Page icon={UsersIcon} title="Usuarios">
@@ -74,6 +88,7 @@ describe("Page", () => {
     );
 
     const trigger = screen.getByRole("button", { name: "Más acciones" });
+    expect(trigger).toHaveClass("size-[34px]");
     expect(trigger.compareDocumentPosition(screen.getByRole("button", { name: "Invitar usuario" })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     trigger.focus();
     await userEvent.keyboard("{Enter}");
@@ -118,6 +133,7 @@ describe("Page", () => {
       const volver = screen.getByRole("link", { name: "Volver a Roles y permisos" });
       const banda = screen.getByRole("heading", { level: 1 }).closest("header");
 
+      expect(volver).toHaveClass("size-7");
       expect(volver).toHaveAttribute("href", "/roles");
       expect(banda).toContainElement(volver);
       // En lugar del ícono, no además: dos marcas al lado del título compiten por el mismo lugar.
@@ -125,13 +141,13 @@ describe("Page", () => {
       expect(volver.querySelector("svg")).not.toBeNull();
     });
 
-    it("puts the status next to the title without renaming the heading", () => {
+    it("puts the status in the second line without renaming the heading", () => {
       renderWithProviders(
         <MemoryRouter>
           <Page
             title="Editar el rol Soporte"
             backTo={{ to: "/roles", label: "Volver a Roles y permisos" }}
-            status={<span>{"· Cambios sin guardar"}</span>}
+            status={<span>{"Cambios sin guardar"}</span>}
           >
             <p>{"contenido"}</p>
           </Page>
@@ -139,11 +155,13 @@ describe("Page", () => {
       );
 
       const titulo = screen.getByRole("heading", { level: 1, name: "Editar el rol Soporte" });
-      const estado = screen.getByText("· Cambios sin guardar");
+      const estado = screen.getByText("Cambios sin guardar");
 
-      // Al lado, no adentro: si fuera parte del h1, el nombre de la pantalla cambiaría con cada tecla.
+      // Debajo del h1, no al lado: Criterio-Marco reserva la segunda línea para el estado.
+      const segundaLinea = estado.closest("[data-slot='page-subline']");
       expect(titulo).not.toContainElement(estado);
-      expect(titulo.parentElement).toContainElement(estado);
+      expect(titulo.nextElementSibling).toBe(segundaLinea);
+      expect(segundaLinea).toContainElement(estado);
     });
   });
 

@@ -39,7 +39,7 @@ export function Page({
   actions,
   moreActions,
   children,
-  bodyClassName = "p-4 md:p-6",
+  bodyClassName = "p-5 lg:px-8 lg:pt-7 lg:pb-6",
 }: PageProps): ReactNode {
   const visibleMoreActions = moreActions?.items.filter((action) => !action.hidden) ?? [];
   const regularActions = visibleMoreActions.filter((action) => !action.destructive);
@@ -47,29 +47,31 @@ export function Page({
 
   return (
     <>
-      <header className="sticky top-0 z-20 flex min-h-[60px] items-center justify-between gap-4 border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4 py-3 md:min-h-16 md:px-6">
+      <header className="flex min-h-16 items-center justify-between gap-4 border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4 py-3 md:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {backTo ? (
             <Link
               to={backTo.to}
               aria-label={backTo.label}
               title={backTo.label}
-              className="inline-flex size-11 shrink-0 items-center justify-center rounded-[7px] border border-[var(--borde)] text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)] md:size-8"
+              className="inline-flex size-7 shrink-0 items-center justify-center rounded-[7px] border border-[var(--borde)] text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
             >
               <ChevronLeftIcon className="size-4" />
             </Link>
           ) : Icon ? (
-            <span aria-hidden="true" className="inline-flex size-8 shrink-0 items-center justify-center rounded-[9px] bg-[var(--marca-t)] text-[var(--marca-tx)] md:size-9 md:rounded-[10px]">
+            <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--marca-t)] text-[var(--marca-tx)]">
               <Icon className="size-5" />
             </span>
           ) : null}
           <div className="min-w-0">
-            <div className="flex min-w-0 items-center gap-2">
-              <h1 className="truncate text-[17px] font-bold leading-tight text-[var(--t1)] md:text-[18px]">{title}</h1>
-              {status ? <span className="flex shrink-0 items-center gap-2">{status}</span> : null}
-            </div>
-            {summary === null || summary === undefined ? null : (
-              <p className="truncate text-[13px] text-[var(--t2)]">{summary}</p>
+            <h1 className="truncate text-[18px] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>
+            {summary === null || summary === undefined ? (
+              status ? <p data-slot="page-subline" className="truncate text-[13px] text-[var(--t2)]">{status}</p> : null
+            ) : (
+              <p data-slot="page-subline" className="flex min-w-0 items-center gap-1 text-[13px] text-[var(--t2)]">
+                <span className="truncate">{summary}</span>
+                {status ? <><span aria-hidden="true">{"·"}</span><span className="truncate">{status}</span></> : null}
+              </p>
             )}
           </div>
         </div>
@@ -82,7 +84,7 @@ export function Page({
                     type="button"
                     aria-label={moreActions.label}
                     title={moreActions.label}
-                    className="inline-flex size-11 items-center justify-center rounded-[8px] border border-[var(--borde)] text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)] md:size-[34px]"
+                    className="inline-flex size-[34px] items-center justify-center rounded-[8px] border border-[var(--borde)] bg-[var(--lado-activo)] text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
                   >
                     <MoreVerticalIcon className="size-4" />
                   </button>
