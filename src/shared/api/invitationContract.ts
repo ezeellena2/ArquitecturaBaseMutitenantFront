@@ -1,5 +1,5 @@
 import { api } from "./httpClient";
-import type { AcceptInvitationRequest, AcceptInvitationResponse, InvitationPreviewResponse } from "./types";
+import type { AcceptInvitationRequest, AcceptInvitationResponse, InvitationAntiforgeryResponse, InvitationPreviewResponse } from "./types";
 
 export const invitationPaths = {
   preview: "/api/invitations/preview",
@@ -7,7 +7,14 @@ export const invitationPaths = {
   page: "/invitacion",
 } as const;
 
-export function previewInvitation(token: string, requestVerificationToken: string): Promise<InvitationPreviewResponse> {
+export const invitationPreviewQueryKey = ["invitations", "preview"] as const;
+export const invitationAntiforgeryQueryKey = ["invitations", "antiforgery"] as const;
+
+export function getInvitationAntiforgery(): Promise<InvitationAntiforgeryResponse> {
+  return api.get<InvitationAntiforgeryResponse>("/api/auth/external/google/antiforgery");
+}
+
+export function previewInvitation(token: string | null, requestVerificationToken: string): Promise<InvitationPreviewResponse> {
   return api.post<InvitationPreviewResponse>(invitationPaths.preview, { token }, {
     headers: { "RequestVerificationToken": requestVerificationToken },
   });

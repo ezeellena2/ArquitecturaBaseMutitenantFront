@@ -39,3 +39,4 @@ export type InvitationPreviewResponse = ApiSchemas["InvitationPreviewResponse"];
 export type InvitationPreviewState = ApiSchemas["InvitationPreviewState"];
 export type AcceptInvitationRequest = ApiSchemas["AcceptInvitationHttpRequest"];
 export type AcceptInvitationResponse = ApiSchemas["AcceptInvitationResponse"];
+export type InvitationAntiforgeryResponse = ApiSchemas["GoogleSignupAntiforgeryResponse"];

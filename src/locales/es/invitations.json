@@ -1,0 +1,52 @@
+{
+  "pageTitle": "Aceptar una invitación",
+  "loading": "Cargando invitación…",
+  "retry": "Reintentar",
+  "backHome": "Volver al inicio",
+  "organizationFallback": "la organización",
+  "accountFallback": "tu cuenta",
+  "panel": {
+    "kicker": "Sin contraseñas",
+    "heading": "Entrás con un código por correo o con Google.",
+    "description": "Con la misma cuenta podés usar el servicio como persona y trabajar en tu organización. Son dos lados separados.",
+    "person": "Como persona, en tu perfil personal.",
+    "organization": "En tu organización, con lo que te habilita tu acceso."
+  },
+  "join": {
+    "title": "Te sumás a {{organization}}",
+    "signInTitle": "Ya tenés una cuenta con {{email}}",
+    "forEmail": "La invitación es para {{email}}.",
+    "invitedBy": "{{inviter}} te invitó",
+    "expires": "Vence",
+    "terms": "Acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>.",
+    "signInDescription": "Ya tenés una cuenta con {{email}}. Entrá con un método de ingreso y la invitación te espera.",
+    "signIn": "Ingresá para aceptar",
+    "signOutAndContinue": "Salir y seguir como {{email}}",
+    "continueAs": "Seguir como {{name}}",
+    "accept": "Aceptar invitación",
+    "accepting": "Aceptando…"
+  },
+  "wrongSession": "Entraste como {{currentEmail}} y la invitación es para {{email}}.",
+  "accepted": {
+    "title": "Te sumaste a {{organization}}",
+    "email": "Entrás con {{email}}.",
+    "personalMethodNotice": "Agregá un método de ingreso propio para no perder tu cuenta si dejás la empresa.",
+    "addNow": "Agregar ahora",
+    "later": "Más tarde",
+    "openOrganization": "Entrar a la organización"
+  },
+  "states": {
+    "Expired": {
+      "title": "La invitación venció",
+      "description": "Pedile a quien te invitó que te envíe otra."
+    },
+    "Invalid": {
+      "title": "Esta invitación ya no sirve",
+      "description": "Pedile a quien te invitó que te envíe otra."
+    },
+    "OrganizationSuspended": {
+      "title": "La organización está suspendida",
+      "description": "No podés aceptar la invitación mientras esté suspendida."
+    }
+  }
+}

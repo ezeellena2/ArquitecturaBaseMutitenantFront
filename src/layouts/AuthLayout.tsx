@@ -6,9 +6,14 @@ import { nativeLanguageName } from "@/shared/format/cultureName";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { BrandMark } from "@/shared/ui/BrandMark";
 
-type AuthLayoutProps = { access: "consumer" | "business"; children: ReactNode; brandPanel?: "content" | "blank" };
+type AuthLayoutProps = {
+  access: "consumer" | "business";
+  children: ReactNode;
+  brandPanel?: "content" | "blank";
+  brandPanelContent?: ReactNode;
+};
 
-export function AuthLayout({ access, children, brandPanel = "content" }: AuthLayoutProps) {
+export function AuthLayout({ access, children, brandPanel = "content", brandPanelContent }: AuthLayoutProps) {
   const { t } = useTranslation("auth");
   const { data: referenceData } = useReferenceData();
   const cultures = referenceData?.cultures.filter((culture) => culture.isEnabled) ?? [];
@@ -52,7 +57,7 @@ export function AuthLayout({ access, children, brandPanel = "content" }: AuthLay
       </footer>
     </div>
     <aside data-testid="auth-brand-panel" aria-hidden="true" className="auth-brand-panel relative hidden flex-col justify-center gap-5 overflow-hidden px-14 text-[var(--lado-activo)] md:flex">
-      {brandPanel === "content" ? <>
+      {brandPanelContent ?? (brandPanel === "content" ? <>
       <span className="self-start rounded-full bg-[var(--lado-activo)]/15 px-3 py-1.5 text-[13px] font-semibold">{t(`panel.${panelKey}.kicker`)}</span>
       <h2 className="max-w-[520px] text-[32px] leading-[1.15] font-bold tracking-[-0.025em]">{t(`panel.${panelKey}.heading`)}</h2>
       <p className="max-w-[500px] text-[15px] leading-[1.6] text-[var(--lado-activo)]/85">{t("panel.intro")}</p>
@@ -63,7 +68,7 @@ export function AuthLayout({ access, children, brandPanel = "content" }: AuthLay
           <span>{t(`panel.${panelKey}.points.${point}`)}</span>
         </li>; })}
       </ul>
-      </> : null}
+      </> : null)}
     </aside>
   </div>;
 }

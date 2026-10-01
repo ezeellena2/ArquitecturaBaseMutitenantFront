@@ -28,6 +28,10 @@ export const routes: RouteObject[] = [
     const { SignupPage } = await import("@/areas/public/auth/pages/SignupPage");
     return { Component: SignupPage };
   }, errorElement: <AppErrorPage /> },
+  { path: "/invitacion", lazy: async () => {
+    const { InvitationPage } = await import("@/areas/public/auth/pages/InvitationPage");
+    return { Component: InvitationPage };
+  }, errorElement: <AppErrorPage /> },
   { path: "/auth/callback", lazy: async () => {
     const { CallbackPage } = await import("@/areas/public/auth/pages/CallbackPage");
     return { Component: CallbackPage };

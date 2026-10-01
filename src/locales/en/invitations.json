@@ -1,0 +1,52 @@
+{
+  "pageTitle": "Accept an invitation",
+  "loading": "Loading invitation…",
+  "retry": "Try again",
+  "backHome": "Back to home",
+  "organizationFallback": "the organization",
+  "accountFallback": "your account",
+  "panel": {
+    "kicker": "No passwords",
+    "heading": "Sign in with an email code or Google.",
+    "description": "Use the same account as a person and to work in your organization. Those are two separate sides.",
+    "person": "As a person, in your personal profile.",
+    "organization": "In your organization, within the access granted to you."
+  },
+  "join": {
+    "title": "Join {{organization}}",
+    "signInTitle": "You already have an account with {{email}}",
+    "forEmail": "This invitation is for {{email}}.",
+    "invitedBy": "{{inviter}} invited you",
+    "expires": "Expires",
+    "terms": "I accept the <terms>Terms</terms> and the <privacy>Privacy Policy</privacy>.",
+    "signInDescription": "You already have an account with {{email}}. Sign in with a login method and your invitation will be waiting.",
+    "signIn": "Sign in to accept",
+    "signOutAndContinue": "Sign out and continue as {{email}}",
+    "continueAs": "Continue as {{name}}",
+    "accept": "Accept invitation",
+    "accepting": "Accepting…"
+  },
+  "wrongSession": "You are signed in as {{currentEmail}}, but the invitation is for {{email}}.",
+  "accepted": {
+    "title": "You joined {{organization}}",
+    "email": "Sign in as {{email}}.",
+    "personalMethodNotice": "Add your own login method so you do not lose your account if you leave the organization.",
+    "addNow": "Add now",
+    "later": "Later",
+    "openOrganization": "Open organization"
+  },
+  "states": {
+    "Expired": {
+      "title": "This invitation has expired",
+      "description": "Ask the person who invited you to send another."
+    },
+    "Invalid": {
+      "title": "This invitation is no longer valid",
+      "description": "Ask the person who invited you to send another."
+    },
+    "OrganizationSuspended": {
+      "title": "The organization is suspended",
+      "description": "You cannot accept this invitation while it is suspended."
+    }
+  }
+}

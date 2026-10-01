@@ -20,6 +20,7 @@ describe("contrato de invitaciones entre back y front", () => {
     };
     const contract = readFront("src/shared/api/invitationContract.ts");
     const schema = readFront("src/shared/api/generated/schema.d.ts");
+    const routes = readFront("src/app/routes.tsx");
 
     expect(controller).toContain("[AllowAnonymous]");
     expect(controller).toContain('[HttpPost("preview")]');
@@ -54,6 +55,8 @@ describe("contrato de invitaciones entre back y front", () => {
     }
     expect(contract).toContain("api.post<InvitationPreviewResponse>(invitationPaths.preview, { token }");
     expect(contract).toContain("api.post<AcceptInvitationResponse>(invitationPaths.accept, request");
+    expect(routes).toContain('path: "/invitacion"');
+    expect(routes).toContain('import("@/areas/public/auth/pages/InvitationPage")');
     expect(contract).toContain('"RequestVerificationToken"');
     expect(contract).toContain('"Idempotency-Key"');
     expect(readBack("src/ArquitecturaBaseMultitenant.Application/Services/Invitations/InvitationDeliveryIssuer.cs"))
