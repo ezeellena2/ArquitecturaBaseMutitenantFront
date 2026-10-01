@@ -3036,6 +3036,482 @@
       }
     },
     {
+      "id": "agregar-correo-reauth-escritorio",
+      "pair": "agregar-correo-reauth",
+      "group": "cuenta",
+      "board": "Cuenta",
+      "props": {
+        "metodos": "Con correo personal",
+        "baja": "Puede darse de baja"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardState": {
+        "dialogo": "principal",
+        "objetivoId": 1,
+        "paso": "codigo"
+      },
+      "note": "El lienzo no tiene un estado de reautenticación previo a agregar; se compara con su diálogo existente de confirmación por código. La pantalla real reutiliza el mismo diálogo para pedir la prueba anterior a la sesión.",
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Agregar correo o teléfono"
+          }
+        ],
+        "readySelector": "input[inputmode=\"numeric\"]",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fernandez@delta.ejemplo.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/me/reauth",
+            "body": {
+              "sourceMethodId": "2",
+              "destination": "lu•••@gmail.com",
+              "resendAfterSeconds": 60
+            },
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "id": "agregar-correo-reauth-movil",
+      "pair": "agregar-correo-reauth",
+      "group": "cuenta",
+      "board": "M-Cuenta",
+      "props": {
+        "metodos": "Con correo personal",
+        "baja": "Puede darse de baja"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardState": {
+        "dialogo": "principal",
+        "objetivoId": 1,
+        "paso": "codigo"
+      },
+      "note": "El lienzo no tiene un estado de reautenticación previo a agregar; se compara con su diálogo existente de confirmación por código. La pantalla real reutiliza el mismo diálogo para pedir la prueba anterior a la sesión.",
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Agregar correo o teléfono"
+          }
+        ],
+        "readySelector": "input[inputmode=\"numeric\"]",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fernandez@delta.ejemplo.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/me/reauth",
+            "body": {
+              "sourceMethodId": "2",
+              "destination": "lu•••@gmail.com",
+              "resendAfterSeconds": 60
+            },
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "id": "vincular-google-reauth-escritorio",
+      "pair": "vincular-google-reauth",
+      "group": "cuenta",
+      "board": "Cuenta",
+      "props": {
+        "metodos": "Con correo personal",
+        "baja": "Puede darse de baja"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardState": {
+        "dialogo": "principal",
+        "objetivoId": 1,
+        "paso": "codigo"
+      },
+      "note": "El lienzo no tiene un estado de reautenticación previo a vincular Google; se compara con su diálogo existente de confirmación por código. La pantalla real reutiliza el mismo diálogo para pedir la prueba anterior a la sesión.",
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Vincular Google"
+          }
+        ],
+        "readySelector": "input[inputmode=\"numeric\"]",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fernandez@delta.ejemplo.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/me/reauth",
+            "body": {
+              "sourceMethodId": "2",
+              "destination": "lu•••@gmail.com",
+              "resendAfterSeconds": 60
+            },
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "id": "vincular-google-reauth-movil",
+      "pair": "vincular-google-reauth",
+      "group": "cuenta",
+      "board": "M-Cuenta",
+      "props": {
+        "metodos": "Con correo personal",
+        "baja": "Puede darse de baja"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardState": {
+        "dialogo": "principal",
+        "objetivoId": 1,
+        "paso": "codigo"
+      },
+      "note": "El lienzo no tiene un estado de reautenticación previo a vincular Google; se compara con su diálogo existente de confirmación por código. La pantalla real reutiliza el mismo diálogo para pedir la prueba anterior a la sesión.",
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Vincular Google"
+          }
+        ],
+        "readySelector": "input[inputmode=\"numeric\"]",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fernandez@delta.ejemplo.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/me/reauth",
+            "body": {
+              "sourceMethodId": "2",
+              "destination": "lu•••@gmail.com",
+              "resendAfterSeconds": 60
+            },
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
       "id": "agregar-invalido-escritorio",
       "pair": "agregar-invalido",
       "group": "cuenta",
