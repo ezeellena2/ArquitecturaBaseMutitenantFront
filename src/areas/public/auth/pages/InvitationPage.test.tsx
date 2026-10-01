@@ -89,9 +89,9 @@ function show(options: { entry?: string; signedInAs?: "business" | "consumer" } 
   } as unknown as AuthContextProps;
   const router = createMemoryRouter([
     { path: "/invitacion", element: <InvitationPage /> },
-    { path: "/org", element: <main>Destino organización</main> },
-    { path: "/cuenta", element: <main>Destino cuenta</main> },
-    { path: "/", element: <main>Destino personal</main> },
+    { path: "/org", element: <main>{"Destino organización"}</main> },
+    { path: "/cuenta", element: <main>{"Destino cuenta"}</main> },
+    { path: "/", element: <main>{"Destino personal"}</main> },
   ], { initialEntries: [options.entry ?? `/invitacion#${invitationToken}`] });
   const view = render(<AppProviders client={client} authContext={auth}><RouterProvider router={router} /></AppProviders>);
   return { ...view, client, router, auth };

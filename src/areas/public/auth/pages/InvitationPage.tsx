@@ -156,7 +156,7 @@ export function InvitationPage() {
         <Button type="button" variant="outlineSurface" size="lg" onClick={retry}>{t("retry")}</Button>
       </div>
         : invitation ? acceptedView ? <div className="flex flex-col gap-[22px]">
-          <span aria-hidden="true" className="flex size-[46px] items-center justify-center self-center rounded-full bg-[var(--exito-t)] text-[var(--exito)]"><CircleCheck size={22} strokeWidth={2} /></span>
+          <span aria-hidden="true" className="flex size-[46px] items-center justify-center self-center rounded-full bg-[var(--ok-t)] text-[var(--ok)]"><CircleCheck size={22} strokeWidth={2} /></span>
           <div className="text-center">
             <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">{t("accepted.title", { organization: organizationName })}</h1>
             <p className="mt-2 break-all text-[15px] leading-normal text-[var(--t2)]">{t("accepted.email", { email })}</p>
