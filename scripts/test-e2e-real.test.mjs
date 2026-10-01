@@ -131,6 +131,42 @@ async function enterCode(page, code) {
   }
 }
 
+async function invitationCommand(readyFile, data) {
+  const commandFile = readyFile.replace(/\.ready$/, ".invitations.json");
+  await rm(commandFile, { force: true });
+  await rm(`${commandFile}.done`, { force: true });
+  await writeFile(commandFile, JSON.stringify(data), { flag: "wx" });
+  const deadline = Date.now() + 30_000;
+  while (Date.now() < deadline) {
+    try { return JSON.parse(await readFile(`${commandFile}.done`, "utf8")); }
+    catch (error) { if (error?.code !== "ENOENT" && !(error instanceof SyntaxError)) throw error; }
+    await delay(250);
+  }
+  throw new Error("El preparador no completó la orden de invitación en la base E2E.");
+}
+
+async function invitationFromPickup(email, before) {
+  const deadline = Date.now() + 95_000;
+  while (Date.now() < deadline) {
+    for (const name of await pickupFiles()) {
+      if (before.has(name)) continue;
+      let eml;
+      try { eml = await readFile(path.join(pickupDirectory, name), "utf8"); }
+      catch (error) { if (error?.code === "ENOENT" || error?.code === "EBUSY") continue; throw error; }
+      if (!eml.toLowerCase().includes(email.toLowerCase())) continue;
+      const link = plainTextBody(eml)?.match(/https:\/\/[^\s]+\/invitacion#[A-Za-z0-9_-]+/)?.[0];
+      if (!link) continue;
+      const url = new URL(link);
+      assert.equal(url.origin, baseUrl.origin, "La invitación debe apuntar al origen público configurado.");
+      assert.equal(url.search, "", "El token no puede viajar en la query HTTP.");
+      await unlink(path.join(pickupDirectory, name));
+      return url.href;
+    }
+    await delay(250);
+  }
+  throw new Error("No llegó el .eml con el enlace real de invitación al pickup aislado.");
+}
+
 async function expectPath(page, expected, step) {
   try {
     await page.waitForURL((url) => url.pathname === expected, { timeout: 20_000 });
@@ -421,6 +457,53 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
 
       // Cada recorrido usa una identidad/contexto propios; un fallo no saltea los otros.
       const accountCases = [
+        ...[false, true].map((existingAccount) => [
+          `3c: aceptar invitación ${existingAccount ? "con cuenta previa" : "sin cuenta y sin Personal"} desde el .eml`,
+          async (invitationPage, setStage) => {
+            const email = `e2e-invitation-${randomUUID()}@example.test`;
+            const before = new Set(await pickupFiles());
+            setStage("emite por InvitationIssuer en la base aislada");
+            const issued = await invitationCommand(readyFile, { kind: "emit", email, existingAccount });
+            setStage("lee el enlace del .eml real");
+            const link = await invitationFromPickup(email, before);
+            setStage("abre /invitacion y ve la vista previa");
+            await invitationPage.goto(link);
+            await invitationPage.getByRole("heading", { name: "Te sumás a Empresa E2E", exact: true }).waitFor({ timeout: 15_000 });
+            await invitationPage.getByText(email, { exact: true }).first().waitFor();
+            assert.equal(new URL(invitationPage.url()).hash, "", "El fragmento secreto debe retirarse antes de seguir.");
+            if (existingAccount) {
+              setStage("ingresa como la cuenta destinataria sin seleccionar acceso");
+              await invitationPage.getByRole("link", { name: "Ingresá para aceptar", exact: true }).click();
+              await invitationPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
+              const loginBefore = new Set(await pickupFiles());
+              await sendLoginCode(invitationPage);
+              await invitationPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+              await enterCode(invitationPage, await codeFromPickup(email, loginBefore));
+              await invitationPage.getByRole("button", { name: "Verificar", exact: true }).click();
+              await expectPath(invitationPage, "/invitacion", "retorno a la invitación");
+            }
+            setStage("acepta la invitación real");
+            const acceptedResponse = invitationPage.waitForResponse((response) =>
+              new URL(response.url()).pathname === "/api/invitations/accept" && response.request().method() === "POST");
+            await invitationPage.getByRole("button", { name: "Aceptar invitación", exact: true }).click();
+            assert.equal((await acceptedResponse).ok(), true, "La aceptación real debe completar su transacción.");
+            if (!existingAccount) {
+              await invitationPage.getByRole("heading", { name: "Te sumaste a Empresa E2E", exact: true }).waitFor();
+              setStage("comprueba identidad vinculada sin espacio Personal antes de cambiar acceso");
+              const inspection = await invitationCommand(readyFile, { kind: "inspect", email, invitationId: issued.invitationId });
+              assert.equal(inspection.personalSpaces, 0, "Aceptar sin cuenta no puede crear un espacio Personal.");
+              assert.equal(inspection.activeBusinessAccesses, 1);
+              assert.equal(inspection.accepted, true);
+              assert.equal(inspection.boundToIdentity, true);
+              await invitationPage.getByRole("button", { name: "Más tarde", exact: true }).click();
+            }
+            setStage("entra a la organización con la membresía activa");
+            await expectPath(invitationPage, "/org", "entrada luego de aceptar");
+            await expectProfile(invitationPage, "Empresa E2E", "entrada luego de aceptar");
+            await invitationPage.reload();
+            await expectProfile(invitationPage, "Empresa E2E", "F5 luego de aceptar");
+          },
+        ]),
         ["3b seguridad: sesión abierta no suma correo ni Google y método nuevo no autoriza el anterior", async (accountPage, setStage) => {
           setStage("registra la persona");
           const original = await registerPerson(accountPage);
