@@ -1,0 +1,1293 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "sin-cuenta-escritorio",
+      "pair": "sin-cuenta",
+      "group": "estados",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Sin cuenta"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "sin-cuenta-movil",
+      "pair": "sin-cuenta",
+      "group": "estados",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Sin cuenta"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cuenta-sin-sesion-escritorio",
+      "pair": "cuenta-sin-sesion",
+      "group": "estados",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Con cuenta y sin sesión"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "SignInRequired",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": true,
+              "canUseGoogle": true,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cuenta-sin-sesion-movil",
+      "pair": "cuenta-sin-sesion",
+      "group": "estados",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Con cuenta y sin sesión"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "SignInRequired",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": true,
+              "canUseGoogle": true,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "sesion-propia-escritorio",
+      "pair": "sesion-propia",
+      "group": "estados",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Con la sesión de la misma persona"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-business&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Ready",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": true,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "sesion-propia-movil",
+      "pair": "sesion-propia",
+      "group": "estados",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Con la sesión de la misma persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-business&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Ready",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": true,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "sesion-ajena-escritorio",
+      "pair": "sesion-ajena",
+      "group": "estados",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Con la sesión de otra persona"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "WrongSession",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false,
+              "currentAccountEmail": "lucia@example.test"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "sesion-ajena-movil",
+      "pair": "sesion-ajena",
+      "group": "estados",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Con la sesión de otra persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "WrongSession",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false,
+              "currentAccountEmail": "lucia@example.test"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "vencida-escritorio",
+      "pair": "vencida",
+      "group": "estados",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Vencida"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Expired",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "vencida-movil",
+      "pair": "vencida",
+      "group": "estados",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Vencida"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Expired",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ya-no-sirve-escritorio",
+      "pair": "ya-no-sirve",
+      "group": "estados",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Ya no sirve"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Invalid",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ya-no-sirve-movil",
+      "pair": "ya-no-sirve",
+      "group": "estados",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Ya no sirve"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Invalid",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "organizacion-suspendida-escritorio",
+      "pair": "organizacion-suspendida",
+      "group": "estados",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Organización suspendida"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "OrganizationSuspended",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "organizacion-suspendida-movil",
+      "pair": "organizacion-suspendida",
+      "group": "estados",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Organización suspendida"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "OrganizationSuspended",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "aceptada-sin-metodo-personal-escritorio",
+      "pair": "aceptada-sin-metodo-personal",
+      "group": "estados",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Aceptada: solo con el correo de la empresa"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Accepted",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": true
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "aceptada-sin-metodo-personal-movil",
+      "pair": "aceptada-sin-metodo-personal",
+      "group": "estados",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Aceptada: solo con el correo de la empresa"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Accepted",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": true
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "carga-escritorio",
+      "pair": "carga",
+      "group": "acciones",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Sin cuenta"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "action": "carga",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "status": 500,
+            "body": {
+              "code": "Invitations.Invitation.Unavailable",
+              "detail": "No pudimos aceptar la invitación. Probá de nuevo."
+            }
+          }
+        ]
+      },
+      "note": "El lienzo no dibuja carga, envío ni error de red; se conserva su estado estable como referencia y se fotografía el estado transitorio real de la app."
+    },
+    {
+      "id": "carga-movil",
+      "pair": "carga",
+      "group": "acciones",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Sin cuenta"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "action": "carga",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "status": 500,
+            "body": {
+              "code": "Invitations.Invitation.Unavailable",
+              "detail": "No pudimos aceptar la invitación. Probá de nuevo."
+            }
+          }
+        ]
+      },
+      "note": "El lienzo no dibuja carga, envío ni error de red; se conserva su estado estable como referencia y se fotografía el estado transitorio real de la app."
+    },
+    {
+      "id": "envio-escritorio",
+      "pair": "envio",
+      "group": "acciones",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Sin cuenta"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "action": "envio",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "status": 500,
+            "body": {
+              "code": "Invitations.Invitation.Unavailable",
+              "detail": "No pudimos aceptar la invitación. Probá de nuevo."
+            }
+          }
+        ]
+      },
+      "note": "El lienzo no dibuja carga, envío ni error de red; se conserva su estado estable como referencia y se fotografía el estado transitorio real de la app."
+    },
+    {
+      "id": "envio-movil",
+      "pair": "envio",
+      "group": "acciones",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Sin cuenta"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "action": "envio",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "status": 500,
+            "body": {
+              "code": "Invitations.Invitation.Unavailable",
+              "detail": "No pudimos aceptar la invitación. Probá de nuevo."
+            }
+          }
+        ]
+      },
+      "note": "El lienzo no dibuja carga, envío ni error de red; se conserva su estado estable como referencia y se fotografía el estado transitorio real de la app."
+    },
+    {
+      "id": "error-escritorio",
+      "pair": "error",
+      "group": "acciones",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Sin cuenta"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "action": "error",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "status": 500,
+            "body": {
+              "code": "Invitations.Invitation.Unavailable",
+              "detail": "No pudimos aceptar la invitación. Probá de nuevo."
+            }
+          }
+        ]
+      },
+      "note": "El lienzo no dibuja carga, envío ni error de red; se conserva su estado estable como referencia y se fotografía el estado transitorio real de la app."
+    },
+    {
+      "id": "error-movil",
+      "pair": "error",
+      "group": "acciones",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Sin cuenta"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "action": "error",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "status": 500,
+            "body": {
+              "code": "Invitations.Invitation.Unavailable",
+              "detail": "No pudimos aceptar la invitación. Probá de nuevo."
+            }
+          }
+        ]
+      },
+      "note": "El lienzo no dibuja carga, envío ni error de red; se conserva su estado estable como referencia y se fotografía el estado transitorio real de la app."
+    },
+    {
+      "id": "correo-sin-codigo-es-escritorio",
+      "pair": "correo-sin-codigo-es",
+      "group": "correos",
+      "board": "Mensajes",
+      "props": {
+        "mensaje": "Invitación a una organización",
+        "canal": "Correo"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "email": true,
+      "note": "El correo de invitación HTML lo genera el renderer real. El tablero de Mensajes es la referencia estática en español; el caso inglés y el ancho móvil se verifican sobre el mismo HTML traducido.",
+      "app": {
+        "path": "/docs/design/capturas/etapa-3c/correos/html/invitacion-es-AR-sin-codigo.html"
+      }
+    },
+    {
+      "id": "correo-sin-codigo-es-movil",
+      "pair": "correo-sin-codigo-es",
+      "group": "correos",
+      "board": "Mensajes",
+      "props": {
+        "mensaje": "Invitación a una organización",
+        "canal": "Correo"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "email": true,
+      "note": "El correo de invitación HTML lo genera el renderer real. El tablero de Mensajes es la referencia estática en español; el caso inglés y el ancho móvil se verifican sobre el mismo HTML traducido.",
+      "app": {
+        "path": "/docs/design/capturas/etapa-3c/correos/html/invitacion-es-AR-sin-codigo.html"
+      }
+    },
+    {
+      "id": "correo-sin-codigo-en-escritorio",
+      "pair": "correo-sin-codigo-en",
+      "group": "correos",
+      "board": "Mensajes",
+      "props": {
+        "mensaje": "Invitación a una organización",
+        "canal": "Correo"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "email": true,
+      "note": "El correo de invitación HTML lo genera el renderer real. El tablero de Mensajes es la referencia estática en español; el caso inglés y el ancho móvil se verifican sobre el mismo HTML traducido.",
+      "app": {
+        "path": "/docs/design/capturas/etapa-3c/correos/html/invitacion-en-US-sin-codigo.html"
+      }
+    },
+    {
+      "id": "correo-sin-codigo-en-movil",
+      "pair": "correo-sin-codigo-en",
+      "group": "correos",
+      "board": "Mensajes",
+      "props": {
+        "mensaje": "Invitación a una organización",
+        "canal": "Correo"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "email": true,
+      "note": "El correo de invitación HTML lo genera el renderer real. El tablero de Mensajes es la referencia estática en español; el caso inglés y el ancho móvil se verifican sobre el mismo HTML traducido.",
+      "app": {
+        "path": "/docs/design/capturas/etapa-3c/correos/html/invitacion-en-US-sin-codigo.html"
+      }
+    },
+    {
+      "id": "correo-con-codigo-es-escritorio",
+      "pair": "correo-con-codigo-es",
+      "group": "correos",
+      "board": "Mensajes",
+      "props": {
+        "mensaje": "Invitación a una organización",
+        "canal": "Correo"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "email": true,
+      "note": "El correo de invitación HTML lo genera el renderer real. El tablero de Mensajes es la referencia estática en español; el caso inglés y el ancho móvil se verifican sobre el mismo HTML traducido.",
+      "app": {
+        "path": "/docs/design/capturas/etapa-3c/correos/html/invitacion-es-AR-con-codigo.html"
+      }
+    },
+    {
+      "id": "correo-con-codigo-es-movil",
+      "pair": "correo-con-codigo-es",
+      "group": "correos",
+      "board": "Mensajes",
+      "props": {
+        "mensaje": "Invitación a una organización",
+        "canal": "Correo"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "email": true,
+      "note": "El correo de invitación HTML lo genera el renderer real. El tablero de Mensajes es la referencia estática en español; el caso inglés y el ancho móvil se verifican sobre el mismo HTML traducido.",
+      "app": {
+        "path": "/docs/design/capturas/etapa-3c/correos/html/invitacion-es-AR-con-codigo.html"
+      }
+    },
+    {
+      "id": "correo-con-codigo-en-escritorio",
+      "pair": "correo-con-codigo-en",
+      "group": "correos",
+      "board": "Mensajes",
+      "props": {
+        "mensaje": "Invitación a una organización",
+        "canal": "Correo"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "email": true,
+      "note": "El correo de invitación HTML lo genera el renderer real. El tablero de Mensajes es la referencia estática en español; el caso inglés y el ancho móvil se verifican sobre el mismo HTML traducido.",
+      "app": {
+        "path": "/docs/design/capturas/etapa-3c/correos/html/invitacion-en-US-con-codigo.html"
+      }
+    },
+    {
+      "id": "correo-con-codigo-en-movil",
+      "pair": "correo-con-codigo-en",
+      "group": "correos",
+      "board": "Mensajes",
+      "props": {
+        "mensaje": "Invitación a una organización",
+        "canal": "Correo"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "email": true,
+      "note": "El correo de invitación HTML lo genera el renderer real. El tablero de Mensajes es la referencia estática en español; el caso inglés y el ancho móvil se verifican sobre el mismo HTML traducido.",
+      "app": {
+        "path": "/docs/design/capturas/etapa-3c/correos/html/invitacion-en-US-con-codigo.html"
+      }
+    }
+  ]
+}
