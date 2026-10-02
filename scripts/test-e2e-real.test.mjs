@@ -457,6 +457,88 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
 
       // Cada recorrido usa una identidad/contexto propios; un fallo no saltea los otros.
       const accountCases = [
+        ["4: administrar roles y bloquear la baja del único Dueño", async (rolesPage, setStage) => {
+          setStage("ingresa como Dueño por la puerta de empresa");
+          await rolesPage.goto(new URL("/login/empresa", baseUrl).href);
+          await rolesPage.getByRole("textbox", { name: "Correo electrónico" }).fill(businessEmail);
+          const loginBefore = new Set(await pickupFiles());
+          await sendLoginCode(rolesPage);
+          await rolesPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+          await enterCode(rolesPage, await codeFromPickup(businessEmail, loginBefore));
+          await rolesPage.getByRole("button", { name: "Verificar", exact: true }).click();
+          await expectPath(rolesPage, "/org", "ingreso del Dueño para E4");
+          await expectProfile(rolesPage, "Empresa E2E", "ingreso del Dueño para E4");
+
+          const authorization = accountTokens.get(rolesPage);
+          assert.equal(typeof authorization, "string", "El navegador debe haber obtenido su token real de empresa.");
+          const headers = { Authorization: authorization };
+
+          setStage("consulta el catálogo de permisos de la organización");
+          const permissionResponse = await rolesPage.request.get(new URL("/api/permissions", baseUrl).href, { headers });
+          assert.equal(permissionResponse.status(), 200,
+            `El catálogo de permisos debe estar disponible para el Dueño (HTTP ${permissionResponse.status()}).`);
+          const permissionGroups = await permissionResponse.json();
+          assert.ok(permissionGroups.flatMap((group) => group.permissions ?? [])
+            .some((permission) => permission.code === "roles.manage"));
+
+          setStage("lista roles y confirma que están los roles de sistema");
+          const listResponse = await rolesPage.request.get(new URL("/api/roles/paged?page=1&pageSize=100", baseUrl).href, { headers });
+          assert.equal(listResponse.status(), 200,
+            `El Dueño debe poder consultar los roles de su organización (HTTP ${listResponse.status()}).`);
+          const rolePage = await listResponse.json();
+          const systemRole = rolePage.items?.find((role) => role.isSystemRole === true);
+          assert.ok(systemRole, "La organización debe tener roles de sistema protegidos.");
+
+          setStage("crea un rol organizacional con un permiso del catálogo");
+          const roleName = `Rol E2E ${randomUUID()}`;
+          const createResponse = await rolesPage.request.post(new URL("/api/roles", baseUrl).href, {
+            headers: { ...headers, "Idempotency-Key": randomUUID() },
+            data: { name: roleName, description: "Rol de prueba aislado", scope: "Organization", permissions: ["roles.read"] },
+          });
+          assert.equal(createResponse.status(), 201, "Crear un rol válido debe responder 201.");
+          const roleLocation = createResponse.headers().location;
+          assert.ok(roleLocation, "El alta debe devolver la ubicación del rol creado.");
+          const roleUrl = new URL(roleLocation, baseUrl);
+          const roleId = roleUrl.pathname.split("/").at(-1);
+          assert.match(roleId ?? "", /^[0-9a-f-]{36}$/i);
+
+          setStage("recupera la versión, edita y rechaza la edición obsoleta");
+          const detailResponse = await rolesPage.request.get(roleUrl.href, { headers });
+          assert.equal(detailResponse.status(), 200);
+          const role = await detailResponse.json();
+          assert.equal(role.name, roleName);
+          assert.equal(typeof role.version, "number");
+          const updatedName = `${roleName} editado`;
+          const updateData = { name: updatedName, description: role.description, scope: role.scope,
+            companyId: role.companyId ?? null, permissions: role.permissions, version: role.version };
+          const updateResponse = await rolesPage.request.put(roleUrl.href, { headers, data: updateData });
+          assert.equal(updateResponse.status(), 204, "La versión vigente debe permitir guardar.");
+          const staleResponse = await rolesPage.request.put(roleUrl.href, { headers, data: updateData });
+          assert.equal(staleResponse.status(), 409, "Una versión obsoleta debe responder 409.");
+          assert.equal((await staleResponse.json()).code, "General.ConcurrencyConflict");
+          const afterStaleResponse = await rolesPage.request.get(roleUrl.href, { headers });
+          assert.equal((await afterStaleResponse.json()).name, updatedName, "El conflicto no debe pisar el primer cambio.");
+
+          setStage("intenta borrar un rol de sistema con su versión vigente");
+          const systemRoleUrl = new URL(`/api/roles/${systemRole.id}`, baseUrl);
+          const systemDelete = await rolesPage.request.delete(systemRoleUrl.href, { headers, data: { version: systemRole.version } });
+          assert.equal(systemDelete.status(), 403, "Un rol de sistema no se puede borrar.");
+
+          setStage("inicia baja de cuenta como único Dueño y comprueba el bloqueo");
+          await openAccount(rolesPage, "Empresa E2E");
+          const deletionCodeBefore = new Set(await pickupFiles());
+          await rolesPage.getByRole("button", { name: "Dar de baja", exact: true }).click();
+          const deletionDialog = rolesPage.getByRole("dialog");
+          await deletionDialog.getByRole("heading", { name: "¿Dar de baja tu cuenta?" }).waitFor();
+          await enterCode(rolesPage, await codeFromPickup(businessEmail, deletionCodeBefore));
+          await deletionDialog.getByRole("textbox", { name: "Motivo" }).fill("Comprobación E4 del único Dueño");
+          const deletionResponsePromise = rolesPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === "/api/me/deletion" && response.request().method() === "POST");
+          await deletionDialog.getByRole("button", { name: "Dar de baja mi cuenta", exact: true }).click();
+          const deletionResponse = await deletionResponsePromise;
+          assert.equal(deletionResponse.status(), 409, "No se puede iniciar la baja del único Dueño.");
+          assert.equal((await deletionResponse.json()).code, "Legal.AccountDeletion.LastAdmin");
+        }],
         ...[false, true].map((existingAccount) => [
           `3c: aceptar invitación ${existingAccount ? "con cuenta previa" : "sin cuenta y sin Personal"} desde el .eml`,
           async (invitationPage, setStage) => {
