@@ -134,6 +134,41 @@ describe("arnés de reglas", () => {
     for (const file of [...pointers, ...ficheFiles]) {
       if (existsSync(file)) expect(brokenLinks(file), path.relative(root, file)).toEqual([]);
     }
+
+    const backRoot = path.resolve(root, "../ArquitecturaBaseMutitenant");
+    const rolesFeature = path.join(backRoot, "docs/features/roles.md");
+    if (existsSync(rolesFeature)) {
+      const feature = readFileSync(rolesFeature, "utf8");
+      const folders = [...feature.matchAll(/^\| `(src\/[^`]+)` \|/gm)].map((match) => match[1]);
+      expect(folders.length).toBeGreaterThan(0);
+      expect(feature).toContain("docs/guides/agregar-un-area.md");
+      expect(feature).toContain("docs/guides/permiso-nuevo.md");
+      for (const folder of folders) {
+        const directory = path.join(backRoot, folder);
+        expect(existsSync(directory), `Falta carpeta de Roles ${folder}`).toBe(true);
+      }
+      const rolesPointers = [
+        "src/ArquitecturaBaseMultitenant.Domain/Authorization",
+        "src/ArquitecturaBaseMultitenant.Application/Models/Roles",
+        "src/ArquitecturaBaseMultitenant.Application/Services/Roles",
+        "src/ArquitecturaBaseMultitenant.Application/Validation/Roles",
+        "src/ArquitecturaBaseMultitenant.Application/Interfaces/Integrations/Caching",
+        "src/ArquitecturaBaseMultitenant.Api/Authorization",
+        "src/ArquitecturaBaseMultitenant.Api/Contracts/Organization",
+        "src/ArquitecturaBaseMultitenant.Api/Controllers/Organization",
+        "tests/ArquitecturaBaseMultitenant.Domain.UnitTests/Authorization",
+        "tests/ArquitecturaBaseMultitenant.Application.UnitTests/Services/Roles",
+        "tests/ArquitecturaBaseMultitenant.Api.IntegrationTests/Organization",
+      ];
+      for (const folder of rolesPointers) {
+        const agent = path.join(backRoot, folder, "AGENTS.md");
+        const claude = path.join(backRoot, folder, "CLAUDE.md");
+        expect(existsSync(agent), `Falta ${folder}/AGENTS.md`).toBe(true);
+        expect(existsSync(claude), `Falta ${folder}/CLAUDE.md`).toBe(true);
+        if (existsSync(agent)) expect(readFileSync(agent, "utf8")).toContain("docs/features/roles.md");
+        if (existsSync(claude)) expect(readFileSync(claude, "utf8").trim()).toBe("@AGENTS.md");
+      }
+    }
   });
 
   it("mantiene completas todas las fichas", () => {
