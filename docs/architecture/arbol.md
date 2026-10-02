@@ -463,7 +463,7 @@ src/
 │       └── icons.tsx                                [E1] SVG propios, trazo 1.75
 │
 └── test/                                            [E0]
-    ├── HarnessStage.ts                              [E0] etapa cerrada única del arnés; se sube al cerrar cada etapa
+    ├── HarnessStage.ts                              [E0] lista explícita de etapas cerradas del arnés; permite etapas no contiguas
     ├── harness.test.ts                              [E0] punteros, enlaces y fichas; exige tests solo hasta HarnessStage
     ├── structure.test.ts                            [E0] sin imports entre features ni entre áreas
     ├── setup.ts                                     [E0] mínimo: jest-dom y vitest-axe, sin i18n; MSW y namespaces se suman en [E1]

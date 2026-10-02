@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { HarnessStage } from "./HarnessStage";
+import { areStagesClosed, ClosedStages, HarnessStage, isStageClosed } from "./HarnessStage";
 
 const root = path.resolve(import.meta.dirname, "../..");
 const src = path.join(root, "src");
@@ -68,9 +68,9 @@ function headingAnchors(markdown: string): Set<string> {
   return anchors;
 }
 
-function requiredStage(marker: string): number | null {
+function closedMarker(marker: string): boolean {
   const match = marker.match(/^\(E(\d+)(?:\s*[–-]\s*E?(\d+))?\)$/);
-  return match ? Number(match[2] ?? match[1]) : null;
+  return match ? areStagesClosed(Number(match[1]), Number(match[2] ?? match[1])) : false;
 }
 
 function brokenLinks(file: string): string[] {
@@ -78,8 +78,8 @@ function brokenLinks(file: string): string[] {
   const broken: string[] = [];
   for (const match of markdown.matchAll(/\]\(([^)]+)\)/g)) {
     const nextLine = markdown.slice(match.index + match[0].length).split("\n", 1)[0];
-    const stage = requiredStage(nextLine.match(/^\s*(\(E\d+(?:\s*[–-]\s*E?\d+)?\))/)?.[1] ?? "");
-    if (stage !== null && stage > HarnessStage) continue;
+    const marker = nextLine.match(/^\s*(\(E\d+(?:\s*[–-]\s*E?\d+)?\))/)?.[1] ?? "";
+    if (marker && !closedMarker(marker)) continue;
     const href = match[1].split(/\s+"/)[0];
     if (/^(?:https?:|mailto:|data:)/i.test(href)) continue;
     const [rawTarget, rawAnchor] = href.split("#", 2);
@@ -106,6 +106,15 @@ describe("arnés de reglas", () => {
   it("tiene una etapa cerrada válida", () => {
     expect(Number.isInteger(HarnessStage)).toBe(true);
     expect(HarnessStage).toBeGreaterThanOrEqual(0);
+    const stageSource = readFileSync(path.join(root, "src/test/HarnessStage.ts"), "utf8");
+    const declaration = stageSource.match(/ClosedStages\s*=\s*\[(?<stages>[^\]]*)\]/);
+    expect(declaration, "HarnessStage debe enumerar etapas para permitir saltos").not.toBeNull();
+    const closedStages = [...(declaration?.groups?.stages ?? "").matchAll(/\d+/g)].map((match) => Number(match[0]));
+    expect(closedStages).toContain(4);
+    expect(closedStages).not.toContain(5);
+    expect(ClosedStages).toEqual(closedStages);
+    expect(HarnessStage).toBe(Math.max(...closedStages));
+    expect(isStageClosed(5)).toBe(false);
   });
 
   it("pone punteros breves en cada carpeta activa del mapa", () => {
@@ -200,19 +209,17 @@ describe("arnés de reglas", () => {
           if (markers.length === 0) continue;
           const range = markers.length === 1 && markers[0][0].match(/^\(E(\d+)\s*[–-]\s*E?(\d+)\)$/);
           for (const [index, reference] of paths.entries()) {
-            const stage = range && paths.length === 2
-              ? Number(index === 0 ? range[1] : range[2])
-              : requiredStage(markers[Math.min(index, markers.length - 1)][0]);
-            if (stage !== null && stage <= HarnessStage) {
-              expect(existsSync(path.join(root, reference)), `${path.basename(file)}: falta ${reference}`).toBe(true);
-            }
+            const marker = range && paths.length === 2
+              ? `(E${index === 0 ? range[1] : range[2]})`
+              : markers[Math.min(index, markers.length - 1)][0];
+            if (!closedMarker(marker)) continue;
+            expect(existsSync(path.join(root, reference)), `${path.basename(file)}: falta ${reference}`).toBe(true);
           }
         }
       }
       for (const line of section(markdown, "Lo verifica").split("\n")) {
         for (const match of line.matchAll(/`([^`/]+\.test\.tsx?)`\s*(\(E\d+(?:\s*[–-]\s*E?\d+)?\))/g)) {
-          const stage = requiredStage(match[2]);
-          if (stage === null || stage > HarnessStage) continue;
+          if (!closedMarker(match[2])) continue;
           expect(
             sourceFiles.some((sourceFile) => path.basename(sourceFile) === match[1]),
             `${path.basename(file)}: falta ${match[1]}`,

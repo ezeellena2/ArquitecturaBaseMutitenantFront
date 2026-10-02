@@ -43,7 +43,7 @@ La tabla vive solo en el [`AGENTS.md` raíz](../../AGENTS.md#antes-de-escribir-c
 
 ## 4. Verificación del arnés
 
-`src/test/harness.test.ts` usa la constante única `HarnessStage`, que se sube al cerrar cada etapa. Un «Copiá de» marcado `(E#)` se exige solo cuando esa etapa ya cerró. El test falla si:
+`src/test/harness.test.ts` usa la lista explícita `ClosedStages`, que se actualiza al cerrar cada etapa sin asumir continuidad numérica. Un «Copiá de» marcado `(E#)` se exige solo cuando esa etapa está cerrada; un rango se exige cuando todas las etapas incluidas cerraron. El test falla si:
 - una carpeta del mapa que ya existe no tiene `AGENTS.md` y `CLAUDE.md`;
 - hay un enlace roto en un puntero o en una ficha;
 - una ficha no tiene sus secciones;
