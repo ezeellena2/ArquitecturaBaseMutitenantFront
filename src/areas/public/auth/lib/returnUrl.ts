@@ -9,9 +9,10 @@ export function safeReturnUrl(candidate: string | null, fallback: string): strin
   }
 }
 
-// El código verifica únicamente el pedido OIDC que emitió el servidor. Una ruta de la app
-// (`/org`, por ejemplo) se conserva como state de signinRedirect y no se manda a verify.
-export function authorizeReturnUrl(value: string | null): string | undefined {
+// El ingreso admite autorización OIDC o el retorno exacto de invitación, sin elegir un acceso.
+// Las demás rutas de la app se conservan como state de signinRedirect.
+export function loginReturnUrl(value: string | null): string | undefined {
+  if (value === "/invitacion") return value;
   const path = "/connect/authorize";
   if (!value?.startsWith(path)) return undefined;
   const rest = value.slice(path.length);

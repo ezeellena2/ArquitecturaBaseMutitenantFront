@@ -91,6 +91,7 @@ function show(options: { entry?: string; signedInAs?: "business" | "consumer" } 
   } as unknown as AuthContextProps;
   const router = createMemoryRouter([
     { path: "/invitacion", element: <InvitationPage /> },
+    { path: "/login", element: <main>{"Ingreso de la cuenta"}</main> },
     { path: "/org", element: <main>{"Destino organización"}</main> },
     { path: "/cuenta", element: <main>{"Destino cuenta"}</main> },
     { path: "/", element: <main>{"Destino personal"}</main> },
@@ -145,17 +146,16 @@ describe("InvitationPage", () => {
     }
   });
 
-  it("reabre el ingreso como persona con el retorno fijo a /invitacion y deja la invitación protegida", async () => {
+  it("abre el ingreso con retorno fijo a /invitacion sin seleccionar Consumer", async () => {
     previewResponse = { ...basePreview, state: "SignInRequired", canUseEmailCode: true, canUseGoogle: true };
-    const { container } = show({ entry: "/invitacion" });
+    const { container, router } = show({ entry: "/invitacion" });
     expect(await screen.findByRole("heading", { name: "Te sumás a Grupo Delta" })).toBeVisible();
     const login = screen.getByRole("button", { name: "Ingresá para aceptar" });
     fireEvent.click(login);
-    await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
-    const options = signinRedirect.mock.calls[0][0] as { state: { returnTo: string }; extraQueryParams: { access: string } };
-    expect(options.state.returnTo).toBe("/invitacion");
-    expect(options.extraQueryParams.access).toBe("consumer");
-    expect(JSON.stringify(options)).not.toContain(invitationToken);
+    await waitFor(() => expect(router.state.location.pathname).toBe("/login"));
+    expect(new URLSearchParams(router.state.location.search).get("returnUrl")).toBe("/invitacion");
+    expect(signinRedirect).not.toHaveBeenCalled();
+    expect(router.state.location.search).not.toContain(invitationToken);
     expect(acceptRequests).toHaveLength(0);
     expect(await axe(container)).toHaveNoViolations();
   });

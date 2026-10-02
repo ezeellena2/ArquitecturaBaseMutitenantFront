@@ -14,6 +14,27 @@ const signinRedirect = vi.fn(() => Promise.resolve());
 const authorizeUrl = "/connect/authorize?client_id=web&response_type=code";
 const loginUrl = `/login?returnUrl=${encodeURIComponent(authorizeUrl)}`;
 
+it("ingresa por código o Google para volver a la invitación sin iniciar OIDC", async () => {
+  const completeLogin = vi.fn();
+  server.use(
+    http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 })),
+    http.post("/api/auth/login-code/verify", async ({ request }) => {
+      expect(await request.json()).toEqual({ email: "ana@example.test", code: "123456", returnUrl: "/invitacion" });
+      return HttpResponse.json({ returnUrl: "/invitacion" });
+    }),
+  );
+  show("consumer", "/login?returnUrl=%2Finvitacion", completeLogin);
+  expect(await screen.findByRole("link", { name: "Ingresar con Google" })).toHaveAttribute("href",
+    "/api/auth/external/google?returnUrl=%2Finvitacion&access=consumer");
+  expect(signinRedirect).not.toHaveBeenCalled();
+  fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: "ana@example.test" } });
+  fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+  fireEvent.change(await screen.findByRole("textbox", { name: "Código 1" }), { target: { value: "123456" } });
+  fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
+  await waitFor(() => expect(completeLogin).toHaveBeenCalledWith("/invitacion"));
+  expect(signinRedirect).not.toHaveBeenCalled();
+});
+
 beforeAll(async () => {
   await configureI18n([
     { code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true },

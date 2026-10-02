@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { invitationPaths } from "@/shared/api/invitationContract";
+import { loginReturnUrl } from "@/areas/public/auth/lib/returnUrl";
 
 const front = path.resolve(import.meta.dirname, "../..");
 const back = path.resolve(front, "../ArquitecturaBaseMutitenant");
@@ -8,6 +10,13 @@ const readBack = (file: string) => readFileSync(path.join(back, file), "utf8");
 const readFront = (file: string) => readFileSync(path.join(front, file), "utf8");
 
 describe("contrato de invitaciones entre back y front", () => {
+  it("comparte el retorno exacto del ingreso sin escoger un acceso antes de aceptar", () => {
+    const source = readBack("src/ArquitecturaBaseMultitenant.Application/Models/Auth/ReturnUrls.cs");
+    const invitationReturn = /const string InvitationPath = "([^"]+)"/.exec(source)?.[1];
+    expect(invitationReturn).toBe(invitationPaths.page);
+    expect(loginReturnUrl(invitationReturn ?? null)).toBe(invitationPaths.page);
+    expect(loginReturnUrl(`${invitationReturn}?access=consumer`)).toBeUndefined();
+  });
   it("publica preview/accept en JSON y consume las mismas rutas, estados y errores", () => {
     const controller = readBack("src/ArquitecturaBaseMultitenant.Api/Controllers/Auth/InvitationsController.cs");
     const previewRequest = readBack("src/ArquitecturaBaseMultitenant.Api/Contracts/Auth/PreviewInvitationHttpRequest.cs");

@@ -221,8 +221,7 @@ function InvitationFlow() {
               <Button type="button" size="lg" variant="outlineSurface" onClick={returnToOwnAccess}>{t("join.continueAs", { name: typeof auth.user?.profile.name === "string" ? auth.user.profile.name : invitation.currentAccountEmail ?? t("accountFallback") })}</Button>
             </> : invitation.state === "SignInRequired" ? <Button type="button" size="lg" onClick={() => {
               setActionError(null);
-                void auth.signinRedirect({ state: { returnTo: invitationPaths.page }, extraQueryParams: { access: "consumer" } })
-                .catch(() => setActionError(tErrors("server")));
+                void navigate(`/login?${new URLSearchParams({ returnUrl: invitationPaths.page })}`);
             }}>{t("join.signIn")}</Button>
               : <Button type="button" size="lg" disabled={accept.isPending || (invitation.state === "NoAccount" && !acceptedTerms)} onClick={() => void acceptInvitationNow()}>
                 {accept.isPending ? t("join.accepting") : t("join.accept")}

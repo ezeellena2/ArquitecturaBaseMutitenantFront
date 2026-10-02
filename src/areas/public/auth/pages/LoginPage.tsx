@@ -18,7 +18,7 @@ import { GoogleButton } from "../components/GoogleButton";
 import { loginCodeErrorKey } from "../errors";
 import { carriedLoginRedirectError, carryLoginRedirectError, forgetLoginRedirectError } from "../lib/loginRedirectError";
 import type { CodeStep } from "../lib/loginCodeState";
-import { authorizeReturnUrl, safeReturnUrl } from "../lib/returnUrl";
+import { loginReturnUrl, safeReturnUrl } from "../lib/returnUrl";
 import type { PendingDeletionState } from "@/shared/api/types";
 import { accountErrorCodes, pendingDeletionFromProblem } from "@/shared/api/accountContract";
 import { getPendingDeletion, cancelAccountDeletion } from "../api/deletion";
@@ -44,7 +44,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const { t } = useTranslation(["auth", "errors"]);
   const auth = useAuth();
   const [searchParams] = useSearchParams();
-  const returnUrl = authorizeReturnUrl(searchParams.get("returnUrl"));
+  const returnUrl = loginReturnUrl(searchParams.get("returnUrl"));
   const redirectError = searchParams.get("error");
   const [googleError, setGoogleError] = useState<string | null>(() => redirectError ?? carriedLoginRedirectError() ?? null);
   const [sessionExpired] = useState(() => {

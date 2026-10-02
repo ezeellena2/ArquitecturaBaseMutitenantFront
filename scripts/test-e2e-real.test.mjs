@@ -589,7 +589,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             { exact: true }).waitFor();
         }],
         ...[false, true].map((existingAccount) => [
-          `3c: aceptar invitación ${existingAccount ? "con cuenta previa" : "sin cuenta y sin Personal"} desde el .eml`,
+          `3c: aceptar invitación ${existingAccount ? "con cuenta previa sin Personal" : "sin cuenta y sin Personal"} desde el .eml`,
           async (invitationPage, setStage) => {
             const email = `e2e-invitation-${randomUUID()}@example.test`;
             const before = new Set(await pickupFiles());
@@ -612,6 +612,9 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               await enterCode(invitationPage, await codeFromPickup(email, loginBefore));
               await invitationPage.getByRole("button", { name: "Verificar", exact: true }).click();
               await expectPath(invitationPage, "/invitacion", "retorno a la invitación");
+              const beforeAcceptance = await invitationCommand(readyFile, { kind: "inspect", email, invitationId: issued.invitationId });
+              assert.equal(beforeAcceptance.personalSpaces, 0, "Ingresar para aceptar no puede crear Personal para una cuenta previa.");
+              assert.equal(beforeAcceptance.accepted, false, "El ingreso no debe consumir la invitación.");
             }
             setStage("acepta la invitación real");
             const acceptedResponse = invitationPage.waitForResponse((response) =>
@@ -621,14 +624,14 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             }
             await invitationPage.getByRole("button", { name: "Aceptar invitación", exact: true }).click();
             assert.equal((await acceptedResponse).ok(), true, "La aceptación real debe completar su transacción.");
+            const inspection = await invitationCommand(readyFile, { kind: "inspect", email, invitationId: issued.invitationId });
+            assert.equal(inspection.personalSpaces, 0, "Aceptar no puede crear Personal, tampoco para una cuenta previa.");
+            assert.equal(inspection.activeBusinessAccesses, 1);
+            assert.equal(inspection.accepted, true);
+            assert.equal(inspection.boundToIdentity, true);
             if (!existingAccount) {
               await invitationPage.getByRole("heading", { name: "Te sumaste a Empresa E2E", exact: true }).waitFor();
               setStage("comprueba identidad vinculada sin espacio Personal antes de cambiar acceso");
-              const inspection = await invitationCommand(readyFile, { kind: "inspect", email, invitationId: issued.invitationId });
-              assert.equal(inspection.personalSpaces, 0, "Aceptar sin cuenta no puede crear un espacio Personal.");
-              assert.equal(inspection.activeBusinessAccesses, 1);
-              assert.equal(inspection.accepted, true);
-              assert.equal(inspection.boundToIdentity, true);
               await invitationPage.getByRole("button", { name: "Más tarde", exact: true }).click();
             } else {
               await invitationPage.getByRole("heading", { name: "Te sumaste a Empresa E2E", exact: true }).waitFor();
