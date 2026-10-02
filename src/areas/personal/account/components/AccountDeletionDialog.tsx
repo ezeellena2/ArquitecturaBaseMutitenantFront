@@ -31,7 +31,7 @@ export function AccountDeletionDialog({ graceDays, onClose, onComplete }: { grac
     catch (error) { if (!(error instanceof ApiError) || !applyApiErrorToForm(error, form.setError, { reason: "reason" })) reauth.showError(error); }
     finally { setConfirming(false); }
   }
-  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent className="account-dialog md:max-w-[420px]" onCloseAutoFocus={restoreFocus}>
+  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent showCloseButton={false} className="account-dialog md:max-w-[420px]" onCloseAutoFocus={restoreFocus}>
     <form onSubmit={(event) => { if (!reauth.proof) { event.preventDefault(); void reauth.send(); } else { if (reauth.code.length !== 6) reauth.setFailure(t("codeIncomplete")); void form.handleSubmit(confirm)(event); } }} className="flex flex-col gap-5">
       <DialogHeader><DialogTitle>{t("deletionTitle")}</DialogTitle><DialogDescription>{t("deletionHint", { days: graceDays })}</DialogDescription></DialogHeader>
       <FormField label={t("reason")} required error={form.formState.errors.reason?.message}><Textarea {...form.register("reason")} disabled={busy} /></FormField>

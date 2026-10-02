@@ -27,6 +27,7 @@ it("pide prueba a otro método y entrega el ticket al quitar", async () => {
     }),
   );
   renderWithProviders(<ChangeLoginMethodDialog action="remove" method={{ id: "target", type: "Email", value: "nuevo@example.test", isVerified: true, isPrimary: false, canRemove: true, canMakePrimary: true }} onClose={() => {}} onComplete={complete} />);
+  expect(screen.queryByRole("button", { name: "Cerrar" })).not.toBeInTheDocument();
   expect(await screen.findByText(/a\*\*\*@example.test/)).toBeVisible();
   expect(screen.getByRole("button", { name: "Quitar" })).toBeEnabled();
   await user.click(screen.getByRole("button", { name: "Quitar" }));

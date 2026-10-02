@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { configureI18n, changeCulture } from "@/shared/i18n";
@@ -16,6 +16,9 @@ describe("métodos de cuenta", () => {
     const onAction = vi.fn();
     renderWithProviders(<LoginMethodsTable methods={[method]} onAction={onAction} />);
     expect(screen.getByText("Principal")).toBeVisible();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(screen.getByRole("list")).toBeVisible();
+    expect(screen.getByText("Principal")).not.toHaveClass("rounded-full");
     await user.click(screen.getByRole("button", { name: "Acciones de ana@example.test" }));
     expect(screen.getByRole("menuitem", { name: "Quitar" })).toHaveAttribute("aria-disabled", "true");
     expect(onAction).not.toHaveBeenCalled();
@@ -27,9 +30,17 @@ describe("métodos de cuenta", () => {
     const pending = { ...method, id: "pending", isPrimary: false, isVerified: false, canRemove: true };
     renderWithProviders(<LoginMethodsTable methods={[pending]} onAction={onAction} />);
     expect(screen.getByText("Sin verificar")).toBeVisible();
-    screen.getByRole("button", { name: "Acciones de ana@example.test" }).focus();
-    await user.keyboard("{Enter}");
-    await user.click(await screen.findByRole("menuitem", { name: "Verificar" }));
+    const row = screen.getByRole("listitem");
+    await user.click(within(row).getByRole("button", { name: "Verificar" }));
     expect(onAction).toHaveBeenCalledWith("verify", pending);
+  });
+
+  it("muestra Google sin vincular en la misma lista cuando puede agregarse", async () => {
+    renderWithProviders(<LoginMethodsTable methods={[]} canLinkGoogle onAction={() => {}} />);
+
+    const row = screen.getByRole("listitem");
+    expect(within(row).getByText("Google")).toBeVisible();
+    expect(within(row).getByText("Sin vincular")).toBeVisible();
+    expect(within(row).getByRole("button", { name: "Vincular Google" })).toBeVisible();
   });
 });

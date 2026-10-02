@@ -62,24 +62,29 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   }
   function discard() { form.reset(); setFailure(undefined); }
   const actions = <>
-    <Button type="button" variant="outline" onClick={discard} disabled={!isDirty || isSubmitting}>{t(mobile ? "discardMobile" : "discard")}</Button>
+    <Button type="button" variant="outline" onClick={discard} disabled={isSubmitting}>{t(mobile ? "discardMobile" : "discard")}</Button>
     <Button type="submit" form="account-profile" disabled={!isDirty || isSubmitting}>{t(mobile ? "saveMobile" : "save")}</Button>
   </>;
-  const dirty = isDirty ? <span className="rounded-full bg-[var(--alerta-t)] px-2.5 py-1 text-xs font-medium text-[var(--alerta)]">{t("unsaved")}</span> : null;
+  const dirty = isDirty ? <span className="font-medium text-[var(--alerta)]">{t("unsaved")}</span> : null;
   return <>
-    <Page title={t("title")} icon={UserRound} status={!mobile ? dirty : undefined} actions={!mobile ? actions : undefined} bodyClassName="p-3 pb-20 md:px-6 md:py-5 md:pb-5">
-      {mobile && dirty ? <div className="mb-3">{dirty}</div> : null}
+    <Page title={t("title")} icon={UserRound} status={dirty} actions={!mobile ? actions : undefined}>
       <ConcurrencyBanner error={failure} isDirty={isDirty} onSeeNew={() => { void reload(); }} onContinueEditing={() => setFailure(undefined)} />
       {failure && (!(failure instanceof ApiError) || failure.code !== "General.ConcurrencyConflict") ? <FormError className="mb-3" message={failure instanceof Error ? failure.message : errors("server")} /> : null}
-      <form id="account-profile" aria-label={t("title")} onSubmit={form.handleSubmit(save)} className="grid grid-cols-1 gap-3 rounded-xl border border-[var(--borde)] bg-[var(--lado-activo)] p-4 text-[13px] text-[var(--t1)] md:grid-cols-2 md:gap-x-5 md:gap-y-3.5 md:p-5 [&_label]:text-xs [&_label]:font-medium [&_label]:text-[var(--t2)] [&_input]:border-[var(--borde)] [&_input]:text-[13px] [&_[data-slot=select-trigger]]:border-[var(--borde)] [&_[data-slot=select-trigger]]:text-[13px]">
-        <h2 className="col-span-full mt-1 -mb-1 text-[15px] font-semibold">{t("data")}</h2>
-        <div className="col-span-full"><FormField label={t("name")} error={form.formState.errors.displayName?.message}><Input {...form.register("displayName")} autoComplete="name" /></FormField></div>
-        <Controller control={form.control} name="culture" render={({ field }) => <FormField label={t("culture")} error={form.formState.errors.culture?.message}><CultureSelect value={field.value} onChange={field.onChange} variant="compact" placeholder={t("culture")} /></FormField>} />
-        <Controller control={form.control} name="timeZoneId" render={({ field }) => <FormField label={t("timeZone")} error={form.formState.errors.timeZoneId?.message}><TimeZoneSelect value={field.value} onChange={field.onChange} variant="compact" placeholder={t("timeZone")} /></FormField>} />
-        {children}
+      <form id="account-profile" aria-label={t("title")} onSubmit={form.handleSubmit(save)}>
+        <section role="region" aria-labelledby="account-data-title" className="overflow-hidden rounded-[12px] border border-[var(--borde)] bg-[var(--lado-activo)]">
+          <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]">
+            <h2 id="account-data-title">{t("data")}</h2>
+          </header>
+          <div className="flex flex-wrap items-start gap-4 px-4 py-4 lg:px-5 lg:py-4">
+            <div className="w-full max-w-full lg:w-[360px]"><FormField label={t("name")} error={form.formState.errors.displayName?.message}><Input {...form.register("displayName")} autoComplete="name" /></FormField></div>
+            <div className="w-full max-w-full lg:w-[260px]"><Controller control={form.control} name="culture" render={({ field }) => <FormField label={t("culture")} error={form.formState.errors.culture?.message}><CultureSelect value={field.value} onChange={field.onChange} variant="compact" placeholder={t("culture")} /></FormField>} /></div>
+            <div className="w-full max-w-full lg:w-[260px]"><Controller control={form.control} name="timeZoneId" render={({ field }) => <FormField label={t("timeZone")} error={form.formState.errors.timeZoneId?.message}><TimeZoneSelect value={field.value} onChange={field.onChange} variant="compact" placeholder={t("timeZone")} /></FormField>} /></div>
+          </div>
+        </section>
       </form>
+      {children}
     </Page>
-    {mobile ? <div data-account-actions className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t border-[var(--borde)] bg-[var(--lado-activo)] px-3 py-2.5 [&>button]:flex-1">{actions}</div> : null}
+    {mobile ? <div role="group" aria-label={t("pageActions")} data-account-actions className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t border-[var(--borde)] bg-[var(--lado-activo)] px-3 py-2.5 [&>button]:flex-1">{actions}</div> : null}
     <ConfirmDialog open={guard.isBlocked} onOpenChange={(open) => { if (!open) guard.stay(); }} title={errors("unsaved.title")} description={errors("unsaved.description")} confirmLabel={errors("unsaved.leave")} cancelLabel={errors("unsaved.continueEditing")} destructive onConfirm={guard.leave} />
   </>;
 }

@@ -36,7 +36,7 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, o
     finally { setSaving(false); }
   }
   const busy = saving || reauth.isPending;
-  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent className="account-dialog md:max-w-[420px]" onCloseAutoFocus={restoreFocus}>
+  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent showCloseButton={action !== "remove"} className="account-dialog md:max-w-[420px]" onCloseAutoFocus={restoreFocus}>
     <form className="flex flex-col gap-5" onSubmit={(event) => { event.preventDefault(); void confirm(); }}>
       <DialogHeader><DialogTitle>{t(title)}</DialogTitle><DialogDescription>{reauth.proof ? t(adding ? "reauthHint" : action === "primary" ? "primaryHint" : "removeHint", { value: method?.value, backup: reauth.proof.destination }) : null}</DialogDescription></DialogHeader>
       {reauth.proof ? <OtpInput length={6} value={reauth.code} onChange={(value) => { reauth.setCode(value); reauth.setFailure(null); }} label={t("code")} autoFocus disabled={busy} /> : null}

@@ -1,7 +1,7 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { HttpResponse, http } from "msw";
-import { beforeEach, describe, expect, it } from "vitest";
+import { delay, HttpResponse, http } from "msw";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { consumerWithoutOrganizations } from "@/test/mocks/currentUsers";
@@ -12,6 +12,70 @@ import { referenceDataFixture } from "@/test/mocks/handlers";
 beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); });
 
 describe("Mi cuenta", () => {
+  it("muestra carga, error y reintento de las formas de acceso", async () => {
+    const user = userEvent.setup();
+    let attempts = 0;
+    server.use(http.get("/api/me/login-methods", async () => {
+      attempts++;
+      if (attempts === 1) {
+        await delay(80);
+        return HttpResponse.json({ code: "General.Unexpected" }, { status: 500 });
+      }
+      return HttpResponse.json({ methods: [], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30 });
+    }));
+    renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+
+    expect(await screen.findByText("Cargando…")).toBeVisible();
+    expect(await screen.findByRole("alert")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(await screen.findByRole("region", { name: "Cómo entrás" })).toBeVisible();
+    expect(attempts).toBe(2);
+  });
+
+  it("mantiene la sección vacía con su acción para agregar un acceso", async () => {
+    server.use(http.get("/api/me/login-methods", () => HttpResponse.json({
+      methods: [], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30,
+    })));
+    renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+
+    const signIn = await screen.findByRole("region", { name: "Cómo entrás" });
+    expect(within(signIn).getByRole("button", { name: "Agregar correo o teléfono" })).toBeVisible();
+    expect(await within(signIn).findByRole("list")).toBeEmptyDOMElement();
+  });
+
+  it("separa datos, formas de acceso y privacidad en las tres secciones del tablero", async () => {
+    renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+
+    const details = await screen.findByRole("region", { name: "Tus datos" });
+    const signIn = screen.getByRole("region", { name: "Cómo entrás" });
+    const privacy = screen.getByRole("region", { name: "Privacidad" });
+    expect(details.compareDocumentPosition(signIn) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(signIn.compareDocumentPosition(privacy) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Descartar cambios" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
+    expect(within(signIn).getByRole("button", { name: "Agregar correo o teléfono" })).toBeVisible();
+  });
+
+  it("en teléfono deja las acciones abajo y muestra el borrador en la segunda línea del título", async () => {
+    vi.stubGlobal("matchMedia", (query: string) => ({
+      matches: query === "(max-width: 767px)", media: query,
+      addEventListener: () => {}, removeEventListener: () => {},
+    }));
+    try {
+      const user = userEvent.setup();
+      renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+      const actions = await screen.findByRole("group", { name: "Acciones de la cuenta" });
+      expect(actions).toHaveAttribute("data-account-actions");
+      expect(within(actions).getByRole("button", { name: "Descartar" })).toBeEnabled();
+      const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
+      await user.type(name, " nuevo");
+      expect(screen.getByText("Cambios sin guardar")).toHaveClass("text-[var(--alerta)]");
+      expect(screen.getByText("Cambios sin guardar")).not.toHaveClass("rounded-full");
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it.each(["Agregar correo o teléfono", "Vincular Google"])("pide reautenticación antes de %s", async (label) => {
     const user = userEvent.setup();
     let additions = 0;
