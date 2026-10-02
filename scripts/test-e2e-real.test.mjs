@@ -703,16 +703,24 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await openAccount(accountPage);
           await addPersonalEmail(accountPage, originalEmail);
         }],
-        ["3b: quitar un método con código enviado a otro", async (accountPage) => {
-          const originalEmail = await registerPerson(accountPage);
+        ["3b: quitar un método con código enviado a otro", async (accountPage, setStage) => {
+          setStage("registra la identidad para retirar un método");
+          const originalEmail = await registerPerson(accountPage, undefined, setStage);
+          setStage("abre Mi cuenta");
           await openAccount(accountPage);
+          setStage("agrega y verifica el método que va a retirar");
           const addedEmail = await addPersonalEmail(accountPage, originalEmail);
           const before = new Set(await pickupFiles());
+          setStage("abre las acciones del método agregado");
           await accountPage.getByRole("button", { name: `Acciones de ${addedEmail}`, exact: true }).click();
+          setStage("solicita reautenticación para quitar el método");
           await openReauthDialog(accountPage, () => accountPage.getByRole("menuitem", { name: "Quitar", exact: true }).click(), "Quitar");
+          setStage("lee y verifica el código del método original");
           await enterCode(accountPage, await codeFromPickup(originalEmail, before));
+          setStage("confirma la baja del método agregado");
           await accountPage.getByRole("dialog").getByRole("button", { name: "Quitar", exact: true }).click();
           await accountPage.getByRole("dialog").waitFor({ state: "hidden" });
+          setStage("comprueba que el método ya no aparezca en la cuenta");
           assert.equal(await accountPage.getByText(addedEmail, { exact: true }).count(), 0);
         }],
         ["3b: pedir baja y cancelarla ingresando durante la gracia", async (accountPage) => {
