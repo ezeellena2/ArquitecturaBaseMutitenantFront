@@ -51,6 +51,9 @@ describe("Mi cuenta", () => {
     const privacy = screen.getByRole("region", { name: "Privacidad" });
     expect(details.compareDocumentPosition(signIn) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(signIn.compareDocumentPosition(privacy) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const deletionAction = within(privacy).getByRole("button", { name: "Dar de baja" });
+    expect(deletionAction).toHaveAttribute("data-variant", "outline");
+    expect(deletionAction).toHaveClass("border-[var(--peligro)]", "text-[var(--peligro)]");
     expect(screen.getByRole("button", { name: "Descartar cambios" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
     expect(within(signIn).getByRole("button", { name: "Agregar correo o teléfono" })).toBeVisible();

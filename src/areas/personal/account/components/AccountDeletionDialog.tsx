@@ -37,7 +37,7 @@ export function AccountDeletionDialog({ graceDays, onClose, onComplete }: { grac
       <FormField label={t("reason")} required error={form.formState.errors.reason?.message}><Textarea {...form.register("reason")} disabled={busy} /></FormField>
       {reauth.proof ? <div className="flex flex-col gap-2"><p className="text-[13px] font-semibold text-[var(--t2)]">{t("deletionCode", { destination: reauth.proof.destination })}</p><OtpInput length={6} value={reauth.code} onChange={(value) => { reauth.setCode(value); reauth.setFailure(null); }} label={t("code")} disabled={busy} invalid={!!reauth.failure} /></div> : null}
       <FormError message={reauth.failure} />
-      <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("cancel")}</Button><Button type="submit" variant="destructive" disabled={busy || reauth.retry.isRunning || (!reauth.proof && !reauth.failure)}>{reauth.retry.label ?? t("deletion")}</Button></DialogFooter>
+      <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("cancel")}</Button><Button type="submit" variant="destructive" disabled={busy || reauth.retry.isRunning || (!reauth.proof && !reauth.failure)}>{reauth.retry.label ?? t("requestDeletion")}</Button></DialogFooter>
     </form>
   </DialogContent></Dialog>;
 }

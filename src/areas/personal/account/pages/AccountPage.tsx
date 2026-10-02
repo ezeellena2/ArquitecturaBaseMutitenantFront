@@ -74,7 +74,7 @@ export function AccountPage() {
       <div className="flex min-h-14 items-center gap-3 border-b border-[var(--borde)] px-4 py-2">
         <Trash2 size={16} className="shrink-0 text-[var(--t2)]" aria-hidden="true" />
         <span className="flex min-w-0 flex-1 flex-col"><span className="font-medium">{t("account:deletion")}</span>{methods.data ? <span className="text-[13px] text-[var(--t3)]">{t("account:deletionGrace", { days: methods.data.accountDeletionGraceDays })}</span> : null}</span>
-        <Button type="button" variant="destructive" size="sm" disabled={!methods.data || methods.isPending} onClick={() => setDeletionOpen(true)}>{t("account:requestDeletion")}</Button>
+        <Button type="button" variant="outline" size="sm" className="border-[var(--peligro)] text-[var(--peligro)] hover:bg-[var(--peligro-t)] hover:text-[var(--peligro)]" disabled={!methods.data || methods.isPending} onClick={() => setDeletionOpen(true)}>{t("account:requestDeletion")}</Button>
       </div>
     </section>
   </AccountProfileForm>
