@@ -527,17 +527,33 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           setStage("inicia baja de cuenta como único Dueño y comprueba el bloqueo");
           await openAccount(rolesPage, "Empresa E2E");
           const deletionCodeBefore = new Set(await pickupFiles());
+          let deletionReauth = rolesPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === "/api/me/reauth" && response.request().method() === "POST");
           await rolesPage.getByRole("button", { name: "Dar de baja", exact: true }).click();
           const deletionDialog = rolesPage.getByRole("dialog");
           await deletionDialog.getByRole("heading", { name: "¿Dar de baja tu cuenta?" }).waitFor();
+          let reauthResponse = await deletionReauth;
+          for (let attempt = 0; reauthResponse.status() === 429 && attempt < 5; attempt++) {
+            const problem = await reauthResponse.json();
+            assert.equal(typeof problem.retryAfter, "number");
+            await delay((problem.retryAfter + 1) * 1000);
+            deletionReauth = rolesPage.waitForResponse((response) =>
+              new URL(response.url()).pathname === "/api/me/reauth" && response.request().method() === "POST");
+            await deletionDialog.locator('button[type="submit"]').click();
+            reauthResponse = await deletionReauth;
+          }
+          assert.equal(reauthResponse.status(), 202,
+            `La reautenticación debe aceptar el código después del cooldown (HTTP ${reauthResponse.status()}).`);
           await enterCode(rolesPage, await codeFromPickup(businessEmail, deletionCodeBefore));
           await deletionDialog.getByRole("textbox", { name: "Motivo" }).fill("Comprobación E4 del único Dueño");
           const deletionResponsePromise = rolesPage.waitForResponse((response) =>
             new URL(response.url()).pathname === "/api/me/deletion" && response.request().method() === "POST");
-          await deletionDialog.getByRole("button", { name: "Dar de baja mi cuenta", exact: true }).click();
+          await deletionDialog.getByRole("button", { name: "Dar de baja", exact: true }).click();
           const deletionResponse = await deletionResponsePromise;
           assert.equal(deletionResponse.status(), 409, "No se puede iniciar la baja del único Dueño.");
           assert.equal((await deletionResponse.json()).code, "Legal.AccountDeletion.LastAdmin");
+          await deletionDialog.getByText("Antes de pedir la baja, cada Organización activa debe tener otra persona con el rol Dueño.",
+            { exact: true }).waitFor();
         }],
         ...[false, true].map((existingAccount) => [
           `3c: aceptar invitación ${existingAccount ? "con cuenta previa" : "sin cuenta y sin Personal"} desde el .eml`,
@@ -670,7 +686,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           const email = await registerPerson(accountPage);
           await openAccount(accountPage);
           const before = new Set(await pickupFiles());
-          await openReauthDialog(accountPage, () => accountPage.getByRole("button", { name: "Dar de baja", exact: true }).click(), "Dar de baja mi cuenta");
+          await openReauthDialog(accountPage, () => accountPage.getByRole("button", { name: "Dar de baja", exact: true }).click(), "Dar de baja");
           const dialog = accountPage.getByRole("dialog");
           await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Recorrido propio del E2E");
           // El rótulo del código de baja incluye el destino enmascarado del lienzo.
@@ -678,7 +694,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           const boxes = dialog.locator('input[inputmode="numeric"]');
           assert.equal(await boxes.count(), 6);
           for (let index = 0; index < 6; index++) await boxes.nth(index).fill(code[index]);
-          await dialog.getByRole("button", { name: "Dar de baja mi cuenta", exact: true }).click();
+          await dialog.getByRole("button", { name: "Dar de baja", exact: true }).click();
           await accountPage.getByRole("heading", { name: "Cerramos tu sesión" }).waitFor();
           await accountPage.goto(new URL("/login", baseUrl).href);
           await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
