@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { configureI18n } from "@/shared/i18n";
@@ -12,7 +13,7 @@ import { platformNavigation } from "./platform";
 vi.mock("@/tenancy/AccessMenu", () => ({ AccessMenu: () => <button type="button">{"Cuenta"}</button> }));
 vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: {
   displayName: "Ana", email: "ana@example.com", activeTenantId: "empresa-a",
-  organizations: [{ id: "empresa-a", name: "Empresa A" }],
+  organizations: [{ id: "empresa-a", name: "Empresa A" }], permissions: ["roles.read"],
 } }) }));
 
 beforeAll(async () => {
@@ -32,15 +33,19 @@ describe("navegación por acceso en 3a", () => {
     expect(screen.queryByText("Organizaciones")).not.toBeInTheDocument();
   });
 
-  it("Empresa muestra Inicio y oculta Administración hasta que existan sus destinos", () => {
+  it("Empresa muestra Roles dentro de Gestión de usuarios en el panel de administración", async () => {
     expect(businessNavigation.links.map((entry) => entry.to)).toEqual(["/org"]);
-    expect(businessNavigation.administration).toBeNull();
-    render(<MemoryRouter initialEntries={["/org"]}><BusinessLayout><h1>{"Inicio organización"}</h1></BusinessLayout></MemoryRouter>);
-    expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("href", "/org");
+    expect(businessNavigation.administration?.sections?.[0].links).toMatchObject([
+      { labelKey: "navigation.roles", to: "/org/roles", permission: "roles.read" },
+    ]);
+    render(<MemoryRouter initialEntries={["/org/roles"]}><BusinessLayout><h1>{"Inicio organización"}</h1></BusinessLayout></MemoryRouter>);
+    expect(within(screen.getByRole("complementary", { name: "Navegación principal" })).getByRole("link", { name: "Inicio" })).toHaveAttribute("href", "/org");
     expect(screen.getByText("Empresa A")).toBeVisible();
-    expect(screen.queryByRole("button", { name: "Administración" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Administración" }));
+    expect(screen.getByRole("navigation", { name: "Administración" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Gestión de usuarios" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("link", { name: "Roles y permisos" })).toHaveAttribute("href", "/org/roles");
     expect(screen.queryByRole("link", { name: "Usuarios" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Roles y permisos" })).not.toBeInTheDocument();
   });
 
   it("Plataforma oculta los destinos de E9 hasta que existan sus rutas", () => {

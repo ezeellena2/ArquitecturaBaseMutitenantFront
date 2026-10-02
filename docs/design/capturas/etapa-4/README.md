@@ -15,3 +15,19 @@ Las capturas se generan con `npm run test:capturas:etapa-4` y `node scripts/capt
 - El marco de la app mantiene sus controles de navegación y usuario, que no aparecen idénticos en cada tablero Perfil personal; se verifican contra Criterio-Marco y no se alteran en una captura de contenido.
 
 Las diferencias de alcance de WhatsApp y exportación ya tienen etapa asignada en el plan maestro; no agregan otra deuda al backlog.
+
+## Roles y permisos
+
+Las capturas cubren `Roles`, `M-Roles`, `Rol` y `M-Rol`: listado con siete roles, alta sin alcance elegido, edición de Recursos humanos, edición de Solo lectura y consulta de Dueño. Se generaron cinco estados en 1440×900 y sus cinco versiones en 390×844; el detalle por pareja está en `manifest.json` y `roles/`.
+
+Las pantallas copiaron el lienzo v60 y usan respuestas visuales locales sin escribir datos. Los roles de sistema llegan de la API con nombres internos: la interfaz muestra «Dueño» y «Administrador» y sus descripciones aprobadas.
+
+Las diferencias y motivos son:
+
+- El panel Administración de la maqueta muestra también Usuarios, Empresas, Configuración, Página pública, WhatsApp y Auditoría. La app deja visible solo Roles y permisos; las demás rutas pertenecen a etapas posteriores y no se simulan.
+- Al crear un rol, la app ofrece «Toda la organización». Las opciones por empresa dependen del catálogo y gestión de Empresas de E6; hasta entonces una persona no puede crear un rol con alcance específico ni elegir una empresa.
+- La API entrega el identificador de la empresa, no su nombre. En el listado, los roles de alcance específico muestran «Una empresa específica» en vez de los nombres de ejemplo de la maqueta.
+- En teléfono la segunda línea de la banda conserva «Vale en … · De sistema» y puede truncarse por el ancho disponible; el tablero prioriza «De sistema» en su segunda línea. El detalle y los controles siguen accesibles.
+- Las casillas de roles de sistema quedan deshabilitadas y toman el tono de la marca con opacidad reducida; la maqueta las dibuja en gris. El contraste expresa el mismo estado de solo lectura.
+
+Las capturas del lienzo son referencias de contenido y disposición; los nombres de empresas dibujados son ilustrativos y no se insertan en la base de desarrollo ni en el catálogo de respuestas del backend.

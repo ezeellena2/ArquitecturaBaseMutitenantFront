@@ -955,6 +955,1909 @@
         ],
         "readySelector": "[role=\"dialog\"]"
       }
+    },
+    {
+      "id": "roles-lista-escritorio",
+      "pair": "roles-lista",
+      "group": "roles",
+      "board": "Roles",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles",
+        "captureMode": "harness",
+        "userFixture": "visual-role-manager",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "role-company-admin",
+                  "name": "CompanyAdmin",
+                  "description": null,
+                  "scope": "AnyCompany",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 2,
+                  "permissions": [
+                    "company.members.read",
+                    "company.members.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "20000000-0000-0000-0000-000000000001",
+                  "isSystemRole": false,
+                  "userCount": 4,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-sur",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "20000000-0000-0000-0000-000000000002",
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-north",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "20000000-0000-0000-0000-000000000003",
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "scope": "Company"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "role-owner",
+                  "name": "TenantAdmin",
+                  "description": null,
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage",
+                    "roles.read",
+                    "roles.manage",
+                    "roles.assign",
+                    "companies.read",
+                    "companies.manage",
+                    "settings.read",
+                    "settings.manage",
+                    "audit.read",
+                    "publicpage.manage",
+                    "company.members.read",
+                    "company.members.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-human-resources",
+                  "name": "Recursos humanos",
+                  "description": "Invita, edita y deshabilita usuarios.",
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-auditor",
+                  "name": "Auditor",
+                  "description": "Ve los usuarios y la auditoría. No cambia nada.",
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "audit.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "scope": "Organization"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "role-owner",
+                  "name": "TenantAdmin",
+                  "description": null,
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage",
+                    "roles.read",
+                    "roles.manage",
+                    "roles.assign",
+                    "companies.read",
+                    "companies.manage",
+                    "settings.read",
+                    "settings.manage",
+                    "audit.read",
+                    "publicpage.manage",
+                    "company.members.read",
+                    "company.members.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-human-resources",
+                  "name": "Recursos humanos",
+                  "description": "Invita, edita y deshabilita usuarios.",
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-auditor",
+                  "name": "Auditor",
+                  "description": "Ve los usuarios y la auditoría. No cambia nada.",
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "audit.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-admin",
+                  "name": "CompanyAdmin",
+                  "description": null,
+                  "scope": "AnyCompany",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 2,
+                  "permissions": [
+                    "company.members.read",
+                    "company.members.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "20000000-0000-0000-0000-000000000001",
+                  "isSystemRole": false,
+                  "userCount": 4,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-sur",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "20000000-0000-0000-0000-000000000002",
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-north",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "20000000-0000-0000-0000-000000000003",
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readySelector": "main",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Administración"
+          }
+        ],
+        "readyText": "Dueño"
+      }
+    },
+    {
+      "id": "roles-lista-movil",
+      "pair": "roles-lista",
+      "group": "roles",
+      "board": "M-Roles",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles",
+        "captureMode": "harness",
+        "userFixture": "visual-role-manager",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "role-company-admin",
+                  "name": "CompanyAdmin",
+                  "description": null,
+                  "scope": "AnyCompany",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 2,
+                  "permissions": [
+                    "company.members.read",
+                    "company.members.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "20000000-0000-0000-0000-000000000001",
+                  "isSystemRole": false,
+                  "userCount": 4,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-sur",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "20000000-0000-0000-0000-000000000002",
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-north",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "20000000-0000-0000-0000-000000000003",
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "scope": "Company"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "role-owner",
+                  "name": "TenantAdmin",
+                  "description": null,
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage",
+                    "roles.read",
+                    "roles.manage",
+                    "roles.assign",
+                    "companies.read",
+                    "companies.manage",
+                    "settings.read",
+                    "settings.manage",
+                    "audit.read",
+                    "publicpage.manage",
+                    "company.members.read",
+                    "company.members.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-human-resources",
+                  "name": "Recursos humanos",
+                  "description": "Invita, edita y deshabilita usuarios.",
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-auditor",
+                  "name": "Auditor",
+                  "description": "Ve los usuarios y la auditoría. No cambia nada.",
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "audit.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "scope": "Organization"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "role-owner",
+                  "name": "TenantAdmin",
+                  "description": null,
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage",
+                    "roles.read",
+                    "roles.manage",
+                    "roles.assign",
+                    "companies.read",
+                    "companies.manage",
+                    "settings.read",
+                    "settings.manage",
+                    "audit.read",
+                    "publicpage.manage",
+                    "company.members.read",
+                    "company.members.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-human-resources",
+                  "name": "Recursos humanos",
+                  "description": "Invita, edita y deshabilita usuarios.",
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-auditor",
+                  "name": "Auditor",
+                  "description": "Ve los usuarios y la auditoría. No cambia nada.",
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "audit.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-admin",
+                  "name": "CompanyAdmin",
+                  "description": null,
+                  "scope": "AnyCompany",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 2,
+                  "permissions": [
+                    "company.members.read",
+                    "company.members.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "20000000-0000-0000-0000-000000000001",
+                  "isSystemRole": false,
+                  "userCount": 4,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-sur",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "20000000-0000-0000-0000-000000000002",
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-north",
+                  "name": "Solo lectura",
+                  "description": "Ve los miembros de la empresa. No cambia nada.",
+                  "scope": "SpecificCompany",
+                  "companyId": "20000000-0000-0000-0000-000000000003",
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-09-27T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Dueño"
+      }
+    },
+    {
+      "id": "rol-crear-escritorio",
+      "pair": "rol-crear",
+      "group": "roles",
+      "board": "Rol",
+      "props": {
+        "modo": "Crear un rol"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Fnew",
+        "captureMode": "harness",
+        "userFixture": "visual-role-manager",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/permissions",
+            "body": [
+              {
+                "area": "users",
+                "name": "Usuarios",
+                "permissions": [
+                  {
+                    "code": "users.read",
+                    "name": "Ver usuarios",
+                    "description": "El listado de usuarios y sus datos."
+                  },
+                  {
+                    "code": "users.invite",
+                    "name": "Invitar usuarios",
+                    "description": "Invitar, reenviar y revocar invitaciones."
+                  },
+                  {
+                    "code": "users.manage",
+                    "name": "Administrar usuarios",
+                    "description": "Editar, deshabilitar y activar usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "roles",
+                "name": "Roles",
+                "permissions": [
+                  {
+                    "code": "roles.read",
+                    "name": "Ver roles",
+                    "description": "Los roles y sus permisos."
+                  },
+                  {
+                    "code": "roles.manage",
+                    "name": "Administrar roles",
+                    "description": "Crear, editar e inactivar roles."
+                  },
+                  {
+                    "code": "roles.assign",
+                    "name": "Asignar roles",
+                    "description": "Dar y quitar roles a los usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "companies",
+                "name": "Empresas",
+                "permissions": [
+                  {
+                    "code": "companies.read",
+                    "name": "Ver empresas",
+                    "description": "El listado de empresas de la organización."
+                  },
+                  {
+                    "code": "companies.manage",
+                    "name": "Administrar empresas",
+                    "description": "Crear y administrar empresas."
+                  }
+                ]
+              },
+              {
+                "area": "settings",
+                "name": "Configuración",
+                "permissions": [
+                  {
+                    "code": "settings.read",
+                    "name": "Ver configuración",
+                    "description": "La configuración de la organización."
+                  },
+                  {
+                    "code": "settings.manage",
+                    "name": "Administrar configuración",
+                    "description": "Cambiar la configuración de la organización."
+                  }
+                ]
+              },
+              {
+                "area": "audit",
+                "name": "Auditoría",
+                "permissions": [
+                  {
+                    "code": "audit.read",
+                    "name": "Ver auditoría",
+                    "description": "Los eventos de auditoría."
+                  }
+                ]
+              },
+              {
+                "area": "publicpage",
+                "name": "Página pública",
+                "permissions": [
+                  {
+                    "code": "publicpage.manage",
+                    "name": "Administrar página pública",
+                    "description": "Configurar la página pública."
+                  }
+                ]
+              },
+              {
+                "area": "company",
+                "name": "Miembros de empresa",
+                "permissions": [
+                  {
+                    "code": "company.members.read",
+                    "name": "Ver miembros",
+                    "description": "El listado de miembros de la empresa."
+                  },
+                  {
+                    "code": "company.members.manage",
+                    "name": "Administrar miembros",
+                    "description": "Editar y administrar miembros de la empresa."
+                  }
+                ]
+              }
+            ],
+            "status": 200
+          }
+        ],
+        "readySelector": "main",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Administración"
+          }
+        ],
+        "readyText": "Elegí dónde vale el rol para ver sus permisos."
+      }
+    },
+    {
+      "id": "rol-crear-movil",
+      "pair": "rol-crear",
+      "group": "roles",
+      "board": "M-Rol",
+      "props": {
+        "modo": "Crear un rol"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Fnew",
+        "captureMode": "harness",
+        "userFixture": "visual-role-manager",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/permissions",
+            "body": [
+              {
+                "area": "users",
+                "name": "Usuarios",
+                "permissions": [
+                  {
+                    "code": "users.read",
+                    "name": "Ver usuarios",
+                    "description": "El listado de usuarios y sus datos."
+                  },
+                  {
+                    "code": "users.invite",
+                    "name": "Invitar usuarios",
+                    "description": "Invitar, reenviar y revocar invitaciones."
+                  },
+                  {
+                    "code": "users.manage",
+                    "name": "Administrar usuarios",
+                    "description": "Editar, deshabilitar y activar usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "roles",
+                "name": "Roles",
+                "permissions": [
+                  {
+                    "code": "roles.read",
+                    "name": "Ver roles",
+                    "description": "Los roles y sus permisos."
+                  },
+                  {
+                    "code": "roles.manage",
+                    "name": "Administrar roles",
+                    "description": "Crear, editar e inactivar roles."
+                  },
+                  {
+                    "code": "roles.assign",
+                    "name": "Asignar roles",
+                    "description": "Dar y quitar roles a los usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "companies",
+                "name": "Empresas",
+                "permissions": [
+                  {
+                    "code": "companies.read",
+                    "name": "Ver empresas",
+                    "description": "El listado de empresas de la organización."
+                  },
+                  {
+                    "code": "companies.manage",
+                    "name": "Administrar empresas",
+                    "description": "Crear y administrar empresas."
+                  }
+                ]
+              },
+              {
+                "area": "settings",
+                "name": "Configuración",
+                "permissions": [
+                  {
+                    "code": "settings.read",
+                    "name": "Ver configuración",
+                    "description": "La configuración de la organización."
+                  },
+                  {
+                    "code": "settings.manage",
+                    "name": "Administrar configuración",
+                    "description": "Cambiar la configuración de la organización."
+                  }
+                ]
+              },
+              {
+                "area": "audit",
+                "name": "Auditoría",
+                "permissions": [
+                  {
+                    "code": "audit.read",
+                    "name": "Ver auditoría",
+                    "description": "Los eventos de auditoría."
+                  }
+                ]
+              },
+              {
+                "area": "publicpage",
+                "name": "Página pública",
+                "permissions": [
+                  {
+                    "code": "publicpage.manage",
+                    "name": "Administrar página pública",
+                    "description": "Configurar la página pública."
+                  }
+                ]
+              },
+              {
+                "area": "company",
+                "name": "Miembros de empresa",
+                "permissions": [
+                  {
+                    "code": "company.members.read",
+                    "name": "Ver miembros",
+                    "description": "El listado de miembros de la empresa."
+                  },
+                  {
+                    "code": "company.members.manage",
+                    "name": "Administrar miembros",
+                    "description": "Editar y administrar miembros de la empresa."
+                  }
+                ]
+              }
+            ],
+            "status": 200
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Elegí dónde vale el rol para ver sus permisos."
+      }
+    },
+    {
+      "id": "rol-recursos-humanos-escritorio",
+      "pair": "rol-recursos-humanos",
+      "group": "roles",
+      "board": "Rol",
+      "props": {
+        "modo": "Editar el rol Recursos humanos"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Frole-human-resources",
+        "captureMode": "harness",
+        "userFixture": "visual-role-manager",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/roles/role-human-resources",
+            "body": {
+              "id": "role-human-resources",
+              "name": "Recursos humanos",
+              "description": "Invita, edita y deshabilita usuarios.",
+              "scope": "Organization",
+              "companyId": null,
+              "isSystemRole": false,
+              "userCount": 0,
+              "permissions": [
+                "users.read",
+                "users.invite",
+                "users.manage"
+              ],
+              "version": 1,
+              "createdAtUtc": "2026-09-27T12:00:00Z"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/permissions",
+            "body": [
+              {
+                "area": "users",
+                "name": "Usuarios",
+                "permissions": [
+                  {
+                    "code": "users.read",
+                    "name": "Ver usuarios",
+                    "description": "El listado de usuarios y sus datos."
+                  },
+                  {
+                    "code": "users.invite",
+                    "name": "Invitar usuarios",
+                    "description": "Invitar, reenviar y revocar invitaciones."
+                  },
+                  {
+                    "code": "users.manage",
+                    "name": "Administrar usuarios",
+                    "description": "Editar, deshabilitar y activar usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "roles",
+                "name": "Roles",
+                "permissions": [
+                  {
+                    "code": "roles.read",
+                    "name": "Ver roles",
+                    "description": "Los roles y sus permisos."
+                  },
+                  {
+                    "code": "roles.manage",
+                    "name": "Administrar roles",
+                    "description": "Crear, editar e inactivar roles."
+                  },
+                  {
+                    "code": "roles.assign",
+                    "name": "Asignar roles",
+                    "description": "Dar y quitar roles a los usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "companies",
+                "name": "Empresas",
+                "permissions": [
+                  {
+                    "code": "companies.read",
+                    "name": "Ver empresas",
+                    "description": "El listado de empresas de la organización."
+                  },
+                  {
+                    "code": "companies.manage",
+                    "name": "Administrar empresas",
+                    "description": "Crear y administrar empresas."
+                  }
+                ]
+              },
+              {
+                "area": "settings",
+                "name": "Configuración",
+                "permissions": [
+                  {
+                    "code": "settings.read",
+                    "name": "Ver configuración",
+                    "description": "La configuración de la organización."
+                  },
+                  {
+                    "code": "settings.manage",
+                    "name": "Administrar configuración",
+                    "description": "Cambiar la configuración de la organización."
+                  }
+                ]
+              },
+              {
+                "area": "audit",
+                "name": "Auditoría",
+                "permissions": [
+                  {
+                    "code": "audit.read",
+                    "name": "Ver auditoría",
+                    "description": "Los eventos de auditoría."
+                  }
+                ]
+              },
+              {
+                "area": "publicpage",
+                "name": "Página pública",
+                "permissions": [
+                  {
+                    "code": "publicpage.manage",
+                    "name": "Administrar página pública",
+                    "description": "Configurar la página pública."
+                  }
+                ]
+              },
+              {
+                "area": "company",
+                "name": "Miembros de empresa",
+                "permissions": [
+                  {
+                    "code": "company.members.read",
+                    "name": "Ver miembros",
+                    "description": "El listado de miembros de la empresa."
+                  },
+                  {
+                    "code": "company.members.manage",
+                    "name": "Administrar miembros",
+                    "description": "Editar y administrar miembros de la empresa."
+                  }
+                ]
+              }
+            ],
+            "status": 200
+          }
+        ],
+        "readySelector": "main",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Administración"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rol-recursos-humanos-movil",
+      "pair": "rol-recursos-humanos",
+      "group": "roles",
+      "board": "M-Rol",
+      "props": {
+        "modo": "Editar el rol Recursos humanos"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Frole-human-resources",
+        "captureMode": "harness",
+        "userFixture": "visual-role-manager",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/roles/role-human-resources",
+            "body": {
+              "id": "role-human-resources",
+              "name": "Recursos humanos",
+              "description": "Invita, edita y deshabilita usuarios.",
+              "scope": "Organization",
+              "companyId": null,
+              "isSystemRole": false,
+              "userCount": 0,
+              "permissions": [
+                "users.read",
+                "users.invite",
+                "users.manage"
+              ],
+              "version": 1,
+              "createdAtUtc": "2026-09-27T12:00:00Z"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/permissions",
+            "body": [
+              {
+                "area": "users",
+                "name": "Usuarios",
+                "permissions": [
+                  {
+                    "code": "users.read",
+                    "name": "Ver usuarios",
+                    "description": "El listado de usuarios y sus datos."
+                  },
+                  {
+                    "code": "users.invite",
+                    "name": "Invitar usuarios",
+                    "description": "Invitar, reenviar y revocar invitaciones."
+                  },
+                  {
+                    "code": "users.manage",
+                    "name": "Administrar usuarios",
+                    "description": "Editar, deshabilitar y activar usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "roles",
+                "name": "Roles",
+                "permissions": [
+                  {
+                    "code": "roles.read",
+                    "name": "Ver roles",
+                    "description": "Los roles y sus permisos."
+                  },
+                  {
+                    "code": "roles.manage",
+                    "name": "Administrar roles",
+                    "description": "Crear, editar e inactivar roles."
+                  },
+                  {
+                    "code": "roles.assign",
+                    "name": "Asignar roles",
+                    "description": "Dar y quitar roles a los usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "companies",
+                "name": "Empresas",
+                "permissions": [
+                  {
+                    "code": "companies.read",
+                    "name": "Ver empresas",
+                    "description": "El listado de empresas de la organización."
+                  },
+                  {
+                    "code": "companies.manage",
+                    "name": "Administrar empresas",
+                    "description": "Crear y administrar empresas."
+                  }
+                ]
+              },
+              {
+                "area": "settings",
+                "name": "Configuración",
+                "permissions": [
+                  {
+                    "code": "settings.read",
+                    "name": "Ver configuración",
+                    "description": "La configuración de la organización."
+                  },
+                  {
+                    "code": "settings.manage",
+                    "name": "Administrar configuración",
+                    "description": "Cambiar la configuración de la organización."
+                  }
+                ]
+              },
+              {
+                "area": "audit",
+                "name": "Auditoría",
+                "permissions": [
+                  {
+                    "code": "audit.read",
+                    "name": "Ver auditoría",
+                    "description": "Los eventos de auditoría."
+                  }
+                ]
+              },
+              {
+                "area": "publicpage",
+                "name": "Página pública",
+                "permissions": [
+                  {
+                    "code": "publicpage.manage",
+                    "name": "Administrar página pública",
+                    "description": "Configurar la página pública."
+                  }
+                ]
+              },
+              {
+                "area": "company",
+                "name": "Miembros de empresa",
+                "permissions": [
+                  {
+                    "code": "company.members.read",
+                    "name": "Ver miembros",
+                    "description": "El listado de miembros de la empresa."
+                  },
+                  {
+                    "code": "company.members.manage",
+                    "name": "Administrar miembros",
+                    "description": "Editar y administrar miembros de la empresa."
+                  }
+                ]
+              }
+            ],
+            "status": 200
+          }
+        ],
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "rol-solo-lectura-escritorio",
+      "pair": "rol-solo-lectura",
+      "group": "roles",
+      "board": "Rol",
+      "props": {
+        "modo": "Editar el rol Solo lectura"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Frole-company-reader",
+        "captureMode": "harness",
+        "userFixture": "visual-role-manager",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/roles/role-company-reader",
+            "body": {
+              "id": "role-company-reader",
+              "name": "Solo lectura",
+              "description": "Ve los miembros de la empresa. No cambia nada.",
+              "scope": "SpecificCompany",
+              "companyId": "20000000-0000-0000-0000-000000000001",
+              "isSystemRole": false,
+              "userCount": 4,
+              "permissions": [
+                "company.members.read"
+              ],
+              "version": 1,
+              "createdAtUtc": "2026-09-27T12:00:00Z"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/permissions",
+            "body": [
+              {
+                "area": "users",
+                "name": "Usuarios",
+                "permissions": [
+                  {
+                    "code": "users.read",
+                    "name": "Ver usuarios",
+                    "description": "El listado de usuarios y sus datos."
+                  },
+                  {
+                    "code": "users.invite",
+                    "name": "Invitar usuarios",
+                    "description": "Invitar, reenviar y revocar invitaciones."
+                  },
+                  {
+                    "code": "users.manage",
+                    "name": "Administrar usuarios",
+                    "description": "Editar, deshabilitar y activar usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "roles",
+                "name": "Roles",
+                "permissions": [
+                  {
+                    "code": "roles.read",
+                    "name": "Ver roles",
+                    "description": "Los roles y sus permisos."
+                  },
+                  {
+                    "code": "roles.manage",
+                    "name": "Administrar roles",
+                    "description": "Crear, editar e inactivar roles."
+                  },
+                  {
+                    "code": "roles.assign",
+                    "name": "Asignar roles",
+                    "description": "Dar y quitar roles a los usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "companies",
+                "name": "Empresas",
+                "permissions": [
+                  {
+                    "code": "companies.read",
+                    "name": "Ver empresas",
+                    "description": "El listado de empresas de la organización."
+                  },
+                  {
+                    "code": "companies.manage",
+                    "name": "Administrar empresas",
+                    "description": "Crear y administrar empresas."
+                  }
+                ]
+              },
+              {
+                "area": "settings",
+                "name": "Configuración",
+                "permissions": [
+                  {
+                    "code": "settings.read",
+                    "name": "Ver configuración",
+                    "description": "La configuración de la organización."
+                  },
+                  {
+                    "code": "settings.manage",
+                    "name": "Administrar configuración",
+                    "description": "Cambiar la configuración de la organización."
+                  }
+                ]
+              },
+              {
+                "area": "audit",
+                "name": "Auditoría",
+                "permissions": [
+                  {
+                    "code": "audit.read",
+                    "name": "Ver auditoría",
+                    "description": "Los eventos de auditoría."
+                  }
+                ]
+              },
+              {
+                "area": "publicpage",
+                "name": "Página pública",
+                "permissions": [
+                  {
+                    "code": "publicpage.manage",
+                    "name": "Administrar página pública",
+                    "description": "Configurar la página pública."
+                  }
+                ]
+              },
+              {
+                "area": "company",
+                "name": "Miembros de empresa",
+                "permissions": [
+                  {
+                    "code": "company.members.read",
+                    "name": "Ver miembros",
+                    "description": "El listado de miembros de la empresa."
+                  },
+                  {
+                    "code": "company.members.manage",
+                    "name": "Administrar miembros",
+                    "description": "Editar y administrar miembros de la empresa."
+                  }
+                ]
+              }
+            ],
+            "status": 200
+          }
+        ],
+        "readySelector": "main",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Administración"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rol-solo-lectura-movil",
+      "pair": "rol-solo-lectura",
+      "group": "roles",
+      "board": "M-Rol",
+      "props": {
+        "modo": "Editar el rol Solo lectura"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Frole-company-reader",
+        "captureMode": "harness",
+        "userFixture": "visual-role-manager",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/roles/role-company-reader",
+            "body": {
+              "id": "role-company-reader",
+              "name": "Solo lectura",
+              "description": "Ve los miembros de la empresa. No cambia nada.",
+              "scope": "SpecificCompany",
+              "companyId": "20000000-0000-0000-0000-000000000001",
+              "isSystemRole": false,
+              "userCount": 4,
+              "permissions": [
+                "company.members.read"
+              ],
+              "version": 1,
+              "createdAtUtc": "2026-09-27T12:00:00Z"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/permissions",
+            "body": [
+              {
+                "area": "users",
+                "name": "Usuarios",
+                "permissions": [
+                  {
+                    "code": "users.read",
+                    "name": "Ver usuarios",
+                    "description": "El listado de usuarios y sus datos."
+                  },
+                  {
+                    "code": "users.invite",
+                    "name": "Invitar usuarios",
+                    "description": "Invitar, reenviar y revocar invitaciones."
+                  },
+                  {
+                    "code": "users.manage",
+                    "name": "Administrar usuarios",
+                    "description": "Editar, deshabilitar y activar usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "roles",
+                "name": "Roles",
+                "permissions": [
+                  {
+                    "code": "roles.read",
+                    "name": "Ver roles",
+                    "description": "Los roles y sus permisos."
+                  },
+                  {
+                    "code": "roles.manage",
+                    "name": "Administrar roles",
+                    "description": "Crear, editar e inactivar roles."
+                  },
+                  {
+                    "code": "roles.assign",
+                    "name": "Asignar roles",
+                    "description": "Dar y quitar roles a los usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "companies",
+                "name": "Empresas",
+                "permissions": [
+                  {
+                    "code": "companies.read",
+                    "name": "Ver empresas",
+                    "description": "El listado de empresas de la organización."
+                  },
+                  {
+                    "code": "companies.manage",
+                    "name": "Administrar empresas",
+                    "description": "Crear y administrar empresas."
+                  }
+                ]
+              },
+              {
+                "area": "settings",
+                "name": "Configuración",
+                "permissions": [
+                  {
+                    "code": "settings.read",
+                    "name": "Ver configuración",
+                    "description": "La configuración de la organización."
+                  },
+                  {
+                    "code": "settings.manage",
+                    "name": "Administrar configuración",
+                    "description": "Cambiar la configuración de la organización."
+                  }
+                ]
+              },
+              {
+                "area": "audit",
+                "name": "Auditoría",
+                "permissions": [
+                  {
+                    "code": "audit.read",
+                    "name": "Ver auditoría",
+                    "description": "Los eventos de auditoría."
+                  }
+                ]
+              },
+              {
+                "area": "publicpage",
+                "name": "Página pública",
+                "permissions": [
+                  {
+                    "code": "publicpage.manage",
+                    "name": "Administrar página pública",
+                    "description": "Configurar la página pública."
+                  }
+                ]
+              },
+              {
+                "area": "company",
+                "name": "Miembros de empresa",
+                "permissions": [
+                  {
+                    "code": "company.members.read",
+                    "name": "Ver miembros",
+                    "description": "El listado de miembros de la empresa."
+                  },
+                  {
+                    "code": "company.members.manage",
+                    "name": "Administrar miembros",
+                    "description": "Editar y administrar miembros de la empresa."
+                  }
+                ]
+              }
+            ],
+            "status": 200
+          }
+        ],
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "rol-dueno-escritorio",
+      "pair": "rol-dueno",
+      "group": "roles",
+      "board": "Rol",
+      "props": {
+        "modo": "Ver el rol Dueño"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Frole-owner",
+        "captureMode": "harness",
+        "userFixture": "visual-role-manager",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/roles/role-owner",
+            "body": {
+              "id": "role-owner",
+              "name": "TenantAdmin",
+              "description": null,
+              "scope": "Organization",
+              "companyId": null,
+              "isSystemRole": true,
+              "userCount": 1,
+              "permissions": [
+                "users.read",
+                "users.invite",
+                "users.manage",
+                "roles.read",
+                "roles.manage",
+                "roles.assign",
+                "companies.read",
+                "companies.manage",
+                "settings.read",
+                "settings.manage",
+                "audit.read",
+                "publicpage.manage",
+                "company.members.read",
+                "company.members.manage"
+              ],
+              "version": 1,
+              "createdAtUtc": "2026-09-27T12:00:00Z"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/permissions",
+            "body": [
+              {
+                "area": "users",
+                "name": "Usuarios",
+                "permissions": [
+                  {
+                    "code": "users.read",
+                    "name": "Ver usuarios",
+                    "description": "El listado de usuarios y sus datos."
+                  },
+                  {
+                    "code": "users.invite",
+                    "name": "Invitar usuarios",
+                    "description": "Invitar, reenviar y revocar invitaciones."
+                  },
+                  {
+                    "code": "users.manage",
+                    "name": "Administrar usuarios",
+                    "description": "Editar, deshabilitar y activar usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "roles",
+                "name": "Roles",
+                "permissions": [
+                  {
+                    "code": "roles.read",
+                    "name": "Ver roles",
+                    "description": "Los roles y sus permisos."
+                  },
+                  {
+                    "code": "roles.manage",
+                    "name": "Administrar roles",
+                    "description": "Crear, editar e inactivar roles."
+                  },
+                  {
+                    "code": "roles.assign",
+                    "name": "Asignar roles",
+                    "description": "Dar y quitar roles a los usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "companies",
+                "name": "Empresas",
+                "permissions": [
+                  {
+                    "code": "companies.read",
+                    "name": "Ver empresas",
+                    "description": "El listado de empresas de la organización."
+                  },
+                  {
+                    "code": "companies.manage",
+                    "name": "Administrar empresas",
+                    "description": "Crear y administrar empresas."
+                  }
+                ]
+              },
+              {
+                "area": "settings",
+                "name": "Configuración",
+                "permissions": [
+                  {
+                    "code": "settings.read",
+                    "name": "Ver configuración",
+                    "description": "La configuración de la organización."
+                  },
+                  {
+                    "code": "settings.manage",
+                    "name": "Administrar configuración",
+                    "description": "Cambiar la configuración de la organización."
+                  }
+                ]
+              },
+              {
+                "area": "audit",
+                "name": "Auditoría",
+                "permissions": [
+                  {
+                    "code": "audit.read",
+                    "name": "Ver auditoría",
+                    "description": "Los eventos de auditoría."
+                  }
+                ]
+              },
+              {
+                "area": "publicpage",
+                "name": "Página pública",
+                "permissions": [
+                  {
+                    "code": "publicpage.manage",
+                    "name": "Administrar página pública",
+                    "description": "Configurar la página pública."
+                  }
+                ]
+              },
+              {
+                "area": "company",
+                "name": "Miembros de empresa",
+                "permissions": [
+                  {
+                    "code": "company.members.read",
+                    "name": "Ver miembros",
+                    "description": "El listado de miembros de la empresa."
+                  },
+                  {
+                    "code": "company.members.manage",
+                    "name": "Administrar miembros",
+                    "description": "Editar y administrar miembros de la empresa."
+                  }
+                ]
+              }
+            ],
+            "status": 200
+          }
+        ],
+        "readySelector": "main",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Administración"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rol-dueno-movil",
+      "pair": "rol-dueno",
+      "group": "roles",
+      "board": "M-Rol",
+      "props": {
+        "modo": "Ver el rol Dueño"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Frole-owner",
+        "captureMode": "harness",
+        "userFixture": "visual-role-manager",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/roles/role-owner",
+            "body": {
+              "id": "role-owner",
+              "name": "TenantAdmin",
+              "description": null,
+              "scope": "Organization",
+              "companyId": null,
+              "isSystemRole": true,
+              "userCount": 1,
+              "permissions": [
+                "users.read",
+                "users.invite",
+                "users.manage",
+                "roles.read",
+                "roles.manage",
+                "roles.assign",
+                "companies.read",
+                "companies.manage",
+                "settings.read",
+                "settings.manage",
+                "audit.read",
+                "publicpage.manage",
+                "company.members.read",
+                "company.members.manage"
+              ],
+              "version": 1,
+              "createdAtUtc": "2026-09-27T12:00:00Z"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/permissions",
+            "body": [
+              {
+                "area": "users",
+                "name": "Usuarios",
+                "permissions": [
+                  {
+                    "code": "users.read",
+                    "name": "Ver usuarios",
+                    "description": "El listado de usuarios y sus datos."
+                  },
+                  {
+                    "code": "users.invite",
+                    "name": "Invitar usuarios",
+                    "description": "Invitar, reenviar y revocar invitaciones."
+                  },
+                  {
+                    "code": "users.manage",
+                    "name": "Administrar usuarios",
+                    "description": "Editar, deshabilitar y activar usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "roles",
+                "name": "Roles",
+                "permissions": [
+                  {
+                    "code": "roles.read",
+                    "name": "Ver roles",
+                    "description": "Los roles y sus permisos."
+                  },
+                  {
+                    "code": "roles.manage",
+                    "name": "Administrar roles",
+                    "description": "Crear, editar e inactivar roles."
+                  },
+                  {
+                    "code": "roles.assign",
+                    "name": "Asignar roles",
+                    "description": "Dar y quitar roles a los usuarios."
+                  }
+                ]
+              },
+              {
+                "area": "companies",
+                "name": "Empresas",
+                "permissions": [
+                  {
+                    "code": "companies.read",
+                    "name": "Ver empresas",
+                    "description": "El listado de empresas de la organización."
+                  },
+                  {
+                    "code": "companies.manage",
+                    "name": "Administrar empresas",
+                    "description": "Crear y administrar empresas."
+                  }
+                ]
+              },
+              {
+                "area": "settings",
+                "name": "Configuración",
+                "permissions": [
+                  {
+                    "code": "settings.read",
+                    "name": "Ver configuración",
+                    "description": "La configuración de la organización."
+                  },
+                  {
+                    "code": "settings.manage",
+                    "name": "Administrar configuración",
+                    "description": "Cambiar la configuración de la organización."
+                  }
+                ]
+              },
+              {
+                "area": "audit",
+                "name": "Auditoría",
+                "permissions": [
+                  {
+                    "code": "audit.read",
+                    "name": "Ver auditoría",
+                    "description": "Los eventos de auditoría."
+                  }
+                ]
+              },
+              {
+                "area": "publicpage",
+                "name": "Página pública",
+                "permissions": [
+                  {
+                    "code": "publicpage.manage",
+                    "name": "Administrar página pública",
+                    "description": "Configurar la página pública."
+                  }
+                ]
+              },
+              {
+                "area": "company",
+                "name": "Miembros de empresa",
+                "permissions": [
+                  {
+                    "code": "company.members.read",
+                    "name": "Ver miembros",
+                    "description": "El listado de miembros de la empresa."
+                  },
+                  {
+                    "code": "company.members.manage",
+                    "name": "Administrar miembros",
+                    "description": "Editar y administrar miembros de la empresa."
+                  }
+                ]
+              }
+            ],
+            "status": 200
+          }
+        ],
+        "readySelector": "main"
+      }
     }
   ]
 }

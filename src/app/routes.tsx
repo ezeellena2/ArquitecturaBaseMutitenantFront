@@ -64,7 +64,21 @@ export const routes: RouteObject[] = [
         return { Component: () => <AccountLayout><AccountPage /></AccountLayout> };
       }, errorElement: <AppErrorPage /> },
       { element: <AccessRoute access="business" />, children: [
-        { path: "/org", element: <BusinessLayout />, children: [{ index: true, element: <BusinessHomePage /> }] },
+        { path: "/org", element: <BusinessLayout />, children: [
+          { index: true, element: <BusinessHomePage /> },
+          { path: "roles", lazy: async () => {
+            const { RolesPage } = await import("@/areas/business/roles/pages/RolesPage");
+            return { Component: RolesPage };
+          }, errorElement: <AppErrorPage /> },
+          { path: "roles/new", lazy: async () => {
+            const { RoleEditorPage } = await import("@/areas/business/roles/pages/RoleEditorPage");
+            return { Component: () => <RoleEditorPage mode="create" /> };
+          }, errorElement: <AppErrorPage /> },
+          { path: "roles/:roleId", lazy: async () => {
+            const { RoleEditorPage } = await import("@/areas/business/roles/pages/RoleEditorPage");
+            return { Component: () => <RoleEditorPage mode="edit" /> };
+          }, errorElement: <AppErrorPage /> },
+        ] },
       ] },
       { element: <AccessRoute access="platform" />, children: [
         { path: "/plataforma", element: <PlatformLayout /> },

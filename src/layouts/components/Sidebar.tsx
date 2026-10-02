@@ -54,6 +54,10 @@ function SidebarBody({ navigation, account, context, isMobile, collapsed, admini
           {showLabels ? <ChevronRight size={15} className={adminExpanded ? "rotate-90" : ""} aria-hidden="true" /> : null}
         </button>
         {isMobile && mobileAdministrationOpen ? <div className="ml-5 border-l border-[var(--lado-borde)] pl-2">
+          {navigation.administration.sections?.map((section) => <div key={section.labelKey} className="py-1">
+            <p className="px-2 py-1 text-xs font-semibold text-[var(--t3)]">{t(section.labelKey)}</p>
+            {section.links.map((entry) => entry.to ? <Link key={entry.labelKey} to={entry.to} onClick={onCloseMobile} className="flex min-h-[32px] items-center rounded-lg px-2 text-[13px] text-[var(--t2)]">{t(entry.labelKey)}</Link> : null)}
+          </div>)}
           {navigation.administration.links.map((entry) => entry.to ? <Link key={entry.labelKey} to={entry.to} onClick={onCloseMobile} className="flex min-h-[32px] items-center rounded-lg px-2 text-[13px] text-[var(--t2)]">{t(entry.labelKey)}</Link> : null)}
         </div> : null}
       </div> : null}

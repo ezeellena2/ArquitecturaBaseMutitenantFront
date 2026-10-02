@@ -5,24 +5,31 @@ import { test } from "node:test";
 import { assertCapturedPairs, validateManifest } from "./capturar-etapa-3a.mjs";
 import { buildCases, canvas, output, writeManifest } from "./capturar-etapa-4.mjs";
 
-test("Mi cuenta y sus diálogos usan solo referencias v60 aprobadas en ambos tamaños", async () => {
+test("Mi cuenta y Roles usan solo referencias v60 validadas en ambos tamaños", async () => {
   const cases = await writeManifest();
   const validated = validateManifest(path.join(output, "manifest.json"), canvas);
-  assert.equal(validated.length, 8);
+  assert.equal(validated.length, 18);
   assert.deepEqual([...new Set(validated.map((entry) => entry.pair))].sort(), [
-    "agregar-correo", "baja-cuenta", "cuenta", "verificar-correo",
+    "agregar-correo", "baja-cuenta", "cuenta", "rol-crear", "rol-dueno",
+    "rol-recursos-humanos", "rol-solo-lectura", "roles-lista", "verificar-correo",
   ]);
   assert.ok(validated.some((entry) => entry.board === "M-Cuenta" && entry.viewport.width === 390));
   assert.ok(validated.some((entry) => entry.board === "Cuenta-Agregar" && entry.viewport.width === 1440));
   assert.ok(validated.some((entry) => entry.board === "Cuenta-Verificar" && entry.viewport.width === 1440));
   assert.ok(validated.some((entry) => entry.board === "Cuenta-Baja" && entry.viewport.width === 1440));
-  assert.ok(validated.filter((entry) => entry.viewport.width === 390 && entry.pair !== "cuenta")
+  assert.ok(validated.some((entry) => entry.board === "Roles" && entry.viewport.width === 1440));
+  assert.ok(validated.some((entry) => entry.board === "M-Roles" && entry.viewport.width === 390));
+  assert.ok(validated.some((entry) => entry.board === "Rol" && entry.props.modo === "Crear un rol"));
+  assert.ok(validated.some((entry) => entry.board === "M-Rol" && entry.props.modo === "Ver el rol Dueño"));
+  assert.ok(validated.some((entry) => entry.board === "Rol" && entry.props.modo === "Editar el rol Recursos humanos"));
+  assert.ok(validated.some((entry) => entry.board === "M-Rol" && entry.props.modo === "Editar el rol Solo lectura"));
+  assert.ok(validated.filter((entry) => entry.group === "cuenta" && entry.viewport.width === 390 && entry.pair !== "cuenta")
     .every((entry) => entry.note?.includes("no tiene tablero móvil del diálogo")));
   assert.ok(validated.every((entry) => entry.app.captureMode === "harness"));
   assert.equal(buildCases().length, cases.length);
 });
 
-test("la puerta visual E4 requiere las ocho capturas de lienzo y aplicación", async () => {
+test("la puerta visual E4 requiere todas las capturas de lienzo y aplicación de cuenta y Roles", async () => {
   const cases = await writeManifest();
   const missing = cases.filter((entry) => {
     const stem = `${entry.id}-${entry.viewport.width}x${entry.viewport.height}`;

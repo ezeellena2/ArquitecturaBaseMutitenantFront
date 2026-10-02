@@ -15,6 +15,7 @@ describe("contrato de roles entre back y front", () => {
     const errors = readBack("src/ArquitecturaBaseMultitenant.Application/Resources/Errors.resx");
     const openapi = JSON.parse(readBack("docs/contracts/openapi.json")) as {
       paths: Record<string, Record<string, {
+        parameters?: Array<{ name: string; in: string }>;
         requestBody?: { content?: Record<string, { schema?: { $ref?: string } }> };
         responses?: Record<string, { content?: Record<string, { schema?: { $ref?: string; format?: string; items?: { $ref?: string } } }> }>;
       }>>;
@@ -29,12 +30,14 @@ describe("contrato de roles entre back y front", () => {
     expect(controller).toContain("[Idempotent]");
     expect(permissionController).toContain('[Route("api/permissions")]');
     expect(requests).toContain("int? Page, int? PageSize, string? Sort, string? Search");
+    expect(requests).toContain("RoleScopeFilter? Scope");
     expect(requests).toContain("uint? Version");
 
     expect(openapi.paths["/api/permissions"].get.responses?.["200"].content?.["application/json"]?.schema?.items?.$ref)
       .toBe("#/components/schemas/PermissionGroupResponse");
     expect(openapi.paths["/api/roles/paged"].get.responses?.["200"].content?.["application/json"]?.schema?.$ref)
       .toBe("#/components/schemas/PagedResultOfRoleResponse");
+    expect(openapi.paths["/api/roles/paged"].get.parameters?.some((parameter) => parameter.name === "Scope")).toBe(true);
     expect(openapi.paths["/api/roles"].post.responses?.["201"].content?.["application/json"]?.schema?.format)
       .toBe("uuid");
     expect(openapi.paths["/api/roles/{id}"].put.requestBody?.content?.["application/json"]?.schema?.$ref)

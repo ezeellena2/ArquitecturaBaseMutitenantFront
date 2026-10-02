@@ -153,7 +153,9 @@ export async function installApiMocks(context, responses = [], userFixture) {
       await route.continue();
       return;
     }
-    const response = responses.find((item) => item.path === requestPath && item.method === request.method());
+    const requestUrl = new URL(request.url());
+    const response = responses.find((item) => item.path === requestPath && item.method === request.method()
+      && Object.entries(item.query ?? {}).every(([key, value]) => requestUrl.searchParams.get(key) === value));
     if (response) {
       await route.fulfill({
         status: response.status,

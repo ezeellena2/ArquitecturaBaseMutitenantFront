@@ -37,6 +37,11 @@ export const businessWithoutPermissions: MeResponse = {
   permissions: [],
 };
 
+export const businessRoleManager: MeResponse = {
+  ...businessUser,
+  permissions: ["roles.read", "roles.manage"],
+};
+
 export const platformOperator: MeResponse = {
   ...consumerWithoutOrganizations,
   access: "platform",
@@ -60,6 +65,11 @@ export const visualBusiness: MeResponse = {
   ...visualPersonal,
   access: "business",
   activeTenantId: "grupo-delta",
+};
+
+export const visualRoleManager: MeResponse = {
+  ...visualBusiness,
+  permissions: ["roles.read", "roles.manage"],
 };
 
 export const visualErrorOrganization: MeResponse = {
@@ -96,10 +106,12 @@ export const currentUsers = {
   "consumer-new-terms": { ...consumerWithoutOrganizations, pendingLegalDocuments: [{ id: "terms-v2", kind: "Terms", version: 2 }] },
   "consumer-with-organizations": consumerWithOrganizations,
   "business-admin": businessUser,
+  "business-role-manager": businessRoleManager,
   "business-no-permissions": businessWithoutPermissions,
   "platform-operator": platformOperator,
   "visual-personal": visualPersonal,
   "visual-business": visualBusiness,
+  "visual-role-manager": visualRoleManager,
   "visual-error-org": visualErrorOrganization,
   "visual-unavailable-suspended": visualUnavailableSuspended,
   "visual-unavailable-pending": visualUnavailablePending,

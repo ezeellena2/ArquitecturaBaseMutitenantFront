@@ -1,0 +1,176 @@
+import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Eye, Pencil, ShieldCheck, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link, useNavigate } from "react-router";
+import { useCurrentUser } from "@/auth/useCurrentUser";
+import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
+import { useFilters } from "@/shared/hooks/useFilters";
+import { usePagination } from "@/shared/hooks/usePagination";
+import { ApiError } from "@/shared/api/ApiError";
+import type { Column } from "@/shared/ui/DataTable";
+import { Button } from "@/shared/ui/button";
+import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
+import { DataTable } from "@/shared/ui/DataTable";
+import { FilterBar } from "@/shared/ui/FilterBar";
+import { Page } from "@/shared/ui/Page";
+import { Pagination } from "@/shared/ui/Pagination";
+import { RowActions } from "@/shared/ui/RowActions";
+import { Surface } from "@/shared/ui/Surface";
+import { toastError } from "@/shared/ui/sonner";
+import { toast } from "sonner";
+import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
+import type { RoleResponse } from "@/shared/api/types";
+import {
+  deleteRole,
+  fetchRoles,
+  rolesQueryKey,
+  rolesQueryKeyRoot,
+  type RolesQuery,
+} from "../api/roles";
+import { createRoleColumns, displayRoleName } from "../columns";
+
+const roleFilterKeys = ["scope"] as const;
+const roleCountScopes = [undefined, "Organization", "Company"] as const;
+
+export function RolesPage() {
+  const { t } = useTranslation(["roles", "common"]);
+  const { data: currentUser } = useCurrentUser();
+  const canRead = currentUser?.permissions?.includes("roles.read") === true;
+  const canManage = currentUser?.permissions?.includes("roles.manage") === true;
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const filters = useFilters(roleFilterKeys);
+  const pagination = usePagination(undefined, { defaultSort: "name" });
+  const debouncedSearch = useDebouncedValue(pagination.search ?? "");
+  const scopeValue = filters.values.scope;
+  const scope = scopeValue === "Organization" || scopeValue === "Company" ? scopeValue : undefined;
+  const query: RolesQuery = {
+    page: pagination.page,
+    pageSize: pagination.pageSize,
+    sort: pagination.sort,
+    search: debouncedSearch || undefined,
+    scope,
+  };
+  const roles = useQuery({
+    queryKey: rolesQueryKey(query),
+    queryFn: () => fetchRoles(query),
+    enabled: canRead,
+    placeholderData: keepPreviousData,
+    meta: { silent: true },
+  });
+  const scopeCounts = useQueries({ queries: roleCountScopes.map((countScope) => ({
+    queryKey: [...rolesQueryKeyRoot, "scope-count", countScope ?? "all", debouncedSearch ?? ""],
+    queryFn: () => fetchRoles({ page: 1, pageSize: 10, search: debouncedSearch || undefined, scope: countScope }),
+    enabled: canRead,
+    meta: { silent: true },
+  })) });
+  const [roleToDelete, setRoleToDelete] = useState<RoleResponse | null>(null);
+  const remove = useMutation({
+    mutationFn: (role: RoleResponse) => deleteRole(role.id, role.version),
+    onSuccess: async (_result, role) => {
+      setRoleToDelete(null);
+      toast.success(t("roles:removed", { name: role.name }));
+      await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
+    },
+    onError: (error) => toastError(error instanceof ApiError ? error.detail ?? t("common:states.error") : t("common:states.error")),
+  });
+
+  if (!canRead) return <ForbiddenPage homePath="/org" />;
+
+  const columns: Column<RoleResponse>[] = [
+    ...createRoleColumns(t),
+    {
+      id: "actions",
+      header: t("roles:columns.actions"),
+      type: "actions",
+      cell: (role) => <RowActions
+        label={t("roles:rowActions", { name: displayRoleName(role, t) })}
+        actions={[
+          { label: t("roles:viewPermissions"), accessibleName: t("roles:viewPermissions"), icon: Eye, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); } },
+          { label: t("roles:edit"), accessibleName: t("roles:edit"), icon: Pencil, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); }, hidden: role.isSystemRole || !canManage },
+          { label: t("roles:deactivate"), accessibleName: t("roles:deactivate"), icon: Trash2, onSelect: () => {
+            if (role.userCount > 0) {
+              toastError(t("roles:errors.hasUsers", { count: role.userCount, name: role.name }));
+            } else {
+              setRoleToDelete(role);
+            }
+          }, destructive: true, hidden: role.isSystemRole || !canManage },
+        ]}
+      />,
+    },
+  ];
+
+  const listSummary = roles.data ? scopeCounts.every((count) => count.data !== undefined)
+    ? t("roles:listSummary", { total: scopeCounts[0].data?.totalCount ?? roles.data.totalCount, count: scopeCounts[0].data?.totalCount ?? roles.data.totalCount,
+      organization: scopeCounts[1].data?.totalCount ?? 0, company: scopeCounts[2].data?.totalCount ?? 0 })
+    : t("roles:listSummaryFallback", { count: roles.data.totalCount }) : undefined;
+  const filterValue = scope ?? "all";
+  const countFor = (index: number) => scopeCounts[index].data?.totalCount;
+
+  return <>
+    <Page
+      icon={ShieldCheck}
+      title={t("roles:title")}
+      summary={listSummary}
+      actions={canManage ? <Button asChild><Link to="/org/roles/new">{t("roles:create")}</Link></Button> : undefined}
+    >
+      <div className="flex flex-col gap-3">
+        <FilterBar
+          label={t("roles:filters.label")}
+          searchLabel={t("roles:filters.search")}
+          searchValue={pagination.search ?? ""}
+          onSearchChange={pagination.setSearch}
+          filters={[{
+            key: "scope",
+            label: t("roles:filters.scope"),
+            menuLabel: t("roles:filters.scopeMenu"),
+            value: filterValue,
+            active: scope !== undefined,
+            onChange: (value) => filters.setFilter("scope", value === "all" ? undefined : value),
+            options: [
+              { value: "all", label: t("roles:filters.scope"), count: countFor(0) },
+              { value: "Organization", label: t("roles:scope.organization"), count: countFor(1) },
+              { value: "Company", label: t("roles:scope.company"), count: countFor(2) },
+            ],
+          }]}
+          clearLabel={t("common:actions.clear")}
+          onClear={filters.clear}
+        />
+        <Surface className="overflow-hidden">
+          <DataTable
+            columns={columns}
+            rows={roles.data?.items ?? []}
+            rowKey={(role) => role.id}
+            isLoading={roles.isPending}
+            isFetching={roles.isFetching}
+            error={roles.error ? roles.error instanceof ApiError ? roles.error.detail ?? t("common:states.error") : t("common:states.error") : undefined}
+            onRetry={() => { void roles.refetch(); }}
+            emptyTitle={t("roles:empty")}
+            sort={pagination.sort}
+            onSortChange={pagination.toggleSort}
+          />
+          {roles.data ? <Pagination
+            page={roles.data.page}
+            pageSize={roles.data.pageSize}
+            totalCount={roles.data.totalCount}
+            totalPages={roles.data.totalPages}
+            hasPrevious={roles.data.hasPrevious}
+            hasNext={roles.data.hasNext}
+            onPageChange={pagination.setPage}
+            onPageSizeChange={pagination.setPageSize}
+          /> : null}
+        </Surface>
+      </div>
+    </Page>
+    <ConfirmDialog
+      open={roleToDelete !== null}
+      onOpenChange={(open) => { if (!open) setRoleToDelete(null); }}
+      title={t("roles:confirmDeactivate", { name: roleToDelete?.name ?? "" })}
+      description={t("roles:confirmDeactivateDescription")}
+      confirmLabel={t("roles:deactivate")}
+      destructive
+      onConfirm={() => { if (roleToDelete) remove.mutate(roleToDelete); }}
+    />
+  </>;
+}

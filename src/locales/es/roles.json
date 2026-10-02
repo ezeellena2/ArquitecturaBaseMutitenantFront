@@ -1,0 +1,80 @@
+{
+  "title": "Roles y permisos",
+  "create": "Crear rol",
+  "createTitle": "Crear un rol",
+  "editorTitle": "Rol",
+  "dataTitle": "Datos del rol",
+  "permissionsTitle": "Permisos",
+  "backToList": "Volver a Roles y permisos",
+  "cancel": "Cancelar",
+  "save": "Guardar cambios",
+  "saving": "Guardando…",
+  "system": "De sistema",
+  "systemRoles": {
+    "owner": "Dueño",
+    "ownerDescription": "Tiene todos los permisos de la organización.",
+    "companyAdmin": "Administrador",
+    "companyAdminDescription": "Administra los miembros de cada empresa."
+  },
+  "custom": "Personalizado",
+  "removed": "Inactivamos el rol {{name}}.",
+  "created": "Creamos el rol {{name}}.",
+  "updated": "Guardamos el rol {{name}}.",
+  "deactivate": "Inactivar",
+  "edit": "Editar",
+  "viewPermissions": "Ver permisos",
+  "confirmDeactivate": "¿Inactivar {{name}}?",
+  "confirmDeactivateDescription": "El rol dejará de estar disponible para asignar.",
+  "rowActions": "Acciones para {{name}}",
+  "noDescription": "Sin descripción",
+  "empty": "No hay roles que coincidan",
+  "listSummary_one": "{{total}} rol · {{organization}} de la organización · {{company}} de empresas",
+  "listSummary_other": "{{total}} roles · {{organization}} de la organización · {{company}} de empresas",
+  "listSummaryFallback": "{{count}} roles",
+  "scopeAndUsers_one": "Vale en {{scope}} · {{count}} usuario lo tiene",
+  "scopeAndUsers_other": "Vale en {{scope}} · {{count}} usuarios lo tienen",
+  "permissionCount": "{{selected}} de {{total}} elegidos",
+  "groupCount": "{{selected}} de {{total}}",
+  "allPermissions": "Todos los permisos de {{area}}",
+  "columns": {
+    "name": "Rol",
+    "description": "Descripción",
+    "scope": "Vale en",
+    "type": "Tipo",
+    "users": "Usuarios",
+    "permissions": "Permisos",
+    "actions": ""
+  },
+  "filters": {
+    "label": "Filtrar roles",
+    "search": "Buscar por nombre o descripción",
+    "scope": "Vale en: todos",
+    "scopeMenu": "Filtrar por dónde vale",
+    "allScopes": "Todos"
+  },
+  "scope": {
+    "organization": "Toda la organización",
+    "organizationDescription": "Permisos sobre usuarios, roles, empresas y configuración.",
+    "company": "Cada empresa",
+    "specificCompany": "Una empresa específica",
+    "choose": "Elegí dónde vale",
+    "chooseForPermissions": "Elegí dónde vale el rol para ver sus permisos."
+  },
+  "fields": {
+    "name": "Nombre",
+    "scope": "Vale en",
+    "description": "Descripción"
+  },
+  "validation": {
+    "nameRequired": "Escribí el nombre del rol.",
+    "scopeRequired": "Elegí dónde vale el rol.",
+    "permissionsRequired": "Elegí al menos un permiso."
+  },
+  "unsavedTitle": "¿Salir sin guardar?",
+  "unsavedDescription": "Los cambios que hiciste se van a perder.",
+  "leaveWithoutSaving": "Salir sin guardar",
+  "continueEditing": "Seguir editando",
+  "errors": {
+    "hasUsers": "No se puede inactivar {{name}} porque {{count}} personas tienen este rol."
+  }
+}

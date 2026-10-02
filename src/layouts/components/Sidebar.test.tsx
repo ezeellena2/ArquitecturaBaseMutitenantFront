@@ -12,10 +12,11 @@ beforeAll(async () => {
 });
 
 describe("Sidebar", () => {
-  it("muestra Inicio, el ámbito y la identidad sin destinos de etapas futuras", async () => {
+  it("muestra Inicio, Administración aprobada, el ámbito y la identidad", async () => {
+    const onToggleAdministration = vi.fn();
     const onToggleCollapsed = vi.fn();
     const { container } = render(<MemoryRouter initialEntries={["/org"]}>
-      <Sidebar navigation={businessNavigation} account={{ name: "Ana", email: "ana@example.com" }} context={{ title: "Empresa A", detail: "Organización" }} isMobile={false} mobileOpen={false} collapsed={false} administrationOpen={false} onToggleAdministration={vi.fn()} onToggleCollapsed={onToggleCollapsed} onCloseMobile={vi.fn()} />
+      <Sidebar navigation={businessNavigation} account={{ name: "Ana", email: "ana@example.com" }} context={{ title: "Empresa A", detail: "Organización" }} isMobile={false} mobileOpen={false} collapsed={false} administrationOpen={false} onToggleAdministration={onToggleAdministration} onToggleCollapsed={onToggleCollapsed} onCloseMobile={vi.fn()} />
     </MemoryRouter>);
     expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-[232px]");
     expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
@@ -24,7 +25,9 @@ describe("Sidebar", () => {
     expect(screen.getByText("Ana")).toBeVisible();
     expect(screen.getByText("ana@example.com")).toBeVisible();
     expect(screen.getByText("Empresa A")).toBeVisible();
-    expect(screen.queryByRole("button", { name: "Administración" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Administración" })).toBeVisible();
+    await userEvent.click(screen.getByRole("button", { name: "Administración" }));
+    expect(onToggleAdministration).toHaveBeenCalledOnce();
     await userEvent.click(screen.getByRole("button", { name: "Contraer menú" }));
     expect(onToggleCollapsed).toHaveBeenCalledOnce();
     expect(await axe(container, { rules: { region: { enabled: false } } })).toHaveNoViolations();
@@ -37,8 +40,10 @@ describe("Sidebar", () => {
     </MemoryRouter>);
     expect(screen.getByRole("dialog", { name: "Navegación principal" })).toHaveClass("w-[280px]");
     expect(screen.getByRole("link", { name: "Inicio" })).toBeVisible();
-    expect(screen.queryByRole("button", { name: "Administración" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Administración" })).toBeVisible();
     expect(screen.queryByRole("navigation", { name: "Administración" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Administración" }));
+    expect(screen.getByRole("link", { name: "Roles y permisos" })).toBeVisible();
     await userEvent.keyboard("{Escape}");
     expect(onCloseMobile).toHaveBeenCalledOnce();
   });

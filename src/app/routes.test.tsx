@@ -31,7 +31,7 @@ describe("rutas de ingreso 3a", () => {
 
     renderRouteWithProviders("/org", { as: "business-admin" });
     expect(await screen.findByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
-    expect(screen.queryByRole("button", { name: "Administración" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Administración" })).toBeVisible();
     expect(screen.getByRole("main")).toBeEmptyDOMElement();
   });
 

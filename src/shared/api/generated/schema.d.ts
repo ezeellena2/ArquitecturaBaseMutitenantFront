@@ -450,6 +450,7 @@ export interface paths {
                     PageSize?: 10 | 20 | 50 | 100;
                     Sort?: string;
                     Search?: string;
+                    Scope?: components["schemas"]["RoleScopeFilter"];
                 };
                 header?: never;
                 path?: never;
@@ -3067,6 +3068,8 @@ export interface components {
          * @enum {string}
          */
         RoleScope: "Organization" | "AnyCompany" | "SpecificCompany";
+        /** @enum {null|string} */
+        RoleScopeFilter: "Organization" | "Company" | null;
         /** @description Solicitud de alta; cultura y zona proceden del navegador, sin campos visibles nuevos. */
         SignupHttpRequest: {
             email?: null | string;

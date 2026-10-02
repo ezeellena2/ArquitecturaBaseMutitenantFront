@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router";
 import { Shield } from "lucide-react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { configureI18n } from "@/shared/i18n";
@@ -15,7 +16,7 @@ beforeAll(async () => {
 describe("AdminPanel", () => {
   it("con un panel configurado abre y cierra con ‹", async () => {
     const onClose = vi.fn();
-    render(<AdminPanel panel={futurePanel} open isMobile={false} onClose={onClose} />);
+    render(<MemoryRouter><AdminPanel panel={futurePanel} open isMobile={false} onClose={onClose} /></MemoryRouter>);
     expect(screen.getByRole("navigation", { name: "Administración" })).toHaveClass("w-[232px]", "bg-[var(--panel)]");
     expect(screen.getByRole("button", { name: "Cerrar Administración" })).toHaveClass("size-8");
     expect(screen.queryByRole("link", { name: "Usuarios" })).not.toBeInTheDocument();
@@ -24,7 +25,7 @@ describe("AdminPanel", () => {
   });
 
   it("no se monta en teléfono", () => {
-    render(<AdminPanel panel={futurePanel} open isMobile onClose={vi.fn()} />);
+    render(<MemoryRouter><AdminPanel panel={futurePanel} open isMobile onClose={vi.fn()} /></MemoryRouter>);
     expect(screen.queryByRole("navigation", { name: "Administración" })).not.toBeInTheDocument();
   });
 });

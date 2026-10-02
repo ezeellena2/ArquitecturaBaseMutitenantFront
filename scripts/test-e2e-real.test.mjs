@@ -490,7 +490,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           assert.ok(systemRole, "La organización debe tener roles de sistema protegidos.");
 
           setStage("crea un rol organizacional con un permiso del catálogo");
-          const roleName = `Rol E2E ${randomUUID()}`;
+          const roleName = `Rol E2E ${randomUUID().slice(0, 8)}`;
           const createResponse = await rolesPage.request.post(new URL("/api/roles", baseUrl).href, {
             headers: { ...headers, "Idempotency-Key": randomUUID() },
             data: { name: roleName, description: "Rol de prueba aislado", scope: "Organization", permissions: ["roles.read"] },
@@ -518,6 +518,39 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           assert.equal((await staleResponse.json()).code, "General.ConcurrencyConflict");
           const afterStaleResponse = await rolesPage.request.get(roleUrl.href, { headers });
           assert.equal((await afterStaleResponse.json()).name, updatedName, "El conflicto no debe pisar el primer cambio.");
+
+          setStage("abre el listado real y actualiza un rol desde la pantalla de edición");
+          await rolesPage.goto(new URL("/org/roles", baseUrl).href);
+          await rolesPage.getByRole("heading", { name: "Roles y permisos" }).waitFor();
+          await rolesPage.getByRole("link", { name: updatedName }).click();
+          await rolesPage.getByRole("heading", { name: updatedName }).waitFor();
+          const roleNameField = rolesPage.getByRole("textbox", { name: "Nombre" });
+          await roleNameField.fill(`${updatedName} desde pantalla`);
+          const uiUpdate = rolesPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === `/api/roles/${roleId}` && response.request().method() === "PUT");
+          await rolesPage.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+          const uiUpdateResponse = await uiUpdate;
+          const uiUpdateProblem = uiUpdateResponse.status() === 204 ? null : await uiUpdateResponse.json().catch(() => null);
+          assert.equal(uiUpdateResponse.status(), 204,
+            `La pantalla debe guardar el rol con su versión vigente (${uiUpdateProblem?.code ?? "sin código"}; campos: ${Object.keys(uiUpdateProblem?.errors ?? {}).join(", ") || "ninguno"}).`);
+          await rolesPage.getByRole("heading", { name: `${updatedName} desde pantalla` }).waitFor();
+
+          setStage("crea un segundo rol desde la pantalla real y envía la versión idempotente");
+          const uiRoleName = `Rol UI E2E ${randomUUID()}`;
+          await rolesPage.goto(new URL("/org/roles/new", baseUrl).href);
+          await rolesPage.getByRole("textbox", { name: "Nombre" }).fill(uiRoleName);
+          await rolesPage.getByRole("textbox", { name: "Descripción" }).fill("Creado por el recorrido real del front.");
+          await rolesPage.getByRole("combobox", { name: "Vale en" }).click();
+          await rolesPage.getByRole("option", { name: "Toda la organización" }).click();
+          await rolesPage.getByText("Ver roles", { exact: true }).click();
+          const uiCreate = rolesPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === "/api/roles" && response.request().method() === "POST");
+          await rolesPage.getByRole("button", { name: "Crear rol", exact: true }).click();
+          const uiCreateResponse = await uiCreate;
+          assert.equal(uiCreateResponse.status(), 201, "El formulario real debe crear el rol organizacional.");
+          const createdUiRoleId = await uiCreateResponse.json();
+          assert.match(createdUiRoleId, /^[0-9a-f-]{36}$/i);
+          await rolesPage.getByRole("heading", { name: uiRoleName }).waitFor();
 
           setStage("intenta borrar un rol de sistema con su versión vigente");
           const systemRoleUrl = new URL(`/api/roles/${systemRole.id}`, baseUrl);

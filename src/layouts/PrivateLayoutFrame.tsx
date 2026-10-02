@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { Outlet } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -23,6 +23,19 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isSigningOut = useIsSigningOut();
   const { data: user } = useCurrentUser();
+  const visibleNavigation = useMemo(() => {
+    const permissions = new Set(user?.permissions ?? []);
+    const visible = (entry: { permission?: string }) => !entry.permission || permissions.has(entry.permission);
+    const links = navigation.links.filter(visible);
+    const source = navigation.administration;
+    const sections = source?.sections?.map((section) => ({ ...section, links: section.links.filter(visible) }))
+      .filter((section) => section.links.length > 0);
+    const panelLinks = source?.links.filter(visible) ?? [];
+    const administration = source && (panelLinks.length > 0 || (sections?.length ?? 0) > 0)
+      ? { ...source, links: panelLinks, ...(source.sections ? { sections } : {}) }
+      : null;
+    return { ...navigation, links, administration };
+  }, [navigation, user?.permissions]);
   const [collapsed, setCollapsed] = useLocalStorage("sidebarCollapsed", false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [administrationOpen, setAdministrationOpen] = useState(false);
@@ -37,7 +50,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
 
   return <div className="flex h-svh print:h-auto">
     <Sidebar
-      navigation={navigation}
+      navigation={visibleNavigation}
       account={account}
       context={context}
       isMobile={isMobile}
@@ -48,7 +61,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
       onToggleCollapsed={() => setCollapsed((value) => !value)}
       onCloseMobile={() => setMobileOpen(false)}
     />
-    <AdminPanel panel={navigation.administration} open={administrationOpen} isMobile={isMobile} onClose={() => setAdministrationOpen(false)} />
+    <AdminPanel panel={visibleNavigation.administration} open={administrationOpen} isMobile={isMobile} onClose={() => setAdministrationOpen(false)} />
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
       <Topbar
         onToggleNavigation={() => { if (isMobile) setMobileOpen((value) => !value); else setCollapsed((value) => !value); }}

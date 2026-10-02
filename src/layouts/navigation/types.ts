@@ -11,6 +11,12 @@ export interface NavigationPanel {
   labelKey: string;
   icon: LucideIcon;
   links: readonly NavigationLink[];
+  sections?: readonly NavigationSection[];
+}
+
+export interface NavigationSection {
+  labelKey: string;
+  links: readonly NavigationLink[];
 }
 
 export interface NavigationConfig {
