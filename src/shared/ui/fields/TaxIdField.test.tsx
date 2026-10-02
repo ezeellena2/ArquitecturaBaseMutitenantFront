@@ -9,14 +9,14 @@ import { server } from "@/test/mocks/server";
 import { FormField } from "../FormField";
 import { TaxIdField, type TaxIdDraft } from "./TaxIdField";
 
-function renderField() {
+function renderField(appliesTo?: "Person" | "Company") {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   const onValidityChange = vi.fn();
   function Harness() {
     const [value, setValue] = useState<TaxIdDraft | null>(null);
     return <>
       <FormField label="Número fiscal"><TaxIdField value={value} onChange={setValue}
-        onValidityChange={onValidityChange} typeLabel="Tipo de identificación" /></FormField>
+        onValidityChange={onValidityChange} typeLabel="Tipo de identificación" appliesTo={appliesTo} /></FormField>
       <output>{JSON.stringify(value)}</output>
     </>;
   }
@@ -40,12 +40,12 @@ describe("TaxIdField", () => {
     })));
   });
 
-  it("ofrece solo tipos fiscales habilitados provenientes del catálogo", async () => {
-    renderField();
+  it("ofrece solo tipos fiscales habilitados que aplican a Company", async () => {
+    renderField("Company");
     const select = screen.getByRole("combobox", { name: "Tipo de identificación" });
     await waitFor(() => expect(select).toBeEnabled());
     expect(Array.from((select as HTMLSelectElement).options, (option) => option.text)).toEqual([
-      "Tipo de identificación", "CUIL", "CUIT",
+      "Tipo de identificación", "CUIT",
     ]);
     expect(screen.queryByRole("option", { name: "DNI" })).not.toBeInTheDocument();
   });

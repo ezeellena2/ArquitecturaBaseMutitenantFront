@@ -19,6 +19,7 @@ interface TaxIdFieldProps {
   name?: string;
   disabled?: boolean;
   required?: boolean;
+  appliesTo?: "Person" | "Company";
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
 }
@@ -29,27 +30,28 @@ const validators: Record<string, (number: string) => boolean> = {
   "ar-dni-length": (number) => stdnum.AR.dni.validate(number).isValid,
 };
 
-function validTaxId(type: TaxIdTypeReference | undefined, number: string): boolean {
+export function isValidTaxId(type: TaxIdTypeReference | undefined, number: string): boolean {
   return Boolean(type?.isEnabled && number && validators[type.validatorKey]?.(number));
 }
 
 /** Entrada E1: el país se deriva del tipo en Application, sin incluirlo en este contrato. */
 export function TaxIdField({ value, onChange, onValidityChange, typeLabel,
-  id, name, disabled, required, "aria-invalid": invalid, "aria-describedby": describedBy }: TaxIdFieldProps) {
+  id, name, disabled, required, appliesTo, "aria-invalid": invalid, "aria-describedby": describedBy }: TaxIdFieldProps) {
   const { t } = useTranslation();
   const { data, isPending, isError } = useReferenceData();
   const types = enabledOptions(data?.taxIdTypes ?? [])
+    .filter((type) => appliesTo === undefined || type.appliesTo === appliesTo || type.appliesTo === "Both")
     .sort((left, right) => (left.sortOrder ?? Number.MAX_SAFE_INTEGER) - (right.sortOrder ?? Number.MAX_SAFE_INTEGER)
       || left.name.localeCompare(right.name, data?.culture));
   const selectedType = types.find((item) => item.code === value?.type);
   const number = value?.number ?? "";
-  const liveInvalid = number !== "" && !validTaxId(selectedType, number);
+  const liveInvalid = number !== "" && !isValidTaxId(selectedType, number);
   const unavailable = disabled || !data;
 
   function change(next: TaxIdDraft) {
     const type = types.find((item) => item.code === next.type);
     onChange(next);
-    onValidityChange?.(validTaxId(type, next.number));
+    onValidityChange?.(isValidTaxId(type, next.number));
   }
 
   return (

@@ -54,12 +54,14 @@ async function readProblem(response: Response): Promise<ProblemDetails> {
   }
 }
 
-async function send(path: string, init: RequestInit, token: string | undefined): Promise<Response> {
+async function send(path: string, init: RequestInit, token: string | undefined, cookieOnly = false): Promise<Response> {
   const headers = new Headers(init.headers);
   headers.set("accept", "application/json");
 
   if (token) {
     headers.set("authorization", `Bearer ${token}`);
+  } else if (cookieOnly) {
+    headers.delete("authorization");
   }
 
   const language = options.getCulture?.() ?? effectiveCulture();
@@ -75,12 +77,13 @@ async function send(path: string, init: RequestInit, token: string | undefined):
   return fetch(path, { ...init, headers });
 }
 
-async function receive(path: string, init: RequestInit, allowNotModified = false): Promise<Response> {
+async function receive(path: string, init: RequestInit, allowNotModified = false,
+  cookieOnly = false): Promise<Response> {
   let response: Response;
-  const token = options.getAccessToken?.();
+  const token = cookieOnly ? undefined : options.getAccessToken?.();
 
   try {
-    response = await send(path, init, token);
+    response = await send(path, init, token, cookieOnly);
   } catch {
     throw ApiError.network();
   }
@@ -94,7 +97,7 @@ async function receive(path: string, init: RequestInit, allowNotModified = false
     }
     if (renewedToken) {
       try {
-        response = await send(path, init, renewedToken);
+      response = await send(path, init, renewedToken, cookieOnly);
       } catch {
         throw ApiError.network();
       }
@@ -131,8 +134,8 @@ async function readBody<T>(response: Response): Promise<T> {
   return (text === "" ? undefined : JSON.parse(text)) as T;
 }
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  return readBody<T>(await receive(path, init));
+async function request<T>(path: string, init: RequestInit = {}, cookieOnly = false): Promise<T> {
+  return readBody<T>(await receive(path, init, false, cookieOnly));
 }
 
 async function getWithMetadata<T>(path: string, init: RequestInit = {}) {
@@ -149,6 +152,8 @@ export const api = {
   getWithMetadata,
   post: <T>(path: string, body?: unknown, init?: RequestInit) =>
     request<T>(path, { ...init, method: "POST", body: body === undefined ? undefined : JSON.stringify(body) }),
+  postCookie: <T>(path: string, body?: unknown, init?: RequestInit) =>
+    request<T>(path, { ...init, method: "POST", body: body === undefined ? undefined : JSON.stringify(body), credentials: "same-origin" }, true),
   put: <T>(path: string, body?: unknown, init?: RequestInit) =>
     request<T>(path, { ...init, method: "PUT", body: body === undefined ? undefined : JSON.stringify(body) }),
   delete: <T>(path: string, init?: RequestInit) => request<T>(path, { ...init, method: "DELETE" }),

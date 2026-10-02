@@ -11,7 +11,7 @@ import { getGoogleSignupAntiforgery, googleSignupAntiforgeryQueryKey } from "../
 
 export type GoogleButtonProps =
   | { mode: "login"; access: "consumer" | "business"; returnUrl: string; acceptedTerms?: never; returnTo?: never }
-  | { mode: "signup"; acceptedTerms: boolean; returnTo: string; access?: never; returnUrl?: never };
+  | { mode: "signup"; acceptedTerms: boolean; returnTo: string; access?: "consumer" | "business"; returnUrl?: never };
 
 function GoogleMark() {
   return <img src={googleMark} width="18" height="18" alt="" aria-hidden="true" />;
@@ -35,7 +35,9 @@ export function GoogleButton(props: GoogleButtonProps) {
   });
   if (!available) return null;
 
-  const label = props.mode === "signup" ? t("signup.google") : t("login.google");
+  const label = props.mode === "signup"
+    ? t(props.access === "business" ? "businessSignup.google" : "signup.google")
+    : t("login.google");
   const className = "w-full border-[var(--t3)] text-[var(--t1)]";
   if (props.mode === "signup") {
     const culture = effectiveCulture() ?? navigator.language;
@@ -46,6 +48,7 @@ export function GoogleButton(props: GoogleButtonProps) {
         <input type="hidden" name="__RequestVerificationToken" value={csrf?.requestToken ?? ""} />
         <input type="hidden" name="signup" value="true" />
         <input type="hidden" name="acceptedTerms" value="true" />
+        <input type="hidden" name="access" value={props.access ?? "consumer"} />
         <input type="hidden" name="returnTo" value={props.returnTo} />
         <input type="hidden" name="culture" value={culture} />
         {timeZoneId ? <input type="hidden" name="timeZoneId" value={timeZoneId} /> : null}

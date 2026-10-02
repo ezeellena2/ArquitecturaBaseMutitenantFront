@@ -8,6 +8,21 @@ import { api, configureHttpClient, resetHttpClient } from "./httpClient";
 afterEach(() => resetHttpClient());
 
 describe("httpClient con sesión", () => {
+  it("permite el alta de organización con la cookie de identidad y sin bearer B2C", async () => {
+    let authorization: string | null = "not-called";
+    server.use(http.post("/api/auth/business-signup", ({ request }) => {
+      authorization = request.headers.get("authorization");
+      return HttpResponse.json({ tenantId: "org-id" });
+    }));
+    configureHttpClient({ getAccessToken: () => "consumer-token" });
+
+    await expect(api.postCookie("/api/auth/business-signup", { organizationName: "Acme" }, {
+      headers: { "RequestVerificationToken": "csrf" },
+    })).resolves.toEqual({ tenantId: "org-id" });
+
+    expect(authorization).toBeNull();
+  });
+
   it("renueva el token tras 401 y repite una sola vez la misma petición", async () => {
     const seen: string[] = [];
     server.use(http.post("/api/protected", async ({ request }) => {
