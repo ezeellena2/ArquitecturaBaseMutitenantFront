@@ -49,6 +49,11 @@ function displayError(error: unknown, fallback: (key: string) => string): string
 }
 
 export function InvitationPage() {
+  const location = useLocation();
+  return <InvitationFlow key={location.key} />;
+}
+
+function InvitationFlow() {
   const { t } = useTranslation("invitations");
   const { t: tErrors } = useTranslation("errors");
   const auth = useAuth();

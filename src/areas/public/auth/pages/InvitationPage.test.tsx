@@ -10,6 +10,7 @@ import { AppProviders } from "@/app/providers";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import type { InvitationPreviewResponse } from "@/shared/api/types";
 import { server } from "@/test/mocks/server";
+import { businessUser } from "@/test/mocks/currentUsers";
 import { InvitationPage } from "./InvitationPage";
 
 const invitationToken = "opaque-invitation-token-probe";
@@ -46,6 +47,7 @@ beforeEach(() => {
   signinRedirect = vi.fn(async () => {});
   signoutRedirect = vi.fn(async () => {});
   server.use(
+    http.get("/api/me", () => HttpResponse.json(businessUser)),
     http.get("/api/auth/external/google/antiforgery", () => HttpResponse.json({ requestToken: "test-antiforgery" })),
     http.post("/api/invitations/preview", async ({ request }) => {
       previewRequests.push({
@@ -179,6 +181,61 @@ describe("InvitationPage", () => {
     expect(acceptRequests[0].body).toEqual({ token: invitationToken, acceptedTerms: false });
     expect(signinRedirect).not.toHaveBeenCalled();
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("acepta una segunda invitación sin reutilizar la confirmación ni la organización anterior", async () => {
+    previewResponse = { ...basePreview, state: "Ready" };
+    const { router } = show();
+    fireEvent.click(await screen.findByRole("button", { name: "Aceptar invitación" }));
+    expect(await screen.findByRole("heading", { name: "Te sumaste a Grupo Delta" })).toBeVisible();
+
+    previewResponse = { ...basePreview, state: "Ready", organizationId: "second-organization", organizationName: "Grupo Norte" };
+    server.use(http.post("/api/invitations/accept", async ({ request }) => {
+      expect(await request.json()).toEqual({ token: "second-invitation", acceptedTerms: false });
+      return HttpResponse.json({ organizationId: "second-organization", createdAccount: false, needsPersonalLoginMethod: false });
+    }));
+    await act(async () => router.navigate("/invitacion#second-invitation"));
+    expect(await screen.findByRole("heading", { name: "Te sumás a Grupo Norte" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Aceptar invitación" }));
+    expect(await screen.findByRole("heading", { name: "Te sumaste a Grupo Norte" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Entrar a la organización" }));
+    await waitFor(() => expect(signinRedirect).toHaveBeenCalledWith(expect.objectContaining({
+      extraQueryParams: { access: "business", tenant: "second-organization" },
+    })));
+  });
+
+  it("pide nuevamente consentimiento al abrir otra invitación", async () => {
+    const { router } = show();
+    const consent = await screen.findByRole("checkbox", { name: /Términos y la Política de privacidad/ });
+    fireEvent.click(consent);
+    expect(consent).toBeChecked();
+    await act(async () => router.navigate("/invitacion#second-invitation"));
+    expect(await screen.findByRole("checkbox", { name: /Términos y la Política de privacidad/ })).not.toBeChecked();
+    expect(screen.getByRole("button", { name: "Aceptar invitación" })).toBeDisabled();
+  });
+
+  it("ignora una aceptación que responde después de abrir otra invitación", async () => {
+    let finishAcceptance!: () => void;
+    const pending = new Promise<void>((resolve) => { finishAcceptance = resolve; });
+    let acceptanceStarted!: () => void;
+    const started = new Promise<void>((resolve) => { acceptanceStarted = resolve; });
+    server.use(http.post("/api/invitations/accept", async () => {
+      acceptanceStarted();
+      await pending;
+      return HttpResponse.json({ organizationId: "tenant-invited", createdAccount: false, needsPersonalLoginMethod: false });
+    }));
+    previewResponse = { ...basePreview, state: "Ready" };
+    const { router, client } = show();
+    fireEvent.click(await screen.findByRole("button", { name: "Aceptar invitación" }));
+    await started;
+    previewResponse = { ...basePreview, state: "Ready", organizationName: "Grupo Norte" };
+    try {
+      await act(async () => router.navigate("/invitacion#second-invitation"));
+      expect(await screen.findByRole("heading", { name: "Te sumás a Grupo Norte" })).toBeVisible();
+    } finally { finishAcceptance(); }
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+    expect(screen.getByRole("heading", { name: "Te sumás a Grupo Norte" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Aceptar invitación" })).toBeEnabled();
   });
 
   it("permite salir y seguir con la cuenta invitada o volver al acceso actual sin aceptar", async () => {
