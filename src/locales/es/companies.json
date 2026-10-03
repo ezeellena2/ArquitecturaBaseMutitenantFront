@@ -34,14 +34,14 @@
     "clear": "Limpiar filtros"
   },
   "form": {
-    "description": "Completá los datos de la empresa dentro de esta organización.",
     "name": "Nombre",
-    "taxId": "Identificación fiscal",
-    "taxIdType": "Tipo de identificación fiscal",
-    "timeZone": "Zona horaria",
-    "chooseTimeZone": "Elegí una zona horaria",
+    "taxId": "CUIT",
+    "timeZone": "Zona de negocio",
     "create": "Crear empresa",
-    "save": "Guardar cambios"
+    "save": "Guardar cambios",
+    "taxIdPlaceholder": "30-12345678-9",
+    "taxIdInvalid": "Revisá el CUIT: son 11 números.",
+    "organizationTimeZone": "La de la organización"
   },
   "validation": {
     "taxIdPair": "Completá el tipo y el número de identificación fiscal, o dejá ambos vacíos."

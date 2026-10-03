@@ -34,14 +34,14 @@
     "clear": "Clear filters"
   },
   "form": {
-    "description": "Enter company details for this organization.",
     "name": "Name",
-    "taxId": "Tax identification",
-    "taxIdType": "Tax identification type",
-    "timeZone": "Time zone",
-    "chooseTimeZone": "Choose a time zone",
+    "taxId": "CUIT",
+    "timeZone": "Business time zone",
     "create": "Create company",
-    "save": "Save changes"
+    "save": "Save changes",
+    "taxIdPlaceholder": "30-12345678-9",
+    "taxIdInvalid": "Check the CUIT: it has 11 digits.",
+    "organizationTimeZone": "The organization's"
   },
   "validation": {
     "taxIdPair": "Enter both the tax ID type and number, or leave both empty."

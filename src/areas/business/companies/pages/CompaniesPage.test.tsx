@@ -65,15 +65,15 @@ describe("CompaniesPage", () => {
     expect(container.querySelector("table")).toBeVisible();
   }, 10_000);
 
-  it("crea una empresa con idempotencia y la zona del catálogo", async () => {
-    let requestBody: unknown;
-    let idempotencyKey: string | null = null;
+  it("crea una empresa como el tablero: Nombre y CUIT, y «Zona de negocio» con «La de la organización»", async () => {
+    const bodies: unknown[] = [];
+    const keys: (string | null)[] = [];
     server.use(
       http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
       http.get("/api/companies/filter-counts", () => HttpResponse.json({ all: 0, active: 0, inactive: 0 })),
       http.post("/api/companies", async ({ request }) => {
-        requestBody = await request.json();
-        idempotencyKey = request.headers.get("Idempotency-Key");
+        bodies.push(await request.json());
+        keys.push(request.headers.get("Idempotency-Key"));
         return HttpResponse.json("company-created", { status: 201 });
       }),
     );
@@ -81,15 +81,29 @@ describe("CompaniesPage", () => {
     const user = userEvent.setup();
     renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Crear empresa" }));
-    await user.type(screen.getByRole("textbox", { name: "Nombre" }), "Empresa Nueva S.A.");
-    await user.click(await screen.findByRole("combobox", { name: "Zona horaria" }));
-    await user.click(await screen.findByRole("option", { name: "Buenos Aires (GMT−3)" }));
-    await user.click(screen.getAllByRole("button", { name: "Crear empresa" }).at(-1)!);
+    const dialog = await screen.findByRole("dialog", { name: "Crear empresa" });
+    expect(dialog).not.toHaveTextContent("Completá los datos");
+    expect(within(dialog).getByRole("textbox", { name: "CUIT" })).toHaveAttribute("placeholder", "30-12345678-9");
+    expect(within(dialog).getByRole("combobox", { name: "Zona de negocio" })).toHaveTextContent("La de la organización");
 
-    await waitFor(() => expect(requestBody).toEqual({ name: "Empresa Nueva S.A.", taxIdType: null, taxIdNumber: null, timeZoneId: "America/Argentina/Buenos_Aires" }));
-    expect(idempotencyKey).toMatch(/^[0-9a-f-]{36}$/i);
+    // Solo el nombre: la zona queda la de la organización.
+    await user.type(within(dialog).getByRole("textbox", { name: "Nombre" }), "Empresa Nueva S.A.");
+    await user.click(within(dialog).getByRole("button", { name: "Crear empresa" }));
+    await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Empresa Nueva S.A.", taxIdType: null, taxIdNumber: null, timeZoneId: null }));
+    expect(keys.at(-1)).toMatch(/^[0-9a-f-]{36}$/i);
     expect(await screen.findByText("Creamos Empresa Nueva S.A. Quedaste con el rol Administrador.")).toBeVisible();
-  }, 10_000);
+
+    // Con CUIT: se guarda como tipo + número.
+    await user.click(screen.getByRole("button", { name: "Crear empresa" }));
+    const again = await screen.findByRole("dialog", { name: "Crear empresa" });
+    await user.type(within(again).getByRole("textbox", { name: "Nombre" }), "Delta Norte S.A.");
+    await user.type(within(again).getByRole("textbox", { name: "CUIT" }), "30-12345678-9");
+    expect(await within(again).findByText("Revisá el CUIT: son 11 números.")).toBeVisible();
+    await user.clear(within(again).getByRole("textbox", { name: "CUIT" }));
+    await user.type(within(again).getByRole("textbox", { name: "CUIT" }), "30712345671");
+    await user.click(within(again).getByRole("button", { name: "Crear empresa" }));
+    await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Delta Norte S.A.", taxIdType: "AR-CUIT", taxIdNumber: "30712345671", timeZoneId: null }));
+  }, 15_000);
 
   it("inactiva una empresa con su versión y confirmación", async () => {
     let requestBody: unknown;

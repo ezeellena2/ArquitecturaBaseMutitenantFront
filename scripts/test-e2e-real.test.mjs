@@ -779,7 +779,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await adminPage.getByRole("button", { name: "Crear empresa", exact: true }).click();
           const companyDialog = adminPage.getByRole("dialog");
           await companyDialog.getByRole("textbox", { name: "Nombre", exact: true }).fill(e2eCompanyName);
-          await companyDialog.getByRole("combobox", { name: "Zona horaria", exact: true }).click();
+          await companyDialog.getByRole("combobox", { name: "Zona de negocio", exact: true }).click();
           await adminPage.getByRole("option", { name: "Buenos Aires (GMT−3)", exact: true }).click();
           const companyCreated = adminPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/companies"
             && response.request().method() === "POST");

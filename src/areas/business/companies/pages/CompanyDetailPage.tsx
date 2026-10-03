@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
-import type { AddCompanyMemberRequest, CompanyMemberResponse, CompanyResponse, RoleResponse, UpdateCompanyRequest } from "@/shared/api/types";
+import type { AddCompanyMemberRequest, CompanyMemberResponse, RoleResponse, UpdateCompanyRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useFilters } from "@/shared/hooks/useFilters";
@@ -20,11 +20,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { TaxIdField, type TaxIdDraft } from "@/shared/ui/fields/TaxIdField";
 import { TaxIdText } from "@/shared/ui/format/TaxIdText";
 import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
-import { TimeZoneSelect } from "@/shared/ui/fields/TimeZoneSelect";
-import { Input } from "@/shared/ui/input";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
@@ -55,16 +52,11 @@ import {
   type CompanyMembersQuery,
 } from "../api/companies";
 import { createCompanyMemberColumns } from "../columns";
+import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyTaxIdValid, type CompanyDraft } from "../components/CompanyFields";
 
 type CompanyTab = "members" | "roles";
-type CompanyDraft = { name: string; taxId: TaxIdDraft | null; timeZoneId: string };
 // Orden del filtro «Estado» del tablero Empresa.
 const states = [undefined, "Active", "Inactive", "PendingDeletion"] as const;
-const initialDraft: CompanyDraft = { name: "", taxId: null, timeZoneId: "" };
-
-function draftFromCompany(company: CompanyResponse): CompanyDraft {
-  return { name: company.name, taxId: company.taxId ? { type: company.taxId.type, number: company.taxId.number } : null, timeZoneId: company.timeZoneId };
-}
 
 function failureMessage(error: unknown, fallback: string): string {
   return error instanceof ApiError ? error.detail ?? fallback : fallback;
@@ -106,8 +98,8 @@ export function CompanyDetailPage() {
   const [statusTarget, setStatusTarget] = useState<CompanyMemberResponse | null>(null);
   const [companyStatusConfirm, setCompanyStatusConfirm] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [editDraft, setEditDraft] = useState<CompanyDraft>(initialDraft);
-  const [taxIdValid, setTaxIdValid] = useState(true);
+  const [editDraft, setEditDraft] = useState<CompanyDraft>(emptyCompanyDraft);
+  const { cuitType, taxIdValid } = useCompanyTaxIdValid(editDraft);
   const [editFailure, setEditFailure] = useState<unknown>();
   const existingMemberIds = useQuery({ queryKey: ["companies", id, "all-member-ids"], queryFn: () => fetchCompanyMemberIds(id), enabled: addOpen && canManageMembers, meta: { silent: true } });
   const alreadyAssigned = new Set(existingMemberIds.data ?? []);
@@ -139,7 +131,7 @@ export function CompanyDetailPage() {
   });
   const saveCompany = useMutation({
     mutationFn: () => {
-      const payload: UpdateCompanyRequest = { name: editDraft.name.trim(), taxIdType: editDraft.taxId?.type || null, taxIdNumber: editDraft.taxId?.number || null, timeZoneId: editDraft.timeZoneId, version: company.data!.version };
+      const payload: UpdateCompanyRequest = { ...companyPayload(editDraft, cuitType?.code), version: company.data!.version };
       return updateCompany(id, payload);
     },
     onSuccess: async () => { setEditOpen(false); setEditFailure(undefined); toast.success(t("companies:messages.detailUpdated")); await invalidate(); },
@@ -153,18 +145,13 @@ export function CompanyDetailPage() {
 
   function openEdit() {
     setEditDraft(draftFromCompany(data));
-    setTaxIdValid(true);
     setEditFailure(undefined);
     setEditOpen(true);
   }
 
   function submitEdit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!editDraft.name.trim() || !editDraft.timeZoneId || !taxIdValid) return;
-    if (editDraft.taxId && Boolean(editDraft.taxId.type) !== Boolean(editDraft.taxId.number)) {
-      setEditFailure(new Error(t("companies:validation.taxIdPair")));
-      return;
-    }
+    if (!editDraft.name.trim() || !taxIdValid) return;
     saveCompany.mutate();
   }
 
@@ -306,13 +293,11 @@ export function CompanyDetailPage() {
 
     <Dialog open={editOpen} onOpenChange={(open) => { setEditOpen(open); if (!open) setEditFailure(undefined); }}>
       <DialogContent mobileFullHeight>
-        <DialogHeader><DialogTitle>{t("companies:editTitle")}</DialogTitle><DialogDescription>{data.name}</DialogDescription></DialogHeader>
+        <DialogHeader><DialogTitle>{t("companies:editTitle")}</DialogTitle></DialogHeader>
         <form onSubmit={submitEdit} className="flex min-h-0 flex-col">
           <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
             {editFailure ? <FormError message={failureMessage(editFailure, t("common:states.error"))} /> : null}
-            <FormField label={t("companies:form.name")} required><Input required maxLength={120} autoComplete="organization" value={editDraft.name} onChange={(event) => setEditDraft({ ...editDraft, name: event.target.value })} /></FormField>
-            <FormField label={t("companies:form.taxId")}><TaxIdField value={editDraft.taxId} onChange={(taxId) => setEditDraft({ ...editDraft, taxId })} onValidityChange={setTaxIdValid} typeLabel={t("companies:form.taxIdType")} appliesTo="Company" /></FormField>
-            <FormField label={t("companies:form.timeZone")} required><TimeZoneSelect variant="compact" value={editDraft.timeZoneId} onChange={(timeZoneId) => setEditDraft({ ...editDraft, timeZoneId })} placeholder={t("companies:form.chooseTimeZone")} /></FormField>
+            <CompanyFields draft={editDraft} onChange={setEditDraft} taxIdValid={taxIdValid} />
           </div>
           <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
             <Button type="button" variant="outline" onClick={() => setEditOpen(false)}>{t("common:actions.cancel")}</Button>

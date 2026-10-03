@@ -14,13 +14,9 @@ import { usePagination } from "@/shared/hooks/usePagination";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
-import { FormField } from "@/shared/ui/FormField";
-import { TaxIdField, type TaxIdDraft } from "@/shared/ui/fields/TaxIdField";
-import { TimeZoneSelect } from "@/shared/ui/fields/TimeZoneSelect";
 import { FilterBar } from "@/shared/ui/FilterBar";
-import { Input } from "@/shared/ui/input";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
@@ -40,14 +36,9 @@ import {
   type CompaniesQuery,
 } from "../api/companies";
 import { createCompanyColumns } from "../columns";
+import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyTaxIdValid, type CompanyDraft } from "../components/CompanyFields";
 
 const statusValues = [undefined, "Active", "Inactive"] as const;
-type CompanyDraft = { name: string; taxId: TaxIdDraft | null; timeZoneId: string };
-const emptyDraft: CompanyDraft = { name: "", taxId: null, timeZoneId: "" };
-
-function draftFromCompany(company: CompanyResponse): CompanyDraft {
-  return { name: company.name, taxId: company.taxId ? { type: company.taxId.type, number: company.taxId.number } : null, timeZoneId: company.timeZoneId };
-}
 
 // «Delta S.A.» + «. Quedaste…» no repite el punto final del nombre.
 const sentence = (text: string) => text.replace("..", ".");
@@ -90,9 +81,9 @@ export function CompaniesPage() {
   });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<CompanyResponse | null>(null);
-  const [draft, setDraft] = useState<CompanyDraft>(emptyDraft);
+  const [draft, setDraft] = useState<CompanyDraft>(emptyCompanyDraft);
   const [failure, setFailure] = useState<unknown>();
-  const [taxIdValid, setTaxIdValid] = useState(true);
+  const { cuitType, taxIdValid } = useCompanyTaxIdValid(draft);
   const [statusTarget, setStatusTarget] = useState<CompanyResponse | null>(null);
 
   const invalidate = async () => {
@@ -102,13 +93,13 @@ export function CompaniesPage() {
     setDialogOpen(false);
     toast.success(sentence(t(creating ? "companies:messages.created" : "companies:messages.updated", { name: draft.name.trim() })));
     setEditingCompany(null);
-    setDraft(emptyDraft);
+    setDraft(emptyCompanyDraft);
     setFailure(undefined);
     await invalidate();
   };
   const create = useIdempotentMutation((request: CreateCompanyRequest, key) => createCompany(request, key));
   const update = useMutation({
-    mutationFn: (company: CompanyResponse) => updateCompany(company.id, { name: draft.name.trim(), taxIdType: draft.taxId?.type || null, taxIdNumber: draft.taxId?.number || null, timeZoneId: draft.timeZoneId, version: company.version }),
+    mutationFn: (company: CompanyResponse) => updateCompany(company.id, { ...companyPayload(draft, cuitType?.code), version: company.version }),
     onSuccess: async () => finishSave(false),
     onError: (error) => setFailure(error),
   });
@@ -126,9 +117,8 @@ export function CompaniesPage() {
 
   function openCreate() {
     setEditingCompany(null);
-    setDraft(emptyDraft);
+    setDraft(emptyCompanyDraft);
     setFailure(undefined);
-    setTaxIdValid(true);
     setDialogOpen(true);
   }
 
@@ -136,19 +126,14 @@ export function CompaniesPage() {
     setEditingCompany(company);
     setDraft(draftFromCompany(company));
     setFailure(undefined);
-    setTaxIdValid(true);
     setDialogOpen(true);
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (draft.name.trim() === "" || !draft.timeZoneId || !taxIdValid) return;
-    if (draft.taxId && Boolean(draft.taxId.type) !== Boolean(draft.taxId.number)) {
-      setFailure(new Error(t("companies:validation.taxIdPair")));
-      return;
-    }
+    if (draft.name.trim() === "" || !taxIdValid) return;
     setFailure(undefined);
-    const request: CreateCompanyRequest = { name: draft.name.trim(), taxIdType: draft.taxId?.type || null, taxIdNumber: draft.taxId?.number || null, timeZoneId: draft.timeZoneId };
+    const request: CreateCompanyRequest = companyPayload(draft, cuitType?.code);
     if (editingCompany) update.mutate(editingCompany);
     else void create.mutateAsync(request).then(() => finishSave(true)).catch((error: unknown) => setFailure(error));
   }
@@ -210,17 +195,11 @@ export function CompaniesPage() {
     </Page>
     <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setFailure(undefined); }}>
       <DialogContent mobileFullHeight>
-        <DialogHeader><DialogTitle>{t(editingCompany ? "companies:editTitle" : "companies:createTitle")}</DialogTitle><DialogDescription>{t("companies:form.description")}</DialogDescription></DialogHeader>
+        <DialogHeader><DialogTitle>{t(editingCompany ? "companies:editTitle" : "companies:createTitle")}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="flex min-h-0 flex-col">
           <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
             {failure ? <FormError message={failure instanceof Error && !(failure instanceof ApiError) ? failure.message : errorMessage(failure, t("common:states.error"))} /> : null}
-            <FormField label={t("companies:form.name")} required><Input required maxLength={120} autoComplete="organization" value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} /></FormField>
-            <FormField label={t("companies:form.taxId")}>
-              <TaxIdField value={draft.taxId} onChange={(taxId) => { setDraft({ ...draft, taxId }); setFailure(undefined); }} onValidityChange={setTaxIdValid} typeLabel={t("companies:form.taxIdType")} appliesTo="Company" />
-            </FormField>
-            <FormField label={t("companies:form.timeZone")} required>
-              <TimeZoneSelect variant="compact" value={draft.timeZoneId} onChange={(timeZoneId) => setDraft({ ...draft, timeZoneId })} placeholder={t("companies:form.chooseTimeZone")} />
-            </FormField>
+            <CompanyFields draft={draft} onChange={(next) => { setDraft(next); setFailure(undefined); }} taxIdValid={taxIdValid} />
           </div>
           <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
             <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{t("common:actions.cancel")}</Button>
