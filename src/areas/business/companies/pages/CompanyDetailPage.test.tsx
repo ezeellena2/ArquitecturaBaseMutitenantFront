@@ -28,6 +28,24 @@ beforeEach(async () => {
 });
 
 describe("CompanyDetailPage", () => {
+  it("la banda dice el estado primero, el CUIT con su máscara y la zona por su nombre", async () => {
+    server.use(
+      http.get("/api/companies/company-1", () => HttpResponse.json({ ...company, taxId: { country: "AR", type: "AR-CUIT", number: "30712345678" } })),
+      http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: 1, active: 1, pendingDeletion: 0, inactive: 0, invited: 0 })),
+      http.get("/api/roles/paged", () => HttpResponse.json({ items: [companyAdmin], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+    );
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+
+    const heading = await screen.findByRole("heading", { level: 1, name: "Delta S.A." });
+    const subline = heading.parentElement!.querySelector("[data-slot='page-subline']")!;
+    // Tablero Empresa: «● Activa · CUIT 30-71234567-8 · Buenos Aires (GMT−3)».
+    await waitFor(() => expect(subline).toHaveTextContent(/^Activa · CUIT 30-71234567-8 · Buenos Aires \(GMT−3\)$/));
+    expect(subline.querySelector("[aria-hidden='true'].rounded-full")).toHaveClass("bg-[var(--ok)]");
+    expect(subline).not.toHaveTextContent("AR-CUIT");
+    expect(subline).not.toHaveTextContent("America/Argentina");
+  });
+
   it("guarda roles de empresa con la versión actual de la membresía", async () => {
     let requestBody: unknown;
     server.use(

@@ -19,6 +19,8 @@ import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { TaxIdField, type TaxIdDraft } from "@/shared/ui/fields/TaxIdField";
+import { TaxIdText } from "@/shared/ui/format/TaxIdText";
+import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
 import { TimeZoneSelect } from "@/shared/ui/fields/TimeZoneSelect";
 import { Input } from "@/shared/ui/input";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
@@ -197,8 +199,12 @@ export function CompanyDetailPage() {
   return <>
     <ConcurrencyBanner error={editFailure ?? mutationError} isDirty={false} onSeeNew={() => { setEditDraft(draftFromCompany(data)); setEditFailure(undefined); setMutationError(undefined); void company.refetch(); }} onContinueEditing={() => { setEditFailure(undefined); setMutationError(undefined); }} />
     <Page icon={Building2} title={data.name} backTo={{ to: "/org/empresas", label: t("companies:back") }}
-      summary={[data.taxId ? `${data.taxId.type} ${data.taxId.number}` : null, data.timeZoneId].filter(Boolean).join(" · ")}
-      status={t(`companies:status.${data.status}`)}
+      // Tablero Empresa: el estado primero, con punto y palabra; después el CUIT y la zona, formateados.
+      summary={<>
+        <span className="inline-flex items-center gap-1.5 text-[var(--t1)]"><span aria-hidden="true" className={`size-2 rounded-full ${data.status === "Active" ? "bg-[var(--ok)]" : "bg-[var(--t3)]"}`} />{t(`companies:status.${data.status}`)}</span>
+        {data.taxId ? <><span aria-hidden="true">{" · "}</span><TaxIdText value={data.taxId} withType /></> : null}
+        <span aria-hidden="true">{" · "}</span><TimeZoneText value={data.timeZoneId} />
+      </>}
       actions={<>
         {canManageCompany ? <Button type="button" variant="outline" onClick={openEdit}><Pencil aria-hidden="true" className="size-4" />{t("companies:actions.edit")}</Button> : null}
         {canAdd && tab === "members" ? <Button type="button" onClick={() => { setMutationError(undefined); setAddOpen(true); }}><Plus aria-hidden="true" className="size-4" />{t("companies:actions.addMember")}</Button> : null}

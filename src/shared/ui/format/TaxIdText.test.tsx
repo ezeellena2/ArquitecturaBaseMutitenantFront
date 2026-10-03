@@ -4,7 +4,10 @@ import { TaxIdText } from "./TaxIdText";
 
 const formatTaxId = vi.hoisted(() => vi.fn(() => "20-12345678-6"));
 vi.mock("@/shared/format/useFormat", () => ({
-  useFormat: () => ({ isLoading: false, formatTaxId, formatEmpty: () => "—" }),
+  useFormat: () => ({
+    isLoading: false, formatTaxId, formatEmpty: () => "—",
+    referenceData: { taxIdTypes: [{ code: "AR-CUIT", name: "CUIT" }] },
+  }),
 }));
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key === "format:emptyLabel" ? "Sin dato" : key }),
@@ -16,6 +19,11 @@ describe("TaxIdText", () => {
     expect(formatTaxId).toHaveBeenCalledWith({ type: "AR-CUIT", number: "20123456786" });
     expect(screen.getByText("20-12345678-6")).toBeInTheDocument();
     expect(screen.queryByText("20123456786")).not.toBeInTheDocument();
+  });
+
+  it("con withType antepone el nombre traducido del tipo, como la banda de Empresa", () => {
+    render(<TaxIdText value={{ country: "AR", type: "AR-CUIT", number: "20123456786" }} withType />);
+    expect(screen.getByText("CUIT 20-12345678-6")).toBeInTheDocument();
   });
 
   it("muestra el vacío accesible cuando no hay identificación", () => {
