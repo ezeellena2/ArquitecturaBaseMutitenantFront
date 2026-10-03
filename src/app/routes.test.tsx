@@ -26,7 +26,8 @@ describe("rutas de ingreso 3a", () => {
   it("/ con persona autenticada muestra el inicio personal; /org muestra el de empresa", async () => {
     const personal = renderRouteWithProviders("/", { as: "consumer-empty" });
     expect(await screen.findByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("main")).toBeEmptyDOMElement();
+    // Tablero Inicio-Personal: solo la banda «Inicio».
+    expect(screen.getByRole("main")).toHaveTextContent(/^Inicio$/);
     personal.unmount();
 
     renderRouteWithProviders("/org", { as: "business-admin" });
