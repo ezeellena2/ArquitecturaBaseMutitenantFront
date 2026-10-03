@@ -90,7 +90,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     const user = userEvent.setup();
     let updateBody: unknown;
     const checkedSlugs: string[] = [];
-    api(page);
+    api({ ...page, contactPhone: "+541143215678" as never });
     server.use(
       http.get("/api/public-site/slug-availability", ({ request }) => {
         const slug = new URL(request.url).searchParams.get("slug") ?? "";
@@ -112,8 +112,14 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     await user.clear(slug);
     await user.type(slug, "grupo-nuevo");
     await waitFor(() => expect(checkedSlugs.at(-1)).toBe("grupo-nuevo"), { timeout: 3_000 });
+    // Teléfono como país + número (telefonos.md): el E.164 guardado se edita en formato nacional.
+    const phone = within(screen.getByRole("region", { name: "Contacto" })).getByRole("textbox", { name: "Teléfono" });
+    expect(phone).toHaveValue("011 4321-5678");
+    await user.clear(phone);
+    await user.type(phone, "011 4321-5679");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
-    await waitFor(() => expect(updateBody).toMatchObject({ slug: "grupo-nuevo", version: 8, removeLogo: false }));
+    await waitFor(() => expect(updateBody).toMatchObject({ slug: "grupo-nuevo", version: 8, removeLogo: false,
+      contactPhone: { country: "AR", number: "011 4321-5679" } }));
     expect(await screen.findByText("Guardamos la página.")).toBeVisible();
   });
 });

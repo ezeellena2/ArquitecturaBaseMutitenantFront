@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { CircleAlert, Globe, Globe2, Info } from "lucide-react";
 import { useId, useState, type ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -12,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
+import { PhoneField, type PhoneDraft } from "@/shared/ui/fields/PhoneField";
 import { Page } from "@/shared/ui/Page";
 import { Surface } from "@/shared/ui/Surface";
 import { Switch } from "@/shared/ui/switch";
@@ -27,7 +29,7 @@ interface PageDraft {
   name: string;
   description: string;
   contactEmail: string;
-  contactPhone: string;
+  contactPhone: PhoneDraft | null;
   address: string;
   website: string;
   logoDataUri: string | null;
@@ -36,13 +38,20 @@ interface PageDraft {
   removeLogo: boolean;
 }
 
+// La API devuelve E.164; para editarlo se muestra como país y número nacional (telefonos.md).
+function phoneDraft(e164: string | null | undefined): PhoneDraft | null {
+  if (!e164) return null;
+  const parsed = parsePhoneNumberFromString(e164);
+  return parsed?.country ? { country: parsed.country, number: parsed.formatNational() } : { country: "", number: e164 };
+}
+
 // El dominio público de la plataforma; en desarrollo la URL real se arma con `publicUrl`.
 const PUBLIC_DOMAIN = ".plataforma.com";
 
 function draftFromPage(page: PublicPageResponse): PageDraft {
   return {
     slug: page.slug ?? "", name: page.name, description: page.description ?? "", contactEmail: page.contactEmail ?? "",
-    contactPhone: page.contactPhone ?? "", address: page.address ?? "", website: page.website ?? "",
+    contactPhone: phoneDraft(page.contactPhone), address: page.address ?? "", website: page.website ?? "",
     logoDataUri: page.logoDataUri ?? null, uploadedLogoBase64: null, logoContentType: null, removeLogo: false,
   };
 }
@@ -143,7 +152,8 @@ export function PublicPagePage() {
     if (!draft || !pageData) return;
     const request: UpdatePublicPageRequest = {
       slug: draft.slug.trim(), name: draft.name, description: draft.description, contactEmail: draft.contactEmail,
-      contactPhone: draft.contactPhone, address: draft.address, website: draft.website,
+      contactPhone: draft.contactPhone?.number.trim() ? { country: draft.contactPhone.country, number: draft.contactPhone.number } : null,
+      address: draft.address, website: draft.website,
       logoBase64: draft.uploadedLogoBase64, logoContentType: draft.logoContentType,
       removeLogo: draft.removeLogo, version: pageData.version,
     };
@@ -214,7 +224,7 @@ export function PublicPagePage() {
           <Box title={t("publicPage:contactTitle")}>
             <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5">
               <FormField label={t("publicPage:fields.email")}><Input type="email" value={draft.contactEmail} maxLength={254} onChange={(event) => setDraftState({ ...draft, contactEmail: event.target.value })} /></FormField>
-              <FormField label={t("publicPage:fields.phone")}><Input type="tel" value={draft.contactPhone} maxLength={100} onChange={(event) => setDraftState({ ...draft, contactPhone: event.target.value })} /></FormField>
+              <FormField label={t("publicPage:fields.phone")}><PhoneField value={draft.contactPhone} onChange={(contactPhone) => setDraftState({ ...draft, contactPhone })} /></FormField>
               <FormField label={t("publicPage:fields.address")}><Input value={draft.address} maxLength={500} onChange={(event) => setDraftState({ ...draft, address: event.target.value })} /></FormField>
               <FormField label={t("publicPage:fields.website")}><Input type="url" value={draft.website} maxLength={2048} onChange={(event) => setDraftState({ ...draft, website: event.target.value })} /></FormField>
             </div>
@@ -231,7 +241,7 @@ export function PublicPagePage() {
           {draft.description ? <p className="whitespace-pre-wrap text-[13px] text-[var(--t2)]">{draft.description}</p> : null}
           <dl className="grid gap-2 text-[13px] sm:grid-cols-2">
             {draft.contactEmail ? <div><dt className="font-semibold">{t("publicPage:fields.email")}</dt><dd>{draft.contactEmail}</dd></div> : null}
-            {draft.contactPhone ? <div><dt className="font-semibold">{t("publicPage:fields.phone")}</dt><dd>{draft.contactPhone}</dd></div> : null}
+            {draft.contactPhone?.number ? <div><dt className="font-semibold">{t("publicPage:fields.phone")}</dt><dd>{draft.contactPhone.number}</dd></div> : null}
             {draft.address ? <div><dt className="font-semibold">{t("publicPage:fields.address")}</dt><dd>{draft.address}</dd></div> : null}
             {draft.website ? <div><dt className="font-semibold">{t("publicPage:fields.website")}</dt><dd>{draft.website}</dd></div> : null}
           </dl>

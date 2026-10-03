@@ -7754,6 +7754,11 @@ export interface components {
             name: string;
             description: string;
         };
+        /** @description País elegido y número escrito; el parser del servicio produce E.164. */
+        PhoneInputHttpRequest: {
+            country?: null | string;
+            number?: null | string;
+        };
         /** @description Habilitación administrable; cero identifica la configuración inicial sin fila persistida. */
         PlatformFeatureResponse: {
             key: string;
@@ -8054,7 +8059,7 @@ export interface components {
             name?: null | string;
             description?: null | string;
             contactEmail?: null | string;
-            contactPhone?: null | string;
+            contactPhone?: null | components["schemas"]["PhoneInputHttpRequest"];
             address?: null | string;
             website?: null | string;
             logoBase64?: null | string;
