@@ -2,7 +2,7 @@
 
 Estado: propuesta pendiente de elección; no aprueba ni reemplaza el lienzo v71.
 
-Generador: `docs/design/lienzo/generadores/plataforma_etapa5_propuesta.py`. Ejecutarlo desde la raíz del front; salida aislada en `.artifacts/etapa-5-propuesta/`. Servir la raíz con `python -m http.server 61405 --bind 127.0.0.1` y abrir [visor conjunto](http://127.0.0.1:61405/.artifacts/etapa-5-propuesta/index.html).
+Propuesta descartada: Plataforma sigue los tableros del lienzo. El generador (`docs/design/lienzo/generadores/plataforma_etapa5_propuesta.py`) se sacó del lienzo; queda en el historial, en el commit d4d0627.
 
 Se conservan los ocho tableros de escritorio y sus estados interactivos. La propuesta aplica letra 13, campos/botones 36, encabezados arena, estados sin pastilla y dos columnas iguales. Descartar siempre queda disponible. Menú de escritorio y detalle de Auditoría conservan sus aprobaciones anteriores.
 
