@@ -12,7 +12,7 @@
   - el formulario es una sola hoja a ancho completo, en dos columnas, y lo asignado va debajo, en su tarjeta (como los permisos en el editor de roles).
 - **Validación:** `react-hook-form` + `zod` cuando hay reglas; en un diálogo simple, un draft en `useState`. Los mensajes salen de i18n.
 - **Campos:** `FormField` (rótulo, control, error, `aria-describedby`) + el field del tipo (`MoneyField`, `DateField`, `PercentField`…). El control más simple para cada dato: pocas opciones → `Select`; varias a la vez → `MultiSelect`.
-- El campo regular mide 44 px en escritorio y 36 px en teléfono; el rótulo mide 13 px y 12 px, respectivamente. Cada control usa el ancho del dato y las cajas separan los campos por tema. No se muestran ayudas debajo salvo que el tablero de la pantalla las incluya; el error sí aparece debajo del control inválido.
+- Los campos miden 36 px; el rótulo mide 13 px en escritorio y 12 px en teléfono. Dentro de una caja, las filas comparten columnas y ocupan todo el ancho; un texto largo ocupa las dos. Cada caja reúne un tema. No se muestran ayudas debajo salvo que el tablero de la pantalla las incluya; el error sí aparece debajo del control inválido.
 - Lo que no se edita se muestra como texto, no como control deshabilitado. En una edición, solo «Guardar cambios» se deshabilita si no hay diferencias; «Descartar cambios» sigue disponible.
 - **Edición inválida:** `MoneyField`, `NumberField`, `PercentField`, `DateField`, `DateTimeField` y `TimeField` conservan el texto escrito para corregirlo, pero emiten `onChange(null)` y `onValidityChange(false)` apenas falla el parseo, para que el formulario no conserve el valor anterior. El control queda inválido para el envío; el mensaje y el estado visual aparecen después de salir del campo. Al corregirlo emiten el valor parseado y `onValidityChange(true)` y retiran el error.
 - **Errores del servidor:** `applyApiErrorToForm`; lo general va en `<FormError>`.
@@ -35,7 +35,7 @@
 - Un array de opciones o decimales de moneda dentro de un componente; pertenecen a los [datos de referencia](../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md).
 
 ## Copiá de
-- `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4) · `src/areas/business/users/components/InviteUserDialog.tsx` (E6)
+- `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4) · `src/areas/business/users/pages/UsersPage.tsx` (E6: diálogo Invitar integrado en el listado)
 
 ## Lo verifica
 - Tests de pantalla: el recorrido del diálogo y un error del servidor ubicado en su campo.
@@ -44,4 +44,4 @@
 - Tests de `shared/ui/fields`: borrado del valor anterior ante texto inválido, aviso tras blur y recuperación de validez al corregir.
 
 ## Detalle
-[frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · [lienzo versionado v60](../design/lienzo/README.md): tableros «Criterio · Formularios y campos» y «Criterio · Diálogos», y «Rol» y «Configuración» como ejemplos (una caja por tema, campos del ancho de su dato, «Cambios sin guardar»)
+[frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · [lienzo versionado v64](../design/lienzo/README.md): tableros «Criterio · Formularios» y «Criterio · Diálogos», y «Rol» y «Configuración» como ejemplos (una caja por tema, filas del ancho de la caja, «Cambios sin guardar»)

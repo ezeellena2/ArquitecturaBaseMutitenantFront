@@ -22,7 +22,7 @@ El aspecto sigue `Criterio-Tablas`: encabezado arena, texto sin mayúsculas forz
 - Armar a mano el texto "1–10 de 1.234": lo hace `Pagination` con `useFormat`.
 
 ## Copiá de
-- `src/areas/business/roles/pages/RolesPage.tsx` (E4) · `src/areas/business/users/components/UsersFilterBar.tsx` (E6)
+- `src/areas/business/roles/pages/RolesPage.tsx` (E4) · `src/areas/business/users/pages/UsersPage.tsx` (E6)
 
 ## Lo verifica
 - `usePagination.test.tsx` (E0/E1): conserva el estado en la URL y vuelve a la página 1; desde E1 corrige una página fuera de rango solo con `items` vacíos y `totalCount > 0`, canoniza página/tamaño inválidos con `replace`, alterna el orden descendente predeterminado y omite `pageSize=10` en la URL.

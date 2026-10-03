@@ -27,7 +27,7 @@
 - Reintentar solo un 429 o un 409 `General.ConcurrencyConflict`. (El 409 `Request.InProgress` de un alta idempotente espera y reintenta: lo hace `useIdempotentMutation`.)
 
 ## Copiá de
-- `src/areas/business/users/errors.ts` (E6) · `src/shared/api/formErrors.ts` (E1)
+- `src/areas/business/users/pages/UserDetailPage.tsx` (E6: conflicto de versión y error de guardado) · `src/shared/api/formErrors.ts` (E1)
 
 ## Lo verifica
 - Tests de pantalla: cada `code` que traduce la feature tiene un test (tests.md).
