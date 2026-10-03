@@ -108,6 +108,59 @@ def directorio():
     b.guardar(DIRECTORIO)
 
 
+PAGINA = """.pp-cta { height: 44px !important; padding: 0 22px !important; border-radius: 10px !important; font-size: 15px !important; width: 100%; }
+.pp-dato { display: flex; gap: 12px; align-items: flex-start; padding: 14px 18px; border-top: 1px solid var(--borde); }
+.pp-dato:first-child { border-top: 0; }
+.pp-dato svg { color: var(--t3); flex-shrink: 0; margin-top: 2px; }
+.pp-dato .tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pp-dato .tx span { font-size: 12.5px; color: var(--t3); }
+.pp-dato .tx b, .pp-dato .tx a { font-size: 15px; font-weight: 500; color: var(--t1); text-decoration: none; overflow-wrap: anywhere; }
+.pp-dato .tx a { color: var(--marca-tx); }
+.pp-centro, .pp-nd { flex: 1; display: flex; align-items: center; justify-content: center; padding: 48px 24px; background: radial-gradient(ellipse at 80% 0%, oklch(0.94 0.028 78), transparent 55%), var(--fondo); }
+.pp-tarjeta { width: 560px; max-width: 100%; box-sizing: border-box; background: #fff; border: 1px solid var(--borde); border-radius: 20px; box-shadow: 0 16px 40px oklch(0.24 0.014 78 / 0.08); padding: 32px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
+.pp-tarjeta .pp-logo { width: 84px; height: 84px; border-radius: 20px; font-size: 28px; margin-bottom: 10px; }
+.pp-tarjeta h1 { margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+.pp-tarjeta .pp-desc { margin: 2px 0 14px; font-size: 16px; color: var(--t2); }
+.pp-tarjeta .lista { width: 100%; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; text-align: left; }
+.pp-tarjeta .lista + .pp-cta, .pp-tarjeta .lista + sc-if { margin-top: 18px; }
+.pp-nd .pp-tarjeta { gap: 16px; }
+.pp-nd .pp-tarjeta h1 { font-size: 24px; }"""
+
+
+def pagina():
+    """Página pública → B: una tarjeta centrada con el logo, el nombre, la descripción, los cuatro datos de contacto
+    y «Ingresá para continuar» (sin sesión); arriba, solo la marca de la plataforma. «No disponible», en la misma tarjeta."""
+    b = Tablero("Pagina-Publica")
+    if b.hecho:
+        return
+    b.rep('<sc-if value="{{sinSesion}}" hint-placeholder-val="{{si}}"><a class="b b-sec lg" href="Ingreso.dc.html">Ingresá</a></sc-if>', "")
+    ini = b.t.index('<section class="pp-cab">')
+    fin = b.t.index('<main class="pp-mods"></main>') + len('<main class="pp-mods"></main>')
+    cab = b.t[ini:fin]
+    import re
+    iconos = re.findall(r"<li>(<svg.*?</svg>)", cab, flags=re.S)
+    assert len(iconos) == 4
+    datos = [("Dirección", iconos[0], "Av. Corrientes 1234, piso 5, Buenos Aires", None),
+             ("Teléfono", iconos[1], "011 4321-5678", "tel:+541143215678"),
+             ("Correo", iconos[2], "contacto@delta.ejemplo.com", "mailto:contacto@delta.ejemplo.com"),
+             ("Sitio web", iconos[3], "delta.ejemplo.com", "https://delta.ejemplo.com")]
+
+    def dato(rotulo, icono, valor, href):
+        v = f'<a href="{href}">{valor}</a>' if href else f"<b>{valor}</b>"
+        return f'<div class="pp-dato">{icono}<span class="tx"><span>{rotulo}</span>{v}</span></div>'
+
+    cuerpo = ('<main class="pp-centro"><div class="pp-tarjeta"><span class="pp-logo" aria-hidden="true">GD</span><h1>Grupo Delta</h1>'
+              '<p class="pp-desc">Grupo Delta y sus empresas, en un solo lugar.</p><div class="lista">' + "".join(dato(*d) for d in datos) + "</div>"
+              '<sc-if value="{{sinSesion}}" hint-placeholder-val="{{si}}"><a class="b b-pri lg pp-cta" href="Ingreso.dc.html">Ingresá para continuar</a></sc-if>'
+              "</div></main>")
+    b.t = b.t[:ini] + cuerpo + b.t[fin:]
+    nd_ini = b.t.index('<section class="pp-nd">') + len('<section class="pp-nd">')
+    nd_fin = b.t.index("</section>", nd_ini)
+    b.t = b.t[:nd_ini] + '<div class="pp-tarjeta">' + b.t[nd_ini:nd_fin] + "</div>" + b.t[nd_fin:]
+    b.guardar(PAGINA)
+
+
 if __name__ == "__main__":
     portada()
     directorio()
+    pagina()

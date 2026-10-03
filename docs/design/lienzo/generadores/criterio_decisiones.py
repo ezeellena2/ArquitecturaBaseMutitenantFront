@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 6980
+ALTO = 7100
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -163,6 +163,8 @@ DECISIONES = {
     ],
     "Sitio público": [
         ("Portada", "B", "Sin la etiqueta del héroe; después de «Dos lados separados», la sección «Empresas en ArquitecturaBase» con buscador, tres empresas y «Ver todas las empresas», que lleva al directorio. «Empresas», arriba, baja a esa sección.", "Dibujada"),
+        ("Directorio", "B", "El encabezado de la portada con «Empresas» marcado y las empresas en tarjetas (logo, nombre, descripción y dirección), con la paginación debajo.", "Dibujada"),
+        ("Página pública", "B", "Una tarjeta centrada: logo, nombre, descripción, los cuatro datos de contacto y «Ingresá para continuar» (vuelve a la misma página). Con sesión, sin el botón y con tu menú arriba. «No disponible», en la misma tarjeta, sin decir por qué.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Inicios", "", "Repensar qué es un inicio en la plantilla y dónde van las acciones pendientes.", "Para repensar"),
