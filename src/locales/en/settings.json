@@ -1,0 +1,37 @@
+{
+  "title": "Settings",
+  "dataTitle": "Organization details",
+  "fields": {
+    "name": "Organization name",
+    "culture": "Default culture",
+    "timeZone": "Default time zone",
+    "currency": "Default currency"
+  },
+  "chooseCulture": "Choose a culture",
+  "chooseTimeZone": "Choose a time zone",
+  "chooseCurrency": "Choose a currency",
+  "discard": "Discard changes",
+  "save": "Save changes",
+  "saved": "Changes saved.",
+  "domains": {
+    "title": "Organization email access",
+    "add": "Add domain",
+    "addTitle": "Add email domain",
+    "addDescription": "Verify that you manage the domain before associating email addresses.",
+    "domain": "Domain",
+    "empty": "No domains have been added.",
+    "status": {
+      "Pending": "Pending verification",
+      "Verified": "Verified",
+      "Removed": "Removed"
+    },
+    "verify": "Verify",
+    "verified": "The domain has been verified.",
+    "added": "The domain was added.",
+    "remove": "Remove",
+    "actions": "Actions for {{domain}}",
+    "removeTitle": "Remove {{domain}}?",
+    "removeDescription": "The domain will stop automatically associating new email addresses. Existing linked addresses will remain protected after you remove this domain.",
+    "removed": "The domain was removed."
+  }
+}

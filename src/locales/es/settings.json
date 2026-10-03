@@ -1,0 +1,37 @@
+{
+  "title": "Configuración",
+  "dataTitle": "Datos de la organización",
+  "fields": {
+    "name": "Nombre de la organización",
+    "culture": "Cultura predeterminada",
+    "timeZone": "Zona horaria predeterminada",
+    "currency": "Moneda predeterminada"
+  },
+  "chooseCulture": "Elegí una cultura",
+  "chooseTimeZone": "Elegí una zona horaria",
+  "chooseCurrency": "Elegí una moneda",
+  "discard": "Descartar cambios",
+  "save": "Guardar cambios",
+  "saved": "Se guardaron los cambios.",
+  "domains": {
+    "title": "Acceso con correo de la organización",
+    "add": "Agregar dominio",
+    "addTitle": "Agregar dominio de correo",
+    "addDescription": "Verificá que administrás el dominio antes de asociar correos.",
+    "domain": "Dominio",
+    "empty": "No hay dominios agregados.",
+    "status": {
+      "Pending": "Pendiente de verificación",
+      "Verified": "Verificado",
+      "Removed": "Retirado"
+    },
+    "verify": "Verificar",
+    "verified": "El dominio quedó verificado.",
+    "added": "Se agregó el dominio.",
+    "remove": "Quitar",
+    "actions": "Acciones de {{domain}}",
+    "removeTitle": "¿Querés quitar {{domain}}?",
+    "removeDescription": "El dominio dejará de asociar automáticamente nuevos correos. Los correos que ya están vinculados seguirán protegidos aunque retires este dominio.",
+    "removed": "Se quitó el dominio."
+  }
+}
