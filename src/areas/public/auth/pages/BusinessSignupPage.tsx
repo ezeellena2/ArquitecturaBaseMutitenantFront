@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
-import { Check, ChevronLeft, LockKeyhole, Clock3 } from "lucide-react";
+import { Check, ChevronLeft, CircleAlert, Clock3, LockKeyhole } from "lucide-react";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { ApiError } from "@/shared/api/ApiError";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -54,6 +54,8 @@ export function BusinessSignupPage() {
   const [slugError, setSlugError] = useState<"invalid" | "reserved" | "taken" | null>(null);
   const [taxIdError, setTaxIdError] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
+  // El tope llega en el 409 (limit) para decir «Llegaste al límite de N organizaciones propias».
+  const [limitCount, setLimitCount] = useState<number | null>(null);
   const { data: referenceData } = useReferenceData();
   const resend = useCountdown(0);
   const retry = useRetryAfterCountdown();
@@ -195,7 +197,11 @@ export function BusinessSignupPage() {
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
       if (caught.code === "Auth.BusinessSignup.Closed") { setStep("closed"); return; }
-      if (caught.code === "Tenancy.Organization.LimitReached") { setLimitReached(true); return; }
+      if (caught.code === "Tenancy.Organization.LimitReached") {
+        setLimitCount(typeof caught.problem.limit === "number" ? caught.problem.limit : null);
+        setLimitReached(true);
+        return;
+      }
       if (caught.code === "Tenancy.TenantSlug.Reserved") { setSlugError("reserved"); return; }
       if (caught.code === "Tenancy.TenantSlug.Taken") { setSlugError("taken"); return; }
       if (caught.code === "Tenancy.TenantSlug.Invalid") { setSlugError("invalid"); return; }
@@ -261,14 +267,16 @@ export function BusinessSignupPage() {
               : <section className="flex flex-col gap-[22px]">
                 <div><h1 className="text-[26px] font-bold leading-tight">{t("businessSignup.organizationTitle")}</h1>
                   <p className="mt-2 text-[14px] text-[var(--t2)]">{t("businessSignup.ownerNote")}</p></div>
-                {limitReached ? <div role="alert" className="rounded-xl border border-[var(--alerta)] bg-[var(--alerta-t)] p-3 text-[13px] text-[var(--t1)]">
-                  <strong className="block">{t("businessSignup.limitTitle")}</strong><span>{t("businessSignup.limitDetail")}</span>
+                {limitReached ? <div role="alert" className="flex items-start gap-2.5 rounded-[10px] bg-[var(--peligro-t)] px-3 py-2.5 text-[13px] leading-normal text-[var(--peligro)]">
+                  <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+                  <span><span className="block">{limitCount === null ? t("businessSignup.limitTitleNoCount") : t("businessSignup.limitTitle", { count: limitCount })}</span>
+                    <span className="block">{t("businessSignup.limitDetail")}</span></span>
                 </div> : null}
-                <FormField label={t("businessSignup.organizationName")} variant="auth" error={organizationError ? t("businessSignup.required") : undefined}>
+                <FormField label={t("businessSignup.organizationName")} variant="auth" required error={organizationError ? t("businessSignup.organizationRequired") : undefined}>
                   <Input value={organizationName} onChange={(event) => { setOrganizationName(event.target.value); setOrganizationError(false); setLimitReached(false); }}
                     autoComplete="organization" maxLength={120} />
                 </FormField>
-                <FormField label={t("businessSignup.pageAddress")} variant="auth"
+                <FormField label={t("businessSignup.pageAddress")} variant="auth" required
                   error={slugError ? t(`businessSignup.slug${slugError[0]!.toUpperCase()}${slugError.slice(1)}`)
                     : slugAvailability === "Reserved" ? t("businessSignup.slugReserved")
                       : slugAvailability === "Taken" ? t("businessSignup.slugTaken")
@@ -281,7 +289,7 @@ export function BusinessSignupPage() {
                   {slug !== "" && !slugMatchesInput ? <span className="text-[var(--t3)]">{t("common:states.loading")}</span>
                     : slugAvailability === "Available" && !slugError ? <span role="status" className="inline-flex items-center gap-1 text-[var(--ok)]"><Check size={14} />{t("businessSignup.slugAvailable")}</span> : null}
                 </div>
-                <FormField label={t("businessSignup.firstCompany")} variant="auth" error={companyError ? t("businessSignup.required") : undefined}>
+                <FormField label={t("businessSignup.firstCompany")} variant="auth" required error={companyError ? t("businessSignup.companyRequired") : undefined}>
                   <Input value={firstCompanyName} onChange={(event) => { setFirstCompanyName(event.target.value); setCompanyError(false); }}
                     autoComplete="organization" maxLength={120} />
                 </FormField>
@@ -292,7 +300,6 @@ export function BusinessSignupPage() {
                 <FormError message={requestErrorText} />
                 <Button type="button" size="lg" className="w-full" disabled={!canCreate}
                   onClick={() => void submitOrganization()}>{createMutation.isPending ? t("businessSignup.creating") : t("businessSignup.create")}</Button>
-                {!auth.isAuthenticated ? <div className="text-center text-[13px] text-[var(--t2)]">{t("businessSignup.alreadyRegistered")} <Link to="/login/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.loginBusiness")}</Link></div> : null}
               </section>}
   </AuthLayout>;
 

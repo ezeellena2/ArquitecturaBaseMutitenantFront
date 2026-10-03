@@ -144,6 +144,36 @@ describe("BusinessSignupPage", () => {
     expect(within(detail).getByText("valentina.ruiz@gmail.com").tagName).toBe("STRONG");
   });
 
+  it("tablero Registro-Empresa: obligatorios, mensajes del tablero, límite en rojo con el tope y sin «¿Tu empresa ya está registrada?»", async () => {
+    server.use(
+      http.get("/api/public-site/slug-availability", () => HttpResponse.json({ slug: "omega", availability: "Available" })),
+      http.post("/api/auth/business-signup", () => HttpResponse.json({ code: "Tenancy.Organization.LimitReached", detail: "x", limit: 3 }, { status: 409 })),
+    );
+    show("/registro/empresa?google=complete");
+    expect(await screen.findByRole("heading", { name: "Tu organización" })).toBeVisible();
+    expect(screen.queryByText("¿Tu empresa ya está registrada?")).not.toBeInTheDocument();
+    for (const name of ["Nombre de la organización", "Primera empresa"]) expect(screen.getByRole("textbox", { name })).toHaveAttribute("aria-required", "true");
+    expect(screen.getByRole("textbox", { name: /Dirección de tu página/ })).toHaveAttribute("aria-required", "true");
+    expect(screen.getByRole("textbox", { name: "CUIT de la empresa" })).not.toHaveAttribute("aria-required");
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Crear organización" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Crear organización" }));
+    expect(await screen.findByText("Escribí el nombre de la organización.")).toBeVisible();
+    expect(screen.getByText("Escribí el nombre de la primera empresa.")).toBeVisible();
+    fireEvent.change(screen.getByRole("textbox", { name: "CUIT de la empresa" }), { target: { value: "301234" } });
+    expect(await screen.findByText("Revisá el CUIT: son 11 números.")).toBeVisible();
+    fireEvent.change(screen.getByRole("textbox", { name: "CUIT de la empresa" }), { target: { value: "" } });
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Nombre de la organización" }), { target: { value: "Grupo Omega" } });
+    fireEvent.change(screen.getByRole("textbox", { name: /Dirección de tu página/ }), { target: { value: "omega" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "Primera empresa" }), { target: { value: "Omega S.A." } });
+    expect(await screen.findByRole("status")).toHaveTextContent("Disponible");
+    fireEvent.click(screen.getByRole("button", { name: "Crear organización" }));
+    const limit = await screen.findByRole("alert");
+    expect(limit).toHaveTextContent("Llegaste al límite de 3 organizaciones propias.");
+    expect(limit.className).toContain("text-[var(--peligro)]");
+  });
+
   it("muestra el rechazo del slug y no permite crear la organización", async () => {
     server.use(http.get("/api/public-site/slug-availability", () => HttpResponse.json({ slug: "admin", availability: "Reserved" })));
     const created = vi.fn();
