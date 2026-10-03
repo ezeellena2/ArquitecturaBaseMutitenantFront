@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 60** (2026-10-01) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 109 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 62** (2026-10-02) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 109 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -37,13 +37,17 @@ Lo que manda son los tableros «Criterio · …». Estas son las decisiones que 
 
 - **Compacto.** Letra de 13. Botones de 36, y de 32 los chicos; solo el ingreso y el registro usan 44. Campos de 36.
 - **Encabezados con color arena:** tablas, cajas y diálogos (`oklch(0.945 0.018 76)`). Filas alternadas, sin mayúsculas.
+- **Nada de texto explicativo en la pantalla** (regla del 2026-10-02).
+  - El estado se dice una sola vez, arriba, con color y palabra corta: «● Despublicada por la plataforma».
+  - El detalle (cuándo, el motivo, qué hacer) va detrás de un ⓘ, que abre un diálogo de aviso importante. Ese diálogo tiene el motivo destacado en rojo suave y «Qué podés hacer» en pasos numerados.
 - **Sin etiquetas.** Nada de pastillas ni rótulos con fondo al lado de un texto («Principal», «Suspendida», «De sistema»).
   - El estado va en la segunda línea, como punto de color y palabra.
   - Lo que estaba al lado del título va en la segunda línea de la banda, separado por «·».
 - **Formularios:**
   - una caja por tema, con encabezado arena;
-  - rótulo arriba y cada campo del ancho de su dato: nombre 360, desplegable 260, documento 200, texto largo hasta 720;
-  - nada estirado y sin ayudas debajo;
+  - rótulo arriba;
+  - dentro de una caja, todas las filas comparten las mismas columnas, en general dos iguales, y **ocupan todo el ancho de la caja**; un texto largo ocupa las dos (regla del 2026-10-02, que reemplaza a «cada campo del ancho de su dato»);
+  - sin ayudas debajo;
   - lo que no se edita se muestra como texto, nunca como campo gris;
   - lo corto (agregar, verificar, confirmar) va en un diálogo.
 - **Avisos y errores:**

@@ -3,11 +3,11 @@ import json
 import pathlib
 import shutil
 
-fuente = pathlib.Path(__file__).resolve().parent / "whatsapp_tableros.py".read_text(encoding="utf-8")
+fuente = (pathlib.Path(__file__).resolve().parent / "whatsapp_tableros.py").read_text(encoding="utf-8")
 g = {"__file__": __file__}  # el mismo directorio: las rutas de whatsapp_tableros.py se resuelven igual
 exec(fuente[:fuente.index("TABLEROS = {}")], g)
 CSS, I, KEBAB, MAS, kebab, banda, svg, HEAD_BASE, PROJ = (g[k] for k in ("CSS", "I", "KEBAB", "MAS", "kebab", "banda", "svg", "HEAD_BASE", "PROJ"))
-perfil = pathlib.Path(__file__).resolve().parent / "perfil_tableros.py".read_text(encoding="utf-8")
+perfil = (pathlib.Path(__file__).resolve().parent / "perfil_tableros.py").read_text(encoding="utf-8")
 CSS_P = perfil[perfil.index('CSS_P = """') + len('CSS_P = """'):perfil.index('</style>"""', perfil.index('CSS_P = """')) + len("</style>")]
 
 PAGINA = "org"
@@ -25,6 +25,17 @@ CSS_O = """<style data-propuesta="org-formularios">
 .o-codigo { font-family: ui-monospace, Consolas, monospace; font-size: 13px; background: var(--s2); border: 1px solid var(--borde); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .w-tel .o-pre, .w-tel .w-cmp .ct { height: 44px; }
 .req { color: var(--peligro); }
+/* Dentro de una caja, las filas comparten las mismas columnas y ocupan todo el ancho (2026-10-02). */
+.o-g2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; padding: 16px 20px 20px; align-items: start; }
+.o-g2 .o-ancho { grid-column: 1 / -1; }
+.o-g2 .w-cmp { width: auto !important; }
+.o-dom-vacio { padding: 14px 16px; color: var(--t3); font-size: 13px; }
+.o-logo-chico { width: 40px; height: 40px; border-radius: 10px; background: var(--marca-t); color: var(--marca-tx); display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+/* Publicación: un interruptor que se aplica al momento; trabado si la plataforma la despublicó. */
+.o-sw { display: inline-flex; padding: 0 10px 0 0; border: 0; background: none; cursor: pointer; }
+.w-sw.o-bloq { opacity: 0.4; cursor: not-allowed; }
+.w-est.o-mal { color: oklch(0.5 0.19 25); }
+.w-est.o-mal::before { background: oklch(0.57 0.2 25); }
 </style>"""
 
 
@@ -111,46 +122,101 @@ SUCIO = '<sc-if value="{{sucio}}" hint-placeholder-val="{{no}}"><span style="col
 TOAST = ('<sc-if value="{{aviso}}" hint-placeholder-val="{{no}}"><div class="p-aviso" role="status">' + OK_AVISO + '<span>{{aviso}}</span></div></sc-if>')
 
 
+INFO = svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><path d="M12 7.8h.01"/>', 16, "2")
+ALERTA = svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5"/><path d="M12 16.2h.01"/>', 18, "2")
+
+
+def sif(valor, cuerpo, ph="no"):
+    return f'<sc-if value="{{{{{valor}}}}}" hint-placeholder-val="{{{{{ph}}}}}">{cuerpo}</sc-if>'
+
+
 # ---------- Configuración ----------
-def configuracion(interactivo):
-    datos = caja("Datos de la organización", hoja(
-        campo("Nombre de la organización", "Grupo Delta", 360, hueco="nombre" if interactivo else None, requerido=True), SALTO,
-        campo("Idioma y región predeterminados", "Español (Argentina)", 260, True),
-        campo("Zona horaria predeterminada", "Buenos Aires (GMT−3)", 260, True),
-        campo("Moneda predeterminada", "Peso argentino (ARS)", 260, True)))
-    dominio = caja("Dominio de correo",
-                   f'<div class="w-it"><span class="p-ic">{GLOBO}</span><span class="dato"><b>delta.ejemplo.com</b>'
-                   f'<span>Verificado · 10 correos administrados por Grupo Delta</span></span>'
-                   f'<a class="ib" aria-label="Quitar delta.ejemplo.com" href="Configuracion-Quitar.dc.html">{KEBAB}</a></div>',
-                   f'<a class="cb cb-sec ch" href="Configuracion-Dominio.dc.html">{MAS} Agregar dominio</a>')
+def configuracion(interactivo, dominio="verificado"):
+    """dominio: «sin», «pendiente» o «verificado». Con Play, se elige con el Tweak «Dominio»."""
+    datos = caja("Datos de la organización", '<div class="o-g2">'
+                 + campo("Nombre de la organización", "Grupo Delta", None, hueco="nombre" if interactivo else None, requerido=True)
+                 + campo("Idioma y región predeterminados", "Español (Argentina)", None, True)
+                 + campo("Zona horaria predeterminada", "Buenos Aires (GMT−3)", None, True)
+                 + campo("Moneda predeterminada", "Peso argentino (ARS)", None, True) + "</div>")
+    quitar = f'<a class="ib" aria-label="Quitar delta.ejemplo.com" href="Configuracion-Quitar.dc.html">{KEBAB}</a>'
+
+    def fila(segunda, derecha):
+        return (f'<div class="w-it"><span class="p-ic">{GLOBO}</span><span class="dato"><b>delta.ejemplo.com</b>'
+                f'<span>{segunda}</span></span>{derecha}</div>')
+
+    estados = {
+        "sin": '<div class="o-dom-vacio">Sin dominio</div>',
+        "pendiente": fila("Pendiente", '<a class="cb cb-sec ch" href="Configuracion-Verificar.dc.html">Verificar</a>' + quitar),
+        "verificado": fila("Verificado · 10 correos administrados por Grupo Delta", quitar),
+    }
+    cuerpo = (sif("sinDominio", estados["sin"]) + sif("pendiente", estados["pendiente"]) + sif("verificado", estados["verificado"], "si")
+              if interactivo else estados[dominio])
+    dom = caja("Dominio de correo", cuerpo, f'<a class="cb cb-sec ch" href="Configuracion-Dominio.dc.html">{MAS} Agregar dominio</a>')
     res = SUCIO if interactivo else ""
-    return banda("Configuración", res, acciones=acciones_edicion(interactivo), icono=I["engr"]) + f'<div class="w-body">{datos}{dominio}</div>'
+    return banda("Configuración", res, acciones=acciones_edicion(interactivo), icono=I["engr"]) + f'<div class="w-body">{datos}{dom}</div>'
 
 
 # ---------- Página pública ----------
-def pagina(interactivo):
-    direccion = campo("Dirección de la página", None, 360, requerido=True,
+def pagina(interactivo, estado="publicada"):
+    """estado: «publicada», «borrador» o «despublicada» (por la plataforma). Con Play, se elige con el Tweak «Estado»."""
+    res = {"publicada": '<span class="w-est">Publicada</span> · delta.plataforma.com',
+           "borrador": '<span class="w-est off">Borrador</span>',
+           "despublicada": '<span class="w-est o-mal">Despublicada por la plataforma</span>'}
+    ver = {"publicada": '<button type="button" class="cb cb-sec">Ver página</button>', "otro": '<button type="button" class="cb cb-sec">Vista previa</button>'}
+    sw = {"publicada": '<a class="o-sw" href="Pagina-Org-Despublicar.dc.html" aria-label="Despublicar la página"><span class="w-sw" role="switch" aria-checked="true"></span></a>',
+          "borrador": '<button type="button" class="o-sw" onClick="{{publicar}}" aria-label="Publicar la página"><span class="w-sw off" role="switch" aria-checked="false"></span></button>',
+          "despublicada": ('<span class="o-sw"><span class="w-sw off o-bloq" role="switch" aria-checked="false" aria-disabled="true" '
+                           'aria-label="Publicar la página: bloqueado por la plataforma"></span></span>')}
+    tit = {"normal": "<b>Visible en delta.plataforma.com</b>",
+           "despublicada": (f'<b class="o-fila-tit">Visible en delta.plataforma.com<button type="button" class="o-i" aria-label="Por qué está despublicada" '
+                            f'onClick="{{{{verInfo}}}}">{INFO}</button></b>')}
+
+    def fila_pub(e):
+        return (f'<div class="w-it"><span class="p-ic">{GLOBO}</span><span class="dato">{tit["despublicada" if e == "despublicada" else "normal"]}</span>'
+                f'{sw[e]}</div>')
+
+    if interactivo:
+        res_b = sif("publicada", res["publicada"], "si") + sif("borrador", res["borrador"]) + sif("despublicada", res["despublicada"])
+        res_b += " " + SUCIO.replace("<span style", "· <span style")
+        extra = sif("publicada", ver["publicada"], "si") + sif("noPublicada", ver["otro"])
+        pub = sif("publicada", fila_pub("publicada"), "si") + sif("borrador", fila_pub("borrador")) + sif("despublicada", fila_pub("despublicada"))
+    else:
+        res_b = res[estado]
+        extra = ver["publicada" if estado == "publicada" else "otro"]
+        pub = fila_pub(estado)
+    publicacion = caja("Publicación", pub)
+
+    logo = ('<div class="w-it"><span class="o-logo-chico">GD</span><span class="dato"><b>Logo</b></span>'
+            '<button type="button" class="cb cb-sec ch">Subir imagen</button></div>')
+    direccion = campo("Dirección de la página", None, None, requerido=True,
                       control='<div class="o-pre"><span style="flex: 1;">delta</span><span>.plataforma.com</span></div>')
-    logo = campo("Logo", None, None, control='<div class="o-logo"><span class="av">GD</span><button type="button" class="cb cb-sec ch">Subir imagen</button></div>')
-    descripcion = campo("Descripción", None, 720, control='<div class="ct area">Grupo Delta y sus empresas, en un solo lugar.</div>')
-    pag = caja("Página", hoja(direccion, campo("Nombre visible", "Grupo Delta", 360, hueco="nombre" if interactivo else None, requerido=True),
-                              SALTO, logo, SALTO, descripcion))
-    tel = campo("Teléfono", None, 300, control=f'<div style="display: flex; gap: 8px;"><div class="ct" style="width: 112px; white-space: nowrap;">AR +54 {I["abajo"]}</div><div class="ct" style="flex: 1;">011 4321-5678</div></div>')
-    contacto = caja("Contacto", hoja(campo("Correo de contacto", "contacto@delta.ejemplo.com", 360), tel, SALTO,
-                                     campo("Dirección", "Av. Corrientes 1234, piso 5, Buenos Aires", 480), campo("Sitio web", "https://delta.ejemplo.com", 360)))
-    extra = (f'<a class="ib" aria-label="Más acciones" href="Pagina-Org-Despublicar.dc.html" style="border-color: var(--borde);">{KEBAB}</a>'
-             '<button type="button" class="cb cb-sec">Ver página</button>')
-    res = '<span class="w-est">Publicada</span> · delta.plataforma.com' + (f" {SUCIO.replace('<span style', '· <span style')}" if interactivo else "")
-    return banda("Página pública", res, acciones=acciones_edicion(interactivo, extra), icono=I["mundo"]) + f'<div class="w-body">{pag}{contacto}</div>'
+    nombre = campo("Nombre visible", "Grupo Delta", None, hueco="nombre" if interactivo else None, requerido=True)
+    descripcion = campo("Descripción", None, None, control='<div class="ct area">Grupo Delta y sus empresas, en un solo lugar.</div>').replace(
+        '<div class="w-cmp"', '<div class="w-cmp o-ancho"', 1)
+    pag = caja("Página", logo + '<div class="o-g2">' + direccion + nombre + descripcion + "</div>")
+    tel = campo("Teléfono", None, None, control=f'<div style="display: flex; gap: 8px;"><div class="ct" style="width: 112px; white-space: nowrap;">AR +54 {I["abajo"]}</div><div class="ct" style="flex: 1;">011 4321-5678</div></div>')
+    contacto = caja("Contacto", '<div class="o-g2">' + campo("Correo de contacto", "contacto@delta.ejemplo.com", None) + tel
+                    + campo("Dirección", "Av. Corrientes 1234, piso 5, Buenos Aires", None) + campo("Sitio web", "https://delta.ejemplo.com", None) + "</div>")
+    return (banda("Página pública", res_b, acciones=acciones_edicion(interactivo, extra), icono=I["mundo"])
+            + f'<div class="w-body">{publicacion}{pag}{contacto}</div>')
+
+
+# El ⓘ de «Despublicada por la plataforma» abre este aviso (diálogo de aviso importante).
+AVISO_DESPUBLICADA = sif("info", '<div class="w-oscuro" style="z-index: 6;"></div><div class="p-dlg" role="dialog" aria-label="Página despublicada">'
+                         f'<div class="dc"><span>Página despublicada</span><button type="button" class="ib" aria-label="Cerrar" onClick="{{{{cerrarInfo}}}}">{I["x"]}</button></div>'
+                         f'<div class="db"><div class="o-mot">{ALERTA}<div><b>Datos de contacto falsos</b><span>Despublicada por la plataforma el 26/09/2026</span></div></div>'
+                         '<span class="o-sub">Qué podés hacer</span><ol class="o-pasos"><li><span class="n">1</span>Corregí los datos de la página</li>'
+                         '<li><span class="n">2</span>Pedí a la plataforma que la habilite</li></ol></div>'
+                         '<div class="df"><button type="button" class="cb cb-pri" onClick="{{cerrarInfo}}">Entendido</button></div></div>')
 
 
 CANCELAR_CONF = '<a class="cb cb-sec" href="Configuracion.dc.html">Cancelar</a>'
 TABLEROS = {
     "Configuracion": ("Configuración · /org/configuracion", 1440, 900, web(configuracion(True), "config", "Inicio / Configuración", TOAST), "Guardamos la configuración."),
-    "Configuracion-Dominio": ("Configuración · agregar dominio", 1440, 900, web(configuracion(False), "config", "Inicio / Configuración", dialogo(
+    "Configuracion-Dominio": ("Configuración · agregar dominio", 1440, 900, web(configuracion(False, "sin"), "config", "Inicio / Configuración", dialogo(
         "Agregar dominio", campo("Dominio", "delta.ejemplo.com", None),
         CANCELAR_CONF + '<a class="cb cb-pri" href="Configuracion-Verificar.dc.html">Siguiente</a>', "Configuracion.dc.html")), None),
-    "Configuracion-Verificar": ("Configuración · verificar dominio", 1440, 900, web(configuracion(False), "config", "Inicio / Configuración", dialogo(
+    "Configuracion-Verificar": ("Configuración · verificar dominio", 1440, 900, web(configuracion(False, "pendiente"), "config", "Inicio / Configuración", dialogo(
         "Verificar delta.ejemplo.com",
         '<div class="w-cmp"><span class="rt">Registro TXT a cargar en el DNS de delta.ejemplo.com</span><div class="o-codigo"><span>ab-verificacion=7f3c9a2e41b8d605</span><button type="button" class="cb cb-sec ch">Copiar</button></div></div>',
         CANCELAR_CONF + '<a class="cb cb-pri" href="Configuracion.dc.html">Comprobar</a>', "Configuracion.dc.html", "normal",
@@ -158,8 +224,8 @@ TABLEROS = {
     "Configuracion-Quitar": ("Configuración · quitar dominio", 1440, 900, web(configuracion(False), "config", "Inicio / Configuración", dialogo(
         "¿Quitar delta.ejemplo.com?", "", CANCELAR_CONF + '<a class="cb cb-pel lleno" href="Configuracion.dc.html">Quitar</a>', "Configuracion.dc.html",
         texto="Los 10 correos de delta.ejemplo.com dejan de estar administrados por Grupo Delta.", con_x=False)), None),
-    "Pagina-Org": ("Página pública · /org/pagina", 1440, 900, web(pagina(True), "pagina", "Inicio / Página pública", TOAST), "Guardamos la página."),
-    "Pagina-Org-Despublicar": ("Página pública · despublicar", 1440, 900, web(pagina(False), "pagina", "Inicio / Página pública", dialogo(
+    "Pagina-Org": ("Página pública · /org/pagina", 1440, 900, web(pagina(True), "pagina", "Inicio / Página pública", TOAST + AVISO_DESPUBLICADA), "Guardamos la página."),
+    "Pagina-Org-Despublicar": ("Página pública · despublicar", 1440, 900, web(pagina(False, "publicada"), "pagina", "Inicio / Página pública", dialogo(
         "¿Despublicar la página?", "", '<a class="cb cb-sec" href="Pagina-Org.dc.html">Cancelar</a><a class="cb cb-pri" href="Pagina-Org.dc.html">Despublicar</a>',
         "Pagina-Org.dc.html", texto="Deja de verse en delta.plataforma.com. La podés volver a publicar cuando quieras.", con_x=False)), None),
     "M-Configuracion": ("Configuración · teléfono", 390, 844, f"""<div class="w-tel p-mov"><header class="w-tb"><span style="display: inline-flex;">{I["menu"]}</span><b style="font-size: 14px;">ArquitecturaBase</b><span class="w-av chico">L</span></header>
@@ -170,14 +236,39 @@ TABLEROS = {
 }
 
 
-def script(aviso_ok):
+def script(aviso_ok, clave=""):
     if not aviso_ok:
         return "class Component extends DCLogic {\n  renderVals() {\n    return { si: true, no: false };\n  }\n}"
+    extra_estado, extra_vals = "", ""
+    if clave == "Configuracion":
+        extra_vals = """
+      sinDominio: this.props.dominio === 'Sin dominio',
+      pendiente: this.props.dominio === 'Pendiente',
+      verificado: (this.props.dominio || 'Verificado') === 'Verificado',"""
+    if clave == "Pagina-Org":
+        extra_estado = ", estado: props.estado || 'Publicada', clave: props.estado, info: false"
+        extra_vals = """
+      publicada: s.estado === 'Publicada',
+      borrador: s.estado === 'Borrador',
+      despublicada: s.estado === 'Despublicada por la plataforma',
+      noPublicada: s.estado !== 'Publicada',
+      publicar: () => {
+        this.setState({ estado: 'Publicada', aviso: 'Publicamos tu página.' });
+        clearTimeout(this.t);
+        this.t = setTimeout(() => this.setState({ aviso: '' }), 3000);
+      },
+      info: s.info,
+      verInfo: () => this.setState({ info: true }),
+      cerrarInfo: () => this.setState({ info: false }),"""
+    actualizar = ("""
+  componentDidUpdate() {
+    if (this.props.estado !== this.state.clave) this.setState({ clave: this.props.estado, estado: this.props.estado || 'Publicada', info: false });
+  }""" if clave == "Pagina-Org" else "")
     return f"""class Component extends DCLogic {{
   constructor(props) {{
     super(props);
-    this.state = {{ nombre: 'Grupo Delta', guardado: 'Grupo Delta', aviso: '' }};
-  }}
+    this.state = {{ nombre: 'Grupo Delta', guardado: 'Grupo Delta', aviso: ''{extra_estado} }};
+  }}{actualizar}
   renderVals() {{
     const s = this.state;
     return {{
@@ -192,15 +283,21 @@ def script(aviso_ok):
         clearTimeout(this.t);
         this.t = setTimeout(() => this.setState({{ aviso: '' }}), 3000);
       }},
-      aviso: s.aviso,
+      aviso: s.aviso,{extra_vals}
     }};
   }}
 }}"""
 
 
-def archivo(titulo, w, h, cuerpo, aviso_ok):
+PROPS = {
+    "Configuracion": '"dominio":{"editor":"enum","options":["Verificado","Pendiente","Sin dominio"],"default":"Verificado","section":"Estado"},',
+    "Pagina-Org": '"estado":{"editor":"enum","options":["Publicada","Borrador","Despublicada por la plataforma"],"default":"Publicada","section":"Estado"},',
+}
+
+
+def archivo(titulo, w, h, cuerpo, aviso_ok, clave=""):
     head = HEAD_BASE.replace("<title>Criterio · Botones</title>", f"<title>{titulo}</title>")
-    tag = f"<script type=\"text/x-dc\" data-dc-script data-props='{{\"$preview\":{{\"width\":{w},\"height\":{h}}}}}'>\n{script(aviso_ok)}\n</script>"
+    tag = f"<script type=\"text/x-dc\" data-dc-script data-props='{{{PROPS.get(clave, '')}\"$preview\":{{\"width\":{w},\"height\":{h}}}}}'>\n{script(aviso_ok, clave)}\n</script>"
     return "\n".join([head, CSS, CSS_P, CSS_O, "</helmet>", "", cuerpo, "</x-dc>", "", tag, "</body>", "</html>", ""])
 
 
@@ -211,7 +308,7 @@ if __name__ == "__main__":
         if not destino.exists():
             shutil.copyfile(ORIG / f"{viejo}.dc.html", destino)
     for clave, (titulo, w, h, cuerpo, aviso) in TABLEROS.items():
-        (PROJ / f"{clave}.dc.html").write_text(archivo(titulo, w, h, cuerpo, aviso), encoding="utf-8")
+        (PROJ / f"{clave}.dc.html").write_text(archivo(titulo, w, h, cuerpo, aviso, clave), encoding="utf-8")
 
     ruta = PROJ / "canvas.json"
     c = json.loads(ruta.read_text(encoding="utf-8"))

@@ -704,6 +704,22 @@ body { margin: 0; }
 .p-dlg .db { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
 .p-dlg .df { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--borde); }
 :where(.w-app, .w-tel) a { text-decoration: none; color: inherit; cursor: pointer; }
+/* Dentro de una caja, las filas comparten las mismas columnas y ocupan todo el ancho (2026-10-02). */
+.o-g3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 16px 20px 20px; align-items: start; }
+.o-g3 .w-cmp { width: auto !important; }
+/* El detalle va detrás de un ⓘ: nada de texto explicativo en la pantalla. */
+.o-i { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: 0; background: none; color: oklch(0.52 0.19 25); cursor: pointer; border-radius: 50%; margin-left: 6px; vertical-align: middle; }
+.o-i:hover { background: oklch(0.57 0.2 25 / 0.1); }
+.o-fila-tit { display: inline-flex !important; align-items: center; }
+.cb.o-apagado { opacity: 0.45; cursor: not-allowed; }
+/* Diálogo de aviso importante: el motivo destacado y qué podés hacer, en pasos. */
+.o-mot { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 10px; background: var(--peligro-t); color: oklch(0.42 0.16 25); }
+.o-mot b { display: block; font-size: 15px; font-weight: 600; color: oklch(0.38 0.15 25); }
+.o-mot span { font-size: 12.5px; }
+.o-sub { font-size: 12.5px; font-weight: 600; color: var(--t3); }
+.o-pasos { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.o-pasos li { display: flex; gap: 10px; align-items: center; font-size: 13.5px; }
+.o-pasos .n { width: 22px; height: 22px; border-radius: 50%; background: var(--s3); color: var(--t2); font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 </style>
 <style data-propuesta="org-formularios">
 .o-col { flex-direction: column; }
@@ -717,6 +733,17 @@ body { margin: 0; }
 .o-codigo { font-family: ui-monospace, Consolas, monospace; font-size: 13px; background: var(--s2); border: 1px solid var(--borde); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .w-tel .o-pre, .w-tel .w-cmp .ct { height: 44px; }
 .req { color: var(--peligro); }
+/* Dentro de una caja, las filas comparten las mismas columnas y ocupan todo el ancho (2026-10-02). */
+.o-g2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; padding: 16px 20px 20px; align-items: start; }
+.o-g2 .o-ancho { grid-column: 1 / -1; }
+.o-g2 .w-cmp { width: auto !important; }
+.o-dom-vacio { padding: 14px 16px; color: var(--t3); font-size: 13px; }
+.o-logo-chico { width: 40px; height: 40px; border-radius: 10px; background: var(--marca-t); color: var(--marca-tx); display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+/* Publicación: un interruptor que se aplica al momento; trabado si la plataforma la despublicó. */
+.o-sw { display: inline-flex; padding: 0 10px 0 0; border: 0; background: none; cursor: pointer; }
+.w-sw.o-bloq { opacity: 0.4; cursor: not-allowed; }
+.w-est.o-mal { color: oklch(0.5 0.19 25); }
+.w-est.o-mal::before { background: oklch(0.57 0.2 25); }
 </style>
   <style data-menu-usuario="">
 /* Tu menú, arriba a la derecha (criterio de menús): se abre al tocar tu nombre. */

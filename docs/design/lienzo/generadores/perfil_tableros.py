@@ -4,13 +4,13 @@ import pathlib
 import shutil
 
 # Reuso las piezas comunes (CSS, íconos, banda, kebab) de los tableros de WhatsApp, sin generar nada de ellos.
-fuente = pathlib.Path(__file__).resolve().parent / "whatsapp_tableros.py".read_text(encoding="utf-8")
+fuente = (pathlib.Path(__file__).resolve().parent / "whatsapp_tableros.py").read_text(encoding="utf-8")
 g = {"__file__": __file__}  # el mismo directorio: las rutas de whatsapp_tableros.py se resuelven igual
 exec(fuente[:fuente.index("TABLEROS = {}")], g)
 CSS, I, KEBAB, MAS, kebab, banda, svg, HEAD_BASE, PROJ = (g[k] for k in ("CSS", "I", "KEBAB", "MAS", "kebab", "banda", "svg", "HEAD_BASE", "PROJ"))
 
 PAGINA = "personal"
-MARCA = " · para aprobar"
+MARCA = ""  # Perfil personal está validado (2026-10-01): sin marca en los títulos.
 PERSONA = svg('<circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/>')
 MAIL = svg('<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7 8 6 8-6"/>', 16)
 GOOGLE = ('<svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.3Z"/>'
@@ -38,6 +38,22 @@ CSS_P = """<style data-propuesta="perfil">
 .p-dlg .db { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
 .p-dlg .df { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--borde); }
 :where(.w-app, .w-tel) a { text-decoration: none; color: inherit; cursor: pointer; }
+/* Dentro de una caja, las filas comparten las mismas columnas y ocupan todo el ancho (2026-10-02). */
+.o-g3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 16px 20px 20px; align-items: start; }
+.o-g3 .w-cmp { width: auto !important; }
+/* El detalle va detrás de un ⓘ: nada de texto explicativo en la pantalla. */
+.o-i { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: 0; background: none; color: oklch(0.52 0.19 25); cursor: pointer; border-radius: 50%; margin-left: 6px; vertical-align: middle; }
+.o-i:hover { background: oklch(0.57 0.2 25 / 0.1); }
+.o-fila-tit { display: inline-flex !important; align-items: center; }
+.cb.o-apagado { opacity: 0.45; cursor: not-allowed; }
+/* Diálogo de aviso importante: el motivo destacado y qué podés hacer, en pasos. */
+.o-mot { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 10px; background: var(--peligro-t); color: oklch(0.42 0.16 25); }
+.o-mot b { display: block; font-size: 15px; font-weight: 600; color: oklch(0.38 0.15 25); }
+.o-mot span { font-size: 12.5px; }
+.o-sub { font-size: 12.5px; font-weight: 600; color: var(--t3); }
+.o-pasos { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.o-pasos li { display: flex; gap: 10px; align-items: center; font-size: 13.5px; }
+.o-pasos .n { width: 22px; height: 22px; border-radius: 50%; background: var(--s3); color: var(--t2); font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 </style>"""
 
 
@@ -82,7 +98,8 @@ def caja(titulo, cuerpo, accion=""):
 
 
 def fila(icono, valor, segunda, derecha):
-    return (f'<div class="w-it"><span class="p-ic">{icono}</span><span class="dato"><b>{valor}</b><span>{segunda}</span></span>{derecha}</div>')
+    linea = f"<span>{segunda}</span>" if segunda else ""
+    return (f'<div class="w-it"><span class="p-ic">{icono}</span><span class="dato"><b>{valor}</b>{linea}</span>{derecha}</div>')
 
 
 def metodos(movil=False):
@@ -97,12 +114,31 @@ def metodos(movil=False):
     return caja("Cómo entrás", filas, accion)
 
 
-PRIVACIDAD = caja("Privacidad",
-                  fila(svg('<path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/>', 16), "Exportar mis datos", "Te mandamos un enlace por correo para descargarlos",
-                       '<button type="button" class="cb cb-sec ch">Exportar</button>')
-                  + fila(svg('<path d="M5 7h14"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6.5 7l1 12.5h9l1-12.5"/><path d="M9.5 7V4.5h5V7"/>', 16),
-                         "Dar de baja mi cuenta", "Tenés 30 días para arrepentirte",
-                         '<a class="cb cb-pel ch" href="Cuenta-Baja.dc.html">Dar de baja</a>'))
+INFO = svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><path d="M12 7.8h.01"/>', 16, "2")
+ALERTA = svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5"/><path d="M12 16.2h.01"/>', 18, "2")
+TACHO = svg('<path d="M5 7h14"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6.5 7l1 12.5h9l1-12.5"/><path d="M9.5 7V4.5h5V7"/>', 16)
+EXPORTAR = fila(svg('<path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/>', 16), "Exportar mis datos", "", '<button type="button" class="cb cb-sec ch">Exportar</button>')
+BAJA = fila(TACHO, "Dar de baja mi cuenta", "", '<a class="cb cb-pel ch" href="Cuenta-Baja.dc.html">Dar de baja</a>')
+# La única Dueña de una organización no puede darse de baja (Legal.AccountDeletion.LastAdmin): ⓘ y botón apagado; los dos abren el aviso.
+BAJA_UNICA = (f'<div class="w-it"><span class="p-ic">{TACHO}</span><span class="dato"><b class="o-fila-tit">Dar de baja mi cuenta'
+              f'<button type="button" class="o-i" aria-label="Por qué no podés darte de baja" onClick="{{{{verInfo}}}}">{INFO}</button></b></span>'
+              '<button type="button" class="cb cb-pel ch o-apagado" aria-disabled="true" onClick="{{verInfo}}">Dar de baja</button></div>')
+
+
+def privacidad(interactivo):
+    if not interactivo:
+        return caja("Privacidad", EXPORTAR + BAJA)
+    return caja("Privacidad", EXPORTAR + '<sc-if value="{{puedeBaja}}" hint-placeholder-val="{{si}}">' + BAJA + '</sc-if>'
+                + '<sc-if value="{{unicaDuena}}" hint-placeholder-val="{{no}}">' + BAJA_UNICA + '</sc-if>')
+
+
+AVISO_UNICA = ('<sc-if value="{{info}}" hint-placeholder-val="{{no}}"><div class="w-oscuro" style="z-index: 6;"></div>'
+               '<div class="p-dlg" role="dialog" aria-label="No podés dar de baja tu cuenta">'
+               f'<div class="dc"><span>No podés dar de baja tu cuenta</span><button type="button" class="ib" aria-label="Cerrar" onClick="{{{{cerrarInfo}}}}">{I["x"]}</button></div>'
+               f'<div class="db"><div class="o-mot">{ALERTA}<div><b>Sos la única Dueña de Grupo Delta</b></div></div>'
+               '<span class="o-sub">Qué podés hacer</span><ol class="o-pasos"><li><span class="n">1</span>Sumá otro Dueño en Grupo Delta</li>'
+               '<li><span class="n">2</span>O pedí a la plataforma que cierre la organización</li></ol></div>'
+               '<div class="df"><button type="button" class="cb cb-pri" onClick="{{cerrarInfo}}">Entendido</button></div></div></sc-if>')
 
 
 def cuerpo_cuenta(interactivo):
@@ -116,9 +152,9 @@ def cuerpo_cuenta(interactivo):
         acciones = ('<button type="button" class="cb cb-sec">Descartar cambios</button>'
                     '<button type="button" class="cb cb-pri" disabled="{{si}}">Guardar cambios</button>')
         nombre = campo("Nombre y apellido", "Lucía Fernández", 360)
-    datos = caja("Tus datos", '<div class="p-hoja">' + nombre + campo("Idioma y región", "Español (Argentina)", 260, True)
+    datos = caja("Tus datos", '<div class="o-g3">' + nombre + campo("Idioma y región", "Español (Argentina)", 260, True)
                  + campo("Zona horaria", "Buenos Aires (GMT−3)", 260, True) + "</div>")
-    return banda("Mi cuenta", res, acciones=acciones, icono=PERSONA) + f'<div class="w-body">{datos}{metodos()}{PRIVACIDAD}</div>'
+    return banda("Mi cuenta", res, acciones=acciones, icono=PERSONA) + f'<div class="w-body">{datos}{metodos()}{privacidad(interactivo)}</div>'
 
 
 TOAST = ('<sc-if value="{{aviso}}" hint-placeholder-val="{{no}}"><div class="p-aviso" role="status">' + OK_AVISO
@@ -138,7 +174,7 @@ OTP = '<div class="p-otp" role="group" aria-label="Código"><span>4</span><span>
 TABLEROS = {
     "Inicio-Personal": ("Inicio personal · /", 1440, 900, True, web_p(
         banda("Inicio", "", icono=I["casa"]) + f'<div class="w-body">{CARTEL_PROPIO}</div>', "inicio", "Inicio")),
-    "Cuenta": ("Mi cuenta · /cuenta", 1440, 900, True, web_p(cuerpo_cuenta(True), "cuenta", "Inicio / Mi cuenta", TOAST)),
+    "Cuenta": ("Mi cuenta · /cuenta", 1440, 900, True, web_p(cuerpo_cuenta(True), "cuenta", "Inicio / Mi cuenta", TOAST + AVISO_UNICA)),
     "Cuenta-Agregar": ("Mi cuenta · agregar correo o teléfono", 1440, 900, True, web_p(cuerpo_cuenta(False), "cuenta", "Inicio / Mi cuenta", dialogo(
         "Agregar correo o teléfono",
         '<div class="p-seg" role="group" aria-label="Qué querés agregar"><span class="on">Correo</span><span>WhatsApp</span></div>' + campo("Correo", "lucia.trabajo@gmail.com", None),
@@ -164,7 +200,7 @@ TABLEROS = {
 SCRIPT_CUENTA = """class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { nombre: 'Lucía Fernández', guardado: 'Lucía Fernández', aviso: '' };
+    this.state = { nombre: 'Lucía Fernández', guardado: 'Lucía Fernández', aviso: '', info: false };
   }
   renderVals() {
     const s = this.state;
@@ -181,15 +217,22 @@ SCRIPT_CUENTA = """class Component extends DCLogic {
         this.t = setTimeout(() => this.setState({ aviso: '' }), 3000);
       },
       aviso: s.aviso,
+      // La única Dueña de una organización no puede darse de baja (409 Legal.AccountDeletion.LastAdmin).
+      unicaDuena: this.props.baja === 'Es la única Dueña',
+      puedeBaja: this.props.baja !== 'Es la única Dueña',
+      info: s.info,
+      verInfo: () => this.setState({ info: true }),
+      cerrarInfo: () => this.setState({ info: false }),
     };
   }
 }"""
+PROPS_CUENTA = '"baja":{"editor":"enum","options":["Puede darse de baja","Es la única Dueña"],"default":"Puede darse de baja","section":"Estado"},'
 SCRIPT_SIMPLE = "class Component extends DCLogic {\n  renderVals() {\n    return { si: true, no: false };\n  }\n}"
 
 
-def archivo(titulo, w, h, cuerpo, script):
+def archivo(titulo, w, h, cuerpo, script, props=""):
     head = HEAD_BASE.replace("<title>Criterio · Botones</title>", f"<title>{titulo}</title>")
-    tag = (f"<script type=\"text/x-dc\" data-dc-script data-props='{{\"$preview\":{{\"width\":{w},\"height\":{h}}}}}'>\n{script}\n</script>")
+    tag = (f"<script type=\"text/x-dc\" data-dc-script data-props='{{{props}\"$preview\":{{\"width\":{w},\"height\":{h}}}}}'>\n{script}\n</script>")
     return "\n".join([head, CSS, CSS_P, "</helmet>", "", cuerpo, "</x-dc>", "", tag, "</body>", "</html>", ""])
 
 
@@ -200,7 +243,8 @@ for viejo, nuevo in (("Cuenta.dc.html", "Cuenta-Anterior.dc.html"), ("M-Cuenta.d
 
 for clave, (titulo, w, h, interactivo, cuerpo) in TABLEROS.items():
     script = SCRIPT_CUENTA if clave == "Cuenta" else SCRIPT_SIMPLE
-    (PROJ / f"{clave}.dc.html").write_text(archivo(titulo, w, h, cuerpo, script), encoding="utf-8")
+    props = PROPS_CUENTA if clave == "Cuenta" else ""
+    (PROJ / f"{clave}.dc.html").write_text(archivo(titulo, w, h, cuerpo, script, props), encoding="utf-8")
 
 ruta = PROJ / "canvas.json"
 c = json.loads(ruta.read_text(encoding="utf-8"))
@@ -214,11 +258,12 @@ for n, clave in enumerate(["M-Inicio-Personal", "M-Cuenta"]):
     B[f"{clave}.dc.html"] = {"x": n * 470, "y": 260 + 900 + 120, "w": w, "h": h, "title": titulo + MARCA, "page": PAGINA}
 c["notes"]["personal-nota"].update({"x": len(web) * 1520, "y": 260, "page": PAGINA})
 c["notes"]["t-personal"]["maxW"] = min(len(web) * 1520 + 440, 8000)
-# Archivo: las versiones anteriores, a la derecha de lo que ya hay.
-x_arch = max(b["x"] + b["w"] for b in B.values() if b.get("page") == "archivo")
-x_arch = max(x_arch, max(n["x"] + n.get("w", 440) for n in c["notes"].values() if n.get("page") == "archivo")) + 80
-B["Cuenta-Anterior.dc.html"] = {"x": x_arch, "y": 260, "w": 1440, "h": 900, "title": "Mi cuenta (antes del criterio)", "page": "archivo", "is_interactive": True}
-B["M-Cuenta-Anterior.dc.html"] = {"x": x_arch + 1520, "y": 260, "w": 390, "h": 844, "title": "Mi cuenta · teléfono (antes del criterio)", "page": "archivo", "is_interactive": True}
+# Archivo: las versiones anteriores, a la derecha de lo que ya hay (solo la primera vez).
+if "Cuenta-Anterior.dc.html" not in B:
+    x_arch = max(b["x"] + b["w"] for b in B.values() if b.get("page") == "archivo")
+    x_arch = max(x_arch, max(n["x"] + n.get("w", 440) for n in c["notes"].values() if n.get("page") == "archivo")) + 80
+    B["Cuenta-Anterior.dc.html"] = {"x": x_arch, "y": 260, "w": 1440, "h": 900, "title": "Mi cuenta (antes del criterio)", "page": "archivo", "is_interactive": True}
+    B["M-Cuenta-Anterior.dc.html"] = {"x": x_arch + 1520, "y": 260, "w": 390, "h": 844, "title": "Mi cuenta · teléfono (antes del criterio)", "page": "archivo", "is_interactive": True}
 for clave in web + ["Cuenta-Anterior", "M-Cuenta-Anterior"]:
     if f"{clave}.dc.html" not in c["order"]:
         c["order"].append(f"{clave}.dc.html")
