@@ -33,6 +33,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -84,6 +93,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -135,6 +153,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": true,
@@ -186,6 +213,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": true,
@@ -237,6 +273,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": true,
@@ -288,6 +333,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": true,
@@ -339,6 +393,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -391,6 +454,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -443,6 +515,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -494,6 +575,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -545,6 +635,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -596,6 +695,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -647,6 +755,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -698,6 +815,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -749,6 +875,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -800,6 +935,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -852,6 +996,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -905,6 +1058,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -958,6 +1120,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -1011,6 +1182,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -1064,6 +1244,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,
@@ -1117,6 +1306,15 @@
               "organizationName": "Empresa E2E",
               "email": "marta.ruiz@example.test",
               "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
               "issuedAtUtc": "2026-09-30T12:00:00Z",
               "expiresAtUtc": "2026-10-07T12:00:00Z",
               "canUseEmailCode": false,

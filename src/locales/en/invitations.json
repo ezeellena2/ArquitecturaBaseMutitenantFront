@@ -5,20 +5,19 @@
   "backToSignIn": "Go to sign in",
   "organizationFallback": "the organization",
   "accountFallback": "your account",
-  "panel": {
-    "kicker": "No passwords",
-    "heading": "Sign in with an email code or Google.",
-    "description": "Use the same account as a person and to work in your organization. Those are two separate sides.",
-    "person": "As a person, in your personal profile.",
-    "organization": "In your organization, within the access granted to you."
-  },
   "join": {
     "title": "Join {{organization}}",
-    "forEmail": "This invitation is for {{email}}.",
+    "forEmail": "This invitation is for <strong>{{email}}</strong>.",
     "invitedBy": "{{inviter}} invited you",
+    "company": "Company",
+    "roles": "Roles",
     "expires": "Expires",
-    "terms": "I accept the <terms>Terms</terms> and the <privacy>Privacy Policy</privacy>.",
-    "signInDescription": "You already have an account with {{email}}. Sign in with a login method and your invitation will be waiting.",
+    "expiresIn_one": "In {{count}} day",
+    "expiresIn_other": "In {{count}} days",
+    "expiresToday": "Today",
+    "termsNotice": "By accepting, we create your account with this email and you accept the Terms and the Privacy Policy.",
+    "joinsProfiles": "{{organization}} is added to your profiles.",
+    "signInDescription": "You already have an account with {{email}}. Sign in with your code and your invitation will be waiting.",
     "signIn": "Sign in to accept",
     "signOutAndContinue": "Sign out and continue as {{email}}",
     "continueAs": "Continue as {{name}}",
@@ -28,11 +27,12 @@
   "wrongSession": "You are signed in as {{currentEmail}}, but the invitation is for {{email}}.",
   "accepted": {
     "title": "You joined {{organization}}",
-    "email": "Sign in as {{email}}.",
-    "personalMethodNotice": "Add your own login method so you do not lose your account if you leave the organization.",
+    "email": "You sign in with <strong>{{email}}</strong>.",
+    "personalMethodNotice": "Add a personal email or your WhatsApp so you do not lose your account if you leave the company.",
     "addNow": "Add now",
     "later": "Later",
-    "openOrganization": "Open organization"
+    "openOrganization": "Open organization",
+    "entering": "Opening {{organization}}…"
   },
   "states": {
     "Expired": {

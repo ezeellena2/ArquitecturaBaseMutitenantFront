@@ -12,6 +12,7 @@ const organizationId = "11111111-1111-4111-8111-111111111111";
 const basePreview = {
   state: "NoAccount", organizationId, organizationName: "Empresa E2E",
   email: "marta.ruiz@example.test", inviterName: "Lucía Fernández",
+  inviterRoles: ["Dueño"], companies: ["Delta Norte S.A."], roles: ["Solo lectura"],
   issuedAtUtc: "2026-09-30T12:00:00Z", expiresAtUtc: "2026-10-07T12:00:00Z",
   canUseEmailCode: false, canUseGoogle: false, needsPersonalLoginMethod: false,
 };
@@ -126,7 +127,6 @@ async function capture(browser, canvasUrl, appUrl, entry) {
       if (!expectedHeading) throw new Error(`Estado de invitación visual desconocido: ${previewState}`);
       await app.getByRole("heading", { name: expectedHeading }).waitFor();
       if (entry.app.action === "envio" || entry.app.action === "error") {
-        await app.getByRole("checkbox", { name: /Términos y la Política de privacidad/ }).check();
         if (entry.app.action === "envio") {
           await context.route("**/api/invitations/accept", () => new Promise(() => {}));
           await app.getByRole("button", { name: "Aceptar invitación" }).click();

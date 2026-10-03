@@ -4,7 +4,7 @@ import { HttpResponse, http } from "msw";
 import type { User } from "oidc-client-ts";
 import type { AuthContextProps } from "react-oidc-context";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { AppProviders } from "@/app/providers";
 import { changeCulture, configureI18n } from "@/shared/i18n";
@@ -39,6 +39,8 @@ beforeAll(async () => {
     { code: "en-US", languageCode: "en", fallbackCulture: "es-AR", isEnabled: true, isDefault: false },
   ], "es-AR");
 });
+
+afterEach(() => { vi.useRealTimers(); });
 
 beforeEach(() => {
   previewResponse = basePreview;
@@ -102,16 +104,21 @@ function show(options: { entry?: string; signedInAs?: "business" | "consumer" } 
 
 describe("InvitationPage", () => {
   it("consulta el token del fragmento por JSON, limpia la URL y acepta una identidad nueva sin Personal", async () => {
+    // Tablero Invitacion, «Sin cuenta»: quién invita con su rol, Empresa, Roles y Vence; la leyenda reemplaza la casilla.
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-10-01T12:00:00Z"));
+    previewResponse = { ...basePreview, inviterRoles: ["Dueño"], companies: ["Delta Norte S.A."], roles: ["Solo lectura"] };
     const originalWidth = window.innerWidth;
     Object.defineProperty(window, "innerWidth", { configurable: true, value: 390 });
     const replaceState = vi.spyOn(window.history, "replaceState");
     try {
       const { container, client } = show();
-      expect(await screen.findByRole("heading", { name: "Te sumás a Grupo Delta" })).toBeVisible();
-      expect(screen.getByText("La invitación es para invitada@example.test.")).toBeVisible();
-      expect(screen.getByText("Lucía Fernández te invitó")).toBeVisible();
-      expect(screen.queryByText("Empresa")).not.toBeInTheDocument();
-      expect(screen.queryByText("Roles")).not.toBeInTheDocument();
+      const heading = await screen.findByRole("heading", { name: "Te sumás a Grupo Delta" });
+      expect(heading.parentElement).toHaveTextContent("La invitación es para invitada@example.test.");
+      expect(screen.getByText("Lucía Fernández te invitó").parentElement).toHaveTextContent("Lucía Fernández te invitóDueño · hace 1 día");
+      expect(screen.getByText("Empresa").closest("dl")).toHaveTextContent("EmpresaDelta Norte S.A.RolesSolo lecturaVenceEn 6 días");
+      expect(screen.getByTestId("auth-brand-panel")).toHaveTextContent("Entrás con un código por correo o por WhatsApp.");
+      expect(screen.getByTestId("auth-brand-panel")).toHaveTextContent("Sin contraseñas: entrás con un código por correo o WhatsApp.");
       expect(await axe(container)).toHaveNoViolations();
 
       expect(replaceState).toHaveBeenCalledWith(null, "", "/invitacion");
@@ -124,14 +131,14 @@ describe("InvitationPage", () => {
       expect(JSON.stringify(client.getQueryCache().getAll().map((query) => query.queryKey)))
         .not.toContain(invitationToken);
 
-      const consent = screen.getByRole("checkbox", { name: /Términos y la Política de privacidad/ });
-      expect(consent).not.toBeChecked();
+      expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+      expect(screen.getByText("Al aceptar creamos tu cuenta con este correo y aceptás los Términos y la Política de privacidad.")).toBeVisible();
       const accept = screen.getByRole("button", { name: "Aceptar invitación" });
-      expect(accept).toBeDisabled();
-      fireEvent.click(consent);
+      expect(accept).toBeEnabled();
       fireEvent.click(accept);
 
       expect(await screen.findByRole("heading", { name: "Te sumaste a Grupo Delta" })).toBeVisible();
+      expect(screen.getByRole("status")).toHaveTextContent("Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.");
       expect(acceptRequests).toHaveLength(1);
       expect(acceptRequests[0].url).toMatch(/\/api\/invitations\/accept$/);
       expect(acceptRequests[0].body).toEqual({ token: invitationToken, acceptedTerms: true });
@@ -150,6 +157,7 @@ describe("InvitationPage", () => {
     previewResponse = { ...basePreview, state: "SignInRequired", canUseEmailCode: true, canUseGoogle: true };
     const { container, router } = show({ entry: "/invitacion" });
     expect(await screen.findByRole("heading", { name: "Te sumás a Grupo Delta" })).toBeVisible();
+    expect(screen.getByText("Ya tenés una cuenta con invitada@example.test. Entrá con tu código y la invitación te espera.")).toBeVisible();
     const login = screen.getByRole("button", { name: "Ingresá para aceptar" });
     fireEvent.click(login);
     await waitFor(() => expect(router.state.location.pathname).toBe("/login"));
@@ -176,6 +184,8 @@ describe("InvitationPage", () => {
     const { container } = show({ signedInAs: "business" });
     expect(await screen.findByRole("heading", { name: "Te sumás a Grupo Delta" })).toBeVisible();
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+    expect(screen.getByText("Grupo Delta se suma a tus perfiles.")).toBeVisible();
+    expect(screen.queryByText(/Al aceptar creamos tu cuenta/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Aceptar invitación" }));
     expect(await screen.findByRole("heading", { name: "Te sumaste a Grupo Delta" })).toBeVisible();
     expect(acceptRequests[0].body).toEqual({ token: invitationToken, acceptedTerms: false });
@@ -197,21 +207,24 @@ describe("InvitationPage", () => {
     await act(async () => router.navigate("/invitacion#second-invitation"));
     expect(await screen.findByRole("heading", { name: "Te sumás a Grupo Norte" })).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: "Aceptar invitación" }));
-    expect(await screen.findByRole("heading", { name: "Te sumaste a Grupo Norte" })).toBeVisible();
-    fireEvent.click(screen.getByRole("button", { name: "Entrar a la organización" }));
+    // Sin aviso de respaldo no hay pantalla intermedia: entra directo a la organización.
     await waitFor(() => expect(signinRedirect).toHaveBeenCalledWith(expect.objectContaining({
+      state: { returnTo: "/org" },
       extraQueryParams: { access: "business", tenant: "second-organization" },
     })));
+    expect(screen.queryByRole("heading", { name: "Te sumaste a Grupo Norte" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Entrar a la organización" })).not.toBeInTheDocument();
   });
 
-  it("pide nuevamente consentimiento al abrir otra invitación", async () => {
-    const { router } = show();
-    const consent = await screen.findByRole("checkbox", { name: /Términos y la Política de privacidad/ });
-    fireEvent.click(consent);
-    expect(consent).toBeChecked();
-    await act(async () => router.navigate("/invitacion#second-invitation"));
-    expect(await screen.findByRole("checkbox", { name: /Términos y la Política de privacidad/ })).not.toBeChecked();
-    expect(screen.getByRole("button", { name: "Aceptar invitación" })).toBeDisabled();
+  it("una invitación ya aceptada sin aviso de respaldo entra directo a la organización", async () => {
+    previewResponse = { ...basePreview, state: "Accepted", needsPersonalLoginMethod: false };
+    show({ entry: "/invitacion" });
+    await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
+    expect(signinRedirect).toHaveBeenCalledWith(expect.objectContaining({
+      state: { returnTo: "/org" },
+      extraQueryParams: { access: "business", tenant: "tenant-invited" },
+    }));
+    expect(screen.getByRole("status")).toHaveTextContent("Entrando a Grupo Delta…");
   });
 
   it("ignora una aceptación que responde después de abrir otra invitación", async () => {
@@ -274,7 +287,7 @@ describe("InvitationPage", () => {
     previewResponse = { ...basePreview, state: "Accepted", needsPersonalLoginMethod: true };
     const { container } = show({ entry: "/invitacion" });
     expect(await screen.findByRole("heading", { name: "Te sumaste a Grupo Delta" })).toBeVisible();
-    expect(screen.getByRole("status")).toHaveTextContent("Agregá un método de ingreso propio");
+    expect(screen.getByRole("status")).toHaveTextContent("Agregá un correo personal o tu WhatsApp");
     fireEvent.click(screen.getByRole("button", { name: "Agregar ahora" }));
     await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
     expect(signinRedirect).toHaveBeenCalledWith(expect.objectContaining({

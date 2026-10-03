@@ -5,20 +5,19 @@
   "backToSignIn": "Ir al ingreso",
   "organizationFallback": "la organización",
   "accountFallback": "tu cuenta",
-  "panel": {
-    "kicker": "Sin contraseñas",
-    "heading": "Entrás con un código por correo o con Google.",
-    "description": "Con la misma cuenta podés usar el servicio como persona y trabajar en tu organización. Son dos lados separados.",
-    "person": "Como persona, en tu perfil personal.",
-    "organization": "En tu organización, con lo que te habilita tu acceso."
-  },
   "join": {
     "title": "Te sumás a {{organization}}",
-    "forEmail": "La invitación es para {{email}}.",
+    "forEmail": "La invitación es para <strong>{{email}}</strong>.",
     "invitedBy": "{{inviter}} te invitó",
+    "company": "Empresa",
+    "roles": "Roles",
     "expires": "Vence",
-    "terms": "Acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>.",
-    "signInDescription": "Ya tenés una cuenta con {{email}}. Entrá con un método de ingreso y la invitación te espera.",
+    "expiresIn_one": "En {{count}} día",
+    "expiresIn_other": "En {{count}} días",
+    "expiresToday": "Hoy",
+    "termsNotice": "Al aceptar creamos tu cuenta con este correo y aceptás los Términos y la Política de privacidad.",
+    "joinsProfiles": "{{organization}} se suma a tus perfiles.",
+    "signInDescription": "Ya tenés una cuenta con {{email}}. Entrá con tu código y la invitación te espera.",
     "signIn": "Ingresá para aceptar",
     "signOutAndContinue": "Salir y seguir como {{email}}",
     "continueAs": "Seguir como {{name}}",
@@ -28,11 +27,12 @@
   "wrongSession": "Entraste como {{currentEmail}} y la invitación es para {{email}}.",
   "accepted": {
     "title": "Te sumaste a {{organization}}",
-    "email": "Entrás con {{email}}.",
-    "personalMethodNotice": "Agregá un método de ingreso propio para no perder tu cuenta si dejás la empresa.",
+    "email": "Entrás con <strong>{{email}}</strong>.",
+    "personalMethodNotice": "Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.",
     "addNow": "Agregar ahora",
     "later": "Más tarde",
-    "openOrganization": "Entrar a la organización"
+    "openOrganization": "Entrar a la organización",
+    "entering": "Entrando a {{organization}}…"
   },
   "states": {
     "Expired": {

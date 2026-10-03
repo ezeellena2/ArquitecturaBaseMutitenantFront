@@ -776,6 +776,11 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               await recipientPage.getByRole("heading", { name: "Te sumás a Empresa E2E", exact: true }).waitFor({ timeout: 15_000 });
               await recipientPage.getByText(`La invitación es para ${email}.`, { exact: true }).waitFor();
               assert.equal(new URL(recipientPage.url()).hash, "", "El fragmento secreto debe retirarse de la URL.");
+              // Tablero Invitacion: la empresa y los roles elegidos al invitar, y quién invita con su rol.
+              const offered = recipientPage.locator("dl");
+              await offered.getByText(e2eCompanyName, { exact: true }).waitFor();
+              await offered.getByText("Dueño, Administrador", { exact: true }).waitFor();
+              await recipientPage.getByText(/^Dueño · /).waitFor();
 
               if (existingAccount) {
                 setStage("ingresa la cuenta existente sin crear Personal");
@@ -791,7 +796,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
                 assert.equal(beforeAcceptance.personalSpaces, 0, "El ingreso para aceptar no puede crear Personal.");
                 assert.equal(beforeAcceptance.accepted, false, "El ingreso no consume la invitación.");
               } else {
-                await recipientPage.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+                await recipientPage.getByText(/^Al aceptar creamos tu cuenta con este correo/).waitFor();
               }
 
               setStage("acepta la invitación emitida por la pantalla de Usuarios");
@@ -809,8 +814,11 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
                 "La invitación debe vincular la membresía a la empresa elegida.");
               assert.equal(inspection.companyAdminAssigned, true,
                 "La invitación debe conservar el rol de empresa elegido.");
-              await recipientPage.getByRole("heading", { name: "Te sumaste a Empresa E2E", exact: true }).waitFor();
-              await recipientPage.getByRole("button", { name: existingAccount ? "Entrar a la organización" : "Más tarde", exact: true }).click();
+              if (!existingAccount) {
+                // Solo con el correo de la empresa: el aviso de respaldo; si no, entra directo sin pantalla intermedia.
+                await recipientPage.getByRole("heading", { name: "Te sumaste a Empresa E2E", exact: true }).waitFor();
+                await recipientPage.getByRole("button", { name: "Más tarde", exact: true }).click();
+              }
               await expectPath(recipientPage, "/org", "entrada luego de aceptar invitación desde Usuarios");
             } finally {
               await recipientContext.close();
@@ -944,9 +952,6 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             setStage("acepta la invitación real");
             const acceptedResponse = invitationPage.waitForResponse((response) =>
               new URL(response.url()).pathname === "/api/invitations/accept" && response.request().method() === "POST");
-            if (!existingAccount) {
-              await invitationPage.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
-            }
             await invitationPage.getByRole("button", { name: "Aceptar invitación", exact: true }).click();
             assert.equal((await acceptedResponse).ok(), true, "La aceptación real debe completar su transacción.");
             const inspection = await invitationCommand(readyFile, { kind: "inspect", email, invitationId: issued.invitationId });
@@ -958,9 +963,6 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               await invitationPage.getByRole("heading", { name: `Te sumaste a ${e2eOrganizationName}`, exact: true }).waitFor();
               setStage("comprueba identidad vinculada sin espacio Personal antes de cambiar acceso");
               await invitationPage.getByRole("button", { name: "Más tarde", exact: true }).click();
-            } else {
-              await invitationPage.getByRole("heading", { name: `Te sumaste a ${e2eOrganizationName}`, exact: true }).waitFor();
-              await invitationPage.getByRole("button", { name: "Entrar a la organización", exact: true }).click();
             }
             setStage("entra a la organización con la membresía activa");
             await expectPath(invitationPage, "/org", "entrada luego de aceptar");

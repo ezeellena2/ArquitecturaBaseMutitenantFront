@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, CircleCheck, TriangleAlert, UserRound } from "lucide-react";
+import { Check, Clock, TriangleAlert } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useAuth } from "react-oidc-context";
@@ -21,23 +21,9 @@ function initials(value: string | null | undefined, fallback: string): string {
   return name.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toLocaleUpperCase();
 }
 
-function InvitationBrandPanel() {
-  const { t } = useTranslation("invitations");
-  return <>
-    <span className="self-start text-[13px] font-semibold">{t("panel.kicker")}</span>
-    <h2 className="max-w-[520px] text-[32px] leading-[1.15] font-bold tracking-[-0.025em]">{t("panel.heading")}</h2>
-    <p className="max-w-[500px] text-[15px] leading-[1.6] text-[var(--lado-activo)]/85">{t("panel.description")}</p>
-    <ul className="mt-2 flex max-w-[500px] flex-col gap-[18px] text-sm font-normal text-[var(--lado-activo)]/90">
-      <li className="flex items-center gap-3">
-        <span className="inline-flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-[var(--lado-activo)]/15"><UserRound aria-hidden="true" size={20} strokeWidth={1.75} /></span>
-        <span>{t("panel.person")}</span>
-      </li>
-      <li className="flex items-center gap-3">
-        <span className="inline-flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-[var(--lado-activo)]/15"><Building2 aria-hidden="true" size={20} strokeWidth={1.75} /></span>
-        <span>{t("panel.organization")}</span>
-      </li>
-    </ul>
-  </>;
+// «Vence: En 6 días» del tablero, redondeado; el último medio día dice «Hoy».
+function daysUntil(value: string): number {
+  return Math.max(0, Math.round((Date.parse(value) - Date.now()) / 86_400_000));
 }
 
 function displayError(error: unknown, fallback: (key: string) => string): string {
@@ -62,9 +48,9 @@ function InvitationFlow() {
   const [token, setToken] = useState<string | null>(null);
   const [loadedLocationKey, setLoadedLocationKey] = useState<string | null>(null);
   const [previewCacheKey, setPreviewCacheKey] = useState(() => crypto.randomUUID());
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [accepted, setAccepted] = useState<AcceptInvitationResponse | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const entered = useRef(false);
 
   useEffect(() => {
     const fragment = location.hash.startsWith("#") ? location.hash.slice(1) : "";
@@ -97,17 +83,22 @@ function InvitationFlow() {
   const invitation = preview.data;
   const acceptedView = accepted !== null || invitation?.state === "Accepted";
   const needsPersonalMethod = accepted?.needsPersonalLoginMethod ?? invitation?.needsPersonalLoginMethod ?? false;
+  // Sin aviso de respaldo no hay pantalla intermedia: al aceptar se entra directo a la organización.
+  const entering = acceptedView && !needsPersonalMethod;
   const organizationId = accepted?.organizationId ?? invitation?.organizationId ?? undefined;
   const organizationName = invitation?.organizationName ?? t("organizationFallback");
   const email = invitation?.email ?? "";
   const inviter = invitation?.inviterName ?? organizationName;
+  const inviterRoles = invitation?.inviterRoles ?? [];
+  const companies = invitation?.companies ?? [];
+  const roles = invitation?.roles ?? [];
 
   async function acceptInvitationNow() {
     if (!invitation || antiforgery.data?.requestToken === undefined) return;
     setActionError(null);
     try {
-      const result = await accept.mutateAsync({ token, acceptedTerms: invitation.state === "NoAccount" && acceptedTerms });
-      setAccepted(result);
+      // Sin cuenta, la leyenda «Al aceptar … aceptás los Términos» hace de consentimiento.
+      setAccepted(await accept.mutateAsync({ token, acceptedTerms: invitation.state === "NoAccount" }));
     } catch (error) {
       setActionError(displayError(error, tErrors));
     }
@@ -124,6 +115,12 @@ function InvitationFlow() {
       setActionError(tErrors("server"));
     }
   }
+
+  useEffect(() => {
+    if (!entering || entered.current) return;
+    entered.current = true;
+    void enterAsBusiness("/org");
+  });
 
   async function signOutAndContinue() {
     beginSignOut();
@@ -152,21 +149,24 @@ function InvitationFlow() {
     void antiforgery.refetch();
     if (antiforgery.data) void preview.refetch();
   };
+  const days = invitation?.expiresAtUtc ? daysUntil(invitation.expiresAtUtc) : 0;
+  const note = "text-center text-xs leading-normal text-[var(--t3)]";
 
-  return <AuthLayout access="business" brandPanel="blank" brandPanelContent={<InvitationBrandPanel />}>
+  return <AuthLayout access="consumer">
     {loading ? <div role="status" aria-busy="true" aria-label={t("loading")} className="flex min-h-36 items-center justify-center text-sm text-[var(--t2)]">{t("loading")}</div>
       : error ? <div className="flex flex-col gap-5">
-        <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">{t("pageTitle")}</h1>
+        <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("pageTitle")}</h1>
         <FormError message={displayError(error, tErrors)} />
         <Button type="button" variant="outlineSurface" size="lg" onClick={retry}>{t("retry")}</Button>
       </div>
-        : invitation ? acceptedView ? <div className="flex flex-col gap-[22px]">
-          <span aria-hidden="true" className="flex size-[46px] items-center justify-center self-center rounded-full bg-[var(--ok-t)] text-[var(--ok)]"><CircleCheck size={22} strokeWidth={2} /></span>
+        : invitation ? entering && !actionError ? <div role="status" aria-busy="true" className="flex min-h-36 items-center justify-center text-sm text-[var(--t2)]">{t("accepted.entering", { organization: organizationName })}</div>
+          : acceptedView ? <div className="flex flex-col gap-[22px]">
+          <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--ok-t)] text-[var(--ok)]"><Check size={22} strokeWidth={2} /></span>
           <div className="text-center">
-            <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">{t("accepted.title", { organization: organizationName })}</h1>
-            <p className="mt-2 break-all text-[15px] leading-normal text-[var(--t2)]">{t("accepted.email", { email })}</p>
+            <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("accepted.title", { organization: organizationName })}</h1>
+            <p className="mt-1.5 break-all text-sm text-[var(--t2)]"><Trans ns="invitations" i18nKey="accepted.email" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
           </div>
-          {needsPersonalMethod ? <div role="status" className="flex items-start gap-2.5 rounded-xl bg-[var(--alerta-t)] px-3.5 py-3 text-sm leading-normal text-[var(--alerta)]">
+          {needsPersonalMethod ? <div role="status" className="flex items-start gap-2.5 rounded-[10px] bg-[var(--alerta-t)] px-3.5 py-3 text-sm leading-normal text-[var(--alerta)]">
             <TriangleAlert aria-hidden="true" className="mt-0.5 shrink-0" size={18} strokeWidth={2} />
             <span>{t("accepted.personalMethodNotice")}</span>
           </div> : null}
@@ -178,55 +178,56 @@ function InvitationFlow() {
           </div>
           <FormError message={actionError} />
         </div> : invitation.state === "Expired" || invitation.state === "Invalid" || invitation.state === "OrganizationSuspended" ? <div className="flex flex-col gap-[22px]">
-          <span aria-hidden="true" className="flex size-[46px] items-center justify-center self-center rounded-full bg-[var(--alerta-t)] text-[var(--alerta)]"><TriangleAlert size={20} strokeWidth={1.75} /></span>
+          <span aria-hidden="true" className={`flex size-[52px] items-center justify-center self-center rounded-full ${invitation.state === "Invalid" ? "bg-[var(--s3)] text-[var(--t2)]" : "bg-[var(--alerta-t)] text-[var(--alerta)]"}`}><Clock size={20} strokeWidth={1.75} /></span>
           <div className="text-center">
-            <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">{t(`states.${invitation.state}.title`, { organization: organizationName, inviter })}</h1>
-            <p className="mt-2 text-[15px] leading-normal text-[var(--t2)]">{t(`states.${invitation.state}.description`, { organization: organizationName, inviter })}</p>
+            <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t(`states.${invitation.state}.title`, { organization: organizationName, inviter })}</h1>
+            <p className="mt-1.5 text-sm text-[var(--t2)]">{t(`states.${invitation.state}.description`, { organization: organizationName, inviter })}</p>
           </div>
-          <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--t3)] text-sm font-semibold text-[var(--t1)] hover:bg-[var(--s2)]">{t("backToSignIn")}</Link>
+          <Button asChild variant="outlineSurface" size="lg"><Link to="/login">{t("backToSignIn")}</Link></Button>
         </div> : <div className="flex flex-col gap-5">
-          <div className="flex size-[46px] items-center justify-center self-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]" aria-hidden="true">
-            <span className="text-sm font-bold">{initials(organizationName, "O")}</span>
+          <span aria-hidden="true" className="flex size-14 items-center justify-center rounded-[14px] bg-[linear-gradient(135deg,var(--marca),var(--auth-panel-mid))] text-xl font-bold text-[var(--lado-activo)]">{initials(organizationName, "O")}</span>
+          <div>
+            <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("join.title", { organization: organizationName })}</h1>
+            <p className="mt-1.5 break-all text-sm text-[var(--t2)]"><Trans ns="invitations" i18nKey="join.forEmail" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
           </div>
-          <div className="text-center">
-            <p className="text-[13px] font-semibold text-[var(--t2)]">{t("pageTitle")}</p>
-            <h1 className="mt-1 text-[26px] leading-tight font-bold tracking-[-0.02em]">{t("join.title", { organization: organizationName })}</h1>
-            <p className="mt-2 break-all text-[15px] leading-normal text-[var(--t2)]">{t("join.forEmail", { email })}</p>
-          </div>
-          <div className="flex items-center gap-3 rounded-xl border border-[var(--borde2)] bg-[var(--lado-activo)] px-3.5 py-3">
-            <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--marca-t)] text-sm font-semibold text-[var(--marca-tx)]">{initials(inviter, "O")}</span>
-            <span className="flex min-w-0 flex-col">
-              <span className="truncate text-[14px] font-semibold text-[var(--t1)]">{t("join.invitedBy", { inviter })}</span>
-              {invitation.issuedAtUtc ? <span className="text-[13px] text-[var(--t2)]"><DateText value={invitation.issuedAtUtc} kind="relative" /></span> : null}
+          <div className="flex items-center gap-3.5 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] px-3 py-2.5">
+            <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--marca)] text-base font-semibold text-[var(--lado-activo)]">{initials(inviter, "O").charAt(0)}</span>
+            <span className="flex min-w-0 flex-col leading-[1.3]">
+              <span className="truncate text-[15px] font-semibold text-[var(--t1)]">{t("join.invitedBy", { inviter })}</span>
+              <span className="text-[13px] text-[var(--t3)]">
+                {inviterRoles.join(", ")}{inviterRoles.length > 0 && invitation.issuedAtUtc ? " · " : null}
+                {invitation.issuedAtUtc ? <DateText value={invitation.issuedAtUtc} kind="relative" /> : null}
+              </span>
             </span>
           </div>
-          <dl className="flex items-baseline justify-between gap-3 border-b border-[var(--borde2)] pb-3 text-[13px]">
+          <dl className="grid grid-cols-[110px_minmax(0,1fr)] gap-x-4 gap-y-2.5 rounded-[10px] border border-[var(--borde)] px-3.5 py-3 text-[13px]">
+            {companies.length > 0 ? <><dt className="text-[var(--t2)]">{t("join.company")}</dt><dd className="font-medium text-[var(--t1)]">{companies.join(", ")}</dd></> : null}
+            {roles.length > 0 ? <><dt className="text-[var(--t2)]">{t("join.roles")}</dt><dd className="font-medium text-[var(--t1)]">{roles.join(", ")}</dd></> : null}
             <dt className="text-[var(--t2)]">{t("join.expires")}</dt>
-            <dd className="font-medium text-[var(--t1)]"><DateText value={invitation.expiresAtUtc} kind="relative" /></dd>
+            <dd className="font-medium text-[var(--t1)]"><time dateTime={invitation.expiresAtUtc ?? undefined}>{days > 0 ? t("join.expiresIn", { count: days }) : t("join.expiresToday")}</time></dd>
           </dl>
-          {invitation.state === "WrongSession" ? <div role="alert" className="rounded-xl bg-[var(--alerta-t)] px-3.5 py-3 text-[13px] leading-normal text-[var(--alerta)]">
-            {t("wrongSession", { currentEmail: invitation.currentAccountEmail ?? t("accountFallback"), email })}
-          </div> : null}
-          {invitation.state === "SignInRequired" ? <p className="text-[13px] leading-normal text-[var(--t2)]">{t("join.signInDescription", { email })}</p> : null}
-          {invitation.state === "NoAccount" ? <label className="flex items-start gap-2.5 text-[13px] leading-normal text-[var(--t1)]">
-            <input type="checkbox" checked={acceptedTerms} onChange={(event) => setAcceptedTerms(event.target.checked)} className="mt-0.5 size-[18px] shrink-0 accent-[var(--marca)]" />
-            <span><Trans ns="invitations" i18nKey="join.terms" components={{
-              terms: <Link to="/terminos" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" />,
-              privacy: <Link to="/privacidad" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" />,
-            }} /></span>
-          </label> : null}
-          <div className="flex flex-col gap-2.5">
-            {invitation.state === "WrongSession" ? <>
+          {invitation.state === "WrongSession" ? <>
+            <div role="alert" className="flex items-start gap-2.5 rounded-[10px] bg-[var(--alerta-t)] px-3 py-2.5 text-[13px] leading-normal text-[var(--alerta)]">
+              <TriangleAlert aria-hidden="true" className="mt-0.5 shrink-0" size={16} strokeWidth={1.75} />
+              <span>{t("wrongSession", { currentEmail: invitation.currentAccountEmail ?? t("accountFallback"), email })}</span>
+            </div>
+            <div className="flex flex-col gap-2.5">
               <Button type="button" size="lg" onClick={() => void signOutAndContinue()}>{t("join.signOutAndContinue", { email })}</Button>
               <Button type="button" size="lg" variant="outlineSurface" onClick={returnToOwnAccess}>{t("join.continueAs", { name: typeof auth.user?.profile.name === "string" ? auth.user.profile.name : invitation.currentAccountEmail ?? t("accountFallback") })}</Button>
-            </> : invitation.state === "SignInRequired" ? <Button type="button" size="lg" onClick={() => {
+            </div>
+          </> : invitation.state === "SignInRequired" ? <>
+            <Button type="button" size="lg" onClick={() => {
               setActionError(null);
-                void navigate(`/login?${new URLSearchParams({ returnUrl: invitationPaths.page })}`);
+              void navigate(`/login?${new URLSearchParams({ returnUrl: invitationPaths.page })}`);
             }}>{t("join.signIn")}</Button>
-              : <Button type="button" size="lg" disabled={accept.isPending || (invitation.state === "NoAccount" && !acceptedTerms)} onClick={() => void acceptInvitationNow()}>
-                {accept.isPending ? t("join.accepting") : t("join.accept")}
-              </Button>}
-          </div>
+            <p className={note}>{t("join.signInDescription", { email })}</p>
+          </> : <>
+            <Button type="button" size="lg" disabled={accept.isPending} onClick={() => void acceptInvitationNow()}>
+              {accept.isPending ? t("join.accepting") : t("join.accept")}
+            </Button>
+            <p className={note}>{invitation.state === "NoAccount" ? t("join.termsNotice")
+              : t("join.joinsProfiles", { organization: organizationName })}</p>
+          </>}
           <FormError message={actionError} />
         </div> : null}
   </AuthLayout>;

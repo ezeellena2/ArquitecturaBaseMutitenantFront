@@ -7430,6 +7430,9 @@ export interface components {
             canUseGoogle: boolean;
             /** @default false */
             needsPersonalLoginMethod: boolean;
+            inviterRoles?: null | string[];
+            companies?: null | string[];
+            roles?: null | string[];
         };
         /** @enum {string} */
         InvitationPreviewState: "NoAccount" | "SignInRequired" | "Ready" | "WrongSession" | "Expired" | "Invalid" | "OrganizationSuspended" | "Accepted";
