@@ -275,7 +275,7 @@
     "Landing.dc.html": {
       "h": 2050,
       "page": "publico",
-      "title": "Landing · por refinar",
+      "title": "Portada · /",
       "w": 1440,
       "x": 0,
       "y": 260
@@ -971,7 +971,7 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 6740,
+      "h": 6980,
       "page": "criterio",
       "title": "Criterio · Decisiones por pantalla",
       "w": 1440,

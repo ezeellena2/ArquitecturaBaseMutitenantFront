@@ -853,6 +853,12 @@
 <style data-regla="flechita-blanca">
 .ab-sidebar__toggle { background: #fff !important; border-color: var(--lado-borde) !important; color: var(--t2) !important; }
 </style>
+<style data-regla="lineas-menu-lateral">
+.ab-sidebar__list > li + li, .ab-sidebar__children > li + li { border-top: 1px solid var(--lado-borde); padding-top: 2px; }
+.w-nav > .w-ln, .w-hijos > .w-ln, .w-abajo > .w-ln { position: relative; }
+.w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
+  content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
+</style>
 </helmet>
 
 <div class="crit">

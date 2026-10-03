@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 73** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 162 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 74** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 162 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -16,7 +16,7 @@ El título de cada tablero dice en qué estado está:
 |---|---|---|
 | Criterio de diseño | 8 | Validado. Es la regla de botones, tablas, diálogos, formularios, avisos, menús y marco. «Decisiones por pantalla» anota lo que el usuario eligió en cada pantalla y las reglas que salieron de eso. El lienzo abre acá. |
 | Mapa general | 2 | Validado |
-| Sitio público | 6 | Por refinar |
+| Sitio público | 6 | En refinación desde el 2026-10-03 (Etapa 7), pantalla por pantalla: la portada está aprobada (con la sección «Empresas en ArquitecturaBase»); el directorio, la página pública y sus teléfonos siguen «por refinar». |
 | Ingreso y registro | 18 | Validado |
 | Perfil personal | 11 | Validado. Los 6 teléfonos están en formato app desde el 2026-10-03. |
 | Organización | 32 | Escritorio y móviles aprobados el 2026-10-03, salvo los dos inicios, que quedan para repensar. Los 14 teléfonos están en formato app desde el 2026-10-03 (el del inicio, no). |
@@ -71,7 +71,9 @@ Lo que manda son los tableros «Criterio · …». Estas son las decisiones que 
   - las acciones de fila y las secundarias van en ⋮;
   - tu menú, arriba a la derecha, tiene Perfiles, Mi cuenta y Salir;
   - Administración es un segundo panel al lado del menú lateral;
-  - una línea fina entre cada opción de un menú desplegable, y una franja antes de las de peligro.
+  - una línea fina entre cada opción de un menú desplegable, y una franja antes de las de peligro;
+  - una línea fina entre cada opción del menú lateral y de su panel, como la que separa Administración;
+  - la flechita que contrae el menú lateral va en blanco.
 - **Listas:** se paginan con más de 10 elementos. Pestañas, solo si hay dos tablas o más.
 - **«Tenant» nunca en pantalla:** se dice «Organización».
 
@@ -96,6 +98,8 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 | `plat_ajustes_1003.py` | Ajustes aprobados en la otra conversación: Cuentas sin Teléfono, los métodos de la ficha de cuenta como en Mi cuenta y Documentos legales como lista. Les saca «· por refinar» a los títulos. |
 | `wa_ajustes_1004.py` | En la compu: la nota interna se prende con un botón al lado de donde se escribe, e «Importar contactos» va sin casilla y con «Descargar ejemplo». |
 | `menus_con_lineas.py` | Suma a todos los tableros la línea entre las opciones de los menús desplegables. Corre al final. |
+| `lineas_menu_lateral.py` | Suma a todos los tableros la línea entre las opciones del menú lateral y de su panel. Corre al final. |
+| `publico_1004.py` | Sitio público aprobado pantalla por pantalla (Etapa 7): por ahora, la portada con la sección del directorio. |
 | `flechita_blanca.py` | El botón redondo que contrae el menú lateral va en blanco, con borde arena, en todos los tableros que lo tienen. Corre al final. |
 | `org_vuelta_1002.py` | Las decisiones de la vuelta de Organización del 2026-10-02 sobre los tableros de escritorio, y les saca «· para aprobar» a los aprobados. Corre después de `org_formularios2.py`. |
 | `conectar_paginas.py` | Enlaces entre páginas: tu menú, el menú de WhatsApp y la entrada WhatsApp en Organización |

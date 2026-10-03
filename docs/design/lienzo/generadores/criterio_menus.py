@@ -13,6 +13,9 @@ head = botones.split("</helmet>", 1)[0].replace("<title>Criterio · Botones</tit
 head = re.sub(r"(\.crit \{[^}]*min-height: )\d+px", lambda m: m.group(1) + f"{ALTO}px", head)
 
 CSS = """  <style data-criterio="menus">
+.lat nav > .ln, .lat .hijos > .ln { position: relative; }
+.lat nav > .ln + .ln::before, .lat nav > .hijos + .ln::before, .lat .hijos > .ln + .ln::before, .lat .abajo > .ln + .ln::before {
+  content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 .reglas2 { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; color: var(--t2); font-size: 14px; }
 .reglas2 strong { color: var(--t1); font-weight: 600; }
 .medidas .fil { box-sizing: border-box; }
@@ -208,7 +211,8 @@ BODY = f"""<div class="crit">
           <li><strong>Un grupo con hijos</strong> se despliega en el lugar, como «Gestión de usuarios».</li>
           <li><strong>El activo va en blanco</strong> con letra petróleo.</li>
           <li><strong>Contraído</strong> muestra solo los íconos; el nombre aparece al pasar el mouse.</li>
-          <li><strong>En el teléfono,</strong> ☰ lo abre encima y los módulos y «Administración» se despliegan adentro.</li>
+          <li><strong>Una línea fina entre cada opción,</strong> como la que separa «Administración», en el menú y en el panel.</li>
+          <li><strong>En el teléfono no hay menú lateral:</strong> va la barra de abajo con «Más» (Marco y pantallas).</li>
         </ul>
       </div>
       <div class="sb chico" style="position: relative;">

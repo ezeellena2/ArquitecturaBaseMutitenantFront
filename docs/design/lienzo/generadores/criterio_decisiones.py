@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 6740
+ALTO = 6980
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -61,6 +61,7 @@ REGLAS = [
     ("En el teléfono, crear algo nuevo es un «+» flotante abajo a la derecha, también con la lista vacía.", "Marco y pantallas", "03/10/2026"),
     ("En el teléfono, el ⋮ de una fila va solo si tiene acciones; si no, se toca la fila.", "Marco y pantallas", "03/10/2026"),
     ("La flechita que contrae el menú lateral va en blanco, con borde arena.", "Menús y desplegables", "03/10/2026"),
+    ("Una línea fina entre cada opción del menú lateral y de su panel, como la que separa Administración.", "Menús y desplegables", "03/10/2026"),
     ("En el teléfono, las pantallas de edición llevan fijos abajo «Descartar cambios» y «Guardar cambios».", "Marco y pantallas", "03/10/2026"),
     ("Una ficha lleva pestañas aunque alguna tenga un solo dato.", "Marco y pantallas", "03/10/2026"),
     ("El detalle de solo lectura en un diálogo va en una grilla con líneas: rótulo a la izquierda sobre arena clara, valor a la derecha.", "Diálogos", "03/10/2026"),
@@ -159,6 +160,9 @@ DECISIONES = {
         ("Cuentas", "", "Cuenta (nombre y correo), Perfiles, Último ingreso (cómo entró debajo) y Estado; sin Teléfono.", "Dibujada"),
         ("Ficha de una cuenta", "", "Los métodos como en Mi cuenta: filas sin encabezado, el tipo y quién lo administra debajo, y el estado solo si pide atención.", "Dibujada"),
         ("Recuperaciones · Auditoría · Legales · Configuración", "", "Cuenta con la fecha debajo; auditoría sin ojo ni cantidad y detalle en grilla; legales como lista («Versión N · vigente desde…»); «Registro y altas» con su encabezado.", "Dibujada"),
+    ],
+    "Sitio público": [
+        ("Portada", "B", "Sin la etiqueta del héroe; después de «Dos lados separados», la sección «Empresas en ArquitecturaBase» con buscador, tres empresas y «Ver todas las empresas», que lleva al directorio. «Empresas», arriba, baja a esa sección.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Inicios", "", "Repensar qué es un inicio en la plantilla y dónde van las acciones pendientes.", "Para repensar"),

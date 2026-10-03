@@ -558,8 +558,17 @@
 <style data-regla="flechita-blanca">
 .ab-sidebar__toggle { background: #fff !important; border-color: var(--lado-borde) !important; color: var(--t2) !important; }
 </style>
+<style data-regla="lineas-menu-lateral">
+.ab-sidebar__list > li + li, .ab-sidebar__children > li + li { border-top: 1px solid var(--lado-borde); padding-top: 2px; }
+.w-nav > .w-ln, .w-hijos > .w-ln, .w-abajo > .w-ln { position: relative; }
+.w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
+  content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
+</style>
 
   <style data-criterio="menus">
+.lat nav > .ln, .lat .hijos > .ln { position: relative; }
+.lat nav > .ln + .ln::before, .lat nav > .hijos + .ln::before, .lat .hijos > .ln + .ln::before, .lat .abajo > .ln + .ln::before {
+  content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 .reglas2 { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; color: var(--t2); font-size: 14px; }
 .reglas2 strong { color: var(--t1); font-weight: 600; }
 .medidas .fil { box-sizing: border-box; }
@@ -710,7 +719,8 @@
           <li><strong>Un grupo con hijos</strong> se despliega en el lugar, como «Gestión de usuarios».</li>
           <li><strong>El activo va en blanco</strong> con letra petróleo.</li>
           <li><strong>Contraído</strong> muestra solo los íconos; el nombre aparece al pasar el mouse.</li>
-          <li><strong>En el teléfono,</strong> ☰ lo abre encima y los módulos y «Administración» se despliegan adentro.</li>
+          <li><strong>Una línea fina entre cada opción,</strong> como la que separa «Administración», en el menú y en el panel.</li>
+          <li><strong>En el teléfono no hay menú lateral:</strong> va la barra de abajo con «Más» (Marco y pantallas).</li>
         </ul>
       </div>
       <div class="sb chico" style="position: relative;">
