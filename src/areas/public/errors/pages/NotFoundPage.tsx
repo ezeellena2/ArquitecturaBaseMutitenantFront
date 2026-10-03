@@ -7,7 +7,6 @@ export function NotFoundPage({ homePath }: { homePath?: string }) {
   return <ErrorPageFrame
     icon={<Search size={20} strokeWidth={1.75} />}
     title={t("errorPage.notFound.title")}
-    description={t("errorPage.notFound.description")}
     homePath={homePath}
   />;
 }

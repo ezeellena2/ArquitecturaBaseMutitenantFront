@@ -11,7 +11,7 @@ describe("NotFoundPage", () => {
   it("reproduce el 404 de Error-Org", async () => {
     const { container } = render(<MemoryRouter><NotFoundPage /></MemoryRouter>);
     expect(screen.getByRole("heading", { name: "No encontramos esta página" })).toBeVisible();
-    expect(screen.getByText("Puede que la hayan borrado o que la dirección esté mal.")).toBeVisible();
+    expect(screen.queryByText("Puede que la hayan borrado o que la dirección esté mal.")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/org");
     expect(await axe(container)).toHaveNoViolations();
   });

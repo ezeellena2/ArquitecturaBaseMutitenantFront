@@ -1,7 +1,17 @@
 import { QueryCache, QueryClient } from "@tanstack/react-query";
 import i18n from "@/shared/i18n";
 import { toastError } from "@/shared/ui/sonner";
+import { toast } from "sonner";
 import { ApiError } from "./ApiError";
+
+async function copyTraceId(traceId: string): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(traceId);
+    toast.success(i18n.t("codeCopied", { ns: "errors" }));
+  } catch {
+    toastError(i18n.t("codeCopyFailed", { ns: "errors" }));
+  }
+}
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
@@ -19,9 +29,12 @@ export const queryClient = new QueryClient({
       }
 
       if (error.status >= 500) {
-        toastError(i18n.t("server", { ns: "errors" }), error.traceId
-          ? { description: i18n.t("traceId", { ns: "errors", traceId: error.traceId }) }
-          : undefined);
+        toastError(i18n.t("server", { ns: "errors" }), error.traceId ? {
+          action: {
+            label: i18n.t("copyCode", { ns: "errors" }),
+            onClick: () => copyTraceId(error.traceId!),
+          },
+        } : undefined);
         return;
       }
 

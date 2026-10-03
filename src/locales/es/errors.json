@@ -6,6 +6,9 @@
   "network": "No pudimos conectarnos. Revisá tu conexión.",
   "server": "Algo salió mal. Probá de nuevo en un rato.",
   "traceId": "Código para reportar: {{traceId}}",
+  "copyCode": "Copiar código",
+  "codeCopied": "Código copiado",
+  "codeCopyFailed": "No se pudo copiar el código.",
   "errorPage": {
     "home": "Ir al inicio",
     "forbidden": {

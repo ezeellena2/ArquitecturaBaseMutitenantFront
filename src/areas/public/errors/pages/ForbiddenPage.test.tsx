@@ -11,7 +11,7 @@ describe("ForbiddenPage", () => {
   it("reproduce el 403 de Error-Org y vuelve al inicio de la organización", async () => {
     const { container } = render(<MemoryRouter><ForbiddenPage organizationName="Grupo Delta" /></MemoryRouter>);
     expect(screen.getByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
-    expect(screen.getByText("Si lo necesitás, pedíselo a quien administra los usuarios de Grupo Delta.")).toBeVisible();
+    expect(screen.queryByText(/pedíselo a quien administra/i)).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/org");
     expect(await axe(container)).toHaveNoViolations();
   });

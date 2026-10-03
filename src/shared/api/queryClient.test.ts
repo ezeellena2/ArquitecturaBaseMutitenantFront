@@ -14,6 +14,7 @@ beforeAll(async () => {
 afterEach(() => {
   queryClient.clear();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 async function failQuery(key: string, error: ApiError, meta?: { silent: boolean }): Promise<ApiError> {
@@ -62,17 +63,25 @@ describe("queryClient", () => {
     );
   });
 
-  it("muestra el texto genérico de 5xx y el traceId, sin exponer detail", async () => {
+  it("muestra el aviso 5xx y permite copiar el traceId sin exponerlo en pantalla", async () => {
     const toastError = vi.spyOn(toast, "error");
+    const toastSuccess = vi.spyOn(toast, "success");
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal("navigator", { clipboard: { writeText } });
     await failQuery("server", new ApiError(500, {
       code: "General.Unexpected", detail: "Detalle interno", traceId: "trace-abc-123",
     }));
 
     expect(toastError).toHaveBeenCalledWith(i18n.t("server", { ns: "errors" }), expect.objectContaining({
-      description: i18n.t("traceId", { ns: "errors", traceId: "trace-abc-123" }),
+      action: expect.objectContaining({ label: i18n.t("copyCode", { ns: "errors" }) }),
       duration: Number.POSITIVE_INFINITY,
       closeButton: true,
     }));
+    const options = toastError.mock.calls.find(([message]) => message === i18n.t("server", { ns: "errors" }))?.[1] as unknown as { action: { onClick: () => void | Promise<void> }; description?: string };
+    expect(options.description).toBeUndefined();
+    await options.action.onClick();
+    expect(writeText).toHaveBeenCalledWith("trace-abc-123");
+    expect(toastSuccess).toHaveBeenCalledWith(i18n.t("codeCopied", { ns: "errors" }));
   });
 
   it("muestra un 429 sin reintento automático y conserva retryAfterSeconds", async () => {
