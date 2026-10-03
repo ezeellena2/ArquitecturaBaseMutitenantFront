@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ShieldCheck } from "lucide-react";
+import { ChevronRight, ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router";
@@ -88,6 +88,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
     meta: { silent: true },
   });
   const [draftState, setDraftState] = useState<RoleDraft | null>(() => mode === "create" ? initialCreateDraft : null);
+  const [expandedAreas, setExpandedAreas] = useState<Set<string> | null>(null);
   const draft = draftState ?? (role.data ? draftFromRole(role.data) : emptyDraft);
   const original = role.data ? draftFromRole(role.data) : emptyDraft;
   const companies = useQuery({
@@ -165,6 +166,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   if (mode === "edit" && role.isError) return <Page icon={ShieldCheck} title={t("roles:editorTitle")} backTo={{ to: "/org/roles", label: t("roles:backToList") }}><div className="p-4"><FormError message={role.error instanceof ApiError ? role.error.detail ?? t("common:states.error") : t("common:states.error")} /><Button type="button" onClick={() => { void role.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
 
   function changeDraft(patch: Partial<RoleDraft>) {
+    if (patch.scope !== undefined && patch.scope !== draft.scope) setExpandedAreas(null);
     setDraftState((current) => ({ ...(current ?? (role.data ? draftFromRole(role.data) : emptyDraft)), ...patch }));
     setValidation({});
     setFailure(undefined);
@@ -182,6 +184,16 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
       else next.delete(code);
     }
     changeDraft({ permissions: [...next] });
+  }
+
+  function toggleArea(area: string) {
+    setExpandedAreas((current) => {
+      const initiallyExpanded = visibleGroups.filter((group) => group.permissions.some((permission) => draft.permissions.includes(permission.code))).map((group) => group.area);
+      const next = new Set(current ?? initiallyExpanded);
+      if (next.has(area)) next.delete(area);
+      else next.add(area);
+      return next;
+    });
   }
 
   async function seeLatest() {
@@ -257,15 +269,21 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
                 {visibleGroups.map((group) => {
                   const codes = group.permissions.map((item) => item.code);
                   const selected = codes.filter((code) => draft.permissions.includes(code)).length;
+                  const expanded = expandedAreas?.has(group.area) ?? selected > 0;
                   return <fieldset key={group.area} className="p-3 lg:p-4">
                     <legend className="sr-only">{group.name}</legend>
-                    <CheckboxField label={group.name} checked={codes.length > 0 && selected === codes.length}
-                      onCheckedChange={(checked) => toggleGroup(codes, checked)} disabled={!editable}
-                      description={t("roles:groupCount", { selected, total: codes.length })} />
-                    <div className="mt-1 grid gap-1 lg:ml-6">
-                      {group.permissions.map((permission) => <CheckboxField key={permission.code} label={permission.name} description={permission.description}
-                        checked={draft.permissions.includes(permission.code)} onCheckedChange={(checked) => togglePermission(permission.code, checked)} disabled={!editable} />)}
+                    <div className="flex items-center gap-2">
+                      <button type="button" aria-expanded={expanded} aria-label={t("roles:toggleArea", { name: group.name })} onClick={() => toggleArea(group.area)} className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
+                        <ChevronRight aria-hidden="true" className={`size-4 transition-transform ${expanded ? "rotate-90" : ""}`} />
+                      </button>
+                      <CheckboxField label={group.name} checked={codes.length > 0 && selected === codes.length}
+                        onCheckedChange={(checked) => toggleGroup(codes, checked)} disabled={!editable}
+                        description={t("roles:groupCount", { selected, total: codes.length })} />
                     </div>
+                    {expanded ? <div className="mt-1 grid gap-1 lg:ml-9">
+                      {group.permissions.map((permission) => <CheckboxField key={permission.code} label={permission.name}
+                        checked={draft.permissions.includes(permission.code)} onCheckedChange={(checked) => togglePermission(permission.code, checked)} disabled={!editable} />)}
+                    </div> : null}
                   </fieldset>;
                 })}
               </div>}

@@ -24,6 +24,7 @@ import type { RoleResponse } from "@/shared/api/types";
 import {
   deleteRole,
   fetchRoles,
+  fetchCompanyOptions,
   rolesQueryKey,
   rolesQueryKeyRoot,
   type RolesQuery,
@@ -59,6 +60,13 @@ export function RolesPage() {
     placeholderData: keepPreviousData,
     meta: { silent: true },
   });
+  const specificCompanyRoles = roles.data?.items.some((role) => role.scope === "SpecificCompany") === true;
+  const companies = useQuery({
+    queryKey: ["role-company-options"],
+    queryFn: fetchCompanyOptions,
+    enabled: canRead && specificCompanyRoles && currentUser?.permissions?.includes("companies.read") === true,
+    meta: { silent: true },
+  });
   const scopeCounts = useQueries({ queries: roleCountScopes.map((countScope) => ({
     queryKey: [...rolesQueryKeyRoot, "scope-count", countScope ?? "all", debouncedSearch ?? ""],
     queryFn: () => fetchRoles({ page: 1, pageSize: 10, search: debouncedSearch || undefined, scope: countScope }),
@@ -78,8 +86,9 @@ export function RolesPage() {
 
   if (!canRead) return <ForbiddenPage homePath="/org" />;
 
+  const companyNames = new Map((companies.data?.items ?? []).map((company) => [company.id, company.name]));
   const columns: Column<RoleResponse>[] = [
-    ...createRoleColumns(t),
+    ...createRoleColumns(t, companyNames),
     {
       id: "actions",
       header: t("roles:columns.actions"),

@@ -5,6 +5,7 @@
   "editorTitle": "Rol",
   "dataTitle": "Datos del rol",
   "permissionsTitle": "Permisos",
+  "toggleArea": "Abrir o cerrar {{name}}",
   "backToList": "Volver a Roles y permisos",
   "cancel": "Cancelar",
   "save": "Guardar cambios",

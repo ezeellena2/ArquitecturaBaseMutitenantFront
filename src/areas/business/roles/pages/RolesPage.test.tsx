@@ -61,6 +61,10 @@ describe("RolesPage", () => {
     expect(await screen.findByRole("link", { name: "Dueño" })).toHaveAttribute("href", "/org/roles/role-owner");
     expect(screen.getByRole("link", { name: "Crear rol" })).toHaveAttribute("href", "/org/roles/new");
     expect(screen.getByRole("columnheader", { name: "Rol" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Vale en" })).toBeVisible();
+    expect(screen.queryByRole("columnheader", { name: "Descripción" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "Tipo" })).not.toBeInTheDocument();
+    expect(screen.getAllByText("De sistema")).toHaveLength(2);
 
     await user.type(screen.getByRole("searchbox", { name: "Buscar por nombre o descripción" }), "Solo lectura");
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("search")).toBe("Solo lectura"), { timeout: 3_000 });

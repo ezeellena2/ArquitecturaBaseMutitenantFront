@@ -34,7 +34,8 @@ describe("CompaniesPage", () => {
 
     expect(await screen.findByRole("heading", { level: 1, name: "Empresas" })).toBeVisible();
     expect(await screen.findByRole("link", { name: "Delta S.A." })).toHaveAttribute("href", "/org/empresas/company-1");
-    expect(screen.getByRole("columnheader", { name: "CUIT" })).toBeVisible();
+    expect(screen.queryByRole("columnheader", { name: "CUIT" })).not.toBeInTheDocument();
+    expect(screen.getByText(/30-71234567-8/)).toBeVisible();
     expect(screen.getByText(/1 empresa/)).toBeVisible();
 
     await user.click(screen.getByRole("button", { name: "Todos los estados" }));
@@ -44,7 +45,7 @@ describe("CompaniesPage", () => {
   }, 10_000);
 
   it("muestra 50 empresas cuando la URL pide una página de 50", async () => {
-    const companies = Array.from({ length: 50 }, (_item, index) => ({ ...company, id: `company-${index + 1}`, name: `Empresa ${index + 1}` }));
+    const companies = Array.from({ length: 50 }, (_item, index) => ({ ...company, id: `company-${index + 1}`, name: `Empresa ${index + 1}`, taxId: index === 49 ? null : company.taxId }));
     server.use(
       http.get("/api/companies/paged", ({ request }) => {
         const url = new URL(request.url);
@@ -58,6 +59,7 @@ describe("CompaniesPage", () => {
     expect(await screen.findByRole("link", { name: "Empresa 50" })).toHaveAttribute("href", "/org/empresas/company-50");
     expect(screen.getAllByRole("row")).toHaveLength(51);
     expect(screen.getByText(/50 empresas/)).toBeVisible();
+    expect(screen.getByText("Sin CUIT")).toBeVisible();
     expect(container.querySelector("table")).toBeVisible();
   }, 10_000);
 
@@ -78,7 +80,7 @@ describe("CompaniesPage", () => {
     renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Crear empresa" }));
     await user.type(screen.getByRole("textbox", { name: "Nombre" }), "Empresa Nueva S.A.");
-    await user.click(await screen.findByRole("combobox", { name: "Zona de negocio" }));
+    await user.click(await screen.findByRole("combobox", { name: "Zona horaria" }));
     await user.click(await screen.findByRole("option", { name: "Buenos Aires (GMT−3)" }));
     await user.click(screen.getAllByRole("button", { name: "Crear empresa" }).at(-1)!);
 

@@ -7,10 +7,11 @@
   "create": "Crear empresa",
   "createTitle": "Crear empresa",
   "editTitle": "Editar empresa",
+  "withoutTaxId": "Sin CUIT",
   "columns": {
     "name": "Empresa",
     "taxId": "CUIT",
-    "timeZone": "Zona de negocio",
+    "timeZone": "Zona horaria",
     "members": "Miembros",
     "status": "Estado",
     "actions": "Acciones"
@@ -33,7 +34,7 @@
     "name": "Nombre",
     "taxId": "Identificación fiscal",
     "taxIdType": "Tipo de identificación fiscal",
-    "timeZone": "Zona de negocio",
+    "timeZone": "Zona horaria",
     "chooseTimeZone": "Elegí una zona horaria",
     "create": "Crear empresa",
     "save": "Guardar cambios"

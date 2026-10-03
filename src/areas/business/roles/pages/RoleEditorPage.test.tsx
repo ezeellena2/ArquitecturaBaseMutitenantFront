@@ -60,6 +60,7 @@ describe("RoleEditorPage", () => {
     await user.type(screen.getByRole("textbox", { name: "Descripción" }), "Consulta los roles.");
     await user.click(screen.getByRole("combobox", { name: "Vale en" }));
     await user.click(await screen.findByRole("option", { name: "Toda la organización" }));
+    await user.click(await screen.findByRole("button", { name: "Abrir o cerrar Roles" }));
     await user.click(await screen.findByRole("checkbox", { name: "Ver roles" }));
     await user.click(screen.getAllByRole("button", { name: "Crear rol" })[0]);
 
@@ -85,6 +86,7 @@ describe("RoleEditorPage", () => {
     await user.type(await screen.findByRole("textbox", { name: "Nombre" }), "Administración Delta");
     expect(screen.getByRole("combobox", { name: "Vale en" })).toHaveTextContent("Una empresa específica");
     expect(await screen.findByText("Delta S.A.")).toBeVisible();
+    await user.click(await screen.findByRole("button", { name: "Abrir o cerrar Miembros de empresa" }));
     await user.click(await screen.findByRole("checkbox", { name: "Ver miembros" }));
     await user.click(screen.getAllByRole("button", { name: "Crear rol" })[0]);
 
@@ -125,6 +127,7 @@ describe("RoleEditorPage", () => {
   }, 10_000);
 
   it("muestra los roles de sistema en solo lectura", async () => {
+    const user = userEvent.setup();
     server.use(
       http.get("/api/roles/role-owner", () => HttpResponse.json({ ...role, id: "role-owner", name: "TenantAdmin", isSystemRole: true, permissions: ["roles.read", "roles.manage", "company.members.read", "company.members.manage"] })),
       http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
@@ -136,7 +139,10 @@ describe("RoleEditorPage", () => {
     expect(screen.queryByRole("textbox", { name: "Nombre" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Guardar cambios" })).not.toBeInTheDocument();
     expect(screen.getByText("Ver roles")).toBeVisible();
+    expect(screen.queryByText("Los roles y sus permisos.")).not.toBeInTheDocument();
     expect(screen.getByText("2 de 2 elegidos")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Abrir o cerrar Roles" }));
+    expect(screen.queryByText("Ver roles")).not.toBeInTheDocument();
     expect(screen.queryByText("Ver miembros")).not.toBeInTheDocument();
   });
 

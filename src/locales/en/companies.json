@@ -7,10 +7,11 @@
   "create": "Create company",
   "createTitle": "Create company",
   "editTitle": "Edit company",
+  "withoutTaxId": "No tax ID",
   "columns": {
     "name": "Company",
     "taxId": "Tax ID",
-    "timeZone": "Business time zone",
+    "timeZone": "Time zone",
     "members": "Members",
     "status": "Status",
     "actions": "Actions"
@@ -33,7 +34,7 @@
     "name": "Name",
     "taxId": "Tax identification",
     "taxIdType": "Tax identification type",
-    "timeZone": "Business time zone",
+    "timeZone": "Time zone",
     "chooseTimeZone": "Choose a time zone",
     "create": "Create company",
     "save": "Save changes"
