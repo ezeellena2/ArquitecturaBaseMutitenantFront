@@ -21,13 +21,15 @@ El título de cada tablero dice en qué estado está:
 | Perfil personal | 7 | Validado |
 | Organización | 26 | Escritorio y móviles aprobados el 2026-10-03, salvo los dos inicios, que quedan para repensar. |
 | Organización · WhatsApp | 31 | Escritorio aprobado el 2026-10-03, pantalla por pantalla (Etapa 11 ampliada). Los 7 teléfonos siguen «por refinar» y el alta de Meta no se dibuja hasta que el usuario lo pida. |
-| Plataforma | 12 | Por refinar |
+| Plataforma | 12 | Menú de escritorio aprobado el 2026-10-03: Gestión y Administración abren un segundo panel. La adaptación del menú móvil y el resto del refinamiento siguen pendientes. |
 | Textos y mensajes | 2 | Validado |
 | Archivo | 14 | Descartado. Son versiones anteriores; están como referencia y no se programan. |
 
 La aplicación se migra al criterio visual por etapas: Mi cuenta y las piezas compartidas se abordaron en la Etapa 4; las pantallas de Organización aprobadas se implementan en la Etapa 6. Los dos inicios de Organización siguen pendientes de diseño.
 
 Ajuste solicitado el 2026-10-03: el detalle de Auditoría de Plataforma usa el encabezado arena de `Criterio-Dialogos`, con la fecha en el cuerpo, datos de lectura y cierre compacto. En teléfono aparece desde abajo y ocupa todo el ancho. Este ajuste no aprueba el resto de Plataforma ni las propuestas de WhatsApp.
+
+Navegación de Plataforma elegida el 2026-10-03: **Gestión**, arriba, agrupa Organizaciones, Cuentas y Recuperaciones; **Administración**, al pie, agrupa Auditoría, Documentos legales y Configuración. En escritorio se abre un único segundo panel al lado del menú principal, con la sección actual marcada. La aprobación alcanza esta distribución y el ajuste del modal de Auditoría; no autoriza las propuestas de WhatsApp. Los dueños usan el panel de Organización y no este menú global.
 
 ## Verlo sin claude.ai
 
@@ -78,6 +80,7 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 |---|---|
 | `criterio_*.py` | Los 8 tableros de «Criterio de diseño». Cada decisión nueva suma una fila en `criterio_decisiones.py` y, si deja una regla, se escribe también en el tablero de esa pieza |
 | `auditoria_plat_dialogo.py` | Alinea el detalle de Auditoría de Plataforma, escritorio y teléfono, con `Criterio-Dialogos`, conservando los datos y la lógica. |
+| `menu_plataforma.py` | Aplica a los ocho tableros de escritorio de Plataforma la agrupación aprobada Gestión / Administración. Conserva el contenido y los estados. Corre después de reconstruir estos tableros; es idempotente. |
 | `perfil_tableros.py` | Perfil personal: Inicio, Mi cuenta y sus diálogos, con las versiones de teléfono |
 | `whatsapp_tableros.py` | Los 15 de WhatsApp. Las piezas comunes (`w-*`, íconos, banda) salen de acá. |
 | `org_formularios.py` | Configuración, Página pública y sus diálogos |
