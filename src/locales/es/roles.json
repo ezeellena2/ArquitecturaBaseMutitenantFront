@@ -85,5 +85,6 @@
   "errors": {
     "hasUsers_one": "No se puede inactivar: {{count}} usuario tiene el rol {{name}}. Quitáselo primero.",
     "hasUsers_other": "No se puede inactivar: {{count}} usuarios tienen el rol {{name}}. Quitáselo primero."
-  }
+  },
+  "emptyFiltered": "Ningún rol coincide con los filtros"
 }

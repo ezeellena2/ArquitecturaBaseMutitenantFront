@@ -140,6 +140,18 @@ describe("RolesPage", () => {
     expect(confirm).toHaveTextContent("Deja de aparecer para asignar. Nadie lo tiene, así que no le cambia nada a ningún usuario.");
   });
 
+  it("con filtros y sin resultados: «Ningún rol coincide con los filtros» y «Limpiar filtros»", async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json(companies)),
+      http.get("/api/roles/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+    );
+    const { router } = renderRouteWithProviders("/org/roles?search=zzz", { as: "business-e6-admin" });
+    expect(await screen.findByText("Ningún rol coincide con los filtros")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Limpiar filtros" }));
+    await waitFor(() => expect(router.state.location.search).not.toContain("search="));
+  });
+
   it("no consulta roles ni muestra la administración sin roles.read", async () => {
     let roleRequests = 0;
     server.use(http.get("/api/roles/paged", () => { roleRequests++; return HttpResponse.json({ items: [] }); }));

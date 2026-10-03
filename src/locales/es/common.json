@@ -14,7 +14,8 @@
     "search": "Buscar",
     "clear": "Limpiar",
     "retry": "Reintentar",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "clearFilters": "Limpiar filtros"
   },
   "states": {
     "loading": "Cargando…",

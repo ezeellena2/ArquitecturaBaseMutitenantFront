@@ -9,6 +9,7 @@ import { usePagination } from "@/shared/hooks/usePagination";
 import { ApiError } from "@/shared/api/ApiError";
 import type { Column } from "@/shared/ui/DataTable";
 import { DataTable } from "@/shared/ui/DataTable";
+import { Button } from "@/shared/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { LoadMore } from "@/shared/ui/LoadMore";
@@ -67,6 +68,8 @@ export function AuditPage() {
     { id: "actor", header: t("audit:columns.who"), type: "text", value: (row) => row.actorDisplayName ?? row.actorText },
   ];
   const periodValue = period;
+  // Como el tablero: cualquier filtro distinto de «Últimos 30 días» sin búsqueda ni tema ni persona cuenta.
+  const filtered = Boolean(category || actorId || pagination.search || filters.values.period && period !== "30");
   return <>
     <Page icon={ScrollText} title={t("audit:title")}>
       <div className="flex flex-col gap-3">
@@ -113,7 +116,8 @@ export function AuditPage() {
             isFetching={audit.isFetching}
             error={audit.error ? audit.error instanceof ApiError ? audit.error.detail ?? t("common:states.error") : t("common:states.error") : undefined}
             onRetry={() => { void audit.refetch(); }}
-            emptyTitle={t("audit:empty")}
+            emptyTitle={filtered ? t("audit:emptyFiltered") : t("audit:empty")}
+            emptyAction={filtered ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined}
           />
           <LoadMore hasMore={audit.hasNextPage} isLoading={audit.isFetchingNextPage} onLoadMore={() => { void audit.fetchNextPage(); }} />
         </Surface>

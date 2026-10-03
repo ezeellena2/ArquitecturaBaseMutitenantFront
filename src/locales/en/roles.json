@@ -85,5 +85,6 @@
   "errors": {
     "hasUsers_one": "Cannot deactivate: {{count}} user has the role {{name}}. Remove it first.",
     "hasUsers_other": "Cannot deactivate: {{count}} users have the role {{name}}. Remove it from them first."
-  }
+  },
+  "emptyFiltered": "No role matches the filters"
 }

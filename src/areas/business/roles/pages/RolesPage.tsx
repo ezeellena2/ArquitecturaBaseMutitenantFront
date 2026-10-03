@@ -163,7 +163,8 @@ export function RolesPage() {
             isFetching={roles.isFetching}
             error={roles.error ? roles.error instanceof ApiError ? roles.error.detail ?? t("common:states.error") : t("common:states.error") : undefined}
             onRetry={() => { void roles.refetch(); }}
-            emptyTitle={t("roles:empty")}
+            emptyTitle={vale || pagination.search ? t("roles:emptyFiltered") : t("roles:empty")}
+            emptyAction={vale || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined}
             sort={pagination.sort}
             onSortChange={pagination.toggleSort}
           />

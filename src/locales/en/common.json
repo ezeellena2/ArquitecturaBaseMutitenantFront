@@ -14,7 +14,8 @@
     "search": "Search",
     "clear": "Clear",
     "retry": "Retry",
-    "close": "Close"
+    "close": "Close",
+    "clearFilters": "Clear filters"
   },
   "states": {
     "loading": "Loading…",

@@ -38,5 +38,6 @@
     "companies": "Empresas",
     "settings": "Configuración",
     "organization": "Organización"
-  }
+  },
+  "emptyFiltered": "Nada coincide con los filtros"
 }

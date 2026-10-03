@@ -14,6 +14,19 @@ beforeEach(async () => {
 });
 
 describe("AuditPage", () => {
+  it("con filtros y sin resultados: «Nada coincide con los filtros» y «Limpiar filtros»", async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.get("/api/organization/audit", () => HttpResponse.json({ items: [], nextCursor: null, hasMore: false })),
+      http.get("/api/organization/audit/actors", () => HttpResponse.json([])),
+    );
+    const { router } = renderRouteWithProviders("/org/auditoria?category=roles", { as: "business-e6-admin" });
+    expect(await screen.findByText("Nada coincide con los filtros")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Limpiar filtros" }));
+    await waitFor(() => expect(router.state.location.search).not.toContain("category="));
+  });
+
+
   it("consulta el cursor, muestra el movimiento y abre sus cambios", async () => {
     const requestUrls: URL[] = [];
     server.use(

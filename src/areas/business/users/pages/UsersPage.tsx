@@ -209,8 +209,8 @@ export function UsersPage() {
             isFetching={users.isFetching}
             error={users.error ? failureMessage(users.error, t("common:states.error")) : undefined}
             onRetry={() => { void users.refetch(); void counts.refetch(); }}
-            emptyTitle={state || companyId || pagination.search ? t("users:empty.filtered") : t("users:empty.all")}
-            emptyAction={state || companyId || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("users:empty.clear")}</Button> : undefined}
+            emptyTitle={state || companyFilter || pagination.search ? t("users:empty.filtered") : t("users:empty.all")}
+            emptyAction={state || companyFilter || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("users:empty.clear")}</Button> : undefined}
             sort={pagination.sort}
             onSortChange={pagination.toggleSort}
           />
