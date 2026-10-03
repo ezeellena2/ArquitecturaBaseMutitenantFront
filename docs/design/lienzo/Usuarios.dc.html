@@ -535,6 +535,13 @@ textarea.in2 { height: auto; min-height: 84px; }
 .hoja h2:not(:first-child) { border-top: 1px solid oklch(0.89 0.02 76); margin-top: 6px !important; }
 .hoja .linea { display: none !important; }
   </style>
+<style data-vuelta="1002-Usuarios">
+.tt-f .dos { display: flex; flex-direction: column; gap: 1px; line-height: 1.35; min-width: 0; }
+.tt-f .dos > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-f .dos .n2 { font-size: 12px; color: var(--t3); }
+.tt-f .dos .c1 { font-weight: 500; }
+.tt-f.o-alto { min-height: 52px !important; }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{admClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -642,20 +649,9 @@ textarea.in2 { height: auto; min-height: 84px; }
           <sc-if value="{{hayFiltros}}" hint-placeholder-val="{{no}}"><button type="button" class="fb-limpiar" onClick="{{limpiar}}">Limpiar</button></sc-if>
         </div>
         <div class="tarjeta">
-          <div class="tt-h {{claseEncabezado}}" style="grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.7fr) minmax(0, 1.2fr) minmax(0, 1.2fr) minmax(0, 1fr) 150px 92px 28px;"><span>Nombre</span><span>Correo</span><span>Roles de la organización</span><span>Empresa</span><span>Roles en la empresa</span><span>Estado</span><span>Vence</span><span class="sr">Acciones</span></div>
+          <div class="tt-h {{claseEncabezado}}" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1.3fr) 190px 28px;"><span>Usuario</span><span>Rol en la organización</span><span>Empresa</span><span>Estado</span><span class="sr">Acciones</span></div>
           <sc-for list="{{filas}}" as="u" hint-placeholder-count="8">
-            <div class="tt-f {{u.clase}}" style="grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.7fr) minmax(0, 1.2fr) minmax(0, 1.2fr) minmax(0, 1fr) 150px 92px 28px;">
-              <span><sc-if value="{{u.conNombre}}" hint-placeholder-val="{{si}}"><a class="c1" href="Usuario.dc.html">{{u.nombre}}</a></sc-if><sc-if value="{{u.sinNombre}}" hint-placeholder-val="{{no}}"><span class="c1 n" style="color: var(--t3);">—</span></sc-if></span>
-              <span class="c1 n">{{u.email}}</span>
-              <span class="roles">
-                <sc-for list="{{u.rolesOrg}}" as="r" hint-placeholder-count="1"><span class="rol">{{r}}</span></sc-for>
-                <sc-if value="{{u.sinRolesOrg}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if>
-              </span>
-              <span class="c1 n">{{u.empresa}}</span>
-              <span class="c1 n">{{u.rolesEmpresa}}</span>
-              <span><span class="pill {{u.pill}}">{{u.estado}}</span></span>
-              <span class="c1 n {{u.claseVence}}">{{u.vence}}</span>
-              <span class="der envoltura">
+            <div class="tt-f {{u.clase}} o-alto" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1.3fr) 190px 28px;"><span class="dos"><sc-if value="{{u.conNombre}}" hint-placeholder-val="{{si}}"><a class="c1" href="Usuario.dc.html">{{u.nombre}}</a></sc-if><sc-if value="{{u.sinNombre}}" hint-placeholder-val="{{no}}"><a class="c1" href="Usuario.dc.html">{{u.email}}</a></sc-if><sc-if value="{{u.conNombre}}" hint-placeholder-val="{{si}}"><span class="n2">{{u.email}}</span></sc-if></span><span class="roles"><sc-for list="{{u.rolesOrg}}" as="r" hint-placeholder-count="1"><span class="rol">{{r}}</span></sc-for><sc-if value="{{u.sinRolesOrg}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if></span><span class="dos"><sc-if value="{{u.conEmpresa}}" hint-placeholder-val="{{si}}"><span>{{u.empresa}}</span><span class="n2">{{u.rolesEmpresa}}</span></sc-if><sc-if value="{{u.sinEmpresa}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if></span><span class="dos"><span><span class="pill {{u.pill}}">{{u.estado}}</span></span><sc-if value="{{u.esInvitacion}}" hint-placeholder-val="{{no}}"><span class="n2">Vence {{u.vence}}</span></sc-if></span><span class="der envoltura">
                 <button type="button" class="kebab" aria-haspopup="menu" aria-expanded="{{u.exp}}" aria-label="{{u.ariaMenu}}" onClick="{{u.alternar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
                 <sc-if value="{{u.menu}}" hint-placeholder-val="{{no}}">
                   <div class="menu der {{u.claseMenu}}" role="menu">
@@ -1099,6 +1095,8 @@ class Component extends DCLogic {
           rolesOrg: u.rolesOrg,
           sinRolesOrg: u.rolesOrg.length === 0,
           empresa: primera ? nombreEmpresa(primera.c) + (u.empresas.length > 1 ? ' y ' + (u.empresas.length - 1) + ' más' : '') : '—',
+          conEmpresa: !!primera,
+          sinEmpresa: !primera,
           rolesEmpresa: primera ? [...new Set(u.empresas.flatMap((e) => e.roles))].join(', ') || 'Sin roles' : '—',
           estado: est.n,
           pill: est.pill,

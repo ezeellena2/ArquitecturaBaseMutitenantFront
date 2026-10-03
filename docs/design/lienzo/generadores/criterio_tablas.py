@@ -4,7 +4,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 2650
+ALTO = 2670
 ARCHIVO = "Criterio-Tablas.dc.html"
 TITULO = "Criterio · Tablas y listas"
 
@@ -139,7 +139,7 @@ BODY = f"""<div class="crit">
         <li><strong>Un tema por columna.</strong> Debajo, en gris, lo que lo aclara: el correo, el rol en la empresa, cuándo vence. Sin dato, una sola raya.</li>
         <li><strong>El estado es un punto de color y la palabra</strong>, sin fondo. Números y montos, a la derecha.</li>
         <li><strong>Las acciones van en ⋮:</strong> las comunes arriba; las de peligro abajo, en rojo y separadas.</li>
-        <li><strong>Más de 10 filas, paginado:</strong> al pie, adentro de la misma caja. De entrada, 10 por página.</li>
+        <li><strong>Más de 10 filas, paginado:</strong> al pie, adentro de la misma caja. De entrada, 10 por página. Lo que solo crece (auditoría, eventos) usa «Cargar más», sin total.</li>
         <li><strong>A ancho completo.</strong> Si no entra, se saca una columna; no se achica la letra.</li>
       </ul>
     </div>

@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 2650px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 2670px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -642,7 +642,7 @@
         <li><strong>Un tema por columna.</strong> Debajo, en gris, lo que lo aclara: el correo, el rol en la empresa, cuándo vence. Sin dato, una sola raya.</li>
         <li><strong>El estado es un punto de color y la palabra</strong>, sin fondo. Números y montos, a la derecha.</li>
         <li><strong>Las acciones van en ⋮:</strong> las comunes arriba; las de peligro abajo, en rojo y separadas.</li>
-        <li><strong>Más de 10 filas, paginado:</strong> al pie, adentro de la misma caja. De entrada, 10 por página.</li>
+        <li><strong>Más de 10 filas, paginado:</strong> al pie, adentro de la misma caja. De entrada, 10 por página. Lo que solo crece (auditoría, eventos) usa «Cargar más», sin total.</li>
         <li><strong>A ancho completo.</strong> Si no entra, se saca una columna; no se achica la letra.</li>
       </ul>
     </div>
@@ -729,7 +729,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2650}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2670}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

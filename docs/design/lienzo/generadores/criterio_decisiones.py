@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 1580
+ALTO = 1940
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -41,6 +41,7 @@ ESTADOS = {
     "Falta dibujar": "alerta",
     "En revisión": "pend",
     "Falta decidir": "off",
+    "Para repensar": "pend",
 }
 
 # Reglas generales que salieron de las decisiones: (regla, tablero donde quedó, fecha).
@@ -50,6 +51,7 @@ REGLAS = [
     ("Una celda puede llevar una segunda línea gris que aclara la primera.", "Tablas y listas", "02/10/2026"),
     ("Una lista se lee; cambiar una fila o sumar otra abre un diálogo chico.", "Tablas y listas", "02/10/2026"),
     ("Los permisos de un rol van en grupos que se abren y se cierran.", "Tablas y listas", "02/10/2026"),
+    ("Lo que solo crece, como la auditoría, se pide de a tandas con «Cargar más» y sin total.", "Tablas y listas", "02/10/2026"),
 ]
 
 # Decisiones por página: (pantalla, opción elegida, qué se eligió, estado en el lienzo).
@@ -58,19 +60,23 @@ DECISIONES = {
         ("Mi cuenta · única Dueña", "", "Un ⓘ junto a «Dar de baja mi cuenta» y el botón apagado; los dos abren el aviso importante.", "Dibujada"),
     ],
     "Organización · 13 pantallas": [
-        ("Usuarios", "A", "Usuario (nombre y correo), Rol en la organización, Empresa (con su rol debajo), Estado («Vence …» si es una invitación) y ⋮. Sin empresa, una sola raya.", "Falta dibujar"),
-        ("Editar usuario", "B", "«Acceso a la organización» en dos columnas a todo el ancho. «Empresas» es una lista para leer («Delta S.A.» / «Solo lectura») con ⋮; cambiar los roles o «+ Sumar empresa» abre un diálogo chico.", "Falta dibujar"),
-        ("Roles y permisos", "A", "Rol (con «De sistema» debajo), Vale en, Usuarios, Permisos y ⋮. Sin descripción ni tipo.", "Falta dibujar"),
-        ("Editar un rol", "A", "Una fila por permiso, solo con el nombre. Cada área se abre y se cierra; al entrar, abiertas las que tienen algo marcado.", "Falta dibujar"),
-        ("Empresas", "A", "Empresa (con el CUIT debajo, o «Sin CUIT»), Zona horaria, Miembros, Estado y ⋮.", "Falta dibujar"),
-        ("Ficha de empresa", "", "", "En revisión"),
-        ("Configuración", "", "Datos en dos columnas. Sin dominio: la caja dice «Sin dominio» y tiene «+ Agregar dominio». Pendiente: «Pendiente · Falta cargar un registro en el DNS del dominio», con «Verificar» y ⋮.", "Dibujada en parte"),
-        ("Página pública", "", "Dos columnas; el logo es la primera fila de «Página». Borrador: la caja «Publicación» con el interruptor «Visible en delta.plataforma.com». Despublicada: el estado solo arriba, en rojo; un ⓘ y el interruptor trabado.", "Dibujada en parte"),
-        ("Auditoría", "", "", "Falta decidir"),
-        ("Inicio de la organización", "", "", "Falta decidir"),
-        ("Inicio de un miembro", "", "", "Falta decidir"),
-        ("Sin permiso o no encontrada", "", "", "Falta decidir"),
-        ("Avisos del sistema", "", "", "Falta decidir"),
+        ("Usuarios", "A", "Usuario (nombre y correo), Rol en la organización, Empresa (con su rol debajo), Estado («Vence …» si es una invitación) y ⋮. Sin empresa, una sola raya.", "Dibujada"),
+        ("Editar usuario", "B", "«Acceso a la organización» en dos columnas a todo el ancho. «Empresas» es una lista para leer («Delta S.A.» / «Solo lectura») con ⋮; cambiar los roles o «+ Sumar empresa» abre un diálogo chico.", "Dibujada"),
+        ("Roles y permisos", "A", "Rol (con «De sistema» debajo), Vale en, Usuarios, Permisos y ⋮. Sin descripción ni tipo.", "Dibujada"),
+        ("Editar un rol", "A", "Una fila por permiso, solo con el nombre. Cada área se abre y se cierra; al entrar, abiertas las que tienen algo marcado.", "Dibujada"),
+        ("Empresas", "A", "Empresa (con el CUIT debajo, o «Sin CUIT»), Zona horaria, Miembros, Estado y ⋮.", "Dibujada"),
+        ("Ficha de empresa", "A", "Quedan las pestañas Miembros y Roles. Miembros: Miembro (nombre y correo), Roles en la empresa, Estado y ⋮. Sin roles, una raya.", "Dibujada"),
+        ("Configuración", "A", "Datos en dos columnas y la caja «Dominio de correo». Sin dominio: «Sin dominio» y «+ Agregar dominio». Pendiente: «Pendiente · Falta cargar un registro en el DNS del dominio», con «Verificar» y ⋮. «Quitar» aclara que los correos ya administrados siguen igual.", "Dibujada"),
+        ("Página pública", "A", "Dos columnas; el logo es la primera fila de «Página». Arriba solo el estado («● Publicada»); la dirección, en «Publicación» y en su campo. «Nombre de la página». Borrador: interruptor «Visible en delta.plataforma.com». Despublicada: el estado arriba, en rojo; un ⓘ y el interruptor trabado.", "Dibujada"),
+        ("Auditoría", "A", "Fecha y hora, Qué pasó (con el nombre: «Cambió los roles de Tomás Acosta»), Dónde y Quién. Tocar «Qué pasó» abre el detalle; sin el ojo. Arriba, sin cantidad. «Cargar más» al pie. El backend tiene que sumar el nombre y la empresa.", "Dibujada"),
+        ("Inicio de la organización", "", "Para repensar. Idea del usuario: las acciones pendientes van en un menú propio, no en el inicio.", "Para repensar"),
+        ("Inicio de un miembro", "", "Para repensar, junto con el inicio de la organización.", "Para repensar"),
+        ("Sin permiso o no encontrada", "A", "Solo el título («No tenés permiso para ver esta página» o «No encontramos esta página») y «Ir al inicio», sin la línea que explica.", "Dibujada"),
+        ("Avisos del sistema", "A", "Sin conexión: solo el cartel de arriba. Error del servidor: el código, detrás de «Copiar código». Módulo apagado: sin la línea que explica. De fondo, Configuración en dos columnas.", "Dibujada"),
+    ],
+    "Lo que sigue": [
+        ("Teléfonos", "", "Pasar lo decidido a M-Usuarios, M-Usuario, M-Roles, M-Rol, M-Empresas, M-Empresa y M-Auditoria-Org.", "Falta dibujar"),
+        ("Inicios", "", "Repensar qué es un inicio en la plantilla y dónde van las acciones pendientes.", "Para repensar"),
     ],
 }
 

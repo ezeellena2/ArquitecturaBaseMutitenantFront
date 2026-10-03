@@ -15,7 +15,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Auditoría · /org/auditoria · para aprobar",
+      "title": "Auditoría · /org/auditoria",
       "w": 1440,
       "x": 4560,
       "y": 1280
@@ -33,7 +33,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Avisos del sistema · para aprobar",
+      "title": "Avisos del sistema",
       "w": 1440,
       "x": 3040,
       "y": 2300
@@ -59,7 +59,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Configuración · /org/configuracion · para aprobar",
+      "title": "Configuración · /org/configuracion",
       "w": 1440,
       "x": 3040,
       "y": 1280
@@ -113,7 +113,7 @@
       "y": 260
     },
     "Criterio-Tablas.dc.html": {
-      "h": 2650,
+      "h": 2670,
       "page": "criterio",
       "title": "Criterio · Tablas y listas",
       "w": 1440,
@@ -187,7 +187,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Ficha de empresa · /org/empresas/:id · para aprobar",
+      "title": "Ficha de empresa · /org/empresas/:id",
       "w": 1440,
       "x": 1520,
       "y": 1280
@@ -196,7 +196,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Empresas · /org/empresas · para aprobar",
+      "title": "Empresas · /org/empresas",
       "w": 1440,
       "x": 0,
       "y": 1280
@@ -214,7 +214,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Sin permiso o no encontrada · para aprobar",
+      "title": "Sin permiso o no encontrada",
       "w": 1440,
       "x": 0,
       "y": 2300
@@ -560,7 +560,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Página pública · /org/pagina · para aprobar",
+      "title": "Página pública · /org/pagina",
       "w": 1440,
       "x": 1520,
       "y": 2300
@@ -639,7 +639,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Editar un rol · /org/roles/:id · para aprobar",
+      "title": "Editar un rol · /org/roles/:id",
       "w": 1440,
       "x": 6080,
       "y": 260
@@ -648,7 +648,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Roles y permisos · /org/roles · para aprobar",
+      "title": "Roles y permisos · /org/roles",
       "w": 1440,
       "x": 4560,
       "y": 260
@@ -666,7 +666,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Editar usuario · /org/usuarios/:id · para aprobar",
+      "title": "Editar usuario · /org/usuarios/:id",
       "w": 1440,
       "x": 3040,
       "y": 260
@@ -675,7 +675,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Usuarios · /org/usuarios · para aprobar",
+      "title": "Usuarios · /org/usuarios",
       "w": 1440,
       "x": 1520,
       "y": 260
@@ -865,7 +865,7 @@
       "y": 4284,
       "w": 1440,
       "h": 900,
-      "title": "Configuración · agregar dominio · para aprobar",
+      "title": "Configuración · agregar dominio",
       "page": "org",
       "is_interactive": true
     },
@@ -874,7 +874,7 @@
       "y": 4284,
       "w": 1440,
       "h": 900,
-      "title": "Configuración · verificar dominio · para aprobar",
+      "title": "Configuración · verificar dominio",
       "page": "org",
       "is_interactive": true
     },
@@ -883,7 +883,7 @@
       "y": 4284,
       "w": 1440,
       "h": 900,
-      "title": "Configuración · quitar dominio · para aprobar",
+      "title": "Configuración · quitar dominio",
       "page": "org",
       "is_interactive": true
     },
@@ -892,7 +892,7 @@
       "y": 4284,
       "w": 1440,
       "h": 900,
-      "title": "Página pública · despublicar · para aprobar",
+      "title": "Página pública · despublicar",
       "page": "org",
       "is_interactive": true
     },
@@ -969,7 +969,7 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 1580,
+      "h": 1940,
       "page": "criterio",
       "title": "Criterio · Decisiones por pantalla",
       "w": 1440,

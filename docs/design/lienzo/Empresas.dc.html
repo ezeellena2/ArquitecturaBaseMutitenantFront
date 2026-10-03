@@ -535,6 +535,13 @@ textarea.in2 { height: auto; min-height: 84px; }
 .hoja h2:not(:first-child) { border-top: 1px solid oklch(0.89 0.02 76); margin-top: 6px !important; }
 .hoja .linea { display: none !important; }
   </style>
+<style data-vuelta="1002-Empresas">
+.tt-f .dos { display: flex; flex-direction: column; gap: 1px; line-height: 1.35; min-width: 0; }
+.tt-f .dos > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-f .dos .n2 { font-size: 12px; color: var(--t3); }
+.tt-f .dos .c1 { font-weight: 500; }
+.tt-f.o-alto { min-height: 52px !important; }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{admClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -632,11 +639,10 @@ textarea.in2 { height: auto; min-height: 84px; }
     </div>
 
     <div class="tarjeta">
-      <div class="tt-h" style="grid-template-columns: minmax(0, 1.6fr) 120px minmax(0, 1.5fr) 84px 110px 28px;"><span>Empresa</span><span>CUIT</span><span>Zona de negocio</span><span class="num">Miembros</span><span>Estado</span><span class="sr">Acciones</span></div>
+      <div class="tt-h" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) 100px 150px 28px;"><span>Empresa</span><span>Zona horaria</span><span class="num">Miembros</span><span>Estado</span><span class="sr">Acciones</span></div>
       <sc-for list="{{filas}}" as="e" hint-placeholder-count="3">
-        <div class="tt-f {{e.clase}}" style="grid-template-columns: minmax(0, 1.6fr) 120px minmax(0, 1.5fr) 84px 110px 28px;">
-          <a class="c1" href="Empresa.dc.html">{{e.n}}</a>
-          <span class="c1 n {{e.claseCuit}}">{{e.cuit}}</span>
+        <div class="tt-f {{e.clase}} o-alto" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) 100px 150px 28px;">
+          <span class="dos"><a class="c1" href="Empresa.dc.html">{{e.n}}</a><span class="n2 {{e.claseCuit}}">{{e.cuit}}</span></span>
           <span class="c1 n">{{e.zona}}</span>
           <span class="num">{{e.miembros}}</span>
           <span><span class="pill {{e.pill}}">{{e.textoEstado}}</span></span>
@@ -1031,7 +1037,7 @@ const activas = s.empresas.filter((e) => e.estado === 'activa').length;
     return {
       ...this.fila(e.id, e.n),
       n: e.n,
-      cuit: e.cuit || '—',
+      cuit: e.cuit ? 'CUIT ' + e.cuit : 'Sin CUIT',
       claseCuit: e.cuit ? '' : 'nada',
       zona: nombreZona(e.zona ?? ORG_ZONA),
       miembros: String(e.miembros),

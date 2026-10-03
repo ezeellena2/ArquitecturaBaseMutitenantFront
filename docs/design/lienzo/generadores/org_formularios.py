@@ -159,7 +159,7 @@ def configuracion(interactivo, dominio="verificado"):
 # ---------- Página pública ----------
 def pagina(interactivo, estado="publicada"):
     """estado: «publicada», «borrador» o «despublicada» (por la plataforma). Con Play, se elige con el Tweak «Estado»."""
-    res = {"publicada": '<span class="w-est">Publicada</span> · delta.plataforma.com',
+    res = {"publicada": '<span class="w-est">Publicada</span>',
            "borrador": '<span class="w-est off">Borrador</span>',
            "despublicada": '<span class="w-est o-mal">Despublicada por la plataforma</span>'}
     ver = {"publicada": '<button type="button" class="cb cb-sec">Ver página</button>', "otro": '<button type="button" class="cb cb-sec">Vista previa</button>'}
@@ -190,7 +190,7 @@ def pagina(interactivo, estado="publicada"):
             '<button type="button" class="cb cb-sec ch">Subir imagen</button></div>')
     direccion = campo("Dirección de la página", None, None, requerido=True,
                       control='<div class="o-pre"><span style="flex: 1;">delta</span><span>.plataforma.com</span></div>')
-    nombre = campo("Nombre visible", "Grupo Delta", None, hueco="nombre" if interactivo else None, requerido=True)
+    nombre = campo("Nombre de la página", "Grupo Delta", None, hueco="nombre" if interactivo else None, requerido=True)
     descripcion = campo("Descripción", None, None, control='<div class="ct area">Grupo Delta y sus empresas, en un solo lugar.</div>').replace(
         '<div class="w-cmp"', '<div class="w-cmp o-ancho"', 1)
     pag = caja("Página", logo + '<div class="o-g2">' + direccion + nombre + descripcion + "</div>")
@@ -223,7 +223,7 @@ TABLEROS = {
         "Cargá este registro en el DNS de tu dominio y después tocá Comprobar. Puede tardar un rato en aparecer.")), None),
     "Configuracion-Quitar": ("Configuración · quitar dominio", 1440, 900, web(configuracion(False), "config", "Inicio / Configuración", dialogo(
         "¿Quitar delta.ejemplo.com?", "", CANCELAR_CONF + '<a class="cb cb-pel lleno" href="Configuracion.dc.html">Quitar</a>', "Configuracion.dc.html",
-        texto="Los 10 correos de delta.ejemplo.com dejan de estar administrados por Grupo Delta.", con_x=False)), None),
+        texto="Los correos nuevos de delta.ejemplo.com ya no quedan administrados por Grupo Delta. Los 10 que ya lo están siguen igual.", con_x=False)), None),
     "Pagina-Org": ("Página pública · /org/pagina", 1440, 900, web(pagina(True), "pagina", "Inicio / Página pública", TOAST + AVISO_DESPUBLICADA), "Guardamos la página."),
     "Pagina-Org-Despublicar": ("Página pública · despublicar", 1440, 900, web(pagina(False, "publicada"), "pagina", "Inicio / Página pública", dialogo(
         "¿Despublicar la página?", "", '<a class="cb cb-sec" href="Pagina-Org.dc.html">Cancelar</a><a class="cb cb-pri" href="Pagina-Org.dc.html">Despublicar</a>',

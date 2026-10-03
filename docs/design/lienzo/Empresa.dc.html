@@ -535,6 +535,13 @@ textarea.in2 { height: auto; min-height: 84px; }
 .hoja h2:not(:first-child) { border-top: 1px solid oklch(0.89 0.02 76); margin-top: 6px !important; }
 .hoja .linea { display: none !important; }
   </style>
+<style data-vuelta="1002-Empresa">
+.tt-f .dos { display: flex; flex-direction: column; gap: 1px; line-height: 1.35; min-width: 0; }
+.tt-f .dos > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-f .dos .n2 { font-size: 12px; color: var(--t3); }
+.tt-f .dos .c1 { font-weight: 500; }
+.tt-f.o-alto { min-height: 52px !important; }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{admClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -655,14 +662,13 @@ textarea.in2 { height: auto; min-height: 84px; }
               </div>
 
               <div class="tarjeta">
-                <div class="tt-h" style="grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.8fr) minmax(0, 1.6fr) 120px 28px;"><span>Nombre</span><span>Correo</span><span>Roles en la empresa</span><span>Estado</span><span class="sr">Acciones</span></div>
+                <div class="tt-h" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) 150px 28px;"><span>Miembro</span><span>Roles en la empresa</span><span>Estado</span><span class="sr">Acciones</span></div>
                 <sc-for list="{{miembros}}" as="m" hint-placeholder-count="6">
-                  <div class="tt-f {{m.clase}}" style="grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.8fr) minmax(0, 1.6fr) 120px 28px;">
-                    <a class="c1" href="Usuario.dc.html">{{m.nombre}}</a>
-                    <span class="c1 n">{{m.email}}</span>
+                  <div class="tt-f {{m.clase}} o-alto" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) 150px 28px;">
+                    <span class="dos"><a class="c1" href="Usuario.dc.html">{{m.nombre}}</a><span class="n2">{{m.email}}</span></span>
                     <span class="roles">
                       <sc-for list="{{m.roles}}" as="r" hint-placeholder-count="1"><span class="rol">{{r}}</span></sc-for>
-                      <sc-if value="{{m.sinRoles}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">Sin roles</span></sc-if>
+                      <sc-if value="{{m.sinRoles}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if>
                     </span>
                     <span><span class="pill {{m.pill}}">{{m.textoEstado}}</span></span>
                     <span class="der envoltura">

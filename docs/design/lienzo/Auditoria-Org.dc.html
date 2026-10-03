@@ -535,6 +535,10 @@ textarea.in2 { height: auto; min-height: 84px; }
 .hoja h2:not(:first-child) { border-top: 1px solid oklch(0.89 0.02 76); margin-top: 6px !important; }
 .hoja .linea { display: none !important; }
   </style>
+<style data-vuelta="1002-Auditoria-Org">
+.o-link { border: 0; background: none; padding: 0; font: inherit; color: var(--t1); text-align: left; cursor: pointer; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.o-link:hover { color: var(--marca-tx); text-decoration: underline; text-underline-offset: 3px; }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{admClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -610,7 +614,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 
     <main class="ab-app-shell__main">
       <div class="banda-pag">
-        <div class="izq"><span class="ico" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"/><path d="M15 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><div style="min-width: 0;"><div class="tit"><h1>Auditoría</h1></div><p class="res">{{resumen}}</p></div></div>
+        <div class="izq"><span class="ico" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"/><path d="M15 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><div style="min-width: 0;"><div class="tit"><h1>Auditoría</h1></div></div></div>
         <div class="acciones"></div>
       </div>
       <div class="pagina">
@@ -652,14 +656,14 @@ textarea.in2 { height: auto; min-height: 84px; }
     </div>
 
     <div class="tarjeta">
-      <div class="tt-h" style="grid-template-columns: 140px minmax(0, 2.4fr) minmax(0, 1.4fr) minmax(0, 1.2fr) 28px;"><span>Fecha y hora</span><span>Qué pasó</span><span>Dónde</span><span>Quién</span><span class="sr">Detalle</span></div>
+      <div class="tt-h" style="grid-template-columns: 140px minmax(0, 2.4fr) minmax(0, 1.4fr) minmax(0, 1.2fr);"><span>Fecha y hora</span><span>Qué pasó</span><span>Dónde</span><span>Quién</span></div>
       <sc-for list="{{filas}}" as="a" hint-placeholder-count="8">
-        <div class="tt-f" style="grid-template-columns: 140px minmax(0, 2.4fr) minmax(0, 1.4fr) minmax(0, 1.2fr) 28px;">
+        <div class="tt-f" style="grid-template-columns: 140px minmax(0, 2.4fr) minmax(0, 1.4fr) minmax(0, 1.2fr);">
           <span class="c1 n num" style="text-align: left;">{{a.fecha}}</span>
-          <span class="c1">{{a.que}}</span>
+          <button type="button" class="c1 o-link" aria-label="{{a.aria}}" onClick="{{a.ver}}">{{a.que}}</button>
           <span class="c1 n">{{a.donde}}</span>
           <span class="c1 n">{{a.quien}}</span>
-          <span class="der"><button type="button" class="ico-btn" aria-label="{{a.aria}}" onClick="{{a.ver}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.75 12S6 5.75 12 5.75 21.25 12 21.25 12 18 18.25 12 18.25 2.75 12 2.75 12Z"/><circle cx="12" cy="12" r="2.75"/></svg></button></span>
+          
         </div>
       </sc-for>
       <sc-if value="{{sinResultados}}" hint-placeholder-val="{{no}}">
