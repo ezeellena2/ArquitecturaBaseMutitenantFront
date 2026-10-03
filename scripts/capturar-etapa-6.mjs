@@ -192,7 +192,7 @@ function buildCases() {
     fixture: "consumer-empty", responses: [api("GET", "/api/auth/external/google/antiforgery", { requestToken: "visual-antiforgery" })], props: { estado: "Tu organización" } });
   both({ pair: "usuarios-lista", board: "Usuarios", mobileBoard: "M-Usuarios", path: "/org/usuarios", responses: usersApi });
   both({ pair: "usuarios-invitar", board: "Usuarios", mobileBoard: "M-Usuarios", path: "/org/usuarios", responses: usersApi,
-    boardActions: [{ type: "click", selector: "button.b-pri" }], actions: [{ type: "click", role: "button", name: "Invitar" }], readySelector: '[role="dialog"]' });
+    boardActions: [{ type: "click", selector: "button.b-pri" }], actions: [{ type: "click", role: "button", name: "Invitar usuario" }], readySelector: '[role="dialog"]' });
 
   both({ pair: "usuario-activo", board: "Usuario", mobileBoard: "M-Usuario", path: "/org/usuarios/member-1", responses: [
     ...userDetailResponses(), ...commonAdminResponses(),

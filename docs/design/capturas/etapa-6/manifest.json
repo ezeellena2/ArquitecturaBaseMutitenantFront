@@ -3193,7 +3193,7 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Invitar"
+            "name": "Invitar usuario"
           }
         ],
         "readySelector": "[role=\"dialog\"]"
@@ -4242,7 +4242,7 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Invitar"
+            "name": "Invitar usuario"
           }
         ],
         "readySelector": "[role=\"dialog\"]"

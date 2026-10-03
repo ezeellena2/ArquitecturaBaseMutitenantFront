@@ -177,7 +177,7 @@ async function invitationFromPickup(email, before) {
 
 async function inviteFromUsersPage(page, email, companyName) {
   await page.goto(new URL("/org/usuarios", baseUrl).href);
-  await page.getByRole("button", { name: "Invitar", exact: true }).click();
+  await page.getByRole("button", { name: "Invitar usuario", exact: true }).click();
   const before = new Set(await pickupFiles());
   await page.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
   await page.getByRole("button", { name: "Roles de la organización", exact: true }).click();
@@ -568,24 +568,56 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await enterCode(platformPage, await codeFromPickup("e2e-operator@example.test", loginBefore));
           setStage("verifica el código real del operador");
           await platformPage.getByRole("button", { name: "Verificar", exact: true }).click();
-          const terms = platformPage.getByRole("checkbox", { name: /Acepto los Términos/ });
-          if (await terms.isVisible()) {
-            await terms.check();
-            await platformPage.getByRole("button", { name: "Aceptar y continuar", exact: true }).click();
-          }
+          // El preparador acepta las versiones reales vigentes para este operador aislado.
           await expectPath(platformPage, "/plataforma", "ingreso del operador");
+          setStage("muestra el listado real de Organizaciones");
           await platformPage.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
-          setStage("consulta Organizaciones, Cuentas y Configuración reales");
-          const authorization = accountTokens.get(platformPage);
-          assert.equal(typeof authorization, "string", "El operador debe obtener su token real de Plataforma.");
-          for (const route of ["/api/platform/settings", "/api/platform/tenants/paged", "/api/platform/accounts/paged"]) {
-            const response = await platformPage.request.get(new URL(route, baseUrl).href, {
-              headers: { Authorization: authorization },
-            });
-            assert.equal(response.status(), 200, `La ruta E5 ${route} debe estar conectada a la API real.`);
+
+          const navigate = async (panelName, linkName) => {
+            const button = platformPage.getByRole("button", { name: panelName, exact: true });
+            await button.waitFor();
+            if (await button.getAttribute("aria-expanded") !== "true") await button.click();
+            await platformPage.getByRole("navigation", { name: panelName, exact: true })
+              .getByRole("link", { name: linkName, exact: true }).click();
+          };
+          const changeState = async (action, state) => {
+            await platformPage.getByRole("button", { name: action, exact: true }).click();
+            const dialog = platformPage.getByRole("dialog");
+            await dialog.getByRole("textbox", { name: /^Motivo/ }).fill("Verificación del recorrido real");
+            await dialog.getByRole("button", { name: action, exact: true }).click();
+            await platformPage.getByText(state, { exact: true }).waitFor();
+          };
+
+          setStage("abre una organización real desde Gestión");
+          await navigate("Gestión", "Organizaciones");
+          await platformPage.getByRole("row", { name: /Empresa E2E/ })
+            .getByRole("link", { name: "Empresa E2E", exact: true }).click();
+          await platformPage.getByRole("heading", { name: "Empresa E2E", exact: true }).waitFor();
+          let suspended = false;
+          try {
+            setStage("suspende con motivo y verifica el estado después de F5");
+            await changeState("Suspender", "Suspendida");
+            suspended = true;
+            await platformPage.reload();
+            await platformPage.getByRole("heading", { name: "Empresa E2E", exact: true }).waitFor();
+            await platformPage.getByText("Suspendida", { exact: true }).waitFor();
+          } finally {
+            if (suspended) {
+              setStage("reactiva la organización para preservar los recorridos de empresa");
+              await changeState("Reactivar", "Activa");
+            }
           }
+
+          setStage("consulta Cuentas y Administración desde sus pantallas");
+          await navigate("Gestión", "Cuentas");
+          await platformPage.getByRole("heading", { name: "Cuentas", exact: true }).waitFor();
+          await platformPage.getByRole("row", { name: /Cuenta E2E/ }).waitFor();
+          await navigate("Administración", "Auditoría");
+          await platformPage.getByRole("heading", { name: "Auditoría", exact: true }).waitFor();
+          await navigate("Administración", "Configuración");
+          await platformPage.getByRole("heading", { name: "Configuración", exact: true }).waitFor();
           await platformPage.reload();
-          await platformPage.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+          await platformPage.getByRole("heading", { name: "Configuración", exact: true }).waitFor();
         }],
         ["4: administrar roles y bloquear la baja del único Dueño", async (rolesPage, setStage) => {
           setStage("ingresa como Dueño por la puerta de empresa");

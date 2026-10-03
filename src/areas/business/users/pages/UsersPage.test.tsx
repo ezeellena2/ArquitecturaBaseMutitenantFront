@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -109,6 +109,35 @@ describe("UsersPage", () => {
     expect(router.state.location.search).toContain("companyId=none");
   }, 15_000);
 
+  it("tablero Usuarios: confirmaciones y avisos con el nombre, en pasado", async () => {
+    const user = userEvent.setup();
+    const invited = { ...member, memberId: "member-2", userId: null, displayName: "", email: "sofia@example.com", state: "Invited" as const, roles: [], invitationId: "invitation-2" };
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [member, invited], page: 1, pageSize: 10, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 2, active: 1, pendingDeletion: 0, invited: 1, expired: 0, inactive: 0 })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.put("/api/users/member-1/status", () => new HttpResponse(null, { status: 204 })),
+      http.delete("/api/users/invitations/invitation-2", () => new HttpResponse(null, { status: 204 })),
+    );
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    expect(await screen.findByRole("button", { name: "Invitar usuario" })).toBeVisible();
+
+    const open = async (name: string) => { const trigger = await screen.findByRole("button", { name }); trigger.focus(); await user.keyboard("{Enter}"); };
+    await open("Acciones de Lucía Fernández");
+    await user.click(await screen.findByRole("menuitem", { name: "Deshabilitar" }));
+    const disable = await screen.findByRole("dialog", { name: "¿Deshabilitar a Lucía Fernández?" });
+    expect(disable).toHaveTextContent("Deja de entrar a Empresa A y a sus empresas. Su cuenta y su perfil personal siguen funcionando.");
+    await user.click(within(disable).getByRole("button", { name: "Deshabilitar" }));
+    expect(await screen.findByText("Deshabilitamos a Lucía Fernández.")).toBeVisible();
+
+    await open("Acciones de sofia@example.com");
+    await user.click(await screen.findByRole("menuitem", { name: "Revocar invitación" }));
+    const revoke = await screen.findByRole("dialog", { name: "¿Revocar la invitación a sofia@example.com?" });
+    expect(revoke).toHaveTextContent("El enlace deja de funcionar. Podés volver a invitarla cuando quieras.");
+    await user.click(within(revoke).getByRole("button", { name: "Revocar" }));
+    expect(await screen.findByText("Revocamos la invitación a sofia@example.com.")).toBeVisible();
+  }, 15_000);
+
   it("invita con correo y roles usando una clave idempotente", async () => {
     let body: unknown;
     let idempotencyKey: string | null = null;
@@ -126,7 +155,7 @@ describe("UsersPage", () => {
 
     const user = userEvent.setup();
     const { container } = renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
-    await user.click(await screen.findByRole("button", { name: "Invitar" }));
+    await user.click(await screen.findByRole("button", { name: "Invitar usuario" }));
     expect(await axe(container)).toHaveNoViolations();
     await user.type(screen.getByRole("textbox", { name: "Correo" }), "nueva@example.com");
     await user.click(screen.getByRole("button", { name: "Roles de la organización" }));

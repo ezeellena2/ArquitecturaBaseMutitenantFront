@@ -48,7 +48,7 @@
     "clear": "Clear filters"
   },
   "invite": {
-    "open": "Invite",
+    "open": "Invite user",
     "title": "Invite user",
     "description": "We will send an invitation link to the email address you enter.",
     "email": "Email",
@@ -73,21 +73,24 @@
   },
   "rowActions": "Actions for {{name}}",
   "confirm": {
-    "revoke": "Revoke the invitation to {{name}}?",
-    "revokeDescription": "This person will no longer be able to use this link.",
+    "revoke": "Revoke the invitation to {{email}}?",
+    "revokeDescription": "The link stops working. You can invite them again whenever you want.",
     "disable": "Disable {{name}}?",
-    "disableDescription": "This person will lose access to the organization.",
-    "remove": "Remove {{name}} from the organization?",
-    "removeDescription": "Their access and roles in this organization will be removed."
+    "disableDescription": "They can no longer enter {{organization}} or its companies. Their account and personal profile keep working.",
+    "remove": "Remove {{name}} from {{organization}}?",
+    "removeDescription": "They stop being a member of the organization and its companies.",
+    "revokeConfirm": "Revoke",
+    "disableConfirm": "Disable",
+    "removeConfirm": "Remove"
   },
   "messages": {
     "saved": "Changes saved.",
-    "invited": "Invitation sent.",
-    "resent": "Invitation resent.",
-    "revoked": "Invitation revoked.",
-    "enabled": "Access enabled.",
-    "disabled": "Access disabled.",
-    "removed": "Person removed from the organization.",
+    "invited": "We invited {{email}}.",
+    "resent": "We resent the invitation to {{email}}.",
+    "revoked": "We revoked the invitation to {{email}}.",
+    "enabled": "We enabled {{name}}.",
+    "disabled": "We disabled {{name}}.",
+    "removed": "We removed {{name}} from {{organization}}.",
     "companyAdded": "Company added.",
     "companyRolesSaved": "Company roles saved.",
     "companyRemoved": "Company access removed."

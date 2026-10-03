@@ -48,7 +48,7 @@
     "clear": "Limpiar filtros"
   },
   "invite": {
-    "open": "Invitar",
+    "open": "Invitar usuario",
     "title": "Invitar usuario",
     "description": "Enviamos un enlace de invitación al correo que ingreses.",
     "email": "Correo",
@@ -73,21 +73,24 @@
   },
   "rowActions": "Acciones de {{name}}",
   "confirm": {
-    "revoke": "¿Revocar la invitación a {{name}}?",
-    "revokeDescription": "La persona ya no va a poder usar este enlace.",
+    "revoke": "¿Revocar la invitación a {{email}}?",
+    "revokeDescription": "El enlace deja de funcionar. Podés volver a invitarla cuando quieras.",
     "disable": "¿Deshabilitar a {{name}}?",
-    "disableDescription": "La persona va a perder el acceso a la organización.",
-    "remove": "¿Quitar a {{name}} de la organización?",
-    "removeDescription": "Se van a quitar sus accesos y roles de esta organización."
+    "disableDescription": "Deja de entrar a {{organization}} y a sus empresas. Su cuenta y su perfil personal siguen funcionando.",
+    "remove": "¿Quitar a {{name}} de {{organization}}?",
+    "removeDescription": "Deja de ser miembro de la organización y de sus empresas.",
+    "revokeConfirm": "Revocar",
+    "disableConfirm": "Deshabilitar",
+    "removeConfirm": "Quitar"
   },
   "messages": {
     "saved": "Guardamos los cambios.",
-    "invited": "Enviamos la invitación.",
-    "resent": "Reenviamos la invitación.",
-    "revoked": "Revocamos la invitación.",
-    "enabled": "Habilitamos el acceso.",
-    "disabled": "Deshabilitamos el acceso.",
-    "removed": "Quitamos a la persona de la organización.",
+    "invited": "Invitamos a {{email}}.",
+    "resent": "Reenviamos la invitación a {{email}}.",
+    "revoked": "Revocamos la invitación a {{email}}.",
+    "enabled": "Habilitamos a {{name}}.",
+    "disabled": "Deshabilitamos a {{name}}.",
+    "removed": "Quitamos a {{name}} de {{organization}}.",
     "companyAdded": "Sumamos la empresa.",
     "companyRolesSaved": "Guardamos los roles de la empresa.",
     "companyRemoved": "Quitamos el acceso a la empresa."

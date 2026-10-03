@@ -58,6 +58,7 @@ export function UsersPage() {
   const canInvite = currentUser?.permissions?.includes("users.invite") === true;
   const canManage = currentUser?.permissions?.includes("users.manage") === true;
   const canFilterByCompany = currentUser?.permissions?.includes("companies.read") === true;
+  const organizationName = currentUser?.organizations.find((organization) => organization.id === currentUser.activeTenantId)?.name ?? "";
   const client = useQueryClient();
   const navigate = useNavigate();
   const filters = useFilters(userFilterKeys);
@@ -115,18 +116,18 @@ export function UsersPage() {
   const resend = useIdempotentMutation((invitationId: string, key) => resendUserInvitation(invitationId, key));
   const invalidate = async () => client.invalidateQueries({ queryKey: usersQueryRoot });
   const revoke = useMutation({
-    mutationFn: (invitationId: string) => revokeUserInvitation(invitationId),
-    onSuccess: async () => { toast.success(t("users:messages.revoked")); setTarget(null); setConfirmAction(null); await invalidate(); },
+    mutationFn: (user: OrganizationUserResponse) => revokeUserInvitation(user.invitationId!),
+    onSuccess: async (_result, user) => { toast.success(t("users:messages.revoked", { email: user.email ?? "" })); setTarget(null); setConfirmAction(null); await invalidate(); },
     onError: (error) => toastError(failureMessage(error, t("common:states.error"))),
   });
   const changeStatus = useMutation({
     mutationFn: (user: OrganizationUserResponse & { isActive: boolean }) => changeUserStatus(user.memberId, { isActive: user.isActive, version: user.version }),
-    onSuccess: async (_result, user) => { toast.success(t(user.isActive ? "users:messages.enabled" : "users:messages.disabled")); setTarget(null); setConfirmAction(null); await invalidate(); },
+    onSuccess: async (_result, user) => { toast.success(t(user.isActive ? "users:messages.enabled" : "users:messages.disabled", { name: user.displayName || user.email || "" })); setTarget(null); setConfirmAction(null); await invalidate(); },
     onError: (error) => toastError(failureMessage(error, t("common:states.error"))),
   });
   const remove = useMutation({
     mutationFn: (user: OrganizationUserResponse) => removeUser(user.memberId, user.version),
-    onSuccess: async () => { toast.success(t("users:messages.removed")); setTarget(null); setConfirmAction(null); await invalidate(); },
+    onSuccess: async (_result, user) => { toast.success(t("users:messages.removed", { name: user.displayName || user.email || "", organization: organizationName })); setTarget(null); setConfirmAction(null); await invalidate(); },
     onError: (error) => toastError(failureMessage(error, t("common:states.error"))),
   });
 
@@ -138,7 +139,7 @@ export function UsersPage() {
       label={t("users:rowActions", { name: member.displayName || member.email || "" })}
       actions={[
         { label: t("users:actions.view"), accessibleName: t("users:actions.view"), icon: Eye, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); } },
-        { label: t("users:actions.resend"), accessibleName: t("users:actions.resend"), icon: RotateCw, onSelect: () => { if (member.invitationId) void resend.mutateAsync(member.invitationId).then(async () => { toast.success(t("users:messages.resent")); await invalidate(); }).catch((error: unknown) => toastError(failureMessage(error, t("common:states.error")))); }, hidden: !canInvite || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
+        { label: t("users:actions.resend"), accessibleName: t("users:actions.resend"), icon: RotateCw, onSelect: () => { if (member.invitationId) void resend.mutateAsync(member.invitationId).then(async () => { toast.success(t("users:messages.resent", { email: member.email ?? "" })); await invalidate(); }).catch((error: unknown) => toastError(failureMessage(error, t("common:states.error")))); }, hidden: !canInvite || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
         { label: t("users:actions.enable"), accessibleName: t("users:actions.enable"), icon: Power, onSelect: () => changeStatus.mutate({ ...member, isActive: true }), hidden: !canManage || member.state !== "Inactive" },
         { label: t("users:actions.disable"), accessibleName: t("users:actions.disable"), icon: Power, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("disable"); }, hidden: !canManage || member.state !== "Active" },
         { label: t("users:actions.revoke"), accessibleName: t("users:actions.revoke"), icon: Trash2, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("revoke"); }, hidden: !canManage || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
@@ -166,7 +167,7 @@ export function UsersPage() {
     }
     try {
       await invite.mutateAsync(payload);
-      toast.success(t("users:messages.invited"));
+      toast.success(t("users:messages.invited", { email: payload.email }));
       setInviteOpen(false);
       setEmail("");
       setOrganizationRoleIds([]);
@@ -258,12 +259,12 @@ export function UsersPage() {
     </Dialog>
 
     <ConfirmDialog open={confirmAction !== null} onOpenChange={(open) => { if (!open) { setConfirmAction(null); setTarget(null); } }} destructive={confirmAction !== null}
-      title={target ? t(`users:confirm.${confirmAction}`, { name: target.displayName || target.email || "" }) : ""}
-      description={confirmAction ? t(`users:confirm.${confirmAction}Description`) : undefined}
-      confirmLabel={confirmAction ? t(`users:actions.${confirmAction}`) : ""}
+      title={target ? t(`users:confirm.${confirmAction}`, { name: target.displayName || target.email || "", email: target.email ?? "", organization: organizationName }) : ""}
+      description={confirmAction ? t(`users:confirm.${confirmAction}Description`, { organization: organizationName }) : undefined}
+      confirmLabel={confirmAction ? t(`users:confirm.${confirmAction}Confirm`) : ""}
       onConfirm={() => {
         if (!target || !confirmAction) return;
-        if (confirmAction === "revoke" && target.invitationId) revoke.mutate(target.invitationId);
+        if (confirmAction === "revoke" && target.invitationId) revoke.mutate(target);
         if (confirmAction === "disable") changeStatus.mutate({ ...target, isActive: false });
         if (confirmAction === "remove") remove.mutate(target);
       }}
