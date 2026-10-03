@@ -14,12 +14,24 @@ const primary: Column<Row> = { id: "name", header: "Nombre", type: "text", value
 const status: Column<Row> = { id: "status", header: "Estado", type: "status", enum: "TestStatus", value: (row) => row.status, mobile: "status" };
 const areaColumns = import.meta.glob<Record<string, unknown>>("../../areas/**/columns.tsx", { eager: true });
 
+function columnDefinitions(module: Record<string, unknown>): Column<unknown>[][] {
+  return Object.entries(module).flatMap(([name, value]) => {
+    if (Array.isArray(value) && value.length > 0
+      && value.every((item) => item && typeof item === "object" && "id" in item && "value" in item)) {
+      return [value as Column<unknown>[]];
+    }
+    if (name.startsWith("create") && name.endsWith("Columns") && typeof value === "function") {
+      const factory = value as unknown as (t: (key: string, options?: unknown) => string) => Column<unknown>[];
+      return [factory((key) => key)];
+    }
+    return [];
+  });
+}
+
 describe("columnas móviles", () => {
-  it("verifica las definiciones reales cuando las áreas publiquen columns.tsx en E4", () => {
+  it("verifica las definiciones reales de columnas exportadas o creadas por las áreas", () => {
     for (const [file, module] of Object.entries(areaColumns)) {
-      const definitions = Object.values(module).filter((value): value is Column<unknown>[] =>
-        Array.isArray(value) && value.length > 0
-        && value.every((item) => item && typeof item === "object" && "id" in item && "value" in item));
+      const definitions = columnDefinitions(module);
       expect(definitions.length, file).toBeGreaterThan(0);
       for (const columns of definitions) {
         expect(columns.filter((column) => column.mobile === "primary"), file).toHaveLength(1);
