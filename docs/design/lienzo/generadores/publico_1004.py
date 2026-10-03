@@ -76,5 +76,38 @@ def portada():
     b.guardar(TARJETAS)
 
 
+DIRECTORIO = """.lp-nav .lp-links a.on { color: var(--marca-tx); font-weight: 600; }
+.dir h1 { font-size: 30px !important; letter-spacing: -0.02em; }
+.dir-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.dir-card { text-decoration: none; color: inherit; background: #fff; border: 1px solid var(--borde); border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.dir-card:hover { border-color: var(--borde2); box-shadow: 0 6px 18px oklch(0.24 0.014 78 / 0.08); }
+.dir-card .cab { display: flex; align-items: center; gap: 12px; }
+.dir-card .lg { width: 44px; height: 44px; border-radius: 12px; background: var(--marca-t); color: var(--marca-tx); font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.dir-card b { font-size: 17px; font-weight: 600; }
+.dir-card p { margin: 0; color: var(--t2); font-size: 15px; line-height: 1.5; }
+.dir-card .url { font-size: 14px; color: var(--marca-tx); font-weight: 500; }"""
+
+
+def directorio():
+    """Directorio → B: el encabezado de la portada con «Empresas» marcado y las empresas en tarjetas, con la paginación debajo."""
+    b = Tablero("Directorio")
+    if b.hecho:
+        return
+    nav = '<div class="lp-der"><a class="b b-gho" href="Ingreso.dc.html">Ingresá como empresa</a>'
+    b.rep(nav, '<nav class="lp-links" aria-label="Secciones"><a href="Landing.dc.html#personas">Personas</a><a href="Landing.dc.html#empezar">Cómo empezar</a>'
+          '<a class="on" href="Directorio.dc.html" aria-current="page">Empresas</a></nav>' + nav)
+    ini = b.t.index('<div class="tarjeta">')
+    fin = b.t.index("</div>\n  </div></main>")
+    viejo = b.t[ini:fin]
+    pie = viejo[viejo.index('<sc-if value="{{hayFilas}}"'):]
+    vacios = viejo[viejo.index('<sc-if value="{{sinResultados}}"'):viejo.index('<sc-if value="{{hayFilas}}"')]
+    nuevo = ('<div class="dir-grid"><sc-for list="{{filas}}" as="e" hint-placeholder-count="3"><a class="dir-card" href="Pagina-Publica.dc.html">'
+             '<span class="cab"><span class="lg" aria-hidden="true">{{e.ini}}</span><b>{{e.nombre}}</b></span><p>{{e.desc}}</p><span class="url">{{e.url}}</span></a></sc-for></div>'
+             '<div class="tarjeta" style="border: 0; box-shadow: none; background: transparent;">' + vacios + pie)
+    b.t = b.t[:ini] + nuevo + b.t[fin:]
+    b.guardar(DIRECTORIO)
+
+
 if __name__ == "__main__":
     portada()
+    directorio()
