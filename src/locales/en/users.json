@@ -2,13 +2,15 @@
   "title": "Users",
   "summary": "{{total}} users · {{active}} active · {{invited}} pending invitations · {{expired}} expired · {{inactive}} disabled",
   "columns": {
-    "person": "Name",
+    "person": "User",
     "email": "Email",
-    "organizationRoles": "Organization roles",
+    "organizationRoles": "Organization role",
     "companies": "Company",
     "companyRoles": "Company roles",
     "state": "Status",
     "expires": "Expires",
+    "expiresPrefix": "Expires",
+    "expiredPrefix": "Expired",
     "actions": "Actions"
   },
   "states": {
@@ -72,7 +74,10 @@
     "revoked": "Invitation revoked.",
     "enabled": "Access enabled.",
     "disabled": "Access disabled.",
-    "removed": "Person removed from the organization."
+    "removed": "Person removed from the organization.",
+    "companyAdded": "Company added.",
+    "companyRolesSaved": "Company roles saved.",
+    "companyRemoved": "Company access removed."
   },
   "detail": {
     "title": "User",
@@ -83,7 +88,13 @@
     "pendingDeletion": "This person requested account deletion. You cannot change their roles; you can remove them from the organization.",
     "pendingDeletionRoles": "Roles stay unchanged while the deletion request is processed.",
     "organizationRoles": "Organization roles",
-    "companyAccess": "Companies and roles",
+    "companyAccess": "Companies",
+    "companyActions": "Actions for {{name}}",
+    "changeCompanyRoles": "Change roles",
+    "removeCompanyAction": "Remove access",
+    "addCompanyTitle": "Add company",
+    "changeCompanyRolesTitle": "Roles in {{name}}",
+    "saveCompanyRoles": "Save",
     "preservedCompanies": "Companies with inactive access stay as they are until access is restored.",
     "companyInactive": "Inactive access",
     "noCompanies": "No company access.",

@@ -40,7 +40,11 @@ describe("UsersPage", () => {
 
     expect(await screen.findByRole("heading", { level: 1, name: "Usuarios" })).toBeVisible();
     expect(await screen.findByRole("link", { name: "Lucía Fernández" })).toHaveAttribute("href", "/org/usuarios/member-1");
-    expect(screen.getByRole("columnheader", { name: "Correo" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Usuario" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Rol en la organización" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Empresa" })).toBeVisible();
+    expect(screen.queryByRole("columnheader", { name: "Correo" })).not.toBeInTheDocument();
+    expect(screen.getByText("lucia@example.com")).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
 
     await user.type(screen.getByRole("searchbox", { name: "Buscar por nombre o correo" }), "Lucía");

@@ -2,13 +2,15 @@
   "title": "Usuarios",
   "summary": "{{total}} usuarios · {{active}} activos · {{invited}} invitaciones pendientes · {{expired}} vencidas · {{inactive}} deshabilitados",
   "columns": {
-    "person": "Nombre",
+    "person": "Usuario",
     "email": "Correo",
-    "organizationRoles": "Roles de la organización",
+    "organizationRoles": "Rol en la organización",
     "companies": "Empresa",
     "companyRoles": "Roles en la empresa",
     "state": "Estado",
     "expires": "Vence",
+    "expiresPrefix": "Vence",
+    "expiredPrefix": "Venció",
     "actions": "Acciones"
   },
   "states": {
@@ -72,7 +74,10 @@
     "revoked": "Revocamos la invitación.",
     "enabled": "Habilitamos el acceso.",
     "disabled": "Deshabilitamos el acceso.",
-    "removed": "Quitamos a la persona de la organización."
+    "removed": "Quitamos a la persona de la organización.",
+    "companyAdded": "Sumamos la empresa.",
+    "companyRolesSaved": "Guardamos los roles de la empresa.",
+    "companyRemoved": "Quitamos el acceso a la empresa."
   },
   "detail": {
     "title": "Usuario",
@@ -83,7 +88,13 @@
     "pendingDeletion": "Esta persona pidió la baja. No podés cambiar sus roles; sí podés quitarla de la organización.",
     "pendingDeletionRoles": "Los roles quedan sin cambios mientras se procesa la baja.",
     "organizationRoles": "Roles de la organización",
-    "companyAccess": "Empresas y roles",
+    "companyAccess": "Empresas",
+    "companyActions": "Acciones de {{name}}",
+    "changeCompanyRoles": "Cambiar roles",
+    "removeCompanyAction": "Quitar acceso",
+    "addCompanyTitle": "Sumar empresa",
+    "changeCompanyRolesTitle": "Roles en {{name}}",
+    "saveCompanyRoles": "Guardar",
     "preservedCompanies": "Las empresas con acceso inactivo se conservan como están hasta que vuelvan a habilitarse.",
     "companyInactive": "Acceso inactivo",
     "noCompanies": "No tiene acceso a empresas.",
