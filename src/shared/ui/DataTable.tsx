@@ -33,6 +33,7 @@ interface ColumnBase {
   /** Solo `low` desaparece también en tablet. */
   priority?: "low";
   mobile?: MobileRole;
+  className?: string;
 }
 
 type ValueColumn<TRow, TType extends string, TValue> = TType extends string ? ColumnBase & {
@@ -187,6 +188,8 @@ export function DataTable<TRow>({
               aria-sort={ariaSort(column, sort)}
               className={cn(
                 "bg-[var(--cab)] px-3 text-[13px] font-semibold normal-case text-[var(--t2)] whitespace-normal",
+                column.className,
+                column.type === "actions" ? "w-[5%] max-md:w-[14%]" : undefined,
                 columnVisibility(column),
                 isNumericColumn(column) || column.mobile === "status" || column.type === "actions" ? "text-right tabular-nums" : undefined,
               )}
@@ -195,7 +198,7 @@ export function DataTable<TRow>({
                 <Button type="button" variant="ghost" size="sm" onClick={() => onSortChange(column.id)} className="-mx-2 px-2 text-[13px] font-semibold normal-case">
                   {column.header}
                 </Button>
-              ) : column.header}
+              ) : column.type === "actions" ? <span className="sr-only">{column.header}</span> : column.header}
             </TableHead>
           ))}
         </TableRow>
@@ -208,6 +211,8 @@ export function DataTable<TRow>({
                 key={column.id}
                 className={cn(
                   "overflow-hidden px-3 py-0 whitespace-nowrap",
+                  column.className,
+                  column.type === "actions" ? "w-[5%] max-md:w-[14%]" : undefined,
                   columnVisibility(column),
                   isNumericColumn(column) || column.mobile === "status" || column.type === "actions" ? "text-right tabular-nums" : undefined,
                 )}

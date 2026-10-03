@@ -140,6 +140,7 @@ describe("DataTable", () => {
     expect(screen.getByRole("columnheader", { name: "Nombre" })).not.toHaveClass("hidden");
     expect(screen.getByRole("columnheader", { name: "Estado" })).not.toHaveClass("hidden");
     expect(screen.getByRole("columnheader", { name: "Acciones" })).not.toHaveClass("hidden");
+    expect(within(screen.getByRole("columnheader", { name: "Acciones" })).getByText("Acciones")).toHaveClass("sr-only");
     expect(screen.getByRole("columnheader", { name: "Fecha" })).toHaveClass("hidden", "md:table-cell");
     expect(screen.getByRole("columnheader", { name: "Correo" })).toHaveClass("hidden", "lg:table-cell");
     expect(screen.getByRole("button", { name: "Acciones de Ana García" }).closest("td")).not.toHaveClass("hidden");

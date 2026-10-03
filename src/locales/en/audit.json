@@ -10,7 +10,7 @@
   "rowActions": "Actions for {{action}} ({{id}})",
   "columns": {
     "action": "What happened",
-    "when": "When",
+    "when": "Date",
     "where": "Where",
     "about": "About",
     "affected": "Affected person",

@@ -1,6 +1,6 @@
 {
   "title": "Usuarios",
-  "summary": "{{total}} usuarios · {{active}} activos · {{invited}} invitaciones pendientes · {{expired}} vencidas · {{inactive}} deshabilitados",
+  "summary": "{{total}} usuarios · {{active}} activos · {{invited}} invitaciones",
   "columns": {
     "person": "Usuario",
     "email": "Correo",
@@ -35,7 +35,7 @@
     "clear": "Limpiar filtros"
   },
   "invite": {
-    "open": "Invitar usuario",
+    "open": "Invitar",
     "title": "Invitar usuario",
     "description": "Enviamos un enlace de invitación al correo que ingreses.",
     "email": "Correo",

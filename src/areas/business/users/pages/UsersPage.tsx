@@ -130,7 +130,7 @@ export function UsersPage() {
       : value === "PendingDeletion" ? counts.data?.pendingDeletion
         : value === "Invited" ? counts.data?.invited
           : value === "Expired" ? counts.data?.expired : counts.data?.inactive;
-  const listSummary = counts.data ? t("users:summary", { total: counts.data.all, active: counts.data.active, invited: counts.data.invited, expired: counts.data.expired, inactive: counts.data.inactive }) : undefined;
+  const listSummary = counts.data ? <span className="max-md:text-[12px]">{t("users:summary", { total: counts.data.all, active: counts.data.active, invited: counts.data.invited })}</span> : undefined;
   const currentState = state ?? "all";
 
   async function submitInvite(event: FormEvent<HTMLFormElement>) {

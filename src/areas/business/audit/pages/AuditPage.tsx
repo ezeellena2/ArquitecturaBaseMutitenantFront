@@ -1,5 +1,5 @@
 import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ScrollText } from "lucide-react";
+import { Eye, ScrollText } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -55,15 +55,15 @@ export function AuditPage() {
 
   const rows = audit.data?.pages.flatMap((page) => page.items) ?? [];
   const columns: Column<OrganizationAuditEntryResponse>[] = [
-    { id: "occurredAtUtc", header: t("audit:columns.when"), type: "dateTime", value: (row) => row.occurredAtUtc },
+    { id: "occurredAtUtc", header: t("audit:columns.when"), type: "custom", mobile: "status", className: "w-[16%] max-md:w-[25%]", cell: (row) => <div className="whitespace-normal text-left"><DateText value={row.occurredAtUtc} kind="dateTime" className="whitespace-normal" /></div> },
     {
       id: "action", header: t("audit:columns.action"), type: "custom", mobile: "primary",
       cell: (row) => <button type="button" aria-label={t("audit:openDetails", { action: row.actionText })}
-        className="text-left text-[var(--t1)] hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
-        onClick={() => setSelected(row)}>{row.actionText}</button>,
+        className="flex w-full items-center justify-between gap-2 text-left text-[var(--t1)] hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
+        onClick={() => setSelected(row)}><span className="truncate">{row.actionText}</span><Eye aria-hidden="true" className="size-4 shrink-0" /></button>,
     },
-    { id: "where", header: t("audit:columns.where"), type: "text", value: (row) => row.whereText, mobile: "status" },
-    { id: "actor", header: t("audit:columns.who"), type: "text", value: (row) => row.actorDisplayName ?? row.actorText, mobile: "status" },
+    { id: "where", header: t("audit:columns.where"), type: "text", value: (row) => row.whereText },
+    { id: "actor", header: t("audit:columns.who"), type: "text", value: (row) => row.actorDisplayName ?? row.actorText },
   ];
   const periodValue = period;
   return <>

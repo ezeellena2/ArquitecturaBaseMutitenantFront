@@ -15,7 +15,7 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
       id: "displayName", header: t("users:columns.person"), type: "custom", mobile: "primary", sortable: true,
       cell: (user) => <div className="min-w-0">
         <Link className="block truncate font-medium text-[var(--marca-tx)] hover:underline" to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}>{user.displayName || user.email || <EmptyValue />}</Link>
-        {user.displayName && user.email ? <span className="block truncate text-xs text-[var(--t3)]">{user.email}</span> : null}
+        {user.displayName && user.email && user.displayName !== user.email ? <span className="hidden truncate text-xs text-[var(--t3)] md:block">{user.email}</span> : null}
       </div>,
     },
     {
@@ -32,7 +32,7 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
       </div>,
     },
     {
-      id: "state", header: t("users:columns.state"), type: "custom", mobile: "status",
+      id: "state", header: t("users:columns.state"), type: "custom", mobile: "status", className: "w-[18%] max-md:w-[38%]",
       cell: (user) => <span className="flex flex-col gap-0.5">
         <span className="inline-flex items-center gap-1.5 text-[13px] text-[var(--t2)]">
           <span aria-hidden="true" className={`size-2 rounded-full ${user.state === "Active" ? "bg-[var(--ok)]" : user.state === "PendingDeletion" ? "bg-[var(--alerta)]" : user.state === "Inactive" ? "bg-[var(--t3)]" : "bg-[var(--marca-tx)]"}`} />

@@ -24,6 +24,9 @@ export function referenceDataFixture(culture = "es-AR"): ReferenceData {
     timeZones: [{
       id: "America/Argentina/Buenos_Aires", countryCodes: ["AR"], city: "Buenos Aires",
       isEnabled: true, sortOrder: 1,
+    }, {
+      id: "America/Argentina/Cordoba", countryCodes: ["AR"], city: "Córdoba",
+      isEnabled: true, sortOrder: 2,
     }],
     cultures: [
       {

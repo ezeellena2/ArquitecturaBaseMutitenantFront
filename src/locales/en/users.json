@@ -1,6 +1,6 @@
 {
   "title": "Users",
-  "summary": "{{total}} users · {{active}} active · {{invited}} pending invitations · {{expired}} expired · {{inactive}} disabled",
+  "summary": "{{total}} users · {{active}} active · {{invited}} invitations",
   "columns": {
     "person": "User",
     "email": "Email",
@@ -35,7 +35,7 @@
     "clear": "Clear filters"
   },
   "invite": {
-    "open": "Invite user",
+    "open": "Invite",
     "title": "Invite user",
     "description": "We will send an invitation link to the email address you enter.",
     "email": "Email",

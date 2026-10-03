@@ -74,7 +74,7 @@ describe("UsersPage", () => {
 
     const user = userEvent.setup();
     const { container } = renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
-    await user.click(await screen.findByRole("button", { name: "Invitar usuario" }));
+    await user.click(await screen.findByRole("button", { name: "Invitar" }));
     expect(await axe(container)).toHaveNoViolations();
     await user.type(screen.getByRole("textbox", { name: "Correo" }), "nueva@example.com");
     await user.click(screen.getByRole("button", { name: "Roles de la organización" }));
