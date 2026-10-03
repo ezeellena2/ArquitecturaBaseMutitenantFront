@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 7420
+ALTO = 7820
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -49,6 +49,7 @@ ESTADOS = {
 REGLAS = [
     ("Dentro de una caja, dos columnas iguales que ocupan todo el ancho.", "Formularios y campos", "02/10/2026"),
     ("Sin textos que explican: el estado se dice una vez arriba y un ⓘ abre el aviso importante.", "Avisos y errores · Diálogos", "02/10/2026"),
+    ("En el teléfono, lo pasajero va abajo en una franja oscura y lo que sigue, debajo de la barra de arriba.", "Avisos y errores", "03/10/2026"),
     ("Una celda puede llevar una segunda línea gris que aclara la primera.", "Tablas y listas", "02/10/2026"),
     ("Una lista se lee; cambiar una fila o sumar otra abre un diálogo chico.", "Tablas y listas", "02/10/2026"),
     ("Los permisos de un rol van en grupos que se abren y se cierran.", "Tablas y listas", "02/10/2026"),
@@ -147,6 +148,12 @@ DECISIONES = {
         ("Diálogos", "", "Invitar usuario, Sumar empresa, Agregar y Verificar dominio como hojas; Quitar dominio, confirmación sin ✕ y con el botón rojo.", "Dibujada"),
         ("Auditoría", "", "Qué pasó con la fecha, y dónde y quién debajo; «Cargar más» al final.", "Dibujada"),
         ("Inicio", "C", "Como una billetera: cabecera de color con «Hola, Lucía» y la organización; atajos redondos con un globito rojo con lo pendiente de cada área; «Para resolver» en filas con ícono redondo del color de la urgencia y la acción en un botón cápsula.", "Dibujada"),
+    ],
+    "Ingreso y avisos · teléfonos (como app)": [
+        ("Sesión", "", "Como el arranque de una app: el logo con una ruedita al iniciar o cerrar; al cambiar de lado, la inicial del perfil con un anillo que gira; si falla, «Volver a ingresar» fijo abajo.", "Dibujada"),
+        ("Organización no disponible", "", "Ícono del color del estado, título y su línea; «Elegí otro perfil» en un grupo de filas y «Salir» abajo.", "Dibujada"),
+        ("Sin permiso o no encontrada", "", "Dentro de la app, con ‹ y la barra de abajo de la persona; al centro, el mensaje e «Ir al inicio».", "Dibujada"),
+        ("Avisos del sistema", "", "Lo pasajero, abajo en una franja oscura; lo que sigue, debajo de la barra de arriba; «¿Salir sin guardar?», en una hoja sin ✕; «Reintentá en 0:39», en el botón fijo.", "Dibujada"),
     ],
     "Plataforma y perfil personal · teléfonos (como app)": [
         ("Barra de abajo de Plataforma", "", "Organizaciones, Cuentas, Recuperaciones, Chats y «Más» (WhatsApp, Administración, Configuración de WhatsApp, Mi cuenta y Salir).", "Dibujada"),

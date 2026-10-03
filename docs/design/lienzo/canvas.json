@@ -971,7 +971,7 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 7420,
+      "h": 7820,
       "page": "criterio",
       "title": "Criterio · Decisiones por pantalla",
       "w": 1440,
@@ -1429,6 +1429,42 @@
       "w": 390,
       "x": 3760,
       "y": 2300
+    },
+    "M-Sesion.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Sesión · teléfono",
+      "w": 390,
+      "x": 3760,
+      "y": 2300
+    },
+    "M-Perfil-Suspendido.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "ingreso",
+      "title": "Organización no disponible · teléfono",
+      "w": 390,
+      "x": 4230,
+      "y": 2300
+    },
+    "M-Error-Org.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Sin permiso o no encontrada · teléfono",
+      "w": 390,
+      "x": 4700,
+      "y": 3320
+    },
+    "M-Avisos.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Avisos del sistema · teléfono",
+      "w": 390,
+      "x": 5170,
+      "y": 3320
     }
   },
   "createdOnFiles": {
@@ -1758,7 +1794,11 @@
     "M-Recuperaciones.dc.html",
     "M-Mas-Plat.dc.html",
     "M-Auditoria-Plat-Detalle.dc.html",
-    "M-Legales.dc.html"
+    "M-Legales.dc.html",
+    "M-Sesion.dc.html",
+    "M-Perfil-Suspendido.dc.html",
+    "M-Error-Org.dc.html",
+    "M-Avisos.dc.html"
   ],
   "pages": [
     {
