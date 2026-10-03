@@ -42,6 +42,8 @@ describe("contrato de auditoría de organización entre back y front", () => {
     expect(types).toContain('export type OrganizationAuditEntryResponse = ApiSchemas["OrganizationAuditEntryResponse"]');
     expect(client).toContain("Promise<OrganizationAuditCursorResponse>");
     expect(page).toContain("row.whereText");
-    expect(page).toContain("selected.affectedDisplayName");
+    // El nombre afectado llega en actionText («Cambió los roles de Tomás Acosta»), como el tablero Auditoria-Org.
+    expect(page).toContain("row.actionText");
+    expect(page).toContain("selected.actorEmail");
   });
 });

@@ -7557,6 +7557,7 @@ export interface components {
             actorId?: null | string;
             actorDisplayName?: null | string;
             changes: components["schemas"]["OrganizationAuditChangeResponse"][];
+            actorEmail?: null | components["schemas"]["Email"];
         };
         OrganizationDomainResponse: {
             /** Format: uuid */

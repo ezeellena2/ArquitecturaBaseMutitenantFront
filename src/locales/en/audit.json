@@ -1,16 +1,13 @@
 {
   "title": "Audit",
-  "summary": "Actions performed in this organization.",
   "empty": "There are no entries to show",
   "details": "View details",
-  "detailSummary": "{{actor}} performed this action on {{entity}}.",
   "openDetails": "View details for {{action}}",
   "noValue": "No value",
-  "noChanges": "There are no field changes to show.",
   "rowActions": "Actions for {{action}} ({{id}})",
   "columns": {
     "action": "What happened",
-    "when": "Date",
+    "when": "Date and time",
     "where": "Where",
     "about": "About",
     "affected": "Affected person",
@@ -22,10 +19,12 @@
     "search": "Search audit",
     "period": "Period",
     "periodMenu": "Filter by period",
-    "category": "Topic",
+    "category": "Topic: all",
     "categoryMenu": "Filter by topic",
-    "actor": "Who",
-    "actorMenu": "Filter by person"
+    "actor": "Who: all",
+    "actorMenu": "Filter by person",
+    "allCategories": "All",
+    "allActors": "Everyone"
   },
   "period": {
     "today": "Today",

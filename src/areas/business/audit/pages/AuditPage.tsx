@@ -1,6 +1,6 @@
 import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Eye, ScrollText } from "lucide-react";
-import { useState } from "react";
+import { ScrollText } from "lucide-react";
+import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
@@ -9,7 +9,7 @@ import { usePagination } from "@/shared/hooks/usePagination";
 import { ApiError } from "@/shared/api/ApiError";
 import type { Column } from "@/shared/ui/DataTable";
 import { DataTable } from "@/shared/ui/DataTable";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { LoadMore } from "@/shared/ui/LoadMore";
 import { Page } from "@/shared/ui/Page";
@@ -58,16 +58,17 @@ export function AuditPage() {
     { id: "occurredAtUtc", header: t("audit:columns.when"), type: "custom", mobile: "status", className: "w-[16%] max-md:w-[25%]", cell: (row) => <div className="whitespace-normal text-left"><DateText value={row.occurredAtUtc} kind="dateTime" className="whitespace-normal" /></div> },
     {
       id: "action", header: t("audit:columns.action"), type: "custom", mobile: "primary",
+      // Tablero Auditoria-Org: tocar «Qué pasó» abre el detalle; sin el ojo.
       cell: (row) => <button type="button" aria-label={t("audit:openDetails", { action: row.actionText })}
-        className="flex w-full items-center justify-between gap-2 text-left text-[var(--t1)] hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
-        onClick={() => setSelected(row)}><span className="truncate">{row.actionText}</span><Eye aria-hidden="true" className="size-4 shrink-0" /></button>,
+        className="block w-full truncate text-left text-[var(--t1)] hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
+        onClick={() => setSelected(row)}>{row.actionText}</button>,
     },
     { id: "where", header: t("audit:columns.where"), type: "text", value: (row) => row.whereText },
     { id: "actor", header: t("audit:columns.who"), type: "text", value: (row) => row.actorDisplayName ?? row.actorText },
   ];
   const periodValue = period;
   return <>
-    <Page icon={ScrollText} title={t("audit:title")} summary={t("audit:summary")}>
+    <Page icon={ScrollText} title={t("audit:title")}>
       <div className="flex flex-col gap-3">
         <FilterBar
           label={t("audit:filters.label")}
@@ -88,15 +89,16 @@ export function AuditPage() {
             },
             {
               key: "category", label: t("audit:filters.category"), menuLabel: t("audit:filters.categoryMenu"),
-              value: category ?? "all", active: category !== undefined,
+              // Sin filtro el botón dice «Tema: todos» y el menú ofrece «Todos», como el tablero.
+              value: category ?? "", active: category !== undefined,
               onChange: (value) => filters.setFilter("category", value === "all" ? undefined : value),
-              options: [{ value: "all", label: t("audit:filters.category") }, ...auditCategories.map((value) => ({ value, label: t(`audit:categories.${value}`) }))],
+              options: [{ value: "all", label: t("audit:filters.allCategories") }, ...auditCategories.map((value) => ({ value, label: t(`audit:categories.${value}`) }))],
             },
             {
               key: "actorId", label: t("audit:filters.actor"), menuLabel: t("audit:filters.actorMenu"),
-              value: actorId ?? "all", active: actorId !== undefined,
+              value: actorId ?? "", active: actorId !== undefined,
               onChange: (value) => filters.setFilter("actorId", value === "all" ? undefined : value),
-              options: [{ value: "all", label: t("audit:filters.actor") }, ...(actors.data ?? []).flatMap((actor) => actor.actorId ? [{ value: actor.actorId, label: actor.displayName ?? actor.actorText }] : [])],
+              options: [{ value: "all", label: t("audit:filters.allActors") }, ...(actors.data ?? []).flatMap((actor) => actor.actorId ? [{ value: actor.actorId, label: actor.displayName ?? actor.actorText }] : [])],
             },
           ]}
           clearLabel={t("common:actions.clear")}
@@ -119,26 +121,22 @@ export function AuditPage() {
     </Page>
     <Dialog open={selected !== null} onOpenChange={(open) => { if (!open) setSelected(null); }}>
       <DialogContent className="md:max-w-[640px]">
+        {/* Tablero Auditoria-Org: qué pasó y cuándo; Quién (nombre · correo), Dónde y cada cambio «antes → después». */}
         <DialogHeader>
           <DialogTitle>{selected?.actionText ?? t("audit:details")}</DialogTitle>
-          <DialogDescription>{selected ? t("audit:detailSummary", { actor: selected.actorDisplayName ?? selected.actorText, entity: selected.entityText }) : ""}</DialogDescription>
+          <DialogDescription>{selected ? <DateText value={selected.occurredAtUtc} kind="dateTime" /> : null}</DialogDescription>
         </DialogHeader>
-        {selected ? <div className="flex flex-col gap-3 px-5 pb-5">
-          <dl className="grid gap-2 text-[13px] sm:grid-cols-2">
-            <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.when")}</dt><dd><DateText value={selected.occurredAtUtc} kind="dateTime" /></dd></div>
-            <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.about")}</dt><dd>{selected.entityText}</dd></div>
-            <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.where")}</dt><dd>{selected.whereText}</dd></div>
-            {selected.affectedDisplayName ? <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.affected")}</dt><dd>{selected.affectedDisplayName}</dd></div> : null}
-            <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.who")}</dt><dd>{selected.actorDisplayName ?? selected.actorText}</dd></div>
-          </dl>
-          {selected.changes.length ? <div className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--borde)]">
-            {selected.changes.map((change) => <div key={change.field} className="grid gap-2 border-b border-[var(--borde)] p-3 last:border-b-0 sm:grid-cols-[1fr_1fr_1fr]">
-              <span className="font-semibold text-[var(--t1)]">{change.field}</span>
-              <span className="text-[var(--t2)]">{change.oldValue ?? t("audit:noValue")}</span>
-              <span className="text-[var(--t1)]">{change.newValue ?? t("audit:noValue")}</span>
-            </div>)}
-          </div> : <p className="text-[13px] text-[var(--t2)]">{t("audit:noChanges")}</p>}
-        </div> : null}
+        {selected ? <div className="px-5 pb-5 pt-4"><dl className="grid grid-cols-[170px_minmax(0,1fr)] overflow-hidden rounded-[10px] border border-[var(--borde)] text-[13.5px] leading-[1.45] text-[var(--t1)] [&>:nth-child(-n+2)]:border-t-0">
+          <dt className="border-r border-t border-[var(--borde)] bg-[var(--s2)] px-3.5 py-2.5 font-medium text-[var(--t2)]">{t("audit:columns.who")}</dt>
+          <dd className="min-w-0 break-words border-t border-[var(--borde)] px-3.5 py-2.5">{[selected.actorDisplayName ?? selected.actorText, selected.actorEmail].filter(Boolean).join(" · ")}</dd>
+          <dt className="border-r border-t border-[var(--borde)] bg-[var(--s2)] px-3.5 py-2.5 font-medium text-[var(--t2)]">{t("audit:columns.where")}</dt>
+          <dd className="min-w-0 break-words border-t border-[var(--borde)] px-3.5 py-2.5">{selected.whereText}</dd>
+          {selected.changes.map((change) => <Fragment key={change.field}>
+            <dt className="border-r border-t border-[var(--borde)] bg-[var(--s2)] px-3.5 py-2.5 font-medium text-[var(--t2)]">{change.field}</dt>
+            <dd className="min-w-0 break-words border-t border-[var(--borde)] px-3.5 py-2.5">{change.oldValue ? <><span className="text-[var(--t3)] line-through">{change.oldValue}</span>{" → "}</> : null}{change.newValue ?? t("audit:noValue")}</dd>
+          </Fragment>)}
+        </dl></div> : null}
+        <DialogFooter showCloseButton />
       </DialogContent>
     </Dialog>
   </>;
