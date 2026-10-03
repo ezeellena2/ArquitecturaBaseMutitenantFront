@@ -1,5 +1,6 @@
 {
   "title": "Usuarios",
+  "back": "Volver a Usuarios",
   "summary": "{{total}} usuarios · {{active}} activos · {{invited}} invitaciones",
   "columns": {
     "person": "Usuario",
@@ -32,6 +33,7 @@
   "empty": {
     "all": "Todavía no hay usuarios en la organización",
     "filtered": "Ningún usuario coincide con los filtros",
+    "missing": "No encontramos este usuario",
     "clear": "Limpiar filtros"
   },
   "invite": {

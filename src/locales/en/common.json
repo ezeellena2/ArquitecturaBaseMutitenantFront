@@ -18,6 +18,7 @@
   },
   "states": {
     "loading": "Loading…",
+    "saving": "Saving…",
     "empty": "Nothing to show",
     "error": "Something went wrong"
   },

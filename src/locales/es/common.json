@@ -18,6 +18,7 @@
   },
   "states": {
     "loading": "Cargando…",
+    "saving": "Guardando…",
     "empty": "No hay nada para mostrar",
     "error": "Algo salió mal"
   },

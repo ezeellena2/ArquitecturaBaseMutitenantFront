@@ -274,7 +274,7 @@ export function BusinessSignupPage() {
                     autoComplete="off" spellCheck={false} />
                 </FormField>
                 <div className="-mt-4 min-h-5 text-[12px]" aria-live="polite">
-                  {slug !== "" && !slugMatchesInput ? <span className="text-[var(--t3)]">{t("states.loading")}</span>
+                  {slug !== "" && !slugMatchesInput ? <span className="text-[var(--t3)]">{t("common:states.loading")}</span>
                     : slugAvailability === "Available" && !slugError ? <span role="status" className="inline-flex items-center gap-1 text-[var(--ok)]"><Check size={14} />{t("businessSignup.slugAvailable")}</span> : null}
                 </div>
                 <FormField label={t("businessSignup.firstCompany")} variant="auth" error={companyError ? t("businessSignup.required") : undefined}>

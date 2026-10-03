@@ -25,6 +25,7 @@
 
 ## Lo verifica
 - `parity.test.ts` (E1): mismas claves en todos los idiomas habilitados del catálogo (es y en al inicio).
+- `keys.test.ts`: cada clave escrita en el código existe en los textos; una clave inexistente se vería cruda en pantalla.
 - `referenceData.test.ts` (E1): nombres traducidos provenientes del catálogo.
 - `oxlint` con la regla de literales en JSX (E0, `react/jsx-no-literals`).
 
