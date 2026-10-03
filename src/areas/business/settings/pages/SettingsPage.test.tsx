@@ -31,6 +31,7 @@ describe("SettingsPage", () => {
 
     const { container } = renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
     const name = await screen.findByRole("textbox", { name: "Nombre de la organización" });
+    expect(screen.getByRole("heading", { name: "Dominio de correo" })).toBeVisible();
     expect(await screen.findByText("delta.example.test")).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
 

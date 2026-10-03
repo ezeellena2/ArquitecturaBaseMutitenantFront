@@ -14,7 +14,7 @@
   "save": "Save changes",
   "saved": "Changes saved.",
   "domains": {
-    "title": "Organization email access",
+    "title": "Email domain",
     "add": "Add domain",
     "addTitle": "Add email domain",
     "addDescription": "Verify that you manage the domain before associating email addresses.",

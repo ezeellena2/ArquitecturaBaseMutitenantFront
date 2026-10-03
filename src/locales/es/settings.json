@@ -14,7 +14,7 @@
   "save": "Guardar cambios",
   "saved": "Se guardaron los cambios.",
   "domains": {
-    "title": "Acceso con correo de la organización",
+    "title": "Dominio de correo",
     "add": "Agregar dominio",
     "addTitle": "Agregar dominio de correo",
     "addDescription": "Verificá que administrás el dominio antes de asociar correos.",

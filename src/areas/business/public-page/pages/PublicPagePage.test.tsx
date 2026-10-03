@@ -32,6 +32,7 @@ describe("PublicPagePage", () => {
     );
 
     const { container } = renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+    expect(await screen.findByRole("textbox", { name: "Nombre de la página" })).toBeVisible();
     const slug = await screen.findByRole("textbox", { name: "Dirección de la página" });
     expect(screen.getByText("Despublicada por la plataforma")).toBeVisible();
     expect(screen.getByRole("button", { name: "Publicar" })).toBeDisabled();
