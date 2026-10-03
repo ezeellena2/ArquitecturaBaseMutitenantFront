@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 7100
+ALTO = 7340
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -58,6 +58,7 @@ REGLAS = [
     ("Antes de algo que se paga (difusión, plantilla), se muestra el costo estimado.", "Diálogos", "03/10/2026"),
     ("Una línea fina entre cada opción de un menú desplegable; antes de las de peligro, una franja.", "Menús y desplegables", "03/10/2026"),
     ("En el teléfono, una app: barra de abajo con «Más», título en la barra, listas de borde a borde y hojas con manija.", "Marco y pantallas", "03/10/2026"),
+    ("El sitio público en el teléfono es web, no app (se abre desde un enlace y no tiene sesión): una columna y ☰ arriba.", "Marco y pantallas", "03/10/2026"),
     ("En el teléfono, crear algo nuevo es un «+» flotante abajo a la derecha, también con la lista vacía.", "Marco y pantallas", "03/10/2026"),
     ("En el teléfono, el ⋮ de una fila va solo si tiene acciones; si no, se toca la fila.", "Marco y pantallas", "03/10/2026"),
     ("La flechita que contrae el menú lateral va en blanco, con borde arena.", "Menús y desplegables", "03/10/2026"),
@@ -165,6 +166,9 @@ DECISIONES = {
         ("Portada", "B", "Sin la etiqueta del héroe; después de «Dos lados separados», la sección «Empresas en ArquitecturaBase» con buscador, tres empresas y «Ver todas las empresas», que lleva al directorio. «Empresas», arriba, baja a esa sección.", "Dibujada"),
         ("Directorio", "B", "El encabezado de la portada con «Empresas» marcado y las empresas en tarjetas (logo, nombre, descripción y dirección), con la paginación debajo.", "Dibujada"),
         ("Página pública", "B", "Una tarjeta centrada: logo, nombre, descripción, los cuatro datos de contacto y «Ingresá para continuar» (vuelve a la misma página). Con sesión, sin el botón y con tu menú arriba. «No disponible», en la misma tarjeta, sin decir por qué.", "Dibujada"),
+        ("Portada · teléfono", "A", "Web en una columna: la marca, «Ingresar» y ☰ (Personas, Cómo empezar, Empresas e «Ingresá como empresa»); la sección de empresas en tarjetas, una debajo de otra.", "Dibujada"),
+        ("Directorio · teléfono", "", "El ☰ de la portada con «Empresas» marcado; buscador a lo ancho y tarjetas en una columna. Dirección: /empresas.", "Dibujada"),
+        ("Página pública · teléfono", "", "La misma tarjeta de la compu, con sus tres estados; sin ☰, porque es la página de la organización.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Inicios", "", "Repensar qué es un inicio en la plantilla y dónde van las acciones pendientes.", "Para repensar"),
