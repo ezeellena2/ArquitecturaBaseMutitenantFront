@@ -208,7 +208,7 @@ export function UsersPage() {
               <MultiSelect options={organizationRoles.map((role: RoleResponse) => ({ value: role.id, label: role.name }))} value={organizationRoleIds} onChange={setOrganizationRoleIds} placeholder={t("users:invite.chooseRoles")} />
             </FormField>
             <section className="flex flex-col gap-3 border-t border-[var(--borde)] pt-4">
-              <div className="flex items-center justify-between gap-3"><div><h3 className="text-sm font-semibold">{t("users:invite.companyRoles")}</h3><p className="mt-1 text-xs text-[var(--t2)]">{t("users:invite.companyRolesHint")}</p></div>
+              <div className="flex items-center justify-between gap-3"><div><h3 className="text-[13px] font-semibold">{t("users:invite.companyRoles")}</h3><p className="mt-1 text-xs text-[var(--t2)]">{t("users:invite.companyRolesHint")}</p></div>
                 <Button type="button" size="sm" variant="outline" disabled={activeCompanies.length <= assignments.length} onClick={addCompanyAssignment}><Plus aria-hidden="true" className="size-4" />{t("users:invite.addCompany")}</Button>
               </div>
               {assignments.map((assignment, index) => {

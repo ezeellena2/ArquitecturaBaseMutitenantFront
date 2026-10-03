@@ -1,4 +1,5 @@
 import { cloneElement, useId, type ReactElement, type ReactNode } from "react";
+import { cn } from "cn";
 import { Label } from "./label";
 
 interface FormFieldProps {
@@ -9,7 +10,7 @@ interface FormFieldProps {
   error?: string;
   required?: boolean;
   variant?: "default" | "auth";
-  children: ReactElement<{ id?: string; "aria-invalid"?: boolean; "aria-describedby"?: string; "aria-required"?: boolean }>;
+  children: ReactElement<{ id?: string; className?: string; "aria-invalid"?: boolean; "aria-describedby"?: string; "aria-required"?: boolean }>;
 }
 
 /// Etiqueta, control y mensaje de error, atados entre sí para lectores de pantalla (sección 7.4).
@@ -27,6 +28,7 @@ export function FormField({ label, htmlFor, hint, error, required, variant = "de
       </Label>
       {cloneElement(children, {
         id: controlId,
+        className: variant === "auth" ? cn(children.props.className, "h-11 rounded-[10px] px-3.5 text-[15px]") : children.props.className,
         "aria-invalid": error ? true : undefined,
         "aria-describedby": message ? messageId : undefined,
         "aria-required": required ? true : undefined,
@@ -35,7 +37,7 @@ export function FormField({ label, htmlFor, hint, error, required, variant = "de
         <p
           id={messageId}
           role={error ? "alert" : undefined}
-          className={error ? "text-sm text-[var(--peligro)]" : "text-sm text-[var(--t2)]"}
+          className={error ? "text-[13px] text-[var(--peligro)]" : "text-[13px] text-[var(--t2)]"}
         >
           {message}
         </p>

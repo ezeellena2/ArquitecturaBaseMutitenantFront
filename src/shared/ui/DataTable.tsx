@@ -178,7 +178,7 @@ export function DataTable<TRow>({
   if (rows.length === 0) return <EmptyState title={emptyTitle ?? t("states.empty")} description={emptyDescription} action={emptyAction} />;
 
   return (
-    <Table aria-busy={isFetching === true} className={cn("table-fixed", isFetching ? "opacity-60" : undefined)}>
+    <Table aria-busy={isFetching === true} className={cn("table-fixed text-[13px]", isFetching ? "opacity-60" : undefined)}>
       <TableHeader>
         <TableRow className="bg-[var(--s2)] hover:bg-[var(--s2)]">
           {columns.map((column) => (
@@ -210,7 +210,7 @@ export function DataTable<TRow>({
               <TableCell
                 key={column.id}
                 className={cn(
-                  "overflow-hidden px-3 py-0 whitespace-nowrap",
+                  "overflow-hidden px-4 py-0 whitespace-nowrap",
                   column.className,
                   column.type === "actions" ? "w-[5%] max-md:w-[14%]" : undefined,
                   columnVisibility(column),

@@ -27,7 +27,7 @@ const Toaster = ({ toastOptions, ...props }: ToasterProps) => {
       position="bottom-right"
       richColors
       containerAriaLabel={t("notifications.label")}
-      toastOptions={{ duration: 4000, closeButton: false, closeButtonAriaLabel: t("notifications.close"), ...toastOptions }}
+      toastOptions={{ duration: 4000, closeButton: false, closeButtonAriaLabel: t("notifications.close"), style: { padding: "12px 14px", gap: "10px", borderRadius: "10px", fontSize: "13px" }, ...toastOptions }}
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,
@@ -41,7 +41,9 @@ const Toaster = ({ toastOptions, ...props }: ToasterProps) => {
           "--normal-bg": "var(--popover)",
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
-          "--border-radius": "12px",
+          "--width": "340px",
+          "--border-radius": "10px",
+          fontFamily: "var(--font-sans)",
           "--success-bg": "var(--ok-t)",
           "--success-border": "var(--ok)",
           "--success-text": "var(--ok)",

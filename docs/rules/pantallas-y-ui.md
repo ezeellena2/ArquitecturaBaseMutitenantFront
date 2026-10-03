@@ -4,9 +4,10 @@
 
 ## Cómo se hace
 - Toda pantalla usa `Page`: una banda blanca de ancho completo (64 px de alto mínimo, como `.banda-pag` del lienzo) con el ícono de la sección o «‹» (`backTo`), el título, el resumen debajo y, a la derecha, la acción principal más el menú ⋮ para las secundarias. El regreso mide 28 × 28 px y el menú de desborde 34 × 34 px, como `Criterio-Marco`. Las pestañas, si corresponden, van debajo de la banda.
+- El cuerpo de `Page` conserva 24 px a los costados, 20 px arriba y abajo y 14 px entre secciones en escritorio; en teléfono usa 16 px de margen.
 - **Listado:** `FilterBar` en su propia tarjeta y, debajo, `Surface` > `DataTable` + `Pagination`. Nunca todo junto en una sola tarjeta. El buscador y filtros miden 36 px en escritorio y 32 px en teléfono. Las acciones de fila van siempre en el menú ⋮ (`RowActions`): primero las comunes y, al final y en rojo, las destructivas; las opciones dependen del estado.
 - Las tablas y listas llevan encabezado arena, filas alternadas y estado como punto de color más texto, sin pastillas. El estado se conserva como texto accesible; el orden se anuncia con `aria-sort`.
-- Los botones estándar miden 40 px en escritorio y 34 px en teléfono; los compactos, 32 y 28 px respectivamente; los de ícono, 32 px. Los campos regulares miden 44 px en escritorio y 36 px en teléfono. Ingreso y registro siguen su tablero aprobado.
+- Los botones estándar miden 36 px en escritorio y 34 px en teléfono; los compactos, 32 y 28 px respectivamente; los de ícono, 32 px. Los campos regulares miden 36 px; ingreso y registro usan 44 px donde lo indica su tablero. El texto común de páginas, filas y menús mide 13 px; las variantes del tablero pueden ser mayores.
 - **Ficha:** a ancho completo. Pestañas **solo** con dos o más tablas grandes, debajo de la banda y con su conteo; la acción de la pestaña aparece en la banda solo con esa pestaña.
 - Colores solo con los tokens de [tema.md](../architecture/tema.md), por nombre (`bg-[var(--fondo)]`, `text-[var(--t2)]`). Las variables de shadcn (`--primary`, `--ring`, `--destructive`…) son solo alias de esos tokens en `index.css`. Si falta un color, se agrega un token en `index.css` y en la tabla de tema.md.
 - shadcn se genera con `npx shadcn@4.21.0 add` y se edita lo mínimo; las piezas propias van en PascalCase.
@@ -23,7 +24,7 @@
 - Programar una pantalla sin tablero.
 
 ## Copiá de
-- el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (v60; solo los tableros validados); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` (E4) y `docs/architecture/tema.md`
+- el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (v65; solo los tableros validados); para la convención de código, `src/areas/business/roles/pages/RolesPage.tsx` (E4) y `docs/architecture/tema.md`
 
 ## Lo verifica
 - La revisión del usuario sobre el tablero, antes de programar.

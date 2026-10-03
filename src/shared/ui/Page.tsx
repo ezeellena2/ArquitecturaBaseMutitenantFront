@@ -39,7 +39,7 @@ export function Page({
   actions,
   moreActions,
   children,
-  bodyClassName = "p-5 lg:px-8 lg:pt-7 lg:pb-6",
+  bodyClassName = "flex flex-col gap-3.5 p-4 text-[13px] lg:px-6 lg:py-5",
 }: PageProps): ReactNode {
   const visibleMoreActions = moreActions?.items.filter((action) => !action.hidden) ?? [];
   const regularActions = visibleMoreActions.filter((action) => !action.destructive);

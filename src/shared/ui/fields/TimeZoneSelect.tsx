@@ -55,7 +55,7 @@ export function TimeZoneSelect({ value, onChange, placeholder, id, disabled, var
         aria-label={t("fields.searchTimeZone")} placeholder={t("fields.searchTimeZone")} disabled={unavailable} />
       <select id={id} value={value} onChange={(event) => onChange(event.target.value)}
         disabled={unavailable} aria-busy={waiting} aria-invalid={invalid} aria-describedby={describedBy}
-        className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm text-[var(--t1)] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50"
+        className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-[13px] text-[var(--t1)] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50"
       >
         <option value="">{waiting ? t("states.loading") : isError ? t("states.error") : placeholder}</option>
         {!format.isLoading && selected && !options.some((zone) => zone.id === value)

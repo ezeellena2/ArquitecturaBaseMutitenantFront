@@ -23,13 +23,13 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center gap-2 rounded-[16px] border border-dashed border-[var(--borde)] p-10 text-center",
+        "flex flex-col items-center gap-2 rounded-[12px] border border-dashed border-[var(--borde)] p-8 text-center",
         className,
       )}
     >
-      <h3 className="text-base font-medium">{title}</h3>
+      <h3 className="text-[14px] font-semibold">{title}</h3>
       {description ? (
-        <p className={cn("text-sm text-[var(--t2)]", descriptionClassName)}>{description}</p>
+        <p className={cn("text-[13px] text-[var(--t2)]", descriptionClassName)}>{description}</p>
       ) : null}
       {action}
     </div>

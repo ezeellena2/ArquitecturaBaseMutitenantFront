@@ -164,15 +164,15 @@ export function UserDetailPage() {
     </> : undefined}>
       <div className="flex flex-col gap-4">
         {failure && !(failure instanceof ApiError && failure.code === "General.ConcurrencyConflict") ? <FormError message={failureMessage(failure, t("common:states.error"))} /> : null}
-        {member.state === "PendingDeletion" ? <p className="rounded-[10px] border border-[var(--alerta)] bg-[var(--alerta-t)] p-3 text-sm text-[var(--t1)]">{t("users:detail.pendingDeletion")}</p> : null}
+        {member.state === "PendingDeletion" ? <p className="rounded-[10px] border border-[var(--alerta)] bg-[var(--alerta-t)] p-3 text-[13px] text-[var(--t1)]">{t("users:detail.pendingDeletion")}</p> : null}
     <Surface className="overflow-hidden">
           <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2>{t("users:detail.accessTitle")}</h2></header>
           <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5">
-            <FormField label={t("users:invite.email")}><p className="min-h-9 content-center break-all text-sm text-[var(--t1)]">{member.email ?? <span className="text-[var(--t3)]">{"—"}</span>}</p></FormField>
-            <FormField label={t("users:detail.joined")}><p className="min-h-9 content-center text-sm text-[var(--t1)]"><DateText value={member.createdAtUtc} kind="date" /></p></FormField>
-            {member.invitationIssuedAtUtc ? <FormField label={t("users:detail.invitationSent")}><p className="min-h-9 content-center text-sm text-[var(--t1)]"><DateText value={member.invitationIssuedAtUtc} kind="dateTime" /></p></FormField> : null}
-            {member.invitationExpiresAtUtc ? <FormField label={t("users:columns.expires")}><p className="min-h-9 content-center text-sm text-[var(--t1)]"><DateText value={member.invitationExpiresAtUtc} kind="date" /></p></FormField> : null}
-            {member.hasManagedEmail ? <p className="flex items-start gap-2 text-sm text-[var(--t2)] md:col-span-2"><Mail aria-hidden="true" className="mt-0.5 size-4 shrink-0" />{t("users:managedEmail")}</p> : null}
+            <FormField label={t("users:invite.email")}><p className="min-h-9 content-center break-all text-[13px] text-[var(--t1)]">{member.email ?? <span className="text-[var(--t3)]">{"—"}</span>}</p></FormField>
+            <FormField label={t("users:detail.joined")}><p className="min-h-9 content-center text-[13px] text-[var(--t1)]"><DateText value={member.createdAtUtc} kind="date" /></p></FormField>
+            {member.invitationIssuedAtUtc ? <FormField label={t("users:detail.invitationSent")}><p className="min-h-9 content-center text-[13px] text-[var(--t1)]"><DateText value={member.invitationIssuedAtUtc} kind="dateTime" /></p></FormField> : null}
+            {member.invitationExpiresAtUtc ? <FormField label={t("users:columns.expires")}><p className="min-h-9 content-center text-[13px] text-[var(--t1)]"><DateText value={member.invitationExpiresAtUtc} kind="date" /></p></FormField> : null}
+            {member.hasManagedEmail ? <p className="flex items-start gap-2 text-[13px] text-[var(--t2)] md:col-span-2"><Mail aria-hidden="true" className="mt-0.5 size-4 shrink-0" />{t("users:managedEmail")}</p> : null}
           </div>
         </Surface>
 
@@ -180,7 +180,7 @@ export function UserDetailPage() {
           <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2>{t("users:detail.organizationRoles")}</h2></header>
           <div className="p-4 md:p-5">
             {isEditableState ? <FormField label={t("users:detail.organizationRoles")}><MultiSelect options={orgRoles.map((role) => ({ value: role.id, label: role.name }))} value={currentRoleIds} onChange={updateOrganizationRoles} placeholder={t("users:invite.chooseRoles")} /></FormField>
-              : <p className="text-sm text-[var(--t2)]">{t("users:detail.pendingDeletionRoles")}</p>}
+              : <p className="text-[13px] text-[var(--t2)]">{t("users:detail.pendingDeletionRoles")}</p>}
           </div>
         </Surface>
 
@@ -190,18 +190,18 @@ export function UserDetailPage() {
             {canManage && isEditableState ? <Button type="button" size="sm" variant="outline" disabled={!companies.data || activeCompanies.every((company) => assignedCompanyIds.has(company.id)) || save.isPending} onClick={() => openCompanyDialog("add")}><Plus aria-hidden="true" className="size-4" />{t("users:invite.addCompany")}</Button> : null}
           </header>
           <div className="flex flex-col gap-3 p-4 md:p-5">
-            {hasUnavailableMemberships ? <p className="rounded-lg bg-[var(--s2)] p-3 text-sm text-[var(--t2)]">{t("users:detail.preservedCompanies")}</p> : null}
+            {hasUnavailableMemberships ? <p className="rounded-lg bg-[var(--s2)] p-3 text-[13px] text-[var(--t2)]">{t("users:detail.preservedCompanies")}</p> : null}
             {member.companies.filter((company) => preservedCompanyIds.has(company.companyId)).map((company) => <div key={company.companyId} className="rounded-lg border border-[var(--borde)] p-3">
-              <div className="flex items-center gap-2 text-sm font-semibold"><Building2 aria-hidden="true" className="size-4 text-[var(--t2)]" />{company.companyName}<span className="ml-auto text-xs font-normal text-[var(--t2)]">{t("users:detail.companyInactive")}</span></div>
-              <p className="mt-2 text-sm text-[var(--t2)]">{company.roles.map((role) => role.name).join(", ") || "—"}</p>
+              <div className="flex items-center gap-2 text-[13px] font-semibold"><Building2 aria-hidden="true" className="size-4 text-[var(--t2)]" />{company.companyName}<span className="ml-auto text-xs font-normal text-[var(--t2)]">{t("users:detail.companyInactive")}</span></div>
+              <p className="mt-2 text-[13px] text-[var(--t2)]">{company.roles.map((role) => role.name).join(", ") || "—"}</p>
             </div>)}
             {changeableAssignments.map((assignment) => {
               const company = activeCompanies.find((item) => item.id === assignment.companyId);
               const companyName = company?.name ?? member.companies.find((item) => item.companyId === assignment.companyId)?.companyName ?? t("users:invite.chooseCompany");
               return <div key={`company-${assignment.companyId}`} className="grid gap-3 rounded-lg border border-[var(--borde)] p-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_auto] md:items-end">
                 <div className="min-w-0 self-center">
-                  <p className="truncate text-sm font-semibold text-[var(--t1)]">{companyName}</p>
-                  <p className="mt-1 truncate text-sm text-[var(--t2)]">{assignment.roleIds.map((id) => companyRoles.find((role) => role.id === id)?.name).filter(Boolean).join(", ") || "—"}</p>
+                  <p className="truncate text-[13px] font-semibold text-[var(--t1)]">{companyName}</p>
+                  <p className="mt-1 truncate text-[13px] text-[var(--t2)]">{assignment.roleIds.map((id) => companyRoles.find((role) => role.id === id)?.name).filter(Boolean).join(", ") || "—"}</p>
                 </div>
                 {canManage && isEditableState ? <RowActions label={t("users:detail.companyActions", { name: companyName })} actions={[
                   { label: t("users:detail.changeCompanyRoles"), accessibleName: t("users:detail.changeCompanyRoles"), icon: Settings2, onSelect: () => openCompanyDialog("roles", assignment) },
@@ -209,7 +209,7 @@ export function UserDetailPage() {
                 ]} /> : null}
               </div>;
             })}
-            {changeableAssignments.length === 0 && preservedCompanyIds.size === 0 ? <p className="text-sm text-[var(--t2)]">{t("users:detail.noCompanies")}</p> : null}
+            {changeableAssignments.length === 0 && preservedCompanyIds.size === 0 ? <p className="text-[13px] text-[var(--t2)]">{t("users:detail.noCompanies")}</p> : null}
           </div>
         </Surface>
 

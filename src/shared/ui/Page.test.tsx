@@ -27,10 +27,10 @@ describe("Page", () => {
     );
 
     const band = screen.getByRole("heading", { level: 1 }).closest("header");
-    const body = container.querySelector("[class*=p-5]");
+    const body = container.querySelector('[class~="p-4"]');
     expect(band).toHaveClass("min-h-16");
     expect(band).not.toHaveClass("sticky");
-    expect(body).toHaveClass("p-5", "lg:px-8", "lg:pt-7", "lg:pb-6");
+    expect(body).toHaveClass("p-4", "lg:px-6", "lg:py-5", "text-[13px]", "flex", "flex-col", "gap-3.5");
   });
 
   it("hides the section icon from the screen reader", () => {

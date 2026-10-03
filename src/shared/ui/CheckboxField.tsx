@@ -71,7 +71,7 @@ export function CheckboxField({
           </p>
         ) : null}
         {error ? (
-          <p id={errorId} role="alert" className="text-sm text-[var(--peligro)]">
+          <p id={errorId} role="alert" className="text-[13px] text-[var(--peligro)]">
             {error}
           </p>
         ) : null}

@@ -142,7 +142,7 @@ export function CompanyDetailPage() {
   });
 
   if (!canRead) return <ForbiddenPage homePath="/org" />;
-  if (company.isPending) return <Page icon={Building2} title={t("companies:detail.loading")}><p role="status" className="p-4 text-sm text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (company.isPending) return <Page icon={Building2} title={t("companies:detail.loading")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   if (company.isError || !company.data) return <Page icon={Building2} title={t("companies:detail.title")} backTo={{ to: "/org/empresas", label: t("companies:back") }}><div className="p-4"><FormError message={failureMessage(company.error, t("common:states.error"))} /><Button type="button" variant="outline" onClick={() => { void company.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
   const data = company.data;
 
@@ -270,7 +270,7 @@ export function CompanyDetailPage() {
           <FormField label={t("companies:editMemberRoles.roles")}>
             <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleDraft} onChange={setRoleDraft} placeholder={t("companies:addMember.chooseRoles")} />
           </FormField>
-          {mutationError instanceof ApiError && mutationError.code === "Companies.Membership.LastCompanyAdmin" ? <p role="alert" className="text-sm text-[var(--alerta)]">{t("companies:editMemberRoles.lastAdmin")}</p> : null}
+          {mutationError instanceof ApiError && mutationError.code === "Companies.Membership.LastCompanyAdmin" ? <p role="alert" className="text-[13px] text-[var(--alerta)]">{t("companies:editMemberRoles.lastAdmin")}</p> : null}
         </div>
         <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
           <Button type="button" variant="outline" onClick={() => setRoleTarget(null)}>{t("common:actions.cancel")}</Button>

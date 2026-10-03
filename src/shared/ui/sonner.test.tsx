@@ -7,12 +7,16 @@ vi.mock("sonner", async (importOriginal) => {
   const actual = await importOriginal<typeof import("sonner")>();
   return {
     ...actual,
-    Toaster: ({ position, richColors, style }: ToasterProps) => (
+    Toaster: ({ position, richColors, style, toastOptions }: ToasterProps) => (
       <div
         data-testid="sonner-root"
         data-x-position={position?.split("-")[1]}
         data-y-position={position?.split("-")[0]}
         data-rich-colors={String(richColors)}
+        data-toast-padding={toastOptions?.style?.padding}
+        data-toast-gap={toastOptions?.style?.gap}
+        data-toast-radius={toastOptions?.style?.borderRadius}
+        data-toast-font-size={toastOptions?.style?.fontSize}
         style={style}
       />
     ),
@@ -21,7 +25,7 @@ vi.mock("sonner", async (importOriginal) => {
 
 afterEach(() => vi.restoreAllMocks());
 
-describe("Toaster · Criterio v60", () => {
+describe("Toaster · Criterio v65", () => {
   it("puts colored toasts at the bottom right using system tokens", () => {
     renderWithProviders(<Toaster />);
     const toaster = document.querySelector<HTMLElement>("[data-testid='sonner-root']");
@@ -29,6 +33,12 @@ describe("Toaster · Criterio v60", () => {
     expect(toaster).toHaveAttribute("data-x-position", "right");
     expect(toaster).toHaveAttribute("data-y-position", "bottom");
     expect(toaster).toHaveAttribute("data-rich-colors", "true");
+    expect(toaster).toHaveAttribute("data-toast-padding", "12px 14px");
+    expect(toaster).toHaveAttribute("data-toast-gap", "10px");
+    expect(toaster).toHaveAttribute("data-toast-radius", "10px");
+    expect(toaster).toHaveAttribute("data-toast-font-size", "13px");
+    expect((toaster as HTMLElement).style.getPropertyValue("--width")).toBe("340px");
+    expect((toaster as HTMLElement).style.getPropertyValue("--border-radius")).toBe("10px");
     expect((toaster as HTMLElement).style.getPropertyValue("--success-bg")).toBe("var(--ok-t)");
     expect((toaster as HTMLElement).style.getPropertyValue("--error-bg")).toBe("var(--peligro-t)");
   });

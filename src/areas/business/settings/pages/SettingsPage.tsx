@@ -91,7 +91,7 @@ export function SettingsPage() {
         {failure && !(failure instanceof ApiError && failure.code === "General.ConcurrencyConflict") ? <FormError message={saveError?.detail ?? t("common:states.error")} /> : null}
         <Surface className="overflow-hidden">
           <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2>{t("settings:dataTitle")}</h2></header>
-          {settings.isPending ? <p role="status" className="p-4 text-sm text-[var(--t2)]">{t("common:states.loading")}</p> : draft ? <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5">
+          {settings.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft ? <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5">
             <FormField label={t("settings:fields.name")} required><Input value={draft.name} disabled={!canManage} maxLength={120} onChange={(event) => setDraftState({ ...draft, name: event.target.value })} /></FormField>
             <FormField label={t("settings:fields.culture")}><CultureSelect value={draft.defaultCulture} onChange={(defaultCulture) => setDraftState({ ...draft, defaultCulture })} placeholder={t("settings:chooseCulture")} disabled={!canManage} /></FormField>
             <FormField label={t("settings:fields.timeZone")}><TimeZoneSelect value={draft.defaultTimeZoneId} onChange={(defaultTimeZoneId) => setDraftState({ ...draft, defaultTimeZoneId })} placeholder={t("settings:chooseTimeZone")} disabled={!canManage} /></FormField>
@@ -104,11 +104,11 @@ export function SettingsPage() {
             <h2>{t("settings:domains.title")}</h2>
             {canManage ? <Button type="button" variant="outline" size="sm" onClick={() => setDomainDialogOpen(true)}><Plus aria-hidden="true" className="size-4" />{t("settings:domains.add")}</Button> : null}
           </header>
-          {domains.isPending ? <p role="status" className="p-4 text-sm text-[var(--t2)]">{t("common:states.loading")}</p>
-            : activeDomains.length === 0 ? <p className="p-4 text-sm text-[var(--t2)]">{t("settings:domains.empty")}</p>
+          {domains.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
+            : activeDomains.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)]">{t("settings:domains.empty")}</p>
               : <div className="divide-y divide-[var(--borde)]">{activeDomains.map((domain) => <div key={domain.id} className="grid gap-3 p-4 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-[var(--t1)]">{domain.domain}</p>
+                  <p className="truncate text-[13px] font-semibold text-[var(--t1)]">{domain.domain}</p>
                   <p className="mt-1 inline-flex items-center gap-1 text-[13px] text-[var(--t2)]">
                     <span aria-hidden="true" className={`size-2 rounded-full ${domain.status === "Verified" ? "bg-[var(--ok)]" : "bg-[var(--alerta)]"}`} />
                     {t(`settings:domains.status.${domain.status}`)}
@@ -128,7 +128,7 @@ export function SettingsPage() {
       <DialogContent className="md:max-w-[420px]">
         <DialogHeader><DialogTitle>{t("settings:domains.addTitle")}</DialogTitle><DialogDescription>{t("settings:domains.addDescription")}</DialogDescription></DialogHeader>
         <div className="px-5 py-4"><FormField label={t("settings:domains.domain")} required><Input autoComplete="off" value={domainDraft} onChange={(event) => setDomainDraft(event.target.value)} /></FormField>
-          {addDomain.error ? <p role="alert" className="mt-2 text-sm text-[var(--peligro)]">{addDomain.error.detail ?? t("common:states.error")}</p> : null}</div>
+          {addDomain.error ? <p role="alert" className="mt-2 text-[13px] text-[var(--peligro)]">{addDomain.error.detail ?? t("common:states.error")}</p> : null}</div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => setDomainDialogOpen(false)}>{t("common:actions.cancel")}</Button>
           <Button type="button" disabled={!domainDraft.trim() || addDomain.isPending} onClick={() => addDomain.mutate({ domain: domainDraft.trim() }, { onSuccess: async () => { setDomainDraft(""); setDomainDialogOpen(false); toast.success(t("settings:domains.added")); await client.invalidateQueries({ queryKey: organizationDomainsKey }); } })}>{t("settings:domains.add")}</Button>

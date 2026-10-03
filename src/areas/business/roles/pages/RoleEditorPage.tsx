@@ -162,7 +162,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const title = mode === "create" ? t("roles:createTitle") : role.data ? displayRoleName(role.data, t) : t("roles:editorTitle");
 
   if (!canRead || mode === "create" && !canManage) return <ForbiddenPage homePath="/org" />;
-  if (mode === "edit" && role.isPending) return <Page icon={ShieldCheck} title={t("roles:editorTitle")}><p role="status" className="p-4 text-sm text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (mode === "edit" && role.isPending) return <Page icon={ShieldCheck} title={t("roles:editorTitle")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   if (mode === "edit" && role.isError) return <Page icon={ShieldCheck} title={t("roles:editorTitle")} backTo={{ to: "/org/roles", label: t("roles:backToList") }}><div className="p-4"><FormError message={role.error instanceof ApiError ? role.error.detail ?? t("common:states.error") : t("common:states.error")} /><Button type="button" onClick={() => { void role.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
 
   function changeDraft(patch: Partial<RoleDraft>) {
@@ -215,18 +215,18 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
         <Button type="button" disabled={save.isPending || mode === "edit" && !isDirty} onClick={() => save.mutate()}>{save.isPending ? t("roles:saving") : mode === "create" ? t("roles:create") : t("roles:save")}</Button>
       </div> : undefined}
     >
-      <div className="flex flex-col gap-4 lg:gap-5">
+      <div className="flex flex-col gap-3.5">
         {failure && !(failure instanceof ApiError && failure.code === "General.ConcurrencyConflict")
           ? <FormError message={failure instanceof ApiError ? failure.detail ?? t("common:states.error") : t("common:states.error")} /> : null}
         {permissions.isError ? <FormError message={permissions.error instanceof ApiError ? permissions.error.detail ?? t("common:states.error") : t("common:states.error")} /> : null}
         <section className="overflow-hidden rounded-[12px] border border-[var(--borde)] bg-[var(--lado-activo)]">
           <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2>{t("roles:dataTitle")}</h2></header>
-          <div className="flex flex-col gap-4 p-4 lg:gap-5 lg:p-5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+          <div className="flex flex-col gap-3.5 p-4 lg:gap-3.5 lg:p-5">
+            <div className="flex flex-col gap-3.5 lg:flex-row lg:items-start lg:gap-5">
               <div className="w-full lg:max-w-[360px]">
                 {editable ? <FormField label={t("roles:fields.name")} required error={validation.name}>
                   <Input value={draft.name} maxLength={60} autoComplete="off" onChange={(event) => changeDraft({ name: event.target.value })} />
-                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.name")}</span><p className="min-h-9 text-[14px] text-[var(--t1)]">{role.data && isSystemRole ? displayRoleName(role.data, t) : draft.name}</p></div>}
+                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.name")}</span><p className="min-h-9 text-[13px] text-[var(--t1)]">{role.data && isSystemRole ? displayRoleName(role.data, t) : draft.name}</p></div>}
               </div>
               <div className="w-full lg:max-w-[260px]">
                 {mode === "create" ? <FormField label={t("roles:fields.scope")} required error={validation.scope}>
@@ -238,7 +238,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
                       <SelectItem value="SpecificCompany" description={t("roles:scope.specificCompanyDescription")}>{t("roles:scope.specificCompany")}</SelectItem>
                     </SelectContent>
                   </Select>
-                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.scope")}</span><p className="min-h-9 text-[14px] text-[var(--t1)]">{role.data ? t(scopeTranslationKey(role.data.scope)) : ""}</p></div>}
+                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.scope")}</span><p className="min-h-9 text-[13px] text-[var(--t1)]">{role.data ? t(scopeTranslationKey(role.data.scope)) : ""}</p></div>}
               </div>
               {draft.scope === "SpecificCompany" && mode === "create" ? <div className="w-full lg:max-w-[320px]">
                 <FormField label={t("roles:fields.company")} required error={validation.companyId}>
@@ -247,12 +247,12 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
                     <SelectContent position="popper">{(companies.data?.items ?? []).filter((company: CompanyResponse) => company.status === "Active").map((company) => <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>)}</SelectContent>
                   </Select>
                 </FormField>
-              </div> : mode === "edit" && draft.scope === "SpecificCompany" ? <div className="w-full lg:max-w-[320px]"><div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.company")}</span><p className="min-h-9 text-[14px] text-[var(--t1)]">{companies.data?.items.find((company) => company.id === draft.companyId)?.name ?? draft.companyId}</p></div></div> : null}
+              </div> : mode === "edit" && draft.scope === "SpecificCompany" ? <div className="w-full lg:max-w-[320px]"><div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.company")}</span><p className="min-h-9 text-[13px] text-[var(--t1)]">{companies.data?.items.find((company) => company.id === draft.companyId)?.name ?? draft.companyId}</p></div></div> : null}
             </div>
             <div className="w-full lg:max-w-[720px]">
               {editable ? <FormField label={t("roles:fields.description")}>
                 <Textarea value={draft.description} maxLength={500} className="min-h-[88px] resize-y" onChange={(event) => changeDraft({ description: event.target.value })} />
-              </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.description")}</span><p className="min-h-9 whitespace-pre-wrap text-[14px] text-[var(--t1)]">{role.data && isSystemRole ? displayRoleDescription(role.data, t) ?? t("roles:noDescription") : draft.description || t("roles:noDescription")}</p></div>}
+              </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.description")}</span><p className="min-h-9 whitespace-pre-wrap text-[13px] text-[var(--t1)]">{role.data && isSystemRole ? displayRoleDescription(role.data, t) ?? t("roles:noDescription") : draft.description || t("roles:noDescription")}</p></div>}
             </div>
           </div>
         </section>

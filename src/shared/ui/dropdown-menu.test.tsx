@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 
-describe("DropdownMenu · Criterio v60", () => {
+describe("DropdownMenu · Criterio v65", () => {
   it("keeps secondary actions accessible and compact at both breakpoints", () => {
     render(
       <DropdownMenu open>
@@ -23,8 +23,9 @@ describe("DropdownMenu · Criterio v60", () => {
     const edit = screen.getByRole("menuitem", { name: "Editar" });
     const remove = screen.getByRole("menuitem", { name: "Eliminar" });
 
-    expect(menu).toHaveClass("min-w-[200px]", "lg:min-w-[220px]");
-    expect(edit).toHaveClass("min-h-[34px]", "lg:min-h-10", "text-[13px]", "lg:text-[14px]");
+    expect(menu).toHaveClass("min-w-[200px]", "rounded-[10px]");
+    expect(edit).toHaveClass("min-h-[34px]", "text-[13px]");
+    expect(edit).not.toHaveClass("lg:min-h-10", "lg:text-[14px]");
     expect(remove).toHaveClass("data-[variant=destructive]:text-[var(--peligro)]");
   });
 });

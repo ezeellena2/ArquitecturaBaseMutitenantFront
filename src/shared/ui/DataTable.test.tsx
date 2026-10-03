@@ -122,6 +122,7 @@ describe("DataTable", () => {
 
   it("usa encabezado arena de 13 px y filas compactas de 40 px", () => {
     render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} />);
+    expect(screen.getByRole("table")).toHaveClass("text-[13px]");
     expect(screen.getByRole("columnheader", { name: "Nombre" })).toHaveClass("bg-[var(--cab)]", "text-[13px]", "normal-case", "whitespace-normal");
     expect(screen.getAllByRole("row")[1]).toHaveClass("h-10", "odd:bg-[var(--fila-alterna)]");
   });

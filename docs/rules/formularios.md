@@ -44,4 +44,4 @@
 - Tests de `shared/ui/fields`: borrado del valor anterior ante texto inválido, aviso tras blur y recuperación de validez al corregir.
 
 ## Detalle
-[frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · [lienzo versionado v64](../design/lienzo/README.md): tableros «Criterio · Formularios» y «Criterio · Diálogos», y «Rol» y «Configuración» como ejemplos (una caja por tema, filas del ancho de la caja, «Cambios sin guardar»)
+[frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · [lienzo versionado v65](../design/lienzo/README.md): tableros «Criterio · Formularios» y «Criterio · Diálogos», y «Rol» y «Configuración» como ejemplos (una caja por tema, filas del ancho de la caja, «Cambios sin guardar»)

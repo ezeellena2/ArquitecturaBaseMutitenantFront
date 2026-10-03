@@ -38,7 +38,7 @@ export function CurrencySelect({ value, onChange, placeholder, id, disabled, "ar
         aria-label={t("fields.searchCurrency")} placeholder={t("fields.searchCurrency")} disabled={unavailable} />
       <select id={id} value={value} onChange={(event) => onChange(event.target.value)}
         disabled={unavailable} aria-busy={isPending} aria-invalid={invalid} aria-describedby={describedBy}
-        className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm text-[var(--t1)] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50"
+        className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-[13px] text-[var(--t1)] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50"
       >
         <option value="">{isPending ? t("states.loading") : isError ? t("states.error") : placeholder}</option>
         {selected && !options.some((row) => row.code === value)

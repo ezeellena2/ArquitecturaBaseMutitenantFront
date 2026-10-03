@@ -152,12 +152,12 @@ export function PublicPagePage() {
     >
       <div className="flex flex-col gap-4">
         {page.error ? <FormError message={page.error instanceof ApiError ? page.error.detail ?? t("common:states.error") : t("common:states.error")} /> : null}
-        {page.isPending ? <p role="status" className="text-sm text-[var(--t2)]">{t("common:states.loading")}</p> : draft && pageData ? <>
+        {page.isPending ? <p role="status" className="text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft && pageData ? <>
           <Surface className="overflow-hidden">
             <header className="flex min-h-10 items-center justify-between border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2>{t("publicPage:pageData")}</h2></header>
             <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5">
               <FormField label={t("publicPage:fields.slug")} required><Input value={draft.slug} disabled={!canManage} maxLength={63} autoComplete="off" onChange={(event) => setDraftState({ ...draft, slug: event.target.value.toLowerCase() })} /></FormField>
-              <div className="flex items-end pb-2 text-sm text-[var(--t2)]">{draft.slug ? <>{draft.slug}{".plataforma.com"}</> : t("publicPage:slug.empty")}</div>
+              <div className="flex items-end pb-2 text-[13px] text-[var(--t2)]">{draft.slug ? <>{draft.slug}{".plataforma.com"}</> : t("publicPage:slug.empty")}</div>
               {slugChanged && slugState ? <p className={`text-[13px] ${slugState === "Available" ? "text-[var(--ok)]" : "text-[var(--peligro)]"}`}>{slugStateText(slugState, t)}</p> : null}
               <FormField label={t("publicPage:fields.name")} required><Input value={draft.name} maxLength={120} onChange={(event) => setDraftState({ ...draft, name: event.target.value })} /></FormField>
               <div className="md:col-span-2"><FormField label={t("publicPage:fields.description")}><Textarea value={draft.description} maxLength={1000} className="min-h-[88px] resize-y" onChange={(event) => setDraftState({ ...draft, description: event.target.value })} /></FormField></div>
@@ -166,7 +166,7 @@ export function PublicPagePage() {
           <Surface className="overflow-hidden">
             <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2>{t("publicPage:logoTitle")}</h2></header>
             <div className="flex flex-wrap items-center gap-3 p-4">
-              {draft.logoDataUri ? <img src={draft.logoDataUri} alt={t("publicPage:logoAlt")} className="size-14 rounded-lg object-contain" /> : <span className="flex size-14 items-center justify-center rounded-lg border border-[var(--borde)] text-sm font-semibold text-[var(--t2)]">{draft.name.slice(0, 2).toUpperCase()}</span>}
+              {draft.logoDataUri ? <img src={draft.logoDataUri} alt={t("publicPage:logoAlt")} className="size-14 rounded-lg object-contain" /> : <span className="flex size-14 items-center justify-center rounded-lg border border-[var(--borde)] text-[13px] font-semibold text-[var(--t2)]">{draft.name.slice(0, 2).toUpperCase()}</span>}
               <label className="inline-flex min-h-8 cursor-pointer items-center gap-2 rounded-[8px] border border-[var(--borde)] px-3 text-[13px] text-[var(--t1)] hover:bg-[var(--s2)]">
                 <ImagePlus aria-hidden="true" className="size-4" />{t("publicPage:uploadLogo")}
                 <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => { void chooseLogo(event.target.files?.[0]); }} />
@@ -192,8 +192,8 @@ export function PublicPagePage() {
         <DialogHeader><DialogTitle>{t("publicPage:preview")}</DialogTitle><DialogDescription>{t("publicPage:previewDescription")}</DialogDescription></DialogHeader>
         {draft ? <div className="flex flex-col gap-4 px-5 pb-5">
           <div className="flex items-center gap-3">{draft.logoDataUri ? <img src={draft.logoDataUri} alt={t("publicPage:logoAlt")} className="size-12 rounded-lg object-contain" /> : null}<h2 className="text-lg font-bold text-[var(--t1)]">{draft.name}</h2></div>
-          {draft.description ? <p className="whitespace-pre-wrap text-sm text-[var(--t2)]">{draft.description}</p> : null}
-          <dl className="grid gap-2 text-sm sm:grid-cols-2">
+          {draft.description ? <p className="whitespace-pre-wrap text-[13px] text-[var(--t2)]">{draft.description}</p> : null}
+          <dl className="grid gap-2 text-[13px] sm:grid-cols-2">
             {draft.contactEmail ? <div><dt className="font-semibold">{t("publicPage:fields.email")}</dt><dd>{draft.contactEmail}</dd></div> : null}
             {draft.contactPhone ? <div><dt className="font-semibold">{t("publicPage:fields.phone")}</dt><dd>{draft.contactPhone}</dd></div> : null}
             {draft.address ? <div><dt className="font-semibold">{t("publicPage:fields.address")}</dt><dd>{draft.address}</dd></div> : null}
@@ -207,7 +207,7 @@ export function PublicPagePage() {
     <Dialog open={blockedInfoOpen} onOpenChange={setBlockedInfoOpen}>
       <DialogContent className="md:max-w-[480px]">
         <DialogHeader><DialogTitle>{t("publicPage:blockedTitle")}</DialogTitle><DialogDescription>{t("publicPage:blockedReason", { reason: pageData?.publishBlockedReason ?? t("publicPage:blockedFallback") })}</DialogDescription></DialogHeader>
-        <ol className="list-decimal space-y-1 px-10 pb-4 text-sm text-[var(--t2)]"><li>{t("publicPage:blockedStep1")}</li><li>{t("publicPage:blockedStep2")}</li></ol>
+        <ol className="list-decimal space-y-1 px-10 pb-4 text-[13px] text-[var(--t2)]"><li>{t("publicPage:blockedStep1")}</li><li>{t("publicPage:blockedStep2")}</li></ol>
         <DialogFooter><Button type="button" onClick={() => setBlockedInfoOpen(false)}>{t("common:actions.close")}</Button></DialogFooter>
       </DialogContent>
     </Dialog>

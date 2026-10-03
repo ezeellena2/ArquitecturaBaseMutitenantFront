@@ -53,6 +53,6 @@ export function DateTimeField({ value, onChange, onValidityChange, id, name, dis
       onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
       aria-invalid={externalInvalid || showError} aria-describedby={description} />
-    {showError && <p id={messageId} role="alert" className="text-sm text-[var(--peligro)]">{t("fields.invalidDateTime")}</p>}
+    {showError && <p id={messageId} role="alert" className="text-[13px] text-[var(--peligro)]">{t("fields.invalidDateTime")}</p>}
   </>;
 }

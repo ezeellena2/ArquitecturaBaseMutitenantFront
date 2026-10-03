@@ -54,8 +54,8 @@ export function AccountPage() {
     }
     const clean = new URLSearchParams(params); clean.delete("google"); clean.delete("error"); setParams(clean, { replace: true });
   });
-  if (isPending) return <p role="status" className="p-6">{t("states.loading")}</p>;
-  if (!data) return <div className="p-6"><FormError message={error instanceof Error ? error.message : t("states.error")} /><Button onClick={() => { void refetch(); }}>{t("actions.retry")}</Button></div>;
+  if (isPending) return <p role="status" className="p-4 text-[13px] lg:px-6 lg:py-5">{t("states.loading")}</p>;
+  if (!data) return <div className="flex flex-col gap-3.5 p-4 text-[13px] lg:px-6 lg:py-5"><FormError message={error instanceof Error ? error.message : t("states.error")} /><Button onClick={() => { void refetch(); }}>{t("actions.retry")}</Button></div>;
   return <><AccountProfileForm key={data.id} account={data}>
     <section role="region" aria-labelledby="account-methods-title" className="overflow-hidden rounded-[12px] border border-[var(--borde)] bg-[var(--lado-activo)]">
       <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]">

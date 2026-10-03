@@ -83,7 +83,7 @@ export function RadioGroupField({ label, options, value, onValueChange, error }:
         })}
       </RadioGroup.Root>
       {error ? (
-        <p id={errorId} role="alert" className="px-2.5 text-sm text-[var(--peligro)]">
+        <p id={errorId} role="alert" className="px-2.5 text-[13px] text-[var(--peligro)]">
           {error}
         </p>
       ) : null}

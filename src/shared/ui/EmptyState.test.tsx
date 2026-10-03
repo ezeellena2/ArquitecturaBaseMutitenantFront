@@ -2,11 +2,14 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { EmptyState } from "./EmptyState";
 
-describe("EmptyState", () => {
-  it("shows the message and the action", () => {
-    render(<EmptyState title="No hay usuarios" description="Probá con otra búsqueda." action={<button>{"Limpiar"}</button>} />);
+describe("EmptyState · criterio compacto", () => {
+  it("mantiene título, detalle y espacio dentro de la escala del lienzo", () => {
+    const { container } = render(<EmptyState title="No hay resultados" description="Probá con otros filtros." />);
+    const title = screen.getByRole("heading", { name: "No hay resultados" });
+    const description = screen.getByText("Probá con otros filtros.");
 
-    expect(screen.getByRole("heading", { name: "No hay usuarios" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Limpiar" })).toBeInTheDocument();
+    expect(container.firstElementChild).toHaveClass("rounded-[12px]", "p-8", "gap-2");
+    expect(title).toHaveClass("text-[14px]");
+    expect(description).toHaveClass("text-[13px]");
   });
 });

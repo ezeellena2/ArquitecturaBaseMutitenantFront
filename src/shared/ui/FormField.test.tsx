@@ -46,7 +46,8 @@ describe("FormField", () => {
 
     const input = screen.getByLabelText("Nombre *");
     expect(input).toHaveAttribute("aria-required", "true");
-    expect(input).toHaveClass("h-9", "lg:h-11", "text-[13.5px]", "lg:text-[15px]");
+    expect(input).toHaveClass("h-9", "text-[13.5px]");
+    expect(input).not.toHaveClass("lg:h-11", "lg:text-[15px]");
     expect(screen.getByText("Nombre")).toHaveClass("text-[12px]", "lg:text-[13px]", "font-semibold", "text-[var(--t2)]");
   });
 
@@ -58,5 +59,6 @@ describe("FormField", () => {
     );
 
     expect(screen.getByText("Correo electrónico")).toHaveClass("text-[12px]", "font-semibold", "text-[var(--t2)]");
+    expect(screen.getByLabelText("Correo electrónico")).toHaveClass("h-11", "rounded-[10px]", "text-[15px]");
   });
 });

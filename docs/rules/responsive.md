@@ -23,7 +23,7 @@
   { id: "createdAtUtc" }                      // sin `mobile`: se oculta en el teléfono
   ```
   El ⋮ de acciones está siempre. Cada tabla tiene **una** columna `primary`.
-- **Tamaño en teléfono:** seguir las dimensiones de cada tablero validado `Criterio-*` (botón estándar 34 px, compacto 28 px y campo 36 px); 44 px se conserva en los estados de ingreso y registro que así lo muestran. El tablero manda si este resumen difiere.
+- **Tamaños:** en escritorio, botón estándar 36 px, compacto 32 px y campo 36 px; en teléfono, botón estándar 34 px, compacto 28 px y campo 36 px. Ingreso y registro conservan los 44 px que muestran sus tableros. El tablero manda si este resumen difiere.
 - **Cortes:** los de Tailwind (`md` = 768 y `lg` = 1024), sin cortes propios. `useMediaQuery` solo para cambiar de pieza (diálogo u hoja), nunca para estilos.
 - **Tableros:** cada pantalla nueva se dibuja en el lienzo **a 1440 y a 390** antes de programarse.
 

@@ -124,7 +124,7 @@ export function AuditPage() {
           <DialogDescription>{selected ? t("audit:detailSummary", { actor: selected.actorDisplayName ?? selected.actorText, entity: selected.entityText }) : ""}</DialogDescription>
         </DialogHeader>
         {selected ? <div className="flex flex-col gap-3 px-5 pb-5">
-          <dl className="grid gap-2 text-sm sm:grid-cols-2">
+          <dl className="grid gap-2 text-[13px] sm:grid-cols-2">
             <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.when")}</dt><dd><DateText value={selected.occurredAtUtc} kind="dateTime" /></dd></div>
             <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.about")}</dt><dd>{selected.entityText}</dd></div>
             <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.where")}</dt><dd>{selected.whereText}</dd></div>
@@ -137,7 +137,7 @@ export function AuditPage() {
               <span className="text-[var(--t2)]">{change.oldValue ?? t("audit:noValue")}</span>
               <span className="text-[var(--t1)]">{change.newValue ?? t("audit:noValue")}</span>
             </div>)}
-          </div> : <p className="text-sm text-[var(--t2)]">{t("audit:noChanges")}</p>}
+          </div> : <p className="text-[13px] text-[var(--t2)]">{t("audit:noChanges")}</p>}
         </div> : null}
       </DialogContent>
     </Dialog>
