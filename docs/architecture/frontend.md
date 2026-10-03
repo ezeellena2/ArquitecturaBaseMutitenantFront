@@ -58,7 +58,8 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 
 | Ruta | Pantalla | Quién |
 |---|---|---|
-| `/` | sin sesión: la portada de la plataforma (con «Para empresas» y el directorio de empresas publicadas). Con sesión de persona: su inicio personal | cualquiera |
+| `/` | sin sesión: la portada de la plataforma (tablero Landing), con «Para empresas», las entradas a «Registrá tu empresa» y la sección «Empresas en ArquitecturaBase»: buscador, tres empresas publicadas y «Ver todas las empresas», que lleva a `/empresas`; «Empresas», arriba, baja a esa sección. Con sesión de persona: su inicio personal | cualquiera |
+| `/empresas` | el directorio de empresas publicadas (tablero Directorio): tarjetas con buscador y paginado; cada una lleva a la página pública de la organización, en su subdominio | cualquiera |
 | `/login`, `/registro`, `/recuperar` | ingresar **como persona**, crear una cuenta y «Recuperar mi cuenta» | público |
 | `/login/empresa`, `/registro/empresa` | ingresar **como empresa** y **«Registrá tu empresa»** | público |
 | `/invitacion`, `/auth/callback`, `/login/enlace` | aceptar una invitación, volver del servidor de ingreso, enlace del bot (Etapa 8) | público |
@@ -263,6 +264,8 @@ Rigen los [tableros del lienzo versionado](../design/lienzo/README.md) (versión
 - Títulos de 24 px, campos y botones de 40 px, código en casillas de 52 px. Los errores del servidor van en un mensaje de color arriba del botón.
 
 **Teléfono** (hasta 767 px)
+- **Con sesión, el teléfono es una app** (lienzo, «Criterio · Marco y pantallas»): barra de título, barra de abajo con «Más», listas de borde a borde y hojas con manija. Lo que sigue en esta sección describe la web achicada anterior; se reescribe con el Paquete 5 de `docs/reviews/2026-10-03-alineacion-lienzo.md` (repo del back). Mientras tanto, manda el lienzo.
+- **El sitio público sin sesión** (portada, `/empresas` y la página de cada organización) se ve como **web móvil**, con ☰ y sin barra de abajo (tableros Landing-Movil, M-Directorio y M-Pagina-Publica).
 - Barra de arriba de 52 px:
   - ☰ abre el mismo menú lateral por encima del contenido, con un velo;
   - en el medio, la marca;
