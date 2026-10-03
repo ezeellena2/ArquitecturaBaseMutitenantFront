@@ -123,6 +123,27 @@ describe("BusinessSignupPage", () => {
     expect(signinRedirect).not.toHaveBeenCalled();
   });
 
+  it("después de Google, «Recibimos el pedido» dice el correo al que avisamos, en negrita como el tablero", async () => {
+    server.use(
+      http.get("/api/public-site/slug-availability", () => HttpResponse.json({ slug: "acme", availability: "Available" })),
+      http.post("/api/auth/business-signup", () => HttpResponse.json({ tenantId: "tenant-id", organizationName: "Acme",
+        slug: "acme", requiresApproval: true, firstCompanyId: "company-id", status: "PendingApproval",
+        notificationEmail: "valentina.ruiz@gmail.com" })),
+    );
+    show("/registro/empresa?google=complete");
+    expect(await screen.findByRole("heading", { name: "Tu organización" })).toBeVisible();
+    fireEvent.change(screen.getByRole("textbox", { name: "Nombre de la organización" }), { target: { value: "Acme" } });
+    fireEvent.change(screen.getByRole("textbox", { name: /Dirección de tu página/ }), { target: { value: "acme" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "Primera empresa" }), { target: { value: "Acme Argentina" } });
+    expect(await screen.findByRole("status")).toHaveTextContent("Disponible");
+    fireEvent.click(screen.getByRole("button", { name: "Crear organización" }));
+
+    expect(await screen.findByRole("heading", { name: "Recibimos el pedido" })).toBeVisible();
+    const detail = screen.getByText((_, element) => element?.tagName === "P"
+      && element.textContent === "Revisamos Acme y te avisamos a valentina.ruiz@gmail.com cuando esté aprobada.");
+    expect(within(detail).getByText("valentina.ruiz@gmail.com").tagName).toBe("STRONG");
+  });
+
   it("muestra el rechazo del slug y no permite crear la organización", async () => {
     server.use(http.get("/api/public-site/slug-availability", () => HttpResponse.json({ slug: "admin", availability: "Reserved" })));
     const created = vi.fn();

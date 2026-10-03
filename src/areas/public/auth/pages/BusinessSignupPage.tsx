@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { Trans, useTranslation } from "react-i18next";
@@ -40,6 +40,8 @@ export function BusinessSignupPage() {
   const [acceptedTerms, setAcceptedTerms] = useState(auth.isAuthenticated);
   const [termsError, setTermsError] = useState(false);
   const [email, setEmail] = useState("");
+  // El correo al que avisamos la aprobación lo dice la API: con Google o con sesión no se escribió ninguno.
+  const [notificationEmail, setNotificationEmail] = useState("");
   const [code, setCode] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [requestError, setRequestError] = useState<ApiError | null>(null);
@@ -188,6 +190,7 @@ export function BusinessSignupPage() {
         firstCompanyName: firstCompanyName.trim(),
         taxNumber,
       });
+      setNotificationEmail(response.notificationEmail ?? email);
       setStep(response.requiresApproval ? "approval" : "success");
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
@@ -218,7 +221,7 @@ export function BusinessSignupPage() {
         detail={t("businessSignup.doneDetail")} action={t("businessSignup.openOrganization", { organization: organizationName.trim() })}
         onAction={() => void enterOrganization()} />
         : step === "approval" ? <StatusPanel icon="approval" title={t("businessSignup.approvalTitle")}
-          detail={t("businessSignup.approvalDetail", { organization: organizationName.trim(), email })}
+          detail={<Trans ns="auth" i18nKey="businessSignup.approvalDetail" values={{ organization: organizationName.trim(), email: notificationEmail }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />}
           action={t("businessSignup.backHome")} href="/" />
           : step === "email" ? <section className="flex flex-col gap-[22px]">
             <h1 className="text-[26px] font-bold leading-tight">{t("businessSignup.title")}</h1>
@@ -294,7 +297,7 @@ export function BusinessSignupPage() {
   </AuthLayout>;
 
   function StatusPanel({ icon, title, detail, action, href, onAction }: {
-    icon: "lock" | "success" | "approval"; title: string; detail: string; action: string; href?: string;
+    icon: "lock" | "success" | "approval"; title: string; detail: ReactNode; action: string; href?: string;
     onAction?: () => void;
   }) {
     const Icon = icon === "lock" ? LockKeyhole : icon === "success" ? Check : Clock3;
