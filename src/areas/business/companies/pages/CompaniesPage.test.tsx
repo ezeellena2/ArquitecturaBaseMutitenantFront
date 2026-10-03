@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -35,10 +35,12 @@ describe("CompaniesPage", () => {
     expect(await screen.findByRole("heading", { level: 1, name: "Empresas" })).toBeVisible();
     expect(await screen.findByRole("link", { name: "Delta S.A." })).toHaveAttribute("href", "/org/empresas/company-1");
     expect(screen.queryByRole("columnheader", { name: "CUIT" })).not.toBeInTheDocument();
-    expect(screen.getByText(/30-71234567-8/)).toBeVisible();
-    expect(screen.getByText(/1 empresa/)).toBeVisible();
+    expect(screen.getByText("CUIT 30-71234567-8")).toBeVisible();
+    // Tablero Empresas: «1 empresa · 1 activa» y el filtro «Estado: todas».
+    expect(screen.getByText("1 empresa · 1 activa")).toBeVisible();
 
-    await user.click(screen.getByRole("button", { name: "Todos los estados" }));
+    await user.click(screen.getByRole("button", { name: "Estado: todas" }));
+    expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent?.replace(/\d+$/, ""))).toEqual(["Todas", "Activas", "Inactivas"]);
     await user.click(await screen.findByRole("menuitemradio", { name: /Inactivas/ }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Inactive"));
     expect(router.state.location.search).toContain("status=Inactive");
@@ -86,6 +88,7 @@ describe("CompaniesPage", () => {
 
     await waitFor(() => expect(requestBody).toEqual({ name: "Empresa Nueva S.A.", taxIdType: null, taxIdNumber: null, timeZoneId: "America/Argentina/Buenos_Aires" }));
     expect(idempotencyKey).toMatch(/^[0-9a-f-]{36}$/i);
+    expect(await screen.findByText("Creamos Empresa Nueva S.A. Quedaste con el rol Administrador.")).toBeVisible();
   }, 10_000);
 
   it("inactiva una empresa con su versión y confirmación", async () => {
@@ -104,9 +107,14 @@ describe("CompaniesPage", () => {
     const rowActions = await screen.findByRole("button", { name: "Acciones para Delta S.A." });
     rowActions.focus();
     await user.keyboard("{Enter}");
-    await user.click(await screen.findByRole("menuitem", { name: "Cambiar estado" }));
-    await user.click(await screen.findByRole("button", { name: "Inactivar empresa" }));
+    // Tablero Empresas: «Ver ficha», «Editar» y, después de la franja, «Inactivar» en rojo.
+    expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Ver ficha", "Editar", "Inactivar"]);
+    await user.click(await screen.findByRole("menuitem", { name: "Inactivar" }));
+    const confirm = await screen.findByRole("dialog", { name: "¿Inactivar Delta S.A.?" });
+    expect(confirm).toHaveTextContent("Nadie entra a esta empresa mientras esté inactiva. Sus datos y sus miembros se conservan.");
+    await user.click(within(confirm).getByRole("button", { name: "Inactivar" }));
 
     await waitFor(() => expect(requestBody).toEqual({ status: "Inactive", version: 3 }));
+    expect(await screen.findByText("Inactivamos Delta S.A.")).toBeVisible();
   }, 10_000);
 });

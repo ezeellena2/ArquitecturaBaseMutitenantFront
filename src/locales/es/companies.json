@@ -1,7 +1,5 @@
 {
   "title": "Empresas",
-  "summary_one": "{{total}} empresa · {{active}} activas · {{inactive}} inactivas",
-  "summary_other": "{{total}} empresas · {{active}} activas · {{inactive}} inactivas",
   "summaryFallback_one": "{{total}} empresa",
   "summaryFallback_other": "{{total}} empresas",
   "create": "Crear empresa",
@@ -19,11 +17,17 @@
   "filters": {
     "label": "Filtrar empresas",
     "search": "Buscar por nombre o CUIT",
-    "status": "Estado",
-    "all": "Todos los estados"
+    "status": "Estado: todas",
+    "all": "Todas"
   },
-  "status": { "Active": "Activa", "Inactive": "Inactiva" },
-  "statusFilters": { "Active": "Activas", "Inactive": "Inactivas" },
+  "status": {
+    "Active": "Activa",
+    "Inactive": "Inactiva"
+  },
+  "statusFilters": {
+    "Active": "Activas",
+    "Inactive": "Inactivas"
+  },
   "empty": {
     "all": "Todavía no hay empresas",
     "filtered": "Ninguna empresa coincide con los filtros",
@@ -39,44 +43,45 @@
     "create": "Crear empresa",
     "save": "Guardar cambios"
   },
-  "validation": { "taxIdPair": "Completá el tipo y el número de identificación fiscal, o dejá ambos vacíos." },
+  "validation": {
+    "taxIdPair": "Completá el tipo y el número de identificación fiscal, o dejá ambos vacíos."
+  },
   "rowActions": "Acciones para {{name}}",
   "memberActions": "Acciones para {{name}}",
   "actions": {
     "view": "Ver ficha",
     "edit": "Editar",
-    "changeStatus": "Cambiar estado",
-    "deactivate": "Inactivar empresa",
-    "activate": "Activar empresa",
+    "deactivate": "Inactivar",
+    "activate": "Activar",
     "more": "Más acciones",
     "addMember": "Agregar miembro",
     "changeRoles": "Cambiar roles",
     "viewUser": "Ver usuario",
     "removeMember": "Quitar de la empresa",
-    "restoreMember": "Volver a sumar"
+    "restoreMember": "Volver a sumar",
+    "editCompany": "Editar empresa"
   },
   "confirm": {
     "deactivate": "¿Inactivar {{name}}?",
-    "deactivateDescription": "La empresa y sus permisos dejarán de estar disponibles. Sus miembros y datos se conservan.",
-    "activate": "¿Activar {{name}}?",
-    "activateDescription": "La empresa volverá a estar disponible para la organización.",
+    "deactivateDescription": "Nadie entra a esta empresa mientras esté inactiva. Sus datos y sus miembros se conservan.",
     "removeMember": "¿Quitar a {{name}} de la empresa?",
-    "removeMemberDescription": "La persona deja de tener acceso a esta empresa y se quitan sus roles. Sigue siendo parte de la organización.",
-    "restoreMember": "¿Volver a sumar a {{name}}?",
-    "restoreMemberDescription": "La persona recupera el acceso a la empresa; los roles se asignan de nuevo después."
+    "removeMemberDescription": "Deja de entrar a {{company}} y pierde sus roles acá. Sigue en la organización y en sus otras empresas.",
+    "deactivateConfirm": "Inactivar",
+    "removeMemberConfirm": "Quitar"
   },
   "messages": {
-    "created": "Creamos la empresa.",
-    "updated": "Guardamos los cambios de la empresa.",
-    "deactivated": "Inactivamos la empresa.",
-    "activated": "Activamos la empresa.",
-    "memberAdded": "Agregamos a la persona a la empresa.",
-    "rolesUpdated": "Guardamos los roles de la empresa.",
-    "memberRemoved": "Quitamos el acceso a la empresa.",
-    "memberRestored": "Restauramos el acceso a la empresa."
+    "created": "Creamos {{name}}. Quedaste con el rol Administrador.",
+    "updated": "Guardamos los cambios de {{name}}.",
+    "deactivated": "Inactivamos {{name}}.",
+    "activated": "Activamos {{name}}.",
+    "memberAdded": "Agregamos a {{name}} a la empresa.",
+    "rolesUpdated": "Guardamos los roles de {{name}}.",
+    "memberRemoved": "Quitamos a {{name}} de la empresa.",
+    "memberRestored": "Volvimos a sumar a {{name}}. Dale los roles de nuevo.",
+    "detailUpdated": "Guardamos los cambios."
   },
   "memberColumns": {
-    "name": "Nombre",
+    "name": "Miembro",
     "email": "Correo",
     "roles": "Roles en la empresa",
     "state": "Estado"
@@ -98,11 +103,18 @@
     "filters": {
       "label": "Filtrar miembros",
       "search": "Buscar por nombre o correo",
-      "role": "Todos los roles",
-      "allRoles": "Todos los roles",
+      "role": "Rol: todos",
+      "allRoles": "Todos",
       "withoutRoles": "Sin roles",
-      "state": "Estado",
-      "allStates": "Todos los estados"
+      "state": "Estado: todos",
+      "allStates": "Todos",
+      "roleMenu": "Filtrar por rol",
+      "stateMenu": "Filtrar por estado",
+      "states": {
+        "Active": "Activos",
+        "Inactive": "Inactivos",
+        "PendingDeletion": "Baja pedida"
+      }
     },
     "empty": {
       "all": "Todavía no hay miembros en esta empresa",
@@ -130,5 +142,10 @@
     "roles": "Roles en la empresa",
     "save": "Guardar cambios",
     "lastAdmin": "Tiene que quedar al menos una persona administradora activa en la empresa."
-  }
+  },
+  "summaryTotal_one": "{{count}} empresa",
+  "summaryTotal_other": "{{count}} empresas",
+  "summaryActive_one": "{{count}} activa",
+  "summaryActive_other": "{{count}} activas",
+  "roleActions": "Acciones para {{name}}"
 }

@@ -231,7 +231,7 @@ function buildCases() {
   both({ pair: "empresa-editar", board: "Empresa", mobileBoard: "M-Empresa", path: "/org/empresas/company-1", responses: companyResponses,
     boardActions: [{ type: "click", selector: "button.b-sec" }],
     mobileBoardActions: [{ type: "click", selector: 'button[aria-label="Más acciones"]' }, { type: "click", selector: 'button[role="menuitem"]:not(.pel)' }],
-    actions: [{ type: "click", role: "button", name: "Editar" }], readySelector: '[role="dialog"]' });
+    actions: [{ type: "click", role: "button", name: "Editar empresa" }], readySelector: '[role="dialog"]' });
 
   both({ pair: "configuracion-verificada", board: "Configuracion", mobileBoard: "M-Configuracion", path: "/org/configuracion", responses: settingsResponses("Verified"), props: { dominio: "Verificado" }, mobileProps: {} });
   both({ pair: "configuracion-pendiente", board: "Configuracion", mobileBoard: null, path: "/org/configuracion", responses: settingsResponses("Pending"), props: { dominio: "Pendiente" } });

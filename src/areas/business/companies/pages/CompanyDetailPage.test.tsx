@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -27,7 +27,72 @@ beforeEach(async () => {
   await changeCulture("es-AR");
 });
 
+const ownRole = {
+  ...companyAdmin, id: "role-reader", name: "Solo lectura", scope: "SpecificCompany" as const, companyId: "company-1",
+  isSystemRole: false, userCount: 4, permissions: ["company.members.read"],
+};
+
+function detailApi(members: unknown[]) {
+  server.use(
+    http.get("/api/companies/company-1", () => HttpResponse.json(company)),
+    http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: members, page: 1, pageSize: 10, totalCount: members.length, totalPages: 1, hasPrevious: false, hasNext: false })),
+    http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: members.length, active: 1, pendingDeletion: 1, inactive: 1, invited: 0 })),
+    http.get("/api/roles/paged", () => HttpResponse.json({ items: [companyAdmin, ownRole], page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+  );
+}
+
 describe("CompanyDetailPage", () => {
+  it("tablero Empresa: banda, columnas, filtros y la pestaña Roles con los roles propios de la empresa", async () => {
+    const user = userEvent.setup();
+    detailApi([member]);
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+
+    const edit = await screen.findByRole("button", { name: "Editar empresa" });
+    expect(edit.querySelector("svg")).toBeNull();
+    expect(screen.getByRole("button", { name: "Agregar miembro" })).toBeVisible();
+    for (const name of ["Miembro", "Roles en la empresa", "Estado"]) expect(await screen.findByRole("columnheader", { name })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Rol: todos" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Estado: todos" })).toBeVisible();
+
+    await user.click(screen.getByRole("tab", { name: /Roles/ }));
+    expect(await screen.findByRole("link", { name: "Crear rol" })).toHaveAttribute("href", "/org/roles/new?scope=SpecificCompany&companyId=company-1");
+    expect(screen.queryByRole("button", { name: "Agregar miembro" })).not.toBeInTheDocument();
+    const roles = screen.getByRole("tabpanel");
+    for (const name of ["Rol", "Usuarios", "Permisos"]) expect(within(roles).getByRole("columnheader", { name })).toBeVisible();
+    expect(within(roles).queryByRole("columnheader", { name: "Vale en" })).not.toBeInTheDocument();
+    expect(within(roles).getByRole("link", { name: "Solo lectura" })).toBeVisible();
+    expect(within(roles).queryByText("Administrador")).not.toBeInTheDocument();
+  }, 15_000);
+
+  it("quitar pide confirmación (también con la baja pedida); volver a sumar es directo", async () => {
+    const user = userEvent.setup();
+    const pending = { ...member, memberId: "member-2", displayName: "Diego Ríos", email: "diego@example.com", state: "PendingDeletion" as const };
+    const inactive = { ...member, memberId: "member-3", displayName: "Marcos Giménez", email: "marcos@example.com", membershipStatus: "Inactive" as const };
+    const statusBodies: unknown[] = [];
+    detailApi([member, pending, inactive]);
+    server.use(http.put("/api/companies/company-1/members/:memberId/status", async ({ request }) => { statusBodies.push(await request.json()); return new HttpResponse(null, { status: 204 }); }));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    const open = async (name: string) => { const trigger = await screen.findByRole("button", { name }); trigger.focus(); await user.keyboard("{Enter}"); };
+
+    await open("Acciones para Diego Ríos");
+    expect(await screen.findByRole("menuitem", { name: "Quitar de la empresa" })).toBeVisible();
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+
+    await open("Acciones para Lucía Fernández");
+    await user.click(await screen.findByRole("menuitem", { name: "Quitar de la empresa" }));
+    const confirm = await screen.findByRole("dialog", { name: "¿Quitar a Lucía Fernández de la empresa?" });
+    expect(confirm).toHaveTextContent("Deja de entrar a Delta S.A. y pierde sus roles acá. Sigue en la organización y en sus otras empresas.");
+    await user.click(within(confirm).getByRole("button", { name: "Quitar" }));
+    expect(await screen.findByText("Quitamos a Lucía Fernández de la empresa.")).toBeVisible();
+
+    await open("Acciones para Marcos Giménez");
+    await user.click(await screen.findByRole("menuitem", { name: "Volver a sumar" }));
+    expect(await screen.findByText("Volvimos a sumar a Marcos Giménez. Dale los roles de nuevo.")).toBeVisible();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(statusBodies).toEqual([{ status: "Inactive", version: 8 }, { status: "Active", version: 8 }]);
+  }, 15_000);
+
   it("la banda dice el estado primero, el CUIT con su máscara y la zona por su nombre", async () => {
     server.use(
       http.get("/api/companies/company-1", () => HttpResponse.json({ ...company, taxId: { country: "AR", type: "AR-CUIT", number: "30712345678" } })),
@@ -63,7 +128,8 @@ describe("CompanyDetailPage", () => {
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     expect(await screen.findByRole("heading", { level: 1, name: "Delta S.A." })).toBeVisible();
     expect(await screen.findByText("Lucía Fernández")).toBeVisible();
-    await user.click(await screen.findByRole("button", { name: "Acciones para Lucía Fernández" }));
+    (await screen.findByRole("button", { name: "Acciones para Lucía Fernández" })).focus();
+    await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
     await user.click(screen.getByRole("button", { name: "Roles en la empresa" }));
     await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));

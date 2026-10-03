@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Building2, Eye, Pencil, Power } from "lucide-react";
+import { Building2, Eye, Pencil, Plus, Power } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -49,6 +49,9 @@ function draftFromCompany(company: CompanyResponse): CompanyDraft {
   return { name: company.name, taxId: company.taxId ? { type: company.taxId.type, number: company.taxId.number } : null, timeZoneId: company.timeZoneId };
 }
 
+// «Delta S.A.» + «. Quedaste…» no repite el punto final del nombre.
+const sentence = (text: string) => text.replace("..", ".");
+
 function errorMessage(error: unknown, fallback: string): string {
   return error instanceof ApiError ? error.detail ?? fallback : fallback;
 }
@@ -97,7 +100,7 @@ export function CompaniesPage() {
   };
   const finishSave = async (creating: boolean) => {
     setDialogOpen(false);
-    toast.success(t(creating ? "companies:messages.created" : "companies:messages.updated"));
+    toast.success(sentence(t(creating ? "companies:messages.created" : "companies:messages.updated", { name: draft.name.trim() })));
     setEditingCompany(null);
     setDraft(emptyDraft);
     setFailure(undefined);
@@ -113,7 +116,7 @@ export function CompaniesPage() {
     mutationFn: (company: CompanyResponse) => changeCompanyStatus(company.id, { status: company.status === "Active" ? "Inactive" : "Active", version: company.version }),
     onSuccess: async (_result, company) => {
       setStatusTarget(null);
-      toast.success(t(company.status === "Active" ? "companies:messages.deactivated" : "companies:messages.activated"));
+      toast.success(sentence(t(company.status === "Active" ? "companies:messages.deactivated" : "companies:messages.activated", { name: company.name })));
       await invalidate();
     },
     onError: (error) => toastError(errorMessage(error, t("common:states.error"))),
@@ -155,19 +158,21 @@ export function CompaniesPage() {
     {
       id: "actions", header: t("companies:columns.actions"), type: "actions",
       cell: (company) => <RowActions label={t("companies:rowActions", { name: company.name })} actions={[
+        // Tablero Empresas: «Ver ficha», «Editar» y, después de la franja, «Inactivar» en rojo; «Activar» es directo.
         { label: t("companies:actions.view"), accessibleName: t("companies:actions.view"), icon: Eye, onSelect: () => { void navigate(`/org/empresas/${encodeURIComponent(company.id)}`); } },
         { label: t("companies:actions.edit"), accessibleName: t("companies:actions.edit"), icon: Pencil, onSelect: () => openEdit(company), hidden: !canManage },
-        { label: t("companies:actions.changeStatus"), accessibleName: t("companies:actions.changeStatus"), icon: Power, onSelect: () => setStatusTarget(company), hidden: !canManage },
+        { label: t(company.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), accessibleName: t(company.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), icon: Power, destructive: company.status === "Active",
+          onSelect: () => { if (company.status === "Active") setStatusTarget(company); else updateStatus.mutate(company); }, hidden: !canManage },
       ]} />,
     },
   ];
   const listSummary = counts.data
-    ? t("companies:summary", { count: counts.data.all, total: counts.data.all, active: counts.data.active, inactive: counts.data.inactive })
+    ? `${t("companies:summaryTotal", { count: counts.data.all })} · ${t("companies:summaryActive", { count: counts.data.active })}`
     : companies.data ? t("companies:summaryFallback", { count: companies.data.totalCount, total: companies.data.totalCount }) : undefined;
 
   return <>
     <Page icon={Building2} title={t("companies:title")} summary={listSummary}
-      actions={canManage ? <Button type="button" onClick={openCreate}>{t("companies:create")}</Button> : undefined}>
+      actions={canManage ? <Button type="button" onClick={openCreate}><Plus aria-hidden="true" className="size-4" />{t("companies:create")}</Button> : undefined}>
       <div className="flex flex-col gap-3">
         <FilterBar
           label={t("companies:filters.label")}
@@ -176,7 +181,8 @@ export function CompaniesPage() {
           onSearchChange={pagination.setSearch}
           filters={[{
             key: "status", label: t("companies:filters.status"), menuLabel: t("companies:filters.status"),
-            value: status ?? "all", active: status !== undefined,
+            // Sin filtro el botón dice «Estado: todas» y el menú ofrece «Todas», como el tablero.
+            value: status ?? "", active: status !== undefined,
             onChange: (value) => filters.setFilter("status", value === "all" ? undefined : value),
             options: statusValues.map((value) => ({ value: value ?? "all", label: value ? t(`companies:statusFilters.${value}`) : t("companies:filters.all"), count: value === "Active" ? counts.data?.active : value === "Inactive" ? counts.data?.inactive : counts.data?.all })),
           }]}
@@ -226,10 +232,10 @@ export function CompaniesPage() {
     <ConfirmDialog
       open={statusTarget !== null}
       onOpenChange={(open) => { if (!open) setStatusTarget(null); }}
-      title={statusTarget ? t(statusTarget.status === "Active" ? "companies:confirm.deactivate" : "companies:confirm.activate", { name: statusTarget.name }) : ""}
-      description={statusTarget ? t(statusTarget.status === "Active" ? "companies:confirm.deactivateDescription" : "companies:confirm.activateDescription") : undefined}
-      confirmLabel={t(statusTarget?.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate")}
-      destructive={statusTarget?.status === "Active"}
+      title={statusTarget ? t("companies:confirm.deactivate", { name: statusTarget.name }) : ""}
+      description={t("companies:confirm.deactivateDescription")}
+      confirmLabel={t("companies:confirm.deactivateConfirm")}
+      destructive
       onConfirm={() => { if (statusTarget) updateStatus.mutate(statusTarget); }}
     />
   </>;

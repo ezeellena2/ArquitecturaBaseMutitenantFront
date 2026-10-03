@@ -11,7 +11,7 @@ export function createCompanyColumns(t: TFunction): Column<CompanyResponse>[] {
       id: "name", header: t("companies:columns.name"), type: "custom", mobile: "primary", sortable: true,
       cell: (company) => <div className="min-w-0">
         <Link className="block truncate font-medium text-[var(--marca-tx)] hover:underline" to={`/org/empresas/${encodeURIComponent(company.id)}`}>{company.name}</Link>
-        <span className="block truncate text-xs text-[var(--t3)]">{company.taxId ? <TaxIdText value={company.taxId} /> : t("companies:withoutTaxId")}</span>
+        <span className="block truncate text-xs text-[var(--t3)]">{company.taxId ? <TaxIdText value={company.taxId} withType /> : t("companies:withoutTaxId")}</span>
       </div>,
     },
     { id: "timeZoneId", header: t("companies:columns.timeZone"), type: "timeZone", value: (company) => company.timeZoneId },

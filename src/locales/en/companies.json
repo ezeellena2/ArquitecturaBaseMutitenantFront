@@ -1,7 +1,5 @@
 {
   "title": "Companies",
-  "summary_one": "{{total}} company · {{active}} active · {{inactive}} inactive",
-  "summary_other": "{{total}} companies · {{active}} active · {{inactive}} inactive",
   "summaryFallback_one": "{{total}} company",
   "summaryFallback_other": "{{total}} companies",
   "create": "Create company",
@@ -19,11 +17,17 @@
   "filters": {
     "label": "Filter companies",
     "search": "Search by name or tax ID",
-    "status": "Status",
-    "all": "All statuses"
+    "status": "Status: all",
+    "all": "All"
   },
-  "status": { "Active": "Active", "Inactive": "Inactive" },
-  "statusFilters": { "Active": "Active", "Inactive": "Inactive" },
+  "status": {
+    "Active": "Active",
+    "Inactive": "Inactive"
+  },
+  "statusFilters": {
+    "Active": "Active",
+    "Inactive": "Inactive"
+  },
   "empty": {
     "all": "There are no companies yet",
     "filtered": "No companies match these filters",
@@ -39,44 +43,45 @@
     "create": "Create company",
     "save": "Save changes"
   },
-  "validation": { "taxIdPair": "Enter both the tax ID type and number, or leave both empty." },
+  "validation": {
+    "taxIdPair": "Enter both the tax ID type and number, or leave both empty."
+  },
   "rowActions": "Actions for {{name}}",
   "memberActions": "Actions for {{name}}",
   "actions": {
     "view": "View details",
     "edit": "Edit",
-    "changeStatus": "Change status",
-    "deactivate": "Deactivate company",
-    "activate": "Activate company",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
     "more": "More actions",
     "addMember": "Add member",
     "changeRoles": "Change roles",
     "viewUser": "View user",
     "removeMember": "Remove from company",
-    "restoreMember": "Add back"
+    "restoreMember": "Add back",
+    "editCompany": "Edit company"
   },
   "confirm": {
     "deactivate": "Deactivate {{name}}?",
-    "deactivateDescription": "The company and its permissions will no longer be available. Its members and data are kept.",
-    "activate": "Activate {{name}}?",
-    "activateDescription": "The company will be available to the organization again.",
+    "deactivateDescription": "Nobody can enter this company while it is inactive. Its data and members are kept.",
     "removeMember": "Remove {{name}} from the company?",
-    "removeMemberDescription": "This person will lose company access and roles. They will remain in the organization.",
-    "restoreMember": "Add {{name}} back?",
-    "restoreMemberDescription": "This person regains company access; roles can be assigned again afterward."
+    "removeMemberDescription": "They can no longer enter {{company}} and lose their roles here. They stay in the organization and its other companies.",
+    "deactivateConfirm": "Deactivate",
+    "removeMemberConfirm": "Remove"
   },
   "messages": {
-    "created": "Company created.",
-    "updated": "Company changes saved.",
-    "deactivated": "Company deactivated.",
-    "activated": "Company activated.",
-    "memberAdded": "Person added to the company.",
-    "rolesUpdated": "Company roles saved.",
-    "memberRemoved": "Company access removed.",
-    "memberRestored": "Company access restored."
+    "created": "We created {{name}}. You have the Administrator role.",
+    "updated": "We saved the changes to {{name}}.",
+    "deactivated": "We deactivated {{name}}.",
+    "activated": "We activated {{name}}.",
+    "memberAdded": "We added {{name}} to the company.",
+    "rolesUpdated": "We saved the roles of {{name}}.",
+    "memberRemoved": "We removed {{name}} from the company.",
+    "memberRestored": "We added {{name}} back. Give them their roles again.",
+    "detailUpdated": "We saved the changes."
   },
   "memberColumns": {
-    "name": "Name",
+    "name": "Member",
     "email": "Email",
     "roles": "Company roles",
     "state": "Status"
@@ -98,11 +103,18 @@
     "filters": {
       "label": "Filter members",
       "search": "Search by name or email",
-      "role": "All roles",
-      "allRoles": "All roles",
+      "role": "Role: all",
+      "allRoles": "All",
       "withoutRoles": "No roles",
-      "state": "Status",
-      "allStates": "All statuses"
+      "state": "Status: all",
+      "allStates": "All",
+      "roleMenu": "Filter by role",
+      "stateMenu": "Filter by status",
+      "states": {
+        "Active": "Active",
+        "Inactive": "Inactive",
+        "PendingDeletion": "Deletion requested"
+      }
     },
     "empty": {
       "all": "There are no members in this company yet",
@@ -130,5 +142,10 @@
     "roles": "Company roles",
     "save": "Save changes",
     "lastAdmin": "The company must keep at least one active administrator."
-  }
+  },
+  "summaryTotal_one": "{{count}} company",
+  "summaryTotal_other": "{{count}} companies",
+  "summaryActive_one": "{{count}} active",
+  "summaryActive_other": "{{count}} active",
+  "roleActions": "Actions for {{name}}"
 }

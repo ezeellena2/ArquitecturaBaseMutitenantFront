@@ -860,7 +860,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           setStage("edita la empresa desde su ficha");
           await adminPage.goto(new URL(`/org/empresas/${e2eCompanyId}`, baseUrl).href);
           await adminPage.getByRole("heading", { name: e2eCompanyName, exact: true }).waitFor();
-          await adminPage.getByRole("button", { name: "Editar", exact: true }).click();
+          await adminPage.getByRole("button", { name: "Editar empresa", exact: true }).click();
           const companyEdit = adminPage.getByRole("dialog");
           await companyEdit.getByRole("textbox", { name: "Nombre", exact: true }).fill(updatedCompanyName);
           const companyUpdated = adminPage.waitForResponse((response) =>

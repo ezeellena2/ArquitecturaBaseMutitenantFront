@@ -10176,7 +10176,7 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Editar"
+            "name": "Editar empresa"
           }
         ],
         "readySelector": "[role=\"dialog\"]"
@@ -10604,7 +10604,7 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Editar"
+            "name": "Editar empresa"
           }
         ],
         "readySelector": "[role=\"dialog\"]"

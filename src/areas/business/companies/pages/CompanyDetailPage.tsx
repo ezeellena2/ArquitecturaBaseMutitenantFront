@@ -1,5 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Building2, Pencil, Plus, Power, ShieldCheck, UserRound } from "lucide-react";
+// «Delta S.A.» + «. Quedaste…» no repite el punto final del nombre.
+const sentence = (text: string) => text.replace("..", ".");
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
@@ -56,7 +58,8 @@ import { createCompanyMemberColumns } from "../columns";
 
 type CompanyTab = "members" | "roles";
 type CompanyDraft = { name: string; taxId: TaxIdDraft | null; timeZoneId: string };
-const states = [undefined, "Active", "PendingDeletion", "Inactive", "Invited"] as const;
+// Orden del filtro «Estado» del tablero Empresa.
+const states = [undefined, "Active", "Inactive", "PendingDeletion"] as const;
 const initialDraft: CompanyDraft = { name: "", taxId: null, timeZoneId: "" };
 
 function draftFromCompany(company: CompanyResponse): CompanyDraft {
@@ -121,17 +124,17 @@ export function CompanyDetailPage() {
   const addMember = useIdempotentMutation((request: AddCompanyMemberRequest, key) => addCompanyMember(id, request, key));
   const changeMemberRoles = useMutation({
     mutationFn: (member: CompanyMemberResponse) => updateCompanyMemberRoles(id, member.memberId, { roleIds: roleDraft, version: member.version }),
-    onSuccess: async () => { setRoleTarget(null); setMutationError(undefined); toast.success(t("companies:messages.rolesUpdated")); await invalidate(); },
+    onSuccess: async (_result, member) => { setRoleTarget(null); setMutationError(undefined); toast.success(t("companies:messages.rolesUpdated", { name: member.displayName })); await invalidate(); },
     onError: setMutationError,
   });
   const changeMemberState = useMutation({
     mutationFn: (member: CompanyMemberResponse) => changeCompanyMemberStatus(id, member.memberId, { status: member.membershipStatus === "Active" ? "Inactive" : "Active", version: member.version }),
-    onSuccess: async (_result, member) => { setStatusTarget(null); toast.success(t(member.membershipStatus === "Active" ? "companies:messages.memberRemoved" : "companies:messages.memberRestored")); await invalidate(); },
+    onSuccess: async (_result, member) => { setStatusTarget(null); toast.success(t(member.membershipStatus === "Active" ? "companies:messages.memberRemoved" : "companies:messages.memberRestored", { name: member.displayName })); await invalidate(); },
     onError: (error) => toastError(failureMessage(error, t("common:states.error"))),
   });
   const changeCompanyState = useMutation({
     mutationFn: () => changeCompanyStatus(id, { status: company.data?.status === "Active" ? "Inactive" : "Active", version: company.data?.version }),
-    onSuccess: async () => { setCompanyStatusConfirm(false); toast.success(t(company.data?.status === "Active" ? "companies:messages.deactivated" : "companies:messages.activated")); await invalidate(); },
+    onSuccess: async () => { setCompanyStatusConfirm(false); toast.success(sentence(t(company.data?.status === "Active" ? "companies:messages.deactivated" : "companies:messages.activated", { name: company.data?.name ?? "" }))); await invalidate(); },
     onError: (error) => toastError(failureMessage(error, t("common:states.error"))),
   });
   const saveCompany = useMutation({
@@ -139,7 +142,7 @@ export function CompanyDetailPage() {
       const payload: UpdateCompanyRequest = { name: editDraft.name.trim(), taxIdType: editDraft.taxId?.type || null, taxIdNumber: editDraft.taxId?.number || null, timeZoneId: editDraft.timeZoneId, version: company.data!.version };
       return updateCompany(id, payload);
     },
-    onSuccess: async () => { setEditOpen(false); setEditFailure(undefined); toast.success(t("companies:messages.updated")); await invalidate(); },
+    onSuccess: async () => { setEditOpen(false); setEditFailure(undefined); toast.success(t("companies:messages.detailUpdated")); await invalidate(); },
     onError: setEditFailure,
   });
 
@@ -169,31 +172,37 @@ export function CompanyDetailPage() {
     event.preventDefault();
     if (!selectedMemberId) return;
     addMember.mutate({ memberId: selectedMemberId, roleIds }, {
-      onSuccess: async () => { setAddOpen(false); setSelectedMemberId(""); setRoleIds([]); toast.success(t("companies:messages.memberAdded")); await invalidate(); },
+      onSuccess: async () => { setAddOpen(false); setSelectedMemberId(""); setRoleIds([]); toast.success(t("companies:messages.memberAdded", { name: candidates.find((member) => member.memberId === selectedMemberId)?.displayName ?? "" })); await invalidate(); },
       onError: setMutationError,
     });
   }
 
   const memberColumns: Column<CompanyMemberResponse>[] = [
-    ...createCompanyMemberColumns(t).slice(0, -1),
+    ...createCompanyMemberColumns(t),
     {
       id: "actions", header: t("companies:columns.actions"), type: "actions",
       cell: (member) => <RowActions label={t("companies:memberActions", { name: member.displayName })} actions={[
         { label: t("companies:actions.changeRoles"), accessibleName: t("companies:actions.changeRoles"), icon: ShieldCheck, onSelect: () => { setRoleTarget(member); setRoleDraft(member.roles.map((role) => role.id)); setMutationError(undefined); }, hidden: !canManageMembers || member.state !== "Active" || member.membershipStatus !== "Active" || data.status !== "Active" },
         { label: t("companies:actions.viewUser"), accessibleName: t("companies:actions.viewUser"), icon: UserRound, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); } },
-        { label: t(member.membershipStatus === "Active" ? "companies:actions.removeMember" : "companies:actions.restoreMember"), accessibleName: t(member.membershipStatus === "Active" ? "companies:actions.removeMember" : "companies:actions.restoreMember"), icon: Power, onSelect: () => setStatusTarget(member), destructive: member.membershipStatus === "Active", hidden: !canManageMembers || data.status !== "Active" || member.state === "PendingDeletion" },
+        // Tablero Empresa: «Quitar de la empresa» (también con la baja pedida) pide confirmación; «Volver a sumar» es directo.
+        { label: t(member.membershipStatus === "Active" ? "companies:actions.removeMember" : "companies:actions.restoreMember"), accessibleName: t(member.membershipStatus === "Active" ? "companies:actions.removeMember" : "companies:actions.restoreMember"), icon: Power, onSelect: () => { if (member.membershipStatus === "Active") setStatusTarget(member); else changeMemberState.mutate(member); }, destructive: member.membershipStatus === "Active", hidden: !canManageMembers || data.status !== "Active" },
       ]} />,
     },
   ];
-  const filteredState = state ?? "all";
+  // Sin filtro el botón dice «Estado: todos» o «Rol: todos» y el menú ofrece «Todos», como el tablero.
+  const filteredState = state ?? "";
   const countForState = (value: typeof states[number]) => value === undefined ? counts.data?.all : value === "Active" ? counts.data?.active : value === "PendingDeletion" ? counts.data?.pendingDeletion : value === "Inactive" ? counts.data?.inactive : counts.data?.invited;
   const selectableRoles = activeRoles.filter((role) => role.scope === "AnyCompany" || role.companyId === id);
+  // Pestaña Roles: solo los roles propios de esta empresa.
+  const ownRoles = activeRoles.filter((role) => role.scope === "SpecificCompany" && role.companyId === id);
   const canAdd = canManageMembers && data.status === "Active";
   const roleColumns: Column<RoleResponse>[] = [
     { id: "name", header: t("companies:roleColumns.name"), type: "custom", mobile: "primary", cell: (role) => <Link to={`/org/roles/${encodeURIComponent(role.id)}`} className="font-medium text-[var(--marca-tx)] hover:underline">{role.name}</Link> },
-    { id: "scope", header: t("companies:roleColumns.scope"), type: "text", value: (role) => t(role.scope === "AnyCompany" ? "roles:scope.company" : "roles:scope.specificCompany") },
     { id: "userCount", header: t("companies:roleColumns.users"), type: "integer", value: (role) => role.userCount },
     { id: "permissions", header: t("companies:roleColumns.permissions"), type: "integer", value: (role) => role.permissions.length, mobile: "status" },
+    { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: (role) => <RowActions label={t("companies:roleActions", { name: role.name })} actions={[
+      { label: t("companies:actions.edit"), accessibleName: t("companies:actions.edit"), icon: Pencil, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); } },
+    ]} /> },
   ];
 
   return <>
@@ -206,28 +215,29 @@ export function CompanyDetailPage() {
         <span aria-hidden="true">{" · "}</span><TimeZoneText value={data.timeZoneId} />
       </>}
       actions={<>
-        {canManageCompany ? <Button type="button" variant="outline" onClick={openEdit}><Pencil aria-hidden="true" className="size-4" />{t("companies:actions.edit")}</Button> : null}
+        {canManageCompany ? <Button type="button" variant="outline" onClick={openEdit}>{t("companies:actions.editCompany")}</Button> : null}
         {canAdd && tab === "members" ? <Button type="button" onClick={() => { setMutationError(undefined); setAddOpen(true); }}><Plus aria-hidden="true" className="size-4" />{t("companies:actions.addMember")}</Button> : null}
+        {canManageRoles && tab === "roles" ? <Button asChild><Link to={`/org/roles/new?scope=SpecificCompany&companyId=${encodeURIComponent(id)}`}><Plus aria-hidden="true" className="size-4" />{t("companies:detail.createRole")}</Link></Button> : null}
       </>}
-      moreActions={canManageCompany ? { label: t("companies:actions.more"), items: [{ label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), onSelect: () => setCompanyStatusConfirm(true), destructive: data.status === "Active" }] } : undefined}>
+      moreActions={canManageCompany ? { label: t("companies:actions.more"), items: [{ label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), onSelect: () => { if (data.status === "Active") setCompanyStatusConfirm(true); else changeCompanyState.mutate(); }, destructive: data.status === "Active" }] } : undefined}>
       <Tabs value={tab} onValueChange={(value) => setTab(value as CompanyTab)} className="flex flex-col gap-4">
         <TabsList variant="line" aria-label={t("companies:detail.tabsLabel")} className="w-full justify-start border-b border-[var(--borde)] rounded-none">
           <TabsTrigger value="members">{t("companies:detail.members")} <span className="text-xs text-[var(--t2)]">{members.data?.totalCount ?? data.memberCount}</span></TabsTrigger>
-          {canReadRoles ? <TabsTrigger value="roles">{t("companies:detail.roles")} <span className="text-xs text-[var(--t2)]">{selectableRoles.length}</span></TabsTrigger> : null}
+          {canReadRoles ? <TabsTrigger value="roles">{t("companies:detail.roles")} <span className="text-xs text-[var(--t2)]">{ownRoles.length}</span></TabsTrigger> : null}
         </TabsList>
         <TabsContent value="members" className="flex flex-col gap-3">
           {!canReadMembers ? <FormError message={t("companies:detail.membersForbidden")} /> : <>
             {counts.isError ? <FormError message={failureMessage(counts.error, t("common:states.error"))} /> : null}
             <FilterBar label={t("companies:detail.filters.label")} searchLabel={t("companies:detail.filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
               filters={[
-                { key: "roleId", label: t("companies:detail.filters.role"), menuLabel: t("companies:detail.filters.role"), value: filters.values.roleId ?? "all", active: filters.values.roleId !== undefined, onChange: (value) => filters.setFilter("roleId", value === "all" ? undefined : value), options: [{ value: "all", label: t("companies:detail.filters.allRoles") }, { value: "none", label: t("companies:detail.filters.withoutRoles") }, ...selectableRoles.map((role) => ({ value: role.id, label: role.name }))] },
-                { key: "state", label: t("companies:detail.filters.state"), menuLabel: t("companies:detail.filters.state"), value: filteredState, active: state !== undefined, onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value), options: states.map((value) => ({ value: value ?? "all", label: value ? t(`companies:memberStates.${value}`) : t("companies:detail.filters.allStates"), count: countForState(value) })) },
+                { key: "roleId", label: t("companies:detail.filters.role"), menuLabel: t("companies:detail.filters.roleMenu"), value: filters.values.roleId ?? "", active: filters.values.roleId !== undefined, onChange: (value) => filters.setFilter("roleId", value === "all" ? undefined : value), options: [{ value: "all", label: t("companies:detail.filters.allRoles") }, { value: "none", label: t("companies:detail.filters.withoutRoles") }, ...selectableRoles.map((role) => ({ value: role.id, label: role.name }))] },
+                { key: "state", label: t("companies:detail.filters.state"), menuLabel: t("companies:detail.filters.stateMenu"), value: filteredState, active: state !== undefined, onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value), options: states.map((value) => ({ value: value ?? "all", label: value ? t(`companies:detail.filters.states.${value}`) : t("companies:detail.filters.allStates"), count: countForState(value) })) },
               ]}
               clearLabel={t("common:actions.clear")} onClear={filters.clear} />
             <Surface className="overflow-hidden">
               <DataTable columns={memberColumns} rows={members.data?.items ?? []} rowKey={(member) => member.memberId} isLoading={members.isPending} isFetching={members.isFetching}
                 error={members.error ? failureMessage(members.error, t("common:states.error")) : undefined} onRetry={() => { void members.refetch(); void counts.refetch(); }}
-                emptyTitle={state || roleId || withoutRoles || pagination.search ? t("companies:detail.empty.filtered") : t("companies:detail.empty.all")} emptyAction={state || roleId || withoutRoles || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clear")}</Button> : undefined}
+                emptyTitle={state || roleId || withoutRoles || pagination.search ? t("companies:detail.empty.filtered") : t("companies:detail.empty.all")} emptyAction={state || roleId || withoutRoles || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined}
                 sort={pagination.sort} onSortChange={pagination.toggleSort} />
               {members.data ? <Pagination page={members.data.page} pageSize={members.data.pageSize} totalCount={members.data.totalCount} totalPages={members.data.totalPages} hasPrevious={members.data.hasPrevious} hasNext={members.data.hasNext} onPageChange={pagination.setPage} onPageSizeChange={pagination.setPageSize} /> : null}
             </Surface>
@@ -235,8 +245,7 @@ export function CompanyDetailPage() {
         </TabsContent>
         {canReadRoles ? <TabsContent value="roles">
           <Surface className="overflow-hidden">
-            <DataTable columns={roleColumns} rows={selectableRoles} rowKey={(role) => role.id} isLoading={roles.isPending} isFetching={roles.isFetching} error={roles.error ? failureMessage(roles.error, t("common:states.error")) : undefined} onRetry={() => { void roles.refetch(); }} emptyTitle={t("companies:detail.rolesEmpty")} />
-            {canManageRoles ? <div className="border-t border-[var(--borde)] p-3"><Button asChild variant="outline"><Link to={`/org/roles/new?scope=SpecificCompany&companyId=${encodeURIComponent(id)}`}>{t("companies:detail.createRole")}</Link></Button></div> : null}
+            <DataTable columns={roleColumns} rows={ownRoles} rowKey={(role) => role.id} isLoading={roles.isPending} isFetching={roles.isFetching} error={roles.error ? failureMessage(roles.error, t("common:states.error")) : undefined} onRetry={() => { void roles.refetch(); }} emptyTitle={t("companies:detail.rolesEmpty")} />
           </Surface>
         </TabsContent> : null}
       </Tabs>
@@ -286,14 +295,14 @@ export function CompanyDetailPage() {
     </Dialog>
 
     <ConfirmDialog open={statusTarget !== null} onOpenChange={(open) => { if (!open) setStatusTarget(null); }}
-      title={statusTarget ? t(statusTarget.membershipStatus === "Active" ? "companies:confirm.removeMember" : "companies:confirm.restoreMember", { name: statusTarget.displayName }) : ""}
-      description={t(statusTarget?.membershipStatus === "Active" ? "companies:confirm.removeMemberDescription" : "companies:confirm.restoreMemberDescription")}
-      confirmLabel={t(statusTarget?.membershipStatus === "Active" ? "companies:actions.removeMember" : "companies:actions.restoreMember")} destructive={statusTarget?.membershipStatus === "Active"}
+      title={statusTarget ? t("companies:confirm.removeMember", { name: statusTarget.displayName }) : ""}
+      description={t("companies:confirm.removeMemberDescription", { company: data.name })}
+      confirmLabel={t("companies:confirm.removeMemberConfirm")} destructive
       onConfirm={() => { if (statusTarget) changeMemberState.mutate(statusTarget); }} />
     <ConfirmDialog open={companyStatusConfirm} onOpenChange={setCompanyStatusConfirm}
-      title={t(data.status === "Active" ? "companies:confirm.deactivate" : "companies:confirm.activate", { name: data.name })}
-      description={t(data.status === "Active" ? "companies:confirm.deactivateDescription" : "companies:confirm.activateDescription")}
-      confirmLabel={t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate")} destructive={data.status === "Active"} onConfirm={() => changeCompanyState.mutate()} />
+      title={t("companies:confirm.deactivate", { name: data.name })}
+      description={t("companies:confirm.deactivateDescription")}
+      confirmLabel={t("companies:confirm.deactivateConfirm")} destructive onConfirm={() => changeCompanyState.mutate()} />
 
     <Dialog open={editOpen} onOpenChange={(open) => { setEditOpen(open); if (!open) setEditFailure(undefined); }}>
       <DialogContent mobileFullHeight>
