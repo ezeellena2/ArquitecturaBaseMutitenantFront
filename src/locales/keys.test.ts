@@ -61,7 +61,8 @@ function missingKeys(source: string): string[] {
     check(match[1], match[3] ? [match[3]] : fallback);
   }
   for (const match of source.matchAll(/i18nKey=(?:"([^"]+)"|\{([^}]*)\})/g)) {
-    const keys = match[1] ? [match[1]] : [...match[2].matchAll(/"([^"]+)"/g)].map((literal) => literal[1]);
+    // Dentro de una expresión solo cuentan los literales con forma de clave: un "Expired" de una comparación no lo es.
+    const keys = match[1] ? [match[1]] : [...match[2].matchAll(/"([^"]+)"/g)].map((literal) => literal[1]).filter((key) => /[.:]/.test(key));
     for (const key of keys) check(key, fallback);
   }
   // Claves con namespace escritas en cualquier lugar: ternarios, configuraciones de columnas, filtros.
@@ -89,6 +90,7 @@ describe("claves de traducción usadas en el código", () => {
     expect(missingKeys('const { t } = useTranslation(); t("code.attemptsLeft", { count: 2 });')).toEqual([]);
     expect(missingKeys('i18n.t("network", { ns: "errors" }); i18n.t("noExiste", { ns: "errors" });')).toEqual(["noExiste"]);
     expect(missingKeys('const label = cond ? "users:actions.enable" : "users:actions.prender";')).toEqual(["users:actions.prender"]);
+    expect(missingKeys('const { t } = useTranslation("users"); <Trans i18nKey={state === "Expired" ? "detail.expiredOn" : "detail.nada"} />')).toEqual(["detail.nada"]);
     expect(missingKeys('const { t } = useTranslation("users"); t(`states.${x}`); t(`nada.${x}`);')).toEqual(["nada.…"]);
   });
 });

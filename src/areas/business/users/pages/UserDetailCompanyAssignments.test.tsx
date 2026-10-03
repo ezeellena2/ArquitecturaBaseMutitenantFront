@@ -62,6 +62,8 @@ describe("UserDetailPage company assignments", () => {
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
     await waitFor(() => expect(updateBody).toEqual({ roleIds: ["role-owner"], companies: [{ companyId: company.id, roleIds: ["role-company-reader", "role-company-manager"] }], version: 2 }));
-    expect(screen.queryByRole("button", { name: "Guardar cambios" })).not.toBeInTheDocument();
+    // Tablero Usuario: la empresa se guarda al momento; «Guardar cambios» sigue a la vista, apagado.
+    expect(await screen.findByText("Guardamos los roles en Delta S.A.")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
   }, 10_000);
 });
