@@ -97,7 +97,10 @@
     "userManagement": "User management",
     "users": "Users",
     "roles": "Roles and permissions",
-    "settings": "Settings"
+    "companies": "Companies",
+    "settings": "Settings",
+    "publicPage": "Public page",
+    "audit": "Audit"
   },
   "layout": {
     "sidebar": {

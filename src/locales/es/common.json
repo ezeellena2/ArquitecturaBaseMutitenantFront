@@ -97,7 +97,10 @@
     "userManagement": "Gestión de usuarios",
     "users": "Usuarios",
     "roles": "Roles y permisos",
-    "settings": "Configuración"
+    "companies": "Empresas",
+    "settings": "Configuración",
+    "publicPage": "Página pública",
+    "audit": "Auditoría"
   },
   "layout": {
     "sidebar": {
