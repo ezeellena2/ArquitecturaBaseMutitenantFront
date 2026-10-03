@@ -24,12 +24,15 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
     },
     {
       id: "companies", header: t("users:columns.companies"), type: "custom",
-      cell: (user) => user.companies.length === 0 ? <EmptyValue /> : <div className="flex min-w-0 flex-col gap-1">
-        {user.companies.map((company) => <span key={company.companyId} className="min-w-0">
-          <span className="block truncate text-[var(--t1)]">{company.companyName}</span>
-          <span className="block truncate text-xs text-[var(--t3)]">{company.roles.map((role) => role.name).join(", ") || <EmptyValue />}</span>
-        </span>)}
-      </div>,
+      // Tablero Usuarios: la primera empresa con «y N más», y debajo sus roles.
+      cell: (user) => {
+        const [first, ...others] = user.companies;
+        if (!first) return <EmptyValue />;
+        return <span className="block min-w-0">
+          <span className="block truncate text-[var(--t1)]">{others.length > 0 ? t("users:columns.companyAndMore", { company: first.companyName, count: others.length }) : first.companyName}</span>
+          {first.roles.length > 0 ? <span className="block truncate text-xs text-[var(--t3)]">{first.roles.map((role) => role.name).join(", ")}</span> : null}
+        </span>;
+      },
     },
     {
       id: "state", header: t("users:columns.state"), type: "custom", mobile: "status", className: "w-[18%] max-md:w-[38%]",

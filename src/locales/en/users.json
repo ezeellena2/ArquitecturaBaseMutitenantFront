@@ -12,7 +12,8 @@
     "expires": "Expires",
     "expiresPrefix": "Expires",
     "expiredPrefix": "Expired",
-    "actions": "Actions"
+    "actions": "Actions",
+    "companyAndMore": "{{company}} and {{count}} more"
   },
   "states": {
     "all": "All statuses",
@@ -25,9 +26,20 @@
   "filters": {
     "label": "Filter users",
     "search": "Search by name or email",
-    "state": "Status",
-    "company": "Company",
-    "allCompanies": "All companies"
+    "state": "Status: all",
+    "stateMenu": "Filter by status",
+    "company": "Company: all",
+    "companyMenu": "Filter by company",
+    "allCompanies": "All",
+    "withoutCompany": "No company",
+    "states": {
+      "all": "All",
+      "Active": "Active",
+      "Invited": "Pending invitation",
+      "Expired": "Expired invitation",
+      "Inactive": "Disabled",
+      "PendingDeletion": "Deletion requested"
+    }
   },
   "empty": {
     "all": "There are no users in the organization yet",

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
-import type { InviteOrganizationUserRequest, OrganizationUserResponse, OrganizationUserState, RoleResponse } from "@/shared/api/types";
+import type { InviteOrganizationUserRequest, OrganizationUserFilterCountsResponse, OrganizationUserResponse, OrganizationUserState, RoleResponse } from "@/shared/api/types";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useFilters } from "@/shared/hooks/useFilters";
 import { usePagination } from "@/shared/hooks/usePagination";
@@ -28,10 +28,22 @@ import { Surface } from "@/shared/ui/Surface";
 import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { changeUserStatus, fetchAssignableRoles, fetchCompanyOptions, fetchUserCounts, fetchUsers, inviteUser, removeUser, resendUserInvitation, revokeUserInvitation, userCompaniesQueryKey, userCountsQueryKey, userRolesQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
-import { createUserColumns, userStateLabel } from "../columns";
+import { createUserColumns } from "../columns";
 
 const userFilterKeys = ["state", "companyId"] as const;
-const userStates: readonly (OrganizationUserState | undefined)[] = [undefined, "Active", "PendingDeletion", "Invited", "Expired", "Inactive"];
+// Orden del filtro «Estado» del tablero Usuarios.
+const userStates: readonly (OrganizationUserState | undefined)[] = [undefined, "Active", "Invited", "Expired", "Inactive", "PendingDeletion"];
+// «Sin empresa» viaja en la URL como companyId=none y a la API como withoutCompany.
+const withoutCompanyValue = "none";
+
+function countFor(counts: OrganizationUserFilterCountsResponse | undefined, state: OrganizationUserState | undefined): number | undefined {
+  if (!counts) return undefined;
+  return state === undefined ? counts.all
+    : state === "Active" ? counts.active
+      : state === "PendingDeletion" ? counts.pendingDeletion
+        : state === "Invited" ? counts.invited
+          : state === "Expired" ? counts.expired : counts.inactive;
+}
 
 type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
 
@@ -53,7 +65,9 @@ export function UsersPage() {
   const debouncedSearch = useDebouncedValue(pagination.search ?? "");
   const stateValue = userStates.some((state) => state === filters.values.state) ? filters.values.state : undefined;
   const state = stateValue as OrganizationUserState | undefined;
-  const companyId = canFilterByCompany ? filters.values.companyId : undefined;
+  const companyFilter = canFilterByCompany ? filters.values.companyId : undefined;
+  const withoutCompany = companyFilter === withoutCompanyValue ? true : undefined;
+  const companyId = companyFilter && !withoutCompany ? companyFilter : undefined;
   const query: UsersQuery = {
     page: pagination.page,
     pageSize: pagination.pageSize,
@@ -61,12 +75,13 @@ export function UsersPage() {
     search: debouncedSearch || undefined,
     state,
     companyId,
+    withoutCompany,
   };
   const users = useQuery({
     queryKey: usersQueryKey(query), queryFn: () => fetchUsers(query), enabled: canRead,
     placeholderData: keepPreviousData, meta: { silent: true },
   });
-  const countQuery = { search: debouncedSearch || undefined, companyId };
+  const countQuery = { search: debouncedSearch || undefined, companyId, withoutCompany };
   const counts = useQuery({
     queryKey: userCountsQueryKey(countQuery), queryFn: () => fetchUserCounts(countQuery), enabled: canRead,
     placeholderData: keepPreviousData, meta: { silent: true },
@@ -75,6 +90,12 @@ export function UsersPage() {
     queryKey: userCompaniesQueryKey, queryFn: fetchCompanyOptions, enabled: canRead && canFilterByCompany,
     meta: { silent: true },
   });
+  // Conteos del filtro «Empresa»: cada empresa y «Sin empresa», con la búsqueda y el estado elegidos.
+  const companyCountTargets = ["all", ...(companies.data?.items ?? []).filter((company) => company.status === "Active").map((company) => company.id), withoutCompanyValue];
+  const companyCounts = useQueries({ queries: companyCountTargets.map((target) => {
+    const targetQuery = { search: debouncedSearch || undefined, ...(target === withoutCompanyValue ? { withoutCompany: true } : target === "all" ? {} : { companyId: target }) };
+    return { queryKey: userCountsQueryKey(targetQuery), queryFn: () => fetchUserCounts(targetQuery), enabled: canRead && canFilterByCompany, meta: { silent: true } };
+  }) });
   const [inviteOpen, setInviteOpen] = useState(false);
   const roleQueries = useQueries({ queries: (["Organization", "Company"] as const).map((scope) => ({
     queryKey: userRolesQueryKey(scope), queryFn: () => fetchAssignableRoles(scope), enabled: canInvite && inviteOpen,
@@ -125,13 +146,11 @@ export function UsersPage() {
       ]}
     /> },
   ];
-  const stateCount = (value: OrganizationUserState | undefined) => value === undefined ? counts.data?.all
-    : value === "Active" ? counts.data?.active
-      : value === "PendingDeletion" ? counts.data?.pendingDeletion
-        : value === "Invited" ? counts.data?.invited
-          : value === "Expired" ? counts.data?.expired : counts.data?.inactive;
-  const listSummary = counts.data ? <span className="max-md:text-[12px]">{t("users:summary", { total: counts.data.all, active: counts.data.active, invited: counts.data.invited })}</span> : undefined;
-  const currentState = state ?? "all";
+  const stateCount = (value: OrganizationUserState | undefined) => countFor(counts.data, value);
+  // «N invitaciones» del tablero: las pendientes y las vencidas.
+  const listSummary = counts.data ? <span className="max-md:text-[12px]">{t("users:summary", { total: counts.data.all, active: counts.data.active, invited: counts.data.invited + counts.data.expired })}</span> : undefined;
+  // Sin filtro el botón dice «Estado: todos» o «Empresa: todas» y el menú ofrece «Todos» o «Todas», como el tablero.
+  const currentState = state ?? "";
 
   async function submitInvite(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -172,8 +191,10 @@ export function UsersPage() {
           searchValue={pagination.search ?? ""}
           onSearchChange={pagination.setSearch}
           filters={[
-            { key: "state", label: t("users:filters.state"), menuLabel: t("users:filters.state"), value: currentState, active: state !== undefined, onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value), options: userStates.map((value) => ({ value: value ?? "all", label: value ? userStateLabel(value, t) : t("users:states.all"), count: stateCount(value) })) },
-            ...(canFilterByCompany ? [{ key: "companyId", label: t("users:filters.company"), menuLabel: t("users:filters.company"), value: companyId ?? "all", active: companyId !== undefined, onChange: (value: string) => filters.setFilter("companyId", value === "all" ? undefined : value), options: [{ value: "all", label: t("users:filters.allCompanies") }, ...(companies.data?.items ?? []).map((company) => ({ value: company.id, label: company.name }))] }] : []),
+            { key: "state", label: t("users:filters.state"), menuLabel: t("users:filters.stateMenu"), value: currentState, active: state !== undefined, onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value), options: userStates.map((value) => ({ value: value ?? "all", label: t(`users:filters.states.${value ?? "all"}`), count: stateCount(value) })) },
+            ...(canFilterByCompany ? [{ key: "companyId", label: t("users:filters.company"), menuLabel: t("users:filters.companyMenu"), value: companyFilter ?? "", active: companyFilter !== undefined, onChange: (value: string) => filters.setFilter("companyId", value === "all" ? undefined : value), options: [
+              ...companyCountTargets.map((target, index) => ({ value: target, label: target === "all" ? t("users:filters.allCompanies") : target === withoutCompanyValue ? t("users:filters.withoutCompany") : companies.data?.items.find((item) => item.id === target)?.name ?? target, count: countFor(companyCounts[index]?.data, state) })),
+            ] }] : []),
           ]}
           clearLabel={t("common:actions.clear")}
           onClear={filters.clear}

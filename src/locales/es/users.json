@@ -12,7 +12,8 @@
     "expires": "Vence",
     "expiresPrefix": "Vence",
     "expiredPrefix": "Venció",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "companyAndMore": "{{company}} y {{count}} más"
   },
   "states": {
     "all": "Todos los estados",
@@ -25,9 +26,20 @@
   "filters": {
     "label": "Filtrar usuarios",
     "search": "Buscar por nombre o correo",
-    "state": "Estado",
-    "company": "Empresa",
-    "allCompanies": "Todas las empresas"
+    "state": "Estado: todos",
+    "stateMenu": "Filtrar por estado",
+    "company": "Empresa: todas",
+    "companyMenu": "Filtrar por empresa",
+    "allCompanies": "Todas",
+    "withoutCompany": "Sin empresa",
+    "states": {
+      "all": "Todos",
+      "Active": "Activos",
+      "Invited": "Invitación pendiente",
+      "Expired": "Invitación vencida",
+      "Inactive": "Deshabilitados",
+      "PendingDeletion": "Baja pedida"
+    }
   },
   "empty": {
     "all": "Todavía no hay usuarios en la organización",

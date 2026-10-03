@@ -51,11 +51,63 @@ describe("UsersPage", () => {
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("search")).toBe("Lucía"), { timeout: 3_000 });
     expect(router.state.location.search).toContain("search=Luc%C3%ADa");
 
-    await user.click(screen.getByRole("button", { name: "Todos los estados" }));
-    await user.click(await screen.findByRole("menuitemradio", { name: /Deshabilitado/ }));
+    await user.click(screen.getByRole("button", { name: "Estado: todos" }));
+    await user.click(await screen.findByRole("menuitemradio", { name: /Deshabilitados/ }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("state")).toBe("Inactive"));
     expect(router.state.location.search).toContain("state=Inactive");
   }, 10_000);
+
+  it("tablero Usuarios: Empresa «y N más», filtros «Estado» y «Empresa» con «Sin empresa» y conteos, e invitaciones pendientes y vencidas", async () => {
+    const user = userEvent.setup();
+    const requests: URL[] = [];
+    const counts = (all: number) => ({ all, active: all - 5 > 0 ? all - 5 : all, pendingDeletion: 1, invited: 2, expired: 1, inactive: 1 });
+    const companies = [
+      { id: "company-1", name: "Delta S.A.", taxId: null, timeZoneId: "America/Argentina/Buenos_Aires", status: "Active", memberCount: 5, version: 1, createdAtUtc: "2026-09-27T12:00:00Z" },
+      { id: "company-2", name: "Delta Sur S.R.L.", taxId: null, timeZoneId: "America/Argentina/Buenos_Aires", status: "Active", memberCount: 2, version: 1, createdAtUtc: "2026-09-27T12:00:00Z" },
+    ];
+    const twoCompanies = { ...member, companies: [
+      { companyId: "company-1", companyName: "Delta S.A.", status: "Active", roles: [{ id: "role-reader", name: "Solo lectura", isSystemRole: false, scope: "SpecificCompany", companyId: "company-1" }] },
+      { companyId: "company-2", companyName: "Delta Sur S.R.L.", status: "Active", roles: [] },
+    ] };
+    server.use(
+      http.get("/api/users/paged", ({ request }) => {
+        requests.push(new URL(request.url));
+        return HttpResponse.json({ items: [twoCompanies], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false });
+      }),
+      http.get("/api/users/filter-counts", ({ request }) => {
+        const url = new URL(request.url);
+        return HttpResponse.json(url.searchParams.get("withoutCompany") === "true" ? counts(2)
+          : url.searchParams.get("companyId") === "company-1" ? counts(5)
+            : url.searchParams.get("companyId") === "company-2" ? counts(3) : counts(11));
+      }),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: companies, page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+    );
+    const { router } = renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+
+    const heading = await screen.findByRole("heading", { level: 1, name: "Usuarios" });
+    // «N invitaciones» cuenta las pendientes y las vencidas.
+    await waitFor(() => expect(heading.parentElement).toHaveTextContent("11 usuarios · 6 activos · 3 invitaciones"));
+    const company = await screen.findByText("Delta S.A. y 1 más");
+    expect(company.parentElement).toHaveTextContent("Delta S.A. y 1 másSolo lectura");
+    expect(screen.queryByText("Delta Sur S.R.L.")).not.toBeInTheDocument();
+
+    screen.getByRole("button", { name: "Estado: todos" }).focus();
+    await user.keyboard("{Enter}");
+    expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent))
+      .toEqual(["Todos11", "Activos6", "Invitación pendiente2", "Invitación vencida1", "Deshabilitados1", "Baja pedida1"]);
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+
+    const companyFilter = screen.getByRole("button", { name: "Empresa: todas" });
+    companyFilter.focus();
+    await user.keyboard("{Enter}");
+    await waitFor(async () => expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent))
+      .toEqual(["Todas11", "Delta S.A.5", "Delta Sur S.R.L.3", "Sin empresa2"]));
+    await user.click(screen.getByRole("menuitemradio", { name: /Sin empresa/ }));
+    await waitFor(() => expect(requests.at(-1)?.searchParams.get("withoutCompany")).toBe("true"));
+    expect(requests.at(-1)?.searchParams.get("companyId")).toBeNull();
+    expect(router.state.location.search).toContain("companyId=none");
+  }, 15_000);
 
   it("invita con correo y roles usando una clave idempotente", async () => {
     let body: unknown;
