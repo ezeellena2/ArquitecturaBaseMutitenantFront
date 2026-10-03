@@ -81,7 +81,7 @@
       "y": 260
     },
     "Criterio-Dialogos.dc.html": {
-      "h": 2840,
+      "h": 2870,
       "page": "criterio",
       "title": "Criterio · Diálogos",
       "w": 1440,
@@ -97,7 +97,7 @@
       "y": 260
     },
     "Criterio-Marco.dc.html": {
-      "h": 3170,
+      "h": 3200,
       "page": "criterio",
       "title": "Criterio · Marco y pantallas",
       "w": 1440,
@@ -681,137 +681,137 @@
       "y": 260
     },
     "WA-Chats.dc.html": {
-      "x": 0,
-      "y": 260,
-      "w": 1440,
       "h": 900,
-      "title": "WhatsApp › Chats (web)",
+      "is_interactive": true,
       "page": "propuesta-whatsapp",
-      "is_interactive": true
+      "title": "WhatsApp › Chats",
+      "w": 1440,
+      "x": 0,
+      "y": 260
     },
     "WA-Contacto.dc.html": {
-      "x": 3040,
-      "y": 260,
-      "w": 1440,
       "h": 900,
-      "title": "WhatsApp › Ficha del contacto (web)",
+      "is_interactive": true,
       "page": "propuesta-whatsapp",
-      "is_interactive": true
+      "title": "WhatsApp › Ficha del contacto",
+      "w": 1440,
+      "x": 3040,
+      "y": 1280
     },
     "WA-Admin.dc.html": {
-      "x": 0,
-      "y": 1280,
-      "w": 1440,
       "h": 900,
-      "title": "Administración › WhatsApp › Número (web)",
+      "is_interactive": true,
       "page": "propuesta-whatsapp",
-      "is_interactive": true
+      "title": "Administración › WhatsApp › Números",
+      "w": 1440,
+      "x": 0,
+      "y": 2300
     },
     "WA-Admin-Vacio.dc.html": {
-      "x": 1520,
-      "y": 1280,
-      "w": 1440,
       "h": 900,
-      "title": "Administración › WhatsApp › Número sin conectar (web)",
+      "is_interactive": true,
       "page": "propuesta-whatsapp",
-      "is_interactive": true
+      "title": "Administración › WhatsApp › Números · sin números",
+      "w": 1440,
+      "x": 3040,
+      "y": 2300
     },
     "WA-Admin-Editar.dc.html": {
-      "x": 4560,
-      "y": 1280,
-      "w": 1440,
       "h": 900,
-      "title": "Administración › WhatsApp › Editar respuesta (web)",
+      "is_interactive": true,
       "page": "propuesta-whatsapp",
-      "is_interactive": true
+      "title": "Administración › WhatsApp › Bot · editar opción",
+      "w": 1440,
+      "x": 7600,
+      "y": 2300
     },
     "M-WA-Chats.dc.html": {
       "x": 470,
-      "y": 2300,
+      "y": 4340,
       "w": 390,
       "h": 844,
-      "title": "Chats · teléfono",
+      "title": "Chats · teléfono · por refinar",
       "page": "propuesta-whatsapp",
       "is_interactive": true
     },
     "M-WA-Conversacion.dc.html": {
       "x": 940,
-      "y": 2300,
+      "y": 4340,
       "w": 390,
       "h": 844,
-      "title": "Conversación · teléfono",
+      "title": "Conversación · teléfono · por refinar",
       "page": "propuesta-whatsapp",
       "is_interactive": true
     },
     "M-WA-24h.dc.html": {
       "x": 1410,
-      "y": 2300,
+      "y": 4340,
       "w": 390,
       "h": 844,
-      "title": "Conversación pasadas 24 h · teléfono",
+      "title": "Conversación pasadas 24 h · teléfono · por refinar",
       "page": "propuesta-whatsapp",
       "is_interactive": true
     },
     "M-WA-Contacto.dc.html": {
       "x": 1880,
-      "y": 2300,
+      "y": 4340,
       "w": 390,
       "h": 844,
-      "title": "Ficha del contacto · teléfono",
+      "title": "Ficha del contacto · teléfono · por refinar",
       "page": "propuesta-whatsapp",
       "is_interactive": true
     },
     "M-WA-Admin.dc.html": {
       "x": 2350,
-      "y": 2300,
+      "y": 4340,
       "w": 390,
       "h": 844,
-      "title": "Respuestas automáticas · teléfono",
+      "title": "Respuestas automáticas · teléfono · por refinar",
       "page": "propuesta-whatsapp",
       "is_interactive": true
     },
     "M-WA-Editar.dc.html": {
       "x": 2820,
-      "y": 2300,
+      "y": 4340,
       "w": 390,
       "h": 844,
-      "title": "Editar respuesta · teléfono",
+      "title": "Editar respuesta · teléfono · por refinar",
       "page": "propuesta-whatsapp",
       "is_interactive": true
     },
     "WA-Contactos.dc.html": {
-      "x": 1520,
-      "y": 260,
-      "w": 1440,
       "h": 900,
-      "title": "WhatsApp › Contactos (web)",
+      "is_interactive": true,
       "page": "propuesta-whatsapp",
-      "is_interactive": true
+      "title": "WhatsApp › Contactos",
+      "w": 1440,
+      "x": 0,
+      "y": 1280
     },
     "WA-Respuestas.dc.html": {
-      "x": 3040,
-      "y": 1280,
-      "w": 1440,
       "h": 900,
-      "title": "Administración › WhatsApp › Respuestas automáticas (web)",
+      "is_interactive": true,
       "page": "propuesta-whatsapp",
-      "is_interactive": true
+      "title": "Administración › WhatsApp › Bot · configuración",
+      "w": 1440,
+      "x": 4560,
+      "y": 2300
     },
     "WA-Plantillas.dc.html": {
-      "x": 6080,
-      "y": 1280,
-      "w": 1440,
       "h": 900,
-      "title": "Administración › WhatsApp › Plantillas (web)",
+      "is_interactive": true,
       "page": "propuesta-whatsapp",
-      "is_interactive": true
+      "title": "Administración › WhatsApp › Plantillas",
+      "w": 1440,
+      "x": 3040,
+      "y": 3320
     },
     "M-WA-Menu.dc.html": {
       "x": 0,
-      "y": 2300,
+      "y": 4340,
       "w": 390,
       "h": 844,
-      "title": "Menú abierto · teléfono",
+      "title": "Menú abierto · teléfono · por refinar",
       "page": "propuesta-whatsapp",
       "is_interactive": true
     },
@@ -969,12 +969,140 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 1940,
+      "h": 3890,
       "page": "criterio",
       "title": "Criterio · Decisiones por pantalla",
       "w": 1440,
       "x": 10640,
       "y": 260
+    },
+    "WA-Chats-SinTomar.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "WhatsApp › Chats · sin tomar",
+      "w": 1440,
+      "x": 1520,
+      "y": 260
+    },
+    "WA-Chats-Pasar.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "WhatsApp › Chats · pasar",
+      "w": 1440,
+      "x": 3040,
+      "y": 260
+    },
+    "WA-Chats-Nota.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "WhatsApp › Chats · nota interna",
+      "w": 1440,
+      "x": 4560,
+      "y": 260
+    },
+    "WA-Chats-24h.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "WhatsApp › Chats · pasaron 24 horas",
+      "w": 1440,
+      "x": 6080,
+      "y": 260
+    },
+    "WA-Chats-Plantilla.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "WhatsApp › Chats · elegir plantilla",
+      "w": 1440,
+      "x": 7600,
+      "y": 260
+    },
+    "WA-Contactos-Importar.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "WhatsApp › Contactos · importar",
+      "w": 1440,
+      "x": 1520,
+      "y": 1280
+    },
+    "WA-Difusiones.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "WhatsApp › Difusiones",
+      "w": 1440,
+      "x": 4560,
+      "y": 1280
+    },
+    "WA-Difusion-Nueva.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "WhatsApp › Nueva difusión",
+      "w": 1440,
+      "x": 6080,
+      "y": 1280
+    },
+    "WA-Difusion-Resultados.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "WhatsApp › Resultados de una difusión",
+      "w": 1440,
+      "x": 7600,
+      "y": 1280
+    },
+    "WA-Admin-Pago.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "Administración › WhatsApp › Números · falta medio de pago",
+      "w": 1440,
+      "x": 1520,
+      "y": 2300
+    },
+    "WA-Bot-Recorrido.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "Administración › WhatsApp › Bot · recorrido",
+      "w": 1440,
+      "x": 6080,
+      "y": 2300
+    },
+    "WA-Equipos.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "Administración › WhatsApp › Equipos",
+      "w": 1440,
+      "x": 0,
+      "y": 3320
+    },
+    "WA-Equipos-Crear.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "Administración › WhatsApp › Equipos · crear",
+      "w": 1440,
+      "x": 1520,
+      "y": 3320
+    },
+    "WA-Plantilla-Nueva.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "Administración › WhatsApp › Plantillas · nueva",
+      "w": 1440,
+      "x": 4560,
+      "y": 3320
+    },
+    "WA-Telefonos.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "Usuarios › Cargar teléfonos de empleados",
+      "w": 1440,
+      "x": 6080,
+      "y": 3320
+    },
+    "WA-Mensajes.dc.html": {
+      "h": 900,
+      "page": "propuesta-whatsapp",
+      "title": "Perfil personal › Mensajes",
+      "w": 1440,
+      "x": 7600,
+      "y": 3320
     }
   },
   "createdOnFiles": {
@@ -1137,7 +1265,7 @@
       "x": 0,
       "y": 0,
       "w": 600,
-      "maxW": 7520,
+      "maxW": 8000,
       "text": "Organización · WhatsApp",
       "page": "propuesta-whatsapp"
     }
@@ -1252,7 +1380,23 @@
     "Avisos-Anterior.dc.html",
     "M-Usuario-Anterior.dc.html",
     "M-Rol-Anterior.dc.html",
-    "Criterio-Decisiones.dc.html"
+    "Criterio-Decisiones.dc.html",
+    "WA-Chats-SinTomar.dc.html",
+    "WA-Chats-Pasar.dc.html",
+    "WA-Chats-Nota.dc.html",
+    "WA-Chats-24h.dc.html",
+    "WA-Chats-Plantilla.dc.html",
+    "WA-Contactos-Importar.dc.html",
+    "WA-Difusiones.dc.html",
+    "WA-Difusion-Nueva.dc.html",
+    "WA-Difusion-Resultados.dc.html",
+    "WA-Admin-Pago.dc.html",
+    "WA-Bot-Recorrido.dc.html",
+    "WA-Equipos.dc.html",
+    "WA-Equipos-Crear.dc.html",
+    "WA-Plantilla-Nueva.dc.html",
+    "WA-Telefonos.dc.html",
+    "WA-Mensajes.dc.html"
   ],
   "pages": [
     {

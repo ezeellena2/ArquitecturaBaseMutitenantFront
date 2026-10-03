@@ -4,7 +4,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 2840
+ALTO = 2870
 ARCHIVO = "Criterio-Dialogos.dc.html"
 TITULO = "Criterio · Diálogos"
 
@@ -175,6 +175,7 @@ BODY = f"""<div class="crit">
       <li><strong>El cursor arranca en el primer campo.</strong></li>
       <li><strong>Se cierra con ✕, Cancelar o Escape.</strong> Un clic afuera no lo cierra, para no perder lo escrito.</li>
       <li><strong>Al terminar, se cierra</strong> y un aviso abajo a la derecha confirma lo que pasó.</li>
+      <li><strong>Si lo que se manda se paga</strong> (una plantilla, una difusión), antes del botón se ve el costo estimado.</li>
       <li><strong>Un error de un campo</strong> va debajo de ese campo; un error general, arriba de los botones.</li>
       <li><strong>En el teléfono</strong> sube desde abajo, a todo el ancho, y los botones ocupan todo el ancho.</li>
     </ul>

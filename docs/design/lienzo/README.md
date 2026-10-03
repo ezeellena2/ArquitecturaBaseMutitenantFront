@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 64** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 110 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 65** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 126 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -20,7 +20,7 @@ El título de cada tablero dice en qué estado está:
 | Ingreso y registro | 18 | Validado |
 | Perfil personal | 7 | Validado |
 | Organización | 26 | Escritorio y móviles aprobados el 2026-10-03, salvo los dos inicios, que quedan para repensar. |
-| Organización · WhatsApp | 15 | Propuesta que le gustó al usuario; falta sumarla al plan (E11) |
+| Organización · WhatsApp | 31 | Escritorio aprobado el 2026-10-03, pantalla por pantalla (Etapa 11 ampliada). Los 7 teléfonos siguen «por refinar» y el alta de Meta no se dibuja hasta que el usuario lo pida. |
 | Plataforma | 12 | Por refinar |
 | Textos y mensajes | 2 | Validado |
 | Archivo | 14 | Descartado. Son versiones anteriores; están como referencia y no se programan. |
@@ -79,11 +79,12 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 | `whatsapp_tableros.py` | Los 15 de WhatsApp. Las piezas comunes (`w-*`, íconos, banda) salen de acá. |
 | `org_formularios.py` | Configuración, Página pública y sus diálogos |
 | `org_formularios2.py` | Usuario, Rol y Avisos. Rehace el dibujo y conserva la lógica de cada tablero. |
+| `wa_vuelta_1003.py` | WhatsApp aprobado el 2026-10-03: corre las propuestas elegidas (`whatsapp_1003/propuestas`) sobre la copia de partida (`whatsapp_1003/base`), deja los 24 tableros con sus enlaces, suma lo de WhatsApp a Rol, Usuarios, Mensajes, el perfil personal y el menú de Plataforma, y acomoda la página. Corre al final. |
 | `org_vuelta_1002.py` | Las decisiones de la vuelta de Organización del 2026-10-02 sobre los tableros de escritorio, y les saca «· para aprobar» a los aprobados. Corre después de `org_formularios2.py`. |
 | `conectar_paginas.py` | Enlaces entre páginas: tu menú, el menú de WhatsApp y la entrada WhatsApp en Organización |
 | `aplicar_criterio.py`, `criterio_marcado.py`, `terminos_sin_deshabilitar.py` | Pasan al criterio los tableros viejos sin rehacerlos |
 
-Después de correr `perfil_tableros.py`, `whatsapp_tableros.py` u `org_formularios.py`, corré `conectar_paginas.py`: esos tres dibujan el menú sin enlaces. `conectar_paginas.py`, `org_formularios2.py` y `org_vuelta_1002.py` se pueden volver a correr sin cambiar lo que ya está. Los otros reescriben `canvas.json`, así que revisá el diff antes de publicar. Para rehacer un formulario, se copia el formato de `org_formularios.py` y nunca se maquilla con CSS encima.
+Después de correr `perfil_tableros.py`, `whatsapp_tableros.py` u `org_formularios.py`, corré `conectar_paginas.py`: esos tres dibujan el menú sin enlaces. `conectar_paginas.py`, `org_formularios2.py`, `org_vuelta_1002.py` y `wa_vuelta_1003.py` se pueden volver a correr sin cambiar lo que ya está. Los otros reescriben `canvas.json`, así que revisá el diff antes de publicar. Para rehacer un formulario, se copia el formato de `org_formularios.py` y nunca se maquilla con CSS encima.
 
 ## Publicar en claude.ai
 

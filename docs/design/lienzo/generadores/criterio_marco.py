@@ -4,7 +4,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 3170
+ALTO = 3200
 ARCHIVO = "Criterio-Marco.dc.html"
 TITULO = "Criterio · Marco y pantallas"
 
@@ -211,7 +211,7 @@ BODY = f"""<div class="crit">
       <div class="tabs2"><span class="on">Miembros <span class="n">6</span></span><span>Roles <span class="n">3</span></span></div>
     </div>
     <ul class="reglas2 dos" style="margin-top: 14px;">
-      <li><strong>Solo con dos o más tablas grandes.</strong> Un dato suelto nunca es una pestaña.</li>
+      <li><strong>Solo con dos o más tablas grandes,</strong> o con dos vistas del mismo contenido, como «Configuración» y «Recorrido» del bot. Un dato suelto nunca es una pestaña.</li>
       <li><strong>La cantidad, en gris</strong> al lado del nombre. Sin etiqueta.</li>
       <li><strong>La acción de la banda cambia con la pestaña:</strong> «Agregar miembro» o «Crear rol».</li>
       <li><strong>Nunca una pestaña «Resumen»</strong> con rótulos y valores: los datos van en la banda.</li>

@@ -550,6 +550,7 @@
 .tt-f:hover { background: oklch(0.95 0.025 185) !important; }
 
   </style><!-- /tema -->
+<style data-vuelta="1003-Mensajes"></style>
 </helmet>
 
 <div class="msg-root">
@@ -626,7 +627,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Código para verificar un método","Enlace para entrar (bot)","Invitación a una organización","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Membresía terminada","Exportación de datos lista","Baja pedida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: aprobada","Recuperación: rechazada"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Código para verificar un método","Enlace para entrar (bot)","Invitación a una organización","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Membresía terminada","Exportación de datos lista","Baja pedida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: aprobada","Recuperación: rechazada"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
 // Mensajes que manda el sistema en los flujos de la plantilla. Salen por el outbox, con textos de Notifications.resx
 // (y los del módulo WhatsApp), en la cultura de la persona y con fechas de DisplayFormatter (es-AR, Buenos Aires).
 // Correo: la estructura de _Layout.html, LoginCode.html e Invitation.html de ArquitecturaBase.
@@ -686,6 +687,18 @@ const MENSAJES = [
     },
     // Plantilla `invitacion_organizacion`: quien invita, la organización y el vencimiento; botón con el enlace. Reemplaza a `invitacion_acceso`.
     wa: { plantilla: 'invitacion_organizacion', texto: [N('Hola. Lucía Fernández te invitó a sumarte a Grupo Delta en ArquitecturaBase. La invitación vence el 04/10/2026.')], botones: [{ t: 'Ver la invitación', url: true }] },
+  },
+  {
+    n: 'Chats esperando',
+    // Aviso al equipo cuando un chat queda sin tomar más del tiempo que eligió el Dueño. Solo por correo y sin copiar mensajes ni teléfonos de clientes.
+    correo: {
+      asunto: 'Tenés 3 chats esperando en Ventas',
+      para: 'lucia.fernandez@delta.ejemplo.com',
+      titulo: '3 chats esperando en Ventas',
+      parrafos: [P('Hola, Lucía. Hay 3 chats de WhatsApp sin tomar en Ventas, de Grupo Delta. El más viejo espera hace 25 minutos.')],
+      boton: 'Ver los chats',
+      pie: 'Te llega porque estás en el equipo Ventas. El Dueño elige cuándo se manda este aviso.',
+    },
   },
   {
     n: 'Método de ingreso agregado',

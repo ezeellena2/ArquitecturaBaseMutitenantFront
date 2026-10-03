@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 2840px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 2870px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -705,6 +705,7 @@
       <li><strong>El cursor arranca en el primer campo.</strong></li>
       <li><strong>Se cierra con ✕, Cancelar o Escape.</strong> Un clic afuera no lo cierra, para no perder lo escrito.</li>
       <li><strong>Al terminar, se cierra</strong> y un aviso abajo a la derecha confirma lo que pasó.</li>
+      <li><strong>Si lo que se manda se paga</strong> (una plantilla, una difusión), antes del botón se ve el costo estimado.</li>
       <li><strong>Un error de un campo</strong> va debajo de ese campo; un error general, arriba de los botones.</li>
       <li><strong>En el teléfono</strong> sube desde abajo, a todo el ancho, y los botones ocupan todo el ancho.</li>
     </ul>
@@ -726,7 +727,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2840}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2870}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };
