@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 6180px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 6740px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -605,6 +605,8 @@
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>En el teléfono, el ⋮ de una fila va solo si tiene acciones; si no, se toca la fila.</span><span>Marco y pantallas</span><span class="gris">03/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>La flechita que contrae el menú lateral va en blanco, con borde arena.</span><span>Menús y desplegables</span><span class="gris">03/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>En el teléfono, las pantallas de edición llevan fijos abajo «Descartar cambios» y «Guardar cambios».</span><span>Marco y pantallas</span><span class="gris">03/10/2026</span></div>
+      <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Una ficha lleva pestañas aunque alguna tenga un solo dato.</span><span>Marco y pantallas</span><span class="gris">03/10/2026</span></div>
+      <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>El detalle de solo lectura en un diálogo va en una grilla con líneas: rótulo a la izquierda sobre arena clara, valor a la derecha.</span><span>Diálogos</span><span class="gris">03/10/2026</span></div>
     </div>
   </section>
 
@@ -665,6 +667,14 @@
   </section>
 
   <section>
+    <h2>Plataforma · compu</h2>
+    <div class="dec">
+      <div class="c" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><span>Pantalla</span><span>Qué se eligió</span><span>En el lienzo</span></div>
+      <div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Menú</strong><span><span class="op">B</span>Gestión, WhatsApp (Chats, Contactos, Difusiones) y Administración, con la configuración de WhatsApp dentro de Administración.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Organizaciones</strong><span>Organización (alta y origen debajo), Dueño (correo debajo), Empresas, Miembros y Estado.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Ficha de una organización</strong><span>Con pestañas (Historial, Dueños, Módulos, Dominio verificado, Página pública); el primer módulo es WhatsApp.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Cuentas</strong><span>Cuenta (nombre y correo), Perfiles, Último ingreso (cómo entró debajo) y Estado; sin Teléfono.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Ficha de una cuenta</strong><span>Los métodos como en Mi cuenta: filas sin encabezado, el tipo y quién lo administra debajo, y el estado solo si pide atención.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Recuperaciones · Auditoría · Legales · Configuración</strong><span>Cuenta con la fecha debajo; auditoría sin ojo ni cantidad y detalle en grilla; legales como lista («Versión N · vigente desde…»); «Registro y altas» con su encabezado.</span><span class="est ok">Dibujada</span></div>
+    </div>
+  </section>
+
+  <section>
     <h2>Lo que sigue</h2>
     <div class="dec">
       <div class="c" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><span>Pantalla</span><span>Qué se eligió</span><span>En el lienzo</span></div>
@@ -674,7 +684,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6180}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6740}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

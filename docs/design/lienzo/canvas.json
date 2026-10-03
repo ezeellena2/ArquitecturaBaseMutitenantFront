@@ -24,7 +24,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Auditoría de seguridad · /plataforma/auditoria · por refinar",
+      "title": "Auditoría de seguridad · /plataforma/auditoria",
       "w": 1440,
       "x": 6080,
       "y": 260
@@ -50,7 +50,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Configuración de la plataforma · /plataforma/configuracion · por refinar",
+      "title": "Configuración de la plataforma · /plataforma/configuracion",
       "w": 1440,
       "x": 0,
       "y": 1280
@@ -151,7 +151,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Ficha de una cuenta · /plataforma/cuentas/:id · por refinar",
+      "title": "Ficha de una cuenta · /plataforma/cuentas/:id",
       "w": 1440,
       "x": 4560,
       "y": 260
@@ -169,7 +169,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Cuentas y operadores · /plataforma/cuentas · por refinar",
+      "title": "Cuentas y operadores · /plataforma/cuentas",
       "w": 1440,
       "x": 3040,
       "y": 260
@@ -293,7 +293,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Documentos legales · /plataforma/legales · por refinar",
+      "title": "Documentos legales · /plataforma/legales",
       "w": 1440,
       "x": 3040,
       "y": 1280
@@ -544,7 +544,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Ficha de una organización · /plataforma/organizaciones/:id · por refinar",
+      "title": "Ficha de una organización · /plataforma/organizaciones/:id",
       "w": 1440,
       "x": 1520,
       "y": 260
@@ -553,7 +553,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Organizaciones · /plataforma · por refinar",
+      "title": "Organizaciones · /plataforma",
       "w": 1440,
       "x": 0,
       "y": 260
@@ -605,7 +605,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Recuperaciones · /plataforma/recuperaciones · por refinar",
+      "title": "Recuperaciones · /plataforma/recuperaciones",
       "w": 1440,
       "x": 1520,
       "y": 1280
@@ -971,7 +971,7 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 6180,
+      "h": 6740,
       "page": "criterio",
       "title": "Criterio · Decisiones por pantalla",
       "w": 1440,

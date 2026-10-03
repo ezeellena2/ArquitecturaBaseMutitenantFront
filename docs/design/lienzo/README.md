@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 72** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 162 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 73** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 162 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -21,7 +21,7 @@ El título de cada tablero dice en qué estado está:
 | Perfil personal | 11 | Validado. Los 6 teléfonos están en formato app desde el 2026-10-03. |
 | Organización | 32 | Escritorio y móviles aprobados el 2026-10-03, salvo los dos inicios, que quedan para repensar. Los 14 teléfonos están en formato app desde el 2026-10-03 (el del inicio, no). |
 | Organización · WhatsApp | 51 | Escritorio y teléfonos aprobados el 2026-10-03, pantalla por pantalla (Etapa 11 ampliada). Los 27 teléfonos son los primeros en formato app. El alta de Meta no se dibuja hasta que el usuario lo pida. |
-| Plataforma | 18 | Menú de escritorio aprobado el 2026-10-03: Gestión y Administración abren un segundo panel. Los 10 teléfonos están en formato app desde el 2026-10-03 (barra de abajo: Organizaciones, Cuentas, Recuperaciones, Chats y Más). El resto del refinamiento de la compu sigue pendiente. |
+| Plataforma | 18 | Aprobada el 2026-10-03, compu y teléfonos. En la compu, Gestión, WhatsApp y Administración abren un segundo panel; en el teléfono, barra de abajo (Organizaciones, Cuentas, Recuperaciones, Chats y Más). |
 | Textos y mensajes | 2 | Validado |
 | Archivo | 14 | Descartado. Son versiones anteriores; están como referencia y no se programan. |
 
@@ -92,6 +92,8 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 | `wa_telefonos_1004.py` | Los 27 teléfonos de WhatsApp en formato app: corre `telefonos_1004/app_todas.py` y `app_numeros.py` sobre la copia de partida (`telefonos_1004/base`), les pone nombre (`M-WA-*`), enlaces y título, y los acomoda en cuatro filas. Las piezas del marco de app salen de `telefonos_1004/app_marco.py` y `app_estilo.py`. |
 | `org_telefonos_1004.py` | Los 14 teléfonos de Organización en formato app: corre `telefonos_1004/app_org.py`, les pone nombre (`M-*`), enlaces y título, y los acomoda en la página. Corre después de `wa_telefonos_1004.py`. |
 | `plat_personal_telefonos_1004.py` | Los 16 teléfonos de Plataforma y del perfil personal en formato app: corre `telefonos_1004/app_plat_personal.py`, les pone nombre, enlaces y título, y los acomoda. Corre después de `org_telefonos_1004.py`. |
+| `plat_vuelta_1004.py` | Plataforma en la compu con el criterio: celdas de dos líneas, auditoría sin ojo y con el detalle en grilla, la ficha de organización con pestañas, «Registro y altas» y WhatsApp en el menú. Antes corren `aplicar_criterio.py` y `criterio_marcado.py` sobre los 8 tableros; después, `plat_ajustes_1003.py`. |
+| `plat_ajustes_1003.py` | Ajustes aprobados en la otra conversación: Cuentas sin Teléfono, los métodos de la ficha de cuenta como en Mi cuenta y Documentos legales como lista. Les saca «· por refinar» a los títulos. |
 | `wa_ajustes_1004.py` | En la compu: la nota interna se prende con un botón al lado de donde se escribe, e «Importar contactos» va sin casilla y con «Descargar ejemplo». |
 | `menus_con_lineas.py` | Suma a todos los tableros la línea entre las opciones de los menús desplegables. Corre al final. |
 | `flechita_blanca.py` | El botón redondo que contrae el menú lateral va en blanco, con borde arena, en todos los tableros que lo tienen. Corre al final. |

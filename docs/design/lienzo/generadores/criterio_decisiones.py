@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 6180
+ALTO = 6740
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -62,6 +62,8 @@ REGLAS = [
     ("En el teléfono, el ⋮ de una fila va solo si tiene acciones; si no, se toca la fila.", "Marco y pantallas", "03/10/2026"),
     ("La flechita que contrae el menú lateral va en blanco, con borde arena.", "Menús y desplegables", "03/10/2026"),
     ("En el teléfono, las pantallas de edición llevan fijos abajo «Descartar cambios» y «Guardar cambios».", "Marco y pantallas", "03/10/2026"),
+    ("Una ficha lleva pestañas aunque alguna tenga un solo dato.", "Marco y pantallas", "03/10/2026"),
+    ("El detalle de solo lectura en un diálogo va en una grilla con líneas: rótulo a la izquierda sobre arena clara, valor a la derecha.", "Diálogos", "03/10/2026"),
 ]
 
 # Decisiones por página: (pantalla, opción elegida, qué se eligió, estado en el lienzo).
@@ -149,6 +151,14 @@ DECISIONES = {
         ("Auditoría de la plataforma", "", "El detalle de un evento sube como hoja, con «Cerrar».", "Dibujada"),
         ("Barra de abajo de la persona", "", "Inicio, Mensajes y «Más» (perfiles, Mi cuenta y Salir).", "Dibujada"),
         ("Mi cuenta", "", "En grupos (Tus datos, Cómo entrás, Privacidad), con «Descartar cambios» y «Guardar cambios» fijos abajo; agregar, verificar y dar de baja en hojas.", "Dibujada"),
+    ],
+    "Plataforma · compu": [
+        ("Menú", "B", "Gestión, WhatsApp (Chats, Contactos, Difusiones) y Administración, con la configuración de WhatsApp dentro de Administración.", "Dibujada"),
+        ("Organizaciones", "", "Organización (alta y origen debajo), Dueño (correo debajo), Empresas, Miembros y Estado.", "Dibujada"),
+        ("Ficha de una organización", "", "Con pestañas (Historial, Dueños, Módulos, Dominio verificado, Página pública); el primer módulo es WhatsApp.", "Dibujada"),
+        ("Cuentas", "", "Cuenta (nombre y correo), Perfiles, Último ingreso (cómo entró debajo) y Estado; sin Teléfono.", "Dibujada"),
+        ("Ficha de una cuenta", "", "Los métodos como en Mi cuenta: filas sin encabezado, el tipo y quién lo administra debajo, y el estado solo si pide atención.", "Dibujada"),
+        ("Recuperaciones · Auditoría · Legales · Configuración", "", "Cuenta con la fecha debajo; auditoría sin ojo ni cantidad y detalle en grilla; legales como lista («Versión N · vigente desde…»); «Registro y altas» con su encabezado.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Inicios", "", "Repensar qué es un inicio en la plantilla y dónde van las acciones pendientes.", "Para repensar"),
