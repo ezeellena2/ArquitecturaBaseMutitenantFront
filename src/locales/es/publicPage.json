@@ -1,0 +1,48 @@
+{
+  "title": "Página pública",
+  "pageData": "Datos de la página",
+  "logoTitle": "Logo",
+  "contactTitle": "Datos de contacto",
+  "saved": "Se guardaron los cambios.",
+  "publish": "Publicar",
+  "unpublish": "Despublicar",
+  "published": "La página está publicada.",
+  "unpublished": "La página quedó como borrador.",
+  "view": "Ver página",
+  "preview": "Vista previa",
+  "previewDescription": "Así se muestran los datos guardados en la página pública.",
+  "discard": "Descartar cambios",
+  "save": "Guardar cambios",
+  "uploadLogo": "Subir imagen",
+  "removeLogo": "Quitar imagen",
+  "logoAlt": "Logo de la organización",
+  "invalidLogo": "Elegí una imagen PNG, JPEG o WebP de hasta 512 KiB.",
+  "blockedInfo": "Ver el motivo y qué podés hacer",
+  "blockedTitle": "La página fue despublicada por la plataforma",
+  "blockedReason": "Motivo: {{reason}}",
+  "blockedFallback": "La plataforma la revisó.",
+  "blockedStep1": "Corregí la información señalada en la página.",
+  "blockedStep2": "Contactá a soporte para que la revisen de nuevo.",
+  "unpublishTitle": "¿Querés despublicar la página?",
+  "unpublishDescription": "La página dejará de estar disponible públicamente hasta que vuelvas a publicarla.",
+  "states": {
+    "published": "Publicada",
+    "draft": "Borrador",
+    "blocked": "Despublicada por la plataforma"
+  },
+  "fields": {
+    "slug": "Dirección de la página",
+    "name": "Nombre de la página",
+    "description": "Descripción",
+    "email": "Correo de contacto",
+    "phone": "Teléfono",
+    "address": "Dirección",
+    "website": "Sitio web"
+  },
+  "slug": {
+    "empty": "Elegí una dirección para tu página.",
+    "Available": "La dirección está disponible.",
+    "Reserved": "Esa dirección está reservada.",
+    "Taken": "Esa dirección ya está en uso."
+  }
+}

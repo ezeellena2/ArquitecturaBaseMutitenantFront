@@ -90,6 +90,10 @@ export const routes: RouteObject[] = [
             const { SettingsPage } = await import("@/areas/business/settings/pages/SettingsPage");
             return { Component: SettingsPage };
           }, errorElement: <AppErrorPage /> },
+          { path: "pagina", lazy: async () => {
+            const { PublicPagePage } = await import("@/areas/business/public-page/pages/PublicPagePage");
+            return { Component: PublicPagePage };
+          }, errorElement: <AppErrorPage /> },
         ] },
       ] },
       { element: <AccessRoute access="platform" />, children: [
