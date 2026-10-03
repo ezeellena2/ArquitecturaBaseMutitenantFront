@@ -40,6 +40,7 @@ describe("AuditPage", () => {
     const heading = screen.getByRole("heading", { level: 1, name: "Auditoría" });
     expect(heading.parentElement!.querySelector("[data-slot='page-subline']")).toBeNull();
     expect(screen.getByRole("columnheader", { name: "Fecha y hora" })).toBeVisible();
+    expect(screen.getByRole("searchbox", { name: "Buscar en la auditoría" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Tema: todos" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Quién: todos" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Ver el detalle de Cambió los roles de Tomás Acosta" }).querySelector("svg")).toBeNull();

@@ -3,16 +3,16 @@
   "dataTitle": "Datos de la organización",
   "fields": {
     "name": "Nombre de la organización",
-    "culture": "Cultura predeterminada",
+    "culture": "Idioma y región predeterminados",
     "timeZone": "Zona horaria predeterminada",
     "currency": "Moneda predeterminada"
   },
-  "chooseCulture": "Elegí una cultura",
+  "chooseCulture": "Elegí un idioma y región",
   "chooseTimeZone": "Elegí una zona horaria",
   "chooseCurrency": "Elegí una moneda",
   "discard": "Descartar cambios",
   "save": "Guardar cambios",
-  "saved": "Se guardaron los cambios.",
+  "saved": "Guardamos la configuración.",
   "domains": {
     "title": "Dominio de correo",
     "add": "Agregar dominio",

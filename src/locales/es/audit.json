@@ -16,7 +16,7 @@
   },
   "filters": {
     "label": "Filtros de auditoría",
-    "search": "Buscar en auditoría",
+    "search": "Buscar en la auditoría",
     "period": "Período",
     "periodMenu": "Filtrar por período",
     "category": "Tema: todos",

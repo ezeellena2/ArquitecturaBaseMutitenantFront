@@ -38,6 +38,8 @@ describe("SettingsPage", () => {
     expect(screen.getByRole("heading", { name: "Dominio de correo" })).toBeVisible();
     expect(await screen.findByText("delta.example.test")).toBeVisible();
     expect(screen.getByText("Verificado")).toBeVisible();
+    // Tablero Configuracion: «Idioma y región predeterminados».
+    expect(screen.getByText("Idioma y región predeterminados")).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
 
     const user = userEvent.setup();
@@ -45,6 +47,7 @@ describe("SettingsPage", () => {
     await user.type(name, "Grupo Delta Sur");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(updateBody).toEqual({ ...settings, name: "Grupo Delta Sur" }));
+    expect(await screen.findByText("Guardamos la configuración.")).toBeVisible();
 
     screen.getByRole("button", { name: "Acciones de delta.example.test" }).focus();
     await user.keyboard("{Enter}");

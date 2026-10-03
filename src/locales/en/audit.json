@@ -16,7 +16,7 @@
   },
   "filters": {
     "label": "Audit filters",
-    "search": "Search audit",
+    "search": "Search the audit log",
     "period": "Period",
     "periodMenu": "Filter by period",
     "category": "Topic: all",

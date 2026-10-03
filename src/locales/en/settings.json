@@ -3,16 +3,16 @@
   "dataTitle": "Organization details",
   "fields": {
     "name": "Organization name",
-    "culture": "Default culture",
+    "culture": "Default language and region",
     "timeZone": "Default time zone",
     "currency": "Default currency"
   },
-  "chooseCulture": "Choose a culture",
+  "chooseCulture": "Choose a language and region",
   "chooseTimeZone": "Choose a time zone",
   "chooseCurrency": "Choose a currency",
   "discard": "Discard changes",
   "save": "Save changes",
-  "saved": "Changes saved.",
+  "saved": "We saved the settings.",
   "domains": {
     "title": "Email domain",
     "add": "Add domain",
