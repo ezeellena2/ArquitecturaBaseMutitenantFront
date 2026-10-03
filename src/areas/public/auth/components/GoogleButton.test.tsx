@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { changeCulture, configureI18n } from "@/shared/i18n";
@@ -41,13 +41,32 @@ describe("GoogleButton", () => {
     expect(screen.queryByRole("link", { name: /Google/ })).not.toBeInTheDocument();
   });
 
-  it("en Registro exige la aceptación y navega por POST con antiforgery y retorno interno", async () => {
+  it("en Registro sin aceptar queda habilitado y al tocarlo pide la aceptación sin salir", async () => {
     server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "google", countries: [] }] })));
-    const view = show(<GoogleButton mode="signup" acceptedTerms={false} returnTo="/catalogo?grupo=1" />);
-    expect(await screen.findByRole("button", { name: "Registrarte con Google" })).toBeDisabled();
-    view.rerender(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><GoogleButton mode="signup" acceptedTerms returnTo="/catalogo?grupo=1" /></QueryClientProvider>);
+    const onTermsRequired = vi.fn();
+    const submitted = vi.fn();
+    show(<GoogleButton mode="signup" acceptedTerms={false} onTermsRequired={onTermsRequired} returnTo="/" />);
     const button = await screen.findByRole("button", { name: "Registrarte con Google" });
     await waitFor(() => expect(button).toBeEnabled());
+    (button as HTMLButtonElement).form!.addEventListener("submit", (event) => { event.preventDefault(); submitted(); });
+
+    fireEvent.click(button);
+
+    expect(onTermsRequired).toHaveBeenCalledOnce();
+    expect(submitted).not.toHaveBeenCalled();
+  });
+
+  it("en Registro con aceptación navega por POST con antiforgery y retorno interno", async () => {
+    server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "google", countries: [] }] })));
+    const onTermsRequired = vi.fn();
+    show(<GoogleButton mode="signup" acceptedTerms onTermsRequired={onTermsRequired} returnTo="/catalogo?grupo=1" />);
+    const button = await screen.findByRole("button", { name: "Registrarte con Google" });
+    await waitFor(() => expect(button).toBeEnabled());
+    const submitted = vi.fn();
+    (button as HTMLButtonElement).form!.addEventListener("submit", (event) => { event.preventDefault(); submitted(); });
+    fireEvent.click(button);
+    expect(submitted).toHaveBeenCalledOnce();
+    expect(onTermsRequired).not.toHaveBeenCalled();
     const form = (button as HTMLButtonElement).form!;
     expect(form).toHaveAttribute("method", "post");
     expect(form).toHaveAttribute("action", "/api/auth/external/google");
@@ -61,7 +80,7 @@ describe("GoogleButton", () => {
     server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "google", countries: [] }] })));
     await act(async () => changeCulture("en-US"));
     try {
-      show(<GoogleButton mode="signup" acceptedTerms returnTo="/" />);
+      show(<GoogleButton mode="signup" acceptedTerms onTermsRequired={() => {}} returnTo="/" />);
       const button = await screen.findByRole("button", { name: "Sign up with Google" });
       await waitFor(() => expect(button).toBeEnabled());
       const form = (button as HTMLButtonElement).form!;

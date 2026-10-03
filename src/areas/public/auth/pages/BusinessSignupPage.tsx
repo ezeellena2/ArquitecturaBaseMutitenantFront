@@ -38,6 +38,7 @@ export function BusinessSignupPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [step, setStep] = useState<Step>(auth.isAuthenticated ? "details" : "email");
   const [acceptedTerms, setAcceptedTerms] = useState(auth.isAuthenticated);
+  const [termsError, setTermsError] = useState(false);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [emailError, setEmailError] = useState(false);
@@ -222,19 +223,19 @@ export function BusinessSignupPage() {
           : step === "email" ? <section className="flex flex-col gap-[22px]">
             <h1 className="text-[26px] font-bold leading-tight">{t("businessSignup.title")}</h1>
             <label className="flex items-start gap-2 text-[13px] text-[var(--t2)]">
-              <input type="checkbox" checked={acceptedTerms} onChange={(event) => setAcceptedTerms(event.target.checked)}
+              <input type="checkbox" checked={acceptedTerms} onChange={(event) => { setAcceptedTerms(event.target.checked); setTermsError(false); }}
                 className="mt-0.5 size-4 accent-[var(--marca)]" />
               <span>{t("businessSignup.accept")} <Link to="/terminos" className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.terms")}</Link> {t("businessSignup.join")} <Link to="/privacidad" className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.privacy")}</Link></span>
             </label>
-            {!acceptedTerms ? <p role="alert" className="-mt-4 text-[13px] text-[var(--peligro)]">{t("businessSignup.acceptRequired")}</p> : null}
-            <GoogleButton mode="signup" access="business" acceptedTerms={acceptedTerms} returnTo="/registro/empresa" />
+            {termsError ? <p role="alert" className="-mt-4 text-[13px] text-[var(--peligro)]">{t("businessSignup.acceptRequired")}</p> : null}
+            <GoogleButton mode="signup" access="business" acceptedTerms={acceptedTerms} onTermsRequired={() => setTermsError(true)} returnTo="/registro/empresa" />
             <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--t3)]" /><span>{t("businessSignup.or")}</span><span className="h-px flex-1 bg-[var(--t3)]" /></div>
             <FormField label={t("businessSignup.email")} variant="auth" error={emailError ? t("login.emailInvalid") : undefined}>
               <EmailField name="email" value={email} onChange={(value) => { setEmail(value ?? ""); setEmailError(false); }} />
             </FormField>
             <FormError message={requestErrorText} />
-            <Button type="button" size="lg" className="w-full" disabled={!acceptedTerms || requestCode.isPending || retry.isRunning}
-              onClick={() => void sendCode()}>{retry.label ?? t("businessSignup.continue")}</Button>
+            <Button type="button" size="lg" className="w-full" disabled={requestCode.isPending || retry.isRunning}
+              onClick={() => { if (acceptedTerms) void sendCode(); else setTermsError(true); }}>{retry.label ?? t("businessSignup.continue")}</Button>
             <div className="text-center text-[13px] text-[var(--t2)]">{t("businessSignup.alreadyRegistered")} <Link to="/login/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.loginBusiness")}</Link></div>
           </section>
             : step === "code" ? <section className="flex flex-col gap-[22px]">

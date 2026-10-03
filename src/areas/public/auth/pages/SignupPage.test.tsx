@@ -33,15 +33,40 @@ function show(url = "/registro") {
 }
 
 describe("SignupPage", () => {
-  it("reproduce Correo a 390: la aceptación bloquea ambos caminos y no pide nombre", async () => {
+  it("sin aceptar, Google y Crear cuenta quedan habilitados y al tocarlos piden la aceptación", async () => {
+    let requests = 0;
+    server.use(http.post("/api/auth/signup", () => { requests += 1; return HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 }); }));
+    show();
+    const google = await screen.findByRole("button", { name: "Registrarte con Google" });
+    await waitFor(() => expect(google).toBeEnabled());
+    const create = screen.getByRole("button", { name: "Crear cuenta" });
+    expect(create).toBeEnabled();
+    // Como el tablero Registro: el aviso no está al abrir; aparece al tocar sin marcar y se va al marcar.
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: "mariana@example.com" } });
+    fireEvent.click(create);
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("Aceptá los Términos y la Política de privacidad.");
+    expect(screen.getByRole("checkbox", { name: /Acepto los Términos/ }).closest("label")?.nextElementSibling).toBe(alert);
+    expect(requests).toBe(0);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
+    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
+    fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
+    fireEvent.click(google);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Aceptá los Términos y la Política de privacidad.");
+  });
+
+  it("reproduce Correo a 390: no pide nombre", async () => {
     const originalWidth = window.innerWidth;
     Object.defineProperty(window, "innerWidth", { configurable: true, value: 390 });
     try {
       const { container } = show();
       expect(screen.getByRole("heading", { name: "Creá tu cuenta" })).toBeVisible();
       expect(screen.getByRole("checkbox", { name: /Acepto los Términos y la Política de privacidad/ })).not.toBeChecked();
-      expect(await screen.findByRole("button", { name: "Registrarte con Google" })).toBeDisabled();
-      expect(screen.getByRole("button", { name: "Crear cuenta" })).toBeDisabled();
+      expect(await screen.findByRole("button", { name: "Registrarte con Google" })).toBeVisible();
+      expect(screen.getByRole("button", { name: "Crear cuenta" })).toBeVisible();
       expect(screen.getByRole("textbox", { name: "Correo electrónico" })).toBeVisible();
       expect(screen.queryByRole("textbox", { name: /Nombre/ })).not.toBeInTheDocument();
       const login = screen.getByRole("link", { name: "Ingresá" });
@@ -147,9 +172,9 @@ describe("SignupPage", () => {
     expect(screen.queryByRole("button", { name: "Registrarte con Google" })).not.toBeInTheDocument();
   });
 
-  it("habilita el challenge Google con aceptación y retorno interno, sin pedir nombre", async () => {
+  it("arma el challenge Google con aceptación y retorno interno, sin pedir nombre", async () => {
     show("/registro?returnUrl=%2Fcatalogo");
-    expect(await screen.findByRole("button", { name: "Registrarte con Google" })).toBeDisabled();
+    await screen.findByRole("button", { name: "Registrarte con Google" });
     fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
     const google = await screen.findByRole("button", { name: "Registrarte con Google" });
     await waitFor(() => expect(google).toBeEnabled());

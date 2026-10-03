@@ -42,7 +42,8 @@ describe("BusinessSignupPage", () => {
         const { unmount } = show("/registro/empresa", viewport);
         expect(screen.getByRole("heading", { name: "Registrá tu empresa" })).toBeVisible();
         expect(screen.getByRole("checkbox", { name: /Acepto los Términos y la Política de privacidad/ })).not.toBeChecked();
-        expect(screen.getByRole("button", { name: "Continuar" })).toBeDisabled();
+        expect(screen.getByRole("button", { name: "Continuar" })).toBeEnabled();
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
         expect(screen.getByRole("textbox", { name: "Tu correo electrónico" })).toBeVisible();
         fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
         expect(screen.queryByRole("button", { name: "Seguir con Google" })).not.toBeInTheDocument();
@@ -51,6 +52,30 @@ describe("BusinessSignupPage", () => {
     } finally {
       Object.defineProperty(window, "innerWidth", { configurable: true, value: originalWidth });
     }
+  });
+
+  it("sin aceptar, Continuar y Google piden la aceptación debajo de la casilla y no envían nada", async () => {
+    let requests = 0;
+    server.use(
+      http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "google", countries: [] }] })),
+      http.post("/api/auth/business-signup/code", () => { requests += 1; return HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 }); }),
+    );
+    show();
+    fireEvent.change(screen.getByRole("textbox", { name: "Tu correo electrónico" }), { target: { value: "mariana@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("Aceptá los Términos y la Política de privacidad.");
+    expect(screen.getByRole("checkbox", { name: /Acepto los Términos/ }).closest("label")?.nextElementSibling).toBe(alert);
+    expect(requests).toBe(0);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
+    const google = await screen.findByRole("button", { name: "Seguir con Google" });
+    await waitFor(() => expect(google).toBeEnabled());
+    fireEvent.click(google);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Aceptá los Términos y la Política de privacidad.");
   });
 
   it("verifica el correo y crea organización con slug disponible y CUIT opcional", async () => {

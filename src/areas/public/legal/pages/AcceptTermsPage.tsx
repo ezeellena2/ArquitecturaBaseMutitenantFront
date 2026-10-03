@@ -23,6 +23,7 @@ export function AcceptTermsPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [accepted, setAccepted] = useState(false);
+  const [acceptRequired, setAcceptRequired] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
   const request = useIdempotentMutation((value: AcceptLegalRequest, key) => acceptLegalDocuments(value, key));
   const fallback = data?.access === "business" ? "/org" : data?.access === "platform" ? "/plataforma" : "/";
@@ -50,13 +51,14 @@ export function AcceptTermsPage() {
   }
   if (!isPending && data && documents.length === 0) { clearAccessError(); return <Navigate to={returnTo} replace />; }
   return <AuthLayout access={data?.access === "business" ? "business" : "consumer"} brandPanel="blank">
-    <form className="flex flex-col gap-[22px]" onSubmit={(event) => { event.preventDefault(); if (accepted) void accept(); }}>
+    <form className="flex flex-col gap-[22px]" onSubmit={(event) => { event.preventDefault(); if (accepted) void accept(); else setAcceptRequired(true); }}>
       <div><h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">{t("accept.title")}</h1>
         <p className="mt-2 text-[15px] leading-normal text-[var(--t2)]"><Trans ns="legal" i18nKey={terms && privacy ? "accept.bothChanged" : terms ? "accept.termsChanged" : "accept.privacyChanged"} values={{ termsVersion: terms?.version, privacyVersion: privacy?.version }} components={{ terms: <Link to="/terminos" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" />, privacy: <Link to="/privacidad" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" /> }} /></p>
       </div>
-      <label className="flex items-start gap-2.5 text-[14px] leading-normal"><input type="checkbox" checked={accepted} onChange={(event) => setAccepted(event.target.checked)} className="mt-0.5 size-[18px] shrink-0 accent-[var(--marca)]" /><span><Trans ns="legal" i18nKey="accept.agreement" components={{ terms: <Link to="/terminos" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" />, privacy: <Link to="/privacidad" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" /> }} /></span></label>
+      <label className="flex items-start gap-2.5 text-[14px] leading-normal"><input type="checkbox" checked={accepted} onChange={(event) => { setAccepted(event.target.checked); setAcceptRequired(false); }} className="mt-0.5 size-[18px] shrink-0 accent-[var(--marca)]" /><span><Trans ns="legal" i18nKey="accept.agreement" components={{ terms: <Link to="/terminos" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" />, privacy: <Link to="/privacidad" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" /> }} /></span></label>
+      {acceptRequired ? <p role="alert" className="-mt-4 text-[13px] text-[var(--peligro)]">{t("accept.acceptRequired")}</p> : null}
       <FormError message={failure} />
-      <div className="flex flex-col gap-2.5"><Button type="submit" size="lg" disabled={!accepted || request.isPending || isPending}>{t("accept.continue")}</Button><Button type="button" size="lg" variant="outline" onClick={() => { void signOut(); }}>{t("accept.signOut")}</Button></div>
+      <div className="flex flex-col gap-2.5"><Button type="submit" size="lg" disabled={request.isPending || isPending}>{t("accept.continue")}</Button><Button type="button" size="lg" variant="outline" onClick={() => { void signOut(); }}>{t("accept.signOut")}</Button></div>
     </form>
   </AuthLayout>;
 }

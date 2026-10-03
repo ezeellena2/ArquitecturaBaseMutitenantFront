@@ -22,8 +22,16 @@ it("bloquea versión nueva, exige casilla y acepta el documento exacto antes de 
   expect(await screen.findByRole("heading", { name: "Actualizamos los términos" })).toBeVisible();
   expect(router.state.location.pathname).toBe("/aceptar-terminos");
   expect(screen.getByText(/versión 2/)).toBeVisible();
-  expect(screen.getByRole("button", { name: "Aceptar y seguir" })).toBeDisabled();
+  // Como el tablero Aceptar-Terminos: el botón no se apaga; sin la casilla pide la aceptación debajo de ella.
+  expect(screen.getByRole("button", { name: "Aceptar y seguir" })).toBeEnabled();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Aceptar y seguir" }));
+  const alert = await screen.findByRole("alert");
+  expect(alert).toHaveTextContent("Aceptá los Términos y la Política de privacidad.");
+  expect(screen.getByRole("checkbox").closest("label")?.nextElementSibling).toBe(alert);
+  expect(accepted).toBeUndefined();
   await user.click(screen.getByRole("checkbox"));
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Aceptar y seguir" }));
   await waitFor(() => expect(accepted).toEqual({ documents: [{ id: "terms-v2", version: 2 }] }));
   expect(await screen.findByRole("heading", { name: "Mi cuenta" })).toBeVisible();

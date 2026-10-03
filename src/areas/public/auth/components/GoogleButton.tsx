@@ -10,8 +10,8 @@ import { getLoginMethods, loginMethodsQueryKey } from "../api/methods";
 import { getGoogleSignupAntiforgery, googleSignupAntiforgeryQueryKey } from "../api/googleSignup";
 
 export type GoogleButtonProps =
-  | { mode: "login"; access: "consumer" | "business"; returnUrl: string; acceptedTerms?: never; returnTo?: never }
-  | { mode: "signup"; acceptedTerms: boolean; returnTo: string; access?: "consumer" | "business"; returnUrl?: never };
+  | { mode: "login"; access: "consumer" | "business"; returnUrl: string; acceptedTerms?: never; onTermsRequired?: never; returnTo?: never }
+  | { mode: "signup"; acceptedTerms: boolean; onTermsRequired: () => void; returnTo: string; access?: "consumer" | "business"; returnUrl?: never };
 
 function GoogleMark() {
   return <img src={googleMark} width="18" height="18" alt="" aria-hidden="true" />;
@@ -53,8 +53,14 @@ export function GoogleButton(props: GoogleButtonProps) {
         <input type="hidden" name="culture" value={culture} />
         {timeZoneId ? <input type="hidden" name="timeZoneId" value={timeZoneId} /> : null}
       </form>, document.body)}
+      {/* No se apaga por los términos: sin la casilla, avisa debajo de ella y no sale (tablero Registro). */}
       <Button type="submit" form={formId} variant="outlineSurface" size="lg" className={className}
-        disabled={!props.acceptedTerms || !csrf?.requestToken}><GoogleMark />{label}</Button>
+        disabled={!csrf?.requestToken}
+        onClick={(event) => {
+          if (props.acceptedTerms) return;
+          event.preventDefault();
+          props.onTermsRequired();
+        }}><GoogleMark />{label}</Button>
     </>;
   }
   return <Button asChild variant="outlineSurface" size="lg" className={className}>

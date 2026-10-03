@@ -1115,7 +1115,11 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await publishNewTerms(readyFile);
           await accountPage.reload();
           await accountPage.getByRole("heading", { name: "Actualizamos los términos" }).waitFor();
-          assert.equal(await accountPage.getByRole("button", { name: "Aceptar y seguir" }).isDisabled(), true);
+          // Como el tablero Aceptar-Terminos: el botón no se apaga; sin la casilla pide la aceptación.
+          assert.equal(await accountPage.getByRole("button", { name: "Aceptar y seguir" }).isDisabled(), false);
+          await accountPage.getByRole("button", { name: "Aceptar y seguir" }).click();
+          await accountPage.getByRole("alert").filter({ hasText: "Aceptá los Términos y la Política de privacidad." }).waitFor();
+          assert.equal(await accountPage.getByRole("heading", { name: "Actualizamos los términos" }).isVisible(), true);
           await accountPage.getByRole("checkbox", { name: /Leí y acepto/ }).check();
           await accountPage.getByRole("button", { name: "Aceptar y seguir" }).click();
           await accountPage.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor();

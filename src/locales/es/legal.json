@@ -10,6 +10,7 @@
     "bothChanged": "Cambiaron los <terms>Términos y condiciones</terms> (versión {{termsVersion}}) y la <privacy>Política de privacidad</privacy> (versión {{privacyVersion}}).",
     "agreement": "Leí y acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>",
     "continue": "Aceptar y seguir",
+    "acceptRequired": "Aceptá los Términos y la Política de privacidad.",
     "signOut": "Salir",
     "title": "Actualizamos los términos"
   }
