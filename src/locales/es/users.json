@@ -1,0 +1,93 @@
+{
+  "title": "Usuarios",
+  "summary": "{{total}} usuarios · {{active}} activos · {{invited}} invitaciones pendientes · {{expired}} vencidas · {{inactive}} deshabilitados",
+  "columns": {
+    "person": "Nombre",
+    "email": "Correo",
+    "organizationRoles": "Roles de la organización",
+    "companies": "Empresa",
+    "companyRoles": "Roles en la empresa",
+    "state": "Estado",
+    "expires": "Vence",
+    "actions": "Acciones"
+  },
+  "states": {
+    "all": "Todos los estados",
+    "Active": "Activo",
+    "PendingDeletion": "Baja pedida",
+    "Invited": "Invitación pendiente",
+    "Expired": "Invitación vencida",
+    "Inactive": "Deshabilitado"
+  },
+  "managedEmail": "Correo administrado por la organización",
+  "filters": {
+    "label": "Filtrar usuarios",
+    "search": "Buscar por nombre o correo",
+    "state": "Estado",
+    "company": "Empresa",
+    "allCompanies": "Todas las empresas"
+  },
+  "empty": {
+    "all": "Todavía no hay usuarios en la organización",
+    "filtered": "Ningún usuario coincide con los filtros",
+    "clear": "Limpiar filtros"
+  },
+  "invite": {
+    "open": "Invitar usuario",
+    "title": "Invitar usuario",
+    "description": "Enviamos un enlace de invitación al correo que ingreses.",
+    "email": "Correo",
+    "emailPlaceholder": "nombre@empresa.com",
+    "organizationRoles": "Roles de la organización",
+    "companyRoles": "Roles en la empresa",
+    "companyRolesHint": "Podés asignar roles en una o más empresas.",
+    "chooseRoles": "Elegí uno o más roles",
+    "company": "Empresa",
+    "chooseCompany": "Elegí una empresa",
+    "addCompany": "Sumar empresa",
+    "send": "Enviar invitación",
+    "roleRequired": "Elegí al menos un rol de la organización o de una empresa."
+  },
+  "actions": {
+    "view": "Ver y editar",
+    "resend": "Reenviar invitación",
+    "enable": "Habilitar",
+    "disable": "Deshabilitar",
+    "revoke": "Revocar invitación",
+    "remove": "Quitar de la organización"
+  },
+  "rowActions": "Acciones de {{name}}",
+  "confirm": {
+    "revoke": "¿Revocar la invitación a {{name}}?",
+    "revokeDescription": "La persona ya no va a poder usar este enlace.",
+    "disable": "¿Deshabilitar a {{name}}?",
+    "disableDescription": "La persona va a perder el acceso a la organización.",
+    "remove": "¿Quitar a {{name}} de la organización?",
+    "removeDescription": "Se van a quitar sus accesos y roles de esta organización."
+  },
+  "messages": {
+    "saved": "Guardamos los cambios.",
+    "invited": "Enviamos la invitación.",
+    "resent": "Reenviamos la invitación.",
+    "revoked": "Revocamos la invitación.",
+    "enabled": "Habilitamos el acceso.",
+    "disabled": "Deshabilitamos el acceso.",
+    "removed": "Quitamos a la persona de la organización."
+  },
+  "detail": {
+    "title": "Usuario",
+    "loading": "Cargando usuario",
+    "accessTitle": "Acceso a la organización",
+    "joined": "Desde",
+    "invitationSent": "Invitación enviada",
+    "pendingDeletion": "Esta persona pidió la baja. No podés cambiar sus roles; sí podés quitarla de la organización.",
+    "pendingDeletionRoles": "Los roles quedan sin cambios mientras se procesa la baja.",
+    "organizationRoles": "Roles de la organización",
+    "companyAccess": "Empresas y roles",
+    "preservedCompanies": "Las empresas con acceso inactivo se conservan como están hasta que vuelvan a habilitarse.",
+    "companyInactive": "Acceso inactivo",
+    "noCompanies": "No tiene acceso a empresas.",
+    "removeCompany": "Quitar acceso a {{name}}",
+    "save": "Guardar cambios"
+  }
+}

@@ -86,6 +86,14 @@ export const routes: RouteObject[] = [
             const { AuditPage } = await import("@/areas/business/audit/pages/AuditPage");
             return { Component: AuditPage };
           }, errorElement: <AppErrorPage /> },
+          { path: "usuarios", lazy: async () => {
+            const { UsersPage } = await import("@/areas/business/users/pages/UsersPage");
+            return { Component: UsersPage };
+          }, errorElement: <AppErrorPage /> },
+          { path: "usuarios/:memberId", lazy: async () => {
+            const { UserDetailPage } = await import("@/areas/business/users/pages/UserDetailPage");
+            return { Component: UserDetailPage };
+          }, errorElement: <AppErrorPage /> },
           { path: "configuracion", lazy: async () => {
             const { SettingsPage } = await import("@/areas/business/settings/pages/SettingsPage");
             return { Component: SettingsPage };

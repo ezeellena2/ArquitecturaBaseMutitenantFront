@@ -1,0 +1,93 @@
+{
+  "title": "Users",
+  "summary": "{{total}} users · {{active}} active · {{invited}} pending invitations · {{expired}} expired · {{inactive}} disabled",
+  "columns": {
+    "person": "Name",
+    "email": "Email",
+    "organizationRoles": "Organization roles",
+    "companies": "Company",
+    "companyRoles": "Company roles",
+    "state": "Status",
+    "expires": "Expires",
+    "actions": "Actions"
+  },
+  "states": {
+    "all": "All statuses",
+    "Active": "Active",
+    "PendingDeletion": "Deletion requested",
+    "Invited": "Invitation pending",
+    "Expired": "Invitation expired",
+    "Inactive": "Disabled"
+  },
+  "managedEmail": "Email managed by the organization",
+  "filters": {
+    "label": "Filter users",
+    "search": "Search by name or email",
+    "state": "Status",
+    "company": "Company",
+    "allCompanies": "All companies"
+  },
+  "empty": {
+    "all": "There are no users in the organization yet",
+    "filtered": "No users match these filters",
+    "clear": "Clear filters"
+  },
+  "invite": {
+    "open": "Invite user",
+    "title": "Invite user",
+    "description": "We will send an invitation link to the email address you enter.",
+    "email": "Email",
+    "emailPlaceholder": "name@company.com",
+    "organizationRoles": "Organization roles",
+    "companyRoles": "Company roles",
+    "companyRolesHint": "You can assign roles in one or more companies.",
+    "chooseRoles": "Choose one or more roles",
+    "company": "Company",
+    "chooseCompany": "Choose a company",
+    "addCompany": "Add company",
+    "send": "Send invitation",
+    "roleRequired": "Choose at least one organization or company role."
+  },
+  "actions": {
+    "view": "View and edit",
+    "resend": "Resend invitation",
+    "enable": "Enable",
+    "disable": "Disable",
+    "revoke": "Revoke invitation",
+    "remove": "Remove from organization"
+  },
+  "rowActions": "Actions for {{name}}",
+  "confirm": {
+    "revoke": "Revoke the invitation to {{name}}?",
+    "revokeDescription": "This person will no longer be able to use this link.",
+    "disable": "Disable {{name}}?",
+    "disableDescription": "This person will lose access to the organization.",
+    "remove": "Remove {{name}} from the organization?",
+    "removeDescription": "Their access and roles in this organization will be removed."
+  },
+  "messages": {
+    "saved": "Changes saved.",
+    "invited": "Invitation sent.",
+    "resent": "Invitation resent.",
+    "revoked": "Invitation revoked.",
+    "enabled": "Access enabled.",
+    "disabled": "Access disabled.",
+    "removed": "Person removed from the organization."
+  },
+  "detail": {
+    "title": "User",
+    "loading": "Loading user",
+    "accessTitle": "Organization access",
+    "joined": "Since",
+    "invitationSent": "Invitation sent",
+    "pendingDeletion": "This person requested account deletion. You cannot change their roles; you can remove them from the organization.",
+    "pendingDeletionRoles": "Roles stay unchanged while the deletion request is processed.",
+    "organizationRoles": "Organization roles",
+    "companyAccess": "Companies and roles",
+    "preservedCompanies": "Companies with inactive access stay as they are until access is restored.",
+    "companyInactive": "Inactive access",
+    "noCompanies": "No company access.",
+    "removeCompany": "Remove access to {{name}}",
+    "save": "Save changes"
+  }
+}
