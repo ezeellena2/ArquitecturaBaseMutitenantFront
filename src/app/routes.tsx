@@ -94,6 +94,14 @@ export const routes: RouteObject[] = [
             const { UserDetailPage } = await import("@/areas/business/users/pages/UserDetailPage");
             return { Component: UserDetailPage };
           }, errorElement: <AppErrorPage /> },
+          { path: "empresas", lazy: async () => {
+            const { CompaniesPage } = await import("@/areas/business/companies/pages/CompaniesPage");
+            return { Component: CompaniesPage };
+          }, errorElement: <AppErrorPage /> },
+          { path: "empresas/:companyId", lazy: async () => {
+            const { CompanyDetailPage } = await import("@/areas/business/companies/pages/CompanyDetailPage");
+            return { Component: CompanyDetailPage };
+          }, errorElement: <AppErrorPage /> },
           { path: "configuracion", lazy: async () => {
             const { SettingsPage } = await import("@/areas/business/settings/pages/SettingsPage");
             return { Component: SettingsPage };

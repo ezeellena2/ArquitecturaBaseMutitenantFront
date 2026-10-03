@@ -1,0 +1,133 @@
+{
+  "title": "Companies",
+  "summary_one": "{{total}} company · {{active}} active · {{inactive}} inactive",
+  "summary_other": "{{total}} companies · {{active}} active · {{inactive}} inactive",
+  "summaryFallback_one": "{{total}} company",
+  "summaryFallback_other": "{{total}} companies",
+  "create": "Create company",
+  "createTitle": "Create company",
+  "editTitle": "Edit company",
+  "columns": {
+    "name": "Company",
+    "taxId": "Tax ID",
+    "timeZone": "Business time zone",
+    "members": "Members",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "filters": {
+    "label": "Filter companies",
+    "search": "Search by name or tax ID",
+    "status": "Status",
+    "all": "All statuses"
+  },
+  "status": { "Active": "Active", "Inactive": "Inactive" },
+  "statusFilters": { "Active": "Active", "Inactive": "Inactive" },
+  "empty": {
+    "all": "There are no companies yet",
+    "filtered": "No companies match these filters",
+    "clear": "Clear filters"
+  },
+  "form": {
+    "description": "Enter company details for this organization.",
+    "name": "Name",
+    "taxId": "Tax identification",
+    "taxIdType": "Tax identification type",
+    "timeZone": "Business time zone",
+    "chooseTimeZone": "Choose a time zone",
+    "create": "Create company",
+    "save": "Save changes"
+  },
+  "validation": { "taxIdPair": "Enter both the tax ID type and number, or leave both empty." },
+  "rowActions": "Actions for {{name}}",
+  "memberActions": "Actions for {{name}}",
+  "actions": {
+    "view": "View details",
+    "edit": "Edit",
+    "changeStatus": "Change status",
+    "deactivate": "Deactivate company",
+    "activate": "Activate company",
+    "more": "More actions",
+    "addMember": "Add member",
+    "changeRoles": "Change roles",
+    "viewUser": "View user",
+    "removeMember": "Remove from company",
+    "restoreMember": "Add back"
+  },
+  "confirm": {
+    "deactivate": "Deactivate {{name}}?",
+    "deactivateDescription": "The company and its permissions will no longer be available. Its members and data are kept.",
+    "activate": "Activate {{name}}?",
+    "activateDescription": "The company will be available to the organization again.",
+    "removeMember": "Remove {{name}} from the company?",
+    "removeMemberDescription": "This person will lose company access and roles. They will remain in the organization.",
+    "restoreMember": "Add {{name}} back?",
+    "restoreMemberDescription": "This person regains company access; roles can be assigned again afterward."
+  },
+  "messages": {
+    "created": "Company created.",
+    "updated": "Company changes saved.",
+    "deactivated": "Company deactivated.",
+    "activated": "Company activated.",
+    "memberAdded": "Person added to the company.",
+    "rolesUpdated": "Company roles saved.",
+    "memberRemoved": "Company access removed.",
+    "memberRestored": "Company access restored."
+  },
+  "memberColumns": {
+    "name": "Name",
+    "email": "Email",
+    "roles": "Company roles",
+    "state": "Status"
+  },
+  "memberStates": {
+    "Active": "Active",
+    "PendingDeletion": "Deletion requested",
+    "Inactive": "Inactive",
+    "Invited": "Invitation pending"
+  },
+  "back": "Back to Companies",
+  "detail": {
+    "title": "Company",
+    "loading": "Loading company",
+    "tabsLabel": "Company sections",
+    "members": "Members",
+    "roles": "Roles",
+    "membersForbidden": "You do not have permission to view this company's members.",
+    "filters": {
+      "label": "Filter members",
+      "search": "Search by name or email",
+      "role": "All roles",
+      "allRoles": "All roles",
+      "withoutRoles": "No roles",
+      "state": "Status",
+      "allStates": "All statuses"
+    },
+    "empty": {
+      "all": "There are no members in this company yet",
+      "filtered": "No members match these filters"
+    },
+    "rolesEmpty": "There are no roles available for this company.",
+    "createRole": "Create role"
+  },
+  "roleColumns": {
+    "name": "Role",
+    "scope": "Applies to",
+    "users": "Users",
+    "permissions": "Permissions"
+  },
+  "addMember": {
+    "title": "Add member",
+    "user": "User",
+    "chooseUser": "Choose a person in the organization",
+    "withoutEmail": "No email",
+    "roles": "Company roles",
+    "chooseRoles": "Choose one or more roles"
+  },
+  "editMemberRoles": {
+    "title": "Roles for {{name}}",
+    "roles": "Company roles",
+    "save": "Save changes",
+    "lastAdmin": "The company must keep at least one active administrator."
+  }
+}

@@ -44,7 +44,7 @@ export const businessRoleManager: MeResponse = {
 
 export const businessE6Admin: MeResponse = {
   ...businessUser,
-  permissions: ["users.read", "users.invite", "users.manage", "roles.read", "roles.manage", "companies.read", "companies.manage", "settings.read", "settings.manage", "publicpage.manage", "audit.read"],
+  permissions: ["users.read", "users.invite", "users.manage", "roles.read", "roles.manage", "companies.read", "companies.manage", "company.members.read", "company.members.manage", "settings.read", "settings.manage", "publicpage.manage", "audit.read"],
 };
 
 export const platformOperator: MeResponse = {

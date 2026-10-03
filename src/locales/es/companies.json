@@ -1,0 +1,133 @@
+{
+  "title": "Empresas",
+  "summary_one": "{{total}} empresa · {{active}} activas · {{inactive}} inactivas",
+  "summary_other": "{{total}} empresas · {{active}} activas · {{inactive}} inactivas",
+  "summaryFallback_one": "{{total}} empresa",
+  "summaryFallback_other": "{{total}} empresas",
+  "create": "Crear empresa",
+  "createTitle": "Crear empresa",
+  "editTitle": "Editar empresa",
+  "columns": {
+    "name": "Empresa",
+    "taxId": "CUIT",
+    "timeZone": "Zona de negocio",
+    "members": "Miembros",
+    "status": "Estado",
+    "actions": "Acciones"
+  },
+  "filters": {
+    "label": "Filtrar empresas",
+    "search": "Buscar por nombre o CUIT",
+    "status": "Estado",
+    "all": "Todos los estados"
+  },
+  "status": { "Active": "Activa", "Inactive": "Inactiva" },
+  "statusFilters": { "Active": "Activas", "Inactive": "Inactivas" },
+  "empty": {
+    "all": "Todavía no hay empresas",
+    "filtered": "Ninguna empresa coincide con los filtros",
+    "clear": "Limpiar filtros"
+  },
+  "form": {
+    "description": "Completá los datos de la empresa dentro de esta organización.",
+    "name": "Nombre",
+    "taxId": "Identificación fiscal",
+    "taxIdType": "Tipo de identificación fiscal",
+    "timeZone": "Zona de negocio",
+    "chooseTimeZone": "Elegí una zona horaria",
+    "create": "Crear empresa",
+    "save": "Guardar cambios"
+  },
+  "validation": { "taxIdPair": "Completá el tipo y el número de identificación fiscal, o dejá ambos vacíos." },
+  "rowActions": "Acciones para {{name}}",
+  "memberActions": "Acciones para {{name}}",
+  "actions": {
+    "view": "Ver ficha",
+    "edit": "Editar",
+    "changeStatus": "Cambiar estado",
+    "deactivate": "Inactivar empresa",
+    "activate": "Activar empresa",
+    "more": "Más acciones",
+    "addMember": "Agregar miembro",
+    "changeRoles": "Cambiar roles",
+    "viewUser": "Ver usuario",
+    "removeMember": "Quitar de la empresa",
+    "restoreMember": "Volver a sumar"
+  },
+  "confirm": {
+    "deactivate": "¿Inactivar {{name}}?",
+    "deactivateDescription": "La empresa y sus permisos dejarán de estar disponibles. Sus miembros y datos se conservan.",
+    "activate": "¿Activar {{name}}?",
+    "activateDescription": "La empresa volverá a estar disponible para la organización.",
+    "removeMember": "¿Quitar a {{name}} de la empresa?",
+    "removeMemberDescription": "La persona deja de tener acceso a esta empresa y se quitan sus roles. Sigue siendo parte de la organización.",
+    "restoreMember": "¿Volver a sumar a {{name}}?",
+    "restoreMemberDescription": "La persona recupera el acceso a la empresa; los roles se asignan de nuevo después."
+  },
+  "messages": {
+    "created": "Creamos la empresa.",
+    "updated": "Guardamos los cambios de la empresa.",
+    "deactivated": "Inactivamos la empresa.",
+    "activated": "Activamos la empresa.",
+    "memberAdded": "Agregamos a la persona a la empresa.",
+    "rolesUpdated": "Guardamos los roles de la empresa.",
+    "memberRemoved": "Quitamos el acceso a la empresa.",
+    "memberRestored": "Restauramos el acceso a la empresa."
+  },
+  "memberColumns": {
+    "name": "Nombre",
+    "email": "Correo",
+    "roles": "Roles en la empresa",
+    "state": "Estado"
+  },
+  "memberStates": {
+    "Active": "Activo",
+    "PendingDeletion": "Baja pedida",
+    "Inactive": "Inactivo",
+    "Invited": "Invitación pendiente"
+  },
+  "back": "Volver a Empresas",
+  "detail": {
+    "title": "Empresa",
+    "loading": "Cargando empresa",
+    "tabsLabel": "Secciones de la empresa",
+    "members": "Miembros",
+    "roles": "Roles",
+    "membersForbidden": "No tenés permiso para consultar los miembros de esta empresa.",
+    "filters": {
+      "label": "Filtrar miembros",
+      "search": "Buscar por nombre o correo",
+      "role": "Todos los roles",
+      "allRoles": "Todos los roles",
+      "withoutRoles": "Sin roles",
+      "state": "Estado",
+      "allStates": "Todos los estados"
+    },
+    "empty": {
+      "all": "Todavía no hay miembros en esta empresa",
+      "filtered": "Ningún miembro coincide con los filtros"
+    },
+    "rolesEmpty": "No hay roles disponibles para esta empresa.",
+    "createRole": "Crear rol"
+  },
+  "roleColumns": {
+    "name": "Rol",
+    "scope": "Alcance",
+    "users": "Usuarios",
+    "permissions": "Permisos"
+  },
+  "addMember": {
+    "title": "Agregar miembro",
+    "user": "Usuario",
+    "chooseUser": "Elegí una persona de la organización",
+    "withoutEmail": "Sin correo",
+    "roles": "Roles en la empresa",
+    "chooseRoles": "Elegí uno o más roles"
+  },
+  "editMemberRoles": {
+    "title": "Roles de {{name}}",
+    "roles": "Roles en la empresa",
+    "save": "Guardar cambios",
+    "lastAdmin": "Tiene que quedar al menos una persona administradora activa en la empresa."
+  }
+}
