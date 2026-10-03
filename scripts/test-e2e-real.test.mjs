@@ -167,6 +167,26 @@ async function invitationFromPickup(email, before) {
   throw new Error("No llegó el .eml con el enlace real de invitación al pickup aislado.");
 }
 
+async function inviteFromUsersPage(page, email) {
+  await page.goto(new URL("/org/usuarios", baseUrl).href);
+  await page.getByRole("button", { name: "Invitar usuario", exact: true }).click();
+  const before = new Set(await pickupFiles());
+  await page.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
+  await page.getByRole("button", { name: "Roles de la organización", exact: true }).click();
+  await page.getByRole("menuitemcheckbox", { name: "Dueño", exact: true }).click();
+  await page.keyboard.press("Escape");
+  const responsePromise = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/users/invitations"
+    && response.request().method() === "POST");
+  await page.getByRole("button", { name: "Enviar invitación", exact: true }).click();
+  const response = await responsePromise;
+  assert.equal(response.status(), 201, "Invitar desde Usuarios debe crear la invitación real.");
+  const invitationId = await response.json();
+  assert.equal(typeof invitationId, "string");
+  assert.match(invitationId, /^[0-9a-f-]{36}$/i);
+  const link = await invitationFromPickup(email, before);
+  return { invitationId, link };
+}
+
 async function expectPath(page, expected, step) {
   try {
     await page.waitForURL((url) => url.pathname === expected, { timeout: 20_000 });
@@ -651,6 +671,71 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         }],
         ["6: registrar empresa por correo sin crear Personal", async (businessSignupPage, setStage) => {
           await registerBusinessByEmail(businessSignupPage, readyFile, setStage);
+        }],
+        ["6: invitar desde Usuarios y aceptar con/sin cuenta previa", async (adminPage, setStage) => {
+          setStage("ingresa como Dueño para administrar Usuarios");
+          await adminPage.goto(new URL("/login/empresa", baseUrl).href);
+          await adminPage.getByRole("textbox", { name: "Correo electrónico" }).fill(businessEmail);
+          const ownerLoginBefore = new Set(await pickupFiles());
+          await sendLoginCode(adminPage);
+          await adminPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+          await enterCode(adminPage, await codeFromPickup(businessEmail, ownerLoginBefore));
+          await adminPage.getByRole("button", { name: "Verificar", exact: true }).click();
+          await expectPath(adminPage, "/org", "ingreso del Dueño para invitar desde Usuarios");
+
+          for (const existingAccount of [false, true]) {
+            const email = `e2e-ui-invitation-${randomUUID()}@example.test`;
+            if (existingAccount) {
+              setStage("prepara una cuenta existente sin espacio Personal");
+              await invitationCommand(readyFile, { kind: "prepare-recipient", email });
+            }
+            setStage(`emite desde Usuarios para persona ${existingAccount ? "con cuenta" : "sin cuenta"}`);
+            const { invitationId, link } = await inviteFromUsersPage(adminPage, email);
+            const browser = adminPage.context().browser();
+            assert.ok(browser, "El recorrido requiere el navegador real de Playwright.");
+            const recipientContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+            const recipientPage = await recipientContext.newPage();
+            try {
+              setStage("abre la vista previa del enlace recibido por correo");
+              await recipientPage.goto(link);
+              await recipientPage.getByRole("heading", { name: "Te sumás a Empresa E2E", exact: true }).waitFor({ timeout: 15_000 });
+              await recipientPage.getByText(`La invitación es para ${email}.`, { exact: true }).waitFor();
+              assert.equal(new URL(recipientPage.url()).hash, "", "El fragmento secreto debe retirarse de la URL.");
+
+              if (existingAccount) {
+                setStage("ingresa la cuenta existente sin crear Personal");
+                await recipientPage.getByRole("button", { name: "Ingresá para aceptar", exact: true }).click();
+                await recipientPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
+                const loginBefore = new Set(await pickupFiles());
+                await sendLoginCode(recipientPage);
+                await recipientPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+                await enterCode(recipientPage, await codeFromPickup(email, loginBefore));
+                await recipientPage.getByRole("button", { name: "Verificar", exact: true }).click();
+                await expectPath(recipientPage, "/invitacion", "retorno de la cuenta existente a la invitación");
+                const beforeAcceptance = await invitationCommand(readyFile, { kind: "inspect", email, invitationId });
+                assert.equal(beforeAcceptance.personalSpaces, 0, "El ingreso para aceptar no puede crear Personal.");
+                assert.equal(beforeAcceptance.accepted, false, "El ingreso no consume la invitación.");
+              } else {
+                await recipientPage.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+              }
+
+              setStage("acepta la invitación emitida por la pantalla de Usuarios");
+              const acceptedResponsePromise = recipientPage.waitForResponse((response) =>
+                new URL(response.url()).pathname === "/api/invitations/accept" && response.request().method() === "POST");
+              await recipientPage.getByRole("button", { name: "Aceptar invitación", exact: true }).click();
+              assert.equal((await acceptedResponsePromise).status(), 200);
+              const inspection = await invitationCommand(readyFile, { kind: "inspect", email, invitationId });
+              assert.equal(inspection.personalSpaces, 0);
+              assert.equal(inspection.activeBusinessAccesses, 1);
+              assert.equal(inspection.accepted, true);
+              assert.equal(inspection.boundToIdentity, true);
+              await recipientPage.getByRole("heading", { name: "Te sumaste a Empresa E2E", exact: true }).waitFor();
+              await recipientPage.getByRole("button", { name: existingAccount ? "Entrar a la organización" : "Más tarde", exact: true }).click();
+              await expectPath(recipientPage, "/org", "entrada luego de aceptar invitación desde Usuarios");
+            } finally {
+              await recipientContext.close();
+            }
+          }
         }],
         ...[false, true].map((existingAccount) => [
           `3c: aceptar invitación ${existingAccount ? "con cuenta previa sin Personal" : "sin cuenta y sin Personal"} desde el .eml`,
