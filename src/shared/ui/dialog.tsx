@@ -52,6 +52,7 @@ function DialogContent({
   children,
   showCloseButton = true,
   mobileFullHeight = false,
+  onInteractOutside,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
@@ -70,6 +71,11 @@ function DialogContent({
           className
         )}
         {...props}
+        // Criterio-Dialogos: se cierra con ✕, Cancelar o Escape; un clic afuera no lo cierra.
+        onInteractOutside={(event) => {
+          onInteractOutside?.(event)
+          event.preventDefault()
+        }}
       >
         {children}
         {showCloseButton ? (
