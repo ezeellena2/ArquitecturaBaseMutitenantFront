@@ -100,6 +100,7 @@ QUITAR = svg('<circle cx="10" cy="8" r="3.5"/><path d="M4 20a6 6 0 0 1 12 0"/><p
 PERSONA = svg('<circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/>')
 SALIR = svg('<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/>')
 CASA = svg('<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>', 18)
+WA = svg('<path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"/>', 18)
 ENGR = svg('<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/>', 18)
 GENTE = svg('<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M15.5 5.2a3.2 3.2 0 0 1 0 5.6"/><path d="M17.5 13.5A5.5 5.5 0 0 1 20.5 19"/>', 18)
 EDIF = svg('<rect x="5" y="3.5" width="14" height="17" rx="1.5"/><path d="M9 7.5h2M13 7.5h2M9 11h2M13 11h2M9 14.5h2M13 14.5h2"/>', 18)
@@ -201,11 +202,11 @@ BODY = f"""<div class="crit">
       <div class="resto" style="position: relative;">
         <ul class="reglas2" style="position: absolute; left: 40px; top: 28px; width: 420px;">
           <li><strong>Es igual en los tres perfiles</strong> (personal, organización y plataforma). Cambian los enlaces.</li>
-          <li><strong>Arriba, Inicio y los módulos.</strong> Abajo de todo, «Administración», que abre un segundo panel al lado.</li>
+          <li><strong>Arriba, Inicio y los módulos de uso diario,</strong> como «WhatsApp». Abajo de todo, con una línea, «Administración», que es configuración. Los dos abren un segundo panel al lado, y solo uno a la vez.</li>
           <li><strong>Un grupo con hijos</strong> se despliega en el lugar, como «Gestión de usuarios».</li>
           <li><strong>El activo va en blanco</strong> con letra petróleo.</li>
           <li><strong>Contraído</strong> muestra solo los íconos; el nombre aparece al pasar el mouse.</li>
-          <li><strong>En el teléfono,</strong> ☰ lo abre encima y «Administración» se despliega adentro.</li>
+          <li><strong>En el teléfono,</strong> ☰ lo abre encima y los módulos y «Administración» se despliegan adentro.</li>
         </ul>
       </div>
       <div class="sb chico" style="position: relative;">
