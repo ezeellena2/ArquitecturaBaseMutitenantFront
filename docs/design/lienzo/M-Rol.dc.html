@@ -685,129 +685,6 @@ body { margin: 0; }
 .w-cajon .w-ln { height: 38px; }
 :where(.w-app, .w-tel) a { text-decoration: none; color: inherit; cursor: pointer; }
   </style>
-<style data-propuesta="perfil">
-.p-hoja { padding: 16px 20px 20px; display: flex; gap: 16px; flex-wrap: wrap; }
-.p-mov .p-hoja { flex-direction: column; padding: 14px 16px 16px; }
-.p-mov .w-cmp .ct { height: 44px; }
-.p-ic { color: var(--t3); display: inline-flex; width: 18px; justify-content: center; }
-.p-aviso { position: absolute; z-index: 8; right: 20px; bottom: 20px; width: 340px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); font-size: 13px; }
-.p-otp { display: flex; gap: 8px; }
-.p-otp span { width: 40px; height: 44px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; background: #fff; }
-.p-otp span.foco { border-color: var(--marca); box-shadow: 0 0 0 3px oklch(0.51 0.099 195 / 0.15); }
-.p-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); }
-.p-seg span { height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--t2); }
-.p-seg span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
-.p-dlg { position: absolute; z-index: 7; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 420px; background: #fff; border-radius: 12px; box-shadow: 0 24px 48px oklch(0.2 0.014 78 / 0.28); overflow: hidden; }
-.p-dlg.normal { width: 560px; }
-.p-dlg .dc { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 8px 0 20px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 15px; font-weight: 600; }
-.p-dlg .tx { padding: 16px 20px 0; font-size: 13.5px; line-height: 1.55; color: var(--t2); }
-.p-dlg .db { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
-.p-dlg .df { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--borde); }
-:where(.w-app, .w-tel) a { text-decoration: none; color: inherit; cursor: pointer; }
-</style>
-<style data-propuesta="org-formularios">
-.o-col { flex-direction: column; }
-.o-fila { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
-.o-codigo .cb { font-family: Inter, system-ui, sans-serif; }
-.o-pre { display: flex; height: 36px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; overflow: hidden; background: #fff; }
-.o-pre span { display: flex; align-items: center; padding: 0 12px; font-size: 13px; }
-.o-pre span + span { background: var(--s2); color: var(--t2); border-left: 1px solid var(--borde); }
-.o-logo { display: flex; align-items: center; gap: 12px; }
-.o-logo .av { width: 56px; height: 56px; border-radius: 12px; background: var(--marca-t); color: var(--marca-tx); display: inline-flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
-.o-codigo { font-family: ui-monospace, Consolas, monospace; font-size: 13px; background: var(--s2); border: 1px solid var(--borde); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.w-tel .o-pre, .w-tel .w-cmp .ct { height: 44px; }
-.req { color: var(--peligro); }
-</style>
-<style data-propuesta="org-formularios-2">
-/* Desplegables del criterio: el control se ve como un campo y la lista se abre debajo. */
-.w-caja.o-abre { overflow: visible; }
-.w-caja.o-abre > .w-cab { border-radius: 11px 11px 0 0; }
-.o-dd { position: relative; min-width: 0; }
-.o-dd > button.ct, input.ct, textarea.ct { height: 36px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px; }
-textarea.ct.area { height: 84px; padding-top: 9px; line-height: 1.45; }
-.p-mov .w-cmp textarea.ct.area { height: 96px; }
-.o-dd > button.ct { width: 100%; font: inherit; font-size: 13px; color: var(--t1); cursor: pointer; text-align: left; }
-.o-dd > button.ct .val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.o-dd > button.ct .val.vacio2 { color: var(--t3); }
-.o-dd > button.ct svg { color: var(--t3); flex-shrink: 0; }
-.o-dd > button.ct[aria-expanded="true"], input.ct:focus, textarea.ct:focus { outline: none; border-color: var(--marca); box-shadow: 0 0 0 3px oklch(0.51 0.099 195 / 0.15); }
-.o-dd > button.ct:disabled { color: var(--t3); background: var(--s2); border-color: var(--borde); cursor: default; }
-.ct.mal { border-color: var(--peligro) !important; }
-.o-err { font-size: 12.5px; color: oklch(0.5 0.19 25); }
-.o-lst { position: absolute; z-index: 20; left: 0; top: calc(100% + 4px); min-width: 100%; width: max-content; max-width: 380px; box-sizing: border-box; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); padding: 4px; display: flex; flex-direction: column; }
-.o-lst.der { left: auto; right: 0; min-width: 220px; }
-.o-lst .op { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 36px; box-sizing: border-box; padding: 4px 10px; border-radius: 6px; font: inherit; font-size: 13px; color: var(--t1); background: none; border: 0; text-align: left; cursor: pointer; white-space: nowrap; }
-.o-lst .op:hover { background: var(--s2); }
-.o-lst .op.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 500; }
-.o-lst .op:disabled { color: var(--t3); cursor: default; background: none; }
-.o-lst .op.pel { color: oklch(0.52 0.19 25); }
-.o-lst .op.pel svg { color: oklch(0.52 0.19 25); }
-.o-lst .op .n2 { display: flex; flex-direction: column; line-height: 1.35; }
-.o-lst .op .d { font-size: 12px; color: var(--t3); font-weight: 400; white-space: normal; max-width: 300px; }
-.o-lst .op .tilde { display: none; }
-.o-lst .op.on .tilde { display: inline-flex; }
-.o-lst label.op { justify-content: flex-start; }
-.o-lst label.op.on { background: none; color: var(--t1); font-weight: 400; }
-:where(.w-app, .w-tel) input[type="checkbox"] { accent-color: var(--marca); width: 16px; height: 16px; margin: 0; flex-shrink: 0; cursor: pointer; }
-:where(.w-app, .w-tel) input[type="checkbox"]:disabled { cursor: default; }
-input.ct, textarea.ct { font: inherit; font-size: 13px; color: var(--t1); width: 100%; }
-textarea.ct.area { resize: none; display: block; }
-.w-cmp .rt { display: flex; align-items: center; gap: 8px; }
-.w-cmp .rt .o-todos { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; color: var(--t2); cursor: pointer; }
-/* Lo que no se edita se muestra como texto, sin campo gris. */
-.o-txt { min-height: 36px; display: flex; align-items: center; font-size: 13px; color: var(--t1); }
-.o-txt.largo { min-height: 0; padding-top: 2px; line-height: 1.5; }
-.o-capa { position: absolute; inset: 0; z-index: 4; background: transparent; border: 0; padding: 0; cursor: default; }
-/* La banda: estado, detalle y «Cambios sin guardar» en la segunda línea, separados por un punto medio. */
-.o-res { display: flex !important; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; }
-.o-res > :empty { display: none; }
-.o-res > * + *::before { content: "·"; color: var(--t3); margin-right: 6px; }
-.o-res .o-corta { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.o-res .sucio { color: oklch(0.5 0.12 70); font-weight: 500; }
-.w-est.ok::before { background: oklch(0.6 0.13 155); }
-.w-est.pend::before { background: var(--marca); }
-.w-est.alerta::before { background: oklch(0.72 0.15 70); }
-.w-est.mal::before { background: oklch(0.57 0.2 25); }
-.w-est.off::before { background: oklch(0.75 0.01 78); }
-.w-bnd .ac .ib.o-borde { border: 1px solid var(--borde2); box-sizing: border-box; }
-/* Carteles debajo de la banda (criterio de avisos). */
-.w-cartel.o-prob { background: var(--peligro-t); color: oklch(0.45 0.17 25); }
-.w-cartel.o-info { background: var(--marca-t); color: var(--marca-tx); }
-.w-cartel .cb-enl { font-size: 13px; }
-/* Filas de una lista dentro de una caja. */
-.o-ets { margin-bottom: -10px; }
-.o-ets .rt { font-size: 12.5px; font-weight: 600; color: var(--t2); }
-.o-vacio { padding: 16px; color: var(--t3); font-size: 13px; }
-.o-grupo { display: flex; align-items: center; gap: 12px; min-height: 40px; box-sizing: border-box; padding: 0 16px; background: oklch(0.975 0.008 78); border-bottom: 1px solid var(--borde); font-weight: 600; cursor: pointer; }
-.o-grupo .cnt { margin-left: auto; font-weight: 500; color: var(--t3); font-variant-numeric: tabular-nums; }
-.o-perm { cursor: pointer; padding-left: 16px; min-height: 48px !important; }
-.o-perm .dato b { color: var(--t1); font-weight: 500; }
-.o-perm .dato { gap: 1px; }
-.w-caja > :last-child.o-perm, .w-caja .o-ult { border-bottom: 0; }
-/* Avisos que se quedan: borde rojo y ✕. El de un 5xx lleva el código de seguimiento. */
-.p-aviso.mal { border-color: oklch(0.57 0.2 25 / 0.45); align-items: flex-start; }
-.p-aviso .o-tt { flex: 1; display: flex; flex-direction: column; gap: 6px; padding-top: 1px; }
-.p-aviso .ib { margin: -6px -6px -6px 0; }
-.o-traza { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--t2); }
-.o-traza .f { display: flex; align-items: center; gap: 8px; }
-.o-traza code { word-break: break-all; font-family: ui-monospace, Consolas, monospace; font-size: 12px; background: var(--s2); border-radius: 6px; padding: 4px 6px; color: var(--t1); }
-.o-lnk { height: auto !important; padding: 0 !important; font-size: 13px; }
-/* La pantalla que no se puede mostrar. */
-.o-404 { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 24px; }
-.o-404 .circ { width: 56px; height: 56px; border-radius: 50%; background: var(--s3); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; }
-.o-404 h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.015em; }
-.o-404 p { margin: 0; font-size: 14px; color: var(--t2); }
-/* Teléfono: cuerpo con scroll, botones fijos abajo, diálogos y avisos a lo ancho. */
-.w-tel .w-body.o-scroll { overflow: auto; }
-.w-tel .o-dd > button.ct, .w-tel input.ct { height: 44px; }
-.w-tel .p-dlg { width: calc(100% - 32px); }
-.w-tel .p-aviso { left: 16px; right: 16px; width: auto; bottom: 88px; }
-.w-tel .o-fila-tel { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--borde); }
-.w-tel .o-fila-tel:last-child { border-bottom: 0; }
-.w-tel .o-fila-tel .arr { display: flex; gap: 8px; align-items: flex-end; }
-.w-tel .o-fila-tel .arr .o-dd { flex: 1; }
-.w-tel .w-bnd .res { white-space: normal; }
-</style>
   <style data-menu-usuario="">
 /* Tu menú, arriba a la derecha (criterio de menús): se abre al tocar tu nombre. */
 .w-umd { position: relative; }
@@ -835,6 +712,214 @@ textarea.ct.area { resize: none; display: block; }
 .w-mn .w-mn-on { margin-left: auto; }
 .w-tel .w-mn { width: 300px; right: -4px; }
   </style>
+<style data-propuesta="tel-chats">
+.o-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); }
+.o-seg span { height: 36px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--t2); }
+.o-seg span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
+.o-seg .c { font-weight: 500; color: var(--t3); }
+.o-filtros { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--borde); background: #fff; }
+.o-fila { display: flex; gap: 8px; }
+.o-fila .w-bus { flex: 1; height: 44px; }
+.o-fila .w-pil { height: 44px; }
+.o-fila .w-pil.ic { width: 44px; padding: 0; justify-content: center; position: relative; }
+.o-fila .w-pil.ic .p { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--marca); }
+.w-conv .l3 { font-size: 12px; color: var(--t3); }
+.w-conv .l3.sin { color: oklch(0.55 0.13 70); }
+a.w-conv { text-decoration: none; color: inherit; }
+</style>
+<style data-propuesta="app-marco">
+.ap { width: 390px; height: 844px; overflow: hidden; background: #fff; font-family: Inter, system-ui, sans-serif; color: var(--t1); display: flex; flex-direction: column; position: relative; }
+.ap-est { height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 22px 0 30px; font-size: 15px; font-weight: 600; background: #fff; }
+.ap-est .ic { display: inline-flex; align-items: center; gap: 6px; }
+.ap-bar { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 6px 0 16px; background: #fff; }
+.ap-bar.int { padding-left: 4px; }
+.ap-bar .tit { flex: 1; min-width: 0; }
+.ap-bar h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-bar.int h1 { font-size: 20px; }
+.ap-bar .sub { display: block; font-size: 12.5px; font-weight: 500; color: var(--t3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-ib { width: 44px; height: 44px; border: 0; background: none; color: var(--t1); display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; position: relative; flex-shrink: 0; text-decoration: none; }
+.ap-cuerpo { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+.ap-fila { display: flex; align-items: center; gap: 14px; padding: 12px 6px 12px 16px; position: relative; text-decoration: none; color: inherit; }
+.ap-fila::after { content: ""; position: absolute; left: 16px; right: 0; bottom: 0; height: 1px; background: var(--borde); }
+.ap-fila .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding-right: 10px; }
+.ap-fila .l1 { display: flex; justify-content: space-between; gap: 8px; font-size: 15.5px; font-weight: 500; }
+.ap-fila .l1 span { font-size: 12.5px; font-weight: 400; color: var(--t3); flex-shrink: 0; }
+.ap-fila .l2 { font-size: 14px; color: var(--t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-fila .l3 { font-size: 13px; color: var(--t3); }
+.ap-fila .l3 .w-est { font-size: 13px; color: var(--t2); }
+.ap-fila .ap-ib { color: var(--t2); margin-right: -4px; }
+.w-est.mal::before { background: oklch(0.57 0.2 25); }
+.w-est.mal { color: oklch(0.5 0.19 25) !important; }
+.w-est.baja::before { background: oklch(0.72 0.15 70); }
+.w-est.prog::before { background: var(--marca); }
+.ap-i { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 22px; padding: 0; border: 0; background: none; color: oklch(0.52 0.19 25); vertical-align: middle; }
+.ap-fab { position: absolute; z-index: 4; right: 16px; bottom: 110px; width: 56px; height: 56px; border-radius: 16px; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px oklch(0.3 0.06 195 / 0.3), 0 2px 4px oklch(0.3 0.06 195 / 0.2); }
+.ap-nav { flex-shrink: 0; display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px 4px 28px; background: #fff; border-top: 1px solid var(--borde); }
+.ap-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 500; color: var(--t2); text-decoration: none; }
+.ap-nav .i { width: 56px; height: 30px; border-radius: 15px; display: inline-flex; align-items: center; justify-content: center; position: relative; }
+.ap-nav a.on { color: var(--marca-tx); font-weight: 600; }
+.ap-nav a.on .i { background: var(--marca-t); }
+.ap-nav .b { position: absolute; top: -3px; right: 4px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; background: var(--marca); color: #fff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+.ap-nav .yo { width: 26px; height: 26px; border-radius: 50%; background: var(--marca); color: #fff; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+.ap-nav a.on .yo { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--marca); }
+.ap-raya { position: absolute; z-index: 9; left: 50%; bottom: 8px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: var(--t1); }
+.ap-velo { position: absolute; inset: 0; z-index: 6; background: oklch(0.2 0.014 78 / 0.45); }
+.ap-hoja { position: absolute; z-index: 7; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 20px 20px 0 0; display: flex; flex-direction: column; box-shadow: 0 -8px 24px oklch(0.2 0.014 78 / 0.12); }
+.ap-hoja .asa { align-self: center; width: 36px; height: 5px; border-radius: 3px; background: var(--borde2); margin: 8px 0 4px; }
+.ap-hoja .hc { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 6px 4px 20px; }
+.ap-hoja .hc h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
+.ap-hoja .hb { padding: 8px 20px 16px; display: flex; flex-direction: column; gap: 14px; }
+.ap-hoja .hp { display: flex; gap: 10px; padding: 8px 20px 34px; }
+.ap-hoja .hp .cb { flex: 1; height: 48px; border-radius: 12px; font-size: 15px; }
+</style>
+<style data-propuesta="app-piezas">
+.ap .w-conv { border-bottom: 0; position: relative; padding: 12px 16px; gap: 14px; text-decoration: none; color: inherit; display: flex; }
+.ap .w-conv::after { content: ""; position: absolute; left: 74px; right: 0; bottom: 0; height: 1px; background: var(--borde); }
+.ap .w-av { width: 44px; height: 44px; font-size: 15px; }
+.ap .w-conv .l1 b { font-size: 15.5px; }
+.ap .w-conv .l1 span { font-size: 12.5px; }
+.ap .w-conv .l2 { font-size: 14px; }
+.ap .w-conv .l3 { font-size: 12.5px; color: var(--t3); }
+.ap .w-conv .l3.sin { color: oklch(0.55 0.13 70); }
+.ap .w-conv .l3 .w-est { font-size: 12.5px; color: var(--t2); }
+.ap-seg { margin: 4px 16px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 12px; background: var(--s3); flex-shrink: 0; }
+.ap-seg span, .ap-seg2 span { height: 38px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 14.5px; font-weight: 600; color: var(--t2); }
+.ap-seg span.on, .ap-seg2 span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
+.ap-seg .c { font-weight: 500; color: var(--t3); }
+.ap-seg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 12px; background: var(--s3); }
+.ap-txt { height: 40px; padding: 0 10px; border: 0; background: none; color: var(--marca-tx); font-size: 15.5px; font-weight: 600; flex-shrink: 0; }
+.ap-cbar { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 4px; background: #fff; border-bottom: 1px solid var(--borde); }
+.ap-cbar .w-av { width: 38px; height: 38px; font-size: 14px; }
+.ap-cbar .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ap-cbar .tx b { font-size: 16.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ap-cbar .tx span { font-size: 12.5px; color: var(--t3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ap-cbar .tx span.sin { color: oklch(0.55 0.13 70); }
+.ap-chat { flex: 1; min-height: 0; overflow: hidden; background: oklch(0.965 0.012 78); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.ap-dia { align-self: center; font-size: 12px; color: var(--t2); background: #fff; padding: 3px 10px; border-radius: 8px; box-shadow: 0 1px 1px oklch(0.2 0.01 78 / 0.06); }
+.ap-m { max-width: 80%; display: flex; flex-direction: column; gap: 2px; }
+.ap-m .gl { padding: 8px 12px; border-radius: 14px; font-size: 15px; line-height: 1.4; }
+.ap-m.ent { align-self: flex-start; }
+.ap-m.ent .gl { background: #fff; border-top-left-radius: 4px; box-shadow: 0 1px 1px oklch(0.2 0.01 78 / 0.06); }
+.ap-m.sal { align-self: flex-end; align-items: flex-end; }
+.ap-m.sal .gl, .ap-burb { background: oklch(0.93 0.04 180); color: oklch(0.28 0.05 195); }
+.ap-m.sal .gl { border-top-right-radius: 4px; }
+.ap-m .pie { font-size: 11.5px; color: var(--t3); padding: 0 4px; }
+.ap-m .gl .bt, .ap-burb .bt { display: block; margin-top: 8px; padding-top: 8px; border-top: 1px solid oklch(0.51 0.099 195 / 0.2); text-align: center; font-weight: 600; color: var(--marca-tx); }
+.ap-sis { align-self: center; font-size: 12.5px; color: var(--t3); text-align: center; }
+.ap-nota { align-self: center; max-width: 88%; background: oklch(0.97 0.05 90); border: 1px solid oklch(0.88 0.08 85); color: oklch(0.38 0.07 70); border-radius: 12px; padding: 8px 12px; font-size: 14px; line-height: 1.45; display: flex; flex-direction: column; gap: 2px; }
+.ap-nota .q { font-size: 12px; font-weight: 600; }
+.ap-escr { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 8px 10px 34px; background: #fff; border-top: 1px solid var(--borde); }
+.ap-escr .campo { flex: 1; min-width: 0; height: 44px; box-sizing: border-box; border-radius: 22px; border: 1px solid var(--borde2); display: flex; align-items: center; padding: 0 16px; color: var(--t3); font-size: 15px; }
+.ap-escr .campo.nota { background: oklch(0.985 0.03 90); border-color: oklch(0.85 0.09 85); color: oklch(0.5 0.08 70); }
+.ap-red { width: 44px; height: 44px; border-radius: 50%; border: 0; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: transparent; color: var(--t2); }
+.ap-red.env { background: var(--marca); color: #fff; }
+.ap-red.gua { background: oklch(0.7 0.14 75); color: #fff; }
+.ap-red.nt.on { background: oklch(0.94 0.07 88); color: oklch(0.45 0.1 70); }
+.ap-24 { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; color: oklch(0.45 0.1 70); font-size: 14px; font-weight: 500; white-space: nowrap; }
+.ap-24 .ap-i { color: oklch(0.45 0.1 70); }
+.ap-pill { text-decoration: none; height: 44px; padding: 0 18px; border-radius: 22px; background: var(--marca); color: #fff; font-weight: 600; font-size: 14.5px; border: 0; display: inline-flex; align-items: center; flex-shrink: 0; }
+.ap-menu { position: absolute; z-index: 8; right: 8px; top: 100px; width: 236px; background: #fff; border-radius: 14px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.2), 0 0 0 1px var(--borde); overflow: hidden; display: flex; flex-direction: column; }
+.ap-menu span { min-height: 50px; display: flex; align-items: center; padding: 0 18px; font-size: 15.5px; }
+.ap-menu span + span { border-top: 1px solid var(--borde); }
+.ap-cmp { display: flex; flex-direction: column; gap: 6px; }
+.ap-cmp .rt { font-size: 13.5px; font-weight: 600; color: var(--t2); display: flex; justify-content: space-between; align-items: center; }
+.ap-cmp .rq { color: var(--peligro); }
+.ap-cmp .ct { min-height: 48px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; font-size: 16px; background: #fff; }
+.ap-cmp .ct.area { display: block; padding: 12px 14px; line-height: 1.55; min-height: 104px; }
+.ap-cmp .ej { text-decoration: none; font-size: 13.5px; font-weight: 600; color: var(--marca-tx); display: inline-flex; gap: 6px; align-items: center; }
+.ap-var { display: inline-flex; padding: 0 7px; border-radius: 6px; background: var(--marca-t); color: var(--marca-tx); font-weight: 600; font-size: 14.5px; }
+.ap-chips2 { display: flex; gap: 8px; flex-wrap: wrap; }
+.ap-chips2 span { height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid var(--borde2); display: inline-flex; align-items: center; font-size: 13.5px; font-weight: 500; color: var(--t2); }
+.ap-burb { align-self: flex-end; max-width: 92%; border-radius: 14px; border-top-right-radius: 4px; padding: 10px 14px; font-size: 15px; line-height: 1.45; }
+.ap-burb b { font-weight: 700; }
+.ap-costo { text-align: right; font-size: 13.5px; color: var(--t3); margin-top: -6px; }
+.ap-lst { display: flex; flex-direction: column; margin: -4px -20px 0; }
+.ap-lst .tit { padding: 10px 20px 4px; font-size: 13px; font-weight: 600; color: var(--t3); }
+.ap-lst .it { display: flex; align-items: center; justify-content: space-between; min-height: 54px; padding: 0 20px; font-size: 16px; border-top: 1px solid var(--borde); }
+.ap-lst .tit + .it { border-top: 0; }
+.ap-lst .it span { font-size: 13.5px; color: var(--t3); }
+.ap-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--borde); flex-shrink: 0; background: #fff; }
+.ap-tabs span { height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 15px; font-weight: 600; color: var(--t2); border-bottom: 2.5px solid transparent; }
+.ap-tabs span.on { color: var(--marca-tx); border-bottom-color: var(--marca); }
+.ap-tabs .c { color: var(--t3); font-weight: 500; }
+.ap-chips { display: flex; gap: 8px; padding: 4px 16px 12px; overflow: hidden; flex-shrink: 0; }
+.ap-chips span { flex-shrink: 0; display: inline-flex; flex-direction: column; justify-content: center; min-width: 84px; height: 58px; box-sizing: border-box; padding: 0 14px; border: 1px solid var(--borde); border-radius: 14px; line-height: 1.25; }
+.ap-chips span b { font-size: 17px; font-weight: 600; }
+.ap-chips span i { font-style: normal; font-size: 12.5px; color: var(--t3); }
+.ap-chips span.on { border-color: oklch(0.51 0.099 195 / 0.45); background: var(--marca-t); }
+.ap-chips span.on b, .ap-chips span.on i { color: var(--marca-tx); }
+.ap-fijo { flex-shrink: 0; display: flex; align-items: center; gap: 12px; padding: 12px 16px 34px; background: #fff; border-top: 1px solid var(--borde); }
+.ap-fijo .cb { height: 50px; border-radius: 12px; font-size: 16px; padding: 0 22px; }
+.ap-fijo .cb.full { flex: 1; }
+.ap-fijo .costo { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
+.ap-fijo .costo b { font-size: 16px; font-weight: 600; }
+.ap-fijo .costo span { font-size: 13px; color: var(--t3); }
+.ap-gris { background: oklch(0.972 0.006 78); }
+.ap-gtit { display: flex; justify-content: space-between; align-items: center; margin: 18px 20px 8px; font-size: 13.5px; font-weight: 600; color: var(--t2); }
+.ap-gtit a { color: var(--marca-tx); font-weight: 600; text-decoration: none; font-size: 14.5px; }
+.ap-grupo { margin: 0 16px; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 0 0 1px var(--borde); flex-shrink: 0; }
+.ap-it { display: flex; align-items: center; gap: 12px; min-height: 56px; box-sizing: border-box; padding: 8px 14px 8px 16px; position: relative; text-decoration: none; color: inherit; }
+.ap-it + .ap-it::before { content: ""; position: absolute; top: 0; left: 16px; right: 0; height: 1px; background: var(--borde); }
+.ap-it .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ap-it .tx b { font-size: 15.5px; font-weight: 500; }
+.ap-it .tx span { font-size: 13px; color: var(--t3); }
+.ap-it .chev { color: var(--t3); display: inline-flex; }
+.ap-it .num { width: 28px; height: 28px; border-radius: 50%; background: var(--marca-t); color: var(--marca-tx); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ap-it .ini { width: 36px; height: 36px; border-radius: 10px; background: var(--s3); color: var(--t2); font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ap-it.apag { opacity: 0.55; }
+.ap-it .ok { color: var(--marca); display: inline-flex; }
+.ap-it.peligro b { color: var(--peligro); }
+.ap-sw { width: 50px; height: 30px; border-radius: 15px; background: var(--marca); position: relative; flex-shrink: 0; }
+.ap-sw::after { content: ""; position: absolute; top: 3px; right: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px oklch(0.2 0.01 78 / 0.25); }
+.ap-sw.off { background: var(--borde2); }
+.ap-sw.off::after { right: auto; left: 3px; }
+.ap-selnum { margin: 0 16px 10px; height: 46px; box-sizing: border-box; border-radius: 12px; background: var(--s3); display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-size: 14.5px; font-weight: 500; flex-shrink: 0; }
+.ap-yo { display: flex; align-items: center; gap: 14px; padding: 8px 20px 4px; }
+.ap-yo .w-av { width: 56px; height: 56px; font-size: 20px; color: #fff; }
+.ap-yo b { display: block; font-size: 18px; font-weight: 600; color: var(--t1); }
+.ap-yo span { font-size: 13.5px; color: var(--t3); }
+.ap-perfil { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 24px 16px; text-align: center; flex-shrink: 0; }
+.ap-perfil .w-av { width: 76px; height: 76px; font-size: 26px; }
+.ap-perfil h2 { margin: 8px 0 0; font-size: 22px; font-weight: 700; letter-spacing: -0.015em; }
+.ap-perfil p { margin: 0; font-size: 14px; color: var(--t2); line-height: 1.45; }
+.ap-rec { padding: 8px 16px 16px; display: flex; flex-direction: column; }
+.ap-n { display: flex; gap: 12px; position: relative; padding-bottom: 14px; }
+.ap-n::before { content: ""; position: absolute; left: 11px; top: 24px; bottom: 0; width: 2px; background: var(--borde2); }
+.ap-n:last-child::before { display: none; }
+.ap-n .pt { width: 24px; height: 24px; border-radius: 50%; background: var(--marca); color: #fff; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; position: relative; z-index: 1; margin-top: 10px; }
+.ap-n .pt.q { background: oklch(0.7 0.14 75); }
+.ap-n .cj { flex: 1; min-width: 0; background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 10px 14px; }
+.ap-n .cj b { font-size: 15px; font-weight: 600; display: block; }
+.ap-n .cj > span { font-size: 13px; color: var(--t3); }
+.ap-rama { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.ap-rama .r { display: flex; align-items: center; gap: 10px; border-radius: 10px; background: var(--s2); border: 1px solid var(--borde); padding: 9px 12px; font-size: 14.5px; }
+.ap-rama .r .et { font-size: 12px; font-weight: 700; color: var(--marca-tx); background: var(--marca-t); border-radius: 6px; padding: 2px 7px; }
+.ap-rama .r .d { color: var(--t3); font-size: 12.5px; margin-left: auto; }
+.w-est.amb::before { background: oklch(0.72 0.15 70); }
+.w-est.azul::before { background: var(--marca); }
+</style>
+<style data-propuesta="app-org">
+.ap .cb.apag { opacity: 0.45; }
+.ap-fijo .cb.full { padding: 0 10px; min-width: 0; }
+.ap-fila .l1 .q { font-size: 15px; font-weight: 500; color: var(--t1); white-space: normal; overflow-wrap: anywhere; min-width: 0; flex: 1; }
+.ap-cod { word-break: break-all; font-size: 13px; }
+.ap-chk { width: 22px; height: 22px; box-sizing: border-box; border-radius: 6px; border: 1.5px solid var(--borde2); background: #fff; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff; }
+.ap-chk.on { background: var(--marca); border-color: var(--marca); }
+.ap-area { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 14px 0 12px; font-size: 15.5px; font-weight: 600; }
+.ap-area .n { flex: 1; }
+.ap-area .c { font-size: 13px; font-weight: 500; color: var(--t3); }
+.ap-perm { display: flex; align-items: center; gap: 12px; min-height: 50px; padding: 0 14px 0 46px; font-size: 15px; border-top: 1px solid var(--borde); }
+.ap-cod { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; padding: 0 6px 0 14px; border-radius: 12px; background: var(--s3); font-family: ui-monospace, Consolas, monospace; font-size: 14px; }
+.ap-txt-l { font-size: 14.5px; line-height: 1.5; color: var(--t2); margin: 0; }
+.ap-logo { display: flex; align-items: center; gap: 14px; }
+.ap-logo .lg { width: 56px; height: 56px; border-radius: 14px; background: var(--marca); color: #fff; font-weight: 700; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; }
+.ap-dir { display: flex; align-items: center; gap: 0; }
+.ap-dir .ct { flex: 1; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.ap-dir .suf { min-height: 48px; box-sizing: border-box; display: inline-flex; align-items: center; padding: 0 12px; border: 1px solid var(--borde2); border-left: 0; border-radius: 0 12px 12px 0; background: var(--s3); color: var(--t2); font-size: 15px; }
+.ap-mas { display: flex; justify-content: center; padding: 14px 16px 20px; }
+.ap-mas .cb { height: 44px; padding: 0 22px; border-radius: 12px; }
+.ap-pie-hoja { font-size: 13.5px; color: var(--t3); margin: -4px 0 0; }
+</style>
 <style data-regla="menus-con-lineas">
 .menu[role="menu"] { padding: 0; overflow: hidden; }
 .menu[role="menu"] .menu-it { border-radius: 0; min-height: 42px; padding: 8px 14px; border-top: 1px solid var(--borde); margin-top: -1px; }
@@ -848,310 +933,13 @@ textarea.ct.area { resize: none; display: block; }
 </style>
 </helmet>
 
-<div class="w-tel p-mov"><header class="w-tb"><span style="display: inline-flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><b style="font-size: 14px;">ArquitecturaBase</b><details class="w-umd"><summary class="av-tel" aria-label="Abrir tu menú"><span class="w-av chico">L</span></summary><div class="w-mn" role="menu" aria-label="Menú de Lucía Fernández"><div class="w-mn-cab"><span class="w-av" style="width: 36px; height: 36px; font-size: 15px;">L</span><span class="w-mn-perf"><b>Lucía Fernández</b><span class="s">lucia.fernandez@delta.ejemplo.com</span></span></div><div class="w-mn-sep" role="separator"></div><div class="w-mn-tit">Perfiles</div><a class="w-mn-it" role="menuitemradio" aria-checked="false" href="M-Inicio-Personal.dc.html"><span class="w-mn-ico">P</span><span class="w-mn-perf">Personal<span class="s">Tu perfil personal</span></span></a><a class="w-mn-it on" role="menuitemradio" aria-checked="true" href="M-Inicio-Org.dc.html"><span class="w-mn-ico">GD</span><span class="w-mn-perf">Grupo Delta<span class="s">Dueño</span></span><span class="w-mn-on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></a><a class="w-mn-it apag" role="menuitemradio" aria-checked="false" href="Perfil-Suspendido.dc.html"><span class="w-mn-ico">BS</span><span class="w-mn-perf">Beta S.R.L.<span class="s">Suspendida</span></span></a><div class="w-mn-sep" role="separator"></div><a class="w-mn-it" role="menuitem" href="M-Cuenta.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Mi cuenta</a><div class="w-mn-sep" role="separator"></div><a class="w-mn-it" role="menuitem" href="M-Ingreso.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Salir</a></div></details></header><div class="w-bnd"><div class="iz"><a class="vol" href="M-Roles.dc.html" aria-label="Volver"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></a><div style="min-width: 0;"><h1>{{titulo}}</h1><p class="res o-res"><sc-if value="{{sistema}}" hint-placeholder-val="{{no}}"><span>De sistema</span></sc-if><sc-if value="{{sucio}}" hint-placeholder-val="{{no}}"><span class="sucio">Cambios sin guardar</span></sc-if></p><p class="res"><sc-if value="{{detalle}}" hint-placeholder-val="{{no}}">{{detalle}}</sc-if></p></div></div><div class="ac"></div></div><div class="w-body o-scroll"><div class="w-caja o-abre"><div class="w-cab"><span>Datos del rol</span></div><div class="p-hoja"><div class="w-cmp" style="width: 100%;"><span class="rt">Nombre<sc-if value="{{editable}}" hint-placeholder-val="{{si}}"> <span class="req" style="margin-left: -4px;">*</span></sc-if></span><sc-if value="{{editable}}" hint-placeholder-val="{{si}}"><input class="ct {{malNombre}}" type="text" autocomplete="off" aria-label="Nombre" value="{{Nombre}}" onChange="{{onNombre}}"></sc-if><sc-if value="{{sistema}}" hint-placeholder-val="{{no}}"><div class="o-txt">{{Nombre}}</div></sc-if><sc-if value="{{errNombre}}" hint-placeholder-val="{{no}}"><span class="o-err" role="alert">{{errNombre}}</span></sc-if></div><div class="w-cmp" style="width: 100%;"><span class="rt">Vale en</span><sc-if value="{{bloqVale}}" hint-placeholder-val="{{no}}"><div class="o-txt">{{textoVale}}</div></sc-if><sc-if value="{{editVale}}" hint-placeholder-val="{{si}}"><div class="o-dd"><button type="button" class="ct {{malVale}}" aria-haspopup="listbox" aria-expanded="{{expVale}}" aria-label="Vale en" onClick="{{alternarVale}}"><span class="val {{claseValVale}}">{{textoVale}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button><sc-if value="{{abiertoVale}}" hint-placeholder-val="{{no}}"><div class="o-lst" role="listbox" aria-label="Vale en"><sc-for list="{{opcionesVale}}" as="o" hint-placeholder-count="3"><button type="button" role="option" aria-selected="{{o.sel}}" class="op {{o.clase}}" onClick="{{o.elegir}}"><span class="n2"><span>{{o.n}}</span><sc-if value="{{o.d}}" hint-placeholder-val="{{no}}"><span class="d">{{o.d}}</span></sc-if></span><span class="tilde"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></button></sc-for></div></sc-if></div></sc-if><sc-if value="{{errVale}}" hint-placeholder-val="{{no}}"><span class="o-err" role="alert">{{errVale}}</span></sc-if></div><div class="w-cmp" style="width: 100%;"><span class="rt">Descripción</span><sc-if value="{{editable}}" hint-placeholder-val="{{si}}"><textarea class="ct area" aria-label="Descripción" value="{{descripcion}}" onChange="{{onDescripcion}}"></textarea></sc-if><sc-if value="{{sistema}}" hint-placeholder-val="{{no}}"><div class="o-txt largo">{{descripcion}}</div></sc-if></div></div></div><div class="w-caja"><div class="w-cab"><span>Permisos</span><span style="font-weight: 500; color: var(--t3); padding-right: 12px;">{{conteo}}</span></div><sc-if value="{{errPermisos}}" hint-placeholder-val="{{no}}"><div class="w-cartel o-prob" role="alert" style="margin: 12px 16px;"><span style="color: currentColor; display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5"/><path d="M12 16.2h.01"/></svg></span><span class="tx">{{errPermisos}}</span></div></sc-if><sc-if value="{{sinVale}}" hint-placeholder-val="{{no}}"><div class="o-vacio">Elegí dónde vale el rol para ver sus permisos.</div></sc-if><sc-if value="{{conVale}}" hint-placeholder-val="{{si}}"><sc-for list="{{areas}}" as="a" hint-placeholder-count="2"><label class="o-grupo"><input type="checkbox" checked="{{a.todos}}" onChange="{{a.alternarTodos}}" disabled="{{a.bloq}}" aria-label="{{a.ariaTodos}}"><span>{{a.n}}</span><span class="cnt">{{a.cuenta}}</span></label><sc-for list="{{a.opciones}}" as="o" hint-placeholder-count="2"><label class="w-it o-perm {{o.clase}}"><input type="checkbox" checked="{{o.on}}" onChange="{{o.alternar}}" disabled="{{o.bloq}}"><span class="dato"><b>{{o.n}}</b><span>{{o.d}}</span></span></label></sc-for></sc-for></sc-if></div></div><sc-if value="{{editable}}" hint-placeholder-val="{{si}}"><div class="w-escr" style="padding: 12px 16px 20px;"><a class="cb cb-sec" style="flex: 1; height: 44px;" href="M-Roles.dc.html">Cancelar</a><button type="button" class="cb cb-pri" style="flex: 1; height: 44px;" onClick="{{guardar}}" disabled="{{noGuardable}}">{{textoGuardar}}</button></div></sc-if><sc-if value="{{hayAbierto}}" hint-placeholder-val="{{no}}"><button type="button" class="o-capa" tabindex="-1" aria-hidden="true" onClick="{{cerrarMenus}}"></button></sc-if><sc-if value="{{confirmacion}}" hint-placeholder-val="{{no}}"><div class="w-oscuro" style="z-index: 6;"></div><div class="p-dlg" role="alertdialog" aria-modal="true" aria-label="{{tituloConfirmacion}}"><div class="dc"><span>{{tituloConfirmacion}}</span></div><div class="tx" style="padding-bottom: 16px;">{{textoConfirmacion}}</div><sc-if value="{{hayMotivo}}" hint-placeholder-val="{{no}}"><div class="db" style="padding-top: 0;"><div class="w-cmp"><span class="rt">Motivo <span class="req" style="margin-left: -4px;">*</span></span><textarea class="ct area {{malMotivo}}" aria-label="Motivo" value="{{motivo}}" onChange="{{onMotivo}}"></textarea><sc-if value="{{errMotivo}}" hint-placeholder-val="{{no}}"><span class="o-err" role="alert">{{errMotivo}}</span></sc-if></div></div></sc-if><div class="df"><button type="button" class="cb cb-sec" onClick="{{cancelarConfirmacion}}">Cancelar</button><button type="button" class="cb {{claseConfirmar}}" onClick="{{confirmar}}">{{botonConfirmacion}}</button></div></div></sc-if><sc-if value="{{aviso}}" hint-placeholder-val="{{no}}"><div class="p-aviso {{claseAviso}}" role="status"><sc-if value="{{avisoOk}}" hint-placeholder-val="{{si}}"><span style="color: oklch(0.55 0.13 155); display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></svg></span></sc-if><sc-if value="{{avisoError}}" hint-placeholder-val="{{no}}"><span style="color: oklch(0.55 0.2 25); display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5"/><path d="M12 16.2h.01"/></svg></span></sc-if><span class="o-tt"><span>{{aviso}}</span></span><sc-if value="{{avisoError}}" hint-placeholder-val="{{no}}"><button type="button" class="ib" aria-label="Cerrar" onClick="{{cerrarAviso}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></sc-if></div></sc-if></div>
+<div class="ap"><div class="ap-est"><span>9:41</span><span class="ic"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="25" height="12" viewBox="0 0 25 12" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="16" height="8" rx="1.8" fill="currentColor"/><path d="M23 4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/></svg></span></div><div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-Roles.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></a><div class="tit"><h1>Solo lectura</h1><span class="sub">Vale en Delta S.A. · 4 usuarios lo tienen</span></div></div><div class="ap-cuerpo" style="padding: 4px 20px 0; gap: 14px;"><div class="ap-cmp"><span class="rt"><span>Nombre <span class="rq">*</span></span></span><div class="ct">Solo lectura</div></div><div class="ap-cmp"><span class="rt"><span>Vale en</span></span><span style="font-size: 16px;">Delta S.A.</span></div><div class="ap-cmp"><span class="rt"><span>Descripción</span></span><div class="ct area">Ve los miembros de la empresa. No cambia nada.</div></div><span class="ap-gtit" style="margin: 6px 0 -6px;">Permisos<span style="font-weight: 500; color: var(--t3);">1 de 2 elegidos</span></span><div class="ap-grupo" style="margin: 0;"><div class="ap-area"><span style="color: var(--t3); display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span><span class="ap-chk"></span><span class="n">Miembros</span><span class="c">1 de 2</span></div><div class="ap-perm"><span class="ap-chk on"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>Ver miembros</div><div class="ap-perm"><span class="ap-chk"></span>Administrar miembros</div></div></div><div class="ap-fijo"><button type="button" class="cb cb-sec full">Cancelar</button><button type="button" class="cb cb-pri full apag">Guardar cambios</button></div><span class="ap-raya"></span></div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"modo":{"editor":"enum","options":["Editar el rol Solo lectura","Editar el rol Recursos humanos","Crear un rol","Ver el rol Dueño"],"default":"Editar el rol Solo lectura","section":"Estado"},"$preview":{"width":390,"height":844}}'>
-// GET /api/permissions: el catálogo agrupado por área y alcance.
-const AREAS_ORG = [
-  { n: 'Usuarios', ps: [['users.read', 'Ver usuarios', 'El listado de usuarios y sus datos.'], ['users.invite', 'Invitar usuarios', 'Invitar, reenviar y revocar invitaciones.'], ['users.manage', 'Administrar usuarios', 'Editar, deshabilitar y activar usuarios.']] },
-  { n: 'Roles', ps: [['roles.read', 'Ver roles', 'Los roles y sus permisos.'], ['roles.manage', 'Administrar roles', 'Crear, editar e inactivar roles.'], ['roles.assign', 'Asignar roles', 'Dar y quitar roles a los usuarios.']] },
-  { n: 'Empresas', ps: [['companies.read', 'Ver empresas', 'El listado de empresas y sus datos.'], ['companies.manage', 'Administrar empresas', 'Crear, editar, inactivar y activar empresas.']] },
-  { n: 'Configuración', ps: [['settings.read', 'Ver la configuración', 'Los ajustes generales de la organización.'], ['settings.manage', 'Cambiar la configuración', 'Nombre, idioma y región, zona horaria y moneda.']] },
-  { n: 'Auditoría', ps: [['audit.read', 'Ver la auditoría', 'Quién hizo qué y cuándo en la organización.']] },
-  { n: 'Página pública', ps: [['publicpage.manage', 'Administrar la página pública', 'Editarla, publicarla y despublicarla.']] },
-];
-// De la plantilla, en cada empresa, solo existen los permisos de miembros. Los módulos de cada producto suman sus áreas acá.
-const AREAS_EMPRESA = [
-  { n: 'Miembros', ps: [['company.members.read', 'Ver miembros', 'Quién está en la empresa y con qué roles.'], ['company.members.manage', 'Administrar miembros', 'Agregar y quitar miembros y cambiarles los roles.']] },
-];
-const LUGARES = { org: 'Toda la organización', cada: 'Cada empresa', c1: 'Delta S.A.', c2: 'Delta Sur S.R.L.', c3: 'Delta Norte S.A.' };
-const MODOS = {
-  'Editar el rol Solo lectura': { nombre: 'Solo lectura', vale: 'c1', descripcion: 'Ve los miembros de la empresa. No cambia nada.', u: 4, elegidos: ['company.members.read'] },
-  'Editar el rol Recursos humanos': { nombre: 'Recursos humanos', vale: 'org', descripcion: 'Invita, edita y deshabilita usuarios.', u: 0, elegidos: ['users.read', 'users.invite', 'users.manage'] },
-  'Crear un rol': { nombre: '', vale: null, descripcion: '', u: 0, elegidos: [], nuevo: true },
-  'Ver el rol Dueño': { nombre: 'Dueño', vale: 'org', descripcion: 'Tiene todos los permisos de la organización.', u: 1, elegidos: AREAS_ORG.flatMap((a) => a.ps.map((p) => p[0])), sistema: true },
-};
-const EXISTENTES = { org: ['Dueño', 'Recursos humanos', 'Auditor'], c1: ['Administrador', 'Solo lectura'], c2: ['Administrador', 'Solo lectura'], c3: ['Administrador', 'Solo lectura'] };
-const catalogo = (vale) => (vale === 'org' ? AREAS_ORG : AREAS_EMPRESA);
-
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
-  constructor(props) {
-    super(props);
-    
-    this.state = { abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', clave: props.modo, ...this.inicial(props.modo) };
-  }
-
-  avisar(texto, tipo = 'ok') {
-    this.setState({ aviso: texto, avisoTipo: tipo });
-    clearTimeout(this.timerAviso);
-    if (tipo !== 'error') this.timerAviso = setTimeout(() => this.setState({ aviso: '' }), 4000);
-  }
-
-  alternarMenu(clave) {
-    this.setState({ abierto: this.state.abierto === clave ? null : clave });
-  }
-
-  // Un desplegable de una opción: clave del estado, opciones [{ v, n, d }] y texto cuando no hay nada elegido.
-  uno(clave, campo, opciones, vacio, extra = {}) {
-    const s = this.state;
-    const actual = opciones.find((o) => o.v === s[campo]);
-    const abierto = s.abierto === clave;
-
-    return {
-      ['abierto' + clave]: abierto,
-      ['exp' + clave]: abierto ? 'true' : 'false',
-      ['alternar' + clave]: () => this.alternarMenu(clave),
-      ['texto' + clave]: actual ? actual.n : vacio,
-      ['claseVal' + clave]: actual ? '' : 'vacio2',
-      ['mal' + clave]: extra.error ? 'mal' : '',
-      ['err' + clave]: extra.error || '',
-      ['bloq' + clave]: !!extra.bloqueado,
-      ['edit' + clave]: !extra.bloqueado,
-      ['opciones' + clave]: opciones.map((o) => ({
-        n: o.n, d: o.d || '', sel: o.v === s[campo] ? 'true' : 'false', clase: o.v === s[campo] ? 'on' : '',
-        elegir: () => this.setState({ [campo]: o.v, abierto: null, ...(extra.alElegir ? extra.alElegir(o.v) : {}) }),
-      })),
-    };
-  }
-
-  // Un desplegable de varias opciones sobre una lista del estado.
-  varios(clave, campo, opciones, vacio, extra = {}) {
-    const s = this.state;
-    const lista = s[campo];
-    const abierto = s.abierto === clave;
-    const elegidos = opciones.filter((o) => lista.includes(o.v));
-    const poner = (nueva) => this.setState({ [campo]: nueva, ...(extra.alCambiar ? extra.alCambiar(nueva) : {}) });
-
-    return {
-      ['abierto' + clave]: abierto,
-      ['exp' + clave]: abierto ? 'true' : 'false',
-      ['alternar' + clave]: () => this.alternarMenu(clave),
-      ['texto' + clave]: elegidos.length === 0 ? vacio : elegidos.map((o) => o.n).join(', '),
-      ['claseVal' + clave]: elegidos.length === 0 ? 'vacio2' : '',
-      ['bloq' + clave]: !!extra.bloqueado,
-      ['edit' + clave]: !extra.bloqueado,
-      ['todos' + clave]: opciones.length > 0 && elegidos.length === opciones.length,
-      ['alternarTodos' + clave]: () => {
-        const codigos = opciones.map((o) => o.v);
-        const resto = this.state[campo].filter((x) => !codigos.includes(x));
-        poner(elegidos.length === opciones.length ? resto : [...resto, ...codigos]);
-      },
-      ['opciones' + clave]: opciones.map((o) => ({
-        n: o.n, d: o.d || '', on: lista.includes(o.v),
-        alternar: () => {
-          const actual = this.state[campo];
-          poner(actual.includes(o.v) ? actual.filter((x) => x !== o.v) : [...actual, o.v]);
-        },
-      })),
-    };
-  }
-
-  // Filtro en pastilla: opciones [{ v, n }] con conteo calculado por `contar(v)`.
-  filtro(clave, campo, opciones, textoTodos, contar) {
-    const s = this.state;
-    const abierto = s.abierto === clave;
-    const actual = opciones.find((o) => o.v === s[campo]);
-
-    return {
-      ['abierto' + clave]: abierto,
-      ['exp' + clave]: abierto ? 'true' : 'false',
-      ['alternar' + clave]: () => this.alternarMenu(clave),
-      ['texto' + clave]: actual && actual.v !== null ? actual.corto || actual.n : textoTodos,
-      ['clase' + clave]: actual && actual.v !== null ? 'con' : '',
-      ['opciones' + clave]: opciones.map((o) => ({
-        n: o.n, c: String(contar(o.v)), sel: o.v === s[campo] ? 'true' : 'false', clase: o.v === s[campo] ? 'on' : '',
-        elegir: () => this.setState({ [campo]: o.v, abierto: null }),
-      })),
-    };
-  }
-
-  // Menú ⋮ de una fila.
-  // Paginado por páginas (usePagination): devuelve la página actual y los valores de paginacion(p).
-  paginar(lista, p = '') {
-    const s = this.state;
-    const tam = s['tam' + p] || 10;
-    const paginas = Math.max(1, Math.ceil(lista.length / tam));
-    const pag = Math.min(s['pag' + p] || 1, paginas);
-    const desde = lista.length === 0 ? 0 : (pag - 1) * tam + 1;
-    const hasta = Math.min(pag * tam, lista.length);
-    const clave = 'tam' + p;
-    const abierto = s.abierto === clave;
-
-    return {
-      items: lista.slice((pag - 1) * tam, pag * tam),
-      vals: {
-        [p + 'pagRango']: lista.length === 0 ? '0 de 0' : (desde === hasta ? String(desde) : desde + '–' + hasta) + ' de ' + lista.length,
-        [p + 'pagTexto']: 'Página ' + pag + ' de ' + paginas,
-        [p + 'pagSinAnterior']: pag <= 1,
-        [p + 'pagSinSiguiente']: pag >= paginas,
-        [p + 'pagAnterior']: () => this.setState({ ['pag' + p]: pag - 1 }),
-        [p + 'pagSiguiente']: () => this.setState({ ['pag' + p]: pag + 1 }),
-        [p + 'pagTamano']: String(tam),
-        [p + 'abiertoTamano']: abierto,
-        [p + 'expTamano']: abierto ? 'true' : 'false',
-        [p + 'alternarTamano']: () => this.alternarMenu(clave),
-        [p + 'opcionesTamano']: [10, 20, 50, 100].map((n) => ({ n: n + ' por página', sel: n === tam ? 'true' : 'false', clase: n === tam ? 'on' : '', elegir: () => this.setState({ ['tam' + p]: n, ['pag' + p]: 1, abierto: null }) })),
-      },
-    };
-  }
-
-  // Menú ⋮ de una fila; en las últimas filas de una lista larga se abre hacia arriba.
-  fila(id, nombre, i = 0, n = 0) {
-    const clave = 'fila:' + id;
-    const abierto = this.state.abierto === clave;
-
-    return { menu: abierto, exp: abierto ? 'true' : 'false', ariaMenu: 'Acciones de ' + nombre, alternar: () => this.alternarMenu(clave), claseMenu: n > 5 && i >= n - 3 ? 'arriba' : '' };
-  }
-
-  // Confirmación: { titulo, texto, boton, peligro, motivo (bool), accion(motivo) }.
-  pedirConfirmacion(c) {
-    this.setState({ abierto: null, confirmar: c, motivo: '', errMotivo: '' });
-  }
-
-  comunes() {
-    const s = this.state;
-    const c = s.confirmar;
-
-    return {
-      si: true,
-      no: false,
-      hayAbierto: s.abierto !== null,
-      cerrarMenus: () => this.setState({ abierto: null }),
-      abiertoDrawer: s.abierto === 'drawer',
-      alternarDrawer: () => this.alternarMenu('drawer'),
-      abiertoMas: s.abierto === 'mas',
-      expMas: s.abierto === 'mas' ? 'true' : 'false',
-      alternarMas: () => this.alternarMenu('mas'),
-      abiertoUsuario: s.abierto === 'usuario',
-      expUsuario: s.abierto === 'usuario' ? 'true' : 'false',
-      alternarUsuario: () => this.alternarMenu('usuario'),
-      aviso: s.aviso,
-      avisoOk: s.avisoTipo !== 'error',
-      avisoError: s.avisoTipo === 'error',
-      claseAviso: s.avisoTipo === 'error' ? 'mal' : '',
-      cerrarAviso: () => this.setState({ aviso: '' }),
-      confirmacion: !!c,
-      tituloConfirmacion: c ? c.titulo : '',
-      textoConfirmacion: c ? c.texto : '',
-      botonConfirmacion: c ? c.boton : '',
-      claseConfirmar: c && c.peligro === false ? 'cb-pri' : 'cb-pel lleno',
-      hayMotivo: !!(c && c.motivo),
-      motivo: s.motivo,
-      onMotivo: (e) => this.setState({ motivo: e.target.value, errMotivo: '' }),
-      malMotivo: s.errMotivo ? 'mal' : '',
-      errMotivo: s.errMotivo,
-      cancelarConfirmacion: () => this.setState({ confirmar: null }),
-      confirmar: () => {
-        if (c.motivo && s.motivo.trim() === '') {
-          this.setState({ errMotivo: 'Escribí el motivo.' });
-
-          return;
-        }
-
-        this.setState({ confirmar: null });
-        c.accion(s.motivo.trim());
-      },
-    };
-  }
-
-  inicial(modo) {
-    const m = MODOS[modo ?? 'Editar el rol Solo lectura'];
-    const guardado = { nombre: m.nombre, vale: m.vale, descripcion: m.descripcion, elegidos: [...m.elegidos] };
-
-    return { m, guardado, ...guardado, elegidos: [...m.elegidos], errNombre: '', errVale: '', errPermisos: '', guardando: false };
-  }
-
-  componentDidUpdate() {
-    if (this.props.modo !== this.state.clave) this.setState({ clave: this.props.modo, abierto: null, ...this.inicial(this.props.modo) });
-  }
-
-  // POST /api/roles o PUT /api/roles/{id}. 409 Roles.Role.NameTaken.
-  guardar() {
-    const s = this.state;
-    const nombre = s.nombre.trim();
-    const errores = { errNombre: '', errVale: '', errPermisos: '' };
-
-    if (nombre === '') errores.errNombre = 'Escribí el nombre del rol.';
-    else if (s.vale && nombre !== s.guardado.nombre && EXISTENTES[s.vale === 'cada' ? 'c1' : s.vale].some((x) => x.toLowerCase() === nombre.toLowerCase())) errores.errNombre = 'Ya hay un rol con ese nombre en ' + LUGARES[s.vale] + '.';
-    if (!s.vale) errores.errVale = 'Elegí dónde vale el rol.';
-    if (s.elegidos.length === 0) errores.errPermisos = 'Elegí al menos un permiso.';
-
-    if (errores.errNombre || errores.errVale || errores.errPermisos) {
-      this.setState({ ...errores, abierto: null });
-
-      return;
-    }
-
-    this.setState({ guardando: true, abierto: null });
-    setTimeout(() => {
-      const g = { nombre, vale: s.vale, descripcion: s.descripcion.trim(), elegidos: [...s.elegidos] };
-      this.setState({ guardado: g, ...g, guardando: false, m: { ...s.m, nombre, nuevo: false } });
-      this.avisar(s.m.nuevo ? 'Creamos el rol ' + nombre + '.' : 'Guardamos el rol ' + nombre + '.');
-    }, 600);
-  }
-
   renderVals() {
-    const s = this.state;
-    const m = s.m;
-    const g = s.guardado;
-    const ord = (l) => [...l].sort().join('|');
-    const sucio = s.nombre !== g.nombre || s.vale !== g.vale || s.descripcion !== g.descripcion || ord(s.elegidos) !== ord(g.elegidos);
-    const cat = s.vale ? catalogo(s.vale) : [];
-    const total = cat.reduce((n, a) => n + a.ps.length, 0);
-
-    return {
-      ...this.comunes(),
-      titulo: m.nuevo ? 'Crear un rol' : m.nombre,
-      detalle: m.nuevo ? '' : 'Vale en ' + LUGARES[g.vale] + ' · ' + (m.u === 1 ? '1 usuario lo tiene' : m.u + ' usuarios lo tienen'),
-      sistema: !!m.sistema,
-      editable: !m.sistema,
-      sucio,
-      noGuardable: !sucio || s.guardando,
-      textoGuardar: s.guardando ? 'Guardando…' : m.nuevo ? 'Crear rol' : 'Guardar cambios',
-      guardar: () => this.guardar(),
-      Nombre: s.nombre,
-      onNombre: (e) => this.setState({ nombre: e.target.value, errNombre: '' }),
-      malNombre: s.errNombre ? 'mal' : '',
-      errNombre: s.errNombre,
-      ...this.uno('Vale', 'vale', [{ v: 'org', n: 'Toda la organización', d: 'Permisos sobre usuarios, roles, empresas y configuración.' }, { v: 'c1', n: LUGARES.c1 }, { v: 'c2', n: LUGARES.c2 }, { v: 'c3', n: LUGARES.c3 }], 'Elegí dónde vale', { bloqueado: !m.nuevo, error: s.errVale, alElegir: () => ({ elegidos: [], errVale: '' }) }),
-      descripcion: s.descripcion,
-      onDescripcion: (e) => this.setState({ descripcion: e.target.value }),
-      conteo: s.vale ? s.elegidos.length + ' de ' + total + ' elegidos' : '',
-      errPermisos: s.errPermisos,
-      sinVale: !s.vale,
-      conVale: !!s.vale,
-      areas: cat.map((a) => {
-        const clave = 'area:' + a.n;
-        const codigos = a.ps.map((p) => p[0]);
-        const elegidos = a.ps.filter((p) => s.elegidos.includes(p[0]));
-        const abierto = s.abierto === clave;
-        const poner = (nueva) => this.setState({ elegidos: nueva, errPermisos: '' });
-
-        return {
-          n: a.n,
-          aria: 'Permisos de ' + a.n,
-          bloq: !s.vale || !!m.sistema,
-          todos: codigos.length > 0 && elegidos.length === codigos.length,
-          alternarTodos: () => {
-            const resto = this.state.elegidos.filter((c) => !codigos.includes(c));
-            poner(elegidos.length === codigos.length ? resto : [...resto, ...codigos]);
-          },
-          abierto,
-          exp: abierto ? 'true' : 'false',
-          alternar: () => this.alternarMenu(clave),
-          texto: !s.vale ? 'Elegí dónde vale primero' : elegidos.length === 0 ? 'Ninguno' : elegidos.map((p) => p[1]).join(', '),
-          claseVal: elegidos.length === 0 ? 'vacio2' : '',
-          claseLista: '',
-          ariaTodos: 'Todos los permisos de ' + a.n,
-          cuenta: elegidos.length + ' de ' + codigos.length,
-          opciones: a.ps.map((p) => ({
-            n: p[1], d: p[2], on: s.elegidos.includes(p[0]), bloq: !!m.sistema, clase: s.elegidos.includes(p[0]) ? 'elegido' : '',
-            alternar: () => poner(this.state.elegidos.includes(p[0]) ? this.state.elegidos.filter((x) => x !== p[0]) : [...this.state.elegidos, p[0]]),
-          })),
-        };
-      }),
-    };
+    return { si: true, no: false };
   }
 }
 </script>

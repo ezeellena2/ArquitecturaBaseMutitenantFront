@@ -311,7 +311,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "org",
-      "title": "Auditoría · teléfono · para aprobar",
+      "title": "Auditoría · teléfono",
       "w": 390,
       "x": 3760,
       "y": 3320
@@ -338,7 +338,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "org",
-      "title": "Configuración · teléfono · para aprobar",
+      "title": "Configuración · teléfono",
       "w": 390,
       "x": 3290,
       "y": 3320
@@ -373,7 +373,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "org",
-      "title": "Ficha de empresa · teléfono · para aprobar",
+      "title": "Ficha de empresa · teléfono",
       "w": 390,
       "x": 2820,
       "y": 3320
@@ -382,7 +382,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "org",
-      "title": "Empresas · teléfono · para aprobar",
+      "title": "Empresas · teléfono",
       "w": 390,
       "x": 2350,
       "y": 3320
@@ -489,7 +489,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "org",
-      "title": "Editar un rol · teléfono · para aprobar",
+      "title": "Editar un rol · teléfono",
       "w": 390,
       "x": 1880,
       "y": 3320
@@ -498,7 +498,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "org",
-      "title": "Roles y permisos · teléfono · para aprobar",
+      "title": "Roles y permisos · teléfono",
       "w": 390,
       "x": 1410,
       "y": 3320
@@ -507,7 +507,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "org",
-      "title": "Editar usuario · teléfono · para aprobar",
+      "title": "Editar usuario · teléfono",
       "w": 390,
       "x": 940,
       "y": 3320
@@ -516,7 +516,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "org",
-      "title": "Usuarios · teléfono · para aprobar",
+      "title": "Usuarios · teléfono",
       "w": 390,
       "x": 470,
       "y": 3320
@@ -969,7 +969,7 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 5200,
+      "h": 5760,
       "page": "criterio",
       "title": "Criterio · Decisiones por pantalla",
       "w": 1440,
@@ -1283,6 +1283,60 @@
       "title": "Mensajes · conversación · teléfono",
       "page": "propuesta-whatsapp",
       "is_interactive": true
+    },
+    "M-Pagina-Org.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Página pública · teléfono",
+      "w": 390,
+      "x": 4230,
+      "y": 3320
+    },
+    "M-Usuarios-Invitar.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Invitar usuario · teléfono",
+      "w": 390,
+      "x": 0,
+      "y": 5304
+    },
+    "M-Usuario-Empresa.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Sumar empresa · teléfono",
+      "w": 390,
+      "x": 470,
+      "y": 5304
+    },
+    "M-Configuracion-Dominio.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Configuración · agregar dominio · teléfono",
+      "w": 390,
+      "x": 940,
+      "y": 5304
+    },
+    "M-Configuracion-Verificar.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Configuración · verificar dominio · teléfono",
+      "w": 390,
+      "x": 1410,
+      "y": 5304
+    },
+    "M-Configuracion-Quitar.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "org",
+      "title": "Configuración · quitar dominio · teléfono",
+      "w": 390,
+      "x": 1880,
+      "y": 5304
     }
   },
   "createdOnFiles": {
@@ -1596,7 +1650,13 @@
     "M-WA-Plantilla-Nueva.dc.html",
     "M-WA-Telefonos.dc.html",
     "M-WA-Mensajes.dc.html",
-    "M-WA-Mensaje.dc.html"
+    "M-WA-Mensaje.dc.html",
+    "M-Pagina-Org.dc.html",
+    "M-Usuarios-Invitar.dc.html",
+    "M-Usuario-Empresa.dc.html",
+    "M-Configuracion-Dominio.dc.html",
+    "M-Configuracion-Verificar.dc.html",
+    "M-Configuracion-Quitar.dc.html"
   ],
   "pages": [
     {

@@ -362,7 +362,7 @@ PERF = (item("Personal", "Tu perfil personal", izq='<span class="ini">P</span>',
         + item("Grupo Delta", "Dueño", izq='<span class="ini" style="background: var(--marca-t); color: var(--marca-tx);">GD</span>', der=f'<span class="ok">{OK}</span>', href="M-Inicio-Org.dc.html")
         + item("Beta S.R.L.", "Suspendida", izq='<span class="ini">BS</span>', clase="apag", href="Perfil-Suspendido.dc.html"))
 ADMIN = "".join(item(t, der=CH, href=h) for t, h in (("Usuarios", "M-Usuarios.dc.html"), ("Roles", "M-Roles.dc.html"), ("Empresas", "M-Empresas.dc.html"),
-                                                      ("Configuración", "M-Configuracion.dc.html"), ("Página pública", "Pagina-Org.dc.html"), ("Auditoría", "M-Auditoria-Org.dc.html")))
+                                                      ("Configuración", "M-Configuracion.dc.html"), ("Página pública", "M-Pagina-Org.dc.html"), ("Auditoría", "M-Auditoria-Org.dc.html")))
 WAADM = "".join(item(t, der=CH, href=h) for t, h in (("Números", "T-App-Numeros.dc.html"), ("Bot", "T-App-Bot.dc.html"),
                                                       ("Equipos", "T-App-Equipos.dc.html"), ("Plantillas", "T-App-Plantillas.dc.html")))
 p("T-App-Mas", estado() + barra("Más", "Grupo Delta")

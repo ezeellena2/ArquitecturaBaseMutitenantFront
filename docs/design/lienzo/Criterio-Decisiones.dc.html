@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 5200px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 5760px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -555,6 +555,9 @@
 .o-menu .it { border-radius: 0; }
 .o-menu .it + .it { border-top: 1px solid var(--borde); }
 </style>
+<style data-regla="flechita-blanca">
+.ab-sidebar__toggle { background: #fff !important; border-color: var(--lado-borde) !important; color: var(--t2) !important; }
+</style>
 
   <style data-criterio="decisiones">
 .dec { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; font-size: 13.5px; }
@@ -575,9 +578,6 @@
 .est.off { color: var(--t2); }
 .est.off::before { background: oklch(0.75 0.01 78); }
   </style>
-<style data-regla="flechita-blanca">
-.ab-sidebar__toggle { background: #fff !important; border-color: var(--lado-borde) !important; color: var(--t2) !important; }
-</style>
 </helmet>
 
 <div class="crit">
@@ -603,6 +603,8 @@
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>En el teléfono, una app: barra de abajo con «Más», título en la barra, listas de borde a borde y hojas con manija.</span><span>Marco y pantallas</span><span class="gris">03/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>En el teléfono, crear algo nuevo es un «+» flotante abajo a la derecha, también con la lista vacía.</span><span>Marco y pantallas</span><span class="gris">03/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>En el teléfono, el ⋮ de una fila va solo si tiene acciones; si no, se toca la fila.</span><span>Marco y pantallas</span><span class="gris">03/10/2026</span></div>
+      <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>La flechita que contrae el menú lateral va en blanco, con borde arena.</span><span>Menús y desplegables</span><span class="gris">03/10/2026</span></div>
+      <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>En el teléfono, las pantallas de edición llevan fijos abajo «Descartar cambios» y «Guardar cambios».</span><span>Marco y pantallas</span><span class="gris">03/10/2026</span></div>
     </div>
   </section>
 
@@ -647,16 +649,24 @@
   </section>
 
   <section>
+    <h2>Organización · teléfonos (como app)</h2>
+    <div class="dec">
+      <div class="c" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><span>Pantalla</span><span>Qué se eligió</span><span>En el lienzo</span></div>
+      <div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Usuarios · Roles · Empresas</strong><span>Listas de borde a borde con ⋮ en cada fila y «+» para invitar, crear rol o crear empresa. En Usuarios, «Cargar teléfonos» va en el ⋮ de arriba.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Ficha de empresa</strong><span>Pestañas «Miembros | Roles»; cada miembro con su rol y estado, ⋮ y «+» para agregar.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Editar usuario</strong><span>Grupos «Acceso a la organización» (Estado, Roles) y «Empresas» con «Sumar empresa»; abajo, fijos, «Descartar cambios» y «Guardar cambios».</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Editar un rol</strong><span>Nombre, Vale en y Descripción; los permisos se abren por área, con casillas; abajo, fijos, «Cancelar» y «Guardar cambios».</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Configuración · Página pública</strong><span>Campos a lo ancho y grupos (Dominio de correo; Publicación, Página y Contacto); abajo, fijos, «Descartar cambios» y «Guardar cambios».</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Diálogos</strong><span>Invitar usuario, Sumar empresa, Agregar y Verificar dominio como hojas; Quitar dominio, confirmación sin ✕ y con el botón rojo.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Auditoría</strong><span>Qué pasó con la fecha, y dónde y quién debajo; «Cargar más» al final.</span><span class="est ok">Dibujada</span></div>
+    </div>
+  </section>
+
+  <section>
     <h2>Lo que sigue</h2>
     <div class="dec">
       <div class="c" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><span>Pantalla</span><span>Qué se eligió</span><span>En el lienzo</span></div>
-      <div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Teléfonos de Organización</strong><span>Pasar a formato app lo decidido en M-Usuarios, M-Usuario, M-Roles, M-Rol, M-Empresas, M-Empresa, M-Configuracion y M-Auditoria-Org.</span><span class="est alerta">Falta dibujar</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Teléfonos de Plataforma y del perfil personal</strong><span>Pasarlos a formato app.</span><span class="est alerta">Falta dibujar</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Inicios</strong><span>Repensar qué es un inicio en la plantilla y dónde van las acciones pendientes.</span><span class="est pend">Para repensar</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Alta de Meta</strong><span>Se dibuja cuando el usuario lo pida.</span><span class="est off">Falta decidir</span></div>
+      <div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Teléfonos de Plataforma y del perfil personal</strong><span>Pasarlos a formato app.</span><span class="est alerta">Falta dibujar</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Inicios</strong><span>Repensar qué es un inicio en la plantilla y dónde van las acciones pendientes.</span><span class="est pend">Para repensar</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Alta de Meta</strong><span>Se dibuja cuando el usuario lo pida.</span><span class="est off">Falta decidir</span></div>
     </div>
   </section>
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5200}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5760}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

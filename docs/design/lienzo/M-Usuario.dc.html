@@ -685,129 +685,6 @@ body { margin: 0; }
 .w-cajon .w-ln { height: 38px; }
 :where(.w-app, .w-tel) a { text-decoration: none; color: inherit; cursor: pointer; }
   </style>
-<style data-propuesta="perfil">
-.p-hoja { padding: 16px 20px 20px; display: flex; gap: 16px; flex-wrap: wrap; }
-.p-mov .p-hoja { flex-direction: column; padding: 14px 16px 16px; }
-.p-mov .w-cmp .ct { height: 44px; }
-.p-ic { color: var(--t3); display: inline-flex; width: 18px; justify-content: center; }
-.p-aviso { position: absolute; z-index: 8; right: 20px; bottom: 20px; width: 340px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); font-size: 13px; }
-.p-otp { display: flex; gap: 8px; }
-.p-otp span { width: 40px; height: 44px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; background: #fff; }
-.p-otp span.foco { border-color: var(--marca); box-shadow: 0 0 0 3px oklch(0.51 0.099 195 / 0.15); }
-.p-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); }
-.p-seg span { height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--t2); }
-.p-seg span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
-.p-dlg { position: absolute; z-index: 7; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 420px; background: #fff; border-radius: 12px; box-shadow: 0 24px 48px oklch(0.2 0.014 78 / 0.28); overflow: hidden; }
-.p-dlg.normal { width: 560px; }
-.p-dlg .dc { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 8px 0 20px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 15px; font-weight: 600; }
-.p-dlg .tx { padding: 16px 20px 0; font-size: 13.5px; line-height: 1.55; color: var(--t2); }
-.p-dlg .db { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
-.p-dlg .df { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--borde); }
-:where(.w-app, .w-tel) a { text-decoration: none; color: inherit; cursor: pointer; }
-</style>
-<style data-propuesta="org-formularios">
-.o-col { flex-direction: column; }
-.o-fila { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
-.o-codigo .cb { font-family: Inter, system-ui, sans-serif; }
-.o-pre { display: flex; height: 36px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; overflow: hidden; background: #fff; }
-.o-pre span { display: flex; align-items: center; padding: 0 12px; font-size: 13px; }
-.o-pre span + span { background: var(--s2); color: var(--t2); border-left: 1px solid var(--borde); }
-.o-logo { display: flex; align-items: center; gap: 12px; }
-.o-logo .av { width: 56px; height: 56px; border-radius: 12px; background: var(--marca-t); color: var(--marca-tx); display: inline-flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
-.o-codigo { font-family: ui-monospace, Consolas, monospace; font-size: 13px; background: var(--s2); border: 1px solid var(--borde); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.w-tel .o-pre, .w-tel .w-cmp .ct { height: 44px; }
-.req { color: var(--peligro); }
-</style>
-<style data-propuesta="org-formularios-2">
-/* Desplegables del criterio: el control se ve como un campo y la lista se abre debajo. */
-.w-caja.o-abre { overflow: visible; }
-.w-caja.o-abre > .w-cab { border-radius: 11px 11px 0 0; }
-.o-dd { position: relative; min-width: 0; }
-.o-dd > button.ct, input.ct, textarea.ct { height: 36px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px; }
-textarea.ct.area { height: 84px; padding-top: 9px; line-height: 1.45; }
-.p-mov .w-cmp textarea.ct.area { height: 96px; }
-.o-dd > button.ct { width: 100%; font: inherit; font-size: 13px; color: var(--t1); cursor: pointer; text-align: left; }
-.o-dd > button.ct .val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.o-dd > button.ct .val.vacio2 { color: var(--t3); }
-.o-dd > button.ct svg { color: var(--t3); flex-shrink: 0; }
-.o-dd > button.ct[aria-expanded="true"], input.ct:focus, textarea.ct:focus { outline: none; border-color: var(--marca); box-shadow: 0 0 0 3px oklch(0.51 0.099 195 / 0.15); }
-.o-dd > button.ct:disabled { color: var(--t3); background: var(--s2); border-color: var(--borde); cursor: default; }
-.ct.mal { border-color: var(--peligro) !important; }
-.o-err { font-size: 12.5px; color: oklch(0.5 0.19 25); }
-.o-lst { position: absolute; z-index: 20; left: 0; top: calc(100% + 4px); min-width: 100%; width: max-content; max-width: 380px; box-sizing: border-box; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); padding: 4px; display: flex; flex-direction: column; }
-.o-lst.der { left: auto; right: 0; min-width: 220px; }
-.o-lst .op { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 36px; box-sizing: border-box; padding: 4px 10px; border-radius: 6px; font: inherit; font-size: 13px; color: var(--t1); background: none; border: 0; text-align: left; cursor: pointer; white-space: nowrap; }
-.o-lst .op:hover { background: var(--s2); }
-.o-lst .op.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 500; }
-.o-lst .op:disabled { color: var(--t3); cursor: default; background: none; }
-.o-lst .op.pel { color: oklch(0.52 0.19 25); }
-.o-lst .op.pel svg { color: oklch(0.52 0.19 25); }
-.o-lst .op .n2 { display: flex; flex-direction: column; line-height: 1.35; }
-.o-lst .op .d { font-size: 12px; color: var(--t3); font-weight: 400; white-space: normal; max-width: 300px; }
-.o-lst .op .tilde { display: none; }
-.o-lst .op.on .tilde { display: inline-flex; }
-.o-lst label.op { justify-content: flex-start; }
-.o-lst label.op.on { background: none; color: var(--t1); font-weight: 400; }
-:where(.w-app, .w-tel) input[type="checkbox"] { accent-color: var(--marca); width: 16px; height: 16px; margin: 0; flex-shrink: 0; cursor: pointer; }
-:where(.w-app, .w-tel) input[type="checkbox"]:disabled { cursor: default; }
-input.ct, textarea.ct { font: inherit; font-size: 13px; color: var(--t1); width: 100%; }
-textarea.ct.area { resize: none; display: block; }
-.w-cmp .rt { display: flex; align-items: center; gap: 8px; }
-.w-cmp .rt .o-todos { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; color: var(--t2); cursor: pointer; }
-/* Lo que no se edita se muestra como texto, sin campo gris. */
-.o-txt { min-height: 36px; display: flex; align-items: center; font-size: 13px; color: var(--t1); }
-.o-txt.largo { min-height: 0; padding-top: 2px; line-height: 1.5; }
-.o-capa { position: absolute; inset: 0; z-index: 4; background: transparent; border: 0; padding: 0; cursor: default; }
-/* La banda: estado, detalle y «Cambios sin guardar» en la segunda línea, separados por un punto medio. */
-.o-res { display: flex !important; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; }
-.o-res > :empty { display: none; }
-.o-res > * + *::before { content: "·"; color: var(--t3); margin-right: 6px; }
-.o-res .o-corta { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.o-res .sucio { color: oklch(0.5 0.12 70); font-weight: 500; }
-.w-est.ok::before { background: oklch(0.6 0.13 155); }
-.w-est.pend::before { background: var(--marca); }
-.w-est.alerta::before { background: oklch(0.72 0.15 70); }
-.w-est.mal::before { background: oklch(0.57 0.2 25); }
-.w-est.off::before { background: oklch(0.75 0.01 78); }
-.w-bnd .ac .ib.o-borde { border: 1px solid var(--borde2); box-sizing: border-box; }
-/* Carteles debajo de la banda (criterio de avisos). */
-.w-cartel.o-prob { background: var(--peligro-t); color: oklch(0.45 0.17 25); }
-.w-cartel.o-info { background: var(--marca-t); color: var(--marca-tx); }
-.w-cartel .cb-enl { font-size: 13px; }
-/* Filas de una lista dentro de una caja. */
-.o-ets { margin-bottom: -10px; }
-.o-ets .rt { font-size: 12.5px; font-weight: 600; color: var(--t2); }
-.o-vacio { padding: 16px; color: var(--t3); font-size: 13px; }
-.o-grupo { display: flex; align-items: center; gap: 12px; min-height: 40px; box-sizing: border-box; padding: 0 16px; background: oklch(0.975 0.008 78); border-bottom: 1px solid var(--borde); font-weight: 600; cursor: pointer; }
-.o-grupo .cnt { margin-left: auto; font-weight: 500; color: var(--t3); font-variant-numeric: tabular-nums; }
-.o-perm { cursor: pointer; padding-left: 16px; min-height: 48px !important; }
-.o-perm .dato b { color: var(--t1); font-weight: 500; }
-.o-perm .dato { gap: 1px; }
-.w-caja > :last-child.o-perm, .w-caja .o-ult { border-bottom: 0; }
-/* Avisos que se quedan: borde rojo y ✕. El de un 5xx lleva el código de seguimiento. */
-.p-aviso.mal { border-color: oklch(0.57 0.2 25 / 0.45); align-items: flex-start; }
-.p-aviso .o-tt { flex: 1; display: flex; flex-direction: column; gap: 6px; padding-top: 1px; }
-.p-aviso .ib { margin: -6px -6px -6px 0; }
-.o-traza { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--t2); }
-.o-traza .f { display: flex; align-items: center; gap: 8px; }
-.o-traza code { word-break: break-all; font-family: ui-monospace, Consolas, monospace; font-size: 12px; background: var(--s2); border-radius: 6px; padding: 4px 6px; color: var(--t1); }
-.o-lnk { height: auto !important; padding: 0 !important; font-size: 13px; }
-/* La pantalla que no se puede mostrar. */
-.o-404 { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 24px; }
-.o-404 .circ { width: 56px; height: 56px; border-radius: 50%; background: var(--s3); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; }
-.o-404 h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.015em; }
-.o-404 p { margin: 0; font-size: 14px; color: var(--t2); }
-/* Teléfono: cuerpo con scroll, botones fijos abajo, diálogos y avisos a lo ancho. */
-.w-tel .w-body.o-scroll { overflow: auto; }
-.w-tel .o-dd > button.ct, .w-tel input.ct { height: 44px; }
-.w-tel .p-dlg { width: calc(100% - 32px); }
-.w-tel .p-aviso { left: 16px; right: 16px; width: auto; bottom: 88px; }
-.w-tel .o-fila-tel { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--borde); }
-.w-tel .o-fila-tel:last-child { border-bottom: 0; }
-.w-tel .o-fila-tel .arr { display: flex; gap: 8px; align-items: flex-end; }
-.w-tel .o-fila-tel .arr .o-dd { flex: 1; }
-.w-tel .w-bnd .res { white-space: normal; }
-</style>
   <style data-menu-usuario="">
 /* Tu menú, arriba a la derecha (criterio de menús): se abre al tocar tu nombre. */
 .w-umd { position: relative; }
@@ -835,6 +712,214 @@ textarea.ct.area { resize: none; display: block; }
 .w-mn .w-mn-on { margin-left: auto; }
 .w-tel .w-mn { width: 300px; right: -4px; }
   </style>
+<style data-propuesta="tel-chats">
+.o-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); }
+.o-seg span { height: 36px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--t2); }
+.o-seg span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
+.o-seg .c { font-weight: 500; color: var(--t3); }
+.o-filtros { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--borde); background: #fff; }
+.o-fila { display: flex; gap: 8px; }
+.o-fila .w-bus { flex: 1; height: 44px; }
+.o-fila .w-pil { height: 44px; }
+.o-fila .w-pil.ic { width: 44px; padding: 0; justify-content: center; position: relative; }
+.o-fila .w-pil.ic .p { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--marca); }
+.w-conv .l3 { font-size: 12px; color: var(--t3); }
+.w-conv .l3.sin { color: oklch(0.55 0.13 70); }
+a.w-conv { text-decoration: none; color: inherit; }
+</style>
+<style data-propuesta="app-marco">
+.ap { width: 390px; height: 844px; overflow: hidden; background: #fff; font-family: Inter, system-ui, sans-serif; color: var(--t1); display: flex; flex-direction: column; position: relative; }
+.ap-est { height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 22px 0 30px; font-size: 15px; font-weight: 600; background: #fff; }
+.ap-est .ic { display: inline-flex; align-items: center; gap: 6px; }
+.ap-bar { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 6px 0 16px; background: #fff; }
+.ap-bar.int { padding-left: 4px; }
+.ap-bar .tit { flex: 1; min-width: 0; }
+.ap-bar h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-bar.int h1 { font-size: 20px; }
+.ap-bar .sub { display: block; font-size: 12.5px; font-weight: 500; color: var(--t3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-ib { width: 44px; height: 44px; border: 0; background: none; color: var(--t1); display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; position: relative; flex-shrink: 0; text-decoration: none; }
+.ap-cuerpo { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+.ap-fila { display: flex; align-items: center; gap: 14px; padding: 12px 6px 12px 16px; position: relative; text-decoration: none; color: inherit; }
+.ap-fila::after { content: ""; position: absolute; left: 16px; right: 0; bottom: 0; height: 1px; background: var(--borde); }
+.ap-fila .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding-right: 10px; }
+.ap-fila .l1 { display: flex; justify-content: space-between; gap: 8px; font-size: 15.5px; font-weight: 500; }
+.ap-fila .l1 span { font-size: 12.5px; font-weight: 400; color: var(--t3); flex-shrink: 0; }
+.ap-fila .l2 { font-size: 14px; color: var(--t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-fila .l3 { font-size: 13px; color: var(--t3); }
+.ap-fila .l3 .w-est { font-size: 13px; color: var(--t2); }
+.ap-fila .ap-ib { color: var(--t2); margin-right: -4px; }
+.w-est.mal::before { background: oklch(0.57 0.2 25); }
+.w-est.mal { color: oklch(0.5 0.19 25) !important; }
+.w-est.baja::before { background: oklch(0.72 0.15 70); }
+.w-est.prog::before { background: var(--marca); }
+.ap-i { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 22px; padding: 0; border: 0; background: none; color: oklch(0.52 0.19 25); vertical-align: middle; }
+.ap-fab { position: absolute; z-index: 4; right: 16px; bottom: 110px; width: 56px; height: 56px; border-radius: 16px; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px oklch(0.3 0.06 195 / 0.3), 0 2px 4px oklch(0.3 0.06 195 / 0.2); }
+.ap-nav { flex-shrink: 0; display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px 4px 28px; background: #fff; border-top: 1px solid var(--borde); }
+.ap-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 500; color: var(--t2); text-decoration: none; }
+.ap-nav .i { width: 56px; height: 30px; border-radius: 15px; display: inline-flex; align-items: center; justify-content: center; position: relative; }
+.ap-nav a.on { color: var(--marca-tx); font-weight: 600; }
+.ap-nav a.on .i { background: var(--marca-t); }
+.ap-nav .b { position: absolute; top: -3px; right: 4px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; background: var(--marca); color: #fff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+.ap-nav .yo { width: 26px; height: 26px; border-radius: 50%; background: var(--marca); color: #fff; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+.ap-nav a.on .yo { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--marca); }
+.ap-raya { position: absolute; z-index: 9; left: 50%; bottom: 8px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: var(--t1); }
+.ap-velo { position: absolute; inset: 0; z-index: 6; background: oklch(0.2 0.014 78 / 0.45); }
+.ap-hoja { position: absolute; z-index: 7; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 20px 20px 0 0; display: flex; flex-direction: column; box-shadow: 0 -8px 24px oklch(0.2 0.014 78 / 0.12); }
+.ap-hoja .asa { align-self: center; width: 36px; height: 5px; border-radius: 3px; background: var(--borde2); margin: 8px 0 4px; }
+.ap-hoja .hc { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 6px 4px 20px; }
+.ap-hoja .hc h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
+.ap-hoja .hb { padding: 8px 20px 16px; display: flex; flex-direction: column; gap: 14px; }
+.ap-hoja .hp { display: flex; gap: 10px; padding: 8px 20px 34px; }
+.ap-hoja .hp .cb { flex: 1; height: 48px; border-radius: 12px; font-size: 15px; }
+</style>
+<style data-propuesta="app-piezas">
+.ap .w-conv { border-bottom: 0; position: relative; padding: 12px 16px; gap: 14px; text-decoration: none; color: inherit; display: flex; }
+.ap .w-conv::after { content: ""; position: absolute; left: 74px; right: 0; bottom: 0; height: 1px; background: var(--borde); }
+.ap .w-av { width: 44px; height: 44px; font-size: 15px; }
+.ap .w-conv .l1 b { font-size: 15.5px; }
+.ap .w-conv .l1 span { font-size: 12.5px; }
+.ap .w-conv .l2 { font-size: 14px; }
+.ap .w-conv .l3 { font-size: 12.5px; color: var(--t3); }
+.ap .w-conv .l3.sin { color: oklch(0.55 0.13 70); }
+.ap .w-conv .l3 .w-est { font-size: 12.5px; color: var(--t2); }
+.ap-seg { margin: 4px 16px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 12px; background: var(--s3); flex-shrink: 0; }
+.ap-seg span, .ap-seg2 span { height: 38px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 14.5px; font-weight: 600; color: var(--t2); }
+.ap-seg span.on, .ap-seg2 span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
+.ap-seg .c { font-weight: 500; color: var(--t3); }
+.ap-seg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 12px; background: var(--s3); }
+.ap-txt { height: 40px; padding: 0 10px; border: 0; background: none; color: var(--marca-tx); font-size: 15.5px; font-weight: 600; flex-shrink: 0; }
+.ap-cbar { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 4px; background: #fff; border-bottom: 1px solid var(--borde); }
+.ap-cbar .w-av { width: 38px; height: 38px; font-size: 14px; }
+.ap-cbar .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ap-cbar .tx b { font-size: 16.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ap-cbar .tx span { font-size: 12.5px; color: var(--t3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ap-cbar .tx span.sin { color: oklch(0.55 0.13 70); }
+.ap-chat { flex: 1; min-height: 0; overflow: hidden; background: oklch(0.965 0.012 78); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.ap-dia { align-self: center; font-size: 12px; color: var(--t2); background: #fff; padding: 3px 10px; border-radius: 8px; box-shadow: 0 1px 1px oklch(0.2 0.01 78 / 0.06); }
+.ap-m { max-width: 80%; display: flex; flex-direction: column; gap: 2px; }
+.ap-m .gl { padding: 8px 12px; border-radius: 14px; font-size: 15px; line-height: 1.4; }
+.ap-m.ent { align-self: flex-start; }
+.ap-m.ent .gl { background: #fff; border-top-left-radius: 4px; box-shadow: 0 1px 1px oklch(0.2 0.01 78 / 0.06); }
+.ap-m.sal { align-self: flex-end; align-items: flex-end; }
+.ap-m.sal .gl, .ap-burb { background: oklch(0.93 0.04 180); color: oklch(0.28 0.05 195); }
+.ap-m.sal .gl { border-top-right-radius: 4px; }
+.ap-m .pie { font-size: 11.5px; color: var(--t3); padding: 0 4px; }
+.ap-m .gl .bt, .ap-burb .bt { display: block; margin-top: 8px; padding-top: 8px; border-top: 1px solid oklch(0.51 0.099 195 / 0.2); text-align: center; font-weight: 600; color: var(--marca-tx); }
+.ap-sis { align-self: center; font-size: 12.5px; color: var(--t3); text-align: center; }
+.ap-nota { align-self: center; max-width: 88%; background: oklch(0.97 0.05 90); border: 1px solid oklch(0.88 0.08 85); color: oklch(0.38 0.07 70); border-radius: 12px; padding: 8px 12px; font-size: 14px; line-height: 1.45; display: flex; flex-direction: column; gap: 2px; }
+.ap-nota .q { font-size: 12px; font-weight: 600; }
+.ap-escr { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 8px 10px 34px; background: #fff; border-top: 1px solid var(--borde); }
+.ap-escr .campo { flex: 1; min-width: 0; height: 44px; box-sizing: border-box; border-radius: 22px; border: 1px solid var(--borde2); display: flex; align-items: center; padding: 0 16px; color: var(--t3); font-size: 15px; }
+.ap-escr .campo.nota { background: oklch(0.985 0.03 90); border-color: oklch(0.85 0.09 85); color: oklch(0.5 0.08 70); }
+.ap-red { width: 44px; height: 44px; border-radius: 50%; border: 0; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: transparent; color: var(--t2); }
+.ap-red.env { background: var(--marca); color: #fff; }
+.ap-red.gua { background: oklch(0.7 0.14 75); color: #fff; }
+.ap-red.nt.on { background: oklch(0.94 0.07 88); color: oklch(0.45 0.1 70); }
+.ap-24 { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; color: oklch(0.45 0.1 70); font-size: 14px; font-weight: 500; white-space: nowrap; }
+.ap-24 .ap-i { color: oklch(0.45 0.1 70); }
+.ap-pill { text-decoration: none; height: 44px; padding: 0 18px; border-radius: 22px; background: var(--marca); color: #fff; font-weight: 600; font-size: 14.5px; border: 0; display: inline-flex; align-items: center; flex-shrink: 0; }
+.ap-menu { position: absolute; z-index: 8; right: 8px; top: 100px; width: 236px; background: #fff; border-radius: 14px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.2), 0 0 0 1px var(--borde); overflow: hidden; display: flex; flex-direction: column; }
+.ap-menu span { min-height: 50px; display: flex; align-items: center; padding: 0 18px; font-size: 15.5px; }
+.ap-menu span + span { border-top: 1px solid var(--borde); }
+.ap-cmp { display: flex; flex-direction: column; gap: 6px; }
+.ap-cmp .rt { font-size: 13.5px; font-weight: 600; color: var(--t2); display: flex; justify-content: space-between; align-items: center; }
+.ap-cmp .rq { color: var(--peligro); }
+.ap-cmp .ct { min-height: 48px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; font-size: 16px; background: #fff; }
+.ap-cmp .ct.area { display: block; padding: 12px 14px; line-height: 1.55; min-height: 104px; }
+.ap-cmp .ej { text-decoration: none; font-size: 13.5px; font-weight: 600; color: var(--marca-tx); display: inline-flex; gap: 6px; align-items: center; }
+.ap-var { display: inline-flex; padding: 0 7px; border-radius: 6px; background: var(--marca-t); color: var(--marca-tx); font-weight: 600; font-size: 14.5px; }
+.ap-chips2 { display: flex; gap: 8px; flex-wrap: wrap; }
+.ap-chips2 span { height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid var(--borde2); display: inline-flex; align-items: center; font-size: 13.5px; font-weight: 500; color: var(--t2); }
+.ap-burb { align-self: flex-end; max-width: 92%; border-radius: 14px; border-top-right-radius: 4px; padding: 10px 14px; font-size: 15px; line-height: 1.45; }
+.ap-burb b { font-weight: 700; }
+.ap-costo { text-align: right; font-size: 13.5px; color: var(--t3); margin-top: -6px; }
+.ap-lst { display: flex; flex-direction: column; margin: -4px -20px 0; }
+.ap-lst .tit { padding: 10px 20px 4px; font-size: 13px; font-weight: 600; color: var(--t3); }
+.ap-lst .it { display: flex; align-items: center; justify-content: space-between; min-height: 54px; padding: 0 20px; font-size: 16px; border-top: 1px solid var(--borde); }
+.ap-lst .tit + .it { border-top: 0; }
+.ap-lst .it span { font-size: 13.5px; color: var(--t3); }
+.ap-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--borde); flex-shrink: 0; background: #fff; }
+.ap-tabs span { height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 15px; font-weight: 600; color: var(--t2); border-bottom: 2.5px solid transparent; }
+.ap-tabs span.on { color: var(--marca-tx); border-bottom-color: var(--marca); }
+.ap-tabs .c { color: var(--t3); font-weight: 500; }
+.ap-chips { display: flex; gap: 8px; padding: 4px 16px 12px; overflow: hidden; flex-shrink: 0; }
+.ap-chips span { flex-shrink: 0; display: inline-flex; flex-direction: column; justify-content: center; min-width: 84px; height: 58px; box-sizing: border-box; padding: 0 14px; border: 1px solid var(--borde); border-radius: 14px; line-height: 1.25; }
+.ap-chips span b { font-size: 17px; font-weight: 600; }
+.ap-chips span i { font-style: normal; font-size: 12.5px; color: var(--t3); }
+.ap-chips span.on { border-color: oklch(0.51 0.099 195 / 0.45); background: var(--marca-t); }
+.ap-chips span.on b, .ap-chips span.on i { color: var(--marca-tx); }
+.ap-fijo { flex-shrink: 0; display: flex; align-items: center; gap: 12px; padding: 12px 16px 34px; background: #fff; border-top: 1px solid var(--borde); }
+.ap-fijo .cb { height: 50px; border-radius: 12px; font-size: 16px; padding: 0 22px; }
+.ap-fijo .cb.full { flex: 1; }
+.ap-fijo .costo { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
+.ap-fijo .costo b { font-size: 16px; font-weight: 600; }
+.ap-fijo .costo span { font-size: 13px; color: var(--t3); }
+.ap-gris { background: oklch(0.972 0.006 78); }
+.ap-gtit { display: flex; justify-content: space-between; align-items: center; margin: 18px 20px 8px; font-size: 13.5px; font-weight: 600; color: var(--t2); }
+.ap-gtit a { color: var(--marca-tx); font-weight: 600; text-decoration: none; font-size: 14.5px; }
+.ap-grupo { margin: 0 16px; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 0 0 1px var(--borde); flex-shrink: 0; }
+.ap-it { display: flex; align-items: center; gap: 12px; min-height: 56px; box-sizing: border-box; padding: 8px 14px 8px 16px; position: relative; text-decoration: none; color: inherit; }
+.ap-it + .ap-it::before { content: ""; position: absolute; top: 0; left: 16px; right: 0; height: 1px; background: var(--borde); }
+.ap-it .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ap-it .tx b { font-size: 15.5px; font-weight: 500; }
+.ap-it .tx span { font-size: 13px; color: var(--t3); }
+.ap-it .chev { color: var(--t3); display: inline-flex; }
+.ap-it .num { width: 28px; height: 28px; border-radius: 50%; background: var(--marca-t); color: var(--marca-tx); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ap-it .ini { width: 36px; height: 36px; border-radius: 10px; background: var(--s3); color: var(--t2); font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ap-it.apag { opacity: 0.55; }
+.ap-it .ok { color: var(--marca); display: inline-flex; }
+.ap-it.peligro b { color: var(--peligro); }
+.ap-sw { width: 50px; height: 30px; border-radius: 15px; background: var(--marca); position: relative; flex-shrink: 0; }
+.ap-sw::after { content: ""; position: absolute; top: 3px; right: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px oklch(0.2 0.01 78 / 0.25); }
+.ap-sw.off { background: var(--borde2); }
+.ap-sw.off::after { right: auto; left: 3px; }
+.ap-selnum { margin: 0 16px 10px; height: 46px; box-sizing: border-box; border-radius: 12px; background: var(--s3); display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-size: 14.5px; font-weight: 500; flex-shrink: 0; }
+.ap-yo { display: flex; align-items: center; gap: 14px; padding: 8px 20px 4px; }
+.ap-yo .w-av { width: 56px; height: 56px; font-size: 20px; color: #fff; }
+.ap-yo b { display: block; font-size: 18px; font-weight: 600; color: var(--t1); }
+.ap-yo span { font-size: 13.5px; color: var(--t3); }
+.ap-perfil { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 24px 16px; text-align: center; flex-shrink: 0; }
+.ap-perfil .w-av { width: 76px; height: 76px; font-size: 26px; }
+.ap-perfil h2 { margin: 8px 0 0; font-size: 22px; font-weight: 700; letter-spacing: -0.015em; }
+.ap-perfil p { margin: 0; font-size: 14px; color: var(--t2); line-height: 1.45; }
+.ap-rec { padding: 8px 16px 16px; display: flex; flex-direction: column; }
+.ap-n { display: flex; gap: 12px; position: relative; padding-bottom: 14px; }
+.ap-n::before { content: ""; position: absolute; left: 11px; top: 24px; bottom: 0; width: 2px; background: var(--borde2); }
+.ap-n:last-child::before { display: none; }
+.ap-n .pt { width: 24px; height: 24px; border-radius: 50%; background: var(--marca); color: #fff; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; position: relative; z-index: 1; margin-top: 10px; }
+.ap-n .pt.q { background: oklch(0.7 0.14 75); }
+.ap-n .cj { flex: 1; min-width: 0; background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 10px 14px; }
+.ap-n .cj b { font-size: 15px; font-weight: 600; display: block; }
+.ap-n .cj > span { font-size: 13px; color: var(--t3); }
+.ap-rama { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.ap-rama .r { display: flex; align-items: center; gap: 10px; border-radius: 10px; background: var(--s2); border: 1px solid var(--borde); padding: 9px 12px; font-size: 14.5px; }
+.ap-rama .r .et { font-size: 12px; font-weight: 700; color: var(--marca-tx); background: var(--marca-t); border-radius: 6px; padding: 2px 7px; }
+.ap-rama .r .d { color: var(--t3); font-size: 12.5px; margin-left: auto; }
+.w-est.amb::before { background: oklch(0.72 0.15 70); }
+.w-est.azul::before { background: var(--marca); }
+</style>
+<style data-propuesta="app-org">
+.ap .cb.apag { opacity: 0.45; }
+.ap-fijo .cb.full { padding: 0 10px; min-width: 0; }
+.ap-fila .l1 .q { font-size: 15px; font-weight: 500; color: var(--t1); white-space: normal; overflow-wrap: anywhere; min-width: 0; flex: 1; }
+.ap-cod { word-break: break-all; font-size: 13px; }
+.ap-chk { width: 22px; height: 22px; box-sizing: border-box; border-radius: 6px; border: 1.5px solid var(--borde2); background: #fff; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff; }
+.ap-chk.on { background: var(--marca); border-color: var(--marca); }
+.ap-area { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 14px 0 12px; font-size: 15.5px; font-weight: 600; }
+.ap-area .n { flex: 1; }
+.ap-area .c { font-size: 13px; font-weight: 500; color: var(--t3); }
+.ap-perm { display: flex; align-items: center; gap: 12px; min-height: 50px; padding: 0 14px 0 46px; font-size: 15px; border-top: 1px solid var(--borde); }
+.ap-cod { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; padding: 0 6px 0 14px; border-radius: 12px; background: var(--s3); font-family: ui-monospace, Consolas, monospace; font-size: 14px; }
+.ap-txt-l { font-size: 14.5px; line-height: 1.5; color: var(--t2); margin: 0; }
+.ap-logo { display: flex; align-items: center; gap: 14px; }
+.ap-logo .lg { width: 56px; height: 56px; border-radius: 14px; background: var(--marca); color: #fff; font-weight: 700; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; }
+.ap-dir { display: flex; align-items: center; gap: 0; }
+.ap-dir .ct { flex: 1; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.ap-dir .suf { min-height: 48px; box-sizing: border-box; display: inline-flex; align-items: center; padding: 0 12px; border: 1px solid var(--borde2); border-left: 0; border-radius: 0 12px 12px 0; background: var(--s3); color: var(--t2); font-size: 15px; }
+.ap-mas { display: flex; justify-content: center; padding: 14px 16px 20px; }
+.ap-mas .cb { height: 44px; padding: 0 22px; border-radius: 12px; }
+.ap-pie-hoja { font-size: 13.5px; color: var(--t3); margin: -4px 0 0; }
+</style>
 <style data-regla="menus-con-lineas">
 .menu[role="menu"] { padding: 0; overflow: hidden; }
 .menu[role="menu"] .menu-it { border-radius: 0; min-height: 42px; padding: 8px 14px; border-top: 1px solid var(--borde); margin-top: -1px; }
@@ -848,417 +933,13 @@ textarea.ct.area { resize: none; display: block; }
 </style>
 </helmet>
 
-<div class="w-tel p-mov"><header class="w-tb"><span style="display: inline-flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><b style="font-size: 14px;">ArquitecturaBase</b><details class="w-umd"><summary class="av-tel" aria-label="Abrir tu menú"><span class="w-av chico">L</span></summary><div class="w-mn" role="menu" aria-label="Menú de Lucía Fernández"><div class="w-mn-cab"><span class="w-av" style="width: 36px; height: 36px; font-size: 15px;">L</span><span class="w-mn-perf"><b>Lucía Fernández</b><span class="s">lucia.fernandez@delta.ejemplo.com</span></span></div><div class="w-mn-sep" role="separator"></div><div class="w-mn-tit">Perfiles</div><a class="w-mn-it" role="menuitemradio" aria-checked="false" href="M-Inicio-Personal.dc.html"><span class="w-mn-ico">P</span><span class="w-mn-perf">Personal<span class="s">Tu perfil personal</span></span></a><a class="w-mn-it on" role="menuitemradio" aria-checked="true" href="M-Inicio-Org.dc.html"><span class="w-mn-ico">GD</span><span class="w-mn-perf">Grupo Delta<span class="s">Dueño</span></span><span class="w-mn-on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></a><a class="w-mn-it apag" role="menuitemradio" aria-checked="false" href="Perfil-Suspendido.dc.html"><span class="w-mn-ico">BS</span><span class="w-mn-perf">Beta S.R.L.<span class="s">Suspendida</span></span></a><div class="w-mn-sep" role="separator"></div><a class="w-mn-it" role="menuitem" href="M-Cuenta.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Mi cuenta</a><div class="w-mn-sep" role="separator"></div><a class="w-mn-it" role="menuitem" href="M-Ingreso.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Salir</a></div></details></header><div class="w-bnd"><div class="iz"><a class="vol" href="M-Usuarios.dc.html" aria-label="Volver"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></a><div style="min-width: 0;"><h1>{{titulo}}</h1><p class="res o-res"><span class="w-est {{pill}}">{{textoEstado}}</span><sc-if value="{{sucio}}" hint-placeholder-val="{{no}}"><span class="sucio">Cambios sin guardar</span></sc-if></p><p class="res"><sc-if value="{{detalle}}" hint-placeholder-val="{{no}}">{{detalle}}</sc-if></p></div></div><div class="ac"><sc-if value="{{bajaPedida}}" hint-placeholder-val="{{no}}"><button type="button" class="cb cb-pel" onClick="{{quitarDeOrg}}">Quitar de la organización</button></sc-if><sc-if value="{{conMas}}" hint-placeholder-val="{{si}}"><span class="o-dd"><button type="button" class="ib o-borde" aria-label="Más acciones" aria-haspopup="menu" aria-expanded="{{expMas}}" onClick="{{alternarMas}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button><sc-if value="{{abiertoMas}}" hint-placeholder-val="{{no}}"><div class="o-lst der" role="menu"><sc-if value="{{esInvitacion}}" hint-placeholder-val="{{no}}"><button type="button" class="op" role="menuitem" onClick="{{reenviar}}">Reenviar invitación</button></sc-if><sc-if value="{{esInvitacion}}" hint-placeholder-val="{{no}}"><button type="button" class="op pel" role="menuitem" onClick="{{revocar}}">Revocar invitación</button></sc-if><sc-if value="{{esMiembro}}" hint-placeholder-val="{{si}}"><button type="button" class="op pel" role="menuitem" onClick="{{quitarDeOrg}}">Quitar de la organización</button></sc-if></div></sc-if></span></sc-if></div></div><div class="w-body o-scroll"><sc-if value="{{error}}" hint-placeholder-val="{{no}}"><div class="w-cartel o-prob" role="alert"><span style="color: currentColor; display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5"/><path d="M12 16.2h.01"/></svg></span><span class="tx">{{error}}</span></div></sc-if><sc-if value="{{bajaPedida}}" hint-placeholder-val="{{no}}"><div class="w-cartel" role="status"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span class="tx">Pidió la baja de su cuenta. Se elimina el {{seElimina}}.</span></div></sc-if><div class="w-caja o-abre"><div class="w-cab"><span>Acceso a la organización</span></div><div class="p-hoja"><div class="w-cmp" style="width: 100%;"><span class="rt">Estado</span><sc-if value="{{bloqEstado}}" hint-placeholder-val="{{no}}"><div class="o-txt">{{textoEstado}}</div></sc-if><sc-if value="{{editEstado}}" hint-placeholder-val="{{si}}"><div class="o-dd"><button type="button" class="ct {{malEstado}}" aria-haspopup="listbox" aria-expanded="{{expEstado}}" aria-label="Estado" onClick="{{alternarEstado}}"><span class="val {{claseValEstado}}">{{textoEstado}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button><sc-if value="{{abiertoEstado}}" hint-placeholder-val="{{no}}"><div class="o-lst" role="listbox" aria-label="Estado"><sc-for list="{{opcionesEstado}}" as="o" hint-placeholder-count="3"><button type="button" role="option" aria-selected="{{o.sel}}" class="op {{o.clase}}" onClick="{{o.elegir}}"><span class="n2"><span>{{o.n}}</span><sc-if value="{{o.d}}" hint-placeholder-val="{{no}}"><span class="d">{{o.d}}</span></sc-if></span><span class="tilde"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></button></sc-for></div></sc-if></div></sc-if><sc-if value="{{errEstado}}" hint-placeholder-val="{{no}}"><span class="o-err" role="alert">{{errEstado}}</span></sc-if></div><div class="w-cmp" style="width: 100%;"><span class="rt">Roles de la organización<sc-if value="{{editRolesOrg}}" hint-placeholder-val="{{si}}"><label class="o-todos"><input type="checkbox" checked="{{todosRolesOrg}}" onChange="{{alternarTodosRolesOrg}}"> Todos</label></sc-if></span><sc-if value="{{bloqRolesOrg}}" hint-placeholder-val="{{no}}"><div class="o-txt">{{textoRolesOrg}}</div></sc-if><sc-if value="{{editRolesOrg}}" hint-placeholder-val="{{si}}"><div class="o-dd"><button type="button" class="ct" aria-haspopup="listbox" aria-expanded="{{expRolesOrg}}" aria-label="Roles de la organización" onClick="{{alternarRolesOrg}}"><span class="val {{claseValRolesOrg}}">{{textoRolesOrg}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button><sc-if value="{{abiertoRolesOrg}}" hint-placeholder-val="{{no}}"><div class="o-lst" role="listbox" aria-multiselectable="true" aria-label="Roles de la organización"><sc-for list="{{opcionesRolesOrg}}" as="o" hint-placeholder-count="3"><label class="op"><input type="checkbox" checked="{{o.on}}" onChange="{{o.alternar}}"><span class="n2"><span>{{o.n}}</span><sc-if value="{{o.d}}" hint-placeholder-val="{{no}}"><span class="d">{{o.d}}</span></sc-if></span></label></sc-for></div></sc-if></div></sc-if></div></div></div><div class="w-caja o-abre"><div class="w-cab"><span>Empresas</span><sc-if value="{{editable}}" hint-placeholder-val="{{si}}"><button type="button" class="cb cb-sec ch" onClick="{{sumar}}" disabled="{{noHayMas}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Sumar</button></sc-if></div><sc-if value="{{sinEmpresas}}" hint-placeholder-val="{{no}}"><div class="o-vacio">No está en ninguna empresa.</div></sc-if><sc-if value="{{conEmpresas}}" hint-placeholder-val="{{si}}"><sc-for list="{{filasEmpresa}}" as="e" hint-placeholder-count="1"><div class="o-fila-tel"><div class="arr"><div class="w-cmp" style="flex: 1;"><span class="rt">Empresa</span><sc-if value="{{e.bloq}}" hint-placeholder-val="{{no}}"><div class="o-txt">{{e.textoEmp}}</div></sc-if><sc-if value="{{e.edit}}" hint-placeholder-val="{{si}}"><div class="o-dd"><button type="button" class="ct" aria-haspopup="listbox" aria-expanded="{{e.expEmp}}" aria-label="{{e.ariaEmpresa}}" onClick="{{e.alternarEmp}}"><span class="val {{e.claseEmp}}">{{e.textoEmp}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button><sc-if value="{{e.abiertoEmp}}" hint-placeholder-val="{{no}}"><div class="o-lst" role="listbox"><sc-for list="{{e.opcionesEmp}}" as="o" hint-placeholder-count="3"><button type="button" role="option" aria-selected="{{o.sel}}" class="op {{o.clase}}" onClick="{{o.elegir}}" disabled="{{o.usada}}"><span class="n2"><span>{{o.n}}</span></span><span class="tilde"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></button></sc-for></div></sc-if></div></sc-if></div><sc-if value="{{e.edit}}" hint-placeholder-val="{{si}}"><button type="button" class="ib" aria-label="{{e.ariaQuitar}}" onClick="{{e.quitar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6.5 7l1 12.5h9l1-12.5"/><path d="M9.5 7V4.5h5V7"/></svg></button></sc-if></div><div class="w-cmp"><span class="rt">Roles en la empresa</span><sc-if value="{{e.bloq}}" hint-placeholder-val="{{no}}"><div class="o-txt">{{e.textoRoles}}</div></sc-if><sc-if value="{{e.edit}}" hint-placeholder-val="{{si}}"><div class="o-dd"><button type="button" class="ct" aria-haspopup="listbox" aria-expanded="{{e.expRoles}}" aria-label="{{e.ariaRoles}}" onClick="{{e.alternarRoles}}" disabled="{{e.sinEmpresa}}"><span class="val {{e.claseRoles}}">{{e.textoRoles}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button><sc-if value="{{e.abiertoRoles}}" hint-placeholder-val="{{no}}"><div class="o-lst" role="listbox" aria-multiselectable="true"><sc-for list="{{e.opcionesRoles}}" as="o" hint-placeholder-count="3"><label class="op"><input type="checkbox" checked="{{o.on}}" onChange="{{o.alternar}}"><span class="n2"><span>{{o.n}}</span><span class="d">{{o.d}}</span></span></label></sc-for></div></sc-if></div></sc-if></div></div></sc-for></sc-if></div></div><sc-if value="{{editable}}" hint-placeholder-val="{{si}}"><div class="w-escr" style="padding: 12px 16px 20px;"><button type="button" class="cb cb-sec" style="flex: 1; height: 44px;" onClick="{{descartar}}">Descartar</button><button type="button" class="cb cb-pri" style="flex: 1; height: 44px;" onClick="{{guardar}}" disabled="{{noGuardable}}">Guardar</button></div></sc-if><sc-if value="{{hayAbierto}}" hint-placeholder-val="{{no}}"><button type="button" class="o-capa" tabindex="-1" aria-hidden="true" onClick="{{cerrarMenus}}"></button></sc-if><sc-if value="{{confirmacion}}" hint-placeholder-val="{{no}}"><div class="w-oscuro" style="z-index: 6;"></div><div class="p-dlg" role="alertdialog" aria-modal="true" aria-label="{{tituloConfirmacion}}"><div class="dc"><span>{{tituloConfirmacion}}</span></div><div class="tx" style="padding-bottom: 16px;">{{textoConfirmacion}}</div><sc-if value="{{hayMotivo}}" hint-placeholder-val="{{no}}"><div class="db" style="padding-top: 0;"><div class="w-cmp"><span class="rt">Motivo <span class="req" style="margin-left: -4px;">*</span></span><textarea class="ct area {{malMotivo}}" aria-label="Motivo" value="{{motivo}}" onChange="{{onMotivo}}"></textarea><sc-if value="{{errMotivo}}" hint-placeholder-val="{{no}}"><span class="o-err" role="alert">{{errMotivo}}</span></sc-if></div></div></sc-if><div class="df"><button type="button" class="cb cb-sec" onClick="{{cancelarConfirmacion}}">Cancelar</button><button type="button" class="cb {{claseConfirmar}}" onClick="{{confirmar}}">{{botonConfirmacion}}</button></div></div></sc-if><sc-if value="{{aviso}}" hint-placeholder-val="{{no}}"><div class="p-aviso {{claseAviso}}" role="status"><sc-if value="{{avisoOk}}" hint-placeholder-val="{{si}}"><span style="color: oklch(0.55 0.13 155); display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></svg></span></sc-if><sc-if value="{{avisoError}}" hint-placeholder-val="{{no}}"><span style="color: oklch(0.55 0.2 25); display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5"/><path d="M12 16.2h.01"/></svg></span></sc-if><span class="o-tt"><span>{{aviso}}</span></span><sc-if value="{{avisoError}}" hint-placeholder-val="{{no}}"><button type="button" class="ib" aria-label="Cerrar" onClick="{{cerrarAviso}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></sc-if></div></sc-if></div>
+<div class="ap"><div class="ap-est"><span>9:41</span><span class="ic"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="25" height="12" viewBox="0 0 25 12" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="16" height="8" rx="1.8" fill="currentColor"/><path d="M23 4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/></svg></span></div><div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-Usuarios.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></a><div class="tit"><h1>Tomás Acosta</h1><span class="sub">tomas.acosta@delta.ejemplo.com</span></div><button type="button" class="ap-ib" aria-label="Acciones de Tomás Acosta"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="ap-cuerpo ap-gris"><span class="ap-gtit">Acceso a la organización</span><div class="ap-grupo"><div class="ap-it "><span class="tx"><b>Estado</b><span><span class="w-est ">Activo</span></span></span><span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div><div class="ap-it "><span class="tx"><b>Roles de la organización</b><span>Ninguno</span></span><span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div></div><span class="ap-gtit">Empresas<a href="M-Usuario-Empresa.dc.html">Sumar empresa</a></span><div class="ap-grupo"><div class="ap-it "><span class="tx"><b>Delta S.A.</b><span>Solo lectura</span></span><button type="button" class="ap-ib" aria-label="Acciones de Delta S.A."><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div></div></div><div class="ap-fijo"><button type="button" class="cb cb-sec full">Descartar cambios</button><button type="button" class="cb cb-pri full apag">Guardar cambios</button></div><span class="ap-raya"></span></div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"usuario":{"editor":"enum","options":["Tomás (activo)","Sofía (invitación pendiente)","Marcos (deshabilitado)","Diego (baja pedida)","Lucía (vos)"],"default":"Tomás (activo)","section":"Estado"},"$preview":{"width":390,"height":844}}'>
-// GET /api/companies
-const EMPRESAS = [
-  { id: 'c1', n: 'Delta S.A.', cuit: '30-71234567-8', zona: null, miembros: 6, estado: 'activa' },
-  { id: 'c2', n: 'Delta Sur S.R.L.', cuit: '30-71555444-2', zona: 'America/Argentina/Cordoba', miembros: 4, estado: 'activa' },
-  { id: 'c3', n: 'Delta Norte S.A.', cuit: '', zona: null, miembros: 3, estado: 'activa' },
-];
-const nombreEmpresa = (id) => (EMPRESAS.find((e) => e.id === id) || { n: '' }).n;
-// GET /api/roles: los de sistema y los que crea cada organización. Solo usan los permisos que existen en la
-// plantilla; cada producto suma los suyos.
-const ROLES = [
-  { id: 'r1', n: 'Dueño', vale: 'org', d: 'Tiene todos los permisos de la organización.', u: 1, p: 12, sistema: true },
-  { id: 'r2', n: 'Recursos humanos', vale: 'org', d: 'Invita, edita y deshabilita usuarios.', u: 0, p: 3 },
-  { id: 'r3', n: 'Auditor', vale: 'org', d: 'Ve los usuarios y la auditoría. No cambia nada.', u: 1, p: 2 },
-  { id: 'r4', n: 'Administrador', vale: 'cada', d: 'Administra la empresa: sus miembros y sus roles.', u: 2, p: 2, sistema: true },
-  { id: 'r5', n: 'Solo lectura', vale: 'c1', d: 'Ve los miembros de la empresa. No cambia nada.', u: 4, p: 1 },
-  { id: 'r6', n: 'Solo lectura', vale: 'c2', d: 'Ve los miembros de la empresa. No cambia nada.', u: 1, p: 1 },
-  { id: 'r7', n: 'Solo lectura', vale: 'c3', d: 'Ve los miembros de la empresa. No cambia nada.', u: 0, p: 1 },
-];
-const rolesDeOrg = () => ROLES.filter((r) => r.vale === 'org').map((r) => ({ v: r.n, n: r.n, d: r.d }));
-const rolesDeEmpresa = (c) => ROLES.filter((r) => r.vale === 'cada' || r.vale === c).map((r) => ({ v: r.n, n: r.n, d: r.d }));
-// GET /api/users: parte de los miembros de la organización (tenant.Members), con su identidad.
-const USUARIOS = [
-  { id: 'u1', n: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', estado: 'activo', rolesOrg: ['Dueño'], empresas: [{ c: 'c1', roles: ['Administrador'] }], desde: '12/01/2026', yo: true },
-  { id: 'u2', n: 'Tomás Acosta', email: 'tomas.acosta@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '03/02/2026' },
-  { id: 'u3', n: 'Julieta Sosa', email: 'julieta.sosa@delta.ejemplo.com', estado: 'activo', rolesOrg: ['Auditor'], empresas: [], desde: '03/02/2026' },
-  // Pidió la baja de su cuenta: el estado sale de la identidad, no de la membresía (multitenancy §3.2).
-  { id: 'u4', n: 'Diego Ríos', email: 'diego.rios@delta.ejemplo.com', estado: 'bajaPedida', seElimina: '27/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '18/02/2026' },
-  { id: 'u5', n: 'Paula Méndez', email: 'paula.mendez@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }, { c: 'c2', roles: ['Solo lectura'] }], desde: '02/03/2026' },
-  { id: 'u9', n: 'Martín Paz', email: 'martin.paz@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }], desde: '10/03/2026' },
-  { id: 'u10', n: 'Carolina Vega', email: 'carolina.vega@delta.ejemplo.com', estado: 'activo', rolesOrg: [], empresas: [{ c: 'c2', roles: ['Administrador'] }, { c: 'c3', roles: ['Administrador'] }], desde: '10/03/2026' },
-  { id: 'u8', n: 'Marcos Giménez', email: 'marcos.gimenez@delta.ejemplo.com', estado: 'deshabilitado', rolesOrg: [], empresas: [], desde: '05/02/2026' },
-  { id: 'u6', n: 'Sofía Herrera', email: 'sofia.herrera@delta.ejemplo.com', estado: 'invitado', vence: '02/10/2026', rolesOrg: [], empresas: [{ c: 'c1', roles: ['Solo lectura'] }] },
-  { id: 'u7', n: '', email: 'valentina.ruiz@gmail.com', estado: 'invitado', vence: '03/10/2026', rolesOrg: [], empresas: [{ c: 'c3', roles: ['Solo lectura'] }] },
-  { id: 'u11', n: '', email: 'carla.bianchi@delta.ejemplo.com', estado: 'vencida', vence: '25/09/2026', rolesOrg: [], empresas: [{ c: 'c2', roles: ['Solo lectura'] }] },
-];
-const ESTADOS_USUARIO = {
-  activo: { n: 'Activo', pill: 'ok' },
-  invitado: { n: 'Invitación pendiente', pill: 'pend' },
-  vencida: { n: 'Invitación vencida', pill: 'alerta' },
-  deshabilitado: { n: 'Deshabilitado', pill: 'off' },
-  bajaPedida: { n: 'Baja pedida', pill: 'alerta' },
-};
-const MODOS = { 'Tomás (activo)': 'u2', 'Sofía (invitación pendiente)': 'u6', 'Marcos (deshabilitado)': 'u8', 'Diego (baja pedida)': 'u4', 'Lucía (vos)': 'u1' };
-// Dominio de correo verificado por la organización (Configuración).
-const DOMINIO_VERIFICADO = 'delta.ejemplo.com';
-const copia = (u) => ({ estado: u.estado, rolesOrg: [...u.rolesOrg], empresas: u.empresas.map((e) => ({ c: e.c, roles: [...e.roles] })) });
-
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
-  constructor(props) {
-    super(props);
-    
-    this.state = { abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', clave: props.usuario, ...this.inicial(props.usuario) };
-  }
-
-  avisar(texto, tipo = 'ok') {
-    this.setState({ aviso: texto, avisoTipo: tipo });
-    clearTimeout(this.timerAviso);
-    if (tipo !== 'error') this.timerAviso = setTimeout(() => this.setState({ aviso: '' }), 4000);
-  }
-
-  alternarMenu(clave) {
-    this.setState({ abierto: this.state.abierto === clave ? null : clave });
-  }
-
-  // Un desplegable de una opción: clave del estado, opciones [{ v, n, d }] y texto cuando no hay nada elegido.
-  uno(clave, campo, opciones, vacio, extra = {}) {
-    const s = this.state;
-    const actual = opciones.find((o) => o.v === s[campo]);
-    const abierto = s.abierto === clave;
-
-    return {
-      ['abierto' + clave]: abierto,
-      ['exp' + clave]: abierto ? 'true' : 'false',
-      ['alternar' + clave]: () => this.alternarMenu(clave),
-      ['texto' + clave]: actual ? actual.n : vacio,
-      ['claseVal' + clave]: actual ? '' : 'vacio2',
-      ['mal' + clave]: extra.error ? 'mal' : '',
-      ['err' + clave]: extra.error || '',
-      ['bloq' + clave]: !!extra.bloqueado,
-      ['edit' + clave]: !extra.bloqueado,
-      ['opciones' + clave]: opciones.map((o) => ({
-        n: o.n, d: o.d || '', sel: o.v === s[campo] ? 'true' : 'false', clase: o.v === s[campo] ? 'on' : '',
-        elegir: () => this.setState({ [campo]: o.v, abierto: null, ...(extra.alElegir ? extra.alElegir(o.v) : {}) }),
-      })),
-    };
-  }
-
-  // Un desplegable de varias opciones sobre una lista del estado.
-  varios(clave, campo, opciones, vacio, extra = {}) {
-    const s = this.state;
-    const lista = s[campo];
-    const abierto = s.abierto === clave;
-    const elegidos = opciones.filter((o) => lista.includes(o.v));
-    const poner = (nueva) => this.setState({ [campo]: nueva, ...(extra.alCambiar ? extra.alCambiar(nueva) : {}) });
-
-    return {
-      ['abierto' + clave]: abierto,
-      ['exp' + clave]: abierto ? 'true' : 'false',
-      ['alternar' + clave]: () => this.alternarMenu(clave),
-      ['texto' + clave]: elegidos.length === 0 ? vacio : elegidos.map((o) => o.n).join(', '),
-      ['claseVal' + clave]: elegidos.length === 0 ? 'vacio2' : '',
-      ['bloq' + clave]: !!extra.bloqueado,
-      ['edit' + clave]: !extra.bloqueado,
-      ['todos' + clave]: opciones.length > 0 && elegidos.length === opciones.length,
-      ['alternarTodos' + clave]: () => {
-        const codigos = opciones.map((o) => o.v);
-        const resto = this.state[campo].filter((x) => !codigos.includes(x));
-        poner(elegidos.length === opciones.length ? resto : [...resto, ...codigos]);
-      },
-      ['opciones' + clave]: opciones.map((o) => ({
-        n: o.n, d: o.d || '', on: lista.includes(o.v),
-        alternar: () => {
-          const actual = this.state[campo];
-          poner(actual.includes(o.v) ? actual.filter((x) => x !== o.v) : [...actual, o.v]);
-        },
-      })),
-    };
-  }
-
-  // Filtro en pastilla: opciones [{ v, n }] con conteo calculado por `contar(v)`.
-  filtro(clave, campo, opciones, textoTodos, contar) {
-    const s = this.state;
-    const abierto = s.abierto === clave;
-    const actual = opciones.find((o) => o.v === s[campo]);
-
-    return {
-      ['abierto' + clave]: abierto,
-      ['exp' + clave]: abierto ? 'true' : 'false',
-      ['alternar' + clave]: () => this.alternarMenu(clave),
-      ['texto' + clave]: actual && actual.v !== null ? actual.corto || actual.n : textoTodos,
-      ['clase' + clave]: actual && actual.v !== null ? 'con' : '',
-      ['opciones' + clave]: opciones.map((o) => ({
-        n: o.n, c: String(contar(o.v)), sel: o.v === s[campo] ? 'true' : 'false', clase: o.v === s[campo] ? 'on' : '',
-        elegir: () => this.setState({ [campo]: o.v, abierto: null }),
-      })),
-    };
-  }
-
-  // Menú ⋮ de una fila.
-  // Paginado por páginas (usePagination): devuelve la página actual y los valores de paginacion(p).
-  paginar(lista, p = '') {
-    const s = this.state;
-    const tam = s['tam' + p] || 10;
-    const paginas = Math.max(1, Math.ceil(lista.length / tam));
-    const pag = Math.min(s['pag' + p] || 1, paginas);
-    const desde = lista.length === 0 ? 0 : (pag - 1) * tam + 1;
-    const hasta = Math.min(pag * tam, lista.length);
-    const clave = 'tam' + p;
-    const abierto = s.abierto === clave;
-
-    return {
-      items: lista.slice((pag - 1) * tam, pag * tam),
-      vals: {
-        [p + 'pagRango']: lista.length === 0 ? '0 de 0' : (desde === hasta ? String(desde) : desde + '–' + hasta) + ' de ' + lista.length,
-        [p + 'pagTexto']: 'Página ' + pag + ' de ' + paginas,
-        [p + 'pagSinAnterior']: pag <= 1,
-        [p + 'pagSinSiguiente']: pag >= paginas,
-        [p + 'pagAnterior']: () => this.setState({ ['pag' + p]: pag - 1 }),
-        [p + 'pagSiguiente']: () => this.setState({ ['pag' + p]: pag + 1 }),
-        [p + 'pagTamano']: String(tam),
-        [p + 'abiertoTamano']: abierto,
-        [p + 'expTamano']: abierto ? 'true' : 'false',
-        [p + 'alternarTamano']: () => this.alternarMenu(clave),
-        [p + 'opcionesTamano']: [10, 20, 50, 100].map((n) => ({ n: n + ' por página', sel: n === tam ? 'true' : 'false', clase: n === tam ? 'on' : '', elegir: () => this.setState({ ['tam' + p]: n, ['pag' + p]: 1, abierto: null }) })),
-      },
-    };
-  }
-
-  // Menú ⋮ de una fila; en las últimas filas de una lista larga se abre hacia arriba.
-  fila(id, nombre, i = 0, n = 0) {
-    const clave = 'fila:' + id;
-    const abierto = this.state.abierto === clave;
-
-    return { menu: abierto, exp: abierto ? 'true' : 'false', ariaMenu: 'Acciones de ' + nombre, alternar: () => this.alternarMenu(clave), claseMenu: n > 5 && i >= n - 3 ? 'arriba' : '' };
-  }
-
-  // Confirmación: { titulo, texto, boton, peligro, motivo (bool), accion(motivo) }.
-  pedirConfirmacion(c) {
-    this.setState({ abierto: null, confirmar: c, motivo: '', errMotivo: '' });
-  }
-
-  comunes() {
-    const s = this.state;
-    const c = s.confirmar;
-
-    return {
-      si: true,
-      no: false,
-      hayAbierto: s.abierto !== null,
-      cerrarMenus: () => this.setState({ abierto: null }),
-      abiertoDrawer: s.abierto === 'drawer',
-      alternarDrawer: () => this.alternarMenu('drawer'),
-      abiertoMas: s.abierto === 'mas',
-      expMas: s.abierto === 'mas' ? 'true' : 'false',
-      alternarMas: () => this.alternarMenu('mas'),
-      abiertoUsuario: s.abierto === 'usuario',
-      expUsuario: s.abierto === 'usuario' ? 'true' : 'false',
-      alternarUsuario: () => this.alternarMenu('usuario'),
-      aviso: s.aviso,
-      avisoOk: s.avisoTipo !== 'error',
-      avisoError: s.avisoTipo === 'error',
-      claseAviso: s.avisoTipo === 'error' ? 'mal' : '',
-      cerrarAviso: () => this.setState({ aviso: '' }),
-      confirmacion: !!c,
-      tituloConfirmacion: c ? c.titulo : '',
-      textoConfirmacion: c ? c.texto : '',
-      botonConfirmacion: c ? c.boton : '',
-      claseConfirmar: c && c.peligro === false ? 'cb-pri' : 'cb-pel lleno',
-      hayMotivo: !!(c && c.motivo),
-      motivo: s.motivo,
-      onMotivo: (e) => this.setState({ motivo: e.target.value, errMotivo: '' }),
-      malMotivo: s.errMotivo ? 'mal' : '',
-      errMotivo: s.errMotivo,
-      cancelarConfirmacion: () => this.setState({ confirmar: null }),
-      confirmar: () => {
-        if (c.motivo && s.motivo.trim() === '') {
-          this.setState({ errMotivo: 'Escribí el motivo.' });
-
-          return;
-        }
-
-        this.setState({ confirmar: null });
-        c.accion(s.motivo.trim());
-      },
-    };
-  }
-
-  inicial(modo) {
-    const u = USUARIOS.find((x) => x.id === MODOS[modo ?? 'Tomás (activo)']);
-
-    return { u, guardado: copia(u), ...copia(u), error: '', guardando: false };
-  }
-
-  componentDidUpdate() {
-    if (this.props.usuario !== this.state.clave) this.setState({ clave: this.props.usuario, abierto: null, ...this.inicial(this.props.usuario) });
-  }
-
-  ponerEmpresa(i, cambios) {
-    this.setState({ empresas: this.state.empresas.map((e, j) => (j === i ? { ...e, ...cambios } : e)), error: '' });
-  }
-
-  // PUT /api/users/{id} { status, roleIds, companies }. 409 Users.Member.LastTenantAdmin o Companies.Member.LastCompanyAdmin.
-  guardar() {
-    const s = this.state;
-
-    if (s.u.yo && s.guardado.estado === 'activo' && s.estado === 'deshabilitado' && this.ultimoDueno()) {
-      this.setState({ error: 'Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de deshabilitarte.', abierto: null });
-
-      return;
-    }
-
-    if (s.u.yo && s.estado === 'deshabilitado' && s.guardado.estado === 'activo') {
-      this.setState({ error: 'No podés deshabilitarte a vos misma.', abierto: null });
-
-      return;
-    }
-
-    if (s.u.yo && !s.rolesOrg.includes('Dueño')) {
-      this.setState({ error: 'Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de quitártelo.', abierto: null });
-
-      return;
-    }
-
-    if ((s.u.yo && s.guardado.empresas.some((g) => g.roles.includes('Administrador') && !s.empresas.some((e) => e.c === g.c && e.roles.includes('Administrador'))))) {
-      this.setState({ error: 'Delta S.A. se queda sin administrador. Dale el rol a otro miembro antes de quitárselo.', abierto: null });
-
-      return;
-    }
-
-    const hacer = () => {
-      this.setState({ guardando: true, abierto: null });
-      setTimeout(() => {
-        const g = copia({ estado: this.state.estado, rolesOrg: this.state.rolesOrg, empresas: this.state.empresas.filter((e) => e.c) });
-        this.setState({ guardado: g, ...copia(g), guardando: false });
-        this.avisar('Guardamos los cambios de ' + (s.u.n || s.u.email) + '.');
-      }, 600);
-    };
-
-    if (s.guardado.estado === 'activo' && s.estado === 'deshabilitado') {
-      this.pedirConfirmacion({
-        titulo: '¿Deshabilitar a ' + s.u.n + '?',
-        texto: 'Deja de entrar a Grupo Delta y a sus empresas. Su cuenta y su perfil personal siguen funcionando.',
-        boton: 'Deshabilitar y guardar',
-        accion: hacer,
-      });
-
-      return;
-    }
-
-    hacer();
-  }
-
-  // El último Dueño activo de la organización no se puede quitar ni deshabilitar (409 Users.Member.LastTenantAdmin).
-  ultimoDueno() {
-    const u = this.state.u;
-    const duenos = USUARIOS.filter((x) => x.estado === 'activo' && x.rolesOrg.includes('Dueño'));
-
-    return u.rolesOrg.includes('Dueño') && duenos.length === 1;
-  }
-
-  // DELETE /api/users/{id}: termina la membresía. Los correos del dominio verificado dejan de servirle para ingresar.
-  quitarDeOrg() {
-    const u = this.state.u;
-
-    if (this.ultimoDueno()) {
-      this.setState({ abierto: null, error: 'Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de salir de la organización.' });
-
-      return;
-    }
-
-    const administrado = u.email.endsWith('@' + DOMINIO_VERIFICADO) && u.estado !== 'bajaPedida';
-    const cierre = u.estado === 'bajaPedida' ? '' : 'Su cuenta y su perfil personal siguen funcionando.';
-
-    this.pedirConfirmacion({
-      titulo: '¿Quitar a ' + u.n + ' de Grupo Delta?',
-      texto: 'Deja de entrar a Grupo Delta y a sus empresas, y pierde sus roles. ' + (administrado ? 'Sus correos de ' + DOMINIO_VERIFICADO + ' dejan de servirle para ingresar; se lo avisamos por sus otros métodos de ingreso. ' : '') + cierre,
-      boton: 'Quitar',
-      accion: () => this.avisar('Quitamos a ' + u.n + ' de Grupo Delta.'),
-    });
-  }
-
-  // DELETE /api/users/invitations/{id}
-  revocar() {
-    const u = this.state.u;
-
-    this.pedirConfirmacion({
-      titulo: '¿Revocar la invitación a ' + u.email + '?',
-      texto: 'El enlace deja de funcionar. Podés volver a invitarla cuando quieras.',
-      boton: 'Revocar',
-      accion: () => this.avisar('Revocamos la invitación a ' + u.email + '.'),
-    });
-  }
-
   renderVals() {
-    const s = this.state;
-    const u = s.u;
-    const g = s.guardado;
-    const ordenar = (l) => [...l].sort().join('|');
-    const firma = (x) => x.estado + ordenar(x.rolesOrg) + x.empresas.filter((e) => e.c).map((e) => e.c + ordenar(e.roles)).join(';');
-    const sucio = firma(s) !== firma(g);
-    const invitacion = u.estado === 'invitado' || u.estado === 'vencida';
-    const est = ESTADOS_USUARIO[s.estado];
-    const usadas = s.empresas.map((e) => e.c);
-    // Con la baja pedida no se le pueden cambiar los roles: solo se lo puede quitar de la organización.
-    const baja = u.estado === 'bajaPedida';
-
-    return {
-      ...this.comunes(),
-      titulo: u.n || u.email,
-      pill: est.pill,
-      textoEstado: est.n,
-      detalle: invitacion ? u.email + (u.estado === 'vencida' ? ' · venció el ' : ' · vence el ') + u.vence : u.email + ' · desde el ' + u.desde,
-      esInvitacion: invitacion,
-      reenviar: () => { this.setState({ abierto: null }); this.avisar('Reenviamos la invitación a ' + u.email + '.'); },
-      esMiembro: !invitacion,
-      bajaPedida: baja,
-      seElimina: u.seElimina || '',
-      conMas: !baja,
-      editable: !baja,
-      revocar: () => this.revocar(),
-      quitarDeOrg: () => this.quitarDeOrg(),
-      sucio,
-      limpio: !sucio,
-      noGuardable: !sucio || s.guardando,
-      textoGuardar: s.guardando ? 'Guardando…' : 'Guardar cambios',
-      guardar: () => this.guardar(),
-      descartar: () => this.setState({ ...copia(g), error: '', abierto: null }),
-      error: s.error,
-
-      ...this.uno('Estado', 'estado', invitacion || baja ? [{ v: u.estado, n: est.n }] : [{ v: 'activo', n: 'Activo', d: 'Entra a la organización y a sus empresas.' }, { v: 'deshabilitado', n: 'Deshabilitado', d: 'No entra. Conserva sus roles por si lo volvés a habilitar.' }], '', { bloqueado: invitacion || baja }),
-      ...this.varios('RolesOrg', 'rolesOrg', rolesDeOrg(), 'Ninguno', { alCambiar: () => ({ error: '' }), bloqueado: baja }),
-
-      filasEmpresa: s.empresas.map((e, i) => {
-        const kE = 'emp:' + i;
-        const kR = 'roles:' + i;
-        const opR = e.c ? rolesDeEmpresa(e.c) : [];
-
-        return {
-          ariaEmpresa: 'Empresa ' + (i + 1),
-          abiertoEmp: s.abierto === kE,
-          expEmp: s.abierto === kE ? 'true' : 'false',
-          alternarEmp: () => this.alternarMenu(kE),
-          textoEmp: e.c ? nombreEmpresa(e.c) : 'Elegí una empresa',
-          claseEmp: e.c ? '' : 'vacio2',
-          opcionesEmp: EMPRESAS.map((x) => ({
-            n: x.n, d: '', sel: x.id === e.c ? 'true' : 'false', clase: x.id === e.c ? 'on' : '', usada: x.id !== e.c && usadas.includes(x.id),
-            elegir: () => { this.setState({ abierto: null }); this.ponerEmpresa(i, { c: x.id, roles: [] }); },
-          })),
-          ariaRoles: 'Roles en ' + (e.c ? nombreEmpresa(e.c) : 'la empresa ' + (i + 1)),
-          sinEmpresa: !e.c || baja,
-          bloq: baja,
-          edit: !baja,
-          abiertoRoles: s.abierto === kR,
-          expRoles: s.abierto === kR ? 'true' : 'false',
-          alternarRoles: () => this.alternarMenu(kR),
-          textoRoles: !e.c ? 'Elegí una empresa primero' : e.roles.length === 0 ? 'Sin roles' : opR.filter((o) => e.roles.includes(o.v)).map((o) => o.n).join(', '),
-          claseRoles: e.roles.length === 0 ? 'vacio2' : '',
-          opcionesRoles: opR.map((o) => ({ n: o.n, d: o.d, on: e.roles.includes(o.v), alternar: () => this.ponerEmpresa(i, { roles: this.state.empresas[i].roles.includes(o.v) ? this.state.empresas[i].roles.filter((x) => x !== o.v) : [...this.state.empresas[i].roles, o.v] }) })),
-          ariaQuitar: 'Quitar ' + (e.c ? nombreEmpresa(e.c) : 'la empresa ' + (i + 1)),
-          quitar: () => this.setState({ empresas: s.empresas.filter((_, j) => j !== i), abierto: null, error: '' }),
-        };
-      }),
-      sinEmpresas: s.empresas.length === 0,
-      conEmpresas: s.empresas.length > 0,
-      noHayMas: baja || s.empresas.length >= EMPRESAS.length,
-      sumar: () => this.setState({ empresas: [...s.empresas, { c: null, roles: [] }], abierto: null }),
-    };
+    return { si: true, no: false };
   }
 }
 </script>
