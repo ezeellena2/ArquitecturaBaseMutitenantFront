@@ -69,6 +69,21 @@ describe("Page", () => {
     expect(band).toContainElement(screen.getByRole("button", { name: "Invitar usuario" }));
   });
 
+  it("on the phone moves the actions to a second line instead of cutting the title", () => {
+    renderWithProviders(
+      <Page icon={UsersIcon} title="Configuración" actions={<><button type="button">{"Descartar cambios"}</button><button type="button">{"Guardar cambios"}</button></>}>
+        <p>{"contenido"}</p>
+      </Page>,
+    );
+
+    // A 390 px el título quedaba en «C..». El título se reserva 12rem y los botones bajan si no entran;
+    // en la compu sigue todo en una fila. El definitivo (barra de app) es el paquete 4 de la alineación.
+    const band = screen.getByRole("heading", { level: 1 }).closest("header");
+    const titleBlock = band?.firstElementChild;
+    expect(band).toHaveClass("flex-wrap", "md:flex-nowrap");
+    expect(titleBlock).toHaveClass("flex-[1_1_12rem]", "md:flex-1");
+  });
+
   it("puts extra actions in a named menu before the primary action", async () => {
     const remove = vi.fn();
     renderWithProviders(

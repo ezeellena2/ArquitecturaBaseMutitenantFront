@@ -47,8 +47,8 @@ export function Page({
 
   return (
     <>
-      <header className="flex min-h-16 items-center justify-between gap-4 border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4 py-3 md:px-6">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+      <header className="flex min-h-16 flex-wrap items-center justify-between gap-4 border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4 py-3 md:flex-nowrap md:px-6">
+        <div className="flex min-w-0 flex-[1_1_12rem] items-center gap-3 md:flex-1">
           {backTo ? (
             <Link
               to={backTo.to}
