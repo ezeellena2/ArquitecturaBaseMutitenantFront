@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 2860px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 2900px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -554,6 +554,9 @@
 .o-menu { padding: 0; overflow: hidden; }
 .o-menu .it { border-radius: 0; }
 .o-menu .it + .it { border-top: 1px solid var(--borde); }
+</style>
+<style data-regla="flechita-blanca">
+.ab-sidebar__toggle { background: #fff !important; border-color: var(--lado-borde) !important; color: var(--t2) !important; }
 </style>
 
   <style data-criterio="menus">
@@ -754,6 +757,7 @@
       <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Separador</strong><span>1 px</span><span>Una línea gris entre grupos de opciones.</span></div>
       <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Caja del menú</strong><span>Esquinas de 10 px</span><span>Fondo blanco, borde fino y sombra suave.</span></div>
       <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Menú lateral</strong><span>232 px · contraído 64 px</span><span>Arena. Opciones de 32 px con ícono de 18.</span></div>
+      <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Botón para contraer el menú</strong><span>28 px, redondo</span><span>Blanco, con borde arena, sobre el borde del menú lateral.</span></div>
       <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Panel de Administración</strong><span>232 px</span><span>Un tono más oscuro que el menú lateral, al lado.</span></div>
     </div>
   </section>
@@ -782,7 +786,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2860}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2900}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

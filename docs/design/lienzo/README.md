@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 69** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 146 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 70** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 146 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -92,11 +92,12 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 | `wa_telefonos_1004.py` | Los 27 teléfonos de WhatsApp en formato app: corre `telefonos_1004/app_todas.py` y `app_numeros.py` sobre la copia de partida (`telefonos_1004/base`), les pone nombre (`M-WA-*`), enlaces y título, y los acomoda en cuatro filas. Las piezas del marco de app salen de `telefonos_1004/app_marco.py` y `app_estilo.py`. |
 | `wa_ajustes_1004.py` | En la compu: la nota interna se prende con un botón al lado de donde se escribe, e «Importar contactos» va sin casilla y con «Descargar ejemplo». |
 | `menus_con_lineas.py` | Suma a todos los tableros la línea entre las opciones de los menús desplegables. Corre al final. |
+| `flechita_blanca.py` | El botón redondo que contrae el menú lateral va en blanco, con borde arena, en todos los tableros que lo tienen. Corre al final. |
 | `org_vuelta_1002.py` | Las decisiones de la vuelta de Organización del 2026-10-02 sobre los tableros de escritorio, y les saca «· para aprobar» a los aprobados. Corre después de `org_formularios2.py`. |
 | `conectar_paginas.py` | Enlaces entre páginas: tu menú, el menú de WhatsApp y la entrada WhatsApp en Organización |
 | `aplicar_criterio.py`, `criterio_marcado.py`, `terminos_sin_deshabilitar.py` | Pasan al criterio los tableros viejos sin rehacerlos |
 
-Después de correr `perfil_tableros.py`, `whatsapp_tableros.py` u `org_formularios.py`, corré `conectar_paginas.py`: esos tres dibujan el menú sin enlaces. `conectar_paginas.py`, `org_formularios2.py`, `org_vuelta_1002.py`, `wa_vuelta_1003.py`, `wa_telefonos_1004.py`, `wa_ajustes_1004.py` y `menus_con_lineas.py` se pueden volver a correr sin cambiar lo que ya está; los dos de 1004 van después de `wa_vuelta_1003.py`. Los otros reescriben `canvas.json`, así que revisá el diff antes de publicar. Para rehacer un formulario, se copia el formato de `org_formularios.py` y nunca se maquilla con CSS encima.
+Después de correr `perfil_tableros.py`, `whatsapp_tableros.py` u `org_formularios.py`, corré `conectar_paginas.py`: esos tres dibujan el menú sin enlaces. `conectar_paginas.py`, `org_formularios2.py`, `org_vuelta_1002.py`, `wa_vuelta_1003.py`, `wa_telefonos_1004.py`, `wa_ajustes_1004.py`, `menus_con_lineas.py` y `flechita_blanca.py` se pueden volver a correr sin cambiar lo que ya está; los dos de 1004 van después de `wa_vuelta_1003.py`. Los otros reescriben `canvas.json`, así que revisá el diff antes de publicar. Para rehacer un formulario, se copia el formato de `org_formularios.py` y nunca se maquilla con CSS encima.
 
 ## Publicar en claude.ai
 
