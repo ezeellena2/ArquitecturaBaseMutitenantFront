@@ -24,8 +24,8 @@
   "deactivate": "Deactivate",
   "edit": "Edit",
   "viewPermissions": "View permissions",
-  "confirmDeactivate": "Deactivate {{name}}?",
-  "confirmDeactivateDescription": "The role will no longer be available for assignment.",
+  "confirmDeactivate": "Deactivate the role {{name}}?",
+  "confirmDeactivateDescription": "It is no longer offered for assignment. Nobody has it, so no user is affected.",
   "rowActions": "Actions for {{name}}",
   "noDescription": "No description",
   "empty": "No matching roles",
@@ -69,7 +69,9 @@
     "company": "Company",
     "description": "Description"
   },
-  "company": { "choose": "Choose a company" },
+  "company": {
+    "choose": "Choose a company"
+  },
   "validation": {
     "nameRequired": "Enter a role name.",
     "scopeRequired": "Choose where the role applies.",
@@ -81,6 +83,7 @@
   "leaveWithoutSaving": "Leave without saving",
   "continueEditing": "Continue editing",
   "errors": {
-    "hasUsers": "{{name}} can't be deactivated because {{count}} people have this role."
+    "hasUsers_one": "Cannot deactivate: {{count}} user has the role {{name}}. Remove it first.",
+    "hasUsers_other": "Cannot deactivate: {{count}} users have the role {{name}}. Remove it from them first."
   }
 }

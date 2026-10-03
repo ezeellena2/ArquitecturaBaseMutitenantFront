@@ -24,8 +24,8 @@
   "deactivate": "Inactivar",
   "edit": "Editar",
   "viewPermissions": "Ver permisos",
-  "confirmDeactivate": "¿Inactivar {{name}}?",
-  "confirmDeactivateDescription": "El rol dejará de estar disponible para asignar.",
+  "confirmDeactivate": "¿Inactivar el rol {{name}}?",
+  "confirmDeactivateDescription": "Deja de aparecer para asignar. Nadie lo tiene, así que no le cambia nada a ningún usuario.",
   "rowActions": "Acciones para {{name}}",
   "noDescription": "Sin descripción",
   "empty": "No hay roles que coincidan",
@@ -69,7 +69,9 @@
     "company": "Empresa",
     "description": "Descripción"
   },
-  "company": { "choose": "Elegí una empresa" },
+  "company": {
+    "choose": "Elegí una empresa"
+  },
   "validation": {
     "nameRequired": "Escribí el nombre del rol.",
     "scopeRequired": "Elegí dónde vale el rol.",
@@ -81,6 +83,7 @@
   "leaveWithoutSaving": "Salir sin guardar",
   "continueEditing": "Seguir editando",
   "errors": {
-    "hasUsers": "No se puede inactivar {{name}} porque {{count}} personas tienen este rol."
+    "hasUsers_one": "No se puede inactivar: {{count}} usuario tiene el rol {{name}}. Quitáselo primero.",
+    "hasUsers_other": "No se puede inactivar: {{count}} usuarios tienen el rol {{name}}. Quitáselo primero."
   }
 }

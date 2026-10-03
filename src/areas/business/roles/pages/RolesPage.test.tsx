@@ -120,6 +120,26 @@ describe("RolesPage", () => {
     expect(within(system).getAllByRole("menuitem").map((item) => item.textContent)).toEqual(["Ver permisos"]);
   });
 
+  it("tablero Roles: «No se puede inactivar: 1 usuario tiene el rol …» y «¿Inactivar el rol …?»", async () => {
+    const user = userEvent.setup();
+    const inUse = { ...companyReader, id: "role-in-use", name: "Auditor", userCount: 1 };
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json(companies)),
+      http.get("/api/roles/paged", () => HttpResponse.json({ items: [inUse, companyReader], page: 1, pageSize: 10, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+    );
+    renderRouteWithProviders("/org/roles", { as: "business-e6-admin" });
+    const open = async (name: string) => { const trigger = await screen.findByRole("button", { name }); trigger.focus(); await user.keyboard("{Enter}"); };
+
+    await open("Acciones para Auditor");
+    await user.click(await screen.findByRole("menuitem", { name: "Inactivar" }));
+    expect(await screen.findByText("No se puede inactivar: 1 usuario tiene el rol Auditor. Quitáselo primero.")).toBeVisible();
+
+    await open("Acciones para Solo lectura");
+    await user.click(await screen.findByRole("menuitem", { name: "Inactivar" }));
+    const confirm = await screen.findByRole("dialog", { name: "¿Inactivar el rol Solo lectura?" });
+    expect(confirm).toHaveTextContent("Deja de aparecer para asignar. Nadie lo tiene, así que no le cambia nada a ningún usuario.");
+  });
+
   it("no consulta roles ni muestra la administración sin roles.read", async () => {
     let roleRequests = 0;
     server.use(http.get("/api/roles/paged", () => { roleRequests++; return HttpResponse.json({ items: [] }); }));
