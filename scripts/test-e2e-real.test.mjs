@@ -882,25 +882,13 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             new URL(response.url()).pathname === "/api/organization/public-page/publish" && response.request().method() === "POST");
           const pageAfterPublication = adminPage.waitForResponse((response) =>
             new URL(response.url()).pathname === "/api/organization/public-page" && response.request().method() === "GET");
-          const publishButton = adminPage.getByRole("button", { name: "Publicar", exact: true });
-          await publishButton.waitFor({ timeout: 10_000 });
-          assert.ok(await publishButton.isEnabled(),
-            `El borrador debe habilitar Publicar tras refrescar: versión=${refreshedPage.version}, guardadoHabilitado=${await adminPage.getByRole("button", { name: "Guardar cambios", exact: true }).isEnabled()}.`);
-          const publishHitTest = await publishButton.evaluate((button) => {
-            const rect = button.getBoundingClientRect();
-            const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
-            return {
-              buttonDisabled: (button instanceof HTMLButtonElement && button.disabled) || button.getAttribute("aria-disabled") === "true",
-              hitIsButton: hit === button || button.contains(hit),
-              hitTag: hit?.tagName ?? null,
-              hitClass: typeof hit?.className === "string" ? hit.className.slice(0, 80) : "",
-              hitPointerEvents: hit ? getComputedStyle(hit).pointerEvents : null,
-            };
-          });
-          try { await publishButton.click({ timeout: 5_000 }); }
-          catch (error) {
-            throw new Error(`El botón Publicar no recibió el click: ${JSON.stringify(publishHitTest)} (${error?.name ?? "Error"}).`);
-          }
+          // Tablero Pagina-Org: se publica con el interruptor de «Publicación», que se aplica al momento.
+          const publishSwitch = adminPage.getByRole("switch", { name: "Visible en empresa-e2e-etapa6.plataforma.com", exact: true });
+          await publishSwitch.waitFor({ timeout: 10_000 });
+          assert.ok(await publishSwitch.isEnabled(),
+            `El borrador debe habilitar el interruptor de Publicación tras refrescar: versión=${refreshedPage.version}.`);
+          assert.equal(await publishSwitch.isChecked(), false, "El borrador empieza con la publicación apagada.");
+          await publishSwitch.click({ timeout: 5_000 });
           const publicationResponse = await pagePublished;
           const publicationError = publicationResponse.status() === 204 ? "" : ` (${(await publicationResponse.json()).code ?? "sin código"})`;
           assert.equal(publicationResponse.status(), 204, `La Página pública debe publicarse con su versión actual${publicationError}.`);
