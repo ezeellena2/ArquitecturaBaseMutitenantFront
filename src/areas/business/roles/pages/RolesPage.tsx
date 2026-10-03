@@ -31,7 +31,8 @@ import {
 } from "../api/roles";
 import { createRoleColumns, displayRoleName } from "../columns";
 
-const roleFilterKeys = ["scope"] as const;
+// «Vale en» (tablero Roles): toda la organización o una empresa por nombre, en un solo filtro.
+const roleFilterKeys = ["vale"] as const;
 const roleCountScopes = [undefined, "Organization", "Company"] as const;
 
 export function RolesPage() {
@@ -44,14 +45,14 @@ export function RolesPage() {
   const filters = useFilters(roleFilterKeys);
   const pagination = usePagination(undefined, { defaultSort: "name" });
   const debouncedSearch = useDebouncedValue(pagination.search ?? "");
-  const scopeValue = filters.values.scope;
-  const scope = scopeValue === "Organization" || scopeValue === "Company" ? scopeValue : undefined;
+  const vale = filters.values.vale;
   const query: RolesQuery = {
     page: pagination.page,
     pageSize: pagination.pageSize,
     sort: pagination.sort,
     search: debouncedSearch || undefined,
-    scope,
+    scope: vale === "Organization" ? "Organization" : undefined,
+    companyId: vale && vale !== "Organization" ? vale : undefined,
   };
   const roles = useQuery({
     queryKey: rolesQueryKey(query),
@@ -60,13 +61,19 @@ export function RolesPage() {
     placeholderData: keepPreviousData,
     meta: { silent: true },
   });
-  const specificCompanyRoles = roles.data?.items.some((role) => role.scope === "SpecificCompany") === true;
   const companies = useQuery({
     queryKey: ["role-company-options"],
     queryFn: fetchCompanyOptions,
-    enabled: canRead && specificCompanyRoles && currentUser?.permissions?.includes("companies.read") === true,
+    enabled: canRead && currentUser?.permissions?.includes("companies.read") === true,
     meta: { silent: true },
   });
+  const activeCompanies = (companies.data?.items ?? []).filter((company) => company.status === "Active");
+  const companyCounts = useQueries({ queries: activeCompanies.map((company) => ({
+    queryKey: [...rolesQueryKeyRoot, "company-count", company.id, debouncedSearch ?? ""],
+    queryFn: () => fetchRoles({ page: 1, pageSize: 10, search: debouncedSearch || undefined, companyId: company.id }),
+    enabled: canRead,
+    meta: { silent: true },
+  })) });
   const scopeCounts = useQueries({ queries: roleCountScopes.map((countScope) => ({
     queryKey: [...rolesQueryKeyRoot, "scope-count", countScope ?? "all", debouncedSearch ?? ""],
     queryFn: () => fetchRoles({ page: 1, pageSize: 10, search: debouncedSearch || undefined, scope: countScope }),
@@ -96,7 +103,7 @@ export function RolesPage() {
       cell: (role) => <RowActions
         label={t("roles:rowActions", { name: displayRoleName(role, t) })}
         actions={[
-          { label: t("roles:viewPermissions"), accessibleName: t("roles:viewPermissions"), icon: Eye, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); } },
+          { label: t("roles:viewPermissions"), accessibleName: t("roles:viewPermissions"), icon: Eye, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); }, hidden: !role.isSystemRole && canManage },
           { label: t("roles:edit"), accessibleName: t("roles:edit"), icon: Pencil, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); }, hidden: role.isSystemRole || !canManage },
           { label: t("roles:deactivate"), accessibleName: t("roles:deactivate"), icon: Trash2, onSelect: () => {
             if (role.userCount > 0) {
@@ -114,7 +121,8 @@ export function RolesPage() {
     ? t("roles:listSummary", { total: scopeCounts[0].data?.totalCount ?? roles.data.totalCount, count: scopeCounts[0].data?.totalCount ?? roles.data.totalCount,
       organization: scopeCounts[1].data?.totalCount ?? 0, company: scopeCounts[2].data?.totalCount ?? 0 })
     : t("roles:listSummaryFallback", { count: roles.data.totalCount }) : undefined;
-  const filterValue = scope ?? "all";
+  // Sin filtro el botón dice «Vale en: todos» y el menú ofrece «Todos», como el tablero.
+  const filterValue = vale ?? "";
   const countFor = (index: number) => scopeCounts[index].data?.totalCount;
 
   return <>
@@ -131,16 +139,16 @@ export function RolesPage() {
           searchValue={pagination.search ?? ""}
           onSearchChange={pagination.setSearch}
           filters={[{
-            key: "scope",
+            key: "vale",
             label: t("roles:filters.scope"),
             menuLabel: t("roles:filters.scopeMenu"),
             value: filterValue,
-            active: scope !== undefined,
-            onChange: (value) => filters.setFilter("scope", value === "all" ? undefined : value),
+            active: vale !== undefined,
+            onChange: (value) => filters.setFilter("vale", value === "all" ? undefined : value),
             options: [
-              { value: "all", label: t("roles:filters.scope"), count: countFor(0) },
+              { value: "all", label: t("roles:filters.allScopes"), count: countFor(0) },
               { value: "Organization", label: t("roles:scope.organization"), count: countFor(1) },
-              { value: "Company", label: t("roles:scope.company"), count: countFor(2) },
+              ...activeCompanies.map((company, index) => ({ value: company.id, label: company.name, count: companyCounts[index]?.data?.totalCount })),
             ],
           }]}
           clearLabel={t("common:actions.clear")}

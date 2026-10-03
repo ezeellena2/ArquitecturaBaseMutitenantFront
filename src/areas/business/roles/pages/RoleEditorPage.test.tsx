@@ -32,6 +32,11 @@ const permissionGroups = [
   ] },
 ];
 
+const companies = { items: [
+  { id: "company-1", name: "Delta S.A.", taxId: null, timeZoneId: "America/Argentina/Buenos_Aires", status: "Active", memberCount: 1, version: 1, createdAtUtc: "2026-09-27T12:00:00Z" },
+  { id: "company-2", name: "Delta Sur S.R.L.", taxId: null, timeZoneId: "America/Argentina/Buenos_Aires", status: "Active", memberCount: 1, version: 1, createdAtUtc: "2026-09-27T12:00:00Z" },
+], page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false };
+
 beforeEach(async () => {
   await configureI18n(referenceDataFixture().cultures);
   await changeCulture("es-AR");
@@ -68,12 +73,12 @@ describe("RoleEditorPage", () => {
     expect(await screen.findByRole("heading", { name: "Operaciones" })).toBeVisible();
   }, 10_000);
 
-  it("crea un rol específico usando la empresa elegida desde su catálogo", async () => {
+  it("«Vale en» ofrece toda la organización o cada empresa por nombre, y crea el rol de la empresa elegida", async () => {
     const user = userEvent.setup();
     let createBody: unknown;
-    const created: RoleResponse = { ...role, id: "role-company", name: "Administración Delta", scope: "SpecificCompany", companyId: "company-1", permissions: ["company.members.read"] };
+    const created: RoleResponse = { ...role, id: "role-company", name: "Administración Delta", scope: "SpecificCompany", companyId: "company-2", permissions: ["company.members.read"] };
     server.use(
-      http.get("/api/companies/paged", () => HttpResponse.json({ items: [{ id: "company-1", name: "Delta S.A.", taxId: null, timeZoneId: "America/Argentina/Buenos_Aires", status: "Active", memberCount: 1, version: 1, createdAtUtc: "2026-09-27T12:00:00Z" }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/paged", () => HttpResponse.json(companies)),
       http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
       http.post("/api/roles", async ({ request }) => {
         createBody = await request.json();
@@ -84,14 +89,35 @@ describe("RoleEditorPage", () => {
 
     renderRouteWithProviders("/org/roles/new?scope=SpecificCompany&companyId=company-1", { as: "business-e6-admin" });
     await user.type(await screen.findByRole("textbox", { name: "Nombre" }), "Administración Delta");
-    expect(screen.getByRole("combobox", { name: "Vale en" })).toHaveTextContent("Una empresa específica");
-    expect(await screen.findByText("Delta S.A.")).toBeVisible();
+    // Desde una empresa llega elegida; sin un campo «Empresa» aparte.
+    const valeEn = screen.getByRole("combobox", { name: "Vale en" });
+    await waitFor(() => expect(valeEn).toHaveTextContent("Delta S.A."));
+    expect(screen.queryByRole("combobox", { name: "Empresa" })).not.toBeInTheDocument();
+    valeEn.focus();
+    await user.keyboard("{Enter}");
+    expect((await screen.findAllByRole("option")).map((option) => option.textContent))
+      .toEqual(["Toda la organizaciónPermisos sobre usuarios, roles, empresas y configuración.", "Delta S.A.", "Delta Sur S.R.L."]);
+    await user.click(screen.getByRole("option", { name: "Delta Sur S.R.L." }));
     await user.click(await screen.findByRole("button", { name: "Abrir o cerrar Miembros de empresa" }));
     await user.click(await screen.findByRole("checkbox", { name: "Ver miembros" }));
     await user.click(screen.getAllByRole("button", { name: "Crear rol" })[0]);
 
-    await waitFor(() => expect(createBody).toMatchObject({ name: "Administración Delta", scope: "SpecificCompany", companyId: "company-1", permissions: ["company.members.read"] }));
+    await waitFor(() => expect(createBody).toMatchObject({ name: "Administración Delta", scope: "SpecificCompany", companyId: "company-2", permissions: ["company.members.read"] }));
   }, 10_000);
+
+  it("un rol de una empresa dice «Vale en» con el nombre de la empresa", async () => {
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json(companies)),
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.get("/api/roles/role-company", () => HttpResponse.json({ ...role, id: "role-company", scope: "SpecificCompany", companyId: "company-1", userCount: 4, permissions: ["company.members.read"] })),
+    );
+    renderRouteWithProviders("/org/roles/role-company", { as: "business-e6-admin" });
+
+    const heading = await screen.findByRole("heading", { level: 1, name: "Solo lectura" });
+    await waitFor(() => expect(heading.parentElement).toHaveTextContent("Vale en Delta S.A. · 4 usuarios lo tienen"));
+    expect(screen.queryByText("Una empresa específica")).not.toBeInTheDocument();
+    expect(screen.queryByText("Empresa")).not.toBeInTheDocument();
+  });
 
   it("manda la versión y conserva el borrador ante un 409 hasta que la persona vea lo nuevo", async () => {
     const user = userEvent.setup();

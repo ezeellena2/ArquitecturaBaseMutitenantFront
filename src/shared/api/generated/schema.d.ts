@@ -4596,6 +4596,7 @@ export interface paths {
                     Sort?: string;
                     Search?: string;
                     Scope?: components["schemas"]["RoleScopeFilter"];
+                    CompanyId?: string;
                 };
                 header?: never;
                 path?: never;

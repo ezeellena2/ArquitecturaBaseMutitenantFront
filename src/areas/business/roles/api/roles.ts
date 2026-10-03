@@ -10,7 +10,7 @@ import type {
   UpdateRoleRequest,
 } from "@/shared/api/types";
 
-export type RolesQuery = PagedRequest & { scope?: RoleScopeFilter };
+export type RolesQuery = PagedRequest & { scope?: RoleScopeFilter; companyId?: string };
 
 export const rolesQueryKeyRoot = ["roles"] as const;
 export const rolesQueryKey = (query: RolesQuery) => [...rolesQueryKeyRoot, query] as const;

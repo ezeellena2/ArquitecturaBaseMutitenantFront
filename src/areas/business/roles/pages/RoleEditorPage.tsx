@@ -94,9 +94,15 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const companies = useQuery({
     queryKey: ["role-company-options"],
     queryFn: fetchCompanyOptions,
-    enabled: currentUser?.permissions?.includes("companies.read") === true && draft.scope === "SpecificCompany",
+    enabled: currentUser?.permissions?.includes("companies.read") === true && (mode === "create" || draft.scope === "SpecificCompany"),
     meta: { silent: true },
   });
+  const companyName = draft.companyId ? companies.data?.items.find((company) => company.id === draft.companyId)?.name : undefined;
+  // «Vale en» (tablero Rol): toda la organización o una empresa por nombre. «Cada empresa» queda para la API.
+  const valeEn = draft.scope === "Organization" ? "Organization"
+    : draft.scope === "SpecificCompany" && draft.companyId ? `company:${draft.companyId}`
+      : draft.scope === "AnyCompany" ? "AnyCompany" : "";
+  const valeEnText = (scope: RoleScope) => scope === "SpecificCompany" ? companyName ?? t("roles:scope.specificCompany") : t(scopeTranslationKey(scope));
   const isSystemRole = role.data?.isSystemRole === true;
   const editable = canManage && mode === "create" || canManage && mode === "edit" && !isSystemRole;
   const isDirty = editable && !sameDraft(draft, original);
@@ -208,7 +214,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
       icon={ShieldCheck}
       title={title}
       backTo={{ to: "/org/roles", label: t("roles:backToList") }}
-      summary={mode === "edit" && role.data ? t("roles:scopeAndUsers", { scope: t(scopeTranslationKey(role.data.scope)), count: role.data.userCount }) : undefined}
+      summary={mode === "edit" && role.data ? t("roles:scopeAndUsers", { scope: valeEnText(role.data.scope), count: role.data.userCount }) : undefined}
       status={isSystemRole ? t("roles:system") : undefined}
       actions={editable ? <div className="hidden items-center gap-2 md:flex">
         <Button type="button" variant="outline" onClick={() => { if (isDirty) setLeaveConfirmationOpen(true); else { guard.allowNextNavigation(); void navigate("/org/roles"); } }}>{t("roles:cancel")}</Button>
@@ -222,37 +228,34 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
         <section className="overflow-hidden rounded-[12px] border border-[var(--borde)] bg-[var(--lado-activo)]">
           <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2>{t("roles:dataTitle")}</h2></header>
           <div className="flex flex-col gap-3.5 p-4 lg:gap-3.5 lg:p-5">
-            <div className="flex flex-col gap-3.5 lg:flex-row lg:items-start lg:gap-5">
-              <div className="w-full lg:max-w-[360px]">
+            <div className="grid gap-3.5 lg:grid-cols-2 lg:gap-x-5">
+              <div className="w-full">
                 {editable ? <FormField label={t("roles:fields.name")} required error={validation.name}>
                   <Input value={draft.name} maxLength={60} autoComplete="off" onChange={(event) => changeDraft({ name: event.target.value })} />
                 </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.name")}</span><p className="min-h-9 text-[13px] text-[var(--t1)]">{role.data && isSystemRole ? displayRoleName(role.data, t) : draft.name}</p></div>}
               </div>
-              <div className="w-full lg:max-w-[260px]">
-                {mode === "create" ? <FormField label={t("roles:fields.scope")} required error={validation.scope}>
-                  <Select value={draft.scope ?? ""} onValueChange={(value) => changeDraft({ scope: value as RoleScope, companyId: "", permissions: [] })}>
+              <div className="w-full">
+                {mode === "create" ? <FormField label={t("roles:fields.scope")} required error={validation.scope ?? validation.companyId}>
+                  <Select value={valeEn} onValueChange={(value) => {
+                    const companyId = value.startsWith("company:") ? value.slice("company:".length) : "";
+                    const scope: RoleScope = companyId ? "SpecificCompany" : value as RoleScope;
+                    // Entre empresas los permisos son los mismos; al pasar a o desde la organización se eligen de nuevo.
+                    changeDraft({ scope, companyId, permissions: scope === draft.scope ? draft.permissions : [] });
+                  }}>
                     <SelectTrigger className="w-full" aria-label={t("roles:fields.scope")}><SelectValue placeholder={t("roles:scope.choose")} /></SelectTrigger>
                     <SelectContent position="popper">
                       <SelectItem value="Organization" description={t("roles:scope.organizationDescription")}>{t("roles:scope.organization")}</SelectItem>
-                      <SelectItem value="AnyCompany" description={t("roles:scope.companyDescription")}>{t("roles:scope.company")}</SelectItem>
-                      <SelectItem value="SpecificCompany" description={t("roles:scope.specificCompanyDescription")}>{t("roles:scope.specificCompany")}</SelectItem>
+                      {draft.scope === "AnyCompany" ? <SelectItem value="AnyCompany" description={t("roles:scope.companyDescription")}>{t("roles:scope.company")}</SelectItem> : null}
+                      {(companies.data?.items ?? []).filter((company: CompanyResponse) => company.status === "Active").map((company) => <SelectItem key={company.id} value={`company:${company.id}`}>{company.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
-                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.scope")}</span><p className="min-h-9 text-[13px] text-[var(--t1)]">{role.data ? t(scopeTranslationKey(role.data.scope)) : ""}</p></div>}
+                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.scope")}</span><p className="min-h-9 text-[13px] text-[var(--t1)]">{role.data ? valeEnText(role.data.scope) : ""}</p></div>}
               </div>
-              {draft.scope === "SpecificCompany" && mode === "create" ? <div className="w-full lg:max-w-[320px]">
-                <FormField label={t("roles:fields.company")} required error={validation.companyId}>
-                  <Select value={draft.companyId} onValueChange={(companyId) => changeDraft({ companyId })} disabled={!currentUser?.permissions?.includes("companies.read") || companies.isPending || companies.isError}>
-                    <SelectTrigger className="w-full" aria-label={t("roles:fields.company")}><SelectValue placeholder={t("roles:company.choose")} /></SelectTrigger>
-                    <SelectContent position="popper">{(companies.data?.items ?? []).filter((company: CompanyResponse) => company.status === "Active").map((company) => <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>)}</SelectContent>
-                  </Select>
-                </FormField>
-              </div> : mode === "edit" && draft.scope === "SpecificCompany" ? <div className="w-full lg:max-w-[320px]"><div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.company")}</span><p className="min-h-9 text-[13px] text-[var(--t1)]">{companies.data?.items.find((company) => company.id === draft.companyId)?.name ?? draft.companyId}</p></div></div> : null}
-            </div>
-            <div className="w-full lg:max-w-[720px]">
+              <div className="w-full">
               {editable ? <FormField label={t("roles:fields.description")}>
                 <Textarea value={draft.description} maxLength={500} className="min-h-[88px] resize-y" onChange={(event) => changeDraft({ description: event.target.value })} />
               </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.description")}</span><p className="min-h-9 whitespace-pre-wrap text-[13px] text-[var(--t1)]">{role.data && isSystemRole ? displayRoleDescription(role.data, t) ?? t("roles:noDescription") : draft.description || t("roles:noDescription")}</p></div>}
+            </div>
             </div>
           </div>
         </section>
