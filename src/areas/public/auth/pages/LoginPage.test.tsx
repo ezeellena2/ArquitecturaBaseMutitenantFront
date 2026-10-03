@@ -132,10 +132,12 @@ describe("LoginPage", () => {
       const { container } = show("business", `/login/empresa?returnUrl=${encodeURIComponent(authorizeUrl)}`);
       const main = screen.getByRole("main");
       expect(within(main).getByRole("heading", { name: "Ingresá como empresa" })).toBeVisible();
-      expect(within(main).queryByText("¿Tu empresa no está registrada?")).not.toBeInTheDocument();
-      expect(within(main).queryByText("Registrala")).not.toBeInTheDocument();
+      expect(within(main).getByText("¿Tu empresa no está registrada?")).toBeVisible();
+      const registerLink = within(main).getByRole("link", { name: "Registrala" });
+      expect(registerLink).toHaveAttribute("href", "/registro/empresa");
       const personalLink = within(main).getByRole("link", { name: "Ingresá acá" });
       expect(personalLink).toHaveAttribute("href", "/login");
+      expect(registerLink.compareDocumentPosition(personalLink) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       expect(personalLink.parentElement?.parentElement).toHaveClass("text-center");
       expect(await axe(container)).toHaveNoViolations();
     } finally {
@@ -246,9 +248,9 @@ describe("LoginPage", () => {
   });
 
   it.each([
-    ["Tenancy.Access.NotMember", {}, "Tu cuenta no está en ninguna empresa todavía"],
-    ["Tenancy.Member.Inactive", { organizationName: "Grupo Delta" }, "Tu acceso a Grupo Delta está deshabilitado"],
-  ])("muestra el estado empresarial %s después del código", async (code, metadata, title) => {
+    ["Tenancy.Access.NotMember", {}, "Tu cuenta no está en ninguna empresa todavía", ["Registrá tu empresa", "Ingresá como persona"]],
+    ["Tenancy.Member.Inactive", { organizationName: "Grupo Delta" }, "Tu acceso a Grupo Delta está deshabilitado", ["Ingresá como persona", "Registrá tu empresa"]],
+  ])("muestra el estado empresarial %s después del código", async (code, metadata, title, links) => {
     server.use(
       http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 })),
       http.post("/api/auth/login-code/verify", () => HttpResponse.json({ code, ...metadata }, { status: 403 })),
@@ -263,7 +265,12 @@ describe("LoginPage", () => {
     expect(await screen.findByRole("heading", { name: title })).toBeVisible();
     const icon = screen.getByRole("main").querySelector("svg");
     expect(icon?.getAttribute("class")).toContain(code === "Tenancy.Access.NotMember" ? "lucide-building" : "lucide-ban");
-    expect(screen.queryByText("Registrá tu empresa")).not.toBeInTheDocument();
+    // Como el tablero Ingreso: la acción principal primero, rellena; la otra, con borde.
+    const actions = within(screen.getByRole("main")).getAllByRole("link").filter((link) => link.textContent !== "ArquitecturaBase");
+    expect(actions.map((link) => link.textContent)).toEqual(links);
+    expect(actions[0]).toHaveClass("bg-[var(--marca)]");
+    expect(actions[1]).not.toHaveClass("bg-[var(--marca)]");
+    expect(screen.getByRole("link", { name: "Registrá tu empresa" })).toHaveAttribute("href", "/registro/empresa");
     expect(screen.getByRole("link", { name: "Ingresá como persona" })).toHaveAttribute("href", "/login");
   });
 

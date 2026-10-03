@@ -174,12 +174,18 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     {pending ? <PendingDeletionPanel pending={pending} onCancel={() => { void cancelDeletion(); }} busy={cancel.isPending} failure={cancelFailure} /> : result === "noBusiness" ? <div className="flex flex-col gap-[22px] text-center">
       <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><Building2 size={20} strokeWidth={1.75} /></span>
       <h1 className="text-2xl font-bold leading-tight">{t("login.noBusiness")}</h1>
-      <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--t3)] text-sm font-semibold">{t("login.enterAsPerson")}</Link>
+      <div className="flex flex-col gap-2.5">
+        <Link to="/registro/empresa" className="inline-flex h-10 items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("login.registerBusiness")}</Link>
+        <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--t3)] text-sm font-semibold">{t("login.enterAsPerson")}</Link>
+      </div>
     </div> : result === "inactive" ? <div className="flex flex-col gap-[22px] text-center">
       <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><Ban size={20} strokeWidth={1.75} /></span>
       <h1 className="text-2xl font-bold leading-tight">{t("login.inactiveBusiness", { organizationName })}</h1>
       <p className="text-sm text-[var(--t2)]">{t("login.askOwner")}</p>
-      <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("login.enterAsPerson")}</Link>
+      <div className="flex flex-col gap-2.5">
+        <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("login.enterAsPerson")}</Link>
+        <Link to="/registro/empresa" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--t3)] text-sm font-semibold">{t("login.registerBusiness")}</Link>
+      </div>
     </div> : unavailable ? <div className="flex flex-col gap-[22px] text-center">
       <span aria-hidden="true" className={`flex size-[52px] items-center justify-center self-center rounded-full ${unavailable.tone}`}><unavailable.Icon size={20} strokeWidth={1.75} /></span>
       <div>
@@ -198,6 +204,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
           <div>{t("login.noAccount")} <Link to="/registro" className="font-semibold text-[var(--marca)] hover:underline">{t("login.createOne")}</Link></div>
           <div>{t("login.haveBusiness")} <Link to="/login/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("login.enterAsBusiness")}</Link></div>
         </> : <>
+          <div>{t("login.businessNotRegistered")} <Link to="/registro/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("login.registerIt")}</Link></div>
           <div>{t("login.enterAsPersonQuestion")} <Link to="/login" className="font-semibold text-[var(--marca)] hover:underline">{t("login.enterHere")}</Link></div>
         </>}
       </div>

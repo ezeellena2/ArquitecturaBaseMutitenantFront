@@ -44,7 +44,11 @@ describe("SignupPage", () => {
       expect(screen.getByRole("button", { name: "Crear cuenta" })).toBeDisabled();
       expect(screen.getByRole("textbox", { name: "Correo electrónico" })).toBeVisible();
       expect(screen.queryByRole("textbox", { name: /Nombre/ })).not.toBeInTheDocument();
-      expect(screen.queryByText("Registrala")).not.toBeInTheDocument();
+      const login = screen.getByRole("link", { name: "Ingresá" });
+      const registerBusiness = screen.getByRole("link", { name: "Registrala" });
+      expect(registerBusiness).toHaveAttribute("href", "/registro/empresa");
+      expect(registerBusiness.parentElement).toHaveTextContent("¿Tenés una empresa? Registrala");
+      expect(login.compareDocumentPosition(registerBusiness) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       const acceptance = screen.getByRole("checkbox", { name: /Acepto los Términos/ }).closest("label")!;
       expect(within(acceptance).getByRole("link", { name: "Términos" })).toHaveAttribute("href", "/terminos");
       expect(screen.getByRole("link", { name: "Política de privacidad" })).toHaveAttribute("href", "/privacidad");

@@ -125,6 +125,7 @@ export function SignupPage() {
       </form>
       <div className="flex flex-col gap-2 text-center text-[13px] text-[var(--t2)]">
         <div>{t("signup.haveAccount")} <Link to="/login" className="font-semibold text-[var(--marca)] hover:underline">{t("signup.login")}</Link></div>
+        <div>{t("login.haveBusiness")} <Link to="/registro/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("login.registerIt")}</Link></div>
       </div>
     </div> : <div className="flex flex-col gap-[22px]">
       <button type="button" onClick={() => { setStep(null); setCode(""); setError(null); }} className="inline-flex items-center gap-1 self-start text-[13px] font-semibold text-[var(--marca)] hover:underline"><ChevronLeft size={16} aria-hidden="true" />{t("login.otherEmail")}</button>

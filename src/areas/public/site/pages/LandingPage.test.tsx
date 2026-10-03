@@ -32,8 +32,16 @@ describe("LandingPage", () => {
     expect(within(main).getAllByRole("link", { name: "Crear mi cuenta" })[2]).toHaveClass("min-h-10");
     expect(within(main).getAllByRole("link", { name: "Crear mi cuenta" })[0]).toHaveClass("after:-inset-y-0.5");
     expect(within(main).getByRole("heading", { name: "Registrá tu empresa" })).toBeVisible();
-    expect(within(main).queryByRole("link", { name: "Registrá tu empresa" })).not.toBeInTheDocument();
-    expect(within(main).getAllByText("Registrá tu empresa")).toHaveLength(1);
+    // Como el tablero Landing: en la portada después de «Crear mi cuenta», en «Para empresas» antes de
+    // «Ingresá como empresa» y en el cierre primero.
+    const register = within(main).getAllByRole("link", { name: "Registrá tu empresa" });
+    const create = within(main).getAllByRole("link", { name: "Crear mi cuenta" });
+    expect(register).toHaveLength(3);
+    for (const link of register) expect(link).toHaveAttribute("href", "/registro/empresa");
+    const follows = (first: Element, second: Element) => Boolean(first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(follows(create[0], register[0])).toBe(true);
+    expect(follows(register[1], within(main).getByRole("link", { name: "Ingresá como empresa" }))).toBe(true);
+    expect(follows(register[2], create[2])).toBe(true);
     expect(await axe(container)).toHaveNoViolations();
   });
 
