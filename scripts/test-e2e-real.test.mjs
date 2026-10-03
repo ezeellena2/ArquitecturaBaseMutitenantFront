@@ -142,6 +142,14 @@ async function invitationCommand(readyFile, data) {
     catch (error) { if (error?.code !== "ENOENT" && !(error instanceof SyntaxError)) throw error; }
     await delay(250);
   }
+  try {
+    const { stdout, stderr } = await aspire(["logs", "e2e-setup", "--tail", "10", "--non-interactive"]);
+    const failure = `${stdout}${stderr}`.match(/E2E setup failed \(([A-Za-z]+Exception)(?: ([0-9A-Z]{5}), constraint ([A-Za-z0-9_]+|none))?\)/);
+    if (failure) throw new Error(`El preparador E2E falló (${failure[1]}).`);
+  } catch (error) {
+    if (error?.message?.startsWith("El preparador E2E falló")) throw error;
+    if (!error?.message?.startsWith("Falló Aspire (logs")) throw error;
+  }
   throw new Error("El preparador no completó la orden de invitación en la base E2E.");
 }
 
@@ -167,7 +175,7 @@ async function invitationFromPickup(email, before) {
   throw new Error("No llegó el .eml con el enlace real de invitación al pickup aislado.");
 }
 
-async function inviteFromUsersPage(page, email) {
+async function inviteFromUsersPage(page, email, companyName) {
   await page.goto(new URL("/org/usuarios", baseUrl).href);
   await page.getByRole("button", { name: "Invitar usuario", exact: true }).click();
   const before = new Set(await pickupFiles());
@@ -175,6 +183,15 @@ async function inviteFromUsersPage(page, email) {
   await page.getByRole("button", { name: "Roles de la organización", exact: true }).click();
   await page.getByRole("menuitemcheckbox", { name: "Dueño", exact: true }).click();
   await page.keyboard.press("Escape");
+  if (companyName) {
+    await page.getByRole("button", { name: "Sumar empresa", exact: true }).click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByRole("combobox").last().click();
+    await page.getByRole("option", { name: companyName, exact: true }).click();
+    await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click();
+    await page.getByRole("menuitemcheckbox", { name: "Administrador", exact: true }).click();
+    await page.keyboard.press("Escape");
+  }
   const responsePromise = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/users/invitations"
     && response.request().method() === "POST");
   await page.getByRole("button", { name: "Enviar invitación", exact: true }).click();
@@ -537,6 +554,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       await signOut(page, "Personal");
 
       // Cada recorrido usa una identidad/contexto propios; un fallo no saltea los otros.
+      const e2eCompanyName = "Sucursal E2E";
+      let e2eCompanyId;
       const accountCases = [
         ["4: administrar roles y bloquear la baja del único Dueño", async (rolesPage, setStage) => {
           setStage("ingresa como Dueño por la puerta de empresa");
@@ -683,6 +702,23 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await adminPage.getByRole("button", { name: "Verificar", exact: true }).click();
           await expectPath(adminPage, "/org", "ingreso del Dueño para invitar desde Usuarios");
 
+          setStage("crea una empresa desde el flujo real de Empresas");
+          await adminPage.goto(new URL("/org/empresas", baseUrl).href);
+          await adminPage.getByRole("heading", { name: "Empresas", exact: true }).waitFor();
+          await adminPage.getByRole("button", { name: "Crear empresa", exact: true }).click();
+          const companyDialog = adminPage.getByRole("dialog");
+          await companyDialog.getByRole("textbox", { name: "Nombre", exact: true }).fill(e2eCompanyName);
+          await companyDialog.getByRole("combobox", { name: "Zona horaria", exact: true }).click();
+          await adminPage.getByRole("option", { name: "Buenos Aires (GMT−3)", exact: true }).click();
+          const companyCreated = adminPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/companies"
+            && response.request().method() === "POST");
+          await companyDialog.getByRole("button", { name: "Crear empresa", exact: true }).click();
+          const companyResponse = await companyCreated;
+          assert.equal(companyResponse.status(), 201, "La pantalla real debe crear la empresa.");
+          e2eCompanyId = await companyResponse.json();
+          assert.match(e2eCompanyId, /^[0-9a-f-]{36}$/i);
+          await adminPage.getByRole("link", { name: e2eCompanyName, exact: true }).waitFor();
+
           for (const existingAccount of [false, true]) {
             const email = `e2e-ui-invitation-${randomUUID()}@example.test`;
             if (existingAccount) {
@@ -690,7 +726,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               await invitationCommand(readyFile, { kind: "prepare-recipient", email });
             }
             setStage(`emite desde Usuarios para persona ${existingAccount ? "con cuenta" : "sin cuenta"}`);
-            const { invitationId, link } = await inviteFromUsersPage(adminPage, email);
+            const { invitationId, link } = await inviteFromUsersPage(adminPage, email, e2eCompanyName);
             const browser = adminPage.context().browser();
             assert.ok(browser, "El recorrido requiere el navegador real de Playwright.");
             const recipientContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
@@ -724,11 +760,16 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
                 new URL(response.url()).pathname === "/api/invitations/accept" && response.request().method() === "POST");
               await recipientPage.getByRole("button", { name: "Aceptar invitación", exact: true }).click();
               assert.equal((await acceptedResponsePromise).status(), 200);
-              const inspection = await invitationCommand(readyFile, { kind: "inspect", email, invitationId });
+              const inspection = await invitationCommand(readyFile, { kind: "inspect", email, invitationId,
+                companyId: e2eCompanyId });
               assert.equal(inspection.personalSpaces, 0);
               assert.equal(inspection.activeBusinessAccesses, 1);
               assert.equal(inspection.accepted, true);
               assert.equal(inspection.boundToIdentity, true);
+              assert.equal(inspection.companyMembershipActive, true,
+                "La invitación debe vincular la membresía a la empresa elegida.");
+              assert.equal(inspection.companyAdminAssigned, true,
+                "La invitación debe conservar el rol de empresa elegido.");
               await recipientPage.getByRole("heading", { name: "Te sumaste a Empresa E2E", exact: true }).waitFor();
               await recipientPage.getByRole("button", { name: existingAccount ? "Entrar a la organización" : "Más tarde", exact: true }).click();
               await expectPath(recipientPage, "/org", "entrada luego de aceptar invitación desde Usuarios");
