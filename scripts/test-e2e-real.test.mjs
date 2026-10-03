@@ -177,7 +177,7 @@ async function invitationFromPickup(email, before) {
 
 async function inviteFromUsersPage(page, email, companyName) {
   await page.goto(new URL("/org/usuarios", baseUrl).href);
-  await page.getByRole("button", { name: "Invitar usuario", exact: true }).click();
+  await page.getByRole("button", { name: "Invitar", exact: true }).click();
   const before = new Set(await pickupFiles());
   await page.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
   await page.getByRole("button", { name: "Roles de la organización", exact: true }).click();
@@ -555,6 +555,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
 
       // Cada recorrido usa una identidad/contexto propios; un fallo no saltea los otros.
       const e2eCompanyName = "Sucursal E2E";
+      let e2eOrganizationName = "Empresa E2E";
       let e2eCompanyId;
       const accountCases = [
         ["4: administrar roles y bloquear la baja del único Dueño", async (rolesPage, setStage) => {
@@ -640,9 +641,18 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await rolesPage.goto(new URL("/org/roles/new", baseUrl).href);
           await rolesPage.getByRole("textbox", { name: "Nombre" }).fill(uiRoleName);
           await rolesPage.getByRole("textbox", { name: "Descripción" }).fill("Creado por el recorrido real del front.");
+          setStage("elige que el rol aplica a toda la organización");
           await rolesPage.getByRole("combobox", { name: "Vale en" }).click();
           await rolesPage.getByRole("option", { name: "Toda la organización" }).click();
-          await rolesPage.getByText("Ver roles", { exact: true }).click();
+          setStage("expande el grupo de permisos Roles");
+          await rolesPage.getByRole("button", { name: "Abrir o cerrar Roles", exact: true }).click();
+          setStage("selecciona el permiso Ver roles");
+          const readRolesPermission = rolesPage.getByRole("checkbox", { name: "Ver roles", exact: true });
+          await readRolesPermission.focus();
+          await readRolesPermission.press("Space");
+          assert.equal(await readRolesPermission.getAttribute("aria-checked"), "true",
+            "La casilla Ver roles debe responder a la barra espaciadora.");
+          setStage("envía el alta del segundo rol desde la pantalla");
           const uiCreate = rolesPage.waitForResponse((response) =>
             new URL(response.url()).pathname === "/api/roles" && response.request().method() === "POST");
           await rolesPage.getByRole("button", { name: "Crear rol", exact: true }).click();
@@ -777,6 +787,114 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               await recipientContext.close();
             }
           }
+          const updatedCompanyName = `${e2eCompanyName} actualizada`;
+          setStage("edita la empresa desde su ficha");
+          await adminPage.goto(new URL(`/org/empresas/${e2eCompanyId}`, baseUrl).href);
+          await adminPage.getByRole("heading", { name: e2eCompanyName, exact: true }).waitFor();
+          await adminPage.getByRole("button", { name: "Editar", exact: true }).click();
+          const companyEdit = adminPage.getByRole("dialog");
+          await companyEdit.getByRole("textbox", { name: "Nombre", exact: true }).fill(updatedCompanyName);
+          const companyUpdated = adminPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === `/api/companies/${e2eCompanyId}` && response.request().method() === "PUT");
+          await companyEdit.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+          assert.equal((await companyUpdated).status(), 204, "La ficha debe guardar la empresa con su versión.");
+          await adminPage.getByRole("heading", { name: updatedCompanyName, exact: true }).waitFor();
+          await adminPage.getByText("Administrador", { exact: true }).first().waitFor();
+
+          setStage("guarda el nombre de la organización desde Configuración");
+          await adminPage.goto(new URL("/org/configuracion", baseUrl).href);
+          const organizationName = adminPage.getByRole("textbox", { name: "Nombre de la organización", exact: true });
+          await organizationName.waitFor();
+          await organizationName.fill("Empresa E2E configurada");
+          const settingsUpdated = adminPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === "/api/organization/settings" && response.request().method() === "PUT");
+          await adminPage.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+          assert.equal((await settingsUpdated).status(), 204, "Configuración debe guardar con su versión.");
+          e2eOrganizationName = "Empresa E2E configurada";
+          assert.equal(
+            await adminPage.getByRole("textbox", { name: "Nombre de la organización", exact: true }).inputValue(),
+            "Empresa E2E configurada",
+            "Configuración debe mostrar el nombre que acaba de guardar.",
+          );
+
+          setStage("abre la Página pública para editarla");
+          await adminPage.goto(new URL("/org/pagina", baseUrl).href);
+          const publicSlug = adminPage.getByRole("textbox", { name: "Dirección de la página", exact: true });
+          const publicName = adminPage.getByRole("textbox", { name: "Nombre de la página", exact: true });
+          await publicSlug.waitFor({ timeout: 10_000 });
+          setStage("comprueba la disponibilidad del slug elegido");
+          const slugAvailability = adminPage.waitForResponse((response) => {
+            const url = new URL(response.url());
+            return url.pathname === "/api/public-site/slug-availability"
+              && url.searchParams.get("slug") === "empresa-e2e-etapa6";
+          });
+          await publicSlug.fill("empresa-e2e-etapa6");
+          await publicName.fill("Página pública E2E");
+          const slugResponse = await slugAvailability;
+          assert.equal(slugResponse.status(), 200, "El chequeo público debe responder la disponibilidad del slug.");
+          assert.equal((await slugResponse.json()).availability, "Available");
+          await adminPage.getByText("La dirección está disponible.", { exact: true }).waitFor({ timeout: 10_000 });
+          setStage("guarda el borrador de la Página pública");
+          const publicPageRefreshed = adminPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === "/api/organization/public-page" && response.request().method() === "GET");
+          const pageUpdated = adminPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === "/api/organization/public-page" && response.request().method() === "PUT");
+          await adminPage.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+          assert.equal((await pageUpdated).status(), 204, "La Página pública debe guardar los datos del borrador.");
+          const refreshedPageResponse = await publicPageRefreshed;
+          assert.equal(refreshedPageResponse.status(), 200);
+          const refreshedPage = await refreshedPageResponse.json();
+          assert.equal(refreshedPage.slug, "empresa-e2e-etapa6");
+          assert.ok(refreshedPage.version > 0, "El borrador guardado debe tener una versión nueva antes de publicarlo.");
+          assert.equal(refreshedPage.isPublished, false, "El borrador debe seguir sin publicar después de guardarlo.");
+          assert.equal(refreshedPage.publishBlockedAtUtc, null, "La página nueva no debe estar bloqueada por moderación.");
+          setStage("publica la página con la versión actualizada");
+          const pagePublished = adminPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === "/api/organization/public-page/publish" && response.request().method() === "POST");
+          const pageAfterPublication = adminPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === "/api/organization/public-page" && response.request().method() === "GET");
+          const publishButton = adminPage.getByRole("button", { name: "Publicar", exact: true });
+          await publishButton.waitFor({ timeout: 10_000 });
+          assert.ok(await publishButton.isEnabled(),
+            `El borrador debe habilitar Publicar tras refrescar: versión=${refreshedPage.version}, guardadoHabilitado=${await adminPage.getByRole("button", { name: "Guardar cambios", exact: true }).isEnabled()}.`);
+          const publishHitTest = await publishButton.evaluate((button) => {
+            const rect = button.getBoundingClientRect();
+            const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            return {
+              buttonDisabled: (button instanceof HTMLButtonElement && button.disabled) || button.getAttribute("aria-disabled") === "true",
+              hitIsButton: hit === button || button.contains(hit),
+              hitTag: hit?.tagName ?? null,
+              hitClass: typeof hit?.className === "string" ? hit.className.slice(0, 80) : "",
+              hitPointerEvents: hit ? getComputedStyle(hit).pointerEvents : null,
+            };
+          });
+          try { await publishButton.click({ timeout: 5_000 }); }
+          catch (error) {
+            throw new Error(`El botón Publicar no recibió el click: ${JSON.stringify(publishHitTest)} (${error?.name ?? "Error"}).`);
+          }
+          const publicationResponse = await pagePublished;
+          const publicationError = publicationResponse.status() === 204 ? "" : ` (${(await publicationResponse.json()).code ?? "sin código"})`;
+          assert.equal(publicationResponse.status(), 204, `La Página pública debe publicarse con su versión actual${publicationError}.`);
+          const publishedPageResponse = await pageAfterPublication;
+          assert.equal(publishedPageResponse.status(), 200, "La Página pública debe refrescarse después de publicar.");
+          const publishedPage = await publishedPageResponse.json();
+          assert.equal(publishedPage.isPublished, true, "La lectura posterior debe confirmar la publicación persistida.");
+          await adminPage.getByRole("link", { name: "Ver página", exact: true }).waitFor();
+
+          setStage("comprueba Auditoría y el nombre/empresa de la membresía invitada");
+          const authorization = accountTokens.get(adminPage);
+          assert.equal(typeof authorization, "string", "El Dueño debe tener un token Business real.");
+          const auditResponse = await adminPage.request.get(new URL("/api/organization/audit?period=all&limit=25", baseUrl).href,
+            { headers: { Authorization: authorization } });
+          assert.equal(auditResponse.status(), 200, "La organización debe consultar su auditoría real.");
+          const audit = await auditResponse.json();
+          assert.ok(audit.items.some((entry) => entry.affectedDisplayName === "Persona invitada E2E"
+            && entry.whereText === updatedCompanyName),
+          "La auditoría debe indicar el nombre afectado y la empresa donde se asignó el rol.");
+          await adminPage.goto(new URL("/org/auditoria", baseUrl).href);
+          await adminPage.getByRole("heading", { name: "Auditoría", exact: true }).waitFor();
+          await adminPage.getByText("Cambió los roles de Persona invitada E2E", { exact: true }).first().waitFor();
+          await adminPage.getByText(updatedCompanyName, { exact: true }).first().waitFor();
         }],
         ...[false, true].map((existingAccount) => [
           `3c: aceptar invitación ${existingAccount ? "con cuenta previa sin Personal" : "sin cuenta y sin Personal"} desde el .eml`,
@@ -789,7 +907,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             const link = await invitationFromPickup(email, before);
             setStage("abre /invitacion y ve la vista previa");
             await invitationPage.goto(link);
-            await invitationPage.getByRole("heading", { name: "Te sumás a Empresa E2E", exact: true }).waitFor({ timeout: 15_000 });
+            await invitationPage.getByRole("heading", { name: `Te sumás a ${e2eOrganizationName}`, exact: true }).waitFor({ timeout: 15_000 });
             await invitationPage.getByText(`La invitación es para ${email}.`, { exact: true }).waitFor();
             assert.equal(new URL(invitationPage.url()).hash, "", "El fragmento secreto debe retirarse antes de seguir.");
             if (existingAccount) {
@@ -820,18 +938,18 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             assert.equal(inspection.accepted, true);
             assert.equal(inspection.boundToIdentity, true);
             if (!existingAccount) {
-              await invitationPage.getByRole("heading", { name: "Te sumaste a Empresa E2E", exact: true }).waitFor();
+              await invitationPage.getByRole("heading", { name: `Te sumaste a ${e2eOrganizationName}`, exact: true }).waitFor();
               setStage("comprueba identidad vinculada sin espacio Personal antes de cambiar acceso");
               await invitationPage.getByRole("button", { name: "Más tarde", exact: true }).click();
             } else {
-              await invitationPage.getByRole("heading", { name: "Te sumaste a Empresa E2E", exact: true }).waitFor();
+              await invitationPage.getByRole("heading", { name: `Te sumaste a ${e2eOrganizationName}`, exact: true }).waitFor();
               await invitationPage.getByRole("button", { name: "Entrar a la organización", exact: true }).click();
             }
             setStage("entra a la organización con la membresía activa");
             await expectPath(invitationPage, "/org", "entrada luego de aceptar");
-            await expectProfile(invitationPage, "Empresa E2E", "entrada luego de aceptar");
+            await expectProfile(invitationPage, e2eOrganizationName, "entrada luego de aceptar");
             await invitationPage.reload();
-            await expectProfile(invitationPage, "Empresa E2E", "F5 luego de aceptar");
+            await expectProfile(invitationPage, e2eOrganizationName, "F5 luego de aceptar");
           },
         ]),
         ["3b seguridad: sesión abierta no suma correo ni Google y método nuevo no autoriza el anterior", async (accountPage, setStage) => {
@@ -911,9 +1029,13 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           setStage("lee y verifica el código del método original");
           await enterCode(accountPage, await codeFromPickup(originalEmail, before));
           setStage("confirma la baja del método agregado");
+          const refreshedMethods = accountPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === "/api/me/login-methods" && response.request().method() === "GET");
           await accountPage.getByRole("dialog").getByRole("button", { name: "Quitar", exact: true }).click();
           await accountPage.getByRole("dialog").waitFor({ state: "hidden" });
           setStage("comprueba que el método ya no aparezca en la cuenta");
+          const methodsResponse = await refreshedMethods;
+          assert.equal(methodsResponse.status(), 200, "La cuenta debe actualizar la lista después de retirar el método.");
           assert.equal(await accountPage.getByText(addedEmail, { exact: true }).count(), 0);
         }],
         ["3b: pedir baja y cancelarla ingresando durante la gracia", async (accountPage) => {
