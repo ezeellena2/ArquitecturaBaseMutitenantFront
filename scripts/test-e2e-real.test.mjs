@@ -239,6 +239,67 @@ async function registerPerson(page, email = `e2e-account-${randomUUID()}@example
   return email;
 }
 
+async function registerBusinessByEmail(page, readyFile, onStage = () => {}) {
+  const email = `e2e-business-signup-${randomUUID()}@example.test`;
+  const organizationName = `Organización E2E ${randomUUID().slice(0, 8)}`;
+  const slug = `e2e-${randomUUID().slice(0, 8)}`;
+  onStage("abre registro empresarial");
+  await page.goto(new URL("/registro/empresa", baseUrl).href);
+  await page.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+  await page.getByRole("textbox", { name: "Tu correo electrónico" }).fill(email);
+  const before = new Set(await pickupFiles());
+  let sentCode = false;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    onStage("solicita código para registro empresarial");
+    const sent = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/business-signup/code"
+      && response.request().method() === "POST");
+    await page.getByRole("button", { name: "Continuar", exact: true }).click({ timeout: 120_000 });
+    const response = await sent;
+    if (response.ok()) { sentCode = true; break; }
+    const problem = await response.json();
+    assert.equal(response.status(), 429);
+    assert.equal(typeof problem.retryAfter, "number");
+    onStage(`espera cooldown del registro empresarial (${problem.retryAfter}s)`);
+    await delay((problem.retryAfter + 1) * 1000);
+  }
+  assert.equal(sentCode, true, "El registro empresarial debe respetar el cooldown hasta que la API acepte el envío.");
+  await page.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+  onStage("lee el código empresarial del .eml");
+  await enterCode(page, await codeFromPickup(email, before));
+  onStage("verifica el correo empresarial");
+  const verified = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/business-signup/verify"
+    && response.request().method() === "POST");
+  await page.getByRole("button", { name: "Verificar", exact: true }).click();
+  assert.equal((await verified).status(), 204, "La verificación de identidad empresarial debe crear o vincular la cuenta.");
+
+  await page.getByRole("heading", { name: "Tu organización" }).waitFor();
+  await page.getByRole("textbox", { name: "Nombre de la organización" }).fill(organizationName);
+  await page.getByRole("textbox", { name: /Dirección de tu página/ }).fill(slug);
+  await page.getByRole("textbox", { name: "Primera empresa" }).fill(`${organizationName} Centro`);
+  await page.getByText("Disponible", { exact: true }).waitFor({ timeout: 10_000 });
+  onStage("crea organización y primera empresa");
+  const created = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/business-signup"
+    && response.request().method() === "POST");
+  await page.getByRole("button", { name: "Crear organización", exact: true }).click();
+  const response = await created;
+  assert.equal(response.status(), 200, "El registro debe crear la organización en la base aislada.");
+  const result = await response.json();
+  assert.equal(result.requiresApproval, false, "La base E2E debe permitir probar la organización activa.");
+  await page.getByRole("heading", { name: `${organizationName} está lista`, exact: true }).waitFor();
+
+  onStage("comprueba que el alta no creó Personal");
+  const accesses = await invitationCommand(readyFile, { kind: "inspect-accesses", email });
+  assert.equal(accesses.personalSpaces, 0, "El alta empresarial no debe crear un espacio Personal.");
+  assert.equal(accesses.activeBusinessAccesses, 1, "La persona debe recibir acceso a la organización creada.");
+
+  onStage("entra a la organización creada");
+  await page.getByRole("button", { name: `Entrar a ${organizationName}`, exact: true }).click();
+  await expectPath(page, "/org", "registro empresarial por correo");
+  await expectProfile(page, organizationName, "registro empresarial por correo");
+  await page.reload();
+  await expectProfile(page, organizationName, "F5 luego del registro empresarial");
+}
+
 async function openAccount(page, currentProfile = "Personal") {
   await page.getByRole("button", { name: new RegExp(`, ${currentProfile}$`) }).click();
   await page.getByRole("menuitem", { name: /^(Mi cuenta|My account)$/ }).click();
@@ -587,6 +648,9 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           assert.equal((await deletionResponse.json()).code, "Legal.AccountDeletion.LastAdmin");
           await deletionDialog.getByText("Antes de pedir la baja, cada Organización activa debe tener otra persona con el rol Dueño.",
             { exact: true }).waitFor();
+        }],
+        ["6: registrar empresa por correo sin crear Personal", async (businessSignupPage, setStage) => {
+          await registerBusinessByEmail(businessSignupPage, readyFile, setStage);
         }],
         ...[false, true].map((existingAccount) => [
           `3c: aceptar invitación ${existingAccount ? "con cuenta previa sin Personal" : "sin cuenta y sin Personal"} desde el .eml`,
