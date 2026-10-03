@@ -558,6 +558,35 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       let e2eOrganizationName = "Empresa E2E";
       let e2eCompanyId;
       const accountCases = [
+        ["5: ingresar como operador y consultar Plataforma", async (platformPage, setStage) => {
+          setStage("abre Plataforma sin sesión");
+          await platformPage.goto(new URL("/plataforma", baseUrl).href);
+          await platformPage.getByRole("textbox", { name: "Correo electrónico" }).fill("e2e-operator@example.test");
+          const loginBefore = new Set(await pickupFiles());
+          await sendLoginCode(platformPage);
+          await platformPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+          await enterCode(platformPage, await codeFromPickup("e2e-operator@example.test", loginBefore));
+          setStage("verifica el código real del operador");
+          await platformPage.getByRole("button", { name: "Verificar", exact: true }).click();
+          const terms = platformPage.getByRole("checkbox", { name: /Acepto los Términos/ });
+          if (await terms.isVisible()) {
+            await terms.check();
+            await platformPage.getByRole("button", { name: "Aceptar y continuar", exact: true }).click();
+          }
+          await expectPath(platformPage, "/plataforma", "ingreso del operador");
+          await platformPage.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+          setStage("consulta Organizaciones, Cuentas y Configuración reales");
+          const authorization = accountTokens.get(platformPage);
+          assert.equal(typeof authorization, "string", "El operador debe obtener su token real de Plataforma.");
+          for (const route of ["/api/platform/settings", "/api/platform/tenants/paged", "/api/platform/accounts/paged"]) {
+            const response = await platformPage.request.get(new URL(route, baseUrl).href, {
+              headers: { Authorization: authorization },
+            });
+            assert.equal(response.status(), 200, `La ruta E5 ${route} debe estar conectada a la API real.`);
+          }
+          await platformPage.reload();
+          await platformPage.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+        }],
         ["4: administrar roles y bloquear la baja del único Dueño", async (rolesPage, setStage) => {
           setStage("ingresa como Dueño por la puerta de empresa");
           await rolesPage.goto(new URL("/login/empresa", baseUrl).href);
