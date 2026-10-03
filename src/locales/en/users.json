@@ -50,18 +50,16 @@
   "invite": {
     "open": "Invite user",
     "title": "Invite user",
-    "description": "We will send an invitation link to the email address you enter.",
     "email": "Email",
     "emailPlaceholder": "name@company.com",
     "organizationRoles": "Organization roles",
-    "companyRoles": "Company roles",
-    "companyRolesHint": "You can assign roles in one or more companies.",
-    "chooseRoles": "Choose one or more roles",
+    "companyRoles": "Roles in the company",
     "company": "Company",
-    "chooseCompany": "Choose a company",
-    "addCompany": "Add company",
-    "send": "Send invitation",
-    "roleRequired": "Choose at least one organization or company role."
+    "send": "Invite",
+    "noRoles": "None",
+    "noCompany": "None",
+    "chooseCompanyFirst": "Choose a company first",
+    "chooseCompany": "Choose a company"
   },
   "actions": {
     "view": "View and edit",

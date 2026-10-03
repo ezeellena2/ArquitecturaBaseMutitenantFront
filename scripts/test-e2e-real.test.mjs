@@ -184,9 +184,9 @@ async function inviteFromUsersPage(page, email, companyName) {
   await page.getByRole("menuitemcheckbox", { name: "Dueño", exact: true }).click();
   await page.keyboard.press("Escape");
   if (companyName) {
-    await page.getByRole("button", { name: "Sumar empresa", exact: true }).click();
+    // Tablero Usuarios (Invitar): una sola Empresa con sus roles.
     const dialog = page.getByRole("dialog");
-    await dialog.getByRole("combobox").last().click();
+    await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click();
     await page.getByRole("option", { name: companyName, exact: true }).click();
     await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click();
     await page.getByRole("menuitemcheckbox", { name: "Administrador", exact: true }).click();
@@ -194,7 +194,7 @@ async function inviteFromUsersPage(page, email, companyName) {
   }
   const responsePromise = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/users/invitations"
     && response.request().method() === "POST");
-  await page.getByRole("button", { name: "Enviar invitación", exact: true }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Invitar", exact: true }).click();
   const response = await responsePromise;
   assert.equal(response.status(), 201, "Invitar desde Usuarios debe crear la invitación real.");
   const invitationId = await response.json();

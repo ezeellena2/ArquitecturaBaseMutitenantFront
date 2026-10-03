@@ -138,34 +138,55 @@ describe("UsersPage", () => {
     expect(await screen.findByText("Revocamos la invitación a sofia@example.com.")).toBeVisible();
   }, 15_000);
 
-  it("invita con correo y roles usando una clave idempotente", async () => {
-    let body: unknown;
-    let idempotencyKey: string | null = null;
+  it("tablero Usuarios, Invitar: una empresa con sus roles, todo opcional salvo el correo, e idempotente", async () => {
+    const bodies: unknown[] = [];
+    const keys: (string | null)[] = [];
+    const companyAdminRole = { id: "role-company-admin", name: "Administrador", isSystemRole: true, scope: "AnyCompany" as const, companyId: null, description: null, userCount: 1, permissions: [], version: 1, createdAtUtc: "2026-09-27T12:00:00Z" };
     server.use(
       http.get("/api/users/paged", () => HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
       http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 1, pendingDeletion: 0, invited: 0, expired: 0, inactive: 0 })),
-      http.get("/api/roles/paged", () => HttpResponse.json({ items: [{ ...ownerRole, description: null, userCount: 1, permissions: [], version: 1, createdAtUtc: "2026-09-27T12:00:00Z" }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
-      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/roles/paged", ({ request }) => HttpResponse.json({ items: new URL(request.url).searchParams.get("scope") === "Company" ? [companyAdminRole] : [{ ...ownerRole, description: null, userCount: 1, permissions: [], version: 1, createdAtUtc: "2026-09-27T12:00:00Z" }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [{ id: "company-1", name: "Delta S.A.", taxId: null, timeZoneId: "America/Argentina/Buenos_Aires", status: "Active", memberCount: 1, version: 1, createdAtUtc: "2026-09-27T12:00:00Z" }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
       http.post("/api/users/invitations", async ({ request }) => {
-        body = await request.json();
-        idempotencyKey = request.headers.get("Idempotency-Key");
-        return HttpResponse.json("invitation-1");
+        bodies.push(await request.json());
+        keys.push(request.headers.get("Idempotency-Key"));
+        return HttpResponse.json("invitation-1", { status: 201 });
       }),
     );
 
     const user = userEvent.setup();
     const { container } = renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Invitar usuario" }));
+    const dialog = await screen.findByRole("dialog", { name: "Invitar usuario" });
+    expect(dialog).not.toHaveTextContent("Enviamos un enlace");
+    expect(within(dialog).queryByRole("button", { name: /Sumar empresa/ })).not.toBeInTheDocument();
+    expect(within(dialog).getByRole("button", { name: "Roles en la empresa" })).toBeDisabled();
     expect(await axe(container)).toHaveNoViolations();
-    await user.type(screen.getByRole("textbox", { name: "Correo" }), "nueva@example.com");
-    await user.click(screen.getByRole("button", { name: "Roles de la organización" }));
+
+    // Solo el correo alcanza.
+    await user.type(within(dialog).getByRole("textbox", { name: "Correo" }), "nueva@example.com");
+    await user.click(within(dialog).getByRole("button", { name: "Invitar" }));
+    await waitFor(() => expect(bodies.at(-1)).toEqual({ email: "nueva@example.com", roleIds: [], companies: [] }));
+    expect(await screen.findByText("Invitamos a nueva@example.com.")).toBeVisible();
+    expect(keys.at(-1)).toMatch(/^[0-9a-f-]{36}$/i);
+
+    // Con un rol de la organización y una empresa con su rol.
+    await user.click(screen.getByRole("button", { name: "Invitar usuario" }));
+    const again = await screen.findByRole("dialog", { name: "Invitar usuario" });
+    await user.type(within(again).getByRole("textbox", { name: "Correo" }), "otra@example.com");
+    await user.click(within(again).getByRole("button", { name: "Roles de la organización" }));
     await user.click(await screen.findByRole("menuitemcheckbox", { name: "Dueño" }));
     await user.keyboard("{Escape}");
-    await user.click(screen.getByRole("button", { name: "Enviar invitación" }));
-
-    await waitFor(() => expect(body).toEqual({ email: "nueva@example.com", roleIds: ["role-owner"], companies: [] }));
-    expect(idempotencyKey).toBeTruthy();
-  }, 10_000);
+    const company = within(again).getByRole("combobox", { name: "Empresa" });
+    company.focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
+    await user.click(within(again).getByRole("button", { name: "Roles en la empresa" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
+    await user.keyboard("{Escape}");
+    await user.click(within(again).getByRole("button", { name: "Invitar" }));
+    await waitFor(() => expect(bodies.at(-1)).toEqual({ email: "otra@example.com", roleIds: ["role-owner"], companies: [{ companyId: "company-1", roleIds: ["role-company-admin"] }] }));
+  }, 20_000);
 
   it("pagina una organización con 50 usuarios sin cargar más de una página", async () => {
     const items = Array.from({ length: 10 }, (_item, index) => ({

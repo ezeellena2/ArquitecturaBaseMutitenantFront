@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Eye, Mail, Plus, Power, RotateCw, Trash2, UserRound } from "lucide-react";
+import { ChevronDown, Eye, Plus, Power, RotateCw, Trash2, UserRound } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -13,7 +13,7 @@ import { usePagination } from "@/shared/hooks/usePagination";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
@@ -45,7 +45,8 @@ function countFor(counts: OrganizationUserFilterCountsResponse | undefined, stat
           : state === "Expired" ? counts.expired : counts.inactive;
 }
 
-type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
+// «Ninguna» en el desplegable de Empresa del tablero Usuarios (Invitar).
+const noCompany = "none";
 
 function failureMessage(error: unknown, fallback: string): string {
   return error instanceof ApiError ? error.detail ?? fallback : fallback;
@@ -107,7 +108,9 @@ export function UsersPage() {
   const activeCompanies = (companies.data?.items ?? []).filter((company) => company.status === "Active");
   const [email, setEmail] = useState("");
   const [organizationRoleIds, setOrganizationRoleIds] = useState<string[]>([]);
-  const [assignments, setAssignments] = useState<CompanyAssignmentDraft[]>([]);
+  // Decisión 4 del usuario: como el tablero, se invita a una sola empresa; desde la ficha se suman más.
+  const [inviteCompanyId, setInviteCompanyId] = useState("");
+  const [inviteCompanyRoleIds, setInviteCompanyRoleIds] = useState<string[]>([]);
   const [inviteError, setInviteError] = useState<string>();
   const [target, setTarget] = useState<OrganizationUserResponse | null>(null);
   const [confirmAction, setConfirmAction] = useState<"revoke" | "disable" | "remove" | null>(null);
@@ -159,29 +162,22 @@ export function UsersPage() {
     const payload: InviteOrganizationUserRequest = {
       email: email.trim(),
       roleIds: organizationRoleIds,
-      companies: assignments.filter((item) => item.companyId).map((item) => ({ companyId: item.companyId, roleIds: item.roleIds })),
+      companies: inviteCompanyId ? [{ companyId: inviteCompanyId, roleIds: inviteCompanyRoleIds }] : [],
     };
-    if (organizationRoleIds.length === 0 && !payload.companies?.some((company) => company.roleIds?.length)) {
-      setInviteError(t("users:invite.roleRequired"));
-      return;
-    }
     try {
       await invite.mutateAsync(payload);
       toast.success(t("users:messages.invited", { email: payload.email }));
       setInviteOpen(false);
       setEmail("");
       setOrganizationRoleIds([]);
-      setAssignments([]);
+      setInviteCompanyId("");
+      setInviteCompanyRoleIds([]);
       await invalidate();
     } catch (error) {
       setInviteError(failureMessage(error, t("common:states.error")));
     }
   }
 
-  function addCompanyAssignment() {
-    const available = activeCompanies.find((company) => !assignments.some((assignment) => assignment.companyId === company.id));
-    if (available) setAssignments([...assignments, { companyId: available.id, roleIds: [] }]);
-  }
 
   return <>
     <Page icon={UserRound} title={t("users:title")} summary={listSummary} actions={canInvite ? <Button type="button" onClick={() => setInviteOpen(true)}><Plus aria-hidden="true" className="size-4" />{t("users:invite.open")}</Button> : undefined}>
@@ -221,38 +217,34 @@ export function UsersPage() {
 
     <Dialog open={inviteOpen} onOpenChange={(open) => { setInviteOpen(open); if (!open) setInviteError(undefined); }}>
       <DialogContent mobileFullHeight>
-        <DialogHeader><DialogTitle>{t("users:invite.title")}</DialogTitle><DialogDescription>{t("users:invite.description")}</DialogDescription></DialogHeader>
+        <DialogHeader><DialogTitle>{t("users:invite.title")}</DialogTitle></DialogHeader>
         <form onSubmit={(event) => { void submitInvite(event); }} className="flex min-h-0 flex-col">
           <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
             {inviteError ? <FormError message={inviteError} /> : null}
             <FormField label={t("users:invite.email")} required><Input autoComplete="email" type="email" required maxLength={254} placeholder={t("users:invite.emailPlaceholder")} value={email} onChange={(event) => setEmail(event.target.value)} /></FormField>
-            <FormField label={t("users:invite.organizationRoles")} required>
-              <MultiSelect options={organizationRoles.map((role: RoleResponse) => ({ value: role.id, label: role.name }))} value={organizationRoleIds} onChange={setOrganizationRoleIds} placeholder={t("users:invite.chooseRoles")} />
+            <FormField label={t("users:invite.organizationRoles")}>
+              <MultiSelect options={organizationRoles.map((role: RoleResponse) => ({ value: role.id, label: role.name }))} value={organizationRoleIds} onChange={setOrganizationRoleIds} placeholder={t("users:invite.noRoles")} />
             </FormField>
-            <section className="flex flex-col gap-3 border-t border-[var(--borde)] pt-4">
-              <div className="flex items-center justify-between gap-3"><div><h3 className="text-[13px] font-semibold">{t("users:invite.companyRoles")}</h3><p className="mt-1 text-xs text-[var(--t2)]">{t("users:invite.companyRolesHint")}</p></div>
-                <Button type="button" size="sm" variant="outline" disabled={activeCompanies.length <= assignments.length} onClick={addCompanyAssignment}><Plus aria-hidden="true" className="size-4" />{t("users:invite.addCompany")}</Button>
-              </div>
-              {assignments.map((assignment, index) => {
-                const availableCompanyRoles = companyRoles.filter((role) => role.scope === "AnyCompany" || role.companyId === assignment.companyId);
-                const otherCompanyIds = assignments.filter((_item, itemIndex) => itemIndex !== index).map((item) => item.companyId);
-                return <div key={`company-${index}`} className="grid gap-3 rounded-lg border border-[var(--borde)] p-3 md:grid-cols-2">
-                  <FormField label={t("users:invite.company")}>
-                    <Select value={assignment.companyId} onValueChange={(value) => setAssignments(assignments.map((item, itemIndex) => itemIndex === index ? { companyId: value, roleIds: [] } : item))}>
-                      <SelectTrigger className="w-full"><SelectValue placeholder={t("users:invite.chooseCompany")} /></SelectTrigger>
-                      <SelectContent>{activeCompanies.filter((company) => !otherCompanyIds.includes(company.id)).map((company) => <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>)}</SelectContent>
-                    </Select>
-                  </FormField>
-                  <FormField label={t("users:invite.companyRoles")}>
-                    <MultiSelect options={availableCompanyRoles.map((role) => ({ value: role.id, label: role.name }))} value={assignment.roleIds} onChange={(roleIds) => setAssignments(assignments.map((item, itemIndex) => itemIndex === index ? { ...item, roleIds } : item))} placeholder={t("users:invite.chooseRoles")} />
-                  </FormField>
-                </div>;
-              })}
-            </section>
+            <div className="grid gap-4 md:grid-cols-2">
+              <FormField label={t("users:invite.company")}>
+                <Select value={inviteCompanyId || noCompany} onValueChange={(value) => { setInviteCompanyId(value === noCompany ? "" : value); setInviteCompanyRoleIds([]); }}>
+                  <SelectTrigger className="w-full" aria-label={t("users:invite.company")}><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={noCompany}>{t("users:invite.noCompany")}</SelectItem>
+                    {activeCompanies.map((company) => <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </FormField>
+              <FormField label={t("users:invite.companyRoles")}>
+                {inviteCompanyId
+                  ? <MultiSelect options={companyRoles.filter((role) => role.scope === "AnyCompany" || role.companyId === inviteCompanyId).map((role) => ({ value: role.id, label: role.name }))} value={inviteCompanyRoleIds} onChange={setInviteCompanyRoleIds} placeholder={t("users:invite.noRoles")} />
+                  : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-[var(--s2)] px-3 text-left text-[13px] text-[var(--t3)] shadow-xs">{t("users:invite.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" /></button>}
+              </FormField>
+            </div>
           </div>
           <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
             <Button type="button" variant="outline" onClick={() => setInviteOpen(false)}>{t("common:actions.cancel")}</Button>
-            <Button type="submit" disabled={invite.isPending}>{invite.isPending ? t("common:states.saving") : <><Mail aria-hidden="true" className="size-4" />{t("users:invite.send")}</>}</Button>
+            <Button type="submit" disabled={invite.isPending}>{invite.isPending ? t("common:states.saving") : t("users:invite.send")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
