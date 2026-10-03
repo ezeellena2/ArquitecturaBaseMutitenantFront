@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 76** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 162 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 77** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 162 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -19,7 +19,7 @@ El título de cada tablero dice en qué estado está:
 | Sitio público | 6 | Aprobado el 2026-10-03 (Etapa 7), pantalla por pantalla: la portada (con la sección «Empresas en ArquitecturaBase»), el directorio en tarjetas (`/empresas`) y la página pública en una tarjeta centrada, con sus tres estados. Los teléfonos son web, no app: una columna y ☰ arriba. |
 | Ingreso y registro | 18 | Validado |
 | Perfil personal | 11 | Validado. Los 6 teléfonos están en formato app desde el 2026-10-03. |
-| Organización | 32 | Escritorio y móviles aprobados el 2026-10-03, salvo los dos inicios, que quedan para repensar. Los 14 teléfonos están en formato app desde el 2026-10-03 (el del inicio, no). |
+| Organización | 32 | Escritorio y móviles aprobados el 2026-10-03, con los dos inicios: las áreas en tarjetas y «Para resolver» como tabla. Los 15 teléfonos están en formato app; el del inicio, como una billetera. |
 | Organización · WhatsApp | 51 | Escritorio y teléfonos aprobados el 2026-10-03, pantalla por pantalla (Etapa 11 ampliada). Los 27 teléfonos son los primeros en formato app. El alta de Meta no se dibuja hasta que el usuario lo pida. |
 | Plataforma | 18 | Aprobada el 2026-10-03, compu y teléfonos. En la compu, Gestión, WhatsApp y Administración abren un segundo panel; en el teléfono, barra de abajo (Organizaciones, Cuentas, Recuperaciones, Chats y Más). |
 | Textos y mensajes | 2 | Validado |
@@ -99,6 +99,7 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 | `wa_ajustes_1004.py` | En la compu: la nota interna se prende con un botón al lado de donde se escribe, e «Importar contactos» va sin casilla y con «Descargar ejemplo». |
 | `menus_con_lineas.py` | Suma a todos los tableros la línea entre las opciones de los menús desplegables. Corre al final. |
 | `lineas_menu_lateral.py` | Suma a todos los tableros la línea entre las opciones del menú lateral y de su panel. Corre al final. |
+| `inicio_1004.py` | Inicios de la organización y del miembro, y el teléfono del inicio, aprobados el 2026-10-03. Corre antes de las reglas finales: el teléfono se arma entero cada vez. |
 | `publico_1004.py` | Sitio público aprobado pantalla por pantalla (Etapa 7): la portada con la sección del directorio, el directorio en tarjetas y la página pública en una tarjeta, y sus teléfonos como web. |
 | `flechita_blanca.py` | El botón redondo que contrae el menú lateral va en blanco, con borde arena, en todos los tableros que lo tienen. Corre al final. |
 | `org_vuelta_1002.py` | Las decisiones de la vuelta de Organización del 2026-10-02 sobre los tableros de escritorio, y les saca «· para aprobar» a los aprobados. Corre después de `org_formularios2.py`. |

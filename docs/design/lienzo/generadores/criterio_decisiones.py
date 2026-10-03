@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 7340
+ALTO = 7420
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -62,6 +62,7 @@ REGLAS = [
     ("En el teléfono, crear algo nuevo es un «+» flotante abajo a la derecha, también con la lista vacía.", "Marco y pantallas", "03/10/2026"),
     ("En el teléfono, el ⋮ de una fila va solo si tiene acciones; si no, se toca la fila.", "Marco y pantallas", "03/10/2026"),
     ("La flechita que contrae el menú lateral va en blanco, con borde arena.", "Menús y desplegables", "03/10/2026"),
+    ("«Para resolver» muestra solo estados que ya existen, que quien mira puede resolver y que tienen una acción; se calcula al abrir y se va solo.", "Tablas y listas", "03/10/2026"),
     ("Una línea fina entre cada opción del menú lateral y de su panel, como la que separa Administración.", "Menús y desplegables", "03/10/2026"),
     ("En el teléfono, las pantallas de edición llevan fijos abajo «Descartar cambios» y «Guardar cambios».", "Marco y pantallas", "03/10/2026"),
     ("Una ficha lleva pestañas aunque alguna tenga un solo dato.", "Marco y pantallas", "03/10/2026"),
@@ -83,8 +84,8 @@ DECISIONES = {
         ("Configuración", "A", "Datos en dos columnas y la caja «Dominio de correo». Sin dominio: «Sin dominio» y «+ Agregar dominio». Pendiente: «Pendiente · Falta cargar un registro en el DNS del dominio», con «Verificar» y ⋮. «Quitar» aclara que los correos ya administrados siguen igual.", "Dibujada"),
         ("Página pública", "A", "Dos columnas; el logo es la primera fila de «Página». Arriba solo el estado («● Publicada»); la dirección, en «Publicación» y en su campo. «Nombre de la página». Borrador: interruptor «Visible en delta.plataforma.com». Despublicada: el estado arriba, en rojo; un ⓘ y el interruptor trabado.", "Dibujada"),
         ("Auditoría", "A", "Fecha y hora, Qué pasó (con el nombre: «Cambió los roles de Tomás Acosta»), Dónde y Quién. Tocar «Qué pasó» abre el detalle; sin el ojo. Arriba, sin cantidad. «Cargar más» al pie. El backend tiene que sumar el nombre y la empresa.", "Dibujada"),
-        ("Inicio de la organización", "", "Para repensar. Idea del usuario: las acciones pendientes van en un menú propio, no en el inicio.", "Para repensar"),
-        ("Inicio de un miembro", "", "Para repensar, junto con el inicio de la organización.", "Para repensar"),
+        ("Inicio de la organización", "A", "Arriba, las áreas en tarjetas con un dato real (11 usuarios, ● Publicada…); abajo, «Para resolver» como tabla: Pendiente, Área, Estado, Desde y el enlace que lo resuelve. Sin pendientes, «Nada para resolver».", "Dibujada"),
+        ("Inicio de un miembro", "A", "«Tus empresas» en las mismas tarjetas (su rol y cuántos miembros); si administra su empresa, abajo su «Para resolver».", "Dibujada"),
         ("Sin permiso o no encontrada", "A", "Solo el título («No tenés permiso para ver esta página» o «No encontramos esta página») y «Ir al inicio», sin la línea que explica.", "Dibujada"),
         ("Avisos del sistema", "A", "Sin conexión: solo el cartel de arriba. Error del servidor: el código, detrás de «Copiar código». Módulo apagado: sin la línea que explica. De fondo, Configuración en dos columnas.", "Dibujada"),
     ],
@@ -145,6 +146,7 @@ DECISIONES = {
         ("Configuración · Página pública", "", "Campos a lo ancho y grupos (Dominio de correo; Publicación, Página y Contacto); abajo, fijos, «Descartar cambios» y «Guardar cambios».", "Dibujada"),
         ("Diálogos", "", "Invitar usuario, Sumar empresa, Agregar y Verificar dominio como hojas; Quitar dominio, confirmación sin ✕ y con el botón rojo.", "Dibujada"),
         ("Auditoría", "", "Qué pasó con la fecha, y dónde y quién debajo; «Cargar más» al final.", "Dibujada"),
+        ("Inicio", "C", "Como una billetera: cabecera de color con «Hola, Lucía» y la organización; atajos redondos con un globito rojo con lo pendiente de cada área; «Para resolver» en filas con ícono redondo del color de la urgencia y la acción en un botón cápsula.", "Dibujada"),
     ],
     "Plataforma y perfil personal · teléfonos (como app)": [
         ("Barra de abajo de Plataforma", "", "Organizaciones, Cuentas, Recuperaciones, Chats y «Más» (WhatsApp, Administración, Configuración de WhatsApp, Mi cuenta y Salir).", "Dibujada"),
@@ -171,7 +173,6 @@ DECISIONES = {
         ("Página pública · teléfono", "", "La misma tarjeta de la compu, con sus tres estados; sin ☰, porque es la página de la organización.", "Dibujada"),
     ],
     "Lo que sigue": [
-        ("Inicios", "", "Repensar qué es un inicio en la plantilla y dónde van las acciones pendientes.", "Para repensar"),
         ("Alta de Meta", "", "Se dibuja cuando el usuario lo pida.", "Falta decidir"),
     ],
 }

@@ -232,7 +232,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Inicio de alguien con roles en una empresa · para aprobar",
+      "title": "Inicio de alguien con roles en una empresa",
       "w": 1440,
       "x": 6080,
       "y": 1280
@@ -241,7 +241,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Inicio · /org · para aprobar",
+      "title": "Inicio · /org",
       "w": 1440,
       "x": 0,
       "y": 260
@@ -410,7 +410,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "org",
-      "title": "Inicio · teléfono · para aprobar",
+      "title": "Inicio · teléfono",
       "w": 390,
       "x": 0,
       "y": 3320
@@ -971,7 +971,7 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 7340,
+      "h": 7420,
       "page": "criterio",
       "title": "Criterio · Decisiones por pantalla",
       "w": 1440,
