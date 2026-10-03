@@ -2,13 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { ApiError } from "@/shared/api/ApiError";
-import type { PermissionGroupResponse, RoleResponse, RoleScope } from "@/shared/api/types";
+import type { CompanyResponse, PermissionGroupResponse, RoleResponse, RoleScope } from "@/shared/api/types";
 import { Button } from "@/shared/ui/button";
 import { CheckboxField } from "@/shared/ui/CheckboxField";
 import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
@@ -20,24 +20,26 @@ import { Page } from "@/shared/ui/Page";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Textarea } from "@/shared/ui/textarea";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
-import { fetchPermissionGroups, fetchRole, permissionGroupsQueryKey, roleQueryKey, rolesQueryKeyRoot, createRole, updateRole } from "../api/roles";
+import { fetchCompanyOptions, fetchPermissionGroups, fetchRole, permissionGroupsQueryKey, roleQueryKey, rolesQueryKeyRoot, createRole, updateRole } from "../api/roles";
 import { displayRoleDescription, displayRoleName } from "../columns";
 
 interface RoleDraft {
   name: string;
   description: string;
   scope: RoleScope | undefined;
+  companyId: string;
   permissions: string[];
 }
 
-const emptyDraft: RoleDraft = { name: "", description: "", scope: undefined, permissions: [] };
+const emptyDraft: RoleDraft = { name: "", description: "", scope: undefined, companyId: "", permissions: [] };
 
 function draftFromRole(role: RoleResponse): RoleDraft {
-  return { name: role.name, description: role.description ?? "", scope: role.scope, permissions: [...role.permissions] };
+  return { name: role.name, description: role.description ?? "", scope: role.scope, companyId: role.companyId ?? "", permissions: [...role.permissions] };
 }
 
 function sameDraft(left: RoleDraft, right: RoleDraft): boolean {
   return left.name === right.name && left.description === right.description && left.scope === right.scope
+    && left.companyId === right.companyId
     && [...left.permissions].sort().join("\u0000") === [...right.permissions].sort().join("\u0000");
 }
 
@@ -62,6 +64,7 @@ function scopeTranslationKey(scope: RoleScope): string {
 export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const { t } = useTranslation(["roles", "common", "errors"]);
   const { roleId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: currentUser } = useCurrentUser();
@@ -73,22 +76,33 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
     enabled: canRead && mode === "edit" && Boolean(roleId),
     meta: { silent: true },
   });
+  const requestedScope = searchParams.get("scope");
+  const requestedCompanyId = searchParams.get("companyId") ?? "";
+  const initialCreateDraft: RoleDraft = requestedScope === "SpecificCompany"
+    ? { ...emptyDraft, scope: "SpecificCompany", companyId: requestedCompanyId }
+    : requestedScope === "AnyCompany" ? { ...emptyDraft, scope: "AnyCompany" } : emptyDraft;
   const permissions = useQuery({
     queryKey: permissionGroupsQueryKey,
     queryFn: fetchPermissionGroups,
     enabled: canRead && (mode === "edit" || canManage),
     meta: { silent: true },
   });
-  const [draftState, setDraftState] = useState<RoleDraft | null>(null);
+  const [draftState, setDraftState] = useState<RoleDraft | null>(() => mode === "create" ? initialCreateDraft : null);
   const draft = draftState ?? (role.data ? draftFromRole(role.data) : emptyDraft);
   const original = role.data ? draftFromRole(role.data) : emptyDraft;
+  const companies = useQuery({
+    queryKey: ["role-company-options"],
+    queryFn: fetchCompanyOptions,
+    enabled: currentUser?.permissions?.includes("companies.read") === true && draft.scope === "SpecificCompany",
+    meta: { silent: true },
+  });
   const isSystemRole = role.data?.isSystemRole === true;
   const editable = canManage && mode === "create" || canManage && mode === "edit" && !isSystemRole;
   const isDirty = editable && !sameDraft(draft, original);
   const guard = useUnsavedChangesGuard(isDirty);
   const [leaveConfirmationOpen, setLeaveConfirmationOpen] = useState(false);
   const [failure, setFailure] = useState<unknown>();
-  const [validation, setValidation] = useState<{ name?: string; scope?: string; permissions?: string }>({});
+  const [validation, setValidation] = useState<{ name?: string; scope?: string; companyId?: string; permissions?: string }>({});
   const idempotencyKey = useMemo(() => crypto.randomUUID(), []);
   const visibleGroups = useMemo(() => groupsForScope(permissions.data ?? [], draft.scope), [permissions.data, draft.scope]);
   const selectedCount = visibleGroups.reduce((total, group) => total + group.permissions.filter((item) => draft.permissions.includes(item.code)).length, 0);
@@ -106,6 +120,10 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
         setValidation((current) => ({ ...current, scope: t("roles:validation.scopeRequired") }));
         throw new Error("validation");
       }
+      if (draft.scope === "SpecificCompany" && !draft.companyId) {
+        setValidation((current) => ({ ...current, companyId: t("roles:validation.companyRequired") }));
+        throw new Error("validation");
+      }
       if (draft.permissions.length === 0) {
         setValidation((current) => ({ ...current, permissions: t("roles:validation.permissionsRequired") }));
         throw new Error("validation");
@@ -116,7 +134,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
         description: draft.description.trim() || null,
         scope: draft.scope,
         // The selected-company catalog arrives in E6; edits preserve an existing company id.
-        companyId: role.data?.companyId ?? null,
+        companyId: draft.scope === "SpecificCompany" ? draft.companyId : null,
         permissions: draft.permissions,
       };
       if (mode === "create") return { id: await createRole(request, idempotencyKey) };
@@ -200,12 +218,24 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
               </div>
               <div className="w-full lg:max-w-[260px]">
                 {mode === "create" ? <FormField label={t("roles:fields.scope")} required error={validation.scope}>
-                  <Select value={draft.scope ?? ""} onValueChange={(value) => changeDraft({ scope: value as RoleScope, permissions: [] })}>
+                  <Select value={draft.scope ?? ""} onValueChange={(value) => changeDraft({ scope: value as RoleScope, companyId: "", permissions: [] })}>
                     <SelectTrigger className="w-full" aria-label={t("roles:fields.scope")}><SelectValue placeholder={t("roles:scope.choose")} /></SelectTrigger>
-                    <SelectContent position="popper"><SelectItem value="Organization" description={t("roles:scope.organizationDescription")}>{t("roles:scope.organization")}</SelectItem></SelectContent>
+                    <SelectContent position="popper">
+                      <SelectItem value="Organization" description={t("roles:scope.organizationDescription")}>{t("roles:scope.organization")}</SelectItem>
+                      <SelectItem value="AnyCompany" description={t("roles:scope.companyDescription")}>{t("roles:scope.company")}</SelectItem>
+                      <SelectItem value="SpecificCompany" description={t("roles:scope.specificCompanyDescription")}>{t("roles:scope.specificCompany")}</SelectItem>
+                    </SelectContent>
                   </Select>
                 </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.scope")}</span><p className="min-h-9 text-[14px] text-[var(--t1)]">{role.data ? t(scopeTranslationKey(role.data.scope)) : ""}</p></div>}
               </div>
+              {draft.scope === "SpecificCompany" && mode === "create" ? <div className="w-full lg:max-w-[320px]">
+                <FormField label={t("roles:fields.company")} required error={validation.companyId}>
+                  <Select value={draft.companyId} onValueChange={(companyId) => changeDraft({ companyId })} disabled={!currentUser?.permissions?.includes("companies.read") || companies.isPending || companies.isError}>
+                    <SelectTrigger className="w-full" aria-label={t("roles:fields.company")}><SelectValue placeholder={t("roles:company.choose")} /></SelectTrigger>
+                    <SelectContent position="popper">{(companies.data?.items ?? []).filter((company: CompanyResponse) => company.status === "Active").map((company) => <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </FormField>
+              </div> : mode === "edit" && draft.scope === "SpecificCompany" ? <div className="w-full lg:max-w-[320px]"><div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.company")}</span><p className="min-h-9 text-[14px] text-[var(--t1)]">{companies.data?.items.find((company) => company.id === draft.companyId)?.name ?? draft.companyId}</p></div></div> : null}
             </div>
             <div className="w-full lg:max-w-[720px]">
               {editable ? <FormField label={t("roles:fields.description")}>

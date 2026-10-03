@@ -56,18 +56,23 @@
     "organization": "The whole organization",
     "organizationDescription": "Permissions for users, roles, companies, and settings.",
     "company": "Each company",
+    "companyDescription": "The permissions apply within each company.",
     "specificCompany": "One specific company",
+    "specificCompanyDescription": "The permissions apply only within the company you choose.",
     "choose": "Choose where it applies",
     "chooseForPermissions": "Choose where the role applies to see its permissions."
   },
   "fields": {
     "name": "Name",
     "scope": "Applies to",
+    "company": "Company",
     "description": "Description"
   },
+  "company": { "choose": "Choose a company" },
   "validation": {
     "nameRequired": "Enter a role name.",
     "scopeRequired": "Choose where the role applies.",
+    "companyRequired": "Choose a company.",
     "permissionsRequired": "Choose at least one permission."
   },
   "unsavedTitle": "Leave without saving?",

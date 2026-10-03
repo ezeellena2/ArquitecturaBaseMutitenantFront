@@ -2,6 +2,7 @@ import { api } from "@/shared/api/httpClient";
 import type { PagedResult } from "@/shared/api/pagedResult";
 import type {
   CreateRoleRequest,
+  CompanyResponse,
   PagedRequest,
   PermissionGroupResponse,
   RoleResponse,
@@ -35,6 +36,10 @@ export function fetchRole(roleId: string): Promise<RoleResponse> {
 
 export function fetchPermissionGroups(): Promise<PermissionGroupResponse[]> {
   return api.get<PermissionGroupResponse[]>("/api/permissions");
+}
+
+export function fetchCompanyOptions(): Promise<PagedResult<CompanyResponse>> {
+  return api.get<PagedResult<CompanyResponse>>("/api/companies/paged?page=1&pageSize=100&sort=name");
 }
 
 export function createRole(request: CreateRoleRequest, idempotencyKey: string): Promise<string> {

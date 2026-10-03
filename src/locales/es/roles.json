@@ -56,18 +56,23 @@
     "organization": "Toda la organización",
     "organizationDescription": "Permisos sobre usuarios, roles, empresas y configuración.",
     "company": "Cada empresa",
+    "companyDescription": "El permiso se aplica dentro de cada empresa.",
     "specificCompany": "Una empresa específica",
+    "specificCompanyDescription": "El permiso se aplica solo dentro de la empresa que elijas.",
     "choose": "Elegí dónde vale",
     "chooseForPermissions": "Elegí dónde vale el rol para ver sus permisos."
   },
   "fields": {
     "name": "Nombre",
     "scope": "Vale en",
+    "company": "Empresa",
     "description": "Descripción"
   },
+  "company": { "choose": "Elegí una empresa" },
   "validation": {
     "nameRequired": "Escribí el nombre del rol.",
     "scopeRequired": "Elegí dónde vale el rol.",
+    "companyRequired": "Elegí una empresa.",
     "permissionsRequired": "Elegí al menos un permiso."
   },
   "unsavedTitle": "¿Salir sin guardar?",

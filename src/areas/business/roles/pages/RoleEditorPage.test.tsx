@@ -67,6 +67,30 @@ describe("RoleEditorPage", () => {
     expect(await screen.findByRole("heading", { name: "Operaciones" })).toBeVisible();
   }, 10_000);
 
+  it("crea un rol específico usando la empresa elegida desde su catálogo", async () => {
+    const user = userEvent.setup();
+    let createBody: unknown;
+    const created: RoleResponse = { ...role, id: "role-company", name: "Administración Delta", scope: "SpecificCompany", companyId: "company-1", permissions: ["company.members.read"] };
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [{ id: "company-1", name: "Delta S.A.", taxId: null, timeZoneId: "America/Argentina/Buenos_Aires", status: "Active", memberCount: 1, version: 1, createdAtUtc: "2026-09-27T12:00:00Z" }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.post("/api/roles", async ({ request }) => {
+        createBody = await request.json();
+        return HttpResponse.json(created.id, { status: 201 });
+      }),
+      http.get("/api/roles/role-company", () => HttpResponse.json(created)),
+    );
+
+    renderRouteWithProviders("/org/roles/new?scope=SpecificCompany&companyId=company-1", { as: "business-e6-admin" });
+    await user.type(await screen.findByRole("textbox", { name: "Nombre" }), "Administración Delta");
+    expect(screen.getByRole("combobox", { name: "Vale en" })).toHaveTextContent("Una empresa específica");
+    expect(await screen.findByText("Delta S.A.")).toBeVisible();
+    await user.click(await screen.findByRole("checkbox", { name: "Ver miembros" }));
+    await user.click(screen.getAllByRole("button", { name: "Crear rol" })[0]);
+
+    await waitFor(() => expect(createBody).toMatchObject({ name: "Administración Delta", scope: "SpecificCompany", companyId: "company-1", permissions: ["company.members.read"] }));
+  }, 10_000);
+
   it("manda la versión y conserva el borrador ante un 409 hasta que la persona vea lo nuevo", async () => {
     const user = userEvent.setup();
     let reads = 0;
