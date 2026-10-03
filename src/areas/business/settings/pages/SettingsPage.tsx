@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, SlidersHorizontal, Trash2 } from "lucide-react";
+import { Globe, Plus, SlidersHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -9,7 +9,7 @@ import type { OrganizationDomainResponse, OrganizationSettingsResponse, UpdateOr
 import { Button } from "@/shared/ui/button";
 import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { CultureSelect } from "@/shared/ui/fields/CultureSelect";
@@ -38,6 +38,7 @@ export function SettingsPage() {
   const { data: currentUser } = useCurrentUser();
   const canRead = currentUser?.permissions?.includes("settings.read") === true;
   const canManage = currentUser?.permissions?.includes("settings.manage") === true;
+  const organizationName = currentUser?.organizations.find((organization) => organization.id === currentUser.activeTenantId)?.name ?? "";
   const client = useQueryClient();
   const settings = useQuery({ queryKey: organizationSettingsKey, queryFn: fetchOrganizationSettings, enabled: canRead, meta: { silent: true } });
   const domains = useQuery({ queryKey: organizationDomainsKey, queryFn: fetchOrganizationDomains, enabled: canRead, meta: { silent: true } });
@@ -46,6 +47,10 @@ export function SettingsPage() {
   const [domainDialogOpen, setDomainDialogOpen] = useState(false);
   const [domainDraft, setDomainDraft] = useState("");
   const [domainToRemove, setDomainToRemove] = useState<OrganizationDomainResponse | null>(null);
+  // Tablero Configuracion-Verificar: después de «Siguiente» o de «Verificar», el TXT va en un diálogo, no en la fila.
+  const [domainToVerify, setDomainToVerify] = useState<OrganizationDomainResponse | null>(null);
+  const [verifyFailure, setVerifyFailure] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const save = useMutation({
     mutationFn: (request: UpdateOrganizationSettingsRequest) => updateOrganizationSettings(request),
     onSuccess: async () => {
@@ -57,17 +62,33 @@ export function SettingsPage() {
   });
   const addDomain = useIdempotentMutation((domain: { domain: string }, key) => registerOrganizationDomain(domain, key));
   const verifyDomain = useMutation({
-    mutationFn: verifyOrganizationDomain,
-    onSuccess: async () => { toast.success(t("settings:domains.verified")); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
-    onError: (error) => toastError(error instanceof ApiError ? error.detail ?? t("common:states.error") : t("common:states.error")),
+    mutationFn: (domain: OrganizationDomainResponse) => verifyOrganizationDomain(domain.id),
+    onSuccess: async (_result, domain) => { closeVerify(); toast.success(t("settings:domains.verified", { domain: domain.domain })); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
+    onError: (error) => setVerifyFailure(error instanceof ApiError ? error.detail ?? t("common:states.error") : t("common:states.error")),
   });
   const removeDomain = useMutation({
     mutationFn: (domain: OrganizationDomainResponse) => removeOrganizationDomain(domain.id, domain.version),
-    onSuccess: async () => { setDomainToRemove(null); toast.success(t("settings:domains.removed")); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
+    onSuccess: async (_result, domain) => { setDomainToRemove(null); toast.success(t("settings:domains.removed", { domain: domain.domain })); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
     onError: (error) => toastError(error instanceof ApiError ? error.detail ?? t("common:states.error") : t("common:states.error")),
   });
 
   if (!canRead) return <ForbiddenPage homePath="/org" />;
+
+  function openVerify(domain: OrganizationDomainResponse) {
+    setDomainToVerify(domain);
+    setVerifyFailure(null);
+    setCopied(false);
+  }
+
+  function closeVerify() {
+    setDomainToVerify(null);
+    setVerifyFailure(null);
+    setCopied(false);
+  }
+
+  function copyTxt(value: string) {
+    void navigator.clipboard.writeText(value).then(() => setCopied(true)).catch(() => toastError(t("common:states.error")));
+  }
 
   const draft = draftState ?? (settings.data ? settingsDraft(settings.data) : null);
   const isDirty = Boolean(settings.data && draft && JSON.stringify(draft) !== JSON.stringify(settingsDraft(settings.data)));
@@ -106,16 +127,13 @@ export function SettingsPage() {
           </header>
           {domains.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
             : activeDomains.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)]">{t("settings:domains.empty")}</p>
-              : <div className="divide-y divide-[var(--borde)]">{activeDomains.map((domain) => <div key={domain.id} className="grid gap-3 p-4 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center">
-                <div className="min-w-0">
-                  <p className="truncate text-[13px] font-semibold text-[var(--t1)]">{domain.domain}</p>
-                  <p className="mt-1 inline-flex items-center gap-1 text-[13px] text-[var(--t2)]">
-                    <span aria-hidden="true" className={`size-2 rounded-full ${domain.status === "Verified" ? "bg-[var(--ok)]" : "bg-[var(--alerta)]"}`} />
-                    {t(`settings:domains.status.${domain.status}`)}
-                  </p>
-                  {domain.status === "Pending" ? <p className="mt-2 break-all text-xs text-[var(--t2)]">{"TXT · "}{domain.txtRecordName}{" · "}{domain.txtRecordValue}</p> : null}
+              : <div className="divide-y divide-[var(--borde)]">{activeDomains.map((domain) => <div key={domain.id} className="flex items-center gap-3 px-4 py-2.5 md:px-5">
+                <Globe aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)]" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] text-[var(--t1)]">{domain.domain}</p>
+                  <p className="truncate text-[12px] text-[var(--t2)] lg:text-[13px]">{t(`settings:domains.status.${domain.status}`)}</p>
                 </div>
-                {domain.status === "Pending" && canManage ? <Button type="button" variant="outline" size="sm" disabled={verifyDomain.isPending} onClick={() => verifyDomain.mutate(domain.id)}>{t("settings:domains.verify")}</Button> : null}
+                {domain.status === "Pending" && canManage && domain.txtRecordValue ? <Button type="button" variant="outline" size="sm" onClick={() => openVerify(domain)}>{t("settings:domains.verify")}</Button> : null}
                 {canManage ? <RowActions label={t("settings:domains.actions", { domain: domain.domain })} actions={[
                   { label: t("settings:domains.remove"), accessibleName: t("settings:domains.remove"), icon: Trash2, destructive: true, onSelect: () => setDomainToRemove(domain) },
                 ]} /> : null}
@@ -126,12 +144,33 @@ export function SettingsPage() {
 
     <Dialog open={domainDialogOpen} onOpenChange={setDomainDialogOpen}>
       <DialogContent className="md:max-w-[420px]">
-        <DialogHeader><DialogTitle>{t("settings:domains.addTitle")}</DialogTitle><DialogDescription>{t("settings:domains.addDescription")}</DialogDescription></DialogHeader>
+        <DialogHeader><DialogTitle>{t("settings:domains.addTitle")}</DialogTitle></DialogHeader>
         <div className="px-5 py-4"><FormField label={t("settings:domains.domain")} required><Input autoComplete="off" value={domainDraft} onChange={(event) => setDomainDraft(event.target.value)} /></FormField>
           {addDomain.error ? <p role="alert" className="mt-2 text-[13px] text-[var(--peligro)]">{addDomain.error.detail ?? t("common:states.error")}</p> : null}</div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => setDomainDialogOpen(false)}>{t("common:actions.cancel")}</Button>
-          <Button type="button" disabled={!domainDraft.trim() || addDomain.isPending} onClick={() => addDomain.mutate({ domain: domainDraft.trim() }, { onSuccess: async () => { setDomainDraft(""); setDomainDialogOpen(false); toast.success(t("settings:domains.added")); await client.invalidateQueries({ queryKey: organizationDomainsKey }); } })}>{t("settings:domains.add")}</Button>
+          <Button type="button" disabled={!domainDraft.trim() || addDomain.isPending} onClick={() => addDomain.mutate({ domain: domainDraft.trim() }, { onSuccess: async (domain) => { setDomainDraft(""); setDomainDialogOpen(false); openVerify(domain); await client.invalidateQueries({ queryKey: organizationDomainsKey }); } })}>{t("settings:domains.next")}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <Dialog open={domainToVerify !== null} onOpenChange={(open) => { if (!open && !verifyDomain.isPending) closeVerify(); }}>
+      <DialogContent className="md:max-w-[560px]">
+        <DialogHeader><DialogTitle>{t("settings:domains.verifyTitle", { domain: domainToVerify?.domain ?? "" })}</DialogTitle></DialogHeader>
+        <div className="flex flex-col gap-3 px-5 py-4 text-[13px]">
+          <p className="text-[var(--t1)]">{t("settings:domains.verifyDescription")}</p>
+          <div className="flex flex-col gap-1.5">
+            <span className="text-[12px] font-semibold text-[var(--t1)] lg:text-[13px]">{t("settings:domains.txtLabel", { domain: domainToVerify?.domain ?? "" })}</span>
+            <div className="flex items-center gap-3 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] py-2 pl-3 pr-2">
+              <code className="min-w-0 flex-1 break-all font-mono text-[12.5px] text-[var(--t1)]">{domainToVerify?.txtRecordValue}</code>
+              <Button type="button" variant="outline" size="sm" onClick={() => { if (domainToVerify?.txtRecordValue) copyTxt(domainToVerify.txtRecordValue); }}>{copied ? t("settings:domains.copied") : t("settings:domains.copy")}</Button>
+            </div>
+          </div>
+          {verifyFailure ? <FormError message={verifyFailure} /> : null}
+        </div>
+        <DialogFooter>
+          <Button type="button" variant="outline" disabled={verifyDomain.isPending} onClick={closeVerify}>{t("common:actions.cancel")}</Button>
+          <Button type="button" disabled={verifyDomain.isPending} onClick={() => { if (domainToVerify) { setVerifyFailure(null); verifyDomain.mutate(domainToVerify); } }}>{t("settings:domains.check")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -140,7 +179,7 @@ export function SettingsPage() {
       open={domainToRemove !== null}
       onOpenChange={(open) => { if (!open) setDomainToRemove(null); }}
       title={t("settings:domains.removeTitle", { domain: domainToRemove?.domain ?? "" })}
-      description={t("settings:domains.removeDescription")}
+      description={t("settings:domains.removeDescription", { domain: domainToRemove?.domain ?? "", organization: organizationName })}
       confirmLabel={t("settings:domains.remove")}
       destructive
       onConfirm={() => { if (domainToRemove) removeDomain.mutate(domainToRemove); }}

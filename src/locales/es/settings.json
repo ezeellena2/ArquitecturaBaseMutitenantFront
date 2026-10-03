@@ -16,22 +16,27 @@
   "domains": {
     "title": "Dominio de correo",
     "add": "Agregar dominio",
-    "addTitle": "Agregar dominio de correo",
-    "addDescription": "Verificá que administrás el dominio antes de asociar correos.",
+    "addTitle": "Agregar dominio",
     "domain": "Dominio",
-    "empty": "No hay dominios agregados.",
+    "empty": "Sin dominio",
     "status": {
-      "Pending": "Pendiente de verificación",
+      "Pending": "Pendiente",
       "Verified": "Verificado",
       "Removed": "Retirado"
     },
     "verify": "Verificar",
-    "verified": "El dominio quedó verificado.",
-    "added": "Se agregó el dominio.",
+    "verified": "Verificamos {{domain}}.",
     "remove": "Quitar",
     "actions": "Acciones de {{domain}}",
-    "removeTitle": "¿Querés quitar {{domain}}?",
-    "removeDescription": "El dominio dejará de asociar automáticamente nuevos correos. Los correos que ya están vinculados seguirán protegidos aunque retires este dominio.",
-    "removed": "Se quitó el dominio."
+    "removeTitle": "¿Quitar {{domain}}?",
+    "removeDescription": "Los correos nuevos de {{domain}} ya no quedan administrados por {{organization}}. Los que ya lo están siguen igual.",
+    "removed": "Quitamos {{domain}}.",
+    "next": "Siguiente",
+    "verifyTitle": "Verificar {{domain}}",
+    "verifyDescription": "Cargá este registro en el DNS de tu dominio y después tocá Comprobar. Puede tardar un rato en aparecer.",
+    "txtLabel": "Registro TXT a cargar en el DNS de {{domain}}",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "check": "Comprobar"
   }
 }

@@ -16,22 +16,27 @@
   "domains": {
     "title": "Email domain",
     "add": "Add domain",
-    "addTitle": "Add email domain",
-    "addDescription": "Verify that you manage the domain before associating email addresses.",
+    "addTitle": "Add domain",
     "domain": "Domain",
-    "empty": "No domains have been added.",
+    "empty": "No domain",
     "status": {
-      "Pending": "Pending verification",
+      "Pending": "Pending",
       "Verified": "Verified",
       "Removed": "Removed"
     },
     "verify": "Verify",
-    "verified": "The domain has been verified.",
-    "added": "The domain was added.",
+    "verified": "We verified {{domain}}.",
     "remove": "Remove",
     "actions": "Actions for {{domain}}",
     "removeTitle": "Remove {{domain}}?",
-    "removeDescription": "The domain will stop automatically associating new email addresses. Existing linked addresses will remain protected after you remove this domain.",
-    "removed": "The domain was removed."
+    "removeDescription": "New emails from {{domain}} will no longer be managed by {{organization}}. The ones already managed stay as they are.",
+    "removed": "We removed {{domain}}.",
+    "next": "Next",
+    "verifyTitle": "Verify {{domain}}",
+    "verifyDescription": "Add this record to your domain's DNS and then tap Check. It can take a while to show up.",
+    "txtLabel": "TXT record to add to the DNS of {{domain}}",
+    "copy": "Copy",
+    "copied": "Copied",
+    "check": "Check"
   }
 }
