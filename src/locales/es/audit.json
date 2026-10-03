@@ -4,13 +4,16 @@
   "empty": "No hay movimientos para mostrar",
   "details": "Ver detalle",
   "detailSummary": "{{actor}} realizó esta acción en {{entity}}.",
+  "openDetails": "Ver el detalle de {{action}}",
   "noValue": "Sin dato",
   "noChanges": "No hay cambios de campos para mostrar.",
   "rowActions": "Acciones de {{action}} ({{id}})",
   "columns": {
     "action": "Qué pasó",
     "when": "Cuándo",
+    "where": "Dónde",
     "about": "En qué",
+    "affected": "A quién",
     "who": "Quién",
     "actions": "Acciones"
   },

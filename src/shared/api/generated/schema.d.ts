@@ -6035,6 +6035,8 @@ export interface components {
             actionText: string;
             entityType: string;
             entityText: string;
+            affectedDisplayName?: null | string;
+            whereText: string;
             actorKind: string;
             actorText: string;
             /** Format: uuid */

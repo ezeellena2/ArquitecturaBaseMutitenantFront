@@ -21,7 +21,8 @@ describe("AuditPage", () => {
         requestUrls.push(new URL(request.url));
         return HttpResponse.json({ items: [{
           id: "audit-1", occurredAtUtc: "2026-10-02T12:00:00Z", action: "MemberEnabled",
-          actionText: "Miembro habilitado", entityType: "Member", entityText: "Usuario",
+          actionText: "Cambió los roles de Tomás Acosta", entityType: "Member", entityText: "Usuario",
+          affectedDisplayName: "Tomás Acosta", whereText: "Delta S.A.",
           actorKind: "User", actorText: "Persona", actorId: "actor-1", actorDisplayName: "Lucía",
           changes: [{ field: "Estado", oldValue: "Inactivo", newValue: "Activo" }],
         }], nextCursor: null, hasMore: false });
@@ -33,14 +34,15 @@ describe("AuditPage", () => {
 
     const { container } = renderRouteWithProviders("/org/auditoria", { as: "business-e6-admin" });
 
-    expect(await screen.findByText("Miembro habilitado")).toBeVisible();
+    expect(await screen.findByText("Cambió los roles de Tomás Acosta")).toBeVisible();
+    expect(screen.getByText("Delta S.A.")).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
     expect(requestUrls[0]?.searchParams.get("period")).toBe("30");
     expect(requestUrls[0]?.searchParams.get("limit")).toBe("25");
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: /Acciones de Miembro habilitado/ }));
-    await user.click(await screen.findByRole("menuitem", { name: "Ver detalle" }));
-    expect(await screen.findByRole("heading", { name: "Miembro habilitado" })).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Ver el detalle de Cambió los roles de Tomás Acosta" }));
+    expect(await screen.findByRole("heading", { name: "Cambió los roles de Tomás Acosta" })).toBeVisible();
+    expect(screen.getByText("Tomás Acosta")).toBeVisible();
     expect(screen.getByText("Inactivo")).toBeVisible();
     expect(screen.getByText("Activo")).toBeVisible();
   });

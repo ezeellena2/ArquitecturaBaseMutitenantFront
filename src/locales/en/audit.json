@@ -4,13 +4,16 @@
   "empty": "There are no entries to show",
   "details": "View details",
   "detailSummary": "{{actor}} performed this action on {{entity}}.",
+  "openDetails": "View details for {{action}}",
   "noValue": "No value",
   "noChanges": "There are no field changes to show.",
   "rowActions": "Actions for {{action}} ({{id}})",
   "columns": {
     "action": "What happened",
     "when": "When",
+    "where": "Where",
     "about": "About",
+    "affected": "Affected person",
     "who": "Who",
     "actions": "Actions"
   },

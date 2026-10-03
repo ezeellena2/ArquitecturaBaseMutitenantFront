@@ -1,5 +1,5 @@
 import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Eye, ScrollText } from "lucide-react";
+import { ScrollText } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -13,7 +13,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { LoadMore } from "@/shared/ui/LoadMore";
 import { Page } from "@/shared/ui/Page";
-import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { DateText } from "@/shared/ui/format/DateText";
@@ -56,16 +55,15 @@ export function AuditPage() {
 
   const rows = audit.data?.pages.flatMap((page) => page.items) ?? [];
   const columns: Column<OrganizationAuditEntryResponse>[] = [
-    { id: "action", header: t("audit:columns.action"), type: "text", value: (row) => row.actionText, mobile: "primary" },
     { id: "occurredAtUtc", header: t("audit:columns.when"), type: "dateTime", value: (row) => row.occurredAtUtc },
-    { id: "entityType", header: t("audit:columns.about"), type: "text", value: (row) => row.entityText },
-    { id: "actor", header: t("audit:columns.who"), type: "text", value: (row) => row.actorDisplayName ?? row.actorText, mobile: "status" },
     {
-      id: "actions", header: t("audit:columns.actions"), type: "actions",
-      cell: (row) => <RowActions label={t("audit:rowActions", { action: row.actionText, id: row.id })} actions={[
-        { label: t("audit:details"), accessibleName: t("audit:details"), icon: Eye, onSelect: () => setSelected(row) },
-      ]} />,
+      id: "action", header: t("audit:columns.action"), type: "custom", mobile: "primary",
+      cell: (row) => <button type="button" aria-label={t("audit:openDetails", { action: row.actionText })}
+        className="text-left text-[var(--t1)] hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
+        onClick={() => setSelected(row)}>{row.actionText}</button>,
     },
+    { id: "where", header: t("audit:columns.where"), type: "text", value: (row) => row.whereText, mobile: "status" },
+    { id: "actor", header: t("audit:columns.who"), type: "text", value: (row) => row.actorDisplayName ?? row.actorText, mobile: "status" },
   ];
   const periodValue = period;
   return <>
@@ -129,6 +127,8 @@ export function AuditPage() {
           <dl className="grid gap-2 text-sm sm:grid-cols-2">
             <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.when")}</dt><dd><DateText value={selected.occurredAtUtc} kind="dateTime" /></dd></div>
             <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.about")}</dt><dd>{selected.entityText}</dd></div>
+            <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.where")}</dt><dd>{selected.whereText}</dd></div>
+            {selected.affectedDisplayName ? <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.affected")}</dt><dd>{selected.affectedDisplayName}</dd></div> : null}
             <div><dt className="font-semibold text-[var(--t2)]">{t("audit:columns.who")}</dt><dd>{selected.actorDisplayName ?? selected.actorText}</dd></div>
           </dl>
           {selected.changes.length ? <div className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--borde)]">
