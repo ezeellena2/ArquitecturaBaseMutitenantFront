@@ -42,6 +42,11 @@ export const businessRoleManager: MeResponse = {
   permissions: ["roles.read", "roles.manage"],
 };
 
+export const businessE6Admin: MeResponse = {
+  ...businessUser,
+  permissions: ["users.read", "users.invite", "users.manage", "roles.read", "roles.manage", "companies.read", "companies.manage", "settings.read", "settings.manage", "publicpage.manage", "audit.read"],
+};
+
 export const platformOperator: MeResponse = {
   ...consumerWithoutOrganizations,
   access: "platform",
@@ -106,6 +111,7 @@ export const currentUsers = {
   "consumer-new-terms": { ...consumerWithoutOrganizations, pendingLegalDocuments: [{ id: "terms-v2", kind: "Terms", version: 2 }] },
   "consumer-with-organizations": consumerWithOrganizations,
   "business-admin": businessUser,
+  "business-e6-admin": businessE6Admin,
   "business-role-manager": businessRoleManager,
   "business-no-permissions": businessWithoutPermissions,
   "platform-operator": platformOperator,

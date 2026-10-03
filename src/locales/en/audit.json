@@ -1,0 +1,40 @@
+{
+  "title": "Audit",
+  "summary": "Actions performed in this organization.",
+  "empty": "There are no entries to show",
+  "details": "View details",
+  "detailSummary": "{{actor}} performed this action on {{entity}}.",
+  "noValue": "No value",
+  "noChanges": "There are no field changes to show.",
+  "rowActions": "Actions for {{action}} ({{id}})",
+  "columns": {
+    "action": "What happened",
+    "when": "When",
+    "about": "About",
+    "who": "Who",
+    "actions": "Actions"
+  },
+  "filters": {
+    "label": "Audit filters",
+    "search": "Search audit",
+    "period": "Period",
+    "periodMenu": "Filter by period",
+    "category": "Topic",
+    "categoryMenu": "Filter by topic",
+    "actor": "Who",
+    "actorMenu": "Filter by person"
+  },
+  "period": {
+    "today": "Today",
+    "days7": "Last 7 days",
+    "days30": "Last 30 days",
+    "all": "All"
+  },
+  "categories": {
+    "users": "Users",
+    "roles": "Roles",
+    "companies": "Companies",
+    "settings": "Settings",
+    "organization": "Organization"
+  }
+}

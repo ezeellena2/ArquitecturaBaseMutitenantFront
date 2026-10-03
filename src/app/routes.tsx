@@ -82,6 +82,10 @@ export const routes: RouteObject[] = [
             const { RoleEditorPage } = await import("@/areas/business/roles/pages/RoleEditorPage");
             return { Component: () => <RoleEditorPage mode="edit" /> };
           }, errorElement: <AppErrorPage /> },
+          { path: "auditoria", lazy: async () => {
+            const { AuditPage } = await import("@/areas/business/audit/pages/AuditPage");
+            return { Component: AuditPage };
+          }, errorElement: <AppErrorPage /> },
         ] },
       ] },
       { element: <AccessRoute access="platform" />, children: [

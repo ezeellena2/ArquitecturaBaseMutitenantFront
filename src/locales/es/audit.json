@@ -1,0 +1,40 @@
+{
+  "title": "Auditoría",
+  "summary": "Acciones realizadas en esta organización.",
+  "empty": "No hay movimientos para mostrar",
+  "details": "Ver detalle",
+  "detailSummary": "{{actor}} realizó esta acción en {{entity}}.",
+  "noValue": "Sin dato",
+  "noChanges": "No hay cambios de campos para mostrar.",
+  "rowActions": "Acciones de {{action}} ({{id}})",
+  "columns": {
+    "action": "Qué pasó",
+    "when": "Cuándo",
+    "about": "En qué",
+    "who": "Quién",
+    "actions": "Acciones"
+  },
+  "filters": {
+    "label": "Filtros de auditoría",
+    "search": "Buscar en auditoría",
+    "period": "Período",
+    "periodMenu": "Filtrar por período",
+    "category": "Tema",
+    "categoryMenu": "Filtrar por tema",
+    "actor": "Quién",
+    "actorMenu": "Filtrar por persona"
+  },
+  "period": {
+    "today": "Hoy",
+    "days7": "Últimos 7 días",
+    "days30": "Últimos 30 días",
+    "all": "Todo"
+  },
+  "categories": {
+    "users": "Usuarios",
+    "roles": "Roles",
+    "companies": "Empresas",
+    "settings": "Configuración",
+    "organization": "Organización"
+  }
+}
