@@ -320,18 +320,18 @@
       "h": 844,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Auditoría de seguridad · teléfono · por refinar",
+      "title": "Auditoría de seguridad · teléfono",
       "w": 390,
-      "x": 940,
+      "x": 2820,
       "y": 2300
     },
     "M-Config-Plat.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Configuración de la plataforma · teléfono · por refinar",
+      "title": "Configuración de la plataforma · teléfono",
       "w": 390,
-      "x": 1410,
+      "x": 4230,
       "y": 2300
     },
     "M-Configuracion.dc.html": {
@@ -344,20 +344,21 @@
       "y": 3320
     },
     "M-Cuenta.dc.html": {
-      "x": 470,
+      "x": 940,
       "y": 1280,
       "w": 390,
       "h": 844,
       "title": "Mi cuenta · teléfono",
-      "page": "personal"
+      "page": "personal",
+      "is_interactive": true
     },
     "M-Cuentas.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Cuentas · teléfono · por refinar",
+      "title": "Cuentas · teléfono",
       "w": 390,
-      "x": 470,
+      "x": 940,
       "y": 2300
     },
     "M-Directorio.dc.html": {
@@ -420,7 +421,8 @@
       "w": 390,
       "h": 844,
       "title": "Inicio personal · teléfono",
-      "page": "personal"
+      "page": "personal",
+      "is_interactive": true
     },
     "M-Invitacion.dc.html": {
       "h": 844,
@@ -444,7 +446,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Organizaciones · teléfono · por refinar",
+      "title": "Organizaciones · teléfono",
       "w": 390,
       "x": 0,
       "y": 2300
@@ -969,7 +971,7 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 5760,
+      "h": 6180,
       "page": "criterio",
       "title": "Criterio · Decisiones por pantalla",
       "w": 1440,
@@ -1337,6 +1339,96 @@
       "w": 390,
       "x": 1880,
       "y": 5304
+    },
+    "M-Mas-Personal.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "personal",
+      "title": "Más · personal · teléfono",
+      "w": 390,
+      "x": 470,
+      "y": 1280
+    },
+    "M-Cuenta-Agregar.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "personal",
+      "title": "Mi cuenta · agregar correo o teléfono · teléfono",
+      "w": 390,
+      "x": 1410,
+      "y": 1280
+    },
+    "M-Cuenta-Verificar.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "personal",
+      "title": "Mi cuenta · verificar · teléfono",
+      "w": 390,
+      "x": 1880,
+      "y": 1280
+    },
+    "M-Cuenta-Baja.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "personal",
+      "title": "Mi cuenta · dar de baja · teléfono",
+      "w": 390,
+      "x": 2350,
+      "y": 1280
+    },
+    "M-Organizacion.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Ficha de una organización · teléfono",
+      "w": 390,
+      "x": 470,
+      "y": 2300
+    },
+    "M-Cuenta-Plat.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Ficha de una cuenta · teléfono",
+      "w": 390,
+      "x": 1410,
+      "y": 2300
+    },
+    "M-Recuperaciones.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Recuperaciones · teléfono",
+      "w": 390,
+      "x": 1880,
+      "y": 2300
+    },
+    "M-Mas-Plat.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Más · plataforma · teléfono",
+      "w": 390,
+      "x": 2350,
+      "y": 2300
+    },
+    "M-Auditoria-Plat-Detalle.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Auditoría de seguridad · detalle · teléfono",
+      "w": 390,
+      "x": 3290,
+      "y": 2300
+    },
+    "M-Legales.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Documentos legales · teléfono",
+      "w": 390,
+      "x": 3760,
+      "y": 2300
     }
   },
   "createdOnFiles": {
@@ -1656,7 +1748,17 @@
     "M-Usuario-Empresa.dc.html",
     "M-Configuracion-Dominio.dc.html",
     "M-Configuracion-Verificar.dc.html",
-    "M-Configuracion-Quitar.dc.html"
+    "M-Configuracion-Quitar.dc.html",
+    "M-Mas-Personal.dc.html",
+    "M-Cuenta-Agregar.dc.html",
+    "M-Cuenta-Verificar.dc.html",
+    "M-Cuenta-Baja.dc.html",
+    "M-Organizacion.dc.html",
+    "M-Cuenta-Plat.dc.html",
+    "M-Recuperaciones.dc.html",
+    "M-Mas-Plat.dc.html",
+    "M-Auditoria-Plat-Detalle.dc.html",
+    "M-Legales.dc.html"
   ],
   "pages": [
     {

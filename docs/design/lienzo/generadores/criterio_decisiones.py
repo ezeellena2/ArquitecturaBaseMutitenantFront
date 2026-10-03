@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 5760
+ALTO = 6180
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -142,8 +142,15 @@ DECISIONES = {
         ("Diálogos", "", "Invitar usuario, Sumar empresa, Agregar y Verificar dominio como hojas; Quitar dominio, confirmación sin ✕ y con el botón rojo.", "Dibujada"),
         ("Auditoría", "", "Qué pasó con la fecha, y dónde y quién debajo; «Cargar más» al final.", "Dibujada"),
     ],
+    "Plataforma y perfil personal · teléfonos (como app)": [
+        ("Barra de abajo de Plataforma", "", "Organizaciones, Cuentas, Recuperaciones, Chats y «Más» (WhatsApp, Administración, Configuración de WhatsApp, Mi cuenta y Salir).", "Dibujada"),
+        ("Organizaciones · Cuentas · Recuperaciones", "", "Listas de borde a borde con ⋮ y estado de color; «+» para crear organización e invitar operador.", "Dibujada"),
+        ("Fichas de organización y de cuenta", "", "Muchas pestañas: se deslizan de costado.", "Dibujada"),
+        ("Auditoría de la plataforma", "", "El detalle de un evento sube como hoja, con «Cerrar».", "Dibujada"),
+        ("Barra de abajo de la persona", "", "Inicio, Mensajes y «Más» (perfiles, Mi cuenta y Salir).", "Dibujada"),
+        ("Mi cuenta", "", "En grupos (Tus datos, Cómo entrás, Privacidad), con «Descartar cambios» y «Guardar cambios» fijos abajo; agregar, verificar y dar de baja en hojas.", "Dibujada"),
+    ],
     "Lo que sigue": [
-        ("Teléfonos de Plataforma y del perfil personal", "", "Pasarlos a formato app.", "Falta dibujar"),
         ("Inicios", "", "Repensar qué es un inicio en la plantilla y dónde van las acciones pendientes.", "Para repensar"),
         ("Alta de Meta", "", "Se dibuja cuando el usuario lo pida.", "Falta decidir"),
     ],

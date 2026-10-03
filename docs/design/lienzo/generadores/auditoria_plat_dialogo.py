@@ -50,4 +50,4 @@ def alinear(nombre, movil):
 
 if __name__ == "__main__":
     alinear("Auditoria-Plat", False)
-    alinear("M-Auditoria-Plat", True)
+    # El teléfono (M-Auditoria-Plat) es app desde el 2026-10-03: lo arma plat_personal_telefonos_1004.py.

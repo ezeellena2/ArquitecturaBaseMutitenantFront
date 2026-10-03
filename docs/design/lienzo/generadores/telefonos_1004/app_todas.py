@@ -340,7 +340,7 @@ def nav_personal(activo):
     h = '<nav class="ap-nav" aria-label="Secciones" style="grid-template-columns: repeat(3, 1fr);">'
     for c, ic, tx, hr in it:
         h += f'<a{" class=\"on\" aria-current=\"page\"" if c == activo else ""} href="{hr}"><span class="i">{ic}</span>{tx}</a>'
-    return h + '<a href="#"><span class="i"><span class="yo">L</span></span>Más</a></nav>'
+    return h + '<a href="M-Mas-Personal.dc.html"><span class="i"><span class="yo">L</span></span>Más</a></nav>'
 
 
 ORGS = [("LC", "La Clementina", "Vos: Gracias, paso a las 17.", "10:42", "T-App-Mensaje.dc.html"),
