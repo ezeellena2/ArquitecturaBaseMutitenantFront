@@ -9,7 +9,7 @@ import { LoginMethodsTable } from "../components/LoginMethodsTable";
 import { PersonalLoginMethodNotice } from "@/shared/ui/PersonalLoginMethodNotice";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2 } from "lucide-react";
+import { CircleAlert, Info, Plus, Trash2 } from "lucide-react";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import type { AccountLoginMethod } from "@/shared/api/types";
 import { AddLoginMethodDialog } from "../components/AddLoginMethodDialog";
@@ -23,6 +23,7 @@ import { useAuth } from "react-oidc-context";
 import { showDeletionRequested } from "@/auth/deletionRequestStatus";
 import { useFormat } from "@/shared/format/useFormat";
 import { AccountDeletionDialog } from "../components/AccountDeletionDialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 
 export function AccountPage() {
   const { t } = useTranslation();
@@ -38,6 +39,10 @@ export function AccountPage() {
   const auth = useAuth();
   const format = useFormat();
   const [deletionOpen, setDeletionOpen] = useState(false);
+  const [deletionBlockedOpen, setDeletionBlockedOpen] = useState(false);
+  // Tablero Cuenta, «Es la única Dueña»: «Dar de baja» apagado; la ⓘ y el botón explican por qué.
+  const soleOwnerOf = methods.data?.soleOwnerOrganizations.join(", ") ?? "";
+  const deletionBlocked = soleOwnerOf.length > 0;
   function refresh() { void queryClient.invalidateQueries({ queryKey: accountMethodsQueryKey }); void queryClient.invalidateQueries({ queryKey: currentUserQueryKey }); }
   async function deleted(scheduledForUtc: string) {
     showDeletionRequested(format.formatDate(scheduledForUtc));
@@ -73,14 +78,41 @@ export function AccountPage() {
       </header>
       <div className="flex min-h-14 items-center gap-3 border-b border-[var(--borde)] px-4 py-2">
         <Trash2 size={16} className="shrink-0 text-[var(--t2)]" aria-hidden="true" />
-        <span className="flex min-w-0 flex-1 flex-col"><span className="font-medium">{t("account:deletion")}</span>{methods.data ? <span className="text-[13px] text-[var(--t3)]">{t("account:deletionGrace", { days: methods.data.accountDeletionGraceDays })}</span> : null}</span>
-        <Button type="button" variant="outline" size="sm" className="border-[var(--peligro)] text-[var(--peligro)] hover:bg-[var(--peligro-t)] hover:text-[var(--peligro)]" disabled={!methods.data || methods.isPending} onClick={() => setDeletionOpen(true)}>{t("account:requestDeletion")}</Button>
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="inline-flex items-center gap-1.5 font-medium">{t("account:deletion")}
+            {deletionBlocked ? <button type="button" aria-label={t("account:deletionBlockedInfo")} title={t("account:deletionBlockedInfo")} onClick={() => setDeletionBlockedOpen(true)}
+              className="inline-flex size-6 shrink-0 items-center justify-center rounded-full text-[var(--peligro)] hover:bg-[var(--peligro-t)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]"><Info aria-hidden="true" className="size-4" /></button> : null}
+          </span>
+          {methods.data && !deletionBlocked ? <span className="text-[13px] text-[var(--t3)]">{t("account:deletionGrace", { days: methods.data.accountDeletionGraceDays })}</span> : null}
+        </span>
+        <Button type="button" variant="outline" size="sm" className={`border-[var(--peligro)] text-[var(--peligro)] hover:bg-[var(--peligro-t)] hover:text-[var(--peligro)] ${deletionBlocked ? "opacity-50" : ""}`}
+          disabled={!methods.data || methods.isPending} aria-disabled={deletionBlocked || undefined}
+          onClick={() => { if (deletionBlocked) setDeletionBlockedOpen(true); else setDeletionOpen(true); }}>{t("account:requestDeletion")}</Button>
       </div>
     </section>
   </AccountProfileForm>
   {addOpen ? <AddLoginMethodDialog open onOpenChange={setAddOpen} onComplete={refresh} /> : null}
   {verifyMethod ? <VerifyLoginMethodDialog method={verifyMethod} open onOpenChange={(open) => { if (!open) setVerifyMethod(null); }} onComplete={refresh} /> : null}
   {change ? <ChangeLoginMethodDialog {...change} onClose={() => setChange(null)} onComplete={refresh} /> : null}
+  {/* Aviso importante (Criterio-Avisos): el motivo destacado en rojo suave y «Qué podés hacer» en pasos. */}
+  <Dialog open={deletionBlockedOpen} onOpenChange={setDeletionBlockedOpen}>
+    <DialogContent className="md:max-w-[420px]" showCloseButton>
+      <DialogHeader><DialogTitle>{t("account:deletionBlockedTitle")}</DialogTitle></DialogHeader>
+      <div className="flex flex-col gap-3 px-5 py-4 text-[13px]">
+        <div className="flex items-start gap-2.5 rounded-[10px] bg-[var(--peligro-t)] px-3.5 py-3 text-[var(--peligro)]">
+          <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+          <strong className="text-[14px] font-semibold">{t("account:deletionBlockedReason", { organizations: soleOwnerOf })}</strong>
+        </div>
+        <span className="text-[12px] font-semibold text-[var(--t2)]">{t("account:whatCanYouDo")}</span>
+        <ol className="flex flex-col gap-2">
+          {[t("account:deletionBlockedStep1", { organizations: soleOwnerOf }), t("account:deletionBlockedStep2")].map((step, index) => <li key={step} className="flex items-center gap-2.5 text-[var(--t1)]">
+            <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center rounded-full border border-[var(--borde)] text-[11px] text-[var(--t2)]">{index + 1}</span>{step}
+          </li>)}
+        </ol>
+      </div>
+      <DialogFooter><Button type="button" onClick={() => setDeletionBlockedOpen(false)}>{t("account:understood")}</Button></DialogFooter>
+    </DialogContent>
+  </Dialog>
   {deletionOpen && methods.data ? <AccountDeletionDialog graceDays={methods.data.accountDeletionGraceDays} onClose={() => setDeletionOpen(false)} onComplete={(scheduled) => { void deleted(scheduled); }} /> : null}
   </>;
 }

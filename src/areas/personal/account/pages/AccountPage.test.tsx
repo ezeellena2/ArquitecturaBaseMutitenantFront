@@ -21,7 +21,7 @@ describe("Mi cuenta", () => {
         await delay(80);
         return HttpResponse.json({ code: "General.Unexpected" }, { status: 500 });
       }
-      return HttpResponse.json({ methods: [], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30 });
+      return HttpResponse.json({ methods: [], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] });
     }));
     renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
 
@@ -34,7 +34,7 @@ describe("Mi cuenta", () => {
 
   it("mantiene la sección vacía con su acción para agregar un acceso", async () => {
     server.use(http.get("/api/me/login-methods", () => HttpResponse.json({
-      methods: [], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30,
+      methods: [], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [],
     })));
     renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
 
@@ -57,6 +57,32 @@ describe("Mi cuenta", () => {
     expect(screen.getByRole("button", { name: "Descartar cambios" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
     expect(within(signIn).getByRole("button", { name: "Agregar correo o teléfono" })).toBeVisible();
+  });
+
+  it("la única Dueña ve «Dar de baja» apagado y el motivo con qué puede hacer (tablero Cuenta)", async () => {
+    const user = userEvent.setup();
+    server.use(http.get("/api/me/login-methods", () => HttpResponse.json({
+      methods: [], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30,
+      soleOwnerOrganizations: ["Grupo Delta"],
+    })));
+    const { container } = renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+
+    const privacy = await screen.findByRole("region", { name: "Privacidad" });
+    const deletion = await within(privacy).findByRole("button", { name: "Dar de baja" });
+    await waitFor(() => expect(deletion).toHaveAttribute("aria-disabled", "true"));
+    await user.click(deletion);
+    const info = await screen.findByRole("dialog", { name: "No podés dar de baja tu cuenta" });
+    expect(info).toHaveTextContent("Sos la única persona con el rol Dueño en Grupo Delta");
+    expect(info).toHaveTextContent("Qué podés hacer");
+    expect(within(info).getAllByRole("listitem").map((item) => item.textContent?.replace(/^\d/, "")))
+      .toEqual(["Sumá otro Dueño en Grupo Delta", "O pedí a la plataforma que cierre la organización"]);
+    expect(screen.queryByRole("dialog", { name: "¿Dar de baja tu cuenta?" })).not.toBeInTheDocument();
+    await user.click(within(info).getByRole("button", { name: "Entendido" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+
+    await user.click(within(privacy).getByRole("button", { name: "Por qué no podés darte de baja" }));
+    expect(await screen.findByRole("dialog", { name: "No podés dar de baja tu cuenta" })).toBeVisible();
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("en teléfono deja las acciones abajo y muestra el borrador en la segunda línea del título", async () => {
@@ -85,7 +111,7 @@ describe("Mi cuenta", () => {
     let action: unknown;
     server.use(
       http.get("/api/me/login-methods", () => HttpResponse.json({ methods: [], canLinkGoogle: true,
-        needsPersonalLoginMethod: false, accountDeletionGraceDays: 30 })),
+        needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] })),
       http.post("/api/me/reauth", async ({ request }) => {
         action = (await request.json() as { action: unknown }).action;
         return HttpResponse.json({ sourceMethodId: "existing", destination: "a***@example.test", resendAfterSeconds: 60 });

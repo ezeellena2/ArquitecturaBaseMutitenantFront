@@ -89,7 +89,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -184,7 +185,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -303,7 +305,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -428,7 +431,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -531,7 +535,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -636,7 +641,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -722,7 +728,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": true,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -808,7 +815,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": true,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -914,7 +922,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -1020,7 +1029,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -1129,7 +1139,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -1238,7 +1249,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -1343,7 +1355,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -1448,7 +1461,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -1553,7 +1567,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -1658,7 +1673,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -1763,7 +1779,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -1868,7 +1885,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -1973,7 +1991,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -2078,7 +2097,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -2183,7 +2203,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -2288,7 +2309,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -2420,7 +2442,8 @@
               ],
               "canLinkGoogle": false,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -2552,7 +2575,8 @@
               ],
               "canLinkGoogle": false,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -2684,7 +2708,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -2816,7 +2841,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -2922,7 +2948,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -3028,7 +3055,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -3137,7 +3165,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -3256,7 +3285,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -3375,7 +3405,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -3494,7 +3525,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -3623,7 +3655,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -3742,7 +3775,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -3862,7 +3896,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -3995,7 +4030,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -4127,7 +4163,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -4255,7 +4292,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -4401,7 +4439,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -4556,7 +4595,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -4757,7 +4797,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -4955,7 +4996,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -5119,7 +5161,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -5277,7 +5320,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -5399,7 +5443,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -5522,7 +5567,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -5645,7 +5691,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -5768,7 +5815,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -5927,7 +5975,8 @@
               ],
               "canLinkGoogle": false,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -6086,7 +6135,8 @@
               ],
               "canLinkGoogle": false,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -6256,7 +6306,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -6440,7 +6491,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -6605,7 +6657,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -6770,7 +6823,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -6928,7 +6982,8 @@
               ],
               "canLinkGoogle": false,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -7062,7 +7117,8 @@
               ],
               "canLinkGoogle": false,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -7232,7 +7288,8 @@
               ],
               "canLinkGoogle": false,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -7426,7 +7483,8 @@
               ],
               "canLinkGoogle": false,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -7556,7 +7614,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -7672,7 +7731,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -7807,7 +7867,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -7942,7 +8003,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -8076,7 +8138,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -8210,7 +8273,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -8351,7 +8415,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -8501,7 +8566,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -8628,7 +8694,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -8745,7 +8812,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -8853,7 +8921,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -8952,7 +9021,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -9062,7 +9132,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -9172,7 +9243,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -9288,7 +9360,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -9404,7 +9477,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -9509,7 +9583,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -9614,7 +9689,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -9725,7 +9801,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -9836,7 +9913,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -9941,7 +10019,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -10046,7 +10125,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -10157,7 +10237,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -10268,7 +10349,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -10366,7 +10448,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -10476,7 +10559,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -10594,7 +10678,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -10718,7 +10803,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -10834,7 +10920,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -10944,7 +11031,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -11062,7 +11150,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -11186,7 +11275,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -11299,7 +11389,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": true,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -11394,7 +11485,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": true,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           }
@@ -11501,7 +11593,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },
@@ -11628,7 +11721,8 @@
               ],
               "canLinkGoogle": true,
               "needsPersonalLoginMethod": false,
-              "accountDeletionGraceDays": 30
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
             },
             "status": 200
           },

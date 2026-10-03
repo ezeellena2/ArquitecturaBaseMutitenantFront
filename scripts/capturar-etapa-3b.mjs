@@ -117,7 +117,7 @@ async function capture(browser, canvasUrl, appUrl, entry) {
         const pathname = new URL(request.url()).pathname;
         if (request.method() !== "GET") { changed = true; await route.fallback(); return; }
         if (changed && pathname === "/api/me/login-methods" && entry.app.afterMethods) {
-          await route.fulfill({ json: { methods: entry.app.afterMethods, canLinkGoogle: true, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30 } }); return;
+          await route.fulfill({ json: { methods: entry.app.afterMethods, canLinkGoogle: true, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] } }); return;
         }
         if (changed && pathname === "/api/me" && entry.app.afterName) {
           await route.fulfill({ json: { ...visualPersonal, displayName: entry.app.afterName } }); return;
@@ -145,7 +145,7 @@ const cases = scenarios.flatMap((scenario) => [1440, 390].map((width) => {
   return { id: `${scenario.id}-${width === 390 ? "movil" : "escritorio"}`, pair: scenario.id, group: scenario.group, board: `${width === 390 ? "M-" : ""}${scenario.board}`, props: scenario.props, viewport: { width, height: width === 390 ? 844 : 900 }, boardState: scenario.mobileOnly && width !== 390 ? {} : scenario.boardState, note: scenario.note,
     app: { path: `/src/test/visualApp.html?${params}`, captureMode: "harness", actions: scenario.mobileOnly && width !== 390 ? [] : scenario.actions, readyText: scenario.readyText, readySelector: scenario.readySelector, afterMethods: scenario.afterMethods, afterName: scenario.afterName, responses: [
       response("GET", "/api/me", { ...visualPersonal, needsPersonalLoginMethod: scenario.needsOwn ?? false, pendingLegalDocuments: scenario.legal ?? [] }),
-      response("GET", "/api/me/login-methods", { methods: scenario.methods ?? [company, personal], canLinkGoogle: !scenario.methods?.some((method) => method.type === "Google"), needsPersonalLoginMethod: scenario.needsOwn ?? false, accountDeletionGraceDays: 30 }), ...(scenario.responses ?? []),
+      response("GET", "/api/me/login-methods", { methods: scenario.methods ?? [company, personal], canLinkGoogle: !scenario.methods?.some((method) => method.type === "Google"), needsPersonalLoginMethod: scenario.needsOwn ?? false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] }), ...(scenario.responses ?? []),
     ] } };
 }));
 for (const [key, label] of [["verificar-metodo", "Código para verificar un método"], ["metodo-agregado", "Método de ingreso agregado"], ["metodo-quitado", "Método de ingreso quitado"], ["principal-cambiado", "Método principal cambiado"], ["baja-pedida", "Baja pedida"], ["baja-cancelada", "Baja cancelada"], ["cuenta-eliminada", "Cuenta eliminada"]]) {

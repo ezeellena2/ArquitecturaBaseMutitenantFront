@@ -58,7 +58,7 @@ export function referenceDataFixture(culture = "es-AR"): ReferenceData {
 export const handlers: RequestHandler[] = [
   http.get("/api/me/login-methods", () => HttpResponse.json({ methods: [
     { id: "email-ana", type: "Email", value: "ana@example.test", isVerified: true, isPrimary: true, canRemove: false, canMakePrimary: false },
-  ], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30 })),
+  ], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] })),
   http.get("/api/reference-data", ({ request }) => {
     const culture = request.headers.get("accept-language") === "en-US" ? "en-US" : "es-AR";
     const etag = `"fixture-${culture}"`;

@@ -18,7 +18,7 @@ const proof = { sourceMethodId: "2", destination: "lu•••@gmail.com", resen
 const api = (method, path, body, status = 200, query) => ({ method, path, body, status, ...(query ? { query } : {}) });
 const accountResponses = (methods = [personal, company, phone]) => [
   api("GET", "/api/me", visualPersonal),
-  api("GET", "/api/me/login-methods", { methods, canLinkGoogle: true, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30 }),
+  api("GET", "/api/me/login-methods", { methods, canLinkGoogle: true, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] }),
 ];
 
 const ownerRole = {

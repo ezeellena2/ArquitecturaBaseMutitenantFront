@@ -7150,6 +7150,7 @@ export interface components {
             needsPersonalLoginMethod: boolean;
             /** Format: int32 */
             accountDeletionGraceDays: number;
+            soleOwnerOrganizations: string[];
         };
         AddCompanyMemberHttpRequest: {
             /** Format: uuid */
