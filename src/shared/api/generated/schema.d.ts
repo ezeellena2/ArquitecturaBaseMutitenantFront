@@ -1161,9 +1161,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["PlatformTenantStateHttpRequest"];
-                    "text/json": components["schemas"]["PlatformTenantStateHttpRequest"];
-                    "application/*+json": components["schemas"]["PlatformTenantStateHttpRequest"];
+                    "application/json": components["schemas"]["PlatformTenantRetryHttpRequest"];
+                    "text/json": components["schemas"]["PlatformTenantRetryHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformTenantRetryHttpRequest"];
                 };
             };
             responses: {
@@ -7818,6 +7818,10 @@ export interface components {
             ownerName?: null | string;
             /** @description Correo normalizado para comparar y enviar; el dominio IDN se guarda en ASCII. */
             ownerEmail?: null | string;
+        };
+        PlatformTenantRetryHttpRequest: {
+            /** Format: uint32 */
+            version?: null | number;
         };
         PlatformTenantSourceCount: {
             source: components["schemas"]["TenantRegistrationSource"];
