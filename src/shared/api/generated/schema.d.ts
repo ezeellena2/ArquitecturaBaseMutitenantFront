@@ -6752,7 +6752,7 @@ export interface components {
             /** Format: uuid */
             firstCompanyId: string;
             status: components["schemas"]["TenantStatus"];
-            notificationEmail?: null | string;
+            notificationEmail?: null | components["schemas"]["Email"];
         };
         BusinessSignupTaxIdHttpRequest: {
             type?: null | string;
