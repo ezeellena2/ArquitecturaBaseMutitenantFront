@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { CircleAlert, Globe, Globe2, Info } from "lucide-react";
 import { useId, useState, type ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -13,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
+import { phoneDraftFromE164 } from "@/shared/phone/phoneInput";
 import { PhoneField, type PhoneDraft } from "@/shared/ui/fields/PhoneField";
 import { Page } from "@/shared/ui/Page";
 import { Surface } from "@/shared/ui/Surface";
@@ -38,20 +38,13 @@ interface PageDraft {
   removeLogo: boolean;
 }
 
-// La API devuelve E.164; para editarlo se muestra como país y número nacional (telefonos.md).
-function phoneDraft(e164: string | null | undefined): PhoneDraft | null {
-  if (!e164) return null;
-  const parsed = parsePhoneNumberFromString(e164);
-  return parsed?.country ? { country: parsed.country, number: parsed.formatNational() } : { country: "", number: e164 };
-}
-
 // El dominio público de la plataforma; en desarrollo la URL real se arma con `publicUrl`.
 const PUBLIC_DOMAIN = ".plataforma.com";
 
 function draftFromPage(page: PublicPageResponse): PageDraft {
   return {
     slug: page.slug ?? "", name: page.name, description: page.description ?? "", contactEmail: page.contactEmail ?? "",
-    contactPhone: phoneDraft(page.contactPhone), address: page.address ?? "", website: page.website ?? "",
+    contactPhone: phoneDraftFromE164(page.contactPhone), address: page.address ?? "", website: page.website ?? "",
     logoDataUri: page.logoDataUri ?? null, uploadedLogoBase64: null, logoContentType: null, removeLogo: false,
   };
 }

@@ -29,3 +29,10 @@ export function formatPhoneDraft(
   const number = new AsYouType(country as CountryCode).input(raw);
   return { country, number, isValid: country !== "" && isValidPhoneNumber(number, country as CountryCode) };
 }
+
+/** Para editar un teléfono guardado: la API devuelve E.164 y el campo trabaja con país y número nacional. */
+export function phoneDraftFromE164(value: string | null | undefined): { country: string; number: string } | null {
+  if (!value) return null;
+  const parsed = parsePhoneNumberFromString(value);
+  return parsed?.country ? { country: parsed.country, number: parsed.formatNational() } : { country: "", number: value };
+}

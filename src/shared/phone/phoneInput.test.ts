@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CountryReference } from "@/shared/referenceData/referenceData";
-import { formatPhoneDraft } from "./phoneInput";
+import { formatPhoneDraft, phoneDraftFromE164 } from "./phoneInput";
 
 const countries = [
   { code: "AR", callingCode: "54", isEnabled: true },
@@ -23,5 +23,17 @@ describe("formatPhoneDraft", () => {
 
   it("marca incompleto un número mientras se escribe", () => {
     expect(formatPhoneDraft("11 2", "AR", countries)).toMatchObject({ country: "AR", isValid: false });
+  });
+});
+
+describe("phoneDraftFromE164", () => {
+  it("separa un teléfono guardado en país y número nacional para editarlo", () => {
+    expect(phoneDraftFromE164("+541143215678")).toEqual({ country: "AR", number: "011 4321-5678" });
+  });
+
+  it("sin teléfono no hay borrador y uno irreconocible queda tal cual", () => {
+    expect(phoneDraftFromE164(null)).toBeNull();
+    expect(phoneDraftFromE164("")).toBeNull();
+    expect(phoneDraftFromE164("12")).toEqual({ country: "", number: "12" });
   });
 });
