@@ -27,6 +27,8 @@ El título de cada tablero dice en qué estado está:
 
 La aplicación se migra al criterio visual por etapas: Mi cuenta y las piezas compartidas se abordaron en la Etapa 4; las pantallas de Organización aprobadas se implementan en la Etapa 6. Los dos inicios de Organización siguen pendientes de diseño.
 
+Ajuste solicitado el 2026-10-03: el detalle de Auditoría de Plataforma usa el encabezado arena de `Criterio-Dialogos`, con la fecha en el cuerpo, datos de lectura y cierre compacto. En teléfono aparece desde abajo y ocupa todo el ancho. Este ajuste no aprueba el resto de Plataforma ni las propuestas de WhatsApp.
+
 ## Verlo sin claude.ai
 
 Serví esta carpeta con un servidor estático, por ejemplo con `python -m http.server`, y abrí `<Tablero>.dc.html`. Cada estado se elige con el control **Tweak**. El estado inicial está en el atributo `data-props` como `default`.
@@ -75,6 +77,7 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 | Script | Qué hace |
 |---|---|
 | `criterio_*.py` | Los 8 tableros de «Criterio de diseño». Cada decisión nueva suma una fila en `criterio_decisiones.py` y, si deja una regla, se escribe también en el tablero de esa pieza |
+| `auditoria_plat_dialogo.py` | Alinea el detalle de Auditoría de Plataforma, escritorio y teléfono, con `Criterio-Dialogos`, conservando los datos y la lógica. |
 | `perfil_tableros.py` | Perfil personal: Inicio, Mi cuenta y sus diálogos, con las versiones de teléfono |
 | `whatsapp_tableros.py` | Los 15 de WhatsApp. Las piezas comunes (`w-*`, íconos, banda) salen de acá. |
 | `org_formularios.py` | Configuración, Página pública y sus diálogos |
