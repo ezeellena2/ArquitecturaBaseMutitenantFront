@@ -19,13 +19,13 @@ El título de cada tablero dice en qué estado está:
 | Sitio público | 6 | Por refinar |
 | Ingreso y registro | 18 | Validado |
 | Perfil personal | 7 | Validado |
-| Organización | 26 | Escritorio aprobado el 2026-10-02, salvo los dos inicios, que quedan para repensar. Los teléfonos siguen para aprobar. |
+| Organización | 26 | Escritorio y móviles aprobados el 2026-10-03, salvo los dos inicios, que quedan para repensar. |
 | Organización · WhatsApp | 15 | Propuesta que le gustó al usuario; falta sumarla al plan (E11) |
 | Plataforma | 12 | Por refinar |
 | Textos y mensajes | 2 | Validado |
 | Archivo | 14 | Descartado. Son versiones anteriores; están como referencia y no se programan. |
 
-El código del front todavía sigue el aspecto de la versión 35. Pasarlo al criterio es un paso pendiente: primero los componentes compartidos, después Mi cuenta y después el resto.
+La aplicación se migra al criterio visual por etapas: Mi cuenta y las piezas compartidas se abordaron en la Etapa 4; las pantallas de Organización aprobadas se implementan en la Etapa 6. Los dos inicios de Organización siguen pendientes de diseño.
 
 ## Verlo sin claude.ai
 

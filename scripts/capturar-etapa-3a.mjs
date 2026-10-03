@@ -135,7 +135,11 @@ export async function runAppActions(page, actions = []) {
     if (action.type === "fill") {
       await page.getByRole(action.role, { name: action.name }).fill(action.value);
     } else if (action.type === "click") {
-      await page.getByRole(action.role, { name: action.name }).click();
+      await page.getByRole(action.role, { name: action.name }).click({ force: action.force ?? false });
+    } else if (action.type === "press") {
+      const target = page.getByRole(action.role, { name: action.name });
+      await target.focus();
+      await target.press(action.key);
     } else if (action.type === "otp") {
       await page.getByRole("textbox", { name: "Código 1" }).click();
       await page.keyboard.type(action.value);
@@ -199,13 +203,15 @@ export async function captureCase(browser, entry, { canvasUrl, appUrl, outputRoo
   try {
     if (hasComparableBoard(entry)) {
       const board = await context.newPage();
+      await board.setViewportSize(entry.boardViewport ?? entry.viewport);
       await board.goto(`${canvasUrl}/${entry.board}.dc.html`, { waitUntil: "domcontentloaded" });
       await board.waitForFunction(() => typeof window.__dcSetProps === "function" && Boolean(window.__dcRootName?.()));
       await board.evaluate((props) => window.__dcSetProps(window.__dcRootName(), props), entry.props ?? {});
       await board.locator("[data-sc-name]").first().waitFor();
+      await board.waitForTimeout(200);
       for (const action of entry.boardActions ?? []) {
         if (action.type !== "click") throw new Error(`Acción de tablero desconocida: ${action.type}`);
-        await board.locator(action.selector).click();
+        await board.locator(action.selector).click({ force: action.force ?? false });
       }
       await board.waitForTimeout(100);
       await board.addStyleTag({ content: '@font-face { font-family: Inter; src: url("/_fonts/inter-latin-wght-normal.woff2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }' });
