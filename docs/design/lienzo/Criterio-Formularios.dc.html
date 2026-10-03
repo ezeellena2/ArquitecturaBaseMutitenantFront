@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 2440px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 2650px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -588,23 +588,28 @@
 .sw::after { content: ""; position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; }
 .aviso-mal { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: var(--peligro-t); color: oklch(0.45 0.17 25); font-size: 13px; }
 .dos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.caja2 { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
+.caja2 .cab2 { display: flex; align-items: center; min-height: 40px; padding: 0 16px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 13px; font-weight: 600; }
+.g2c { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 16px 20px 20px; }
+.g2c .ancho { grid-column: 1 / -1; }
+.g4c { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
   </style>
 </helmet>
 
 <div class="crit">
   <div>
     <h1>Formularios y campos</h1>
-    <p class="sub">Rótulo arriba, el control más simple para cada dato y cada campo con el ancho de lo que lleva.</p>
+    <p class="sub">Rótulo arriba, el control más simple para cada dato y, en cada caja, dos columnas iguales a todo el ancho.</p>
   </div>
 
   <section>
     <h2>Un campo y sus estados</h2>
     <div class="hoja2">
-      <div class="fila-c">
-        <div class="cmp" style="width: 300px;"><span class="rot">Correo <span class="req">*</span></span><div class="ctl">sofia.herrera@delta.ejemplo.com</div><span class="err3" style="color: var(--t3);">Normal</span></div>
-        <div class="cmp" style="width: 300px;"><span class="rot">Correo <span class="req">*</span></span><div class="ctl foco">sofia.herrera@</div><span class="err3" style="color: var(--t3);">Escribiendo: borde petróleo</span></div>
-        <div class="cmp" style="width: 300px;"><span class="rot">Correo <span class="req">*</span></span><div class="ctl mal">sofia.herrera@</div><span class="err3">Revisá el correo: no parece válido.</span></div>
-        <div class="cmp" style="width: 300px;"><span class="rot">Correo <span class="req">*</span></span><div class="ctl mal"></div><span class="err3">Escribí el correo.</span></div>
+      <div class="g4c">
+        <div class="cmp"><span class="rot">Correo <span class="req">*</span></span><div class="ctl">sofia.herrera@delta.ejemplo.com</div><span class="err3" style="color: var(--t3);">Normal</span></div>
+        <div class="cmp"><span class="rot">Correo <span class="req">*</span></span><div class="ctl foco">sofia.herrera@</div><span class="err3" style="color: var(--t3);">Escribiendo: borde petróleo</span></div>
+        <div class="cmp"><span class="rot">Correo <span class="req">*</span></span><div class="ctl mal">sofia.herrera@</div><span class="err3">Revisá el correo: no parece válido.</span></div>
+        <div class="cmp"><span class="rot">Correo <span class="req">*</span></span><div class="ctl mal"></div><span class="err3">Escribí el correo.</span></div>
       </div>
     </div>
     <ul class="reglas2" style="margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 40px;">
@@ -639,26 +644,28 @@
   </section>
 
   <section>
-    <h2>Cada campo, del ancho de su dato</h2>
-    <div class="hoja2">
-      <div class="fila-c">
-        <div class="cmp" style="width: 360px;"><span class="rot">Nombre y apellido</span><div class="ctl">Lucía Fernández</div></div>
-        <div class="cmp" style="width: 260px;"><span class="rot">Idioma y región</span><div class="ctl">Español (Argentina) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--t3); flex-shrink: 0;"><path d="m7 10 5 5 5-5"/></svg></div></div>
-        <div class="cmp" style="width: 260px;"><span class="rot">Zona horaria</span><div class="ctl">Buenos Aires (GMT−3) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--t3); flex-shrink: 0;"><path d="m7 10 5 5 5-5"/></svg></div></div>
-      </div>
-      <div class="fila-c" style="margin-top: 16px;">
-        <div class="cmp" style="width: 360px;"><span class="rot">Correo</span><div class="ctl">lucia.fer@gmail.com</div></div>
-        <div class="cmp" style="width: 280px;"><span class="rot">WhatsApp</span><div class="tel"><div class="ctl" style="width: 84px;">+54 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--t3); flex-shrink: 0;"><path d="m7 10 5 5 5-5"/></svg></div><div class="ctl" style="flex: 1;">11 5555-4521</div></div></div>
-        <div class="cmp" style="width: 200px;"><span class="rot">CUIT</span><div class="ctl">30-71234567-8</div></div>
+    <h2>Una caja por tema, a todo el ancho</h2>
+    <div class="caja2">
+      <div class="cab2">Datos de la organización</div>
+      <div class="g2c">
+        <div class="cmp"><span class="rot">Nombre de la organización <span class="req">*</span></span><div class="ctl">Grupo Delta</div></div>
+        <div class="cmp"><span class="rot">Idioma y región predeterminados</span><div class="ctl">Español (Argentina) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--t3); flex-shrink: 0;"><path d="m7 10 5 5 5-5"/></svg></div></div>
+        <div class="cmp"><span class="rot">Zona horaria predeterminada</span><div class="ctl">Buenos Aires (GMT−3) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--t3); flex-shrink: 0;"><path d="m7 10 5 5 5-5"/></svg></div></div>
+        <div class="cmp"><span class="rot">Moneda predeterminada</span><div class="ctl">Peso argentino (ARS) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--t3); flex-shrink: 0;"><path d="m7 10 5 5 5-5"/></svg></div></div>
+        <div class="cmp ancho"><span class="rot">Descripción</span><div class="ctl area">Distribuidora de insumos para la construcción, con sucursales en Buenos Aires y Córdoba.</div></div>
       </div>
     </div>
+    <ul class="reglas2" style="margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 40px;">
+      <li><strong>Una caja por tema</strong>, con el título en el encabezado arena. Nunca varias secciones en una misma hoja.</li>
+      <li><strong>Dos columnas iguales</strong> que ocupan todo el ancho de la caja. Todas las filas de la caja usan las mismas columnas.</li>
+      <li><strong>Un texto largo</strong>, como una descripción o un motivo, ocupa las dos columnas.</li>
+      <li><strong>Lo que es una lista</strong> (correos, dominios, empresas) va en una caja de lista, no en campos. Ver «Tablas y listas».</li>
+    </ul>
     <div class="medidas" style="margin-top: 16px;">
-      <div class="cab" style="grid-template-columns: 240px 170px minmax(0, 1fr);"><span>Dato</span><span>Ancho</span><span>Ejemplos</span></div>
-      <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Nombre, correo</strong><span>360 px</span><span>Nombre y apellido, correo, nombre de una empresa.</span></div>
-      <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Teléfono</strong><span>280 px</span><span>Prefijo del país y número.</span></div>
-      <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Desplegable</strong><span>260 px</span><span>Idioma, zona horaria, empresa, roles.</span></div>
-      <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Número o documento</strong><span>200 px</span><span>CUIT, DNI, código postal, un monto.</span></div>
-      <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Texto largo</strong><span>Todo el ancho</span><span>Motivo, descripción. Hasta 720 px.</span></div>
+      <div class="cab" style="grid-template-columns: 240px 170px minmax(0, 1fr);"><span>Pieza</span><span>Medida</span><span>Cómo es</span></div>
+      <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Columnas</strong><span>Dos iguales</span><span>16 px entre una y otra. Tres solo si todos los datos son cortos, como en «Tus datos».</span></div>
+      <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Encabezado de la caja</strong><span>40 px</span><span>Fondo arena, igual que el de una tabla. Título de 13 en semibold.</span></div>
+      <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Adentro de la caja</strong><span>16 y 20 px</span><span>16 arriba y entre filas; 20 a los costados y abajo.</span></div>
       <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Alto de todo campo</strong><span>36 px</span><span>Igual que un botón normal. El código, 44 px.</span></div>
     </div>
   </section>
@@ -667,11 +674,11 @@
     <h2>Errores</h2>
     <div class="dos">
       <div class="hoja2" style="display: flex; flex-direction: column; gap: 14px;">
-        <div class="cmp" style="width: 360px;"><span class="rot">Nombre y apellido</span><div class="ctl mal">Lucía Fernández de la Santísima Trinidad y…</div><span class="err3">El nombre es demasiado largo.</span></div>
+        <div class="cmp"><span class="rot">Nombre y apellido</span><div class="ctl mal">Lucía Fernández de la Santísima Trinidad y…</div><span class="err3">El nombre es demasiado largo.</span></div>
         <div class="cmp"><span class="rot">Motivo <span class="req">*</span></span><div class="ctl area mal"></div><span class="err3">Escribí el motivo.</span></div>
       </div>
       <div class="hoja2" style="display: flex; flex-direction: column; gap: 14px;">
-        <div class="cmp" style="width: 360px;"><span class="rot">Nombre y apellido</span><div class="ctl">Lucía Fernández</div></div>
+        <div class="cmp"><span class="rot">Nombre y apellido</span><div class="ctl">Lucía Fernández</div></div>
         <div class="aviso-mal" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg> No pudimos conectarnos. Revisá tu conexión.</div>
         <div style="display: flex; justify-content: flex-end; gap: 8px;"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Guardar cambios</button></div>
       </div>
@@ -687,7 +694,7 @@
     <ul class="prohibido">
       <li>Rótulos adentro del campo en vez de arriba.</li>
       <li>Ayudas o ejemplos debajo de cada campo.</li>
-      <li>Campos estirados a todo el ancho de la pantalla.</li>
+      <li>Campos a medio ancho con el resto de la caja vacío, o filas con columnas distintas en la misma caja.</li>
       <li>Listas de casillas sueltas: van en un desplegable.</li>
       <li>Campos grises de solo lectura: lo que no se edita se muestra como texto.</li>
       <li>Avisar un error con un aviso que desaparece.</li>
@@ -698,7 +705,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2440}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2650}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

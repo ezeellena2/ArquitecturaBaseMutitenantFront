@@ -65,7 +65,7 @@
       "y": 1280
     },
     "Criterio-Avisos.dc.html": {
-      "h": 2300,
+      "h": 2620,
       "page": "criterio",
       "title": "Criterio · Avisos y errores",
       "w": 1440,
@@ -81,7 +81,7 @@
       "y": 260
     },
     "Criterio-Dialogos.dc.html": {
-      "h": 2200,
+      "h": 2840,
       "page": "criterio",
       "title": "Criterio · Diálogos",
       "w": 1440,
@@ -89,7 +89,7 @@
       "y": 260
     },
     "Criterio-Formularios.dc.html": {
-      "h": 2440,
+      "h": 2650,
       "page": "criterio",
       "title": "Criterio · Formularios y campos",
       "w": 1440,
@@ -113,7 +113,7 @@
       "y": 260
     },
     "Criterio-Tablas.dc.html": {
-      "h": 2130,
+      "h": 2650,
       "page": "criterio",
       "title": "Criterio · Tablas y listas",
       "w": 1440,
@@ -967,6 +967,14 @@
       "title": "Editar un rol · teléfono (antes del criterio)",
       "page": "archivo",
       "is_interactive": true
+    },
+    "Criterio-Decisiones.dc.html": {
+      "h": 1580,
+      "page": "criterio",
+      "title": "Criterio · Decisiones por pantalla",
+      "w": 1440,
+      "x": 10640,
+      "y": 260
     }
   },
   "createdOnFiles": {
@@ -1243,7 +1251,8 @@
     "Rol-Anterior.dc.html",
     "Avisos-Anterior.dc.html",
     "M-Usuario-Anterior.dc.html",
-    "M-Rol-Anterior.dc.html"
+    "M-Rol-Anterior.dc.html",
+    "Criterio-Decisiones.dc.html"
   ],
   "pages": [
     {

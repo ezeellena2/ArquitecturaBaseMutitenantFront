@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 2130px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 2650px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -553,7 +553,7 @@
 .fb2 .bus { width: 360px; height: 36px; box-sizing: border-box; border: 1px solid var(--borde); border-radius: 8px; background: var(--s2); display: flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--t3); font-size: 14px; }
 .fb2 .pil { height: 36px; box-sizing: border-box; border: 1px solid var(--borde); border-radius: 999px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--t2); background: #fff; }
 .tb { background: #fff; border: 1px solid var(--borde); border-radius: 12px; }
-.tb .th, .tb .tr { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.75fr) minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr) 190px 110px 48px; gap: 16px; align-items: center; padding: 0 8px 0 16px; }
+.tb .th, .tb .tr { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr) 48px; gap: 16px; align-items: center; padding: 0 8px 0 16px; }
 .tb .th { min-height: 40px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); border-radius: 11px 11px 0 0; font-size: 13px; font-weight: 600; color: var(--t2); }
 .tb .tr { min-height: 40px; border-bottom: 1px solid var(--borde); font-size: 13px; position: relative; }
 .tb .tr:nth-child(odd) { background: oklch(0.975 0.008 78); }
@@ -598,6 +598,19 @@
 .mini .esq span { height: 12px; border-radius: 6px; background: oklch(0.93 0.01 78); }
 .medidas .fil { box-sizing: border-box; }
 .mini .rot2 { padding: 10px 16px; border-top: 1px solid var(--borde); font-size: 13px; font-weight: 600; color: var(--t2); }
+.tb .tr.d2 { min-height: 52px; }
+.tb .tr .dos { display: flex; flex-direction: column; line-height: 1.35; }
+.tb .tr .dos > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tb .tr .l2 { font-size: 12px; color: var(--t3); }
+.tb .tr .l2.sang { padding-left: 16px; }
+.lista .gcab { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 16px 0 10px; background: oklch(0.975 0.008 78); border-bottom: 1px solid var(--borde); font-size: 13px; }
+.lista .gcab strong { font-weight: 600; }
+.lista .gcab .cnt { margin-left: auto; color: var(--t3); }
+.lista .gcab .fl { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; color: var(--t3); }
+.lista .gcab .fl.ab svg { transform: rotate(90deg); }
+.lista .it.perm { min-height: 40px; padding-left: 54px; gap: 10px; }
+.cas { width: 16px; height: 16px; box-sizing: border-box; border-radius: 4px; border: 1.5px solid var(--borde2); background: #fff; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.cas.si { background: var(--marca); border-color: var(--marca); color: #fff; }
   </style>
 </helmet>
 
@@ -612,21 +625,21 @@
     <div style="display: flex; flex-direction: column; gap: 16px;">
       <div class="fb2" role="search" aria-label="Filtrar usuarios"><span class="bus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 3.5 3.5"/></svg> Buscar por nombre o correo</span><span class="pil">Estado <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></span><span class="pil">Empresa <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></span></div>
       <div class="tb">
-        <div class="th"><span>Nombre</span><span>Correo</span><span>Roles de la organización</span><span>Empresa</span><span>Roles en la empresa</span><span>Estado</span><span>Vence</span><span class="sr">Acciones</span></div>
-        <div class="tr"><span class="n">Lucía Fernández</span><span>lucia.fernandez@delta.ejemplo.com</span><span>Dueño</span><span>Delta S.A.</span><span>Administrador</span><span><span class="est ok">Activo</span></span><span><span class="nada">—</span></span><span class="der"><button type="button" class="ib" aria-label="Acciones de Lucía Fernández"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div>
-        <div class="tr h"><span class="n">Tomás Acosta</span><span>tomas.acosta@delta.ejemplo.com</span><span><span class="nada">—</span></span><span>Delta S.A.</span><span>Solo lectura</span><span><span class="est ok">Activo</span></span><span><span class="nada">—</span></span><span class="der"><button type="button" class="ib h" aria-label="Acciones de Tomás Acosta"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button><div class="menu2" role="menu"><span class="it" role="menuitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 5.5 18.5 8.5 9 18H6v-3z"/></svg> Editar</span><div class="sep" role="separator"></div><span class="it pel" role="menuitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m6.5 6.5 11 11"/></svg> Deshabilitar</span></div></span></div>
-        <div class="tr"><span class="n">Julieta Sosa</span><span>julieta.sosa@delta.ejemplo.com</span><span>Auditor</span><span><span class="nada">—</span></span><span><span class="nada">—</span></span><span><span class="est ok">Activo</span></span><span><span class="nada">—</span></span><span class="der"><button type="button" class="ib" aria-label="Acciones de Julieta Sosa"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div>
-        <div class="tr"><span class="n">Diego Ríos</span><span>diego.rios@delta.ejemplo.com</span><span><span class="nada">—</span></span><span>Delta S.A.</span><span>Solo lectura</span><span><span class="est alerta">Baja pedida</span></span><span>27/10/2026</span><span class="der"><button type="button" class="ib" aria-label="Acciones de Diego Ríos"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div>
-        <div class="tr"><span class="n">Martín Paz</span><span>martin.paz@delta.ejemplo.com</span><span><span class="nada">—</span></span><span>Delta S.A.</span><span>Solo lectura</span><span><span class="est ok">Activo</span></span><span><span class="nada">—</span></span><span class="der"><button type="button" class="ib" aria-label="Acciones de Martín Paz"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div>
-        <div class="tr"><span class="n">Marcos Giménez</span><span>marcos.gimenez@delta.ejemplo.com</span><span><span class="nada">—</span></span><span><span class="nada">—</span></span><span><span class="nada">—</span></span><span><span class="est off">Deshabilitado</span></span><span><span class="nada">—</span></span><span class="der"><button type="button" class="ib" aria-label="Acciones de Marcos Giménez"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div>
-        <div class="tr"><span class="n">Sofía Herrera</span><span>sofia.herrera@delta.ejemplo.com</span><span><span class="nada">—</span></span><span>Delta S.A.</span><span>Solo lectura</span><span><span class="est pend">Invitación pendiente</span></span><span>02/10/2026</span><span class="der"><button type="button" class="ib" aria-label="Acciones de Sofía Herrera"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div>
+        <div class="th"><span>Usuario</span><span>Rol en la organización</span><span>Empresa</span><span>Estado</span><span class="sr">Acciones</span></div>
+        <div class="tr d2"><span class="dos"><span class="n">Lucía Fernández</span><span class="l2">lucia.fernandez@delta.ejemplo.com</span></span><span>Dueño</span><span class="dos"><span>Delta S.A.</span><span class="l2">Administrador</span></span><span><span class="est ok">Activo</span></span><span class="der"><button type="button" class="ib" aria-label="Acciones de Lucía Fernández"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div>
+        <div class="tr d2 h"><span class="dos"><span class="n">Tomás Acosta</span><span class="l2">tomas.acosta@delta.ejemplo.com</span></span><span><span class="nada">—</span></span><span class="dos"><span>Delta S.A.</span><span class="l2">Solo lectura</span></span><span><span class="est ok">Activo</span></span><span class="der"><button type="button" class="ib h" aria-label="Acciones de Tomás Acosta"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button><div class="menu2" role="menu"><span class="it" role="menuitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 5.5 18.5 8.5 9 18H6v-3z"/></svg> Editar</span><div class="sep" role="separator"></div><span class="it pel" role="menuitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m6.5 6.5 11 11"/></svg> Deshabilitar</span></div></span></div>
+        <div class="tr d2"><span class="dos"><span class="n">Julieta Sosa</span><span class="l2">julieta.sosa@delta.ejemplo.com</span></span><span>Auditor</span><span><span class="nada">—</span></span><span><span class="est ok">Activo</span></span><span class="der"><button type="button" class="ib" aria-label="Acciones de Julieta Sosa"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div>
+        <div class="tr d2"><span class="dos"><span class="n">Diego Ríos</span><span class="l2">diego.rios@delta.ejemplo.com</span></span><span><span class="nada">—</span></span><span class="dos"><span>Delta S.A.</span><span class="l2">Solo lectura</span></span><span><span class="est alerta">Baja pedida</span></span><span class="der"><button type="button" class="ib" aria-label="Acciones de Diego Ríos"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div>
+        <div class="tr d2"><span class="dos"><span class="n">Martín Paz</span><span class="l2">martin.paz@delta.ejemplo.com</span></span><span><span class="nada">—</span></span><span class="dos"><span>Delta S.A.</span><span class="l2">Solo lectura</span></span><span><span class="est ok">Activo</span></span><span class="der"><button type="button" class="ib" aria-label="Acciones de Martín Paz"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div>
+        <div class="tr d2"><span class="dos"><span class="n">Marcos Giménez</span><span class="l2">marcos.gimenez@delta.ejemplo.com</span></span><span><span class="nada">—</span></span><span><span class="nada">—</span></span><span><span class="est off">Deshabilitado</span></span><span class="der"><button type="button" class="ib" aria-label="Acciones de Marcos Giménez"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div>
+        <div class="tr d2"><span class="dos"><span class="n">Sofía Herrera</span><span class="l2">sofia.herrera@delta.ejemplo.com</span></span><span><span class="nada">—</span></span><span class="dos"><span>Delta S.A.</span><span class="l2">Solo lectura</span></span><span class="dos"><span class="est pend">Invitación pendiente</span><span class="l2 sang">Vence 02/10/2026</span></span><span class="der"><button type="button" class="ib" aria-label="Acciones de Sofía Herrera"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div>
         <div class="pie"><span>1–7 de 7</span><span class="pag"><span class="pil">10 por página <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></span><span>Página 1 de 1</span><button type="button" class="ib" aria-label="Página anterior" disabled="{{si}}" style="opacity: 0.4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><button type="button" class="ib" aria-label="Página siguiente" disabled="{{si}}" style="opacity: 0.4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5.5 6.5 6.5-6.5 6.5"/></svg></button></span></div>
       </div>
       <ul class="reglas2" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 40px;">
         <li><strong>Filtros en su propia tarjeta</strong>, arriba de la tabla. Sin botones.</li>
         <li><strong>Encabezado con color:</strong> 40 px, fondo arena, sin mayúsculas.</li>
-        <li><strong>Filas de 40 px</strong>, con la letra de hoy (13), alternadas. Al pasar el mouse, petróleo claro.</li>
-        <li><strong>Un dato por columna</strong> y en una sola línea. Sin dato, una raya.</li>
+        <li><strong>Filas de 40 px</strong>, o de 52 con segunda línea. Letra de hoy (13), alternadas. Al pasar el mouse, petróleo claro.</li>
+        <li><strong>Un tema por columna.</strong> Debajo, en gris, lo que lo aclara: el correo, el rol en la empresa, cuándo vence. Sin dato, una sola raya.</li>
         <li><strong>El estado es un punto de color y la palabra</strong>, sin fondo. Números y montos, a la derecha.</li>
         <li><strong>Las acciones van en ⋮:</strong> las comunes arriba; las de peligro abajo, en rojo y separadas.</li>
         <li><strong>Más de 10 filas, paginado:</strong> al pie, adentro de la misma caja. De entrada, 10 por página.</li>
@@ -649,6 +662,28 @@
         <li><strong>El encabezado lleva el título</strong>, con el mismo color que el de la tabla, y a lo sumo una acción chica a la derecha.</li>
         <li><strong>Sin encabezado de columnas.</strong> Filas de 44 px; con segunda línea, 56 px.</li>
         <li><strong>Lo que aclara cada fila</strong> («Principal», «Sin verificar») va en la segunda línea, en gris. Nunca como etiqueta ni como texto suelto a la derecha.</li>
+        <li><strong>Se lee, no se edita adentro.</strong> Cambiar una fila o sumar otra abre un diálogo chico, desde el ⋮ o desde la acción del encabezado.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Lista con grupos que se abren</h2>
+    <div class="lado">
+      <div class="lista">
+        <div class="cab"><span>Permisos</span></div>
+        <div class="gcab"><span class="fl ab"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5.5 6.5 6.5-6.5 6.5"/></svg></span><span class="cas si"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span><strong>Usuarios</strong><span class="cnt">3 de 3</span></div>
+        <div class="it perm"><span class="cas si"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>Ver usuarios</div>
+        <div class="it perm"><span class="cas si"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>Invitar usuarios</div>
+        <div class="it perm"><span class="cas si"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>Administrar usuarios</div>
+        <div class="gcab"><span class="fl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5.5 6.5 6.5-6.5 6.5"/></svg></span><span class="cas">&nbsp;</span><strong>Roles</strong><span class="cnt">0 de 3</span></div>
+        <div class="gcab"><span class="fl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5.5 6.5 6.5-6.5 6.5"/></svg></span><span class="cas">&nbsp;</span><strong>Empresas</strong><span class="cnt">0 de 2</span></div>
+      </div>
+      <ul class="reglas2">
+        <li><strong>Solo para los permisos de un rol.</strong> Es la única lista que se abre y se cierra.</li>
+        <li><strong>Cada grupo se abre</strong> con la flecha o con el nombre. Tiene su casilla de «todos» y la cuenta «3 de 3».</li>
+        <li><strong>Al entrar</strong>, están abiertos los grupos con algo marcado y cerrados los demás.</li>
+        <li><strong>Una fila por permiso</strong>, solo con el nombre, sin explicación gris.</li>
       </ul>
     </div>
   </section>
@@ -658,7 +693,7 @@
     <div class="medidas">
       <div class="cab" style="grid-template-columns: 220px 150px minmax(0, 1fr);"><span>Pieza</span><span>Medida</span><span>Cómo es</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Encabezado</strong><span>40 px</span><span>Fondo arena, letra de 13 en semibold, gris oscuro, sin mayúsculas. Igual en tablas, listas y cajas.</span></div>
-      <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Fila de tabla</strong><span>40 px</span><span>Letra de 13, la de hoy. Una fila sí y otra no, arena muy suave. Al pasar el mouse, petróleo claro.</span></div>
+      <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Fila de tabla</strong><span>40 o 52 px</span><span>Letra de 13, la de hoy; la segunda línea, gris de 12. Una fila sí y otra no, arena muy suave. Al pasar el mouse, petróleo claro.</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Fila de lista</strong><span>44 o 56 px</span><span>Letra de 13. Lo que aclara la fila, en una segunda línea gris de 12.</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Estado</strong><span>Punto de 8 px</span><span>Punto de color y la palabra, sin fondo: verde activo, petróleo pendiente, ámbar atención, gris apagado.</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Columna de acciones</strong><span>48 px</span><span>Solo el ⋮, botón de ícono de 32 × 32.</span></div>
@@ -669,10 +704,10 @@
   <section>
     <h2>Cuando no hay filas</h2>
     <div class="g4">
-      <div class="mini"><div class="th"><span>Nombre</span><span>Correo</span></div><div class="cuerpo"><div class="esq"><span style="width: 80%;"></span><span style="width: 65%;"></span><span style="width: 72%;"></span><span style="width: 55%;"></span></div></div><div class="rot2">Cargando</div></div>
-      <div class="mini"><div class="th"><span>Nombre</span><span>Correo</span></div><div class="cuerpo"><strong>Todavía no hay usuarios.</strong></div><div class="rot2">Todavía no hay nada · se crea desde la banda</div></div>
-      <div class="mini"><div class="th"><span>Nombre</span><span>Correo</span></div><div class="cuerpo"><strong>Ningún usuario coincide con los filtros.</strong><button type="button" class="cb cb-enl" style="font-size: 14px;">Limpiar filtros</button></div><div class="rot2">Ninguno coincide</div></div>
-      <div class="mini"><div class="th"><span>Nombre</span><span>Correo</span></div><div class="cuerpo"><strong>No pudimos cargar los usuarios.</strong><button type="button" class="cb cb-sec ch">Reintentar</button></div><div class="rot2">Error</div></div>
+      <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="cuerpo"><div class="esq"><span style="width: 80%;"></span><span style="width: 65%;"></span><span style="width: 72%;"></span><span style="width: 55%;"></span></div></div><div class="rot2">Cargando</div></div>
+      <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="cuerpo"><strong>Todavía no hay usuarios.</strong></div><div class="rot2">Todavía no hay nada · se crea desde la banda</div></div>
+      <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="cuerpo"><strong>Ningún usuario coincide con los filtros.</strong><button type="button" class="cb cb-enl" style="font-size: 14px;">Limpiar filtros</button></div><div class="rot2">Ninguno coincide</div></div>
+      <div class="mini"><div class="th"><span>Usuario</span><span>Estado</span></div><div class="cuerpo"><strong>No pudimos cargar los usuarios.</strong><button type="button" class="cb cb-sec ch">Reintentar</button></div><div class="rot2">Error</div></div>
     </div>
   </section>
 
@@ -681,7 +716,8 @@
     <ul class="prohibido">
       <li>Encabezados en mayúsculas o sin color.</li>
       <li>Etiquetas o textos sueltos que cuentan un estado al lado de un dato: «Principal», «Suspendida», roles.</li>
-      <li>Celdas de dos líneas, como nombre y correo juntos.</li>
+      <li>Dos datos sin relación en la misma celda: la segunda línea solo aclara la primera.</li>
+      <li>Una columna aparte para algo que aclara otra: el correo va debajo del nombre.</li>
       <li>Botones sueltos en la fila, salvo un enlace que pide el estado.</li>
       <li>Filtros y tabla en la misma tarjeta.</li>
       <li>Una tabla dentro de un diálogo.</li>
@@ -693,7 +729,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2130}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2650}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

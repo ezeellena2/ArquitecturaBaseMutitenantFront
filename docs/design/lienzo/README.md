@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 62** (2026-10-02) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 109 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 63** (2026-10-02) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 110 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -14,7 +14,7 @@ El título de cada tablero dice en qué estado está:
 
 | Página | Tableros | Estado |
 |---|---|---|
-| Criterio de diseño | 7 | Validado. Es la regla de botones, tablas, diálogos, formularios, avisos, menús y marco. El lienzo abre acá. |
+| Criterio de diseño | 8 | Validado. Es la regla de botones, tablas, diálogos, formularios, avisos, menús y marco. «Decisiones por pantalla» anota lo que el usuario eligió en cada pantalla y las reglas que salieron de eso. El lienzo abre acá. |
 | Mapa general | 2 | Validado |
 | Sitio público | 6 | Por refinar |
 | Ingreso y registro | 18 | Validado |
@@ -74,7 +74,7 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 
 | Script | Qué hace |
 |---|---|
-| `criterio_*.py` | Los 7 tableros de «Criterio de diseño» |
+| `criterio_*.py` | Los 8 tableros de «Criterio de diseño». Cada decisión nueva suma una fila en `criterio_decisiones.py` y, si deja una regla, se escribe también en el tablero de esa pieza |
 | `perfil_tableros.py` | Perfil personal: Inicio, Mi cuenta y sus diálogos, con las versiones de teléfono |
 | `whatsapp_tableros.py` | Los 15 de WhatsApp. Las piezas comunes (`w-*`, íconos, banda) salen de acá. |
 | `org_formularios.py` | Configuración, Página pública y sus diálogos |

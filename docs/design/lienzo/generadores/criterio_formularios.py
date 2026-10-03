@@ -4,7 +4,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 2440
+ALTO = 2650
 ARCHIVO = "Criterio-Formularios.dc.html"
 TITULO = "Criterio · Formularios y campos"
 
@@ -52,6 +52,11 @@ CSS = """  <style data-criterio="formularios">
 .sw::after { content: ""; position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; }
 .aviso-mal { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: var(--peligro-t); color: oklch(0.45 0.17 25); font-size: 13px; }
 .dos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.caja2 { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
+.caja2 .cab2 { display: flex; align-items: center; min-height: 40px; padding: 0 16px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 13px; font-weight: 600; }
+.g2c { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 16px 20px 20px; }
+.g2c .ancho { grid-column: 1 / -1; }
+.g4c { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
   </style>"""
 
 ABAJO = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--t3); flex-shrink: 0;"><path d="m7 10 5 5 5-5"/></svg>'
@@ -69,17 +74,17 @@ def fila_medida(pieza, medida, como):
 BODY = f"""<div class="crit">
   <div>
     <h1>Formularios y campos</h1>
-    <p class="sub">Rótulo arriba, el control más simple para cada dato y cada campo con el ancho de lo que lleva.</p>
+    <p class="sub">Rótulo arriba, el control más simple para cada dato y, en cada caja, dos columnas iguales a todo el ancho.</p>
   </div>
 
   <section>
     <h2>Un campo y sus estados</h2>
     <div class="hoja2">
-      <div class="fila-c">
-        <div class="cmp" style="width: 300px;"><span class="rot">Correo <span class="req">*</span></span><div class="ctl">sofia.herrera@delta.ejemplo.com</div><span class="err3" style="color: var(--t3);">Normal</span></div>
-        <div class="cmp" style="width: 300px;"><span class="rot">Correo <span class="req">*</span></span><div class="ctl foco">sofia.herrera@</div><span class="err3" style="color: var(--t3);">Escribiendo: borde petróleo</span></div>
-        <div class="cmp" style="width: 300px;"><span class="rot">Correo <span class="req">*</span></span><div class="ctl mal">sofia.herrera@</div><span class="err3">Revisá el correo: no parece válido.</span></div>
-        <div class="cmp" style="width: 300px;"><span class="rot">Correo <span class="req">*</span></span><div class="ctl mal"></div><span class="err3">Escribí el correo.</span></div>
+      <div class="g4c">
+        <div class="cmp"><span class="rot">Correo <span class="req">*</span></span><div class="ctl">sofia.herrera@delta.ejemplo.com</div><span class="err3" style="color: var(--t3);">Normal</span></div>
+        <div class="cmp"><span class="rot">Correo <span class="req">*</span></span><div class="ctl foco">sofia.herrera@</div><span class="err3" style="color: var(--t3);">Escribiendo: borde petróleo</span></div>
+        <div class="cmp"><span class="rot">Correo <span class="req">*</span></span><div class="ctl mal">sofia.herrera@</div><span class="err3">Revisá el correo: no parece válido.</span></div>
+        <div class="cmp"><span class="rot">Correo <span class="req">*</span></span><div class="ctl mal"></div><span class="err3">Escribí el correo.</span></div>
       </div>
     </div>
     <ul class="reglas2" style="margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 40px;">
@@ -114,26 +119,28 @@ BODY = f"""<div class="crit">
   </section>
 
   <section>
-    <h2>Cada campo, del ancho de su dato</h2>
-    <div class="hoja2">
-      <div class="fila-c">
-        <div class="cmp" style="width: 360px;"><span class="rot">Nombre y apellido</span><div class="ctl">Lucía Fernández</div></div>
-        <div class="cmp" style="width: 260px;"><span class="rot">Idioma y región</span><div class="ctl">Español (Argentina) {ABAJO}</div></div>
-        <div class="cmp" style="width: 260px;"><span class="rot">Zona horaria</span><div class="ctl">Buenos Aires (GMT−3) {ABAJO}</div></div>
-      </div>
-      <div class="fila-c" style="margin-top: 16px;">
-        <div class="cmp" style="width: 360px;"><span class="rot">Correo</span><div class="ctl">lucia.fer@gmail.com</div></div>
-        <div class="cmp" style="width: 280px;"><span class="rot">WhatsApp</span><div class="tel"><div class="ctl" style="width: 84px;">+54 {ABAJO}</div><div class="ctl" style="flex: 1;">11 5555-4521</div></div></div>
-        <div class="cmp" style="width: 200px;"><span class="rot">CUIT</span><div class="ctl">30-71234567-8</div></div>
+    <h2>Una caja por tema, a todo el ancho</h2>
+    <div class="caja2">
+      <div class="cab2">Datos de la organización</div>
+      <div class="g2c">
+        <div class="cmp"><span class="rot">Nombre de la organización <span class="req">*</span></span><div class="ctl">Grupo Delta</div></div>
+        <div class="cmp"><span class="rot">Idioma y región predeterminados</span><div class="ctl">Español (Argentina) {ABAJO}</div></div>
+        <div class="cmp"><span class="rot">Zona horaria predeterminada</span><div class="ctl">Buenos Aires (GMT−3) {ABAJO}</div></div>
+        <div class="cmp"><span class="rot">Moneda predeterminada</span><div class="ctl">Peso argentino (ARS) {ABAJO}</div></div>
+        <div class="cmp ancho"><span class="rot">Descripción</span><div class="ctl area">Distribuidora de insumos para la construcción, con sucursales en Buenos Aires y Córdoba.</div></div>
       </div>
     </div>
+    <ul class="reglas2" style="margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 40px;">
+      <li><strong>Una caja por tema</strong>, con el título en el encabezado arena. Nunca varias secciones en una misma hoja.</li>
+      <li><strong>Dos columnas iguales</strong> que ocupan todo el ancho de la caja. Todas las filas de la caja usan las mismas columnas.</li>
+      <li><strong>Un texto largo</strong>, como una descripción o un motivo, ocupa las dos columnas.</li>
+      <li><strong>Lo que es una lista</strong> (correos, dominios, empresas) va en una caja de lista, no en campos. Ver «Tablas y listas».</li>
+    </ul>
     <div class="medidas" style="margin-top: 16px;">
-      <div class="cab" style="grid-template-columns: 240px 170px minmax(0, 1fr);"><span>Dato</span><span>Ancho</span><span>Ejemplos</span></div>
-      {fila_medida("Nombre, correo", "360 px", "Nombre y apellido, correo, nombre de una empresa.")}
-      {fila_medida("Teléfono", "280 px", "Prefijo del país y número.")}
-      {fila_medida("Desplegable", "260 px", "Idioma, zona horaria, empresa, roles.")}
-      {fila_medida("Número o documento", "200 px", "CUIT, DNI, código postal, un monto.")}
-      {fila_medida("Texto largo", "Todo el ancho", "Motivo, descripción. Hasta 720 px.")}
+      <div class="cab" style="grid-template-columns: 240px 170px minmax(0, 1fr);"><span>Pieza</span><span>Medida</span><span>Cómo es</span></div>
+      {fila_medida("Columnas", "Dos iguales", "16 px entre una y otra. Tres solo si todos los datos son cortos, como en «Tus datos».")}
+      {fila_medida("Encabezado de la caja", "40 px", "Fondo arena, igual que el de una tabla. Título de 13 en semibold.")}
+      {fila_medida("Adentro de la caja", "16 y 20 px", "16 arriba y entre filas; 20 a los costados y abajo.")}
       {fila_medida("Alto de todo campo", "36 px", "Igual que un botón normal. El código, 44 px.")}
     </div>
   </section>
@@ -142,11 +149,11 @@ BODY = f"""<div class="crit">
     <h2>Errores</h2>
     <div class="dos">
       <div class="hoja2" style="display: flex; flex-direction: column; gap: 14px;">
-        <div class="cmp" style="width: 360px;"><span class="rot">Nombre y apellido</span><div class="ctl mal">Lucía Fernández de la Santísima Trinidad y…</div><span class="err3">El nombre es demasiado largo.</span></div>
+        <div class="cmp"><span class="rot">Nombre y apellido</span><div class="ctl mal">Lucía Fernández de la Santísima Trinidad y…</div><span class="err3">El nombre es demasiado largo.</span></div>
         <div class="cmp"><span class="rot">Motivo <span class="req">*</span></span><div class="ctl area mal"></div><span class="err3">Escribí el motivo.</span></div>
       </div>
       <div class="hoja2" style="display: flex; flex-direction: column; gap: 14px;">
-        <div class="cmp" style="width: 360px;"><span class="rot">Nombre y apellido</span><div class="ctl">Lucía Fernández</div></div>
+        <div class="cmp"><span class="rot">Nombre y apellido</span><div class="ctl">Lucía Fernández</div></div>
         <div class="aviso-mal" role="alert">{ALERTA} No pudimos conectarnos. Revisá tu conexión.</div>
         <div style="display: flex; justify-content: flex-end; gap: 8px;"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Guardar cambios</button></div>
       </div>
@@ -162,7 +169,7 @@ BODY = f"""<div class="crit">
     <ul class="prohibido">
       <li>Rótulos adentro del campo en vez de arriba.</li>
       <li>Ayudas o ejemplos debajo de cada campo.</li>
-      <li>Campos estirados a todo el ancho de la pantalla.</li>
+      <li>Campos a medio ancho con el resto de la caja vacío, o filas con columnas distintas en la misma caja.</li>
       <li>Listas de casillas sueltas: van en un desplegable.</li>
       <li>Campos grises de solo lectura: lo que no se edita se muestra como texto.</li>
       <li>Avisar un error con un aviso que desaparece.</li>

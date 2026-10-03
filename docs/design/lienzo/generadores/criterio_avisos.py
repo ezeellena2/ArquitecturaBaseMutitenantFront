@@ -4,7 +4,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 2300
+ALTO = 2620
 ARCHIVO = "Criterio-Avisos.dc.html"
 TITULO = "Criterio · Avisos y errores"
 
@@ -58,6 +58,19 @@ CSS = """  <style data-criterio="avisos">
 .esc .tarj { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
 .esc .tarj strong { font-size: 15px; }
 .esc .tarj .f { color: var(--t2); font-size: 13.5px; }
+.expl { display: grid; grid-template-columns: 720px minmax(0, 1fr); gap: 32px; align-items: start; }
+.pant2 { background: var(--fondo); border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
+.banda2 { display: flex; flex-direction: column; gap: 2px; padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--borde); }
+.banda2 strong { font-size: 17px; }
+.est2 { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: oklch(0.5 0.19 25); }
+.est2::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.57 0.2 25); }
+.caja3 { margin: 20px; background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
+.cab3 { display: flex; align-items: center; min-height: 40px; padding: 0 16px; background: oklch(0.945 0.018 76); border-bottom: 1px solid oklch(0.89 0.02 76); font-size: 13px; font-weight: 600; }
+.fila3 { display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 16px; font-size: 13px; }
+.fila3 .tx { flex: 1; color: var(--t3); }
+.i3 { display: inline-flex; color: oklch(0.52 0.19 25); }
+.sw3 { width: 36px; height: 20px; border-radius: 999px; background: oklch(0.88 0.01 78); position: relative; margin-left: 8px; }
+.sw3::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; }
 .esc .tarj .ej { font-size: 13.5px; color: var(--t1); background: var(--s2); border-radius: 8px; padding: 8px 10px; }
   </style>"""
 
@@ -141,6 +154,25 @@ BODY = f"""<div class="crit">
   </section>
 
   <section>
+    <h2>Sin textos que explican</h2>
+    <div class="expl">
+      <div class="pant2">
+        <div class="banda2"><strong>Página pública</strong><span class="est2">Despublicada por la plataforma</span></div>
+        <div class="caja3">
+          <div class="cab3">Publicación</div>
+          <div class="fila3"><span class="tx">Visible en delta.plataforma.com</span><span class="i3" aria-label="Por qué está despublicada">{INFO}</span><span class="sw3" aria-hidden="true"></span></div>
+        </div>
+      </div>
+      <ul class="reglas2">
+        <li><strong>El estado se dice una vez</strong>, arriba, en la segunda línea de la banda: un punto de color y pocas palabras.</li>
+        <li><strong>Donde está la acción, solo un ⓘ.</strong> Lo que no se puede usar queda apagado y abre lo mismo que el ⓘ.</li>
+        <li><strong>El ⓘ abre el aviso importante</strong>, con el motivo y qué podés hacer. Ver «Diálogos».</li>
+        <li><strong>Ningún párrafo que explique</strong> en la pantalla: lo que hay que saber va en ese aviso.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
     <h2>Prohibido</h2>
     <ul class="prohibido">
       <li>Un error en un aviso que se va solo.</li>
@@ -149,6 +181,8 @@ BODY = f"""<div class="crit">
       <li>Cerrar un cartel mientras lo que avisa sigue pasando.</li>
       <li>Textos como «Error», «Ups», «Operación exitosa» o con signos de exclamación.</li>
       <li>Códigos técnicos o textos en inglés.</li>
+      <li>Párrafos o líneas que explican en la pantalla: van detrás de un ⓘ.</li>
+      <li>El mismo estado en dos lugares: arriba y otra vez en la fila.</li>
     </ul>
   </section>
 </div>"""

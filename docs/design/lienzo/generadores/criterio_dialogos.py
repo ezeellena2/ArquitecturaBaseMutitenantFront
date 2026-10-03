@@ -4,7 +4,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 2200
+ALTO = 2840
 ARCHIVO = "Criterio-Dialogos.dc.html"
 TITULO = "Criterio · Diálogos"
 
@@ -39,10 +39,18 @@ CSS = """  <style data-criterio="dialogos">
 .tarj strong { font-size: 15px; }
 .tarj ul { margin: 0; padding-left: 18px; color: var(--t2); display: flex; flex-direction: column; gap: 4px; }
 .medidas .fil { box-sizing: border-box; }
+.mot { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 10px; background: var(--peligro-t); color: oklch(0.42 0.16 25); }
+.mot b { display: block; font-size: 15px; font-weight: 600; color: oklch(0.38 0.15 25); }
+.mot span { font-size: 12.5px; }
+.psub { font-size: 12.5px; font-weight: 600; color: var(--t3); }
+.pasos { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.pasos li { display: flex; gap: 10px; align-items: center; font-size: 13.5px; }
+.pasos .n { width: 22px; height: 22px; border-radius: 50%; background: var(--s3); color: var(--t2); font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
   </style>"""
 
 X = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg>'
 ABAJO = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--t3);"><path d="m7 10 5 5 5-5"/></svg>'
+ALERTA = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg>'
 CERRAR = f'<button type="button" class="ib" aria-label="Cerrar">{X}</button>'
 
 
@@ -118,6 +126,29 @@ BODY = f"""<div class="crit">
   </section>
 
   <section>
+    <h2>Aviso importante</h2>
+    <div class="fondo-osc">
+      <div>
+        <div class="cd chico" role="dialog" aria-label="Página despublicada">
+          <div class="cab"><h3>Página despublicada</h3>{CERRAR}</div>
+          <div class="cuerpo">
+            <div class="mot">{ALERTA}<div><b>Datos de contacto falsos</b><span>Despublicada por la plataforma el 26/09/2026</span></div></div>
+            <span class="psub">Qué podés hacer</span>
+            <ol class="pasos"><li><span class="n">1</span>Corregí los datos de la página</li><li><span class="n">2</span>Pedí a la plataforma que la habilite</li></ol>
+          </div>
+          <div class="pie"><button type="button" class="cb cb-pri">Entendido</button></div>
+        </div>
+        <p class="pie-rot">Aviso importante · 420 px · se abre desde un ⓘ</p>
+      </div>
+    </div>
+    <ul class="reglas2" style="margin-top: 16px;">
+      <li><strong>Explica algo que no se puede hacer</strong> o por qué algo está así. Se abre desde el ⓘ o desde el botón apagado.</li>
+      <li><strong>El título dice qué pasa.</strong> El motivo va en una caja roja suave; debajo, «Qué podés hacer» en pasos numerados.</li>
+      <li><strong>Un solo botón, «Entendido».</strong> Sin Cancelar: no hay nada que confirmar.</li>
+    </ul>
+  </section>
+
+  <section>
     <h2>Medidas</h2>
     <div class="medidas">
       <div class="cab" style="grid-template-columns: 220px 170px minmax(0, 1fr);"><span>Pieza</span><span>Medida</span><span>Cómo es</span></div>
@@ -158,7 +189,7 @@ BODY = f"""<div class="crit">
       <li>Scroll adentro: si no entra, es una pantalla.</li>
       <li>Más de dos botones en el pie.</li>
       <li>Un diálogo para avisar que algo salió bien: eso es un aviso.</li>
-      <li>Paneles que se despliegan o filas que se expanden en vez de un diálogo.</li>
+      <li>Paneles que se despliegan o filas que se expanden en vez de un diálogo. La única excepción son los grupos de permisos de un rol.</li>
       <li>Otros anchos que no sean 420 o 560.</li>
     </ul>
   </section>
