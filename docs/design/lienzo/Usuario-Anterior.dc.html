@@ -536,6 +536,14 @@ textarea.in2 { height: auto; min-height: 84px; }
 .hoja h2:not(:first-child) { border-top: 1px solid oklch(0.89 0.02 76); margin-top: 6px !important; }
 .hoja .linea { display: none !important; }
   </style>
+<style data-regla="menus-con-lineas">
+.menu[role="menu"] { padding: 0; overflow: hidden; }
+.menu[role="menu"] .menu-it { border-radius: 0; min-height: 42px; padding: 8px 14px; border-top: 1px solid var(--borde); margin-top: -1px; }
+.menu[role="menu"] .menu-sep { height: 6px; margin: 0; background: var(--s2); border-top: 1px solid var(--borde); }
+.o-menu { padding: 0; overflow: hidden; }
+.o-menu .it { border-radius: 0; }
+.o-menu .it + .it { border-top: 1px solid var(--borde); }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{admClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">

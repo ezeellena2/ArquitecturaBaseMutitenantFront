@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 65** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 126 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 69** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 146 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -19,8 +19,8 @@ El título de cada tablero dice en qué estado está:
 | Sitio público | 6 | Por refinar |
 | Ingreso y registro | 18 | Validado |
 | Perfil personal | 7 | Validado |
-| Organización | 26 | Escritorio y móviles aprobados el 2026-10-03, salvo los dos inicios, que quedan para repensar. |
-| Organización · WhatsApp | 31 | Escritorio aprobado el 2026-10-03, pantalla por pantalla (Etapa 11 ampliada). Los 7 teléfonos siguen «por refinar» y el alta de Meta no se dibuja hasta que el usuario lo pida. |
+| Organización | 26 | Escritorio y móviles aprobados el 2026-10-03, salvo los dos inicios, que quedan para repensar. Los teléfonos todavía tienen que pasar al formato app. |
+| Organización · WhatsApp | 51 | Escritorio y teléfonos aprobados el 2026-10-03, pantalla por pantalla (Etapa 11 ampliada). Los 27 teléfonos son los primeros en formato app. El alta de Meta no se dibuja hasta que el usuario lo pida. |
 | Plataforma | 12 | Menú de escritorio aprobado el 2026-10-03: Gestión y Administración abren un segundo panel. La adaptación del menú móvil y el resto del refinamiento siguen pendientes. |
 | Textos y mensajes | 2 | Validado |
 | Archivo | 14 | Descartado. Son versiones anteriores; están como referencia y no se programan. |
@@ -30,6 +30,8 @@ La aplicación se migra al criterio visual por etapas: Mi cuenta y las piezas co
 Ajuste solicitado el 2026-10-03: el detalle de Auditoría de Plataforma usa el encabezado arena de `Criterio-Dialogos`, con la fecha en el cuerpo, datos de lectura y cierre compacto. En teléfono aparece desde abajo y ocupa todo el ancho. Este ajuste no aprueba el resto de Plataforma ni las propuestas de WhatsApp.
 
 Navegación de Plataforma elegida el 2026-10-03: **Gestión**, arriba, agrupa Organizaciones, Cuentas y Recuperaciones; **Administración**, al pie, agrupa Auditoría, Documentos legales y Configuración. En escritorio se abre un único segundo panel al lado del menú principal, con la sección actual marcada. La aprobación alcanza esta distribución y el ajuste del modal de Auditoría; no autoriza las propuestas de WhatsApp. Los dueños usan el panel de Organización y no este menú global.
+
+**El teléfono es una app** (decisión del 2026-10-03, «Criterio · Marco y pantallas»): barra de estado arriba y título grande en la barra, con la organización debajo; barra de abajo con hasta cuatro secciones y «Más»; listas de borde a borde; lo que en la compu es un diálogo es una hoja desde abajo con manija; crear es un «+» flotante; la acción de una tarea va fija abajo. Nada de la web achicada (marca arriba, banda, cajas con cabecera beige, menú ☰). Los teléfonos de WhatsApp ya están así; los de Organización, Plataforma y el perfil personal todavía no.
 
 ## Verlo sin claude.ai
 
@@ -68,7 +70,8 @@ Lo que manda son los tableros «Criterio · …». Estas son las decisiones que 
 - **Menús:**
   - las acciones de fila y las secundarias van en ⋮;
   - tu menú, arriba a la derecha, tiene Perfiles, Mi cuenta y Salir;
-  - Administración es un segundo panel al lado del menú lateral.
+  - Administración es un segundo panel al lado del menú lateral;
+  - una línea fina entre cada opción de un menú desplegable, y una franja antes de las de peligro.
 - **Listas:** se paginan con más de 10 elementos. Pestañas, solo si hay dos tablas o más.
 - **«Tenant» nunca en pantalla:** se dice «Organización».
 
@@ -86,11 +89,14 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 | `org_formularios.py` | Configuración, Página pública y sus diálogos |
 | `org_formularios2.py` | Usuario, Rol y Avisos. Rehace el dibujo y conserva la lógica de cada tablero. |
 | `wa_vuelta_1003.py` | WhatsApp aprobado el 2026-10-03: corre las propuestas elegidas (`whatsapp_1003/propuestas`) sobre la copia de partida (`whatsapp_1003/base`), deja los 24 tableros con sus enlaces, suma lo de WhatsApp a Rol, Usuarios, Mensajes, el perfil personal y el menú de Plataforma, y acomoda la página. Corre al final. |
+| `wa_telefonos_1004.py` | Los 27 teléfonos de WhatsApp en formato app: corre `telefonos_1004/app_todas.py` y `app_numeros.py` sobre la copia de partida (`telefonos_1004/base`), les pone nombre (`M-WA-*`), enlaces y título, y los acomoda en cuatro filas. Las piezas del marco de app salen de `telefonos_1004/app_marco.py` y `app_estilo.py`. |
+| `wa_ajustes_1004.py` | En la compu: la nota interna se prende con un botón al lado de donde se escribe, e «Importar contactos» va sin casilla y con «Descargar ejemplo». |
+| `menus_con_lineas.py` | Suma a todos los tableros la línea entre las opciones de los menús desplegables. Corre al final. |
 | `org_vuelta_1002.py` | Las decisiones de la vuelta de Organización del 2026-10-02 sobre los tableros de escritorio, y les saca «· para aprobar» a los aprobados. Corre después de `org_formularios2.py`. |
 | `conectar_paginas.py` | Enlaces entre páginas: tu menú, el menú de WhatsApp y la entrada WhatsApp en Organización |
 | `aplicar_criterio.py`, `criterio_marcado.py`, `terminos_sin_deshabilitar.py` | Pasan al criterio los tableros viejos sin rehacerlos |
 
-Después de correr `perfil_tableros.py`, `whatsapp_tableros.py` u `org_formularios.py`, corré `conectar_paginas.py`: esos tres dibujan el menú sin enlaces. `conectar_paginas.py`, `org_formularios2.py`, `org_vuelta_1002.py` y `wa_vuelta_1003.py` se pueden volver a correr sin cambiar lo que ya está. Los otros reescriben `canvas.json`, así que revisá el diff antes de publicar. Para rehacer un formulario, se copia el formato de `org_formularios.py` y nunca se maquilla con CSS encima.
+Después de correr `perfil_tableros.py`, `whatsapp_tableros.py` u `org_formularios.py`, corré `conectar_paginas.py`: esos tres dibujan el menú sin enlaces. `conectar_paginas.py`, `org_formularios2.py`, `org_vuelta_1002.py`, `wa_vuelta_1003.py`, `wa_telefonos_1004.py`, `wa_ajustes_1004.py` y `menus_con_lineas.py` se pueden volver a correr sin cambiar lo que ya está; los dos de 1004 van después de `wa_vuelta_1003.py`. Los otros reescriben `canvas.json`, así que revisá el diff antes de publicar. Para rehacer un formulario, se copia el formato de `org_formularios.py` y nunca se maquilla con CSS encima.
 
 ## Publicar en claude.ai
 

@@ -593,6 +593,14 @@ textarea.in2 { height: auto; min-height: 84px; }
 /* Sin etiquetas con fondo: el rótulo chico del panel de la marca queda como texto. */
 .kicker { background: transparent !important; padding: 0 !important; border: 0 !important; font-size: 13px !important; font-weight: 600 !important; }
   </style>
+<style data-regla="menus-con-lineas">
+.menu[role="menu"] { padding: 0; overflow: hidden; }
+.menu[role="menu"] .menu-it { border-radius: 0; min-height: 42px; padding: 8px 14px; border-top: 1px solid var(--borde); margin-top: -1px; }
+.menu[role="menu"] .menu-sep { height: 6px; margin: 0; background: var(--s2); border-top: 1px solid var(--borde); }
+.o-menu { padding: 0; overflow: hidden; }
+.o-menu .it { border-radius: 0; }
+.o-menu .it + .it { border-top: 1px solid var(--borde); }
+</style>
 </helmet>
 
 <div class="auth auth-m">

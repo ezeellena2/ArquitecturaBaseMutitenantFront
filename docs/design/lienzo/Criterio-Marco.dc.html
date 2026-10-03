@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 3200px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 3440px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -547,6 +547,14 @@
 .prohibido { margin: 0; padding-left: 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 32px; color: var(--t2); font-size: 14px; }
 .girar2 { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2px solid oklch(1 0 0 / 0.4); border-top-color: #fff; }
   </style>
+<style data-regla="menus-con-lineas">
+.menu[role="menu"] { padding: 0; overflow: hidden; }
+.menu[role="menu"] .menu-it { border-radius: 0; min-height: 42px; padding: 8px 14px; border-top: 1px solid var(--borde); margin-top: -1px; }
+.menu[role="menu"] .menu-sep { height: 6px; margin: 0; background: var(--s2); border-top: 1px solid var(--borde); }
+.o-menu { padding: 0; overflow: hidden; }
+.o-menu .it { border-radius: 0; }
+.o-menu .it + .it { border-top: 1px solid var(--borde); }
+</style>
 
   <style data-criterio="marco">
 .reglas2 { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; color: var(--t2); font-size: 14px; }
@@ -643,6 +651,205 @@
 .tel .fija .cb { flex: 1; height: 44px; }
 .rotel { text-align: center; margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--t2); }
   </style>
+<style data-propuesta="app-marco">
+.ap { width: 390px; height: 844px; overflow: hidden; background: #fff; font-family: Inter, system-ui, sans-serif; color: var(--t1); display: flex; flex-direction: column; position: relative; }
+.ap-est { height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 22px 0 30px; font-size: 15px; font-weight: 600; background: #fff; }
+.ap-est .ic { display: inline-flex; align-items: center; gap: 6px; }
+.ap-bar { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 6px 0 16px; background: #fff; }
+.ap-bar.int { padding-left: 4px; }
+.ap-bar .tit { flex: 1; min-width: 0; }
+.ap-bar h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-bar.int h1 { font-size: 20px; }
+.ap-bar .sub { display: block; font-size: 12.5px; font-weight: 500; color: var(--t3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-ib { width: 44px; height: 44px; border: 0; background: none; color: var(--t1); display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; position: relative; flex-shrink: 0; text-decoration: none; }
+.ap-cuerpo { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+.ap-fila { display: flex; align-items: center; gap: 14px; padding: 12px 6px 12px 16px; position: relative; text-decoration: none; color: inherit; }
+.ap-fila::after { content: ""; position: absolute; left: 16px; right: 0; bottom: 0; height: 1px; background: var(--borde); }
+.ap-fila .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding-right: 10px; }
+.ap-fila .l1 { display: flex; justify-content: space-between; gap: 8px; font-size: 15.5px; font-weight: 500; }
+.ap-fila .l1 span { font-size: 12.5px; font-weight: 400; color: var(--t3); flex-shrink: 0; }
+.ap-fila .l2 { font-size: 14px; color: var(--t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-fila .l3 { font-size: 13px; color: var(--t3); }
+.ap-fila .l3 .w-est { font-size: 13px; color: var(--t2); }
+.ap-fila .ap-ib { color: var(--t2); margin-right: -4px; }
+.w-est.mal::before { background: oklch(0.57 0.2 25); }
+.w-est.mal { color: oklch(0.5 0.19 25) !important; }
+.w-est.baja::before { background: oklch(0.72 0.15 70); }
+.w-est.prog::before { background: var(--marca); }
+.ap-i { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 22px; padding: 0; border: 0; background: none; color: oklch(0.52 0.19 25); vertical-align: middle; }
+.ap-fab { position: absolute; z-index: 4; right: 16px; bottom: 110px; width: 56px; height: 56px; border-radius: 16px; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px oklch(0.3 0.06 195 / 0.3), 0 2px 4px oklch(0.3 0.06 195 / 0.2); }
+.ap-nav { flex-shrink: 0; display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px 4px 28px; background: #fff; border-top: 1px solid var(--borde); }
+.ap-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 500; color: var(--t2); text-decoration: none; }
+.ap-nav .i { width: 56px; height: 30px; border-radius: 15px; display: inline-flex; align-items: center; justify-content: center; position: relative; }
+.ap-nav a.on { color: var(--marca-tx); font-weight: 600; }
+.ap-nav a.on .i { background: var(--marca-t); }
+.ap-nav .b { position: absolute; top: -3px; right: 4px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; background: var(--marca); color: #fff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+.ap-nav .yo { width: 26px; height: 26px; border-radius: 50%; background: var(--marca); color: #fff; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+.ap-nav a.on .yo { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--marca); }
+.ap-raya { position: absolute; z-index: 9; left: 50%; bottom: 8px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: var(--t1); }
+.ap-velo { position: absolute; inset: 0; z-index: 6; background: oklch(0.2 0.014 78 / 0.45); }
+.ap-hoja { position: absolute; z-index: 7; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 20px 20px 0 0; display: flex; flex-direction: column; box-shadow: 0 -8px 24px oklch(0.2 0.014 78 / 0.12); }
+.ap-hoja .asa { align-self: center; width: 36px; height: 5px; border-radius: 3px; background: var(--borde2); margin: 8px 0 4px; }
+.ap-hoja .hc { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 6px 4px 20px; }
+.ap-hoja .hc h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
+.ap-hoja .hb { padding: 8px 20px 16px; display: flex; flex-direction: column; gap: 14px; }
+.ap-hoja .hp { display: flex; gap: 10px; padding: 8px 20px 34px; }
+.ap-hoja .hp .cb { flex: 1; height: 48px; border-radius: 12px; font-size: 15px; }
+</style>
+<style data-propuesta="app-piezas">
+.ap .w-conv { border-bottom: 0; position: relative; padding: 12px 16px; gap: 14px; text-decoration: none; color: inherit; display: flex; }
+.ap .w-conv::after { content: ""; position: absolute; left: 74px; right: 0; bottom: 0; height: 1px; background: var(--borde); }
+.ap .w-av { width: 44px; height: 44px; font-size: 15px; }
+.ap .w-conv .l1 b { font-size: 15.5px; }
+.ap .w-conv .l1 span { font-size: 12.5px; }
+.ap .w-conv .l2 { font-size: 14px; }
+.ap .w-conv .l3 { font-size: 12.5px; color: var(--t3); }
+.ap .w-conv .l3.sin { color: oklch(0.55 0.13 70); }
+.ap .w-conv .l3 .w-est { font-size: 12.5px; color: var(--t2); }
+.ap-seg { margin: 4px 16px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 12px; background: var(--s3); flex-shrink: 0; }
+.ap-seg span, .ap-seg2 span { height: 38px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 14.5px; font-weight: 600; color: var(--t2); }
+.ap-seg span.on, .ap-seg2 span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
+.ap-seg .c { font-weight: 500; color: var(--t3); }
+.ap-seg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 12px; background: var(--s3); }
+.ap-txt { height: 40px; padding: 0 10px; border: 0; background: none; color: var(--marca-tx); font-size: 15.5px; font-weight: 600; flex-shrink: 0; }
+.ap-cbar { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 4px; background: #fff; border-bottom: 1px solid var(--borde); }
+.ap-cbar .w-av { width: 38px; height: 38px; font-size: 14px; }
+.ap-cbar .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ap-cbar .tx b { font-size: 16.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ap-cbar .tx span { font-size: 12.5px; color: var(--t3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ap-cbar .tx span.sin { color: oklch(0.55 0.13 70); }
+.ap-chat { flex: 1; min-height: 0; overflow: hidden; background: oklch(0.965 0.012 78); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.ap-dia { align-self: center; font-size: 12px; color: var(--t2); background: #fff; padding: 3px 10px; border-radius: 8px; box-shadow: 0 1px 1px oklch(0.2 0.01 78 / 0.06); }
+.ap-m { max-width: 80%; display: flex; flex-direction: column; gap: 2px; }
+.ap-m .gl { padding: 8px 12px; border-radius: 14px; font-size: 15px; line-height: 1.4; }
+.ap-m.ent { align-self: flex-start; }
+.ap-m.ent .gl { background: #fff; border-top-left-radius: 4px; box-shadow: 0 1px 1px oklch(0.2 0.01 78 / 0.06); }
+.ap-m.sal { align-self: flex-end; align-items: flex-end; }
+.ap-m.sal .gl, .ap-burb { background: oklch(0.93 0.04 180); color: oklch(0.28 0.05 195); }
+.ap-m.sal .gl { border-top-right-radius: 4px; }
+.ap-m .pie { font-size: 11.5px; color: var(--t3); padding: 0 4px; }
+.ap-m .gl .bt, .ap-burb .bt { display: block; margin-top: 8px; padding-top: 8px; border-top: 1px solid oklch(0.51 0.099 195 / 0.2); text-align: center; font-weight: 600; color: var(--marca-tx); }
+.ap-sis { align-self: center; font-size: 12.5px; color: var(--t3); text-align: center; }
+.ap-nota { align-self: center; max-width: 88%; background: oklch(0.97 0.05 90); border: 1px solid oklch(0.88 0.08 85); color: oklch(0.38 0.07 70); border-radius: 12px; padding: 8px 12px; font-size: 14px; line-height: 1.45; display: flex; flex-direction: column; gap: 2px; }
+.ap-nota .q { font-size: 12px; font-weight: 600; }
+.ap-escr { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 8px 10px 34px; background: #fff; border-top: 1px solid var(--borde); }
+.ap-escr .campo { flex: 1; min-width: 0; height: 44px; box-sizing: border-box; border-radius: 22px; border: 1px solid var(--borde2); display: flex; align-items: center; padding: 0 16px; color: var(--t3); font-size: 15px; }
+.ap-escr .campo.nota { background: oklch(0.985 0.03 90); border-color: oklch(0.85 0.09 85); color: oklch(0.5 0.08 70); }
+.ap-red { width: 44px; height: 44px; border-radius: 50%; border: 0; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: transparent; color: var(--t2); }
+.ap-red.env { background: var(--marca); color: #fff; }
+.ap-red.gua { background: oklch(0.7 0.14 75); color: #fff; }
+.ap-red.nt.on { background: oklch(0.94 0.07 88); color: oklch(0.45 0.1 70); }
+.ap-24 { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; color: oklch(0.45 0.1 70); font-size: 14px; font-weight: 500; white-space: nowrap; }
+.ap-24 .ap-i { color: oklch(0.45 0.1 70); }
+.ap-pill { text-decoration: none; height: 44px; padding: 0 18px; border-radius: 22px; background: var(--marca); color: #fff; font-weight: 600; font-size: 14.5px; border: 0; display: inline-flex; align-items: center; flex-shrink: 0; }
+.ap-menu { position: absolute; z-index: 8; right: 8px; top: 100px; width: 236px; background: #fff; border-radius: 14px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.2), 0 0 0 1px var(--borde); overflow: hidden; display: flex; flex-direction: column; }
+.ap-menu span { min-height: 50px; display: flex; align-items: center; padding: 0 18px; font-size: 15.5px; }
+.ap-menu span + span { border-top: 1px solid var(--borde); }
+.ap-cmp { display: flex; flex-direction: column; gap: 6px; }
+.ap-cmp .rt { font-size: 13.5px; font-weight: 600; color: var(--t2); display: flex; justify-content: space-between; align-items: center; }
+.ap-cmp .rq { color: var(--peligro); }
+.ap-cmp .ct { min-height: 48px; box-sizing: border-box; border: 1px solid var(--borde2); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px; font-size: 16px; background: #fff; }
+.ap-cmp .ct.area { display: block; padding: 12px 14px; line-height: 1.55; min-height: 104px; }
+.ap-cmp .ej { text-decoration: none; font-size: 13.5px; font-weight: 600; color: var(--marca-tx); display: inline-flex; gap: 6px; align-items: center; }
+.ap-var { display: inline-flex; padding: 0 7px; border-radius: 6px; background: var(--marca-t); color: var(--marca-tx); font-weight: 600; font-size: 14.5px; }
+.ap-chips2 { display: flex; gap: 8px; flex-wrap: wrap; }
+.ap-chips2 span { height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid var(--borde2); display: inline-flex; align-items: center; font-size: 13.5px; font-weight: 500; color: var(--t2); }
+.ap-burb { align-self: flex-end; max-width: 92%; border-radius: 14px; border-top-right-radius: 4px; padding: 10px 14px; font-size: 15px; line-height: 1.45; }
+.ap-burb b { font-weight: 700; }
+.ap-costo { text-align: right; font-size: 13.5px; color: var(--t3); margin-top: -6px; }
+.ap-lst { display: flex; flex-direction: column; margin: -4px -20px 0; }
+.ap-lst .tit { padding: 10px 20px 4px; font-size: 13px; font-weight: 600; color: var(--t3); }
+.ap-lst .it { display: flex; align-items: center; justify-content: space-between; min-height: 54px; padding: 0 20px; font-size: 16px; border-top: 1px solid var(--borde); }
+.ap-lst .tit + .it { border-top: 0; }
+.ap-lst .it span { font-size: 13.5px; color: var(--t3); }
+.ap-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--borde); flex-shrink: 0; background: #fff; }
+.ap-tabs span { height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 15px; font-weight: 600; color: var(--t2); border-bottom: 2.5px solid transparent; }
+.ap-tabs span.on { color: var(--marca-tx); border-bottom-color: var(--marca); }
+.ap-tabs .c { color: var(--t3); font-weight: 500; }
+.ap-chips { display: flex; gap: 8px; padding: 4px 16px 12px; overflow: hidden; flex-shrink: 0; }
+.ap-chips span { flex-shrink: 0; display: inline-flex; flex-direction: column; justify-content: center; min-width: 84px; height: 58px; box-sizing: border-box; padding: 0 14px; border: 1px solid var(--borde); border-radius: 14px; line-height: 1.25; }
+.ap-chips span b { font-size: 17px; font-weight: 600; }
+.ap-chips span i { font-style: normal; font-size: 12.5px; color: var(--t3); }
+.ap-chips span.on { border-color: oklch(0.51 0.099 195 / 0.45); background: var(--marca-t); }
+.ap-chips span.on b, .ap-chips span.on i { color: var(--marca-tx); }
+.ap-fijo { flex-shrink: 0; display: flex; align-items: center; gap: 12px; padding: 12px 16px 34px; background: #fff; border-top: 1px solid var(--borde); }
+.ap-fijo .cb { height: 50px; border-radius: 12px; font-size: 16px; padding: 0 22px; }
+.ap-fijo .cb.full { flex: 1; }
+.ap-fijo .costo { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
+.ap-fijo .costo b { font-size: 16px; font-weight: 600; }
+.ap-fijo .costo span { font-size: 13px; color: var(--t3); }
+.ap-gris { background: oklch(0.972 0.006 78); }
+.ap-gtit { display: flex; justify-content: space-between; align-items: center; margin: 18px 20px 8px; font-size: 13.5px; font-weight: 600; color: var(--t2); }
+.ap-gtit a { color: var(--marca-tx); font-weight: 600; text-decoration: none; font-size: 14.5px; }
+.ap-grupo { margin: 0 16px; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 0 0 1px var(--borde); flex-shrink: 0; }
+.ap-it { display: flex; align-items: center; gap: 12px; min-height: 56px; box-sizing: border-box; padding: 8px 14px 8px 16px; position: relative; text-decoration: none; color: inherit; }
+.ap-it + .ap-it::before { content: ""; position: absolute; top: 0; left: 16px; right: 0; height: 1px; background: var(--borde); }
+.ap-it .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ap-it .tx b { font-size: 15.5px; font-weight: 500; }
+.ap-it .tx span { font-size: 13px; color: var(--t3); }
+.ap-it .chev { color: var(--t3); display: inline-flex; }
+.ap-it .num { width: 28px; height: 28px; border-radius: 50%; background: var(--marca-t); color: var(--marca-tx); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ap-it .ini { width: 36px; height: 36px; border-radius: 10px; background: var(--s3); color: var(--t2); font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ap-it.apag { opacity: 0.55; }
+.ap-it .ok { color: var(--marca); display: inline-flex; }
+.ap-it.peligro b { color: var(--peligro); }
+.ap-sw { width: 50px; height: 30px; border-radius: 15px; background: var(--marca); position: relative; flex-shrink: 0; }
+.ap-sw::after { content: ""; position: absolute; top: 3px; right: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px oklch(0.2 0.01 78 / 0.25); }
+.ap-sw.off { background: var(--borde2); }
+.ap-sw.off::after { right: auto; left: 3px; }
+.ap-selnum { margin: 0 16px 10px; height: 46px; box-sizing: border-box; border-radius: 12px; background: var(--s3); display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-size: 14.5px; font-weight: 500; flex-shrink: 0; }
+.ap-yo { display: flex; align-items: center; gap: 14px; padding: 8px 20px 4px; }
+.ap-yo .w-av { width: 56px; height: 56px; font-size: 20px; color: #fff; }
+.ap-yo b { display: block; font-size: 18px; font-weight: 600; color: var(--t1); }
+.ap-yo span { font-size: 13.5px; color: var(--t3); }
+.ap-perfil { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 24px 16px; text-align: center; flex-shrink: 0; }
+.ap-perfil .w-av { width: 76px; height: 76px; font-size: 26px; }
+.ap-perfil h2 { margin: 8px 0 0; font-size: 22px; font-weight: 700; letter-spacing: -0.015em; }
+.ap-perfil p { margin: 0; font-size: 14px; color: var(--t2); line-height: 1.45; }
+.ap-rec { padding: 8px 16px 16px; display: flex; flex-direction: column; }
+.ap-n { display: flex; gap: 12px; position: relative; padding-bottom: 14px; }
+.ap-n::before { content: ""; position: absolute; left: 11px; top: 24px; bottom: 0; width: 2px; background: var(--borde2); }
+.ap-n:last-child::before { display: none; }
+.ap-n .pt { width: 24px; height: 24px; border-radius: 50%; background: var(--marca); color: #fff; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; position: relative; z-index: 1; margin-top: 10px; }
+.ap-n .pt.q { background: oklch(0.7 0.14 75); }
+.ap-n .cj { flex: 1; min-width: 0; background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 10px 14px; }
+.ap-n .cj b { font-size: 15px; font-weight: 600; display: block; }
+.ap-n .cj > span { font-size: 13px; color: var(--t3); }
+.ap-rama { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.ap-rama .r { display: flex; align-items: center; gap: 10px; border-radius: 10px; background: var(--s2); border: 1px solid var(--borde); padding: 9px 12px; font-size: 14.5px; }
+.ap-rama .r .et { font-size: 12px; font-weight: 700; color: var(--marca-tx); background: var(--marca-t); border-radius: 6px; padding: 2px 7px; }
+.ap-rama .r .d { color: var(--t3); font-size: 12.5px; margin-left: auto; }
+.w-est.amb::before { background: oklch(0.72 0.15 70); }
+.w-est.azul::before { background: var(--marca); }
+</style>
+<style data-criterio="telefono-base">
+.w-av { width: 32px; height: 32px; border-radius: 50%; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+.w-av.g { background: oklch(0.9 0.012 78); color: var(--t2); }
+.w-av.chico { width: 28px; height: 28px; font-size: 12px; }
+.w-est { display: inline-flex; align-items: center; gap: 6px; }
+.w-est::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); }
+.w-est.off::before { background: oklch(0.75 0.01 78); }
+.w-est.pend::before { background: oklch(0.72 0.15 70); }
+.w-conv { display: flex; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--borde); align-items: flex-start; }
+.w-conv.on { background: var(--marca-t); }
+.w-conv .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.w-conv .l1 { display: flex; justify-content: space-between; gap: 8px; }
+.w-conv .l1 b { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-conv .l1 span { font-size: 12px; color: var(--t3); flex-shrink: 0; }
+.w-conv .l2 { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--t3); }
+.w-conv .l2 span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-conv.nuevo .l1 b, .w-conv.nuevo .l2 span { font-weight: 600; color: var(--t1); }
+.w-conv.nuevo .l1 span { color: var(--marca-tx); font-weight: 600; }
+.w-punto { width: 8px; height: 8px; border-radius: 50%; background: var(--marca); flex-shrink: 0; margin-top: 5px; }
+.w-conv { padding: 12px 16px; }
+.w-conv .l3 { font-size: 12px; color: var(--t3); }
+.w-conv .l3.sin { color: oklch(0.55 0.13 70); }
+.w-conv { text-decoration: none; color: inherit; }
+.tel2 { width: 390px; height: 760px; border: 1px solid var(--borde2); border-radius: 28px; overflow: hidden; position: relative; background: #fff; }
+.tel2 .ap { height: 760px; }
+.tel2 .ap-fab { bottom: 110px; }
+.tel2 h1, .tel2 h2 { border: 0 !important; padding: 0 !important; margin: 0 !important; }
+</style>
 </helmet>
 
 <div class="crit">
@@ -734,60 +941,21 @@
   </section>
 
   <section>
-    <h2>En el teléfono</h2>
+    <h2>En el teléfono: una app</h2>
     <div class="tels">
-      <div>
-        <div class="tel">
-          <div class="tb"><span style="display: inline-flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span>ArquitecturaBase</span><span class="av">L</span></div>
-          <div class="bnd"><div class="iz"><div><h3>Usuarios</h3><p class="res">11 usuarios · 7 activos…</p></div></div><div class="ac"><button type="button" class="cb cb-pri ch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Invitar</button></div></div>
-          <div class="bd">
-            <div class="busq">Buscar por nombre o correo</div>
-            <div class="pills"><span>Estado</span><span>Empresa</span></div>
-            <div class="lst"><div class="h"><span>Nombre</span><span>Estado</span></div>
-              <div class="r"><span class="n">Lucía Fernández</span><span class="est">Activo</span><button type="button" class="ib" aria-label="Más acciones" style=""><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></div>
-              <div class="r"><span class="n">Tomás Acosta</span><span class="est">Activo</span><button type="button" class="ib" aria-label="Más acciones" style=""><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></div>
-              <div class="r"><span class="n">Marcos Giménez</span><span class="est off">Deshabilitado</span><button type="button" class="ib" aria-label="Más acciones" style=""><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></div>
-              <div class="r"><span class="n">Sofía Herrera</span><span class="est pend">Invitación pendiente</span><button type="button" class="ib" aria-label="Más acciones" style=""><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></div>
-            </div>
-          </div>
-        </div>
-        <p class="rotel">Listado: solo el nombre, el estado y el ⋮</p>
-      </div>
-      <div>
-        <div class="tel">
-          <div class="tb"><span style="display: inline-flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span>ArquitecturaBase</span><span class="av">L</span></div>
-          <div class="oscuro"></div>
-          <div class="hoja">
-            <div class="hc"><span>Invitar usuario</span><button type="button" class="ib" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div>
-            <div class="campos">
-              <div class="cmp"><span class="rt">Correo</span><div class="ct">sofia.herrera@delta.ejemplo.com</div></div>
-              <div class="cmp"><span class="rt">Roles de la organización</span><div class="ct" style="color: var(--t3);">Ninguno <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div></div>
-              <div class="cmp"><span class="rt">Empresa</span><div class="ct">Delta S.A. <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div></div>
-            </div>
-            <div class="botones"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Invitar</button></div>
-          </div>
-        </div>
-        <p class="rotel">Diálogo: sube desde abajo, botones a lo ancho</p>
-      </div>
-      <div>
-        <div class="tel">
-          <div class="tb"><span style="display: inline-flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></span><span>ArquitecturaBase</span><span class="av">L</span></div>
-          <div class="bnd"><div class="iz"><div><h3>Mi cuenta</h3><p class="res"><span class="suc">Cambios sin guardar</span></p></div></div></div>
-          <div class="campos" style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
-            <div class="cmp"><span class="rt">Nombre y apellido</span><div class="ct">Lucía Fernández</div></div>
-            <div class="cmp"><span class="rt">Idioma y región</span><div class="ct">Español (Argentina) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div></div>
-            <div class="cmp"><span class="rt">Zona horaria</span><div class="ct">Buenos Aires (GMT−3) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div></div>
-          </div>
-          <div class="fija"><button type="button" class="cb cb-sec">Descartar</button><button type="button" class="cb cb-pri">Guardar</button></div>
-        </div>
-        <p class="rotel">Edición: los botones quedan fijos abajo</p>
-      </div>
+      <div><div class="tel2"><div class="ap"><div class="ap-est"><span>9:41</span><span class="ic"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="25" height="12" viewBox="0 0 25 12" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="16" height="8" rx="1.8" fill="currentColor"/><path d="M23 4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/></svg></span></div><div class="ap-bar"><div class="tit"><h1>Chats</h1><span class="sub">Grupo Delta</span></div><button type="button" class="ap-ib" aria-label="Buscar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 3.5 3.5"/></svg></button><button type="button" class="ap-ib" aria-label="Filtros"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M7 12h10"/><path d="M10 18h4"/></svg></button></div><div class="ap-seg"><span class="on">Clientes <span class="c">5</span></span><span>Internos <span class="c">2</span></span></div><div class="ap-cuerpo"><div class="w-conv"><span class="w-av">ML</span><span class="tx"><span class="l1"><b>Martina López</b><span>10:42</span></span><span class="l2"><span>2 cajas de tornillos. ¿Atienden hasta las 18?</span></span><span class="l3">Ventas · Lucía Fernández</span></span></div><div class="w-conv"><span class="w-av g"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"/></svg></span><span class="tx"><span class="l1"><b>+54 9 351 555-0192</b><span>10:15</span></span><span class="l2"><span>Quiero hacer un pedido.</span></span><span class="l3 sin">Ventas · Sin tomar</span></span></div><div class="w-conv"><span class="w-av">FD</span><span class="tx"><span class="l1"><b>Federico Díaz</b><span>Ayer</span></span><span class="l2"><span>¿Siguen abiertos el sábado?</span></span><span class="l3 sin">Soporte · Sin tomar</span></span></div><div class="w-conv"><span class="w-av">JP</span><span class="tx"><span class="l1"><b>Javier Pereyra</b><span>Ayer</span></span><span class="l2"><span>Perfecto, gracias.</span></span><span class="l3">Soporte · Tomás Acosta</span></span></div></div><nav class="ap-nav" aria-label="Secciones"><a href="M-Inicio-Org.dc.html"><span class="i"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10v9h11v-9"/></svg></span>Inicio</a><a class="on" aria-current="page" href="T-App-Chats.dc.html"><span class="i"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/></svg><span class="b">2</span></span>Chats</a><a href="T-App-Contactos.dc.html"><span class="i"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M3 19.5c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4"/><path d="M18 14.8c1.6.7 2.7 2.3 3 4.7"/></svg></span>Contactos</a><a href="T-App-Difusiones.dc.html"><span class="i"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4h3l6 4V6L7 10z"/><path d="M16.5 9a4 4 0 0 1 0 6"/></svg></span>Difusiones</a><a href="T-App-Mas.dc.html"><span class="i"><span class="yo">L</span></span>Más</a></nav></div></div><p class="rotel">Lista: título en la barra, filas de borde a borde y la barra de abajo</p></div>
+      <div><div class="tel2"><div class="ap"><div class="ap-est"><span>9:41</span><span class="ic"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="25" height="12" viewBox="0 0 25 12" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="16" height="8" rx="1.8" fill="currentColor"/><path d="M23 4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/></svg></span></div><div class="ap-bar"><div class="tit"><h1>Contactos</h1><span class="sub">Grupo Delta</span></div><button type="button" class="ap-ib" aria-label="Buscar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 3.5 3.5"/></svg></button><button type="button" class="ap-txt">Importar</button></div><div class="ap-cuerpo"><div class="w-conv"><span class="w-av">ML</span><span class="tx"><span class="l1"><b>Martina López</b><span>Hoy</span></span><span class="l2"><span>+54 9 11 5555-4521 · Vinculada</span></span><span class="l3">Mayorista · Acepta</span></span></div><div class="w-conv"><span class="w-av">FD</span><span class="tx"><span class="l1"><b>Federico Díaz</b><span>Ayer</span></span><span class="l2"><span>+54 9 11 5555-2087</span></span><span class="l3">Minorista · No acepta</span></span></div><div class="w-conv"><span class="w-av">CR</span><span class="tx"><span class="l1"><b>Carla Ruiz</b><span>29/09</span></span><span class="l2"><span>+54 9 11 5555-1146</span></span><span class="l3">Se dio de baja</span></span></div></div><nav class="ap-nav" aria-label="Secciones"><a href="M-Inicio-Org.dc.html"><span class="i"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10v9h11v-9"/></svg></span>Inicio</a><a href="T-App-Chats.dc.html"><span class="i"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/></svg><span class="b">2</span></span>Chats</a><a class="on" aria-current="page" href="T-App-Contactos.dc.html"><span class="i"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M3 19.5c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4"/><path d="M18 14.8c1.6.7 2.7 2.3 3 4.7"/></svg></span>Contactos</a><a href="T-App-Difusiones.dc.html"><span class="i"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4h3l6 4V6L7 10z"/><path d="M16.5 9a4 4 0 0 1 0 6"/></svg></span>Difusiones</a><a href="T-App-Mas.dc.html"><span class="i"><span class="yo">L</span></span>Más</a></nav><div class="ap-velo"></div><div class="ap-hoja" role="dialog" aria-label="Importar contactos"><span class="asa"></span><div class="hc"><h2>Importar contactos</h2><button type="button" class="ap-ib" aria-label="Cerrar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div><div class="hb"><div class="ap-cmp"><span class="rt"><span>Archivo <span class="rq">*</span></span></span><div class="ct">clientes-mayoristas.xlsx</div></div><div class="ap-cmp"><span class="rt"><span>Etiqueta para todos <span class="rq">*</span></span></span><div class="ct">Mayorista<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div></div></div><div class="hp"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Importar 48 contactos</button></div></div></div></div><p class="rotel">Diálogo: una hoja que sube desde abajo, con manija</p></div>
+      <div><div class="tel2"><div class="ap"><div class="ap-est"><span>9:41</span><span class="ic"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="25" height="12" viewBox="0 0 25 12" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="16" height="8" rx="1.8" fill="currentColor"/><path d="M23 4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/></svg></span></div><div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="#"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></a><div class="tit"><h1>Nueva difusión</h1><span class="sub">Borrador</span></div></div><div class="ap-cuerpo" style="padding: 4px 20px 0; gap: 14px;"><div class="ap-cmp"><span class="rt"><span>Nombre <span class="rq">*</span></span></span><div class="ct">Horario de fiestas</div></div><div class="ap-cmp"><span class="rt"><span>Plantilla <span class="rq">*</span></span></span><div class="ct">Aviso de horario · Marketing<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div></div><div class="ap-cmp"><span class="rt"><span>Destinatarios <span class="rq">*</span></span></span><div class="ap-seg2"><span>Los que aceptan</span><span class="on">Una etiqueta</span></div></div><div class="ap-cmp"><span class="rt"><span>Etiqueta <span class="rq">*</span></span></span><div class="ct">Mayorista<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div></div></div><div class="ap-fijo"><span class="costo"><b>48 contactos · US$ 2,97</b><span>Costo estimado</span></span><button type="button" class="cb cb-pri">Programar</button></div></div></div><p class="rotel">Tarea: ‹ arriba y la acción fija abajo, sin la barra de abajo</p></div>
     </div>
     <ul class="reglas2 dos" style="margin-top: 18px;">
-      <li><strong>Arriba:</strong> ☰ abre el menú, la marca al medio y tu avatar abre tu menú.</li>
-      <li><strong>La banda:</strong> la acción principal con un nombre corto («+ Invitar»); el resto, en ⋮.</li>
-      <li><strong>Las tablas</strong> muestran solo el dato principal, el estado y el ⋮. El resto se ve al entrar.</li>
-      <li><strong>Los botones del teléfono</strong> miden 44 px para tocarlos con el dedo.</li>
+      <li><strong>Arriba,</strong> la barra del teléfono y el título grande, con la organización debajo. Buscar y filtrar son íconos.</li>
+      <li><strong>Abajo,</strong> hasta cuatro secciones y «Más», con tu inicial: perfiles, Administración, Mi cuenta y Salir.</li>
+      <li><strong>Pantallas internas:</strong> ‹ y el título, con el camino debajo. Sin barra de abajo en un chat o si hay una acción fija abajo.</li>
+      <li><strong>Listas de borde a borde,</strong> con filas de hasta tres líneas. El ⋮ va solo si la fila tiene acciones; si no, se toca la fila.</li>
+      <li><strong>Lo que en la compu es un diálogo</strong> es una hoja desde abajo, con manija y botones de 48 px a lo ancho.</li>
+      <li><strong>Crear algo nuevo</strong> es un «+» flotante abajo a la derecha, también con la lista vacía.</li>
+      <li><strong>Los ajustes</strong> van en grupos blancos sobre fondo gris, con interruptores o una flecha.</li>
+      <li><strong>Los botones del teléfono</strong> miden 44 a 50 px para tocarlos con el dedo.</li>
     </ul>
   </section>
 
@@ -801,13 +969,14 @@
       <li>Pestañas para un dato suelto o para un «Resumen».</li>
       <li>Más de tres botones a la vista en la banda.</li>
       <li>Una versión aparte de la pantalla para el teléfono, hecha a mano.</li>
+      <li>La web achicada en el teléfono: la marca arriba, la banda con ícono y resumen, cajas con cabecera beige o el menú ☰.</li>
       <li>Scroll de costado en el teléfono.</li>
     </ul>
   </section>
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3200}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3440}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

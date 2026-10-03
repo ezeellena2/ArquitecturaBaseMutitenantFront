@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Respuestas automáticas · teléfono</title>
+<title>Números · teléfono</title>
 <script src="./support.js"></script>
 <link rel="stylesheet" href="ds/ab/components/bundle.css">
 <script src="ds/ab/components/bundle.js"></script>
@@ -712,14 +712,87 @@ body { margin: 0; }
 .w-mn .w-mn-on { margin-left: auto; }
 .w-tel .w-mn { width: 300px; right: -4px; }
   </style>
+<style data-propuesta="tel-chats">
+.o-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 10px; background: var(--s3); }
+.o-seg span { height: 36px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--t2); }
+.o-seg span.on { background: #fff; color: var(--t1); box-shadow: 0 1px 3px oklch(0.24 0.014 78 / 0.12); }
+.o-seg .c { font-weight: 500; color: var(--t3); }
+.o-filtros { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--borde); background: #fff; }
+.o-fila { display: flex; gap: 8px; }
+.o-fila .w-bus { flex: 1; height: 44px; }
+.o-fila .w-pil { height: 44px; }
+.o-fila .w-pil.ic { width: 44px; padding: 0; justify-content: center; position: relative; }
+.o-fila .w-pil.ic .p { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--marca); }
+.w-conv .l3 { font-size: 12px; color: var(--t3); }
+.w-conv .l3.sin { color: oklch(0.55 0.13 70); }
+a.w-conv { text-decoration: none; color: inherit; }
+</style>
+<style data-propuesta="app-marco">
+.ap { width: 390px; height: 844px; overflow: hidden; background: #fff; font-family: Inter, system-ui, sans-serif; color: var(--t1); display: flex; flex-direction: column; position: relative; }
+.ap-est { height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 22px 0 30px; font-size: 15px; font-weight: 600; background: #fff; }
+.ap-est .ic { display: inline-flex; align-items: center; gap: 6px; }
+.ap-bar { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 6px 0 16px; background: #fff; }
+.ap-bar.int { padding-left: 4px; }
+.ap-bar .tit { flex: 1; min-width: 0; }
+.ap-bar h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-bar.int h1 { font-size: 20px; }
+.ap-bar .sub { display: block; font-size: 12.5px; font-weight: 500; color: var(--t3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-ib { width: 44px; height: 44px; border: 0; background: none; color: var(--t1); display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; position: relative; flex-shrink: 0; text-decoration: none; }
+.ap-cuerpo { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+.ap-fila { display: flex; align-items: center; gap: 14px; padding: 12px 6px 12px 16px; position: relative; text-decoration: none; color: inherit; }
+.ap-fila::after { content: ""; position: absolute; left: 16px; right: 0; bottom: 0; height: 1px; background: var(--borde); }
+.ap-fila .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding-right: 10px; }
+.ap-fila .l1 { display: flex; justify-content: space-between; gap: 8px; font-size: 15.5px; font-weight: 500; }
+.ap-fila .l1 span { font-size: 12.5px; font-weight: 400; color: var(--t3); flex-shrink: 0; }
+.ap-fila .l2 { font-size: 14px; color: var(--t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-fila .l3 { font-size: 13px; color: var(--t3); }
+.ap-fila .l3 .w-est { font-size: 13px; color: var(--t2); }
+.ap-fila .ap-ib { color: var(--t2); margin-right: -4px; }
+.w-est.mal::before { background: oklch(0.57 0.2 25); }
+.w-est.mal { color: oklch(0.5 0.19 25) !important; }
+.w-est.baja::before { background: oklch(0.72 0.15 70); }
+.w-est.prog::before { background: var(--marca); }
+.ap-i { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 22px; padding: 0; border: 0; background: none; color: oklch(0.52 0.19 25); vertical-align: middle; }
+.ap-fab { position: absolute; z-index: 4; right: 16px; bottom: 110px; width: 56px; height: 56px; border-radius: 16px; background: var(--marca); color: #fff; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px oklch(0.3 0.06 195 / 0.3), 0 2px 4px oklch(0.3 0.06 195 / 0.2); }
+.ap-nav { flex-shrink: 0; display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px 4px 28px; background: #fff; border-top: 1px solid var(--borde); }
+.ap-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 500; color: var(--t2); text-decoration: none; }
+.ap-nav .i { width: 56px; height: 30px; border-radius: 15px; display: inline-flex; align-items: center; justify-content: center; position: relative; }
+.ap-nav a.on { color: var(--marca-tx); font-weight: 600; }
+.ap-nav a.on .i { background: var(--marca-t); }
+.ap-nav .b { position: absolute; top: -3px; right: 4px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; background: var(--marca); color: #fff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+.ap-nav .yo { width: 26px; height: 26px; border-radius: 50%; background: var(--marca); color: #fff; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+.ap-nav a.on .yo { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--marca); }
+.ap-raya { position: absolute; z-index: 9; left: 50%; bottom: 8px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: var(--t1); }
+.ap-velo { position: absolute; inset: 0; z-index: 6; background: oklch(0.2 0.014 78 / 0.45); }
+.ap-hoja { position: absolute; z-index: 7; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 20px 20px 0 0; display: flex; flex-direction: column; box-shadow: 0 -8px 24px oklch(0.2 0.014 78 / 0.12); }
+.ap-hoja .asa { align-self: center; width: 36px; height: 5px; border-radius: 3px; background: var(--borde2); margin: 8px 0 4px; }
+.ap-hoja .hc { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 6px 4px 20px; }
+.ap-hoja .hc h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
+.ap-hoja .hb { padding: 8px 20px 16px; display: flex; flex-direction: column; gap: 14px; }
+.ap-hoja .hp { display: flex; gap: 10px; padding: 8px 20px 34px; }
+.ap-hoja .hp .cb { flex: 1; height: 48px; border-radius: 12px; font-size: 15px; }
+</style>
+<style data-propuesta="app-numeros">
+.ap-mot { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 14px; background: var(--peligro-t); color: oklch(0.42 0.16 25); }
+.ap-mot svg { flex-shrink: 0; margin-top: 1px; }
+.ap-mot b { display: block; font-size: 15.5px; font-weight: 600; color: oklch(0.38 0.15 25); }
+.ap-mot span { font-size: 13.5px; }
+.ap-sub { font-size: 13px; font-weight: 600; color: var(--t3); margin-bottom: -2px; }
+.ap-pasos { display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.ap-pasos li { display: flex; gap: 12px; align-items: center; font-size: 15px; }
+.ap-pasos .n { width: 28px; height: 28px; border-radius: 50%; background: var(--s3); color: var(--t2); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+</style>
+<style data-regla="menus-con-lineas">
+.menu[role="menu"] { padding: 0; overflow: hidden; }
+.menu[role="menu"] .menu-it { border-radius: 0; min-height: 42px; padding: 8px 14px; border-top: 1px solid var(--borde); margin-top: -1px; }
+.menu[role="menu"] .menu-sep { height: 6px; margin: 0; background: var(--s2); border-top: 1px solid var(--borde); }
+.o-menu { padding: 0; overflow: hidden; }
+.o-menu .it { border-radius: 0; }
+.o-menu .it + .it { border-top: 1px solid var(--borde); }
+</style>
 </helmet>
 
-<div class="w-tel"><header class="w-tb"><a style="display: inline-flex;" href="M-WA-Menu.dc.html" aria-label="Abrir el menú"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg></a><b style="font-size: 14px;">ArquitecturaBase</b><details class="w-umd"><summary class="av-tel" aria-label="Abrir tu menú"><span class="w-av chico">L</span></summary><div class="w-mn" role="menu" aria-label="Menú de Lucía Fernández"><div class="w-mn-cab"><span class="w-av" style="width: 36px; height: 36px; font-size: 15px;">L</span><span class="w-mn-perf"><b>Lucía Fernández</b><span class="s">lucia.fernandez@delta.ejemplo.com</span></span></div><div class="w-mn-sep" role="separator"></div><div class="w-mn-tit">Perfiles</div><a class="w-mn-it" role="menuitemradio" aria-checked="false" href="M-Inicio-Personal.dc.html"><span class="w-mn-ico">P</span><span class="w-mn-perf">Personal<span class="s">Tu perfil personal</span></span></a><a class="w-mn-it on" role="menuitemradio" aria-checked="true" href="M-Inicio-Org.dc.html"><span class="w-mn-ico">GD</span><span class="w-mn-perf">Grupo Delta<span class="s">Dueño</span></span><span class="w-mn-on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></a><a class="w-mn-it apag" role="menuitemradio" aria-checked="false" href="Perfil-Suspendido.dc.html"><span class="w-mn-ico">BS</span><span class="w-mn-perf">Beta S.R.L.<span class="s">Suspendida</span></span></a><div class="w-mn-sep" role="separator"></div><a class="w-mn-it" role="menuitem" href="M-Cuenta.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Mi cuenta</a><div class="w-mn-sep" role="separator"></div><a class="w-mn-it" role="menuitem" href="M-Ingreso.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Salir</a></div></details></header>
-  <div class="w-bnd"><div class="iz"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"/></svg></span><div><h1>Respuestas automáticas</h1><p class="res">2 activas</p></div></div><div class="ac"></div></div>
-  <div class="w-body"><div class="w-caja">
-  <div class="w-it"><span class="dato"><b>Bienvenida</b><span>La primera vez que alguien escribe</span></span><span class="w-sw" role="switch" aria-checked="true" aria-label="Bienvenida"></span><button type="button" class="ib" aria-label="Acciones de Bienvenida"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></div>
-  <div class="w-it"><span class="dato"><b>Fuera de horario</b><span>Lunes a viernes, de 9 a 18</span></span><span class="w-sw" role="switch" aria-checked="true" aria-label="Fuera de horario"></span><a class="ib" aria-label="Acciones de Fuera de horario" href="M-WA-Editar.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></a></div>
-</div></div></div>
+<div class="ap"><div class="ap-est"><span>9:41</span><span class="ic"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="25" height="12" viewBox="0 0 25 12" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="16" height="8" rx="1.8" fill="currentColor"/><path d="M23 4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/></svg></span></div><div class="ap-bar int"><a class="ap-ib" aria-label="Volver" href="M-WA-Menu.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></a><div class="tit"><h1>Números</h1><span class="sub">Administración · WhatsApp</span></div></div><div class="ap-cuerpo"><div class="ap-fila"><div class="tx"><span class="l1">+54 9 11 5555-0100<span>640 de 1.000 gratis</span></span><span class="l2">Grupo Delta · también en la app</span><span class="l3">Toda la organización · <span class="w-est ">Conectado</span></span></div><button type="button" class="ap-ib" aria-label="Acciones de +54 9 11 5555-0100"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div><div class="ap-fila"><div class="tx"><span class="l1">+54 9 351 555-0200</span><span class="l2">Delta Sur</span><span class="l3">Delta Sur S.R.L. · <span class="w-est mal">Falta medio de pago</span><button type="button" class="ap-i" aria-label="Qué hacer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><path d="M12 7.8h.01"/></svg></button></span></div><button type="button" class="ap-ib" aria-label="Acciones de +54 9 351 555-0200"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></div></div><a class="ap-fab" aria-label="Conectar número" href="#"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg></a><nav class="ap-nav" aria-label="Secciones"><a href="M-Inicio-Org.dc.html"><span class="i"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10v9h11v-9"/></svg></span>Inicio</a><a href="M-WA-Chats.dc.html"><span class="i"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/></svg><span class="b">2</span></span>Chats</a><a href="M-WA-Contactos.dc.html"><span class="i"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M3 19.5c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4"/><path d="M18 14.8c1.6.7 2.7 2.3 3 4.7"/></svg></span>Contactos</a><a href="M-WA-Difusiones.dc.html"><span class="i"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4h3l6 4V6L7 10z"/><path d="M16.5 9a4 4 0 0 1 0 6"/></svg></span>Difusiones</a><a class="on" aria-current="page" href="M-WA-Menu.dc.html"><span class="i"><span class="yo">L</span></span>Más</a></nav><span class="ap-raya"></span></div>
 </x-dc>
 
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>

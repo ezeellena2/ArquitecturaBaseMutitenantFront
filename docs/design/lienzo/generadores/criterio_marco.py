@@ -4,7 +4,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 3200
+ALTO = 3440
 ARCHIVO = "Criterio-Marco.dc.html"
 TITULO = "Criterio · Marco y pantallas"
 
@@ -130,6 +130,58 @@ MAS_KEBAB = f'<button type="button" class="ib" aria-label="Más acciones" style=
 filas_tabla = "".join(f'<div class="tr"><span style="width: {a}px;"></span><span style="width: {b}px;"></span><span style="width: {c}px;"></span></div>'
                       for a, b, c in [(120, 220, 80), (100, 200, 70), (130, 240, 90), (110, 190, 80), (90, 230, 60), (120, 210, 90)])
 
+
+# Teléfono como app (2026-10-03): las piezas salen del mismo marco que los teléfonos de WhatsApp.
+import sys as _sys
+_sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / "telefonos_1004"))
+from app_marco import ESTILO as AP_CSS, I as AP_I, estado as ap_estado, barra as ap_barra, nav as ap_nav, hoja as ap_hoja  # noqa: E402
+from app_estilo import ESTILO_X as AP_CSS_X  # noqa: E402
+
+_base = (pathlib.Path(__file__).resolve().parent / "telefonos_1004" / "base" / "telefono.dc.html").read_text(encoding="utf-8")
+AP_BASE = "<style data-criterio=\"telefono-base\">\n" + "\n".join(re.findall(r"\.w-(?:conv|av|punto|est)[^{]*\{[^}]*\}", _base)) + """
+.tel2 { width: 390px; height: 760px; border: 1px solid var(--borde2); border-radius: 28px; overflow: hidden; position: relative; background: #fff; }
+.tel2 .ap { height: 760px; }
+.tel2 .ap-fab { bottom: 110px; }
+.tel2 h1, .tel2 h2 { border: 0 !important; padding: 0 !important; margin: 0 !important; }
+</style>"""
+
+
+def _acc(*claves):
+    return "".join(f'<button type="button" class="ap-ib" aria-label="{e}">{AP_I[c]}</button>' for c, e in claves)
+
+
+def _fila(ini, nombre, l2, l3, hora, sin=False):
+    av = f'<span class="w-av{"" if ini else " g"}">{ini or AP_I["wa"]}</span>'
+    return (f'<div class="w-conv">{av}<span class="tx"><span class="l1"><b>{nombre}</b><span>{hora}</span></span>'
+            f'<span class="l2"><span>{l2}</span></span><span class="l3{" sin" if sin else ""}">{l3}</span></span></div>')
+
+
+def _campo(rotulo, valor, flecha=False):
+    f = ABAJO if flecha else ""
+    return f'<div class="ap-cmp"><span class="rt"><span>{rotulo} <span class="rq">*</span></span></span><div class="ct">{valor}{f}</div></div>'
+
+
+_CHATS = (_fila("ML", "Martina López", "2 cajas de tornillos. ¿Atienden hasta las 18?", "Ventas · Lucía Fernández", "10:42")
+          + _fila("", "+54 9 351 555-0192", "Quiero hacer un pedido.", "Ventas · Sin tomar", "10:15", True)
+          + _fila("FD", "Federico Díaz", "¿Siguen abiertos el sábado?", "Soporte · Sin tomar", "Ayer", True)
+          + _fila("JP", "Javier Pereyra", "Perfecto, gracias.", "Soporte · Tomás Acosta", "Ayer"))
+TEL_LISTA = (ap_estado() + ap_barra("Chats", "Grupo Delta", _acc(("lupa", "Buscar"), ("filtro", "Filtros")))
+             + '<div class="ap-seg"><span class="on">Clientes <span class="c">5</span></span><span>Internos <span class="c">2</span></span></div>'
+             + f'<div class="ap-cuerpo">{_CHATS}</div>' + ap_nav("chats"))
+_CONT = (_fila("ML", "Martina López", "+54 9 11 5555-4521 · Vinculada", "Mayorista · Acepta", "Hoy")
+         + _fila("FD", "Federico Díaz", "+54 9 11 5555-2087", "Minorista · No acepta", "Ayer")
+         + _fila("CR", "Carla Ruiz", "+54 9 11 5555-1146", "Se dio de baja", "29/09"))
+TEL_HOJA = (ap_estado() + ap_barra("Contactos", "Grupo Delta", _acc(("lupa", "Buscar")) + '<button type="button" class="ap-txt">Importar</button>')
+            + f'<div class="ap-cuerpo">{_CONT}</div>' + ap_nav("contactos")
+            + ap_hoja("Importar contactos", _campo("Archivo", "clientes-mayoristas.xlsx") + _campo("Etiqueta para todos", "Mayorista", True),
+                      '<button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Importar 48 contactos</button>'))
+TEL_TAREA = (ap_estado() + ap_barra("Nueva difusión", "Borrador", volver="#")
+             + '<div class="ap-cuerpo" style="padding: 4px 20px 0; gap: 14px;">'
+             + _campo("Nombre", "Horario de fiestas") + _campo("Plantilla", "Aviso de horario · Marketing", True)
+             + '<div class="ap-cmp"><span class="rt"><span>Destinatarios <span class="rq">*</span></span></span><div class="ap-seg2"><span>Los que aceptan</span><span class="on">Una etiqueta</span></div></div>'
+             + _campo("Etiqueta", "Mayorista", True) + "</div>"
+             + '<div class="ap-fijo"><span class="costo"><b>48 contactos · US$ 2,97</b><span>Costo estimado</span></span><button type="button" class="cb cb-pri">Programar</button></div>')
+
 BODY = f"""<div class="crit">
   <div>
     <h1>Marco y pantallas</h1>
@@ -219,60 +271,21 @@ BODY = f"""<div class="crit">
   </section>
 
   <section>
-    <h2>En el teléfono</h2>
+    <h2>En el teléfono: una app</h2>
     <div class="tels">
-      <div>
-        <div class="tel">
-          <div class="tb"><span style="display: inline-flex;">{MENU}</span><span>ArquitecturaBase</span><span class="av">L</span></div>
-          <div class="bnd"><div class="iz"><div><h3>Usuarios</h3><p class="res">11 usuarios · 7 activos…</p></div></div><div class="ac"><button type="button" class="cb cb-pri ch">{MAS} Invitar</button></div></div>
-          <div class="bd">
-            <div class="busq">Buscar por nombre o correo</div>
-            <div class="pills"><span>Estado</span><span>Empresa</span></div>
-            <div class="lst"><div class="h"><span>Nombre</span><span>Estado</span></div>
-              <div class="r"><span class="n">Lucía Fernández</span><span class="est">Activo</span>{MAS_KEBAB.replace('border-color: var(--borde);', '')}</div>
-              <div class="r"><span class="n">Tomás Acosta</span><span class="est">Activo</span>{MAS_KEBAB.replace('border-color: var(--borde);', '')}</div>
-              <div class="r"><span class="n">Marcos Giménez</span><span class="est off">Deshabilitado</span>{MAS_KEBAB.replace('border-color: var(--borde);', '')}</div>
-              <div class="r"><span class="n">Sofía Herrera</span><span class="est pend">Invitación pendiente</span>{MAS_KEBAB.replace('border-color: var(--borde);', '')}</div>
-            </div>
-          </div>
-        </div>
-        <p class="rotel">Listado: solo el nombre, el estado y el ⋮</p>
-      </div>
-      <div>
-        <div class="tel">
-          <div class="tb"><span style="display: inline-flex;">{MENU}</span><span>ArquitecturaBase</span><span class="av">L</span></div>
-          <div class="oscuro"></div>
-          <div class="hoja">
-            <div class="hc"><span>Invitar usuario</span><button type="button" class="ib" aria-label="Cerrar">{X}</button></div>
-            <div class="campos">
-              <div class="cmp"><span class="rt">Correo</span><div class="ct">sofia.herrera@delta.ejemplo.com</div></div>
-              <div class="cmp"><span class="rt">Roles de la organización</span><div class="ct" style="color: var(--t3);">Ninguno {ABAJO}</div></div>
-              <div class="cmp"><span class="rt">Empresa</span><div class="ct">Delta S.A. {ABAJO}</div></div>
-            </div>
-            <div class="botones"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Invitar</button></div>
-          </div>
-        </div>
-        <p class="rotel">Diálogo: sube desde abajo, botones a lo ancho</p>
-      </div>
-      <div>
-        <div class="tel">
-          <div class="tb"><span style="display: inline-flex;">{MENU}</span><span>ArquitecturaBase</span><span class="av">L</span></div>
-          <div class="bnd"><div class="iz"><div><h3>Mi cuenta</h3><p class="res"><span class="suc">Cambios sin guardar</span></p></div></div></div>
-          <div class="campos" style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
-            <div class="cmp"><span class="rt">Nombre y apellido</span><div class="ct">Lucía Fernández</div></div>
-            <div class="cmp"><span class="rt">Idioma y región</span><div class="ct">Español (Argentina) {ABAJO}</div></div>
-            <div class="cmp"><span class="rt">Zona horaria</span><div class="ct">Buenos Aires (GMT−3) {ABAJO}</div></div>
-          </div>
-          <div class="fija"><button type="button" class="cb cb-sec">Descartar</button><button type="button" class="cb cb-pri">Guardar</button></div>
-        </div>
-        <p class="rotel">Edición: los botones quedan fijos abajo</p>
-      </div>
+      <div><div class="tel2"><div class="ap">{TEL_LISTA}</div></div><p class="rotel">Lista: título en la barra, filas de borde a borde y la barra de abajo</p></div>
+      <div><div class="tel2"><div class="ap">{TEL_HOJA}</div></div><p class="rotel">Diálogo: una hoja que sube desde abajo, con manija</p></div>
+      <div><div class="tel2"><div class="ap">{TEL_TAREA}</div></div><p class="rotel">Tarea: ‹ arriba y la acción fija abajo, sin la barra de abajo</p></div>
     </div>
     <ul class="reglas2 dos" style="margin-top: 18px;">
-      <li><strong>Arriba:</strong> ☰ abre el menú, la marca al medio y tu avatar abre tu menú.</li>
-      <li><strong>La banda:</strong> la acción principal con un nombre corto («+ Invitar»); el resto, en ⋮.</li>
-      <li><strong>Las tablas</strong> muestran solo el dato principal, el estado y el ⋮. El resto se ve al entrar.</li>
-      <li><strong>Los botones del teléfono</strong> miden 44 px para tocarlos con el dedo.</li>
+      <li><strong>Arriba,</strong> la barra del teléfono y el título grande, con la organización debajo. Buscar y filtrar son íconos.</li>
+      <li><strong>Abajo,</strong> hasta cuatro secciones y «Más», con tu inicial: perfiles, Administración, Mi cuenta y Salir.</li>
+      <li><strong>Pantallas internas:</strong> ‹ y el título, con el camino debajo. Sin barra de abajo en un chat o si hay una acción fija abajo.</li>
+      <li><strong>Listas de borde a borde,</strong> con filas de hasta tres líneas. El ⋮ va solo si la fila tiene acciones; si no, se toca la fila.</li>
+      <li><strong>Lo que en la compu es un diálogo</strong> es una hoja desde abajo, con manija y botones de 48 px a lo ancho.</li>
+      <li><strong>Crear algo nuevo</strong> es un «+» flotante abajo a la derecha, también con la lista vacía.</li>
+      <li><strong>Los ajustes</strong> van en grupos blancos sobre fondo gris, con interruptores o una flecha.</li>
+      <li><strong>Los botones del teléfono</strong> miden 44 a 50 px para tocarlos con el dedo.</li>
     </ul>
   </section>
 
@@ -286,6 +299,7 @@ BODY = f"""<div class="crit">
       <li>Pestañas para un dato suelto o para un «Resumen».</li>
       <li>Más de tres botones a la vista en la banda.</li>
       <li>Una versión aparte de la pantalla para el teléfono, hecha a mano.</li>
+      <li>La web achicada en el teléfono: la marca arriba, la banda con ícono y resumen, cajas con cabecera beige o el menú ☰.</li>
       <li>Scroll de costado en el teléfono.</li>
     </ul>
   </section>
@@ -299,7 +313,7 @@ class Component extends DCLogic {{
 }}
 </script>"""
 
-html = "\n".join([head, CSS, "</helmet>", "", BODY, "</x-dc>", "", SCRIPT, "</body>", "</html>", ""])
+html = "\n".join([head, CSS, AP_CSS, AP_CSS_X, AP_BASE, "</helmet>", "", BODY, "</x-dc>", "", SCRIPT, "</body>", "</html>", ""])
 (PROJ / ARCHIVO).write_text(html, encoding="utf-8")
 
 ruta = PROJ / "canvas.json"

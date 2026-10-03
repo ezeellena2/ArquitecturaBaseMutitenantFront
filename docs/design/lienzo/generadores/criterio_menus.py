@@ -4,7 +4,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 2820
+ALTO = 2860
 ARCHIVO = "Criterio-Menus.dc.html"
 TITULO = "Criterio · Menús y desplegables"
 
@@ -22,8 +22,8 @@ CSS = """  <style data-criterio="menus">
 .mfila { position: relative; height: 230px; background: #fff; border: 1px solid var(--borde); border-radius: 12px; }
 .mfila .r { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--borde); font-size: 13px; background: oklch(0.955 0.025 185); border-radius: 11px 11px 0 0; }
 .mfila .r .n { flex: 1; font-weight: 500; }
-.mn { position: absolute; z-index: 3; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); padding: 4px; min-width: 220px; display: flex; flex-direction: column; font-size: 13px; color: var(--t1); }
-.mn .it { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 10px; border-radius: 6px; white-space: nowrap; }
+.mn { position: absolute; z-index: 3; background: #fff; border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.16); padding: 0; overflow: hidden; min-width: 220px; display: flex; flex-direction: column; font-size: 13px; color: var(--t1); }
+.mn .it { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 14px; border-radius: 0; white-space: nowrap; }
 .mn .it svg { color: var(--t3); flex-shrink: 0; }
 .mn .it.h { background: var(--s2); }
 .mn .it.pel, .mn .it.pel svg { color: oklch(0.52 0.19 25); }
@@ -31,7 +31,8 @@ CSS = """  <style data-criterio="menus">
 .mn .it.apag { color: var(--t3); }
 .mn .it .der2 { margin-left: auto; padding-left: 16px; color: var(--t3); font-size: 12.5px; }
 .mn .it .on-t { margin-left: auto; color: var(--marca-tx); }
-.mn .sep { height: 1px; background: var(--borde); margin: 4px 0; }
+.mn .sep { height: 6px; background: var(--s2); border-top: 1px solid var(--borde); }
+.mn .it + .it { border-top: 1px solid var(--borde); }
 .mn .tit { padding: 8px 10px 4px; font-size: 12.5px; font-weight: 600; color: var(--t3); }
 .mn .cabu { display: flex; align-items: center; gap: 10px; padding: 10px; }
 .mn .cabu .av { width: 36px; height: 36px; font-size: 15px; }
@@ -147,7 +148,8 @@ BODY = f"""<div class="crit">
     </div>
     <ul class="reglas2" style="margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 40px;">
       <li><strong>Solo lo que se puede hacer con esa fila.</strong> Lo que no aplica no aparece; nada de opciones grises.</li>
-      <li><strong>Las comunes arriba;</strong> las de peligro abajo, en rojo y después de una línea.</li>
+      <li><strong>Las comunes arriba;</strong> las de peligro abajo, en rojo y después de una franja.</li>
+      <li><strong>Una línea fina entre cada opción,</strong> en la compu y en el teléfono.</li>
       <li><strong>Cada opción con su ícono gris</strong> y un verbo: «Editar», «Reenviar invitación».</li>
       <li><strong>Abre debajo del ⋮</strong>, alineado a la derecha. Si no hay lugar abajo, abre hacia arriba.</li>
     </ul>

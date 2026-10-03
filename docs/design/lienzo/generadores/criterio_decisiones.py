@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 3890
+ALTO = 5200
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -56,6 +56,10 @@ REGLAS = [
     ("Dos vistas del mismo contenido pueden ir en pestañas (Bot: Configuración y Recorrido).", "Marco y pantallas", "03/10/2026"),
     ("Los módulos de uso diario (WhatsApp) van arriba, debajo de Inicio, y abren su propio panel; Administración, abajo con una línea.", "Menús y desplegables", "03/10/2026"),
     ("Antes de algo que se paga (difusión, plantilla), se muestra el costo estimado.", "Diálogos", "03/10/2026"),
+    ("Una línea fina entre cada opción de un menú desplegable; antes de las de peligro, una franja.", "Menús y desplegables", "03/10/2026"),
+    ("En el teléfono, una app: barra de abajo con «Más», título en la barra, listas de borde a borde y hojas con manija.", "Marco y pantallas", "03/10/2026"),
+    ("En el teléfono, crear algo nuevo es un «+» flotante abajo a la derecha, también con la lista vacía.", "Marco y pantallas", "03/10/2026"),
+    ("En el teléfono, el ⋮ de una fila va solo si tiene acciones; si no, se toca la fila.", "Marco y pantallas", "03/10/2026"),
 ]
 
 # Decisiones por página: (pantalla, opción elegida, qué se eligió, estado en el lienzo).
@@ -93,10 +97,10 @@ DECISIONES = {
         ("Chats", "A", "Una pantalla con «Clientes | Internos», filtros por equipo y estado, tercera línea con equipo y quién atiende («Sin tomar» en ámbar).", "Dibujada"),
         ("Chat sin tomar", "A", "Se puede responder directo y el primer mensaje lo toma; si otro lo tomó antes, avisa.", "Dibujada"),
         ("Pasar", "B", "Desplegable directo con equipos y personas.", "Dibujada"),
-        ("Notas internas", "A", "Abajo se elige «Mensaje» o «Nota interna»; la nota, amarilla, la ve solo el equipo.", "Dibujada"),
+        ("Notas internas", "B", "Un botón a la izquierda de donde se escribe prende la nota: el campo se pone amarillo y se guarda; la ve solo el equipo. Reemplaza «Mensaje | Nota interna».", "Dibujada"),
         ("Pasaron 24 horas", "B", "Donde se escribe: «Pasaron 24 horas» con ⓘ y «Elegir plantilla».", "Dibujada"),
         ("Elegir plantilla", "A", "Diálogo con la plantilla, sus datos, la vista previa y el costo.", "Dibujada"),
-        ("Contactos", "A", "Contacto (con «Vinculada»), Etiquetas, Promociones y Última conversación; «Importar contactos» con consentimiento obligatorio.", "Dibujada"),
+        ("Contactos", "A", "Contacto (con «Vinculada»), Etiquetas, Promociones y Última conversación; «Importar contactos» con «Descargar ejemplo» y sin casilla: el consentimiento va por contacto, en la columna «Acepta promociones» del archivo.", "Dibujada"),
         ("Ficha del contacto", "B", "Datos en la segunda línea de arriba y pestañas «Conversaciones | Difusiones».", "Dibujada"),
         ("Difusiones", "A", "Lista; «Nueva difusión» en pantalla propia con vista previa y costo; resultados con los números y cada contacto.", "Dibujada"),
         ("Números", "A", "Tabla con Atiende a, Estado y Este mes; «Falta medio de pago» en rojo con ⓘ.", "Dibujada"),
@@ -107,13 +111,30 @@ DECISIONES = {
         ("Mensajes de la persona", "A", "En el perfil personal, solo para leer, con «Seguir en WhatsApp».", "Dibujada"),
         ("Permisos", "A", "Área WhatsApp con 4: Atender clientes, Atender internos, Mandar difusiones y Administrar WhatsApp.", "Dibujada"),
         ("Correo «Chats esperando»", "A", "Solo el resumen y «Ver los chats», sin copiar mensajes ni teléfonos.", "Dibujada"),
-        ("Menú de la organización", "", "«WhatsApp» arriba, debajo de Inicio, con el contador de Chats; abre un segundo panel (Chats, Contactos, Difusiones) como Administración, y solo uno de los dos abre a la vez. «Administración» queda abajo, con la línea, por ser configuración. En el teléfono, todo dentro del cajón.", "Dibujada"),
+        ("Menú de la organización", "", "«WhatsApp» arriba, debajo de Inicio, con el contador de Chats; abre un segundo panel (Chats, Contactos, Difusiones) como Administración, y solo uno de los dos abre a la vez. «Administración» queda abajo, con la línea, por ser configuración. En el teléfono, la barra de abajo y «Más».", "Dibujada"),
         ("Menú de Plataforma", "B", "«WhatsApp» para atender y la configuración dentro de «Configuración».", "Dibujada"),
     ],
+    "WhatsApp · teléfonos (como app)": [
+        ("Marco", "A", "Barra de abajo: Inicio, Chats (con los sin leer), Contactos, Difusiones y «Más». Título grande en la barra de arriba, con la organización debajo.", "Dibujada"),
+        ("Más", "", "Tu cuenta, Perfiles, Administración, WhatsApp (Números, Bot, Equipos, Plantillas), Mi cuenta y Salir, en grupos.", "Dibujada"),
+        ("Lista de chats", "A", "«Clientes | Internos» arriba; buscar y filtrar como íconos (los filtros abren una hoja). Filas de tres líneas.", "Dibujada"),
+        ("Conversación", "B", "Arriba ‹, el nombre y «Vinculada a su cuenta · Mayorista». «Pasar» y «Ver ficha del contacto» en el ⋮. Sin barra de abajo.", "Dibujada"),
+        ("Chat sin tomar", "B", "«Sin tomar · Ventas» en ámbar; «Tomar», «Pasar» y «Ver ficha» en el ⋮. Responder ya lo toma.", "Dibujada"),
+        ("Pasar · Elegir plantilla · Importar", "A", "Hojas desde abajo, con manija.", "Dibujada"),
+        ("Nota interna", "B", "El botón de nota prende el modo nota: campo amarillo y botón ámbar con tilde.", "Dibujada"),
+        ("Pasaron 24 horas", "", "Abajo: el botón de nota, «Pasaron 24 horas» con ⓘ y «Elegir plantilla».", "Dibujada"),
+        ("Contactos", "B", "Lista como Chats: nombre y última conversación, número con «Vinculada», etiqueta y promociones. Tocar abre la ficha.", "Dibujada"),
+        ("Ficha del contacto", "B", "Avatar grande al centro, nombre y datos debajo; pestañas «Conversaciones | Difusiones»; «Abrir chat» fijo abajo.", "Dibujada"),
+        ("Difusiones · Nueva difusión", "A", "Lista con «+» flotante. Nueva difusión: los campos y la vista previa; abajo fijo, cantidad, costo y «Programar».", "Dibujada"),
+        ("Resultados", "B", "Los números son también el filtro, en una fila que se desliza; «No llegaron» suma los que no recibieron.", "Dibujada"),
+        ("Números", "A", "Lista de tres líneas con ⋮ (Cambiar a quién atiende, Desconectar) y «+»; «Falta medio de pago» abre el aviso como hoja.", "Dibujada"),
+        ("Sin números", "A", "La frase y el «+» de siempre.", "Dibujada"),
+        ("Bot · Equipos · Plantillas · Cargar teléfonos · Mensajes", "", "Decididos con los mismos criterios: ajustes en grupos, recorrido como línea de pasos, listas con ⋮ y «+», acción fija abajo, Mensajes con su propia barra (Inicio, Mensajes, Más).", "Dibujada"),
+    ],
     "Lo que sigue": [
-        ("Teléfonos", "", "Pasar lo decidido a M-Usuarios, M-Usuario, M-Roles, M-Rol, M-Empresas, M-Empresa y M-Auditoria-Org.", "Falta dibujar"),
+        ("Teléfonos de Organización", "", "Pasar a formato app lo decidido en M-Usuarios, M-Usuario, M-Roles, M-Rol, M-Empresas, M-Empresa, M-Configuracion y M-Auditoria-Org.", "Falta dibujar"),
+        ("Teléfonos de Plataforma y del perfil personal", "", "Pasarlos a formato app.", "Falta dibujar"),
         ("Inicios", "", "Repensar qué es un inicio en la plantilla y dónde van las acciones pendientes.", "Para repensar"),
-        ("Teléfonos de WhatsApp", "", "Pasar lo decidido a M-WA-*.", "Falta dibujar"),
         ("Alta de Meta", "", "Se dibuja cuando el usuario lo pida.", "Falta decidir"),
     ],
 }

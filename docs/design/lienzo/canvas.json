@@ -97,7 +97,7 @@
       "y": 260
     },
     "Criterio-Marco.dc.html": {
-      "h": 3200,
+      "h": 3440,
       "page": "criterio",
       "title": "Criterio · Marco y pantallas",
       "w": 1440,
@@ -105,7 +105,7 @@
       "y": 260
     },
     "Criterio-Menus.dc.html": {
-      "h": 2820,
+      "h": 2860,
       "page": "criterio",
       "title": "Criterio · Menús y desplegables",
       "w": 1440,
@@ -726,56 +726,56 @@
       "y": 2300
     },
     "M-WA-Chats.dc.html": {
-      "x": 470,
+      "x": 0,
       "y": 4340,
       "w": 390,
       "h": 844,
-      "title": "Chats · teléfono · por refinar",
+      "title": "Chats · teléfono",
       "page": "propuesta-whatsapp",
       "is_interactive": true
     },
     "M-WA-Conversacion.dc.html": {
-      "x": 940,
+      "x": 470,
       "y": 4340,
       "w": 390,
       "h": 844,
-      "title": "Conversación · teléfono · por refinar",
+      "title": "Conversación · teléfono",
       "page": "propuesta-whatsapp",
       "is_interactive": true
     },
     "M-WA-24h.dc.html": {
-      "x": 1410,
-      "y": 4340,
-      "w": 390,
-      "h": 844,
-      "title": "Conversación pasadas 24 h · teléfono · por refinar",
-      "page": "propuesta-whatsapp",
-      "is_interactive": true
-    },
-    "M-WA-Contacto.dc.html": {
-      "x": 1880,
-      "y": 4340,
-      "w": 390,
-      "h": 844,
-      "title": "Ficha del contacto · teléfono · por refinar",
-      "page": "propuesta-whatsapp",
-      "is_interactive": true
-    },
-    "M-WA-Admin.dc.html": {
       "x": 2350,
       "y": 4340,
       "w": 390,
       "h": 844,
-      "title": "Respuestas automáticas · teléfono · por refinar",
+      "title": "Pasaron 24 horas · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Contacto.dc.html": {
+      "x": 940,
+      "y": 5340,
+      "w": 390,
+      "h": 844,
+      "title": "Ficha del contacto · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Admin.dc.html": {
+      "x": 470,
+      "y": 6340,
+      "w": 390,
+      "h": 844,
+      "title": "Números · teléfono",
       "page": "propuesta-whatsapp",
       "is_interactive": true
     },
     "M-WA-Editar.dc.html": {
       "x": 2820,
-      "y": 4340,
+      "y": 6340,
       "w": 390,
       "h": 844,
-      "title": "Editar respuesta · teléfono · por refinar",
+      "title": "Bot · editar opción · teléfono",
       "page": "propuesta-whatsapp",
       "is_interactive": true
     },
@@ -808,10 +808,10 @@
     },
     "M-WA-Menu.dc.html": {
       "x": 0,
-      "y": 4340,
+      "y": 6340,
       "w": 390,
       "h": 844,
-      "title": "Menú abierto · teléfono · por refinar",
+      "title": "Más · teléfono",
       "page": "propuesta-whatsapp",
       "is_interactive": true
     },
@@ -969,7 +969,7 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 3890,
+      "h": 5200,
       "page": "criterio",
       "title": "Criterio · Decisiones por pantalla",
       "w": 1440,
@@ -1103,6 +1103,186 @@
       "w": 1440,
       "x": 7600,
       "y": 3320
+    },
+    "M-WA-Chats-SinTomar.dc.html": {
+      "x": 940,
+      "y": 4340,
+      "w": 390,
+      "h": 844,
+      "title": "Chat sin tomar · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Chats-Pasar.dc.html": {
+      "x": 1410,
+      "y": 4340,
+      "w": 390,
+      "h": 844,
+      "title": "Pasar · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Chats-Nota.dc.html": {
+      "x": 1880,
+      "y": 4340,
+      "w": 390,
+      "h": 844,
+      "title": "Nota interna · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Chats-Plantilla.dc.html": {
+      "x": 2820,
+      "y": 4340,
+      "w": 390,
+      "h": 844,
+      "title": "Elegir plantilla · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Contactos.dc.html": {
+      "x": 0,
+      "y": 5340,
+      "w": 390,
+      "h": 844,
+      "title": "Contactos · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Contactos-Importar.dc.html": {
+      "x": 470,
+      "y": 5340,
+      "w": 390,
+      "h": 844,
+      "title": "Importar contactos · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Difusiones.dc.html": {
+      "x": 1410,
+      "y": 5340,
+      "w": 390,
+      "h": 844,
+      "title": "Difusiones · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Difusion-Nueva.dc.html": {
+      "x": 1880,
+      "y": 5340,
+      "w": 390,
+      "h": 844,
+      "title": "Nueva difusión · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Difusion-Resultados.dc.html": {
+      "x": 2350,
+      "y": 5340,
+      "w": 390,
+      "h": 844,
+      "title": "Resultados de una difusión · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Admin-Pago.dc.html": {
+      "x": 940,
+      "y": 6340,
+      "w": 390,
+      "h": 844,
+      "title": "Falta medio de pago · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Admin-Vacio.dc.html": {
+      "x": 1410,
+      "y": 6340,
+      "w": 390,
+      "h": 844,
+      "title": "Sin números · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Respuestas.dc.html": {
+      "x": 1880,
+      "y": 6340,
+      "w": 390,
+      "h": 844,
+      "title": "Bot · configuración · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Bot-Recorrido.dc.html": {
+      "x": 2350,
+      "y": 6340,
+      "w": 390,
+      "h": 844,
+      "title": "Bot · recorrido · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Equipos.dc.html": {
+      "x": 0,
+      "y": 7340,
+      "w": 390,
+      "h": 844,
+      "title": "Equipos · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Equipos-Crear.dc.html": {
+      "x": 470,
+      "y": 7340,
+      "w": 390,
+      "h": 844,
+      "title": "Crear equipo · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Plantillas.dc.html": {
+      "x": 940,
+      "y": 7340,
+      "w": 390,
+      "h": 844,
+      "title": "Plantillas · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Plantilla-Nueva.dc.html": {
+      "x": 1410,
+      "y": 7340,
+      "w": 390,
+      "h": 844,
+      "title": "Nueva plantilla · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Telefonos.dc.html": {
+      "x": 1880,
+      "y": 7340,
+      "w": 390,
+      "h": 844,
+      "title": "Cargar teléfonos de empleados · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Mensajes.dc.html": {
+      "x": 2350,
+      "y": 7340,
+      "w": 390,
+      "h": 844,
+      "title": "Mensajes · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Mensaje.dc.html": {
+      "x": 2820,
+      "y": 7340,
+      "w": 390,
+      "h": 844,
+      "title": "Mensajes · conversación · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -1396,7 +1576,27 @@
     "WA-Equipos-Crear.dc.html",
     "WA-Plantilla-Nueva.dc.html",
     "WA-Telefonos.dc.html",
-    "WA-Mensajes.dc.html"
+    "WA-Mensajes.dc.html",
+    "M-WA-Chats-SinTomar.dc.html",
+    "M-WA-Chats-Pasar.dc.html",
+    "M-WA-Chats-Nota.dc.html",
+    "M-WA-Chats-Plantilla.dc.html",
+    "M-WA-Contactos.dc.html",
+    "M-WA-Contactos-Importar.dc.html",
+    "M-WA-Difusiones.dc.html",
+    "M-WA-Difusion-Nueva.dc.html",
+    "M-WA-Difusion-Resultados.dc.html",
+    "M-WA-Admin-Pago.dc.html",
+    "M-WA-Admin-Vacio.dc.html",
+    "M-WA-Respuestas.dc.html",
+    "M-WA-Bot-Recorrido.dc.html",
+    "M-WA-Equipos.dc.html",
+    "M-WA-Equipos-Crear.dc.html",
+    "M-WA-Plantillas.dc.html",
+    "M-WA-Plantilla-Nueva.dc.html",
+    "M-WA-Telefonos.dc.html",
+    "M-WA-Mensajes.dc.html",
+    "M-WA-Mensaje.dc.html"
   ],
   "pages": [
     {
