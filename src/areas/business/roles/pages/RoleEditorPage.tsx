@@ -35,7 +35,7 @@ interface RoleDraft {
 }
 
 // La casilla: en la compu, la de siempre con borde visible; en el teléfono (tablero M-Rol, .ap-chk), de 22 con borde de 1,5.
-const checkClass = "border-[var(--t2)] max-md:size-[22px]! max-md:rounded-[6px]! max-md:border-[1.5px]! max-md:border-[var(--borde2)]! max-md:data-[state=checked]:border-[var(--marca)]!";
+const checkClass = "border-[var(--t2)] max-md:size-[22px]! max-md:rounded-[6px]! max-md:border-[1.5px]! max-md:border-[var(--borde2)]! max-md:enabled:data-[state=checked]:border-[var(--marca)]!";
 
 const emptyDraft: RoleDraft = { name: "", description: "", scope: undefined, companyId: "", permissions: [] };
 
@@ -282,7 +282,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
               </div>
               <div className="w-full">
               {editable ? <FormField label={t("roles:fields.description")}>
-                <Textarea value={draft.description} maxLength={500} className="min-h-[88px] resize-y max-md:min-h-[104px]" onChange={(event) => changeDraft({ description: event.target.value })} />
+                <Textarea value={draft.description} maxLength={500} className="min-h-[88px] max-md:min-h-[104px]" onChange={(event) => changeDraft({ description: event.target.value })} />
               </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12.5px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{t("roles:fields.description")}</span><p className="min-h-9 whitespace-pre-wrap text-[13px] text-[var(--t1)] max-md:min-h-0 max-md:text-[16px]">{role.data && isSystemRole ? displayRoleDescription(role.data, t) ?? t("roles:noDescription") : draft.description || t("roles:noDescription")}</p></div>}
             </div>
             </div>

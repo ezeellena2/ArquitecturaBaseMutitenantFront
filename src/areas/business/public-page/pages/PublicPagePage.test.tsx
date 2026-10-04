@@ -211,6 +211,10 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(within(pageBox).getByText(".plataforma.com")).toBeVisible();
     expect(screen.getByRole("region", { name: "Contacto" })).toBeVisible();
     expect(screen.queryByRole("region", { name: "Logo" })).not.toBeInTheDocument();
+    // Tablero Pagina-Org: la caja de «Descripción» crece con el texto y no tiene el tirador para cambiarle el tamaño.
+    const description = within(pageBox).getByRole("textbox", { name: "Descripción" });
+    expect(description).toHaveClass("resize-none");
+    expect(description).not.toHaveClass("resize-y");
 
     const slug = within(pageBox).getByRole("textbox", { name: "Dirección de la página" });
     await user.clear(slug);

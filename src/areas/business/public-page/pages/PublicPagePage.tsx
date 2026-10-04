@@ -219,7 +219,7 @@ export function PublicPagePage() {
                 {slugChanged && slugState ? <p className={`text-[13px] ${slugState === "Available" ? "text-[var(--ok)]" : "text-[var(--peligro)]"}`}>{slugStateText(slugState, t)}</p> : null}
               </div>
               <FormField label={t("publicPage:fields.name")} required><Input value={draft.name} maxLength={120} onChange={(event) => setDraftState({ ...draft, name: event.target.value })} /></FormField>
-              <div className="md:col-span-2"><FormField label={t("publicPage:fields.description")}><Textarea value={draft.description} maxLength={1000} className="min-h-[88px] resize-y max-md:min-h-[104px]" onChange={(event) => setDraftState({ ...draft, description: event.target.value })} /></FormField></div>
+              <div className="md:col-span-2"><FormField label={t("publicPage:fields.description")}><Textarea value={draft.description} maxLength={1000} className="min-h-[88px] max-md:min-h-[104px]" onChange={(event) => setDraftState({ ...draft, description: event.target.value })} /></FormField></div>
             </div>
           </Section>
 
