@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
+import { CountryFlag } from "@/shared/phone/CountryFlag";
 import { phoneCountryOptions } from "@/shared/phone/countries";
 import { formatPhoneDraft } from "@/shared/phone/phoneInput";
 import { Input } from "../input";
@@ -49,11 +50,15 @@ export function PhoneField({ value, onChange, onValidityChange, allowedCountries
 
   return (
     <div className="flex gap-2">
-      {/* Tablero Página pública: el país compacto, «AR +54», en una caja de 112; la lista muestra el nombre entero. */}
+      {/* El país compacto en una caja de 112: la bandera y el prefijo («+54»), decisión del usuario del 2026-10-04; la
+          lista muestra la bandera y el nombre entero. */}
       <div className="w-[112px] shrink-0">
         <CountrySelect value={country} onChange={changeCountry} allowedCountries={countries.map((item) => item.code)}
           placeholder={t("phone.country", { country: "" })} disabled={unavailable}
-          renderValue={(selected) => selected.callingCode ? `${selected.code} +${selected.callingCode}` : selected.code} />
+          renderValue={(selected) => <span className="inline-flex items-center gap-2">
+            <CountryFlag countryCode={selected.code} title={selected.name} className="h-4 w-6 shrink-0" />
+            {selected.callingCode ? `+${selected.callingCode}` : selected.code}
+          </span>} />
       </div>
       <Input id={id} name={name} type="tel" autoComplete="tel-national" inputMode="tel"
         value={value?.number ?? ""} onChange={(event) => changeNumber(event.target.value)}

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -51,9 +51,11 @@ describe("PhoneField", () => {
     expect(input).toHaveAttribute("type", "tel");
     expect(input).toHaveAttribute("autocomplete", "tel-national");
     expect(input).toHaveAccessibleDescription("Para avisos de la cuenta");
-    // Tablero Página pública: el país compacto, «AR +54», en una caja de 112 al lado del número.
+    // El país compacto en una caja de 112 al lado del número: la bandera (una imagen, no un emoji) y «+54». Decisión del
+    // usuario del 2026-10-04.
     const country = screen.getByRole("combobox", { name: "País: Argentina, +54" });
-    expect(country.textContent).toBe("AR +54");
+    expect(await within(country).findByRole("img", { name: "Argentina" })).toHaveClass("h-4", "w-6");
+    expect(country).toHaveTextContent(/^\+54$/);
     expect(country.parentElement).toHaveClass("w-[112px]");
 
     fireEvent.change(input, { target: { value: "1123456789" } });
