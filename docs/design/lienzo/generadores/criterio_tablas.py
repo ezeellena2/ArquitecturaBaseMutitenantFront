@@ -135,7 +135,7 @@ BODY = f"""<div class="crit">
       <ul class="reglas2" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 40px;">
         <li><strong>Filtros en su propia tarjeta</strong>, arriba de la tabla. Sin botones.</li>
         <li><strong>Encabezado con color:</strong> 40 px, fondo arena, sin mayúsculas.</li>
-        <li><strong>Filas de 40 px</strong>, o de 52 con segunda línea. Letra de hoy (13), alternadas. Al pasar el mouse, petróleo claro.</li>
+        <li><strong>Filas de 40 px</strong>; si alguna tiene segunda línea, todas las de la tabla son de 52. Letra de hoy (13), alternadas. Al pasar el mouse, petróleo claro.</li>
         <li><strong>Un tema por columna.</strong> Debajo, en gris, lo que lo aclara: el correo, el rol en la empresa, cuándo vence. Sin dato, una sola raya.</li>
         <li><strong>El estado es un punto de color y la palabra</strong>, sin fondo. Números y montos, a la derecha.</li>
         <li><strong>Las acciones van en ⋮:</strong> las comunes arriba; las de peligro abajo, en rojo y separadas.</li>
@@ -190,7 +190,7 @@ BODY = f"""<div class="crit">
     <div class="medidas">
       <div class="cab" style="grid-template-columns: 220px 150px minmax(0, 1fr);"><span>Pieza</span><span>Medida</span><span>Cómo es</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Encabezado</strong><span>40 px</span><span>Fondo arena, letra de 13 en semibold, gris oscuro, sin mayúsculas. Igual en tablas, listas y cajas.</span></div>
-      <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Fila de tabla</strong><span>40 o 52 px</span><span>Letra de 13, la de hoy; la segunda línea, gris de 12. Una fila sí y otra no, arena muy suave. Al pasar el mouse, petróleo claro.</span></div>
+      <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Fila de tabla</strong><span>40 o 52 px</span><span>52 en toda la tabla si alguna fila tiene segunda línea. Letra de 13, la de hoy; la segunda línea, gris de 12. Una fila sí y otra no, arena muy suave. Al pasar el mouse, petróleo claro.</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Fila de lista</strong><span>44 o 56 px</span><span>Letra de 13. Lo que aclara la fila, en una segunda línea gris de 12.</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Estado</strong><span>Punto de 8 px</span><span>Punto de color y la palabra, sin fondo: verde activo, petróleo pendiente, ámbar atención, gris apagado.</span></div>
       <div class="fil" style="grid-template-columns: 220px 150px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Columna de acciones</strong><span>48 px</span><span>Solo el ⋮, botón de ícono de 32 × 32.</span></div>

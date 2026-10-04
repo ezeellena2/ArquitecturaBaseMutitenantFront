@@ -574,6 +574,13 @@ textarea.in2 { height: auto; min-height: 84px; }
 .w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
   content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 </style>
+<style data-vuelta="1004-viejos-criterio">
+.tabs2 { gap: 28px; padding: 0 4px; border-bottom: 1px solid var(--borde); }
+.tab2 { height: 44px; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: none !important; color: var(--t2); font-size: 14px; font-weight: 500; gap: 6px; }
+.tab2:hover { color: var(--t1); background: none !important; }
+.tab2[aria-selected="true"] { color: var(--marca-tx); font-weight: 600; background: none !important; box-shadow: inset 0 -2px 0 var(--marca); }
+.tab2 .cnt, .tab2[aria-selected="true"] .cnt { padding: 0 !important; border-radius: 0; background: none !important; color: var(--t3); font-size: 14px; font-weight: 400; }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{plMenuClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
