@@ -8,7 +8,7 @@
   - `useRestoreFocusOnClose`;
   - se monta solo mientras está abierto.
 - **Pantalla:**
-  - `Page` con `backTo`, `useUnsavedChangesGuard` y «Cambios sin guardar» en la segunda línea de la banda;
+  - `Page` con `backTo` y **`useEditPage`** (`shared/hooks`), que da «Cambios sin guardar» para la segunda línea de la banda, el `ConcurrencyBanner` del 409, la franja `FormError` del error de guardado y «¿Salir sin guardar?» (con `useUnsavedChangesGuard`); cada error va en un solo lugar;
   - **una caja por tema** (`Section`), con el título en el encabezado arena; lo asignado va debajo, en su propia caja (como los permisos en el editor de roles);
   - **editar algo que ya existe** lleva «Descartar cambios», que vuelve a lo guardado sin salir de la pantalla, y «Guardar cambios»; **crear algo nuevo** lleva «Cancelar», que vuelve (con «¿Salir sin guardar?» si hay cambios), y la acción («Crear rol»).
 - **Validación:** `react-hook-form` + `zod` cuando hay reglas; en un diálogo simple, un draft en `useState`. Los mensajes salen de i18n.
@@ -17,7 +17,7 @@
 - **Permisos de un rol:** la única lista con grupos que se abren y se cierran. Cada grupo tiene su casilla de «todos» y la cuenta («3 de 3»); al entrar están abiertos los que tienen algo marcado.
 - Lo que no se edita se muestra como texto, no como control deshabilitado. En una edición, solo «Guardar cambios» se deshabilita si no hay diferencias; «Descartar cambios» sigue disponible.
 - **Edición inválida:** `MoneyField`, `NumberField`, `PercentField`, `DateField`, `DateTimeField` y `TimeField` conservan el texto escrito para corregirlo, pero emiten `onChange(null)` y `onValidityChange(false)` apenas falla el parseo, para que el formulario no conserve el valor anterior. El control queda inválido para el envío; el mensaje y el estado visual aparecen después de salir del campo. Al corregirlo emiten el valor parseado y `onValidityChange(true)` y retiran el error.
-- **Errores del servidor:** `applyApiErrorToForm`; lo general va en `<FormError>`.
+- **Errores del servidor:** `applyApiErrorToForm`; lo general va en `<FormError>`: en una ficha, debajo de la banda; en un diálogo, arriba de sus botones, también el 409, y se va al cerrarlo. Red, 5xx y 429 los avisa el `MutationCache` ([errores](errores.md)).
 - **Campos por tipo de dato:** `EmailField` (trim y minúsculas al escribir), `PhoneField` + `CountrySelect` ([telefonos](telefonos.md)), `MoneyField` + `CurrencySelect`, `TimeZoneSelect`, `CultureSelect`, `DateField`… Sus opciones salen de `shared/referenceData`; mientras carga el catálogo muestran estado de carga. `TaxIdField` toma los tipos de `TaxIdTypes`, valida en E1 solo con `stdnum` y emite `{ type, number }` con `type = TaxIdTypes.Code` (por ejemplo, `AR-CUIT`) y `number` sin separadores; el value object y el contrato de salida `{ country, type, number }` del back llegan en E6. El `maxLength` de cada texto sale del contrato generado (`TextLimits` del back), nunca de un número escrito a mano.
 - **Búsqueda en selectores:** `CountrySelect`, `CurrencySelect`, `TimeZoneSelect` y `CultureSelect` filtran las opciones disponibles sin ocultar el valor ya elegido en el control. Cada buscador anuncia su objeto (país, moneda, zona horaria o cultura). La etiqueta del valor elegido sale de cualquier fila del catálogo, incluso si luego quedó deshabilitada; la lista de nuevas opciones muestra solo filas habilitadas.
 - **Envío sin duplicados:** el guardado de un alta o un envío usa `useIdempotentMutation` ([datos-y-api](datos-y-api.md)). La clave nace al abrir el formulario.
@@ -41,10 +41,11 @@
 - Un array de opciones o decimales de moneda dentro de un componente; pertenecen a los [datos de referencia](../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md).
 
 ## Copiá de
-- `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4) · `src/areas/business/users/pages/UsersPage.tsx` (E6: diálogo Invitar integrado en el listado)
+- `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4) · `src/areas/business/users/pages/UsersPage.tsx` (E6: diálogo Invitar integrado en el listado) · `src/areas/business/settings/pages/SettingsPage.tsx` (F7: `useEditPage`) · `src/areas/business/users/pages/UserDetailPage.tsx` (F7: el error de un diálogo arriba de sus botones)
 
 ## Lo verifica
 - Tests de pantalla: el recorrido del diálogo y un error del servidor ubicado en su campo. `RoleEditorPage.test.tsx` (E5): al editar, «Descartar cambios» vuelve a lo guardado sin salir; al crear, «Cancelar».
+- `useEditPage.test.tsx` (F7): el 409 solo en el cartel, otro error solo en la franja, los genéricos en ningún lado y «¿Salir sin guardar?» con cambios. `SettingsPage.test.tsx` (B11): con cambios, un enlace del menú pregunta antes de salir.
 - `parsers.test.ts` (E1).
 - `referenceData.test.ts` (E1) y tests de los selectores (E1): opciones del catálogo, carga y `{ type: "AR-CUIT", number }` sin separadores.
 - Tests de `shared/ui/fields`: borrado del valor anterior ante texto inválido, aviso tras blur y recuperación de validez al corregir.

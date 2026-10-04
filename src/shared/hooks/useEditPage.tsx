@@ -1,0 +1,59 @@
+import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { ApiError } from "@/shared/api/ApiError";
+import { actionErrorMessage } from "@/shared/api/errorMessage";
+import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
+import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
+import { FormError } from "@/shared/ui/FormError";
+import { useUnsavedChangesGuard } from "./useUnsavedChangesGuard";
+
+export interface EditPageOptions {
+  /** Lo escrito difiere de lo guardado. */
+  readonly isDirty: boolean;
+  /** El error del último guardado de la pantalla (no el de sus diálogos: esos van arriba de sus botones). */
+  readonly error: unknown;
+  /** «Ver lo nuevo»: vuelve a leer la ficha y suelta lo escrito. */
+  readonly onSeeNew: () => void;
+  /** «Seguir editando»: cierra el aviso del 409 y conserva lo escrito. */
+  readonly onContinueEditing: () => void;
+}
+
+export interface EditPage {
+  /** El cartel del 409 `General.ConcurrencyConflict`, para el `banner` de `Page`. */
+  readonly banner: ReactNode;
+  /** «Cambios sin guardar» para la segunda línea de la banda; `null` sin cambios. */
+  readonly unsaved: ReactNode;
+  /** La franja del error de guardado: todo salvo el 409 y lo que ya avisó el MutationCache (red, 5xx y 429). */
+  readonly formError: ReactNode;
+  /** «¿Salir sin guardar?» cuando una salida queda frenada por los cambios. */
+  readonly leaveDialog: ReactNode;
+  /** Deja pasar la próxima navegación sin preguntar: lo que sale después de guardar o de borrar. */
+  readonly allowNextNavigation: () => void;
+}
+
+/// Lo común de una pantalla que edita algo que ya existe (tableros Avisos y «Criterio · Avisos y errores»): el cartel
+/// del 409 debajo de la banda, «Cambios sin guardar» en la banda, la franja del error de guardado y la pregunta antes de
+/// salir con cambios. Cada error va en un solo lugar.
+export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing }: EditPageOptions): EditPage {
+  const { t } = useTranslation("errors");
+  const guard = useUnsavedChangesGuard(isDirty);
+  const conflict = error instanceof ApiError && error.code === "General.ConcurrencyConflict";
+  const message = conflict ? null : actionErrorMessage(error, t);
+
+  return {
+    banner: <ConcurrencyBanner error={error} isDirty={isDirty} onSeeNew={onSeeNew} onContinueEditing={onContinueEditing} />,
+    unsaved: isDirty ? <span className="font-medium text-[var(--alerta)]">{t("unsaved.changes")}</span> : null,
+    formError: message ? <FormError message={message} /> : null,
+    leaveDialog: <ConfirmDialog
+      open={guard.isBlocked}
+      onOpenChange={(open) => { if (!open) guard.stay(); }}
+      title={t("unsaved.title")}
+      description={t("unsaved.description")}
+      confirmLabel={t("unsaved.leave")}
+      cancelLabel={t("unsaved.continueEditing")}
+      destructive
+      onConfirm={guard.leave}
+    />,
+    allowNextNavigation: guard.allowNextNavigation,
+  };
+}

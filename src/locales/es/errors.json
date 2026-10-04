@@ -38,6 +38,7 @@
     "continueEditing": "Seguir editando"
   },
   "unsaved": {
+    "changes": "Cambios sin guardar",
     "title": "¿Salir sin guardar?",
     "description": "Se pierde lo que cambiaste acá.",
     "leave": "Salir sin guardar",

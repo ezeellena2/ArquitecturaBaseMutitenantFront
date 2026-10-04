@@ -38,6 +38,7 @@
     "continueEditing": "Keep editing"
   },
   "unsaved": {
+    "changes": "Unsaved changes",
     "title": "Leave without saving?",
     "description": "You'll lose the changes you made here.",
     "leave": "Leave without saving",
