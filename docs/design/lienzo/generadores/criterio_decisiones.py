@@ -47,7 +47,7 @@ ESTADOS = {
 
 # Reglas generales que salieron de las decisiones: (regla, tablero donde quedó, fecha).
 REGLAS = [
-    ("Dentro de una caja, dos columnas iguales que ocupan todo el ancho.", "Formularios y campos", "02/10/2026"),
+    ("Dentro de una caja, dos columnas iguales que ocupan todo el ancho; tres solo si todos los datos son cortos, como en «Tus datos».", "Formularios y campos", "04/10/2026"),
     ("Sin textos que explican: el estado se dice una vez arriba y un ⓘ abre el aviso importante.", "Avisos y errores · Diálogos", "02/10/2026"),
     ("En el teléfono, lo pasajero va abajo en una franja oscura y lo que sigue, debajo de la barra de arriba.", "Avisos y errores", "03/10/2026"),
     ("Nada revela si un correo o un teléfono tiene cuenta, en «Recuperar mi cuenta» ni en Mi cuenta: la pantalla sigue igual y a ese correo le llega un aviso en lugar del código. Excepción: «Invitar operador», porque quien tiene permiso de cuentas ya las ve.", "Avisos y errores", "03/10/2026"),
