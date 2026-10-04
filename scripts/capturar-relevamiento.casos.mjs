@@ -237,6 +237,43 @@ function extraCases(root) {
       desktop: { ...openRoles }, phone: { props: { estado: "Elegir los roles" } },
       app: { actions: [appClick("button", "Roles de la organización")], readySelector: '[role="menu"]' }, phoneApp: { actions: [appClick("button", "Roles de la organización")], ...dialog } }),
     ...alignmentCases(root),
+    ...dialogCases(root),
+  ];
+}
+
+// Alineación R2b (diálogos, hojas y campos): los diálogos de Empresa sin error y el desplegable con buscador, que en el
+// teléfono es una hoja (SearchSelect).
+function dialogCases(root) {
+  const openRolesBoard = [click('button[aria-label="Acciones de Lucía Fernández"]'), click('[role="menu"] button[role="menuitem"]')];
+  const openRolesApp = { actions: [appClick("button", "Acciones para Lucía Fernández"), appClick("menuitem", "Cambiar roles")], ...dialog };
+  // «Agregar miembro» pide además todos los miembros de la empresa (de a 100) para no ofrecer a quien ya está.
+  const addMemberApp = (width) => {
+    const { responses } = stageCases(root, "etapa-6").find((entry) => entry.pair === "empresa-miembros" && entry.viewport.width === width).app;
+    const members = responses.find((item) => item.path === "/api/companies/company-1/members/paged");
+    return { responses: [...responses, { ...members, query: { page: "1", pageSize: "100" } }], actions: [appClick("button", "Agregar miembro")], ...dialog };
+  };
+  const timeZone = { board: "Cuenta-Agregar", props: { estado: "WhatsApp: elegir el país" } };
+  // «Sumar empresa» con la empresa elegida: recién ahí aparece «Roles en la empresa» (v100). El tablero del teléfono
+  // (M-Usuario-Empresa) ya la dibuja elegida.
+  const pickCompanyBoard = [click("button.cb-sec.ch"), click('button.ct[aria-label="Empresa"]'), click('.o-lst[aria-label="Empresa"] button[role="option"]')];
+  const pickCompanyApp = { actions: [appClick("button", "Sumar empresa"), appClick("combobox", "Empresa"), appClick("option", "Beta S.R.L.")], ...dialog };
+  return [
+    ...pairCases(root, { stage: "consolidacion/f7", pair: "usuario-sumar-empresa", id: "usuario-sumar-empresa-elegida", group: "usuarios",
+      state: "Ficha de Usuario: «Sumar empresa» con la empresa elegida, y «Roles en la empresa», opcional",
+      desktop: { boardActions: pickCompanyBoard }, app: pickCompanyApp, phoneApp: pickCompanyApp }),
+    ...pairCases(root, { stage: "consolidacion/f7", pair: "empresa-roles-error", id: "empresa-roles-dialogo", group: "empresas",
+      state: "Empresa: «Roles de …», el diálogo chico sin bajada",
+      desktop: { boardActions: openRolesBoard }, phone: { state: "Empresa en el teléfono: la hoja «Roles de …» (el tablero no dibuja esa hoja)" },
+      app: openRolesApp, phoneApp: openRolesApp }),
+    ...pairCases(root, { stage: "etapa-6", pair: "empresa-miembros", id: "empresa-agregar-miembro", group: "empresas",
+      state: "Empresa: «Agregar miembro», el diálogo chico sin bajada",
+      desktop: { boardActions: [click("text=Agregar miembro")] }, phone: { state: "Empresa en el teléfono: la hoja «Agregar miembro» (el tablero no dibuja esa hoja)" },
+      app: addMemberApp(1440), phoneApp: addMemberApp(390) }),
+    ...pairCases(root, { stage: "etapa-4", pair: "cuenta", id: "cuenta-zona-horaria", group: "cuenta",
+      state: "Mi cuenta: elegir la zona horaria, el desplegable con buscador (el tablero más cercano es la lista de países de «Agregar»)",
+      desktop: timeZone, phone: { ...timeZone, board: "M-Cuenta-Agregar" },
+      app: { actions: [appClick("combobox", "Zona horaria")], readySelector: '[role="listbox"]' },
+      phoneApp: { actions: [appClick("combobox", "Zona horaria")], ...dialog } }),
   ];
 }
 
