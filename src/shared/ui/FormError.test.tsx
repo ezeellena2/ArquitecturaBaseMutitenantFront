@@ -12,13 +12,13 @@ describe("FormError", () => {
     expect(alert).not.toHaveClass("border");
   });
 
-  // «Criterio · Formularios» (.aviso-mal): en la compu y en las páginas públicas, 13 con padding 10/12, radio 8, ícono
-  // de 16 y el rojo de los avisos.
+  // «Criterio · Formularios» (.aviso-mal): en la compu y en las páginas públicas, 13 con interlineado 1,5, padding
+  // 10/12, radio 8, ícono de 16 al medio de la primera línea y el rojo de los avisos.
   it("en la compu tiene las medidas de la franja del criterio", () => {
     render(<FormError message="Tiene que quedar al menos un Dueño activo." />);
     const alert = screen.getByRole("alert");
-    expect(alert).toHaveClass("text-[13px]", "px-3", "py-2.5", "rounded-[8px]", "bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]");
-    expect(alert.querySelector("svg")).toHaveClass("size-4");
+    expect(alert).toHaveClass("text-[13px]", "leading-normal", "px-3", "py-2.5", "rounded-[8px]", "bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]");
+    expect(alert.querySelector("svg")).toHaveClass("size-4", "mt-0.5");
   });
 
   // Lienzo v100 (.aviso-mal.tel): en la app del teléfono, la letra de los avisos del teléfono (14,5 con interlineado
