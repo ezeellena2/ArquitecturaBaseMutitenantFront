@@ -89,6 +89,9 @@ export function CompanyDetailPage() {
   const roles = useQuery({ queryKey: ["roles", "company-options", id], queryFn: () => fetchAssignableCompanyRoles(id), enabled: (canReadRoles || canReadMembers) && Boolean(id), meta: { silent: true } });
   const activeRoles = (roles.data?.items ?? []).filter((role) => !role.isSystemRole || role.name !== "TenantAdmin");
   const [tab, setTab] = useState<CompanyTab>("members");
+  // Los roles propios se paginan en el cliente: el pie es el mismo que el de Miembros (tablero Empresa).
+  const [rolePage, setRolePage] = useState(1);
+  const [rolePageSize, setRolePageSize] = useState(10);
   const [addOpen, setAddOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState("");
   const [roleIds, setRoleIds] = useState<string[]>([]);
@@ -232,7 +235,10 @@ export function CompanyDetailPage() {
         </TabsContent>
         {canReadRoles ? <TabsContent value="roles">
           <Surface className="overflow-hidden">
-            <DataTable columns={roleColumns} rows={ownRoles} rowKey={(role) => role.id} isLoading={roles.isPending} isFetching={roles.isFetching} error={roles.error ? failureMessage(roles.error, t("common:states.error")) : undefined} onRetry={() => { void roles.refetch(); }} emptyTitle={t("companies:detail.rolesEmpty")} />
+            <DataTable columns={roleColumns} rows={ownRoles.slice((rolePage - 1) * rolePageSize, rolePage * rolePageSize)} rowKey={(role) => role.id} isLoading={roles.isPending} isFetching={roles.isFetching} error={roles.error ? failureMessage(roles.error, t("common:states.error")) : undefined} onRetry={() => { void roles.refetch(); }} emptyTitle={t("companies:detail.rolesEmpty")} />
+            {roles.data ? <Pagination page={rolePage} pageSize={rolePageSize} totalCount={ownRoles.length} totalPages={Math.max(1, Math.ceil(ownRoles.length / rolePageSize))}
+              hasPrevious={rolePage > 1} hasNext={rolePage * rolePageSize < ownRoles.length} onPageChange={setRolePage}
+              onPageSizeChange={(size) => { setRolePageSize(size); setRolePage(1); }} /> : null}
           </Surface>
         </TabsContent> : null}
       </Tabs>
