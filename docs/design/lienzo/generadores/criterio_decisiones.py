@@ -78,6 +78,7 @@ REGLAS = [
 DECISIONES = {
     "Perfil personal": [
         ("Mi cuenta · única Dueña", "", "Un ⓘ junto a «Dar de baja mi cuenta» y el botón apagado; los dos abren el aviso importante.", "Dibujada"),
+        ("Mi cuenta · el ⋮ de «Cómo entrás»", "", "Solo en las filas con acciones: el principal, si es el único método personal, no lo lleva; el correo de la empresa, con «Hacer principal» y «Quitar»; el teléfono sin verificar, con «Quitar».", "Dibujada"),
         ("Mi cuenta › WhatsApp · agregar y verificar", "", "«WhatsApp» con país y número (solo los países que habilita WhatsApp); error: país que no habilita (un número de otra cuenta no da error: no se revela); el código por WhatsApp con «Reenviar», incorrecto o vencido. Sin el módulo, ni la fila ni la opción.", "Dibujada"),
         ("Mi cuenta › WhatsApp · quitar o hacer principal", "A", "⋮ con «Hacer principal» y «Quitar»; el código llega a otro método, y el WhatsApp también es ese otro método. Para cambiar el número se agrega el nuevo y se quita el viejo.", "Dibujada"),
     ],

@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 95** (2026-10-04) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 186 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 96** (2026-10-04) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 186 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -108,6 +108,7 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 | `viejos_criterio_1004.py` | Tableros que habían quedado viejos frente al criterio: pestañas subrayadas en Empresa, Organizacion y Cuenta-Plat, y los íconos de Usuarios en el panel Administración de los tableros con `w-panel`. |
 | `telefonos_sin_revelar_1004.py` | «Cargar teléfonos de empleados» sin revelar si un número tiene cuenta (ADR 0041): «Ya es miembro», «Se invita» o «Número inválido», en WA-Telefonos y M-WA-Telefonos. |
 | `portada_sin_empresas_1004.py` | Etapa 7: el estado «Sin empresas» de la sección de empresas en Landing y Landing-Movil, y las rutas del contrato sin prefijo de acceso (`/api/public-site`, `/api/directory`) en los comentarios. |
+| `correcciones_cuenta_rol_1004.py` | El ⋮ de «Cómo entrás» solo en las filas con acciones (Cuenta y M-Cuenta, con sus estados de agregar, verificar y dar de baja) y «Vale en toda la organización» en minúscula en Rol. |
 | `config_plat_correos_1004.py` | Configuración de la plataforma con la sección «Contacto»: correo de ventas y de soporte. El teléfono lo arma `telefonos_1004/app_plat_personal.py`. |
 | `plat_menu_wa_1004.py` | Menú de Plataforma en la compu con WhatsApp solo para consultas: «WhatsApp» va directo a Consultas y Administración › WhatsApp lleva a los tableros Plat-WA-*. Corre después de `plat_vuelta_1004.py` y `plat_ajustes_1003.py`. |
 | `plat_wa_1004.py` | Plataforma › WhatsApp en la compu (Etapa 11), a partir de los tableros de WhatsApp de la organización: Consultas, Número, Bot (con su recorrido), Equipos y Plantillas. |
