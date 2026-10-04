@@ -7,12 +7,22 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 **En el teléfono** (tableros M-*): cada listado declara su fila (`mobileRow` con `ListRow`), de borde a borde y con hasta tres líneas; la lupa y el filtro son íconos de la barra y el filtro abre una hoja con las opciones y su conteo; el paginado es «Cargar más», que pide el tamaño de página siguiente; crear es un «+» flotante ([responsive](responsive.md)).
 
 ## Cómo se hace
-- `usePagination(result?: { items; totalCount })` toma opcionalmente el resultado ya recibido por la query; `useFilters(keys)` mantiene los filtros en la URL. La query usa el estado de página, orden, búsqueda y filtros de esa URL, con `placeholderData: keepPreviousData`.
+- **Un listado paginado es `usePagedQuery`**: compone `useFilters(keys)`, `usePagination`, la búsqueda con 300 ms de debounce, la consulta con `placeholderData: keepPreviousData`, la corrección de una página fuera de rango y las props de `Pagination`:
+  ```ts
+  const { filters, pagination, query, result: roles, paginationProps } = usePagedQuery({
+    filterKeys: roleFilterKeys, defaultSort: "name",
+    toQuery: (page, values): RolesQuery => ({ ...page, scope: values.vale === "Organization" ? "Organization" : undefined }),
+    queryKey: rolesQueryKey, queryFn: fetchRoles, enabled: canRead, meta: { silent: true, blocksView: true },
+  });
+  // …
+  {paginationProps ? <Pagination {...paginationProps} /> : null}
+  ```
+  `filterKeys` es una constante del módulo; `query` es la consulta ya armada (los conteos toman de ahí la búsqueda y los filtros) y `pagination` da la búsqueda escrita, el orden y sus cambios para `FilterBar` y `DataTable`.
 - Las columnas son ordenables con `sortable: true`, y su `id` es el campo del backend.
 - Cambiar la búsqueda (con 300 ms de debounce), un filtro, el orden o el tamaño vuelve a la página 1, y lo hace `usePagination`.
 - `usePagination` normaliza `page` a un entero seguro desde 1 y `pageSize` a 10, 20, 50 o 100. Un valor inválido vuelve a 1/10; los valores por defecto se omiten de la URL y la corrección usa `replace`, sin agregar historial. Si el orden inicial es descendente (`-campo`), pulsar esa columna alterna a `campo` ascendente y de regreso al descendente.
 - Los tamaños disponibles viven una sola vez en `shared/api/pageSizes.ts`, tipados con el `PagedRequest` generado. El hook y `Pagination` los comparten; `pageSizes.test.ts` compara su lista y orden con el enum del OpenAPI del back.
-- Si llegan `items` vacíos con `totalCount > 0`, `usePagination` salta solo a la última página. Desde la E1 la corrección queda dentro del hook (puede usar un helper interno): no expone `correctPage` a quien lo llama y usa `replace` para no agregar historial.
+- Si llegan `items` vacíos con `totalCount > 0` (por ejemplo, se borró la única fila de la última página), `usePagedQuery` salta solo a la última página que tiene filas, con `replace` y sin agregar historial. Mira solo la respuesta de esa página, nunca la anterior que se muestra mientras carga. No expone `correctPage` a quien lo llama.
 - Los conteos de los filtros salen de `GET …/filter-counts`, con los mismos filtros.
 - **Auditoría y actividad** (lo que solo crece): `useCursorList` + `<LoadMore />`, de a tandas y sin total.
 - Vacío, sin coincidencias, carga y error: los resuelve `DataTable` (`emptyTitle`, `emptyAction`).
@@ -27,7 +37,8 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 - `src/areas/business/users/pages/UsersPage.tsx` y `users/columns.tsx` (E6) · `src/areas/business/roles/pages/RolesPage.tsx` (E4)
 
 ## Lo verifica
-- `usePagination.test.tsx` (E0/E1): conserva el estado en la URL y vuelve a la página 1; desde E1 corrige una página fuera de rango solo con `items` vacíos y `totalCount > 0`, canoniza página/tamaño inválidos con `replace`, alterna el orden descendente predeterminado y omite `pageSize=10` en la URL.
+- `usePagination.test.tsx` (E0/E1): conserva el estado en la URL y vuelve a la página 1, canoniza página/tamaño inválidos con `replace`, alterna el orden descendente predeterminado y omite `pageSize=10` en la URL.
+- `usePagedQuery.test.tsx`: la URL llega a la consulta, la búsqueda con debounce, la corrección de una página fuera de rango (solo con `items` vacíos y `totalCount > 0`) y las props de `Pagination`; `RolesPage.test.tsx`: al inactivar el único rol de la última página, vuelve a la anterior.
 - `pageSizes.test.ts` (E2): exige concordancia exacta con `PagedRequest.properties.pageSize.enum` del OpenAPI; el repo hermano es obligatorio en local y solo ese chequeo se omite con aviso en CI aislado.
 - Tests de pantalla: sin coincidencias y cambio de página; en el teléfono, la lista y su «+».
 - `src/shared/ui/app/lists.test.tsx`: en el teléfono, filas de lista, filtros en una hoja y «Cargar más».

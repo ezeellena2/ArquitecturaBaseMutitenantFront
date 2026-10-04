@@ -119,9 +119,9 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 
 ### Paginado, orden y búsqueda
 El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado del front:
-- **Por páginas:** `usePagination(result?: { items; totalCount })` guarda `page`, `pageSize`, `sort` y `search` **en la URL**, y `useFilters(keys)` hace lo mismo con los filtros. Los dos escriben con `useQueryUpdate`: una escritura por tick y `replace: true`.
+- **Por páginas:** `usePagedQuery` arma el listado: `usePagination()` guarda `page`, `pageSize`, `sort` y `search` **en la URL**, y `useFilters(keys)` hace lo mismo con los filtros; suma el debounce, la consulta, la corrección de página y las props de `Pagination`. Los dos escriben con `useQueryUpdate`: una escritura por tick y `replace: true`.
 - **Qué vuelve a la página 1:** cambiar la búsqueda, un filtro, el orden o el tamaño de página. La búsqueda se aplica con 300 ms de debounce.
-- **Página fuera de rango:** si llegan `items` vacíos con `totalCount > 0`, `usePagination` salta solo a la última, con `replace`, sin dejar una entrada en el historial. Desde la E1 lo hace internamente, sin exponer `correctPage`.
+- **Página fuera de rango:** si llegan `items` vacíos con `totalCount > 0`, `usePagedQuery` salta solo a la última, con `replace`, sin dejar una entrada en el historial. Lo hace adentro, con la respuesta de esa página, sin exponer `correctPage`.
 - **`Pagination`:** muestra "1–10 de 1.234" y "Página 1 de 124", siempre con `useFormat`, y tiene un selector de 10, 20, 50 o 100 por página (**10 por defecto**; si la URL no trae `pageSize`, no se escribe).
 - **`DataTable`:** una columna es ordenable si declara `sortable`. Su `id` es el campo del contrato. El encabezado lleva `aria-sort` y alterna ascendente → descendente → orden por defecto.
 - **Por cursor** (auditoría y actividad): `useCursorList` sobre `useInfiniteQuery`, con el botón "Cargar más" (`LoadMore`), sin total ni número de página. Los filtros viven en la URL; el cursor no.

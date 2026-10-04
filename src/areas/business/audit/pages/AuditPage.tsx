@@ -29,7 +29,8 @@ export function AuditPage() {
   const { data: currentUser } = useCurrentUser();
   const canRead = currentUser?.permissions?.includes("audit.read") === true;
   const filters = useFilters(auditFilterKeys);
-  const pagination = usePagination(undefined);
+  // Por cursor («Cargar más», sin páginas ni total): de usePagination solo usa la búsqueda en la URL.
+  const pagination = usePagination();
   const search = useDebouncedValue(pagination.search ?? "");
   const period = filters.values.period ?? "30";
   const category = filters.values.category;

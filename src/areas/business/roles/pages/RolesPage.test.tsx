@@ -146,6 +146,33 @@ describe("RolesPage", () => {
     expect(confirm).toHaveTextContent("Deja de aparecer para asignar. Nadie lo tiene, así que no le cambia nada a ningún usuario.");
   });
 
+  // B6: si se inactiva el único rol de la última página, la lista vuelve a la anterior en vez de quedar vacía.
+  it("al inactivar el único rol de la última página, vuelve a la anterior", async () => {
+    const user = userEvent.setup();
+    const firstPage = Array.from({ length: 10 }, (_item, index) => ({ ...companyReader, id: `role-${index + 1}`, name: `Rol ${String(index + 1).padStart(2, "0")}` }));
+    const last = { ...companyReader, id: "role-last", name: "Último rol" };
+    let removed = false;
+    server.use(
+      http.get("/api/roles/paged", ({ request }) => {
+        const all = removed ? firstPage : [...firstPage, last];
+        const page = Number(new URL(request.url).searchParams.get("page") ?? "1");
+        const items = all.slice((page - 1) * 10, page * 10);
+        return HttpResponse.json({ items, page, pageSize: 10, totalCount: all.length, totalPages: Math.ceil(all.length / 10), hasPrevious: page > 1, hasNext: page * 10 < all.length });
+      }),
+      http.delete("/api/roles/role-last", () => { removed = true; return new HttpResponse(null, { status: 204 }); }),
+    );
+    const { router } = renderRouteWithProviders("/org/roles?page=2", { as: "business-role-manager" });
+
+    (await screen.findByRole("button", { name: "Acciones para Último rol" })).focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Inactivar" }));
+    const confirm = await screen.findByRole("dialog", { name: "¿Inactivar el rol Último rol?" });
+    await user.click(within(confirm).getByRole("button", { name: "Inactivar" }));
+
+    expect(await screen.findByRole("link", { name: "Rol 01" })).toBeVisible();
+    await waitFor(() => expect(router.state.location.search).toBe(""));
+  }, 10_000);
+
   it("con filtros y sin resultados: «Ningún rol coincide con los filtros» y «Limpiar filtros»", async () => {
     const user = userEvent.setup();
     server.use(

@@ -7,7 +7,7 @@ import { useAppChrome } from "./app/AppChrome";
 import { Button } from "./button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
 
-type PaginationProps = Pick<
+export type PaginationProps = Pick<
   PagedResult<unknown>,
   "page" | "pageSize" | "totalCount" | "totalPages" | "hasPrevious" | "hasNext"
 > & {

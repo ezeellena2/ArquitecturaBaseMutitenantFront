@@ -10,16 +10,14 @@ function wrapperFor(url: string, previousUrl?: string) {
   };
 }
 
-type PageResult = { items: readonly unknown[]; totalCount: number };
-
 function renderPagination(url: string, defaultSort?: string, previousUrl?: string) {
   return renderHook(
-    ({ pageResult }: { pageResult?: PageResult }) => ({
-      pagination: usePagination(pageResult, { defaultSort }),
+    () => ({
+      pagination: usePagination({ defaultSort }),
       location: useLocation(),
       navigate: useNavigate(),
     }),
-    { wrapper: wrapperFor(url, previousUrl), initialProps: { pageResult: undefined as PageResult | undefined } },
+    { wrapper: wrapperFor(url, previousUrl) },
   );
 }
 
@@ -102,34 +100,11 @@ describe("usePagination", () => {
     expect(result.current.location.search).toBe("?pageSize=50");
   });
 
-  it("replaces an out-of-range page with the last page when results are empty", () => {
-    const { result, rerender } = renderPagination("/usuarios?page=9", undefined, "/anterior");
+  // La corrección de una página fuera de rango necesita la respuesta: la prueba usePagedQuery.test.tsx.
+  it("no expone una corrección para que la pantalla la llame a mano", () => {
+    const { result } = renderPagination("/usuarios?page=9");
 
     expect(result.current.pagination.page).toBe(9);
-    rerender({ pageResult: { items: [], totalCount: 25 } });
-
-    expect(result.current.pagination.page).toBe(3);
-    expect(result.current.location.search).toBe("?page=3");
     expect("correctPage" in result.current.pagination).toBe(false);
-
-    act(() => result.current.navigate(-1));
-    expect(result.current.location.pathname).toBe("/anterior");
-  });
-
-  it("keeps the current page when it contains results", () => {
-    const { result, rerender } = renderPagination("/usuarios?page=2");
-
-    rerender({ pageResult: { items: [{}], totalCount: 25 } });
-
-    expect(result.current.pagination.page).toBe(2);
-    expect(result.current.location.search).toBe("?page=2");
-  });
-
-  it("no salta de página cuando el listado completo está vacío", () => {
-    const { result, rerender } = renderPagination("/usuarios?page=4");
-
-    rerender({ pageResult: { items: [], totalCount: 0 } });
-
-    expect(result.current.pagination.page).toBe(4);
   });
 });

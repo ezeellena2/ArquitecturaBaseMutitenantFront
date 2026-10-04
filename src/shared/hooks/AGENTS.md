@@ -2,4 +2,4 @@
 
 Acá van hooks reutilizables, cada uno con su test al lado; no se duplican dentro de una feature.
 Leé [paginado y listados](../../../docs/rules/paginado-y-listados.md) y [formularios](../../../docs/rules/formularios.md).
-Copiá [usePagination.ts](usePagination.ts) (E0); `useCursorList.ts` nace en E1.
+Un listado paginado usa [usePagedQuery.ts](usePagedQuery.ts); uno que solo crece, `useCursorList.ts`.

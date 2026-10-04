@@ -1,4 +1,4 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Building2, Eye, Pencil, Plus, Power } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,9 +8,7 @@ import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/
 import type { CompanyResponse } from "@/shared/api/types";
 import type { CreateCompanyRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
-import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
-import { useFilters } from "@/shared/hooks/useFilters";
-import { usePagination } from "@/shared/hooks/usePagination";
+import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
@@ -38,6 +36,7 @@ import { createCompanyColumns, companyPhoneRow } from "../columns";
 import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyTaxIdValid, type CompanyDraft } from "../components/CompanyFields";
 
 const statusValues = [undefined, "Active", "Inactive"] as const;
+const companyFilterKeys = ["status"] as const;
 
 // «Delta S.A.» + «. Quedaste…» no repite el punto final del nombre.
 const sentence = (text: string) => text.replace("..", ".");
@@ -49,28 +48,20 @@ export function CompaniesPage() {
   const canManage = currentUser?.permissions?.includes("companies.manage") === true;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const filters = useFilters(["status"] as const);
-  const pagination = usePagination(undefined, { defaultSort: "name" });
-  const debouncedSearch = useDebouncedValue(pagination.search ?? "");
-  const statusValue = filters.values.status;
-  const status = statusValue === "Active" || statusValue === "Inactive" ? statusValue : undefined;
-  const query: CompaniesQuery = {
-    page: pagination.page,
-    pageSize: pagination.pageSize,
-    sort: pagination.sort,
-    search: debouncedSearch || undefined,
-    status,
-  };
-  const companies = useQuery({
-    queryKey: companiesQueryKey(query),
-    queryFn: () => fetchCompanies(query),
-    enabled: canRead,
-    placeholderData: keepPreviousData,
-    meta: { silent: true, blocksView: true },
+  const { filters, pagination, query, result: companies, paginationProps } = usePagedQuery({
+    filterKeys: companyFilterKeys,
+    defaultSort: "name",
+    toQuery: (page, values): CompaniesQuery => ({
+      ...page,
+      status: values.status === "Active" || values.status === "Inactive" ? values.status : undefined,
+    }),
+    queryKey: companiesQueryKey, queryFn: fetchCompanies, enabled: canRead, meta: { silent: true, blocksView: true },
   });
+  const { status } = query;
+  const debouncedSearch = query.search ?? undefined;
   const counts = useQuery({
-    queryKey: companiesCountQueryKey(debouncedSearch || undefined),
-    queryFn: () => fetchCompanyCounts(debouncedSearch || undefined),
+    queryKey: companiesCountQueryKey(debouncedSearch),
+    queryFn: () => fetchCompanyCounts(debouncedSearch),
     enabled: canRead,
     meta: { silent: true },
   });
@@ -184,7 +175,7 @@ export function CompaniesPage() {
             sort={pagination.sort}
             onSortChange={pagination.toggleSort}
           />
-          {companies.data ? <Pagination page={companies.data.page} pageSize={companies.data.pageSize} totalCount={companies.data.totalCount} totalPages={companies.data.totalPages} hasPrevious={companies.data.hasPrevious} hasNext={companies.data.hasNext} onPageChange={pagination.setPage} onPageSizeChange={pagination.setPageSize} /> : null}
+          {paginationProps ? <Pagination {...paginationProps} /> : null}
         </Surface>
       </div>
     </Page>

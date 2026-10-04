@@ -373,8 +373,10 @@ src/
 │   │   └── needsPersonalMethod.test.ts
 │   ├── hooks/                                       [E0] de la base solo los hooks sin dependencias de etapas posteriores; cada uno con su test
 │   │   ├── usePagination.ts                         [E0] de la base; página, tamaño, orden y búsqueda en la URL; vuelve a la 1 al cambiar
-│   │   │                                            búsqueda, filtro, orden o tamaño; [E1] corrige internamente una página fuera de rango, sin exponer `correctPage`
-│   │   ├── usePagination.test.tsx                   [E0] URL; [E1] corrige última página con result vacío y totalCount > 0
+│   │   │                                            búsqueda, filtro, orden o tamaño; canoniza la URL con replace
+│   │   ├── usePagination.test.tsx                   [E0] URL y canónico con replace
+│   │   ├── usePagedQuery.ts                         un listado paginado: filtros, página, búsqueda con debounce, consulta, corrección de página y props de Pagination
+│   │   ├── usePagedQuery.test.tsx                   la corrección de una página fuera de rango con items vacíos y totalCount > 0
 │   │   ├── useCursorList.ts                         [E1] se crea: useInfiniteQuery para auditoría y actividad ("Cargar más")
 │   │   ├── useDebouncedValue.ts                     [E1] se crea: 300 ms para la búsqueda
 │   │   ├── useFilters.ts                            [E0] de la base

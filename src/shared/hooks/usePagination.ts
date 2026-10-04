@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
-import { defaultPageSize, isPageSize } from "@/shared/api/pageSizes";
+import { defaultPageSize, isPageSize, type PageSize } from "@/shared/api/pageSizes";
 import { useQueryUpdate } from "./useQueryUpdate";
 
 function positiveInteger(value: string | null, fallback: number): number {
@@ -13,13 +13,17 @@ interface PaginationOptions {
   readonly defaultSort?: string;
 }
 
-interface PaginationResult {
-  readonly items: readonly unknown[];
-  readonly totalCount: number;
+/// Página, tamaño, orden y búsqueda de un listado, como los lleva la consulta.
+export interface PageQuery {
+  readonly page: number;
+  readonly pageSize: PageSize;
+  readonly sort?: string;
+  readonly search?: string;
 }
 
-/// Página, orden y búsqueda viven en la URL: el listado se puede compartir y el botón atrás funciona.
-export function usePagination(result?: PaginationResult, { defaultSort }: PaginationOptions = {}) {
+/// Página, orden y búsqueda viven en la URL: el listado se puede compartir y el botón atrás funciona. La corrección de
+/// una página fuera de rango necesita la respuesta del back, así que la hace `usePagedQuery`, que la tiene.
+export function usePagination({ defaultSort }: PaginationOptions = {}) {
   const [params] = useSearchParams();
 
   const rawPage = params.get("page");
@@ -40,20 +44,15 @@ export function usePagination(result?: PaginationResult, { defaultSort }: Pagina
     [update],
   );
 
-  // Canoniza la URL y corrige una página vacía en una sola escritura con replace.
-  // Dos llamadas a useQueryUpdate en el mismo tick no se acumulan.
-  const itemCount = result?.items.length;
-  const totalCount = result?.totalCount;
+  // Canoniza la URL en una sola escritura con replace: dos llamadas a useQueryUpdate en el mismo tick no se acumulan.
   useEffect(() => {
-    const lastPage = itemCount === 0 && totalCount !== undefined && totalCount > 0
-      ? Math.max(1, Math.ceil(totalCount / pageSize)) : page;
-    const canonicalPage = lastPage === 1 ? null : String(lastPage);
+    const canonicalPage = page === 1 ? null : String(page);
     const canonicalSize = pageSize === defaultPageSize ? null : String(pageSize);
     const changes: Record<string, string | undefined> = {};
     if (rawPage !== canonicalPage) changes.page = canonicalPage ?? undefined;
     if (rawPageSize !== canonicalSize) changes.pageSize = canonicalSize ?? undefined;
     if (Object.keys(changes).length > 0) update(changes);
-  }, [itemCount, totalCount, page, pageSize, rawPage, rawPageSize, update]);
+  }, [page, pageSize, rawPage, rawPageSize, update]);
 
   // Cambiar la búsqueda o el orden vuelve a la primera página: si no, se puede quedar en una página que ya no existe.
   const setSearch = useCallback((next: string) => update({ search: next, page: undefined }), [update]);
@@ -68,7 +67,7 @@ export function usePagination(result?: PaginationResult, { defaultSort }: Pagina
     [sort, defaultSort, update],
   );
 
-  const query = useMemo(() => ({ page, pageSize, sort, search }), [page, pageSize, sort, search]);
+  const query = useMemo<PageQuery>(() => ({ page, pageSize, sort, search }), [page, pageSize, sort, search]);
 
   return useMemo(
     () => ({ page, pageSize, sort, search, query, setPage, setPageSize, setSearch, toggleSort }),

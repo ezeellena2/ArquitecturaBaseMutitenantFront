@@ -8,9 +8,7 @@ import { useCurrentUser } from "@/auth/useCurrentUser";
 import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import type { InviteOrganizationUserRequest, OrganizationUserFilterCountsResponse, OrganizationUserResponse, OrganizationUserState, RoleResponse } from "@/shared/api/types";
-import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
-import { useFilters } from "@/shared/hooks/useFilters";
-import { usePagination } from "@/shared/hooks/usePagination";
+import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
@@ -59,28 +57,23 @@ export function UsersPage() {
   const organizationName = currentUser?.organizations.find((organization) => organization.id === currentUser.activeTenantId)?.name ?? "";
   const client = useQueryClient();
   const navigate = useNavigate();
-  const filters = useFilters(userFilterKeys);
-  const pagination = usePagination(undefined, { defaultSort: "displayName" });
-  const debouncedSearch = useDebouncedValue(pagination.search ?? "");
-  const stateValue = userStates.some((state) => state === filters.values.state) ? filters.values.state : undefined;
-  const state = stateValue as OrganizationUserState | undefined;
-  const companyFilter = canFilterByCompany ? filters.values.companyId : undefined;
-  const withoutCompany = companyFilter === withoutCompanyValue ? true : undefined;
-  const companyId = companyFilter && !withoutCompany ? companyFilter : undefined;
-  const query: UsersQuery = {
-    page: pagination.page,
-    pageSize: pagination.pageSize,
-    sort: pagination.sort,
-    search: debouncedSearch || undefined,
-    state,
-    companyId,
-    withoutCompany,
-  };
-  const users = useQuery({
-    queryKey: usersQueryKey(query), queryFn: () => fetchUsers(query), enabled: canRead,
-    placeholderData: keepPreviousData, meta: { silent: true, blocksView: true },
+  const { filters, pagination, query, result: users, paginationProps } = usePagedQuery({
+    filterKeys: userFilterKeys,
+    defaultSort: "displayName",
+    toQuery: (page, values): UsersQuery => {
+      const companyFilter = canFilterByCompany ? values.companyId : undefined;
+      return {
+        ...page,
+        state: userStates.find((state) => state === values.state),
+        companyId: companyFilter && companyFilter !== withoutCompanyValue ? companyFilter : undefined,
+        withoutCompany: companyFilter === withoutCompanyValue ? true : undefined,
+      };
+    },
+    queryKey: usersQueryKey, queryFn: fetchUsers, enabled: canRead, meta: { silent: true, blocksView: true },
   });
-  const countQuery = { search: debouncedSearch || undefined, companyId, withoutCompany };
+  const { state, companyId, withoutCompany, search: debouncedSearch } = query;
+  const companyFilter = withoutCompany ? withoutCompanyValue : companyId;
+  const countQuery = { search: debouncedSearch, companyId, withoutCompany };
   const counts = useQuery({
     queryKey: userCountsQueryKey(countQuery), queryFn: () => fetchUserCounts(countQuery), enabled: canRead,
     placeholderData: keepPreviousData, meta: { silent: true },
@@ -212,7 +205,7 @@ export function UsersPage() {
             sort={pagination.sort}
             onSortChange={pagination.toggleSort}
           />
-          {users.data ? <Pagination page={users.data.page} pageSize={users.data.pageSize} totalCount={users.data.totalCount} totalPages={users.data.totalPages} hasPrevious={users.data.hasPrevious} hasNext={users.data.hasNext} onPageChange={pagination.setPage} onPageSizeChange={pagination.setPageSize} /> : null}
+          {paginationProps ? <Pagination {...paginationProps} /> : null}
         </Surface>
       </div>
     </Page>

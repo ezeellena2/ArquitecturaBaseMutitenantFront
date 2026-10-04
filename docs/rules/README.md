@@ -9,7 +9,7 @@ Mismo formato que las del back: **Regla · Cómo se hace · Prohibido · Copiá 
 | [errores](errores.md) | `ApiError`, decidir por `code`, errores de formulario |
 | [formatos](formatos.md) | fechas, números, moneda, %, vacíos (resumen de `architecture/formatos.md`) |
 | [telefonos](telefonos.md) | `PhoneField` (país con bandera, búsqueda, formato al escribir) y `PhoneText` |
-| [paginado-y-listados](paginado-y-listados.md) | `usePagination`, `DataTable`, filtros, cursor |
+| [paginado-y-listados](paginado-y-listados.md) | `usePagedQuery`, `DataTable`, filtros, cursor |
 | [formularios](formularios.md) | diálogo o pantalla, fields, validación |
 | [textos-y-traducciones](textos-y-traducciones.md) | i18n, namespaces, voseo, enums |
 | [accesos-y-permisos](accesos-y-permisos.md) | accesos B2C, B2B y plataforma, rutas por host, `AccessRoute`, `Can`, módulos |

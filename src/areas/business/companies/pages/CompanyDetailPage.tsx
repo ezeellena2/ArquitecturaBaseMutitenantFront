@@ -1,4 +1,4 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Building2, Pencil, Plus, Power, ShieldCheck, UserRound } from "lucide-react";
 // «Delta S.A.» + «. Quedaste…» no repite el punto final del nombre.
 const sentence = (text: string) => text.replace("..", ".");
@@ -10,9 +10,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { AddCompanyMemberRequest, CompanyMemberResponse, RoleResponse, UpdateCompanyRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
-import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
-import { useFilters } from "@/shared/hooks/useFilters";
-import { usePagination } from "@/shared/hooks/usePagination";
+import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
@@ -60,6 +58,7 @@ import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, use
 type CompanyTab = "members" | "roles";
 // Orden del filtro «Estado» del tablero Empresa.
 const states = [undefined, "Active", "Inactive", "PendingDeletion"] as const;
+const memberFilterKeys = ["state", "roleId"] as const;
 
 export function CompanyDetailPage() {
   const { t } = useTranslation(["companies", "common"]);
@@ -75,17 +74,22 @@ export function CompanyDetailPage() {
   const canManageRoles = currentUser?.permissions?.includes("roles.manage") === true;
   const queryClient = useQueryClient();
   const { phone } = useAppChrome();
-  const filters = useFilters(["state", "roleId"] as const);
-  const pagination = usePagination(undefined, { defaultSort: "displayName" });
-  const debouncedSearch = useDebouncedValue(pagination.search ?? "");
-  const stateValue = filters.values.state;
-  const state = states.some((item) => item === stateValue) ? stateValue as CompanyMembersQuery["state"] : undefined;
-  const roleId = filters.values.roleId === "none" ? undefined : filters.values.roleId;
-  const withoutRoles = filters.values.roleId === "none" ? true : undefined;
-  const memberQuery: CompanyMembersQuery = { page: pagination.page, pageSize: pagination.pageSize, sort: pagination.sort, search: debouncedSearch || undefined, state, roleId, withoutRoles };
+  const { filters, pagination, query: memberQuery, result: members, paginationProps } = usePagedQuery({
+    filterKeys: memberFilterKeys,
+    defaultSort: "displayName",
+    toQuery: (page, values): CompanyMembersQuery => ({
+      ...page,
+      state: states.find((item) => item === values.state),
+      roleId: values.roleId === "none" ? undefined : values.roleId,
+      withoutRoles: values.roleId === "none" ? true : undefined,
+    }),
+    queryKey: (query) => companyMembersQueryKey(id, query), queryFn: (query) => fetchCompanyMembers(id, query),
+    enabled: canReadMembers && Boolean(id), meta: { silent: true },
+  });
+  const { state, roleId, withoutRoles } = memberQuery;
+  const debouncedSearch = memberQuery.search ?? undefined;
   const company = useQuery({ queryKey: companyQueryKey(id), queryFn: () => fetchCompany(id), enabled: canRead && Boolean(id), meta: { silent: true, blocksView: true } });
   useBreadcrumbLeaf(company.data?.name);
-  const members = useQuery({ queryKey: companyMembersQueryKey(id, memberQuery), queryFn: () => fetchCompanyMembers(id, memberQuery), enabled: canReadMembers && Boolean(id), placeholderData: keepPreviousData, meta: { silent: true } });
   const counts = useQuery({ queryKey: companyMembersCountQueryKey(id, debouncedSearch || undefined), queryFn: () => fetchCompanyMemberCounts(id, debouncedSearch || undefined), enabled: canReadMembers && Boolean(id), meta: { silent: true } });
   const roles = useQuery({ queryKey: ["roles", "company-options", id], queryFn: () => fetchAssignableCompanyRoles(id), enabled: (canReadRoles || canReadMembers) && Boolean(id), meta: { silent: true } });
   const activeRoles = (roles.data?.items ?? []).filter((role) => !role.isSystemRole || role.name !== "TenantAdmin");
@@ -236,7 +240,7 @@ export function CompanyDetailPage() {
                 error={members.error ? apiErrorMessage(members.error, t) : undefined} onRetry={() => { void members.refetch(); void counts.refetch(); }}
                 emptyTitle={state || roleId || withoutRoles || pagination.search ? t("companies:detail.empty.filtered") : t("companies:detail.empty.all")} emptyAction={state || roleId || withoutRoles || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined}
                 sort={pagination.sort} onSortChange={pagination.toggleSort} />
-              {members.data ? <Pagination page={members.data.page} pageSize={members.data.pageSize} totalCount={members.data.totalCount} totalPages={members.data.totalPages} hasPrevious={members.data.hasPrevious} hasNext={members.data.hasNext} onPageChange={pagination.setPage} onPageSizeChange={pagination.setPageSize} /> : null}
+              {paginationProps ? <Pagination {...paginationProps} /> : null}
             </Surface>
           </>}
         </TabsContent>

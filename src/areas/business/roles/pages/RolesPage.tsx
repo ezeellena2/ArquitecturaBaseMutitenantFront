@@ -1,12 +1,10 @@
-import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, Pencil, Plus, Shield, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
-import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
-import { useFilters } from "@/shared/hooks/useFilters";
-import { usePagination } from "@/shared/hooks/usePagination";
+import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { Column } from "@/shared/ui/DataTable";
 import { Button } from "@/shared/ui/button";
@@ -42,25 +40,18 @@ export function RolesPage() {
   const canManage = currentUser?.permissions?.includes("roles.manage") === true;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const filters = useFilters(roleFilterKeys);
-  const pagination = usePagination(undefined, { defaultSort: "name" });
-  const debouncedSearch = useDebouncedValue(pagination.search ?? "");
-  const vale = filters.values.vale;
-  const query: RolesQuery = {
-    page: pagination.page,
-    pageSize: pagination.pageSize,
-    sort: pagination.sort,
-    search: debouncedSearch || undefined,
-    scope: vale === "Organization" ? "Organization" : undefined,
-    companyId: vale && vale !== "Organization" ? vale : undefined,
-  };
-  const roles = useQuery({
-    queryKey: rolesQueryKey(query),
-    queryFn: () => fetchRoles(query),
-    enabled: canRead,
-    placeholderData: keepPreviousData,
-    meta: { silent: true, blocksView: true },
+  const { filters, pagination, query, result: roles, paginationProps } = usePagedQuery({
+    filterKeys: roleFilterKeys,
+    defaultSort: "name",
+    toQuery: (page, values): RolesQuery => ({
+      ...page,
+      scope: values.vale === "Organization" ? "Organization" : undefined,
+      companyId: values.vale && values.vale !== "Organization" ? values.vale : undefined,
+    }),
+    queryKey: rolesQueryKey, queryFn: fetchRoles, enabled: canRead, meta: { silent: true, blocksView: true },
   });
+  const vale = filters.values.vale;
+  const debouncedSearch = query.search ?? undefined;
   const companies = useQuery({
     queryKey: ["role-company-options"],
     queryFn: fetchCompanyOptions,
@@ -167,16 +158,7 @@ export function RolesPage() {
             sort={pagination.sort}
             onSortChange={pagination.toggleSort}
           />
-          {roles.data ? <Pagination
-            page={roles.data.page}
-            pageSize={roles.data.pageSize}
-            totalCount={roles.data.totalCount}
-            totalPages={roles.data.totalPages}
-            hasPrevious={roles.data.hasPrevious}
-            hasNext={roles.data.hasNext}
-            onPageChange={pagination.setPage}
-            onPageSizeChange={pagination.setPageSize}
-          /> : null}
+          {paginationProps ? <Pagination {...paginationProps} /> : null}
         </Surface>
       </div>
     </Page>
