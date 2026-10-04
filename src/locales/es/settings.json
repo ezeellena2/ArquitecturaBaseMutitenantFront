@@ -18,6 +18,7 @@
     "add": "Agregar dominio",
     "addTitle": "Agregar dominio",
     "domain": "Dominio",
+    "domainRequired": "Escribí el dominio.",
     "empty": "Sin dominio",
     "status": {
       "Pending": "Pendiente",

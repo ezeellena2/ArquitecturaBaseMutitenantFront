@@ -162,6 +162,32 @@ describe("SettingsPage", () => {
     expect(await screen.findByText("Verificamos delta.example.test.")).toBeVisible();
   });
 
+  // «Criterio · Botones» y «Criterio · Formularios»: «Siguiente» no se apaga; sin dominio, el campo queda en rojo con
+  // «Escribí el dominio.» y se limpia al escribirlo.
+  it("«Siguiente» sin dominio marca el campo con «Escribí el dominio.» y se limpia al escribirlo", async () => {
+    const user = userEvent.setup();
+    let posts = 0;
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([])),
+      http.post("/api/organization/settings/domains", () => { posts += 1; return HttpResponse.json(pending, { status: 201 }); }),
+    );
+    renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Agregar dominio" }));
+    const add = await screen.findByRole("dialog", { name: "Agregar dominio" });
+
+    const next = within(add).getByRole("button", { name: "Siguiente" });
+    expect(next).toBeEnabled();
+    await user.click(next);
+    const domain = within(add).getByRole("textbox", { name: "Dominio" });
+    expect(domain).toHaveAttribute("aria-invalid", "true");
+    expect(domain).toHaveAccessibleDescription("Escribí el dominio.");
+    expect(posts).toBe(0);
+
+    await user.type(domain, "d");
+    expect(within(add).queryByText("Escribí el dominio.")).not.toBeInTheDocument();
+  });
+
   it("en un dominio pendiente, «Verificar» abre el diálogo con el TXT y la fila no lo muestra", async () => {
     const user = userEvent.setup();
     server.use(

@@ -52,6 +52,8 @@ export function SettingsPage() {
   const [draftState, setDraftState] = useState<SettingsDraft | null>(null);
   const [failure, setFailure] = useState<unknown>();
   const [domainDialogOpen, setDomainDialogOpen] = useState(false);
+  // Tocó «Siguiente» sin escribir el dominio: el campo queda en rojo hasta que escribe.
+  const [missingDomain, setMissingDomain] = useState(false);
   const [domainDraft, setDomainDraft] = useState("");
   const [domainToRemove, setDomainToRemove] = useState<OrganizationDomainResponse | null>(null);
   // Tablero Configuracion-Verificar: después de «Siguiente» o de «Verificar», el TXT va en un diálogo, no en la fila.
@@ -85,6 +87,13 @@ export function SettingsPage() {
     onSuccess: async (_result, domain) => { setDomainToRemove(null); toast.success(t("settings:domains.removed", { domain: domain.domain })); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
     onError: (error) => toastActionError(error, t),
   });
+
+  // «Criterio · Botones»: «Siguiente» no se apaga; sin dominio, el campo dice qué falta.
+  function submitDomain() {
+    const domain = domainDraft.trim();
+    if (!domain) { setMissingDomain(true); return; }
+    addDomain.mutate({ domain }, { onSuccess: async (added) => { setDomainDraft(""); setDomainDialogOpen(false); openVerify(added); await client.invalidateQueries({ queryKey: organizationDomainsKey }); } });
+  }
 
   function openVerify(domain: OrganizationDomainResponse) {
     setDomainToVerify(domain);
@@ -169,17 +178,19 @@ export function SettingsPage() {
       </div>
     </Page>
 
-    <Dialog open={domainDialogOpen} onOpenChange={setDomainDialogOpen}>
+    <Dialog open={domainDialogOpen} onOpenChange={(open) => { setDomainDialogOpen(open); if (!open) setMissingDomain(false); }}>
       <DialogContent size="sm">
         <DialogHeader><DialogTitle>{t("settings:domains.addTitle")}</DialogTitle></DialogHeader>
         {/* «Criterio · Diálogos»: el cuerpo común, y el error general en la franja arriba de los botones. */}
         <DialogBody>
-          <FormField label={t("settings:domains.domain")} required><Input autoComplete="off" value={domainDraft} onChange={(event) => setDomainDraft(event.target.value)} /></FormField>
+          <FormField label={t("settings:domains.domain")} required error={missingDomain ? t("settings:domains.domainRequired") : undefined}>
+            <Input autoComplete="off" value={domainDraft} onChange={(event) => { setDomainDraft(event.target.value); setMissingDomain(false); }} />
+          </FormField>
           <FormError message={addDomainError} />
         </DialogBody>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => setDomainDialogOpen(false)}>{t("common:actions.cancel")}</Button>
-          <Button type="button" disabled={!domainDraft.trim() || addDomain.isPending} onClick={() => addDomain.mutate({ domain: domainDraft.trim() }, { onSuccess: async (domain) => { setDomainDraft(""); setDomainDialogOpen(false); openVerify(domain); await client.invalidateQueries({ queryKey: organizationDomainsKey }); } })}>{t("settings:domains.next")}</Button>
+          <Button type="button" variant="outline" onClick={() => { setDomainDialogOpen(false); setMissingDomain(false); }}>{t("common:actions.cancel")}</Button>
+          <Button type="button" disabled={addDomain.isPending} onClick={submitDomain}>{t("settings:domains.next")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
