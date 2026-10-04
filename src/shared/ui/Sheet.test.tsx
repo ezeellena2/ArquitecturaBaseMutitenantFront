@@ -18,7 +18,8 @@ describe("Sheet", () => {
       </Sheet>,
     );
 
-    expect(screen.getByRole("dialog", { name: "Cuenta" })).toHaveClass("bottom-0", "rounded-t-[16px]");
-    expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("size-8");
+    // Tablero M-Usuarios-Invitar (.ap-hoja): esquinas de 20 y un ✕ de 44 para el dedo.
+    expect(screen.getByRole("dialog", { name: "Cuenta" })).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("size-11");
   });
 });

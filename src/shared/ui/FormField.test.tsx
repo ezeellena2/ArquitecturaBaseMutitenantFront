@@ -51,6 +51,14 @@ describe("FormField", () => {
     expect(screen.getByText("Nombre")).toHaveClass("text-[12px]", "lg:text-[13px]", "font-semibold", "text-[var(--t2)]");
   });
 
+  // Tableros M-* (.ap-cmp): en el teléfono el campo mide 48, con radio 12 y letra de 16, y el rótulo es de 13,5.
+  it("en el teléfono usa campos de 48 y rótulos de 13,5", () => {
+    render(<FormField label="Correo"><Input /></FormField>);
+
+    expect(screen.getByLabelText("Correo")).toHaveClass("max-md:h-12", "max-md:rounded-[12px]", "max-md:text-[16px]");
+    expect(screen.getByText("Correo")).toHaveClass("max-md:text-[13.5px]");
+  });
+
   // Tablero «Criterio · Formularios»: si el dato es obligatorio, el rótulo lleva un asterisco rojo.
   it("pone el asterisco de obligatorio en rojo", () => {
     render(<FormField label="Nombre" required><Input /></FormField>);

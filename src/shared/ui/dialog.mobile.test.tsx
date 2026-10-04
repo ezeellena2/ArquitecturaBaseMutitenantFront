@@ -23,9 +23,14 @@ describe("Dialog mobile layout", () => {
     expect(document.querySelector('[data-slot="dialog-overlay"]')).toHaveClass("bg-[var(--velo)]");
     expect(content).toHaveClass("bottom-0", "md:top-1/2", "md:max-w-[560px]");
     expect(content).toHaveClass("max-h-[calc(100dvh-1rem)]");
-    expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("size-8");
-    expect(document.querySelector('[data-slot="dialog-header"]')).toHaveClass("bg-[var(--cab)]", "min-h-12");
-    expect(screen.getByRole("button", { name: "Guardar" }).parentElement).toHaveClass("[&_button]:w-full", "md:[&_button]:w-auto");
+    // Tablero M-Usuarios-Invitar (.ap-hoja): en el teléfono es una hoja con esquinas de 20 y manija; el título de 18
+    // va sin fondo arena, el ✕ mide 44 y los botones de 48 van uno al lado del otro, a lo ancho.
+    expect(content).toHaveClass("rounded-t-[20px]", "shadow-[var(--sombra-hoja)]");
+    expect(content.querySelector("[data-slot='dialog-handle']")).toHaveClass("md:hidden", "h-[5px]", "w-9");
+    expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("size-11", "md:size-8");
+    expect(document.querySelector('[data-slot="dialog-header"]')).toHaveClass("md:bg-[var(--cab)]", "md:min-h-12", "max-md:bg-transparent");
+    expect(screen.getByRole("heading", { name: "Editar" })).toHaveClass("max-md:text-[18px]", "max-md:font-bold");
+    expect(screen.getByRole("button", { name: "Guardar" }).parentElement).toHaveClass("max-md:[&_button]:h-12", "max-md:[&_button]:flex-1", "max-md:border-0");
   });
 
   it("gives form dialogs nearly the full phone height and confirmations a narrower desktop width", () => {

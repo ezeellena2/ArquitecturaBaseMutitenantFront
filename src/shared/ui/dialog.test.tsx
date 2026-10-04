@@ -62,10 +62,10 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
     );
 
     const title = screen.getByRole("heading", { name: "Verificar tu correo" });
-    expect(title).toHaveClass("text-[15px]", "font-semibold");
-    expect(title.parentElement).toHaveClass("min-h-12", "bg-[var(--cab)]", "border-b");
-    expect(screen.getByText("Te mandamos un código.").parentElement).toHaveClass("flex", "flex-col", "gap-3.5", "p-5");
-    expect(screen.getByRole("button", { name: "Verificar" }).parentElement).toHaveClass("border-t", "py-3");
+    expect(title).toHaveClass("md:text-[15px]", "font-semibold");
+    expect(title.parentElement).toHaveClass("md:min-h-12", "md:bg-[var(--cab)]", "md:border-b");
+    expect(screen.getByText("Te mandamos un código.").parentElement).toHaveClass("flex", "flex-col", "gap-3.5", "md:p-5");
+    expect(screen.getByRole("button", { name: "Verificar" }).parentElement).toHaveClass("md:border-t", "md:py-3");
     expect(document.querySelector("[data-slot='dialog-overlay']")).toHaveClass("bg-[var(--velo)]", "backdrop-blur-[4px]");
   });
 });

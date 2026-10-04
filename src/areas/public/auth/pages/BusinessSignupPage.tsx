@@ -322,7 +322,7 @@ export function BusinessSignupPage() {
 
 // Tablero Registro-Empresa: el dominio va en una caja gris aparte, pegada al campo.
 function SlugInput({ suffix, className, ...inputProps }: React.ComponentProps<"input"> & { suffix: string }) {
-  return <div className="flex items-stretch overflow-hidden rounded-md border border-input bg-transparent focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50">
+  return <div className="flex items-stretch overflow-hidden rounded-[10px] border border-[var(--borde2)] bg-[var(--lado-activo)] focus-within:border-[var(--marca)] focus-within:ring-[3px] focus-within:ring-[var(--foco-halo)]">
     <Input {...inputProps} className={`min-w-0 flex-1 rounded-none border-0 shadow-none focus-visible:ring-0 ${className ?? ""}`} />
     <span data-slug-suffix className="flex shrink-0 items-center border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[13px] text-[var(--t2)]">{suffix}</span>
   </div>;

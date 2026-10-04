@@ -240,7 +240,7 @@ export function UsersPage() {
               <FormField label={t("users:invite.companyRoles")}>
                 {inviteCompanyId
                   ? <MultiSelect options={companyRoles.filter((role) => role.scope === "AnyCompany" || role.companyId === inviteCompanyId).map((role) => ({ value: role.id, label: role.name }))} value={inviteCompanyRoleIds} onChange={setInviteCompanyRoleIds} placeholder={t("users:invite.noRoles")} />
-                  : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-[var(--s2)] px-3 text-left text-[13px] text-[var(--t3)] shadow-xs">{t("users:invite.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" /></button>}
+                  : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[8px] border border-[var(--borde2)] bg-[var(--s2)] px-3 text-left text-[13px] text-[var(--t3)] max-md:h-12 max-md:rounded-[12px] max-md:text-[16px]">{t("users:invite.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" /></button>}
               </FormField>
             </div>
           </div>

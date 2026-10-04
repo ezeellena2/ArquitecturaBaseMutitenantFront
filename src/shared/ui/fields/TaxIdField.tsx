@@ -58,7 +58,7 @@ export function TaxIdField({ value, onChange, onValidityChange, typeLabel,
     <div className="flex gap-2">
       <select value={value?.type ?? ""} onChange={(event) => change({ type: event.target.value, number })}
         disabled={unavailable} aria-busy={isPending} aria-label={typeLabel}
-        className="h-9 min-w-36 rounded-md border border-input bg-transparent px-3 text-[13px] text-[var(--t1)] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50">
+        className="h-9 min-w-36 rounded-[8px] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3 text-[13px] text-[var(--t1)] outline-none focus-visible:border-[var(--marca)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] disabled:opacity-50">
         <option value="">{isPending ? t("states.loading") : isError ? t("states.error") : typeLabel}</option>
         {types.map((type) => <option key={type.code} value={type.code}>{type.name}</option>)}
       </select>

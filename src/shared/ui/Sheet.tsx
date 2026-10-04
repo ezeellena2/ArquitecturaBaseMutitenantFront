@@ -20,5 +20,5 @@ export const SheetTitle = DialogTitle;
 export const SheetTrigger = DialogTrigger;
 
 export function SheetContent({ className, ...props }: ComponentProps<typeof DialogContent>) {
-  return <DialogContent data-slot="sheet-content" className={cn("bottom-0 rounded-t-[16px]", className)} {...props} />;
+  return <DialogContent data-slot="sheet-content" className={cn("bottom-0 rounded-t-[20px]", className)} {...props} />;
 }
