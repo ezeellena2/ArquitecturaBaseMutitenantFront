@@ -1,6 +1,7 @@
 import type { ComponentProps, ReactNode } from "react";
 import { CircleAlert, TriangleAlert } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { useAppChrome } from "./app/AppChrome";
 
 export interface FormErrorProps extends Omit<ComponentProps<"div">, "children"> {
   message: ReactNode;
@@ -8,6 +9,7 @@ export interface FormErrorProps extends Omit<ComponentProps<"div">, "children"> 
 }
 
 export function FormError({ message, tone = "danger", className, ...props }: FormErrorProps) {
+  const { phone } = useAppChrome();
   if (!message) {
     return null;
   }
@@ -19,7 +21,10 @@ export function FormError({ message, tone = "danger", className, ...props }: For
     <div
       role="alert"
       className={cn(
-        "flex items-start gap-2.5 rounded-xl px-3.5 py-3 text-[13px] leading-normal",
+        "flex items-start gap-2.5 rounded-xl px-3.5 py-3",
+        // «Criterio · Formularios»: 13 en la compu y en las páginas públicas (M-Ingreso). En la app del teléfono, la letra
+        // de sus avisos (M-Avisos, 14,5), la misma del cartel del 409.
+        phone ? "text-[14.5px] leading-[1.4]" : "text-[13px] leading-normal",
         tone === "warning" ? "bg-[var(--alerta-t)] text-[var(--alerta)]" : "bg-[var(--peligro-t)] text-[var(--peligro)]",
         className,
       )}
