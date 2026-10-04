@@ -134,6 +134,45 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
   });
 
+  // Tableros Pagina-Org y Avisos: con cambios, la banda dice «Publicada · Cambios sin guardar» y un enlace del menú
+  // pregunta «¿Salir sin guardar?».
+  it("con cambios, la banda suma «Cambios sin guardar» y salir pregunta antes", async () => {
+    const user = userEvent.setup();
+    api(page);
+    const { router } = renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+
+    const name = await within(await screen.findByRole("region", { name: "Página" })).findByRole("textbox", { name: "Nombre de la página" });
+    expect(subline()).toHaveTextContent(/^Publicada$/);
+    await user.clear(name);
+    await user.type(name, "Grupo Delta Norte");
+    expect(subline()).toHaveTextContent(/^Publicada · Cambios sin guardar$/);
+
+    await user.click(screen.getByRole("link", { name: "Empresas" }));
+    expect(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).toBeVisible();
+    expect(router.state.location.pathname).toBe("/org/pagina");
+  });
+
+  // «Criterio · Avisos y errores»: el error de un formulario va en su franja, no en un aviso abajo.
+  it("un error al guardar va en la franja del formulario, no en un aviso", async () => {
+    const user = userEvent.setup();
+    api(page);
+    server.use(http.put("/api/organization/public-page", () => HttpResponse.json(
+      { code: "Tenancy.TenantSlug.Taken", title: "Conflicto", detail: "Esta dirección ya está en uso." },
+      { status: 409, headers: { "Content-Type": "application/problem+json" } })));
+    renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+
+    const name = await within(await screen.findByRole("region", { name: "Página" })).findByRole("textbox", { name: "Nombre de la página" });
+    await user.clear(name);
+    await user.type(name, "Grupo Delta Norte");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    const message = await screen.findByText("Esta dirección ya está en uso.");
+    expect(message.closest("[role='alert']")).not.toBeNull();
+    expect(message.closest("[data-sonner-toast]")).toBeNull();
+    expect(screen.getAllByText("Esta dirección ya está en uso.")).toHaveLength(1);
+    expect(name).toHaveValue("Grupo Delta Norte");
+  });
+
   it("el logo va en «Página», el contacto en «Contacto», y guarda con la versión actual", async () => {
     const user = userEvent.setup();
     let updateBody: unknown;

@@ -2,12 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Globe } from "lucide-react";
 import { useId, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { PublicPageResponse, TenantSlugAvailability, UpdatePublicPageRequest } from "@/shared/api/types";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
+import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Button } from "@/shared/ui/button";
-import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ImportantNotice } from "@/shared/ui/ImportantNotice";
 import { InfoButton } from "@/shared/ui/InfoButton";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
@@ -74,10 +73,6 @@ function publicUrl(slug: string): string {
   return url.toString();
 }
 
-function isConcurrencyConflict(error: unknown): boolean {
-  return error instanceof ApiError && error.code === "General.ConcurrencyConflict";
-}
-
 function slugStateText(state: TenantSlugAvailability | undefined, t: (key: string) => string): string | undefined {
   if (!state) return undefined;
   return t(`publicPage:slug.${state}`);
@@ -103,9 +98,8 @@ export function PublicPagePage() {
   const [unpublishOpen, setUnpublishOpen] = useState(false);
   const update = useMutation({
     mutationFn: updatePublicPage,
+    // El error queda en `update.error`: el 409 va en su cartel y el resto, en la franja del formulario (useEditPage).
     onSuccess: async () => { setDraftState(null); toast.success(t("publicPage:saved")); await client.invalidateQueries({ queryKey: publicPageQueryKey }); },
-    // El conflicto de concurrencia va en su cartel, debajo de la banda; los demás errores, en un aviso.
-    onError: (error) => { if (!isConcurrencyConflict(error)) toastActionError(error, t); },
   });
   // Tablero Pagina-Org: el interruptor de «Publicación» se aplica al momento, sin esperar a «Guardar cambios».
   const publication = useMutation({
@@ -116,6 +110,13 @@ export function PublicPagePage() {
 
   const pageData = page.data;
   const isDirty = Boolean(pageData && draft && JSON.stringify(draft) !== JSON.stringify(draftFromPage(pageData)));
+  // Tableros Pagina-Org y Avisos: el 409 en su cartel, «Cambios sin guardar» después del estado, el error de guardado en
+  // la franja del formulario y «¿Salir sin guardar?» antes de irse con cambios.
+  const edit = useEditPage({
+    isDirty, error: update.error,
+    onSeeNew: () => { setDraftState(null); update.reset(); void page.refetch(); },
+    onContinueEditing: () => update.reset(),
+  });
   const blocked = pageData?.publishBlockedAtUtc != null;
   const slugState = slugAvailability.data?.availability;
   const canSave = Boolean(isDirty && draft && pageData);
@@ -152,6 +153,7 @@ export function PublicPagePage() {
   const state = pageData ? <span className={`inline-flex items-center gap-1.5 ${blocked ? "text-[var(--peligro)]" : "text-[var(--t1)] max-md:text-[var(--t3)]"}`}>
     <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${stateDot}`} />{stateText}
   </span> : undefined;
+  const summary = state ? <>{state}{edit.unsaved ? <><span aria-hidden="true">{" · "}</span>{edit.unsaved}</> : null}</> : undefined;
   // Tablero M-Pagina-Org: los campos van adentro de la tarjeta blanca, uno debajo del otro.
   const fieldsClass = "grid gap-4 p-4 md:grid-cols-2 md:p-5 max-md:gap-3.5 max-md:px-4 max-md:py-3.5";
 
@@ -159,20 +161,22 @@ export function PublicPagePage() {
     <Page
       icon={Globe}
       title={t("publicPage:title")}
-      banner={<ConcurrencyBanner error={update.error} isDirty={isDirty} onSeeNew={() => { setDraftState(null); update.reset(); void page.refetch(); }} onContinueEditing={() => update.reset()} />}
-      summary={state}
-      phoneSubtitle={state}
+      banner={edit.banner}
+      summary={summary}
+      phoneSubtitle={summary}
       phoneBody="gray"
       barAction={pageData?.isPublished && pageData.slug
         ? { label: t("publicPage:view"), href: publicUrl(pageData.slug) }
         : { label: t("publicPage:preview"), onClick: () => setPreviewOpen(true) }}
       actions={<>
-        <Button type="button" variant="outline" onClick={() => setDraftState(null)}>{t("publicPage:discard")}</Button>
+        <Button type="button" variant="outline" onClick={() => { setDraftState(null); update.reset(); }}>{t("publicPage:discard")}</Button>
         <Button type="button" disabled={!canSave || update.isPending} onClick={saveChanges}>{update.isPending ? t("common:states.saving") : t("publicPage:save")}</Button>
       </>}
     >
       <div className="flex flex-col gap-4 max-md:gap-0">
         {page.error ? <FormError message={apiErrorMessage(page.error, t)} /> : null}
+        {/* En el teléfono, la franja lleva el margen de las tarjetas. */}
+        {edit.formError ? <div className="max-md:mx-4 max-md:mt-3.5">{edit.formError}</div> : null}
         {page.isPending ? <p role="status" className="text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft && pageData ? <>
           <Section title={t("publicPage:publicationTitle")}>
             <div className="flex items-center gap-3 px-4 py-3 md:px-5 max-md:min-h-14 max-md:py-2 max-md:pr-3.5">
@@ -251,5 +255,6 @@ export function PublicPagePage() {
     <ConfirmDialog open={unpublishOpen} onOpenChange={setUnpublishOpen} title={t("publicPage:unpublishTitle")}
       description={t("publicPage:unpublishDescription", { host: `${savedSlug}${PUBLIC_DOMAIN}` })} confirmLabel={t("publicPage:unpublish")} destructive
       onConfirm={() => publication.mutate(false)} />
+    {edit.leaveDialog}
   </>;
 }
