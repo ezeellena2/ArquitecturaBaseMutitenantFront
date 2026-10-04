@@ -28,7 +28,8 @@ export function SiteLayout({ children, variant = "landing" }: { children: ReactN
       </div>
     </header>
     <main className={variant === "legal" ? "flex-1" : ""}>{children}</main>
-    <footer className={`border-t border-[var(--borde)] text-sm text-[var(--t3)] ${variant === "legal" ? "py-5 md:py-6" : "py-7"}`}>
+    {/* Tableros Landing y Legal: el pie en 14; en el teléfono de los textos legales (M-Legal), en 13. */}
+    <footer className={`border-t border-[var(--borde)] text-[var(--t3)] ${variant === "legal" ? "py-5 text-[13px] md:py-6 md:text-sm" : "py-7 text-sm"}`}>
       <div className="mx-auto flex max-w-[1280px] flex-col gap-1.5 px-4 md:flex-row md:justify-between md:px-10">
         <span>{t("footer.copyright")}</span>
         <span className="flex items-center gap-5">

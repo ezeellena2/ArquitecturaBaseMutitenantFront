@@ -155,7 +155,7 @@ function InvitationFlow() {
             <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("accepted.title", { organization: organizationName })}</h1>
             <p className="mt-1.5 break-all text-sm text-[var(--t2)]"><Trans ns="invitations" i18nKey="accepted.email" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
           </div>
-          {needsPersonalMethod ? <div role="status" className="flex items-start gap-2.5 rounded-[10px] bg-[var(--alerta-t)] px-3.5 py-3 text-sm leading-normal text-[var(--alerta)]">
+          {needsPersonalMethod ? <div role="status" className="flex items-start gap-2.5 rounded-[10px] bg-[var(--alerta-t)] px-3 py-2.5 text-[13px] leading-normal text-[var(--alerta-tx)]">
             <TriangleAlert aria-hidden="true" className="mt-0.5 shrink-0" size={18} strokeWidth={2} />
             <span>{t("accepted.personalMethodNotice")}</span>
           </div> : null}

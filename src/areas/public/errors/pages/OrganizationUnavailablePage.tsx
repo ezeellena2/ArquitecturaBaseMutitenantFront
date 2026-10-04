@@ -84,19 +84,21 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
         </div>
       </div>
       <div className="rounded-2xl border border-[var(--borde)] bg-[var(--lado-activo)] p-1 shadow-[var(--shadow-card)]">
-        <div className="px-3 pb-1 pt-1 text-[13px] font-semibold text-[var(--t3)]">{t("errors:errorPage.unavailable.otherProfile")}</div>
-        {account?.hasPersonalSpace ? <button type="button" onClick={() => changeProfile({ access: "consumer" }, t("common:accessMenu.personal"))} className="flex min-h-11 w-full items-center gap-2.5 rounded-lg px-3 py-1 text-left hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
-          <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-[var(--s3)] text-[13px] font-semibold text-[var(--t2)]">{t("common:accessMenu.personal").slice(0, 1)}</span>
-          <span className="flex flex-1 flex-col text-sm leading-[1.25]"><span className="font-semibold">{t("common:accessMenu.personal")}</span><span className="text-[13px] text-[var(--t3)]">{t("common:accessMenu.personalDetail")}</span></span>
+        {/* Tablero Perfil-Suspendido: la lista de perfiles como la de tu menú, con el nombre en 13 y 500, el rol en 12 y el
+            ícono del perfil de 28 con la sigla en 11,5 y negrita. */}
+        <div className="px-3 pb-1 pt-1 text-[12px] font-semibold text-[var(--t3)]">{t("errors:errorPage.unavailable.otherProfile")}</div>
+        {account?.hasPersonalSpace ? <button type="button" onClick={() => changeProfile({ access: "consumer" }, t("common:accessMenu.personal"))} className="flex min-h-11 w-full items-center gap-2 rounded-lg px-3 py-1 text-left hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
+          <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-[var(--s3)] text-[11.5px] font-bold text-[var(--t2)]">{t("common:accessMenu.personal").slice(0, 1)}</span>
+          <span className="flex flex-1 flex-col text-[13px] leading-[1.3]"><span className="font-medium">{t("common:accessMenu.personal")}</span><span className="text-[12px] text-[var(--t3)]">{t("common:accessMenu.personalDetail")}</span></span>
           <ChevronRight size={16} strokeWidth={1.75} aria-hidden="true" />
         </button> : null}
-        {organizations.map((organization) => <button key={organization.id} type="button" onClick={() => changeProfile({ access: "business", tenantId: organization.id }, organization.name)} className="flex min-h-11 w-full items-center gap-2.5 rounded-lg px-3 py-1 text-left hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
-          <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-[var(--s3)] text-[13px] font-semibold text-[var(--t2)]">{initials(organization.name)}</span>
-          <span className="flex flex-1 flex-col text-sm leading-[1.25]"><span className="font-semibold">{organization.name}</span>{organization.roleName ? <span className="text-[13px] text-[var(--t3)]">{organization.roleName}</span> : null}</span>
+        {organizations.map((organization) => <button key={organization.id} type="button" onClick={() => changeProfile({ access: "business", tenantId: organization.id }, organization.name)} className="flex min-h-11 w-full items-center gap-2 rounded-lg px-3 py-1 text-left hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
+          <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-[var(--s3)] text-[11.5px] font-bold text-[var(--t2)]">{initials(organization.name)}</span>
+          <span className="flex flex-1 flex-col text-[13px] leading-[1.3]"><span className="font-medium">{organization.name}</span>{organization.roleName ? <span className="text-[12px] text-[var(--t3)]">{organization.roleName}</span> : null}</span>
           <ChevronRight size={16} strokeWidth={1.75} aria-hidden="true" />
         </button>)}
       </div>
-      <button type="button" onClick={() => { void signOut(); }} className="mx-auto inline-flex min-h-11 items-center gap-2 rounded-lg px-4 text-sm font-medium text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
+      <button type="button" onClick={() => { void signOut(); }} className="mx-auto inline-flex min-h-9 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
         <LogOutIcon className="size-4" />{t("common:accessMenu.signOut")}
       </button>
     </div>

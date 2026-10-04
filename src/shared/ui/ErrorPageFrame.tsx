@@ -2,6 +2,7 @@ import { useEffect, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { AppBar } from "./app/AppBar";
+import { Button } from "./button";
 import { useAppChrome } from "./app/AppChrome";
 
 /// «Ir al inicio» lleva al inicio del acceso de la sesión: quien la usa lo sabe (homeOf en tenancy/access.ts).
@@ -40,9 +41,8 @@ export function ErrorPageFrame({ icon, title, homePath, onHomeClick }: {
     <div className="flex w-full max-w-[460px] flex-col items-center gap-4 text-center">
       <span aria-hidden="true" className="inline-flex size-16 items-center justify-center rounded-full bg-[var(--s3)] text-[var(--t2)]">{icon}</span>
       <h1 className="text-2xl font-bold tracking-[-0.02em]">{title}</h1>
-      <Link to={homePath} onClick={onHomeClick} className="inline-flex min-h-11 items-center justify-center rounded-[10px] bg-[var(--marca)] px-[14px] text-[13px] font-semibold text-[var(--lado-activo)] hover:bg-[var(--marca-h)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] md:min-h-[35px]">
-        {t("errorPage.home")}
-      </Link>
+      {/* Tablero Error-Org y «Criterio · Botones»: el botón principal de siempre, de 36 y letra de 14. */}
+      <Button asChild><Link to={homePath} onClick={onHomeClick}>{t("errorPage.home")}</Link></Button>
     </div>
   </div>;
 }
