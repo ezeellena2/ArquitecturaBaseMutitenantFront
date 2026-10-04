@@ -243,6 +243,80 @@ function extraCases(root) {
       app: { actions: [appClick("button", "Roles de la organización")], readySelector: '[role="menu"]' }, phoneApp: { actions: [appClick("button", "Roles de la organización")], ...dialog } }),
     ...alignmentCases(root),
     ...dialogCases(root),
+    ...errorsAndButtonsCases(root),
+  ];
+}
+
+// «Agregar miembro» pide además todos los miembros de la empresa (de a 100) para no ofrecer a quien ya está, y las
+// personas de la organización: las que no están en la empresa son las del tablero Empresa (Julieta, Carolina y Sofía).
+function addMemberResponses(root, width) {
+  const { responses } = stageCases(root, "etapa-6").find((entry) => entry.pair === "empresa-miembros" && entry.viewport.width === width).app;
+  const members = responses.find((item) => item.path === "/api/companies/company-1/members/paged");
+  const users = responses.find((item) => item.path === "/api/users/paged");
+  const [template] = users.body.items;
+  const candidate = (id, displayName, email) => ({ ...template, memberId: `member-${id}`, userId: `user-${id}`, displayName, email, roles: [], companies: [] });
+  const candidates = [candidate("julieta", "Julieta Sosa", "julieta.sosa@delta.ejemplo.com"), candidate("carolina", "Carolina Vega", "carolina.vega@delta.ejemplo.com"),
+    candidate("sofia", "Sofía Herrera", "sofia.herrera@delta.ejemplo.com")];
+  return [{ ...members, query: { page: "1", pageSize: "100" } }, { ...users, body: { ...users.body, items: candidates, totalCount: candidates.length } }, ...responses];
+}
+
+// Alineación R2c (errores, botones y tests): el 404 de una ficha, los errores arriba de los botones, los botones que ya
+// no se apagan (el campo dice qué falta) y los diálogos con el ancho y el cuerpo de la pieza.
+function errorsAndButtonsCases(root) {
+  const stageApp = (stage, pair, width) => stageCases(root, stage).find((entry) => entry.pair === pair && entry.viewport.width === width).app;
+  const fieldError = { readySelector: '[role="dialog"] [role="alert"]' };
+  const notFound = { path: "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fusuarios%2Fmember-1", captureMode: "harness", userFixture: "visual-owner",
+    readySelector: "main", readyText: "No encontramos esta página",
+    responses: [api("GET", "/api/users/member-1", { status: 404, code: "Tenancy.Member.NotFound", title: "No encontrado", detail: "No encontramos a esa persona." }, 404)] };
+  const inviteFails = (width) => ({ ...stageApp("etapa-6", "usuarios-invitar", width), ...fieldError,
+    responses: [api("POST", "/api/users/invitations", { status: 409, code: "Users.Invitation.UserInactive", title: "Conflicto",
+      detail: "Esa persona tiene el acceso deshabilitado. Habilitala en vez de invitarla." }, 409), ...stageApp("etapa-6", "usuarios-invitar", width).responses],
+    actions: [appClick("button", "Invitar usuario"), appFill("Correo", "marcos.diaz@delta.ejemplo.com"), appClick("button", "Invitar")] });
+  const addWithoutCompany = { actions: [appClick("button", "Sumar empresa"), appClick("button", "Sumar")], ...fieldError };
+  const addMemberApp = (width) => ({ responses: addMemberResponses(root, width),
+    actions: [appClick("button", "Agregar miembro"), appClick("button", "Agregar miembro")], ...fieldError });
+  const wrongCuit = { actions: [appClick("button", "Crear empresa"), appFill("Nombre", "Delta Oeste S.A."), appFill("CUIT", "3071234567"),
+    appClick("button", "Crear empresa")], ...fieldError };
+  const emptyDomain = { actions: [appClick("button", "Agregar dominio"), appClick("button", "Siguiente")], ...fieldError };
+  const auditDetail = { actions: [appClick("button", "Ver el detalle de Cambió los roles de Tomás Acosta")], ...dialog };
+  // En el teléfono, la fila entera abre el detalle: se nombra con lo que pasó.
+  const auditDetailPhone = { actions: [appClick("button", "Cambió los roles de Tomás Acosta")], ...dialog };
+  const preview = { actions: [appClick("button", "Vista previa")], ...dialog };
+  return [
+    ...custom({ id: "usuario-no-existe", group: "errores", state: "Ficha de Usuario de alguien que no existe (404): «No encontramos esta página» con «Ir al inicio»",
+      desktop: { board: "Error-Org", props: { caso: "No encontrada (404)" } }, phone: { board: "M-Error-Org", props: { caso: "No encontrada (404)" } },
+      app: notFound }),
+    ...custom({ id: "usuarios-invitar-error", group: "usuarios", state: "«Invitar usuario»: el error, en la franja arriba de los botones (el tablero no dibuja el error)",
+      desktop: { board: "Usuarios", boardActions: [click("button.b-pri")] }, phone: { board: "M-Usuarios-Invitar" },
+      app: inviteFails(1440), phoneApp: inviteFails(390) }),
+    ...pairCases(root, { stage: "consolidacion/f7", pair: "usuario-sumar-empresa", id: "usuario-sumar-empresa-sin-empresa", group: "usuarios",
+      state: "«Sumar empresa»: «Sumar» sin empresa marca el campo con «Elegí una empresa.»",
+      desktop: { boardActions: [click("button.cb-sec.ch"), click("text=Sumar")] },
+      phone: { state: "«Sumar empresa» en el teléfono: «Sumar» sin empresa marca el campo (el tablero no dibuja el error)" },
+      app: addWithoutCompany, phoneApp: addWithoutCompany }),
+    ...pairCases(root, { stage: "etapa-6", pair: "empresa-miembros", id: "empresa-agregar-miembro-sin-usuario", group: "empresas",
+      state: "«Agregar miembro» sin usuario marca el campo con «Elegí un usuario.»",
+      desktop: { boardActions: [click("text=Agregar miembro"), click("text=Agregar miembro")] },
+      phone: { state: "Empresa en el teléfono: «Agregar miembro» sin usuario (el tablero no dibuja esa hoja)" },
+      app: addMemberApp(1440), phoneApp: addMemberApp(390) }),
+    ...pairCases(root, { stage: "etapa-6", pair: "empresas-crear", id: "empresas-crear-cuit-mal", group: "empresas",
+      state: "«Crear empresa» con el CUIT mal: el botón sigue activo y el campo dice qué corregir",
+      desktop: { boardActions: [click("button.b-pri"), fill("Nombre", "Delta Oeste S.A."), fill("CUIT", "3071234567"), click(".dlg-f button.b-pri")] },
+      phone: { state: "«Crear empresa» en el teléfono con el CUIT mal (el tablero no dibuja esa hoja)" },
+      app: wrongCuit, phoneApp: wrongCuit }),
+    ...pairCases(root, { stage: "etapa-6", pair: "configuracion-agregar-dominio", id: "configuracion-agregar-dominio-vacio", group: "configuracion",
+      state: "«Agregar dominio»: «Siguiente» sin dominio marca el campo con «Escribí el dominio.» (el tablero no dibuja el error)",
+      phone: { board: "M-Configuracion-Dominio", props: {} },
+      app: emptyDomain, phoneApp: emptyDomain }),
+    ...pairCases(root, { stage: "etapa-6", pair: "auditoria-lista", id: "auditoria-detalle", group: "auditoria",
+      state: "Auditoría: el detalle de un movimiento, en el diálogo normal de 560",
+      desktop: { boardActions: [click("button.o-link")] },
+      phone: { state: "Auditoría en el teléfono: el detalle de un movimiento (el tablero no dibuja esa hoja)" },
+      app: auditDetail, phoneApp: auditDetailPhone }),
+    ...pairCases(root, { stage: "etapa-6", pair: "pagina-publica-borrador", id: "pagina-publica-vista-previa", group: "pagina-publica",
+      state: "Página pública: la vista previa, en el diálogo normal de 560 (el tablero no dibuja la vista previa)",
+      phone: { board: "M-Pagina-Org", props: {} },
+      app: preview, phoneApp: preview }),
   ];
 }
 
@@ -251,12 +325,7 @@ function extraCases(root) {
 function dialogCases(root) {
   const openRolesBoard = [click('button[aria-label="Acciones de Lucía Fernández"]'), click('[role="menu"] button[role="menuitem"]')];
   const openRolesApp = { actions: [appClick("button", "Acciones para Lucía Fernández"), appClick("menuitem", "Cambiar roles")], ...dialog };
-  // «Agregar miembro» pide además todos los miembros de la empresa (de a 100) para no ofrecer a quien ya está.
-  const addMemberApp = (width) => {
-    const { responses } = stageCases(root, "etapa-6").find((entry) => entry.pair === "empresa-miembros" && entry.viewport.width === width).app;
-    const members = responses.find((item) => item.path === "/api/companies/company-1/members/paged");
-    return { responses: [...responses, { ...members, query: { page: "1", pageSize: "100" } }], actions: [appClick("button", "Agregar miembro")], ...dialog };
-  };
+  const addMemberApp = (width) => ({ responses: addMemberResponses(root, width), actions: [appClick("button", "Agregar miembro")], ...dialog });
   const timeZone = { board: "Cuenta-Agregar", props: { estado: "WhatsApp: elegir el país" } };
   // «Sumar empresa» con la empresa elegida: recién ahí aparece «Roles en la empresa» (v100). El tablero del teléfono
   // (M-Usuario-Empresa) ya la dibuja elegida.
