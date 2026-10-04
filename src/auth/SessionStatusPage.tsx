@@ -1,7 +1,10 @@
 import { CircleAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { initials } from "@/shared/lib/initials";
 import { BrandMark } from "@/shared/ui/BrandMark";
+import { FixedActions } from "@/shared/ui/app/FixedActions";
 
 export type SessionStatusPageProps =
   | { status: "starting" | "closing"; targetName?: never; loginPath?: never }
@@ -10,6 +13,7 @@ export type SessionStatusPageProps =
 
 export function SessionStatusPage(props: SessionStatusPageProps) {
   const { t } = useTranslation("auth");
+  const phone = useMediaQuery("(max-width: 767px)");
   const isError = props.status === "error";
   const title = props.status === "switching"
     ? t("session.switching.title", { targetName: props.targetName })
@@ -17,6 +21,29 @@ export function SessionStatusPage(props: SessionStatusPageProps) {
   const detail = props.status === "starting" || isError
     ? t(`session.${props.status}.detail`)
     : null;
+
+  const backToLogin = t("session.error.backToLogin");
+
+  // Tablero M-Sesion: en el teléfono la pantalla es blanca y sin la marca arriba. Al entrar o salir, la marca grande y
+  // un giro chico; al cambiar de lado, las iniciales con el giro alrededor; si falla, «Volver a ingresar» fijo abajo.
+  if (phone) return <main className="flex min-h-dvh flex-col bg-[var(--lado-activo)] text-[var(--t1)]">
+    <div role="status" className="flex flex-1 flex-col items-center justify-center gap-3 px-8 text-center">
+      {isError ? <span aria-hidden="true" className="flex size-16 items-center justify-center rounded-full bg-[var(--peligro-t)] text-[var(--peligro)]">
+        <CircleAlert size={28} strokeWidth={1.75} />
+      </span> : props.status === "switching" ? <span aria-hidden="true" className="relative inline-flex size-[84px] items-center justify-center">
+        <span className="inline-flex size-[66px] items-center justify-center rounded-full bg-[var(--marca-t)] text-[22px] font-bold text-[var(--marca-tx)]">{initials(props.targetName)}</span>
+        <span className="absolute inset-0 animate-spin rounded-full border-[3px] border-[var(--borde)] border-t-[var(--marca)] [animation-duration:1.1s]" />
+      </span> : <>
+        <BrandMark className="size-[76px]! rounded-[22px]! [&>span]:inset-[21px]! [&>span]:rounded-[5px]! [&>span]:border-[5px]!" />
+        <span aria-hidden="true" className="mt-[18px] size-[26px] animate-spin rounded-full border-[3px] border-[var(--borde)] border-t-[var(--marca)] [animation-duration:0.9s]" />
+      </>}
+      <h1 className="mt-1.5 text-[22px] font-bold leading-tight tracking-[-0.015em]">{title}</h1>
+      {detail ? <p className="text-[15px] leading-normal text-[var(--t2)]">{detail}</p> : null}
+    </div>
+    {isError ? <FixedActions>
+      <Link to={props.loginPath ?? "/login"} className="inline-flex items-center justify-center bg-[var(--marca)] font-semibold text-[var(--lado-activo)]">{backToLogin}</Link>
+    </FixedActions> : null}
+  </main>;
 
   return (
     <main className="relative min-h-dvh bg-[var(--fondo)] text-[var(--t1)]">
@@ -41,7 +68,7 @@ export function SessionStatusPage(props: SessionStatusPageProps) {
             to={props.loginPath ?? "/login"}
             className="inline-flex h-12 w-[280px] max-w-full items-center justify-center rounded-xl bg-[var(--marca)] px-5 text-[15px] font-semibold text-[var(--lado-activo)] hover:bg-[var(--marca-h)] md:h-10 md:rounded-[10px]"
           >
-            {t("session.error.backToLogin")}
+            {backToLogin}
           </Link>
         ) : null}
       </div>

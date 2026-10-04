@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
+import { asPhone } from "@/test/utils/phone";
 import { SessionStatusPage } from "./SessionStatusPage";
 
 function renderStatus(status: Parameters<typeof SessionStatusPage>[0]) {
@@ -37,5 +38,26 @@ describe("SessionStatusPage", () => {
     const { container } = renderStatus({ status: "error" });
     expect(container.querySelector(".brand-mark > span")).not.toBeNull();
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  // Tablero M-Sesion: en el teléfono la pantalla es blanca, sin la marca arriba; al entrar o salir, la marca grande y
+  // un giro chico; al cambiar de lado, las iniciales con el giro alrededor; si falla, «Volver a ingresar» fijo abajo.
+  it("en el teléfono es la pantalla de una app", () => {
+    const restore = asPhone();
+    try {
+      const starting = renderStatus({ status: "starting" });
+      expect(starting.container.querySelector(".brand-mark")).toHaveClass("size-[76px]!");
+      expect(starting.container.querySelectorAll(".brand-mark")).toHaveLength(1);
+      starting.unmount();
+
+      const switching = renderStatus({ status: "switching", targetName: "Grupo Delta" });
+      expect(screen.getByText("GD")).toHaveClass("size-[66px]", "bg-[var(--marca-t)]");
+      switching.unmount();
+
+      renderStatus({ status: "error", loginPath: "/login" });
+      expect(screen.getByRole("link", { name: "Volver a ingresar" }).parentElement).toHaveAttribute("data-slot", "fixed-actions");
+    } finally {
+      restore();
+    }
   });
 });
