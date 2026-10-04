@@ -3,35 +3,36 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 import { Slot } from "radix-ui"
 
+// Tablero «Criterio · Botones»: cuatro tipos y tres tamaños, iguales en todas las pantallas. El de ícono (⋮, ✕, ☰)
+// mide 32 × 32 y siempre lleva nombre para el lector de pantalla.
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 lg:text-[14px]",
+  "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-[8px] border border-transparent font-semibold whitespace-nowrap transition-[background-color,border-color,filter] outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        default: "bg-[var(--marca)] text-[var(--lado-activo)] hover:bg-[var(--marca-h)]",
-        destructive:
-          "bg-[var(--peligro)] text-[var(--lado-activo)] hover:bg-[var(--peligro)]/90 focus-visible:ring-destructive/20",
-        outline:
-          "border border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t1)] hover:bg-[var(--s2)]",
-        outlineSurface:
-          "border bg-[var(--lado-activo)] shadow-xs hover:bg-[var(--s2)] hover:text-[var(--t1)]",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+        // Principal: la acción que hace avanzar; una sola por pantalla o diálogo, la última a la derecha.
+        default: "bg-[linear-gradient(180deg,var(--marca)_0%,var(--marca-h)_100%)] text-[var(--lado-activo)] shadow-[0_1px_2px_var(--marca-sombra),inset_0_1px_0_var(--brillo)] hover:brightness-105",
+        // Secundario: todas las demás acciones.
+        outline: "border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t1)] hover:bg-[var(--s2)]",
+        // Peligro: con borde en la pantalla.
+        danger: "border-[var(--peligro-borde)] bg-[var(--lado-activo)] text-[var(--peligro)] hover:bg-[var(--peligro-t)]",
+        // Peligro relleno: solo en el diálogo que confirma algo que no se deshace.
+        destructive: "border-[var(--peligro)] bg-[var(--peligro)] text-[var(--lado-activo)] hover:brightness-95",
+        // Enlace: una acción chica dentro de una fila o de un texto; nunca la principal.
+        link: "bg-transparent text-[var(--marca-tx)] underline-offset-[3px] hover:underline",
+        // Solo para los botones de ícono.
+        icon: "bg-transparent text-[var(--t2)] hover:bg-[var(--s2)] hover:text-[var(--t1)]",
       },
       size: {
-        default: "h-[34px] rounded-[8px] px-[14px] py-0 gap-1.5 lg:h-9 has-[>svg]:px-3",
-        xs: "h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-7 gap-1.5 rounded-[7px] px-2.5 text-[12.5px] has-[>svg]:px-2 [&_svg:not([class*='size-'])]:size-3 lg:h-8 lg:rounded-[8px] lg:px-3 lg:text-[13px] lg:has-[>svg]:px-2.5",
-        lg: "h-11 rounded-[10px] px-[18px] text-[15px] has-[>svg]:px-4",
-        icon: "size-8 rounded-[8px] p-0",
-        "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "size-8 rounded-[8px] p-0",
-        "icon-lg": "size-10",
+        default: "h-9 px-3.5 text-[14px]",
+        sm: "h-8 px-3 text-[13px] [&_svg:not([class*='size-'])]:size-3.5",
+        lg: "h-11 rounded-[10px] px-[18px] text-[15px]",
+        icon: "size-8 p-0",
       },
     },
+    compoundVariants: [
+      { variant: "link", class: "h-auto border-0 px-0" },
+    ],
     defaultVariants: {
       variant: "default",
       size: "default",

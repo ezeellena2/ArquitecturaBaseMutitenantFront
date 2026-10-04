@@ -85,7 +85,7 @@ export function AccountPage() {
           </span>
           {methods.data && !deletionBlocked ? <span className="text-[13px] text-[var(--t3)]">{t("account:deletionGrace", { days: methods.data.accountDeletionGraceDays })}</span> : null}
         </span>
-        <Button type="button" variant="outline" size="sm" className={`border-[var(--peligro)] text-[var(--peligro)] hover:bg-[var(--peligro-t)] hover:text-[var(--peligro)] ${deletionBlocked ? "opacity-50" : ""}`}
+        <Button type="button" variant="danger" size="sm" className={deletionBlocked ? "opacity-50" : undefined}
           disabled={!methods.data || methods.isPending} aria-disabled={deletionBlocked || undefined}
           onClick={() => { if (deletionBlocked) setDeletionBlockedOpen(true); else setDeletionOpen(true); }}>{t("account:requestDeletion")}</Button>
       </div>

@@ -54,7 +54,7 @@ export function GoogleButton(props: GoogleButtonProps) {
         {timeZoneId ? <input type="hidden" name="timeZoneId" value={timeZoneId} /> : null}
       </form>, document.body)}
       {/* No se apaga por los términos: sin la casilla, avisa debajo de ella y no sale (tablero Registro). */}
-      <Button type="submit" form={formId} variant="outlineSurface" size="lg" className={className}
+      <Button type="submit" form={formId} variant="outline" size="lg" className={className}
         disabled={!csrf?.requestToken}
         onClick={(event) => {
           if (props.acceptedTerms) return;
@@ -63,7 +63,7 @@ export function GoogleButton(props: GoogleButtonProps) {
         }}><GoogleMark />{label}</Button>
     </>;
   }
-  return <Button asChild variant="outlineSurface" size="lg" className={className}>
+  return <Button asChild variant="outline" size="lg" className={className}>
     <a href={loginGoogleUrl(props)}><GoogleMark />{label}</a>
   </Button>;
 }

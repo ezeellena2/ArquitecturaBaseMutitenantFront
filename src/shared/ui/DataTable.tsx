@@ -195,9 +195,9 @@ export function DataTable<TRow>({
               )}
             >
               {column.sortable && onSortChange ? (
-                <Button type="button" variant="ghost" size="sm" onClick={() => onSortChange(column.id)} className="-mx-2 px-2 text-[13px] font-semibold normal-case">
+                <button type="button" onClick={() => onSortChange(column.id)} className="-mx-1 rounded-[6px] px-1 text-[13px] font-semibold normal-case hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
                   {column.header}
-                </Button>
+                </button>
               ) : column.type === "actions" ? <span className="sr-only">{column.header}</span> : column.header}
             </TableHead>
           ))}

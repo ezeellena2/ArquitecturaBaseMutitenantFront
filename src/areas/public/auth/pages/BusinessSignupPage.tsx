@@ -258,7 +258,7 @@ export function BusinessSignupPage() {
               <FormError message={requestErrorText} />
               <div className="flex flex-col gap-2.5">
                 <Button type="button" size="lg" onClick={() => void confirmCode()} disabled={code.length !== 6 || verifyCode.isPending}>{t("businessSignup.verify")}</Button>
-                <Button type="button" size="lg" variant="outlineSurface" className="border-[var(--t3)]"
+                <Button type="button" size="lg" variant="outline" className="border-[var(--t3)]"
                   onClick={() => void resendCode()} disabled={resend.isRunning || retry.isRunning || requestCode.isPending}>
                   {retry.label ?? (resend.isRunning ? t("businessSignup.resendIn", { seconds: resend.seconds }) : t("businessSignup.resend"))}
                 </Button>
@@ -315,7 +315,7 @@ export function BusinessSignupPage() {
       <div aria-hidden="true" className={`flex size-[52px] items-center justify-center rounded-full ${tone}`}><Icon size={20} /></div>
       <div><h1 className="text-[22px] font-bold leading-tight">{title}</h1><p className="mt-2 text-sm text-[var(--t2)]">{detail}</p></div>
       {onAction ? <Button type="button" size="lg" className="w-full" onClick={onAction}>{action}</Button>
-        : <Button asChild variant="outlineSurface" size="lg" className="w-full"><Link to={href ?? "/"}>{action}</Link></Button>}
+        : <Button asChild variant="outline" size="lg" className="w-full"><Link to={href ?? "/"}>{action}</Link></Button>}
     </section>;
   }
 }

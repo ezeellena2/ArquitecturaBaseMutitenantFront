@@ -34,7 +34,7 @@ export function ConcurrencyBanner({ error, isDirty, onSeeNew, onContinueEditing 
         <strong className="font-semibold">{t("concurrency.banner")}</strong>
         <div className="ml-auto flex gap-2">
           <Button type="button" variant="outline" size="sm" onClick={seeNew}>{t("concurrency.seeNew")}</Button>
-          <Button type="button" variant="ghost" size="sm" onClick={onContinueEditing}>{t("concurrency.continueEditing")}</Button>
+          <Button type="button" variant="outline" size="sm" onClick={onContinueEditing}>{t("concurrency.continueEditing")}</Button>
         </div>
       </div>
       <ConfirmDialog

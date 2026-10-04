@@ -221,7 +221,7 @@ export function UserDetailPage() {
         { label: t("users:actions.remove"), onSelect: () => setConfirmAction("remove"), destructive: true, hidden: !isMember },
       ] } : undefined}
       actions={canManage ? pendingDeletion
-        ? <Button type="button" variant="outline" className="border-[var(--peligro)] text-[var(--peligro)] hover:bg-[var(--peligro-t)]" onClick={() => setConfirmAction("remove")}>{t("users:actions.remove")}</Button>
+        ? <Button type="button" variant="danger" onClick={() => setConfirmAction("remove")}>{t("users:actions.remove")}</Button>
         : <>
           <Button type="button" variant="outline" onClick={() => { setDraft(null); setFailure(undefined); }}>{t("users:detail.discard")}</Button>
           <Button type="button" disabled={!isDirty || save.isPending || !roles[0].data || !roles[1].data || !companies.data}

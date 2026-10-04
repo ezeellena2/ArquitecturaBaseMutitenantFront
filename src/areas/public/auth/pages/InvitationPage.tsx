@@ -157,7 +157,7 @@ function InvitationFlow() {
       : error ? <div className="flex flex-col gap-5">
         <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("pageTitle")}</h1>
         <FormError message={displayError(error, tErrors)} />
-        <Button type="button" variant="outlineSurface" size="lg" onClick={retry}>{t("retry")}</Button>
+        <Button type="button" variant="outline" size="lg" onClick={retry}>{t("retry")}</Button>
       </div>
         : invitation ? entering && !actionError ? <div role="status" aria-busy="true" className="flex min-h-36 items-center justify-center text-sm text-[var(--t2)]">{t("accepted.entering", { organization: organizationName })}</div>
           : acceptedView ? <div className="flex flex-col gap-[22px]">
@@ -173,7 +173,7 @@ function InvitationFlow() {
           <div className="flex flex-col gap-2.5">
             {needsPersonalMethod ? <>
               <Button type="button" size="lg" onClick={() => void enterAsBusiness("/cuenta")}>{t("accepted.addNow")}</Button>
-              <Button type="button" variant="outlineSurface" size="lg" onClick={() => void enterAsBusiness("/org")}>{t("accepted.later")}</Button>
+              <Button type="button" variant="outline" size="lg" onClick={() => void enterAsBusiness("/org")}>{t("accepted.later")}</Button>
             </> : <Button type="button" size="lg" onClick={() => void enterAsBusiness("/org")}>{t("accepted.openOrganization")}</Button>}
           </div>
           <FormError message={actionError} />
@@ -183,7 +183,7 @@ function InvitationFlow() {
             <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t(`states.${invitation.state}.title`, { organization: organizationName, inviter })}</h1>
             <p className="mt-1.5 text-sm text-[var(--t2)]">{t(`states.${invitation.state}.description`, { organization: organizationName, inviter })}</p>
           </div>
-          <Button asChild variant="outlineSurface" size="lg"><Link to="/login">{t("backToSignIn")}</Link></Button>
+          <Button asChild variant="outline" size="lg"><Link to="/login">{t("backToSignIn")}</Link></Button>
         </div> : <div className="flex flex-col gap-5">
           <span aria-hidden="true" className="flex size-14 items-center justify-center rounded-[14px] bg-[linear-gradient(135deg,var(--marca),var(--auth-panel-mid))] text-xl font-bold text-[var(--lado-activo)]">{initials(organizationName, "O")}</span>
           <div>
@@ -214,7 +214,7 @@ function InvitationFlow() {
             <div className="flex flex-col gap-2.5">
               <Button type="button" size="lg" onClick={() => void signOutAndContinue()}>{t("join.signOutAndContinue", { email })}</Button>
               {/* Tablero Invitacion (sesión ajena): «Seguir como Lucía», con el nombre de pila de la cuenta abierta. */}
-              <Button type="button" size="lg" variant="outlineSurface" onClick={returnToOwnAccess}>{t("join.continueAs", { name: invitation.currentAccountName?.trim().split(/\s+/)[0]
+              <Button type="button" size="lg" variant="outline" onClick={returnToOwnAccess}>{t("join.continueAs", { name: invitation.currentAccountName?.trim().split(/\s+/)[0]
                 || (typeof auth.user?.profile.name === "string" ? auth.user.profile.name : invitation.currentAccountEmail ?? t("accountFallback")) })}</Button>
             </div>
           </> : invitation.state === "SignInRequired" ? <>

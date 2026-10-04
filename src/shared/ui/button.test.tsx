@@ -2,8 +2,9 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { Button } from "./button";
 
-describe("Button · Criterio v65", () => {
-  it("matches the board's responsive standard and compact sizes with a solid primary color", () => {
+// Tablero «Criterio · Botones»: cuatro tipos (principal, secundario, peligro y enlace) y tres tamaños, más el de ícono.
+describe("Button · Criterio · Botones", () => {
+  it("normal de 36 con texto de 14, chico de 32 con 13 y grande de 44 con 15; el principal con el degradé del tablero", () => {
     render(
       <>
         <Button>{"Guardar cambios"}</Button>
@@ -13,18 +14,28 @@ describe("Button · Criterio v65", () => {
     );
 
     const standard = screen.getByRole("button", { name: "Guardar cambios" });
-    const compact = screen.getByRole("button", { name: "Agregar" });
-    const large = screen.getByRole("button", { name: "Continuar" });
-
-    expect(standard).toHaveClass("h-[34px]", "lg:h-9", "text-[13px]", "lg:text-[14px]", "bg-[var(--marca)]");
-    expect(standard).not.toHaveClass("bg-linear-to-b");
-    expect(compact).toHaveClass("h-7", "lg:h-8", "text-[12.5px]", "lg:text-[13px]");
-    expect(large).toHaveClass("h-11");
+    expect(standard).toHaveClass("h-9", "text-[14px]", "bg-[linear-gradient(180deg,var(--marca)_0%,var(--marca-h)_100%)]");
+    expect(screen.getByRole("button", { name: "Agregar" })).toHaveClass("h-8", "text-[13px]", "border-[var(--borde2)]");
+    expect(screen.getByRole("button", { name: "Continuar" })).toHaveClass("h-11", "text-[15px]");
   });
 
-  it("keeps icon-only buttons at 32 px and accessible by name", () => {
-    render(<Button size="icon" aria-label="Más acciones"><span aria-hidden="true">{"⋮"}</span></Button>);
+  it("peligro con borde en la pantalla y relleno solo en el diálogo que confirma; el enlace sin caja", () => {
+    render(
+      <>
+        <Button variant="danger">{"Dar de baja"}</Button>
+        <Button variant="destructive">{"Quitar"}</Button>
+        <Button variant="link">{"Verificar"}</Button>
+      </>,
+    );
 
-    expect(screen.getByRole("button", { name: "Más acciones" })).toHaveClass("size-8");
+    expect(screen.getByRole("button", { name: "Dar de baja" })).toHaveClass("border-[var(--peligro-borde)]", "text-[var(--peligro)]", "bg-[var(--lado-activo)]");
+    expect(screen.getByRole("button", { name: "Quitar" })).toHaveClass("bg-[var(--peligro)]", "text-[var(--lado-activo)]");
+    expect(screen.getByRole("button", { name: "Verificar" })).toHaveClass("h-auto", "px-0", "text-[var(--marca-tx)]");
+  });
+
+  it("los de ícono miden 32 × 32, sin borde, y se nombran para el lector de pantalla", () => {
+    render(<Button variant="icon" size="icon" aria-label="Más acciones"><span aria-hidden="true">{"⋮"}</span></Button>);
+
+    expect(screen.getByRole("button", { name: "Más acciones" })).toHaveClass("size-8", "bg-transparent");
   });
 });

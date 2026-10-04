@@ -53,8 +53,8 @@ export function Pagination({
         </span>
         <Button
           type="button"
-          variant="ghost"
-          size="icon-sm"
+          variant="icon"
+          size="icon"
           aria-label={t("pagination.previous")}
           disabled={!hasPrevious}
           onClick={() => onPageChange(page - 1)}
@@ -64,8 +64,8 @@ export function Pagination({
         </Button>
         <Button
           type="button"
-          variant="ghost"
-          size="icon-sm"
+          variant="icon"
+          size="icon"
           aria-label={t("pagination.next")}
           disabled={!hasNext}
           onClick={() => onPageChange(page + 1)}
