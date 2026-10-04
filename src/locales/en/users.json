@@ -83,7 +83,7 @@
   },
   "messages": {
     "saved": "Changes saved.",
-    "invited": "We invited {{email}}.",
+    "invited": "We invited {{email}}. The invitation expires on {{date}}.",
     "resent": "We resent the invitation to {{email}}.",
     "revoked": "We revoked the invitation to {{email}}.",
     "enabled": "We enabled {{name}}.",

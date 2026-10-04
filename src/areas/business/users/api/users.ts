@@ -2,6 +2,7 @@ import { api } from "@/shared/api/httpClient";
 import type {
   ChangeOrganizationUserStatusRequest,
   InviteOrganizationUserRequest,
+  OrganizationInvitationIssuedResponse,
   OrganizationUserFilterCountsResponse,
   OrganizationUserResponse,
   OrganizationUserState,
@@ -48,8 +49,8 @@ export function fetchUser(memberId: string): Promise<OrganizationUserResponse> {
   return api.get<OrganizationUserResponse>(`/api/users/${encodeURIComponent(memberId)}`);
 }
 
-export function inviteUser(request: InviteOrganizationUserRequest, idempotencyKey: string): Promise<string> {
-  return api.post<string>("/api/users/invitations", request, { headers: { "Idempotency-Key": idempotencyKey } });
+export function inviteUser(request: InviteOrganizationUserRequest, idempotencyKey: string): Promise<OrganizationInvitationIssuedResponse> {
+  return api.post<OrganizationInvitationIssuedResponse>("/api/users/invitations", request, { headers: { "Idempotency-Key": idempotencyKey } });
 }
 
 export function resendUserInvitation(invitationId: string, idempotencyKey: string): Promise<string> {

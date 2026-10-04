@@ -197,9 +197,10 @@ async function inviteFromUsersPage(page, email, companyName) {
   await page.getByRole("dialog").getByRole("button", { name: "Invitar", exact: true }).click();
   const response = await responsePromise;
   assert.equal(response.status(), 201, "Invitar desde Usuarios debe crear la invitación real.");
-  const invitationId = await response.json();
-  assert.equal(typeof invitationId, "string");
+  const { invitationId, expiresAtUtc } = await response.json();
   assert.match(invitationId, /^[0-9a-f-]{36}$/i);
+  assert.ok(Date.parse(expiresAtUtc) > Date.now(), "Invitar debe devolver cuándo vence la invitación.");
+  await page.getByText(`Invitamos a ${email}. La invitación vence el `).waitFor();
   const link = await invitationFromPickup(email, before);
   return { invitationId, link };
 }

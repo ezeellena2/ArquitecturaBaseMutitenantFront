@@ -150,7 +150,7 @@ describe("UsersPage", () => {
       http.post("/api/users/invitations", async ({ request }) => {
         bodies.push(await request.json());
         keys.push(request.headers.get("Idempotency-Key"));
-        return HttpResponse.json("invitation-1", { status: 201 });
+        return HttpResponse.json({ invitationId: "invitation-1", expiresAtUtc: "2026-10-10T15:00:00Z" }, { status: 201 });
       }),
     );
 
@@ -167,7 +167,7 @@ describe("UsersPage", () => {
     await user.type(within(dialog).getByRole("textbox", { name: "Correo" }), "nueva@example.com");
     await user.click(within(dialog).getByRole("button", { name: "Invitar" }));
     await waitFor(() => expect(bodies.at(-1)).toEqual({ email: "nueva@example.com", roleIds: [], companies: [] }));
-    expect(await screen.findByText("Invitamos a nueva@example.com.")).toBeVisible();
+    expect(await screen.findByText("Invitamos a nueva@example.com. La invitación vence el 10/10/2026.")).toBeVisible();
     expect(keys.at(-1)).toMatch(/^[0-9a-f-]{36}$/i);
 
     // Con un rol de la organización y una empresa con su rol.

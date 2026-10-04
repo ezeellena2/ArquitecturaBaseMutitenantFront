@@ -57,6 +57,7 @@ export type OrganizationUserResponse = ApiSchemas["OrganizationUserResponse"];
 export type OrganizationUserState = ApiSchemas["OrganizationUserState"];
 export type OrganizationUserFilterCountsResponse = ApiSchemas["OrganizationUserFilterCountsResponse"];
 export type InviteOrganizationUserRequest = ApiSchemas["InviteOrganizationUserHttpRequest"];
+export type OrganizationInvitationIssuedResponse = ApiSchemas["OrganizationInvitationIssuedResponse"];
 export type UpdateOrganizationUserRequest = ApiSchemas["UpdateOrganizationUserHttpRequest"];
 export type ChangeOrganizationUserStatusRequest = ApiSchemas["ChangeOrganizationUserStatusHttpRequest"];
 export type CompanyResponse = ApiSchemas["CompanyResponse"];

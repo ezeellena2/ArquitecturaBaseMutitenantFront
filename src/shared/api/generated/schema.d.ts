@@ -3864,9 +3864,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": string;
-                        "application/json": string;
-                        "text/json": string;
+                        "text/plain": components["schemas"]["OrganizationInvitationIssuedResponse"];
+                        "application/json": components["schemas"]["OrganizationInvitationIssuedResponse"];
+                        "text/json": components["schemas"]["OrganizationInvitationIssuedResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -7572,6 +7572,13 @@ export interface components {
             verifiedAtUtc?: null | string;
             /** Format: uint32 */
             version: number;
+        };
+        /** @description La invitación emitida y cuándo vence, para el aviso «Invitamos a … La invitación vence el …». */
+        OrganizationInvitationIssuedResponse: {
+            /** Format: uuid */
+            invitationId: string;
+            /** Format: date-time */
+            expiresAtUtc: string;
         };
         OrganizationSettingsResponse: {
             name: string;

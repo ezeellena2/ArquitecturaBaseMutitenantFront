@@ -2,6 +2,7 @@ import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } f
 import { ChevronDown, Eye, Plus, Power, RotateCw, Trash2, UserRound } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { useFormat } from "@/shared/format/useFormat";
 import { useNavigate } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
@@ -54,6 +55,7 @@ function failureMessage(error: unknown, fallback: string): string {
 
 export function UsersPage() {
   const { t } = useTranslation(["users", "common"]);
+  const format = useFormat();
   const { data: currentUser } = useCurrentUser();
   const canRead = currentUser?.permissions?.includes("users.read") === true;
   const canInvite = currentUser?.permissions?.includes("users.invite") === true;
@@ -165,8 +167,8 @@ export function UsersPage() {
       companies: inviteCompanyId ? [{ companyId: inviteCompanyId, roleIds: inviteCompanyRoleIds }] : [],
     };
     try {
-      await invite.mutateAsync(payload);
-      toast.success(t("users:messages.invited", { email: payload.email }));
+      const issued = await invite.mutateAsync(payload);
+      toast.success(t("users:messages.invited", { email: payload.email, date: format.formatDate(issued.expiresAtUtc) }));
       setInviteOpen(false);
       setEmail("");
       setOrganizationRoleIds([]);
