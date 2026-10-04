@@ -1,13 +1,12 @@
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import { Suspense, useEffect, type ReactNode } from "react";
 import { I18nextProvider, useTranslation } from "react-i18next";
-import i18n, { configureI18n, cultureStorageKey, effectiveCulture } from "@/shared/i18n";
+import i18n, { chosenCulture, configureI18n, effectiveCulture, resolveCulture } from "@/shared/i18n";
 import { queryClient } from "@/shared/api/queryClient";
 import { FormatProvider } from "@/shared/format/useFormat";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { Toaster } from "@/shared/ui/sonner";
 import { Button } from "@/shared/ui/button";
-import { safeStorageGet } from "@/shared/hooks/safeStorage";
 import { AppAuthProvider } from "@/auth/AuthProvider";
 import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -17,16 +16,13 @@ function ReferenceDataStartup({ children }: { children: ReactNode }) {
   const { data: user } = useCurrentUser();
   const { t } = useTranslation();
 
+  // La única decisión de la cultura efectiva: i18n la aplica y de ella leen los formatos, el catálogo y Accept-Language.
   useEffect(() => {
     if (!data) return;
-    const stored = safeStorageGet(cultureStorageKey);
-    const chosen = data.cultures.find((culture) => culture.isEnabled && culture.code === user?.culture)?.code
-      ?? data.cultures.find((culture) => culture.isEnabled && culture.code === stored)?.code
-      ?? data.cultures.find((culture) => culture.isEnabled && culture.code === effectiveCulture())?.code
-      ?? data.cultures.find((culture) => culture.isEnabled && culture.isDefault)?.code;
+    const culture = resolveCulture({ account: user?.culture, chosen: chosenCulture(), cultures: data.cultures });
     // Repetir init en cada montaje suspende los controles mientras cargan namespaces.
-    if (i18n.isInitialized && i18n.language === chosen) return;
-    void configureI18n(data.cultures, chosen);
+    if (i18n.isInitialized && effectiveCulture() === culture) return;
+    void configureI18n(data.cultures, culture);
   }, [data, user?.culture]);
 
   if (isError && data === undefined) return <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-6">

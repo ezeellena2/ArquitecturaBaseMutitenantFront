@@ -5,7 +5,9 @@ import type { ReactNode } from "react";
 import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppProviders } from "@/app/providers";
-import { cultureStorageKey } from "@/shared/i18n";
+import { api } from "@/shared/api/httpClient";
+import i18n, { cultureStorageKey } from "@/shared/i18n";
+import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { useFormat } from "./useFormat";
@@ -45,6 +47,44 @@ describe("formato con perfil de cuenta", () => {
     await waitFor(() => expect(result.current.culture).toBe("en-US"));
     expect(result.current).toMatchObject({ timeZone: "UTC", currency: "USD" });
     expect(result.current.formatInteger(1234)).toBe("1,234");
+  });
+
+  // F6: una sola cultura efectiva. Con la de la cuenta distinta de la de este navegador, la usan los textos, los
+  // formatos, el catálogo y Accept-Language, y el catálogo no se pide dos veces en la misma cultura.
+  it("la cultura de la cuenta es la de los textos, los formatos, el catálogo y Accept-Language", async () => {
+    localStorage.setItem(cultureStorageKey, "es-AR");
+    const requested: string[] = [];
+    let sentLanguage: string | null = null;
+    server.use(
+      http.get("/api/reference-data", ({ request }) => {
+        const culture = request.headers.get("accept-language") === "en-US" ? "en-US" : "es-AR";
+        requested.push(culture);
+        return HttpResponse.json(referenceDataFixture(culture));
+      }),
+      http.get("/api/me", () => HttpResponse.json({
+        id: "ana", access: "consumer", hasPersonalSpace: true, organizations: [],
+        effectivePermissions: { organization: [], companies: {} }, features: [],
+        culture: "en-US", timeZoneId: "America/Argentina/Buenos_Aires", currencyCode: "ARS",
+      })),
+      http.get("/api/culture-probe", ({ request }) => {
+        sentLanguage = request.headers.get("accept-language");
+        return HttpResponse.json({});
+      }),
+    );
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <AuthContext.Provider value={auth as unknown as AuthContextProps}>
+        <AppProviders client={client}>{children}</AppProviders>
+      </AuthContext.Provider>
+    );
+
+    const { result } = renderHook(() => ({ format: useFormat(), catalog: useReferenceData().data }), { wrapper });
+    await waitFor(() => expect(result.current.catalog?.culture).toBe("en-US"));
+    expect(result.current.format.culture).toBe("en-US");
+    expect(i18n.language).toBe("en-US");
+    expect(requested.filter((culture) => culture === "en-US")).toHaveLength(1);
+    await api.get("/api/culture-probe");
+    expect(sentLanguage).toBe("en-US");
   });
 
   it("no inventa moneda cuando /api/me devuelve null", async () => {

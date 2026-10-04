@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Trans, useTranslation } from "react-i18next";
-import { effectiveCulture } from "@/shared/i18n";
+import { useEffectiveCulture } from "@/shared/i18n";
 import { DateText } from "@/shared/ui/format/DateText";
 import { NumberText } from "@/shared/ui/format/NumberText";
 import { getLegalDocument, legalDocumentQueryKey, type LegalKind } from "../api/legal";
 
 export function LegalDocumentPage({ kind }: { kind: LegalKind }) {
   const { t } = useTranslation("legal");
-  const culture = effectiveCulture();
+  const culture = useEffectiveCulture();
   const { data, isError, error } = useQuery({
     queryKey: legalDocumentQueryKey(kind, culture ?? ""),
     queryFn: () => getLegalDocument(kind),

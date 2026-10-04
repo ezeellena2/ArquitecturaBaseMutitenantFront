@@ -82,8 +82,7 @@ src/
 │   ├── AccessRoute.test.tsx
 │   ├── useCurrentUser.ts                            GET /api/me, key ["current-user"]
 │   ├── usePermissions.ts                            [E7] can, canInCompany y hasFeature (P8) sobre effectivePermissions y features de /api/me; los códigos tipados del catálogo del back
-│   ├── usePermissions.test.ts                       [E7]
-│   └── useLanguagePreference.ts                     PUT /api/me con rollback
+│   └── usePermissions.test.ts                       [E7]
 │
 ├── tenancy/                                         [E3] accesos (B2C / B2B / plataforma)
 │   ├── access.ts                                    el tipo Access del contrato, homeOf, loginPathOf, accessOfPath, activeOrganization, isSelectable y los estados no disponibles: el único lugar con «/org» y «/login/empresa»
@@ -349,7 +348,7 @@ src/
 │   │   └── generated/                               NO SE EDITA A MANO
 │   │       └── schema.d.ts                          [E1] única salida de openapi-typescript
 │   ├── i18n/                                        [E1]
-│   │   ├── index.ts
+│   │   ├── index.ts                                 i18next con los textos empaquetados; resolveCulture (cuenta → este navegador → predeterminada) y useEffectiveCulture [E7]
 │   │   └── i18n.test.tsx
 │   ├── format/                                      [E1] ÚNICO lugar que formatea (formatos.md)
 │   │   ├── cultureProfiles.ts                       adapta patrones de Cultures (JSON E1, tabla E2); sin perfiles fijos
@@ -359,7 +358,7 @@ src/
 │   │   │                                            formatDuration, formatPhone, formatTaxId, formatTimeZone,
 │   │   │                                            formatCulture, EMPTY
 │   │   ├── parsers.ts                               entrada del usuario en su cultura → contrato de la API
-│   │   ├── useFormat.ts                             defaults del catálogo + cultura localStorage en E1; /api/me en E3
+│   │   ├── useFormat.ts                             la cultura efectiva (useEffectiveCulture); zona y moneda del catálogo o de /api/me
 │   │   ├── statusTones.ts                           estado → tono visual (success, warning, danger, neutral, pending); colores en tema.md
 │   │   ├── formatters.test.ts                       recorre ../ArquitecturaBaseMutitenant/docs/contracts/format-cases.json
 │   │   ├── parsers.test.ts
@@ -368,7 +367,7 @@ src/
 │   │   └── useEffectiveTimeZone.ts                  cuenta → empresa → organización (en B2B)
 │   ├── referenceData/                               [E1] cinco catálogos de GET /api/reference-data
 │   │   ├── referenceData.ts                         cliente tipado; opciones habilitadas y traducidas, ETag
-│   │   ├── useReferenceData.ts                      TanStack Query, staleTime: Infinity; carga única
+│   │   ├── useReferenceData.ts                      TanStack Query, staleTime: Infinity; en la cultura efectiva, una carga por cultura
 │   │   └── referenceData.test.ts                    catálogos, ausencia de listas fijas y estado de carga
 │   ├── account/                                     [E3] lo de la cuenta que usan varias áreas (ADR 0033)
 │   │   ├── PersonalMethodBanner.tsx                 [E3] parte 3b: avisa que falta un método propio y lleva a /cuenta; ofrece correo; WhatsApp aparece si el canal llega en GET /api/auth/methods desde [E8]

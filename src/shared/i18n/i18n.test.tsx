@@ -7,6 +7,7 @@ import i18n, {
   configureI18n,
   cultureStorageKey,
   effectiveCulture,
+  resolveCulture,
   type CultureLocale,
 } from "./index";
 
@@ -126,5 +127,27 @@ describe("i18n basado en Cultures", () => {
     await changeCulture("en-US");
     expect(i18n.t("offline", { ns: "errors" })).toBe("Offline");
     expect(i18n.t("TestStatus.Active", { ns: "enums" })).toBe("Active");
+  });
+});
+
+// F6: una sola precedencia para i18n, los formatos, el catálogo y Accept-Language.
+describe("resolveCulture", () => {
+  it("la cultura de la cuenta gana sobre la elegida en este navegador", () => {
+    expect(resolveCulture({ account: "en-US", chosen: "es-AR", cultures })).toBe("en-US");
+  });
+
+  it("sin cuenta, vale la elegida en este navegador", () => {
+    expect(resolveCulture({ account: null, chosen: "en-US", cultures })).toBe("en-US");
+    expect(resolveCulture({ chosen: "en-US", cultures })).toBe("en-US");
+  });
+
+  it("salta una cultura deshabilitada o que no está en el catálogo", () => {
+    expect(resolveCulture({ account: "fr-FR", chosen: "en-US", cultures })).toBe("en-US");
+    expect(resolveCulture({ account: "it-IT", chosen: "fr-FR", cultures })).toBe("es-AR");
+  });
+
+  it("sin preferencias, la predeterminada del catálogo", () => {
+    expect(resolveCulture({ cultures })).toBe("es-AR");
+    expect(resolveCulture({ cultures: cultures.map((culture) => ({ ...culture, isDefault: culture.code === "en-US" })) })).toBe("en-US");
   });
 });

@@ -2,7 +2,6 @@ import { useLayoutEffect, type ReactNode } from "react";
 import { AuthProvider as OidcProvider, useAuth, type AuthContextProps } from "react-oidc-context";
 import { configureHttpClient } from "@/shared/api/httpClient";
 import { queryClient } from "@/shared/api/queryClient";
-import i18n from "@/shared/i18n";
 import { authConfig } from "./authConfig";
 import { rememberExpiredSessionNotice } from "./sessionExpiredNotice";
 import { rememberRecoveryAccess } from "./recoveryAccess";
@@ -13,7 +12,6 @@ let session: AuthContextProps | undefined;
 // El puente está listo antes de la primera consulta que hagan los hijos.
 const httpClientOptions = {
   getAccessToken: () => session?.user?.access_token,
-  getCulture: () => i18n.language,
   renewAccessToken: async () => (await session?.signinSilent())?.access_token,
   onSessionExpired: async () => {
     const returnUrl = `${globalThis.location.pathname}${globalThis.location.search}`;

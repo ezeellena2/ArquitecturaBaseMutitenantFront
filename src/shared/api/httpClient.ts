@@ -4,7 +4,6 @@ import { effectiveCulture } from "@/shared/i18n";
 
 interface HttpClientOptions {
   getAccessToken?: () => string | undefined;
-  getCulture?: () => string | null | undefined;
   renewAccessToken?: () => Promise<string | undefined>;
   onSessionExpired?: () => Promise<void> | void;
 }
@@ -62,7 +61,8 @@ async function send(path: string, init: RequestInit, token: string | undefined, 
     headers.delete("authorization");
   }
 
-  const language = options.getCulture?.() ?? effectiveCulture();
+  // La cultura efectiva, la misma de los textos y los formatos (resolveCulture).
+  const language = effectiveCulture();
 
   if (language && !headers.has("accept-language")) {
     headers.set("accept-language", language);

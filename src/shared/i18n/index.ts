@@ -1,4 +1,5 @@
 import i18n, { type Resource } from "i18next";
+import { useSyncExternalStore } from "react";
 import { initReactI18next } from "react-i18next";
 import { safeStorageGet, safeStorageSet } from "@/shared/hooks/safeStorage";
 
@@ -11,6 +12,26 @@ export type CultureLocale = {
 };
 
 export const cultureStorageKey = "arquitecturabasemt.culture";
+
+/// La cultura efectiva, una sola para los textos, los formatos, el catálogo y Accept-Language (frontend.md, «Idioma y
+/// cultura»): la de la cuenta; si no, la que la persona eligió en este navegador; si no, la predeterminada del
+/// catálogo. Solo vale una cultura habilitada.
+export function resolveCulture({ account, chosen, cultures }: {
+  account?: string | null;
+  chosen?: string | null;
+  cultures: readonly Pick<CultureLocale, "code" | "isEnabled" | "isDefault">[];
+}): string {
+  const enabled = cultures.filter((culture) => culture.isEnabled);
+  const usable = (code: string | null | undefined) => enabled.find((culture) => culture.code === code)?.code;
+  const fallback = enabled.find((culture) => culture.isDefault)?.code;
+  if (!fallback) throw new Error("Cultures debe tener una cultura predeterminada habilitada");
+  return usable(account) ?? usable(chosen) ?? fallback;
+}
+
+/// La cultura que la persona eligió en este navegador; con el almacenamiento bloqueado, la de esta sesión.
+export function chosenCulture(): string | null {
+  return safeStorageGet(cultureStorageKey);
+}
 
 // Los archivos de interfaz son la fuente de idiomas disponibles. Las culturas y su fallback
 // llegan por Cultures desde shared/referenceData; ninguna lista de culturas vive acá.
@@ -50,12 +71,24 @@ i18n.on("languageChanged", (culture) => {
   if (language && typeof document !== "undefined") document.documentElement.lang = language;
 });
 
+/// La cultura efectiva que ya aplicó i18n; `null` hasta que llega el catálogo.
 export function effectiveCulture(): string | null {
   return enabledCultures.has(i18n.language) ? i18n.language : null;
 }
 
-// Se llama cuando llega el catálogo. Mientras tanto, la app muestra su estado de carga.
-export async function configureI18n(cultures: readonly CultureLocale[], preferredCulture?: string | null): Promise<void> {
+function onLanguageChanged(notify: () => void): () => void {
+  i18n.on("languageChanged", notify);
+  return () => i18n.off("languageChanged", notify);
+}
+
+/// La cultura efectiva en un componente: la usan los formatos, el catálogo y las pantallas que la mandan a la API.
+export function useEffectiveCulture(): string | null {
+  return useSyncExternalStore(onLanguageChanged, effectiveCulture, effectiveCulture);
+}
+
+// Se llama cuando llega el catálogo, con la cultura efectiva (resolveCulture); sin ella, la de este navegador o la
+// predeterminada. Mientras tanto, la app muestra su estado de carga.
+export async function configureI18n(cultures: readonly CultureLocale[], culture?: string | null): Promise<void> {
   const enabled = cultures.filter((culture) => culture.isEnabled);
   const defaults = enabled.filter((culture) => culture.isDefault);
   if (defaults.length !== 1) throw new Error("Cultures debe tener una sola cultura predeterminada habilitada");
@@ -68,10 +101,7 @@ export async function configureI18n(cultures: readonly CultureLocale[], preferre
 
   enabledCultures = new Map(enabled.map((culture) => [culture.code, culture]));
   defaultCulture = defaults[0].code;
-  const stored = safeStorageGet(cultureStorageKey);
-  const chosen = preferredCulture && enabledCultures.has(preferredCulture)
-    ? preferredCulture
-    : stored && enabledCultures.has(stored) ? stored : defaultCulture;
+  const chosen = culture && enabledCultures.has(culture) ? culture : resolveCulture({ chosen: chosenCulture(), cultures: enabled });
 
   const resources: Resource = {};
   for (const culture of enabled) resources[culture.code] = packagedResources[culture.languageCode];
@@ -89,6 +119,7 @@ export async function configureI18n(cultures: readonly CultureLocale[], preferre
   });
 }
 
+/// La persona elige una cultura en este navegador (el idioma de las pantallas públicas, o la de su cuenta al guardarla).
 export async function changeCulture(culture: string): Promise<void> {
   if (!enabledCultures.has(culture)) throw new Error(`La cultura ${culture} no está habilitada`);
   safeStorageSet(cultureStorageKey, culture);

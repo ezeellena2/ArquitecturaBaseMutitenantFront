@@ -1,7 +1,6 @@
 import { createContext, createElement, Fragment, useContext, useMemo, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { cultureStorageKey, effectiveCulture } from "@/shared/i18n";
-import { safeStorageGet } from "@/shared/hooks/safeStorage";
+import { useEffectiveCulture } from "@/shared/i18n";
 import type { ReferenceData } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -73,13 +72,8 @@ const loadingState: FormatState = {
 
 const FormatContext = createContext<FormatState | undefined>(undefined);
 
-function effectivePreferences(data: ReferenceData, user: MeResponse | undefined, activeCulture: string | null) {
+function effectivePreferences(data: ReferenceData, user: MeResponse | undefined, culture: string) {
   const defaultCulture = getDefaultCultureProfile(data);
-  const stored = safeStorageGet(cultureStorageKey);
-  const culture = data.cultures.find((item) => item.isEnabled && item.code === user?.culture)?.code
-    ?? data.cultures.find((item) => item.isEnabled && item.code === stored)?.code
-    ?? data.cultures.find((item) => item.isEnabled && item.code === activeCulture)?.code
-    ?? defaultCulture.code;
 
   // Sin sesión rigen el catálogo y la cultura local; /api/me devuelve las preferencias efectivas.
   const country = data.countries.find(
@@ -96,14 +90,15 @@ function effectivePreferences(data: ReferenceData, user: MeResponse | undefined,
 }
 
 /**
- * Las preferencias efectivas de /api/me ganan sobre la cultura local.
+ * La cultura es la efectiva (useEffectiveCulture), la misma de los textos; la zona y la moneda efectivas de /api/me
+ * ganan sobre las del catálogo.
  */
 export function FormatProvider({ children }: { children: ReactNode }) {
   const { data } = useReferenceData();
   const { data: user } = useCurrentUser();
-  const activeCulture = effectiveCulture();
-  const preferences = useMemo(() => data ? effectivePreferences(data, user, activeCulture) : null,
-    [data, user, activeCulture]);
+  const culture = useEffectiveCulture();
+  const preferences = useMemo(() => data && culture ? effectivePreferences(data, user, culture) : null,
+    [data, user, culture]);
   const { t, ready } = useTranslation(["common", "format", "enums"], {
     lng: preferences?.culture,
     useSuspense: false,

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import i18n, { changeCulture } from "@/shared/i18n";
+import { changeCulture, useEffectiveCulture } from "@/shared/i18n";
 import { nativeLanguageName } from "@/shared/format/cultureName";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { BrandMark } from "@/shared/ui/BrandMark";
@@ -18,6 +18,7 @@ type AuthLayoutProps = {
 export function AuthLayout({ access, children, brandPanel = "content", brandPanelContent, panelIntro }: AuthLayoutProps) {
   const { t } = useTranslation("auth");
   const { data: referenceData } = useReferenceData();
+  const effective = useEffectiveCulture();
   const cultures = referenceData?.cultures.filter((culture) => culture.isEnabled) ?? [];
   const panelKey = access === "consumer" ? "person" : "business";
   const pointIcons = access === "consumer"
@@ -46,7 +47,7 @@ export function AuthLayout({ access, children, brandPanel = "content", brandPane
           {t("footer.language")}{":"}
           {cultures.map((culture, index) => <span key={culture.code} className="inline-flex items-center gap-1">
             {index > 0 ? <span aria-hidden="true">{"·"}</span> : null}
-            <button type="button" onClick={() => void changeCulture(culture.code)} aria-pressed={i18n.language === culture.code} className={`text-[13px] ${i18n.language === culture.code ? "font-semibold text-[var(--t1)]" : "text-[var(--t2)] hover:underline"}`}>
+            <button type="button" onClick={() => void changeCulture(culture.code)} aria-pressed={effective === culture.code} className={`text-[13px] ${effective === culture.code ? "font-semibold text-[var(--t1)]" : "text-[var(--t2)] hover:underline"}`}>
               {nativeLanguageName(culture.code, culture.languageCode)}
             </button>
           </span>)}
