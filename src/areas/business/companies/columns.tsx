@@ -47,7 +47,6 @@ export function createCompanyColumns(t: TFunction): Column<CompanyResponse>[] {
       <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${company.status === "Active" ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-apagado)]"}`} />
       <span className="min-w-0 truncate">{t(`companies:status.${company.status}`)}</span>
     </span> },
-    { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: () => <EmptyValue /> },
   ];
 }
 

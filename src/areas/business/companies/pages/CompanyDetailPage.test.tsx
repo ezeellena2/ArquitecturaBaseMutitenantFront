@@ -67,6 +67,17 @@ describe("CompanyDetailPage", () => {
     expect(within(roles).getByRole("combobox", { name: /por página/ })).toBeVisible();
   }, 15_000);
 
+  // B3: la tabla de miembros tiene las cuatro columnas del tablero Empresa, en su orden; las acciones, sin rótulo visible.
+  it("los miembros van con Miembro, Roles en la empresa, Estado y Acciones, como el tablero", async () => {
+    detailApi([member]);
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+
+    const members = await screen.findByRole("tabpanel");
+    await within(members).findByText("Lucía Fernández");
+    expect(within(members).getAllByRole("columnheader").map((header) => header.textContent))
+      .toEqual(["Miembro", "Roles en la empresa", "Estado", "Acciones"]);
+  });
+
   it("las migas siguen el camino hasta la empresa", async () => {
     detailApi([member]);
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });

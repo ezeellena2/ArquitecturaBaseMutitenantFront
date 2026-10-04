@@ -146,7 +146,7 @@ export function CompaniesPage() {
           onSelect: () => { if (company.status === "Active") setStatusTarget(company); else updateStatus.mutate(company); }, hidden: !canManage },
       ]} />;
   const columns: Column<CompanyResponse>[] = [
-    ...createCompanyColumns(t).slice(0, -1),
+    ...createCompanyColumns(t),
     { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: rowActions },
   ];
   const listSummary = counts.data

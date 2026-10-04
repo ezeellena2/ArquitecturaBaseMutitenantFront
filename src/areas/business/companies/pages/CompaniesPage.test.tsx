@@ -40,6 +40,8 @@ describe("CompaniesPage", () => {
     expect(screen.getByRole("columnheader", { name: "Miembros" })).toHaveClass("w-[112px]", "text-right");
     expect(screen.getByRole("columnheader", { name: "Estado" })).toHaveClass("w-[162px]");
     expect(screen.queryByRole("columnheader", { name: "CUIT" })).not.toBeInTheDocument();
+    expect(screen.getAllByRole("columnheader").map((header) => header.textContent))
+      .toEqual(["Empresa", "Zona horaria", "Miembros", "Estado", "Acciones"]);
     expect(screen.getByText("CUIT 30-71234567-8")).toBeVisible();
     // Tablero Empresas: «1 empresa · 1 activa» y el filtro «Estado: todas».
     expect(screen.getByText("1 empresa · 1 activa")).toBeVisible();
