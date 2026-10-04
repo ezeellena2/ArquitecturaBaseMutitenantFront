@@ -68,7 +68,8 @@ export const visualPersonal: MeResponse = {
   ...consumerWithoutOrganizations,
   id: "lucia",
   displayName: "Lucía Fernández",
-  email: "lucia.fernandez@delta.ejemplo.com",
+  // Como el back (/api/me): el correo principal en cualquier perfil, que es el personal (Cuenta y M-Mas-Personal).
+  email: "lucia.fer@gmail.com",
   organizations: visualOrganizations,
 };
 
