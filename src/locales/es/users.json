@@ -122,6 +122,7 @@
     "deletionScheduled": "Pidió la baja de su cuenta. Se elimina el <date/>.",
     "addCompany": "Sumar empresa",
     "addCompanyConfirm": "Sumar",
+    "companyRequired": "Elegí una empresa.",
     "confirm": {
       "disableTitle": "¿Deshabilitar a {{name}}?",
       "disableDescription": "Deja de entrar a {{organization}} y a sus empresas. Su cuenta y su perfil personal siguen funcionando.",

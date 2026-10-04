@@ -122,6 +122,7 @@
     "deletionScheduled": "Requested to delete their account. It will be deleted on <date/>.",
     "addCompany": "Add company",
     "addCompanyConfirm": "Add",
+    "companyRequired": "Choose a company.",
     "confirm": {
       "disableTitle": "Disable {{name}}?",
       "disableDescription": "They will no longer access {{organization}} and its companies. Their account and personal profile keep working.",

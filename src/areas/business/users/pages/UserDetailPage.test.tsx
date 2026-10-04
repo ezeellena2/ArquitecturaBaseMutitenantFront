@@ -261,6 +261,31 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(screen.queryByRole("button", { name: "Acciones de Delta S.A." })).not.toBeInTheDocument();
   });
 
+  // «Criterio · Botones» y tablero Usuario (v104): «Sumar» nunca se apaga; sin empresa, el campo queda en rojo con
+  // «Elegí una empresa.» y se limpia al elegir una.
+  it("«Sumar» sin empresa marca el campo con «Elegí una empresa.» y se limpia al elegir una", async () => {
+    const user = userEvent.setup();
+    const writes = { put: [] as unknown[] };
+    api(member, writes);
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+
+    await user.click(await screen.findByRole("button", { name: "Sumar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
+    const add = within(dialog).getByRole("button", { name: "Sumar" });
+    expect(add).toBeEnabled();
+    await user.click(add);
+
+    const company = within(dialog).getByRole("combobox", { name: "Empresa" });
+    expect(company).toHaveAttribute("aria-invalid", "true");
+    expect(company).toHaveAccessibleDescription("Elegí una empresa.");
+    expect(writes.put).toHaveLength(0);
+
+    await open(user, company);
+    await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
+    expect(within(dialog).queryByText("Elegí una empresa.")).not.toBeInTheDocument();
+    expect(company).not.toHaveAttribute("aria-invalid");
+  });
+
   it("suma una empresa desde el diálogo y la guarda al momento", async () => {
     const user = userEvent.setup();
     const put: unknown[] = [];

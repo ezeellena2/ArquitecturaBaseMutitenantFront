@@ -37,7 +37,8 @@ import { userErrorMessage, type UserAction } from "../errors";
 import { activeOrganization, homeOf } from "@/tenancy/access";
 
 type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
-type CompanyDialogDraft = { mode: "add" | "roles"; companyId: string; roleIds: string[] };
+/// `missingCompany`: tocó «Sumar» sin elegir la empresa (el campo queda en rojo hasta que elige una).
+type CompanyDialogDraft = { mode: "add" | "roles"; companyId: string; roleIds: string[]; missingCompany?: boolean };
 type AccessDraft = { isActive: boolean; roleIds: string[] };
 type UserState = OrganizationUserResponse["state"];
 /// De dónde salió un guardado: su error va en la franja de la ficha o en la del diálogo, arriba de sus botones.
@@ -190,7 +191,9 @@ export function UserDetailPage() {
   }
 
   async function saveCompanyDialog() {
-    if (!companyDialog?.companyId) return;
+    if (!companyDialog) return;
+    // «Criterio · Botones»: «Sumar» no se apaga; sin empresa, el campo dice qué falta.
+    if (!companyDialog.companyId) { setCompanyDialog({ ...companyDialog, missingCompany: true }); return; }
     const name = companyName(companyDialog.companyId);
     if (companyDialog.mode === "add") {
       await saveCompanies([...changeableAssignments, { companyId: companyDialog.companyId, roleIds: companyDialog.roleIds }],
@@ -341,8 +344,8 @@ export function UserDetailPage() {
       <DialogContent size="sm">
         <DialogHeader><DialogTitle>{companyDialog?.mode === "add" ? t("users:detail.addCompanyTitle") : t("users:detail.changeCompanyRolesTitle", { name: companyName(companyDialog?.companyId ?? "") })}</DialogTitle></DialogHeader>
         <DialogBody>
-          {companyDialog?.mode === "add" ? <FormField label={t("users:invite.company")} required>
-            <Select value={companyDialog.companyId} onValueChange={(companyId) => changeCompanyDialog({ ...companyDialog, companyId, roleIds: [] })}>
+          {companyDialog?.mode === "add" ? <FormField label={t("users:invite.company")} required error={companyDialog.missingCompany ? t("users:detail.companyRequired") : undefined}>
+            <Select value={companyDialog.companyId} onValueChange={(companyId) => changeCompanyDialog({ ...companyDialog, companyId, roleIds: [], missingCompany: false })}>
               <SelectTrigger className="w-full" aria-label={t("users:invite.company")}><SelectValue placeholder={t("users:invite.chooseCompany")} /></SelectTrigger>
               <SelectContent position="popper">{activeCompanies.filter((company) => !assignedCompanyIds.has(company.id)).map((company) => <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>)}</SelectContent>
             </Select>
@@ -355,7 +358,7 @@ export function UserDetailPage() {
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" disabled={save.isPending} onClick={closeCompanyDialog}>{t("common:actions.cancel")}</Button>
-          <Button type="button" disabled={save.isPending || !companyDialog?.companyId} onClick={() => { void saveCompanyDialog(); }}>{save.isPending ? t("common:states.saving") : companyDialog?.mode === "add" ? t("users:detail.addCompanyConfirm") : t("users:detail.saveCompanyRoles")}</Button>
+          <Button type="button" disabled={save.isPending} onClick={() => { void saveCompanyDialog(); }}>{save.isPending ? t("common:states.saving") : companyDialog?.mode === "add" ? t("users:detail.addCompanyConfirm") : t("users:detail.saveCompanyRoles")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
