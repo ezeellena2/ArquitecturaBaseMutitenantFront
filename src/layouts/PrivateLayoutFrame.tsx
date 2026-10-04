@@ -50,6 +50,8 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   const administrationOpen = toggledAdministration?.pathname === pathname ? toggledAdministration.open : onAdministrationRoute;
   const [bottomNavHidden, setBottomNavHidden] = useState(false);
   const hideBottomNav = useCallback((hidden: boolean) => setBottomNavHidden(hidden), []);
+  const [activeSectionHidden, setActiveSectionHidden] = useState(false);
+  const hideActiveSection = useCallback((hidden: boolean) => setActiveSectionHidden(hidden), []);
   const name = user?.displayName || user?.email || "";
   const account = user ? { name, email: user.email ?? null } : null;
   const activeOrganization = user?.organizations.find((item) => item.id === user.activeTenantId);
@@ -68,7 +70,8 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
     subtitle: administrationEntry && navigation.administration ? t(navigation.administration.labelKey) : context?.title ?? null,
     title: administrationEntry ? t(administrationEntry.link.labelKey) : null,
     hideBottomNav,
-  }), [isMobile, navigation.moreTo, navigation.administration, onHome, onMore, administrationEntry, context?.title, hideBottomNav, t]);
+    hideActiveSection,
+  }), [isMobile, navigation.moreTo, navigation.administration, onHome, onMore, administrationEntry, context?.title, hideBottomNav, hideActiveSection, t]);
 
   if (isSigningOut) return <SessionStatusPage status="closing" />;
 
@@ -76,8 +79,8 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
     <div className="flex h-svh flex-col bg-[var(--lado-activo)]">
       <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">{children ?? <Outlet />}</main>
       {home?.to && navigation.moreTo && !bottomNavHidden ? <BottomNav label={t("navigation.sections")} items={[
-        { key: "home", label: t(home.labelKey), to: home.to, icon: home.icon, active: onHome },
-        { key: "more", label: t("navigation.more"), to: navigation.moreTo, avatar: name.charAt(0).toUpperCase() || undefined, active: !onHome },
+        { key: "home", label: t(home.labelKey), to: home.to, icon: home.icon, active: onHome && !activeSectionHidden },
+        { key: "more", label: t("navigation.more"), to: navigation.moreTo, avatar: name.charAt(0).toUpperCase() || undefined, active: !onHome && !activeSectionHidden },
       ]} /> : null}
     </div>
   </AppChromeProvider>;

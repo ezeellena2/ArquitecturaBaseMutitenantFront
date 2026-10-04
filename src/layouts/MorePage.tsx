@@ -1,4 +1,5 @@
-import { Check, LogOut } from "lucide-react";
+import { Check } from "lucide-react";
+import { LogOutIcon } from "@/shared/ui/icons";
 import { useTranslation } from "react-i18next";
 import { Navigate } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -60,7 +61,7 @@ export function MorePage() {
     <SettingsGroup label={t("accessMenu.myAccount")} className="mt-4">
       <SettingsItem title={t("accessMenu.myAccount")} to="/cuenta" />
       <SettingsItem title={t("accessMenu.signOut")} tone="danger" onClick={() => { void signOut(); }} trailing={<span />}
-        leading={<LogOut size={18} aria-hidden="true" className="shrink-0 text-[var(--peligro)]" />} />
+        leading={<LogOutIcon className="size-[18px] shrink-0 text-[var(--peligro)]" />} />
     </SettingsGroup>
   </div>;
 }

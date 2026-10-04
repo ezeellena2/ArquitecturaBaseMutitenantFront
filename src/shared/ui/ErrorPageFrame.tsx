@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { AppBar } from "./app/AppBar";
@@ -12,6 +12,12 @@ export function ErrorPageFrame({ icon, title, homePath = "/org", onHomeClick }: 
 }) {
   const { t } = useTranslation("errors");
   const chrome = useAppChrome();
+  const { hideActiveSection } = chrome;
+  // Tablero M-Error-Org: la barra de abajo no marca ninguna sección mientras se ve el aviso.
+  useEffect(() => {
+    hideActiveSection?.(true);
+    return () => hideActiveSection?.(false);
+  }, [hideActiveSection]);
 
   // Tablero M-Error-Org: en el teléfono la barra lleva ‹ y el nombre de la pantalla; el aviso va al medio, con
   // «Ir al inicio» redondeado, y la barra de abajo sigue.

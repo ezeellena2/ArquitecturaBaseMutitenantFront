@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Clock3, ChevronRight, LockKeyhole, LogOut, TriangleAlert } from "lucide-react";
+import { Clock3, ChevronRight, LockKeyhole, TriangleAlert } from "lucide-react";
+import { LogOutIcon } from "@/shared/ui/icons";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "react-oidc-context";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
@@ -78,7 +79,7 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
           detail={organization.roleName ?? undefined} onClick={() => changeProfile({ access: "business", tenantId: organization.id }, organization.name)} />)}
       </SettingsGroup>
       <button type="button" onClick={() => { void signOut(); }} className="mx-auto mt-auto mb-10 inline-flex h-11 items-center gap-2 rounded-[22px] px-5 text-[15.5px] font-semibold text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
-        <LogOut size={18} strokeWidth={1.75} aria-hidden="true" />{t("common:accessMenu.signOut")}
+        <LogOutIcon className="size-[18px]" />{t("common:accessMenu.signOut")}
       </button>
     </main>;
   }
@@ -99,18 +100,18 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
       <div className="rounded-2xl border border-[var(--borde)] bg-[var(--lado-activo)] p-1 shadow-[var(--shadow-card)]">
         <div className="px-3 pb-1 pt-1 text-[13px] font-semibold text-[var(--t3)]">{t("errors:errorPage.unavailable.otherProfile")}</div>
         {account?.hasPersonalSpace ? <button type="button" onClick={() => changeProfile({ access: "consumer" }, t("common:accessMenu.personal"))} className="flex min-h-11 w-full items-center gap-2.5 rounded-lg px-3 py-1 text-left hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
-          <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-lg bg-[var(--s3)] text-[13px] font-semibold text-[var(--t2)]">{t("common:accessMenu.personal").slice(0, 1)}</span>
+          <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-[var(--s3)] text-[13px] font-semibold text-[var(--t2)]">{t("common:accessMenu.personal").slice(0, 1)}</span>
           <span className="flex flex-1 flex-col text-sm leading-[1.25]"><span className="font-semibold">{t("common:accessMenu.personal")}</span><span className="text-[13px] text-[var(--t3)]">{t("common:accessMenu.personalDetail")}</span></span>
           <ChevronRight size={16} strokeWidth={1.75} aria-hidden="true" />
         </button> : null}
         {organizations.map((organization) => <button key={organization.id} type="button" onClick={() => changeProfile({ access: "business", tenantId: organization.id }, organization.name)} className="flex min-h-11 w-full items-center gap-2.5 rounded-lg px-3 py-1 text-left hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
-          <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-lg bg-[var(--s3)] text-[13px] font-semibold text-[var(--t2)]">{initials(organization.name)}</span>
+          <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-[var(--s3)] text-[13px] font-semibold text-[var(--t2)]">{initials(organization.name)}</span>
           <span className="flex flex-1 flex-col text-sm leading-[1.25]"><span className="font-semibold">{organization.name}</span>{organization.roleName ? <span className="text-[13px] text-[var(--t3)]">{organization.roleName}</span> : null}</span>
           <ChevronRight size={16} strokeWidth={1.75} aria-hidden="true" />
         </button>)}
       </div>
       <button type="button" onClick={() => { void signOut(); }} className="mx-auto inline-flex min-h-11 items-center gap-2 rounded-lg px-4 text-sm font-medium text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
-        <LogOut size={16} strokeWidth={1.75} aria-hidden="true" />{t("common:accessMenu.signOut")}
+        <LogOutIcon className="size-4" />{t("common:accessMenu.signOut")}
       </button>
     </div>
   </main>;

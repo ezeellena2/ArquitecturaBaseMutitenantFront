@@ -65,6 +65,22 @@ describe("listas en el teléfono", () => {
     expect(onChange).toHaveBeenCalledWith("Active");
   });
 
+  // Tableros M-Roles, M-Empresas y M-Auditoria-Org: solo el filtro en la barra; M-Empresa, ni la lupa ni el filtro.
+  it("cada lista lleva en la barra solo los íconos de su tablero", () => {
+    const props = { label: "Filtrar roles", searchLabel: "Buscar roles", searchValue: "", onSearchChange: vi.fn(), clearLabel: "Limpiar", onClear: vi.fn(),
+      filters: [{ key: "scope", label: "Vale en: todos", menuLabel: "Filtrar por dónde vale", value: "", active: false, onChange: vi.fn(), options: [{ value: "all", label: "Todos" }] }] };
+    const { unmount } = render(<MemoryRouter><AppChromeProvider value={phone}><Page title="Roles"><FilterBar {...props} phoneTools="filter" /></Page></AppChromeProvider></MemoryRouter>);
+    const bar = screen.getByRole("heading", { level: 1, name: "Roles" }).closest("header")!;
+    expect(within(bar).queryByRole("button", { name: "Buscar roles" })).not.toBeInTheDocument();
+    expect(within(bar).getByRole("button", { name: "Filtrar roles" })).toBeInTheDocument();
+    unmount();
+
+    render(<MemoryRouter><AppChromeProvider value={phone}><Page title="Delta S.A."><FilterBar {...props} phoneTools="none" /></Page></AppChromeProvider></MemoryRouter>);
+    const company = screen.getByRole("heading", { level: 1, name: "Delta S.A." }).closest("header")!;
+    expect(within(company).queryByRole("button", { name: "Buscar roles" })).not.toBeInTheDocument();
+    expect(within(company).queryByRole("button", { name: "Filtrar roles" })).not.toBeInTheDocument();
+  });
+
   it("el paginado es «Cargar más», que pide la página más grande que sigue", async () => {
     const onPageSizeChange = vi.fn();
     renderWithProviders(<AppChromeProvider value={phone}>

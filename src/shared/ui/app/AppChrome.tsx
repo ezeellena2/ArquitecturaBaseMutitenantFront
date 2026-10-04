@@ -10,6 +10,8 @@ export interface AppChrome {
   /** El nombre de la pantalla de Administración en la que está («Auditoría»): lo usa el aviso de error (M-Error-Org). */
   title?: string | null;
   hideBottomNav: (hidden: boolean) => void;
+  /** Una pantalla que no es de ninguna sección (el 403 o el 404, M-Error-Org) apaga la marca de la barra de abajo. */
+  hideActiveSection?: (hidden: boolean) => void;
 }
 
 const AppChromeContext = createContext<AppChrome>({ phone: false, parent: null, subtitle: null, hideBottomNav: () => {} });

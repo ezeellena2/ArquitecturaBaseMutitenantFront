@@ -69,10 +69,12 @@ describe("AccessMenu", () => {
     await user.keyboard("{Enter}");
     const menu = await screen.findByRole("menu", { name: "Ana, Empresa A" });
     const active = within(menu).getByRole("menuitemradio", { name: /Empresa A.*Dueño/ });
-    expect(active).toHaveClass("min-h-9", "lg:min-h-9", "lg:gap-2.5", "px-2.5", "py-1.5");
+    expect(active).toHaveClass("min-h-9", "lg:min-h-9", "lg:gap-2.5", "px-2.5", "py-1.5", "rounded-[6px]");
+    // Tablero Cuenta (.w-mn-it, .w-mn-ico): la fila activa con esquinas de 6 y el ícono del perfil con esquinas de 8,
+    // no la píldora ni el círculo de --radius-lg.
     expect(within(active).getByText("Empresa A")).toHaveClass("text-[13px]", "lg:text-[14px]");
     expect(within(active).getByText("Dueño")).toHaveClass("text-[12px]", "lg:text-[13px]");
-    expect(active.querySelector("[aria-hidden='true']")).toHaveClass("size-7", "lg:size-8");
+    expect(active.querySelector("[aria-hidden='true']")).toHaveClass("size-7", "lg:size-8", "rounded-[8px]");
     const signOutIcon = within(menu).getByRole("menuitem", { name: "Salir" }).querySelector("svg");
     expect(Array.from(signOutIcon?.querySelectorAll("path") ?? [], (path) => path.getAttribute("d"))).toEqual([
       "M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4",

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n } from "@/shared/i18n";
 import { AppChromeProvider } from "@/shared/ui/app/AppChrome";
@@ -28,5 +28,17 @@ describe("ForbiddenPage", () => {
     expect(screen.getByRole("link", { name: "Volver a Más" })).toHaveAttribute("href", "/mas");
     expect(screen.getByRole("heading", { level: 2, name: "No tenés permiso para ver esta página" })).toHaveClass("text-[22px]");
     expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveClass("h-12", "rounded-full");
+  });
+
+  // Tablero M-Error-Org: la barra de abajo no marca ninguna sección.
+  it("en el teléfono la barra de abajo no marca ninguna sección", () => {
+    const hideActiveSection = vi.fn();
+    const { unmount } = render(<MemoryRouter><AppChromeProvider value={{ phone: true, parent: null, subtitle: null, title: "Auditoría", hideBottomNav: () => {}, hideActiveSection }}>
+      <ForbiddenPage organizationName="Grupo Delta" />
+    </AppChromeProvider></MemoryRouter>);
+
+    expect(hideActiveSection).toHaveBeenLastCalledWith(true);
+    unmount();
+    expect(hideActiveSection).toHaveBeenLastCalledWith(false);
   });
 });

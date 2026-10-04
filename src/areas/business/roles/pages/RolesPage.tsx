@@ -131,7 +131,7 @@ export function RolesPage() {
       actions={canManage ? <Button asChild><Link to="/org/roles/new"><Plus aria-hidden="true" className="size-4" />{t("roles:create")}</Link></Button> : undefined}
     >
       <div className="flex flex-col gap-3">
-        <FilterBar
+        <FilterBar phoneTools="filter"
           label={t("roles:filters.label")}
           searchLabel={t("roles:filters.search")}
           searchValue={pagination.search ?? ""}

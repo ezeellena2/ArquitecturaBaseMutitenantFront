@@ -76,7 +76,7 @@ export function AuditPage() {
     {/* Tablero M-Auditoria-Org: en el teléfono, debajo del título va el período elegido. */}
     <Page icon={ClipboardList} title={t("audit:title")} phoneBody="flush" phoneSubtitle={t(`audit:period.${({ "0": "today", "7": "days7", "30": "days30", all: "all" } as Record<string, string>)[periodValue] ?? "days30"}`)}>
       <div className="flex flex-col gap-3">
-        <FilterBar
+        <FilterBar phoneTools="filter"
           label={t("audit:filters.label")}
           searchLabel={t("audit:filters.search")}
           searchValue={pagination.search ?? ""}

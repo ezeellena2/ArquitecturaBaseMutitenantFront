@@ -7,17 +7,10 @@ import { initials, useProfiles, type ProfileEntry } from "./useProfiles";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
-
-function SignOutIcon() {
-  return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4" />
-    <path d="M10 16l-4-4 4-4" />
-    <path d="M6 12h10" />
-  </svg>;
-}
+import { LogOutIcon } from "@/shared/ui/icons";
 
 function ProfileRow({ profile, onClose }: { profile: ProfileEntry; onClose: () => void }) {
-  const rowClass = `flex w-full min-h-9 items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-[13px] lg:min-h-9 lg:gap-2.5 ${profile.checked ? "bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]" : profile.unavailable ? "cursor-pointer text-[var(--t3)]" : "cursor-pointer text-[var(--t1)] hover:bg-[var(--s2)]"}`;
+  const rowClass = `flex w-full min-h-9 items-center gap-2 rounded-[6px] px-2.5 py-1.5 text-left text-[13px] lg:min-h-9 lg:gap-2.5 ${profile.checked ? "bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]" : profile.unavailable ? "cursor-pointer text-[var(--t3)]" : "cursor-pointer text-[var(--t1)] hover:bg-[var(--s2)]"}`;
 
   return <DropdownMenuItem
     role="menuitemradio"
@@ -26,7 +19,7 @@ function ProfileRow({ profile, onClose }: { profile: ProfileEntry; onClose: () =
     onSelect={() => { if (profile.checked) onClose(); else profile.select(); }}
     className={rowClass}
   >
-    <span aria-hidden="true" className={`inline-flex size-7 shrink-0 items-center justify-center rounded-lg text-[11.5px] font-bold lg:size-8 ${profile.checked ? "bg-[var(--lado-activo)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]"}`}>
+    <span aria-hidden="true" className={`inline-flex size-7 shrink-0 items-center justify-center rounded-[8px] text-[11.5px] font-bold lg:size-8 ${profile.checked ? "bg-[var(--lado-activo)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]"}`}>
       {initials(profile.name)}
     </span>
     <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
@@ -49,7 +42,7 @@ export function AccessMenu() {
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
   const currentOrganization = organizations.find((organization) => organization.id === activeTenantId);
   const activeName = access === "consumer" ? t("accessMenu.personal") : currentOrganization?.name ?? "";
-  const itemClass = "flex w-full min-h-[34px] items-center gap-2 rounded-lg px-2.5 py-1.5 text-[13px] text-[var(--t1)] hover:bg-[var(--s2)]";
+  const itemClass = "flex w-full min-h-[34px] items-center gap-2 rounded-[6px] px-2.5 py-1.5 text-[13px] text-[var(--t1)] hover:bg-[var(--s2)]";
 
   return <DropdownMenu open={open} onOpenChange={setOpen}>
     <DropdownMenuTrigger asChild>
@@ -72,7 +65,7 @@ export function AccessMenu() {
       {profiles.map((profile) => <ProfileRow key={profile.key} profile={profile} onClose={() => setOpen(false)} />)}
       <div className="my-1 h-px bg-[var(--borde)]" aria-hidden="true" />
       <DropdownMenuItem asChild className={itemClass}><Link to="/cuenta" onClick={() => setOpen(false)}><UserRound size={16} aria-hidden="true" />{t("accessMenu.myAccount")}</Link></DropdownMenuItem>
-      <DropdownMenuItem onSelect={() => { setOpen(false); void signOut(); }} className={itemClass}><SignOutIcon />{t("accessMenu.signOut")}</DropdownMenuItem>
+      <DropdownMenuItem onSelect={() => { setOpen(false); void signOut(); }} className={itemClass}><LogOutIcon className="size-4" />{t("accessMenu.signOut")}</DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>;
 }

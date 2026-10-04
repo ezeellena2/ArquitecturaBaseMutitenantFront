@@ -42,6 +42,9 @@ export interface FilterBarProps {
   clearLabel: string;
   onClear: () => void;
   className?: string;
+  /** En el teléfono, los íconos de la barra según el tablero de la lista: lupa y filtro (M-Usuarios), solo el filtro
+   *  (M-Roles, M-Empresas, M-Auditoria-Org) o ninguno (M-Empresa). */
+  phoneTools?: "search-and-filter" | "filter" | "none";
 }
 
 export function FilterBar({
@@ -53,6 +56,7 @@ export function FilterBar({
   clearLabel,
   onClear,
   className,
+  phoneTools = "search-and-filter",
 }: FilterBarProps) {
   const hasFilters = searchValue.trim().length > 0 || filters.some((filter) => filter.active);
   const { phone } = useAppChrome();
@@ -63,13 +67,13 @@ export function FilterBar({
   // debajo de la barra; el filtro abre una hoja con cada filtro y sus opciones, con «Todos» marcado si no hay filtro.
   if (phone) return <>
     <AppBarTools>
-      <AppIconButton label={searchLabel} aria-pressed={searchOpen} onClick={() => setSearchOpen((open) => !open)}><SearchIcon /></AppIconButton>
-      {filters.length > 0 ? <AppIconButton label={label} onClick={() => setSheetOpen(true)}>
+      {phoneTools === "search-and-filter" ? <AppIconButton label={searchLabel} aria-pressed={searchOpen} onClick={() => setSearchOpen((open) => !open)}><SearchIcon /></AppIconButton> : null}
+      {filters.length > 0 && phoneTools !== "none" ? <AppIconButton label={label} onClick={() => setSheetOpen(true)}>
         <ListFilter />
         {filters.some((filter) => filter.active) ? <span aria-hidden="true" className="absolute top-2 right-2 size-2 rounded-full bg-[var(--marca)]" /> : null}
       </AppIconButton> : null}
     </AppBarTools>
-    {searchOpen ? <div className="px-4 pt-1 pb-2">
+    {searchOpen && phoneTools === "search-and-filter" ? <div className="px-4 pt-1 pb-2">
       <label className="flex h-[46px] items-center gap-2.5 rounded-[12px] bg-[var(--s3)] px-3.5 text-[var(--t3)]">
         <SearchIcon aria-hidden="true" className="size-[18px] shrink-0" />
         <input type="search" autoFocus value={searchValue} onChange={(event) => onSearchChange(event.target.value)} aria-label={searchLabel} placeholder={searchLabel}

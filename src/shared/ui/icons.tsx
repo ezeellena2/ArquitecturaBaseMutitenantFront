@@ -108,12 +108,14 @@ export function RefreshIcon(props: IconProps) {
   );
 }
 
+/// «Salir», como en los tableros (menú de la cuenta, «Más», Perfil-Suspendido): la puerta a la derecha y la flecha que
+/// sale hacia la izquierda.
 export function LogOutIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M9 20H5.5A1.5 1.5 0 0 1 4 18.5v-13A1.5 1.5 0 0 1 5.5 4H9" />
-      <path d="M14 15.5 19 12l-5-3.5" />
-      <path d="M19 12H9" />
+      <path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4" />
+      <path d="M10 16l-4-4 4-4" />
+      <path d="M6 12h10" />
     </Icon>
   );
 }
