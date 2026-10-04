@@ -8,6 +8,7 @@
     "daysAgo_one": "{{count}} day ago",
     "daysAgo_other": "{{count}} days ago"
   },
+  "calendar": { "today": "today", "yesterday": "yesterday" },
   "compact": { "thousand": "K", "million": "M", "billion": "B" },
   "fileSize": { "B": " B", "KB": " KB", "MB": " MB", "GB": " GB", "TB": " TB" },
   "duration": { "hours": "{{count}} h", "minutes": "{{count}} min", "seconds": "{{count}} s" },

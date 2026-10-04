@@ -189,6 +189,16 @@ describe.skipIf(!backendPresent)("reloj del formateador", () => {
     }
   });
 
+  it("dice hoy o ayer con la hora de la zona, y si no, fecha y hora (tablero Inicio-Org: «Último cambio hoy, 10:42»)", () => {
+    const formatter = createFormatters({
+      referenceData: sourceCatalog("es-AR"), culture: "es-AR", timeZone: "America/Argentina/Buenos_Aires",
+      now: "2026-10-03T18:00:00Z", translate: translator("es-AR"),
+    });
+    expect(formatter.formatCalendar("2026-10-03T13:42:00Z")).toBe("hoy, 10:42");
+    expect(formatter.formatCalendar("2026-10-02T23:30:00Z")).toBe("ayer, 20:30");
+    expect(formatter.formatCalendar("2026-09-30T13:42:00Z")).toBe(formatter.formatDateTime("2026-09-30T13:42:00Z"));
+  });
+
   it("actualiza también los textos relativos cuando no se fijó now", () => {
     vi.useFakeTimers();
     try {

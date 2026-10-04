@@ -8,6 +8,7 @@
     "daysAgo_one": "hace {{count}} día",
     "daysAgo_other": "hace {{count}} días"
   },
+  "calendar": { "today": "hoy", "yesterday": "ayer" },
   "compact": { "thousand": " mil", "million": " M", "billion": " mil M" },
   "fileSize": { "B": " B", "KB": " KB", "MB": " MB", "GB": " GB", "TB": " TB" },
   "duration": { "hours": "{{count}} h", "minutes": "{{count}} min", "seconds": "{{count}} s" },

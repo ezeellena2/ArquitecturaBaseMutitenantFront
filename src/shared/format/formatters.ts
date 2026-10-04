@@ -153,6 +153,16 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
     return translate(`format:relative.${key}`, { count });
   }
 
+  /** «hoy, 10:42», «ayer, 20:30» en la zona de la persona; si no, fecha y hora. */
+  function formatCalendar(value: string): string {
+    const day = formatDate(value);
+    const today = clock();
+    if (day === formatDate(today.toISOString())) return `${translate("format:calendar.today")}, ${formatTime(value)}`;
+    const yesterday = new Date(today.getTime() - 24 * 3600 * 1000);
+    if (day === formatDate(yesterday.toISOString())) return `${translate("format:calendar.yesterday")}, ${formatTime(value)}`;
+    return formatDateTime(value);
+  }
+
   function formatDateRange(value: DateRangeValue): string {
     return `${formatDate(value.start)} – ${formatDate(value.end)}`;
   }
@@ -294,7 +304,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   function formatText(value: string): string { return value; }
 
   return {
-    formatDate, formatDateTime, formatTime, formatDateLong, formatRelative, formatDateRange,
+    formatDate, formatDateTime, formatTime, formatDateLong, formatRelative, formatCalendar, formatDateRange,
     formatInteger, formatDecimal, formatQuantity, formatPercent, formatMoney, formatCompact,
     formatFileSize, formatDuration, formatPhone, formatTimeZone, formatCulture, formatTaxId,
     formatEmail, formatEnum, formatBoolean, formatEmpty, formatText,

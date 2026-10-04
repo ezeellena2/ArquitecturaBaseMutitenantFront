@@ -35,6 +35,7 @@ const unavailableFormatters: Formatters = {
   formatTime: emptyText,
   formatDateLong: emptyText,
   formatRelative: emptyText,
+  formatCalendar: emptyText,
   formatDateRange: emptyText,
   formatInteger: emptyText,
   formatDecimal: emptyText,
