@@ -5,7 +5,7 @@
 - el **sitio de la plataforma** y la **página pública de cada organización en su subdominio**;
 - el **backoffice** de la plataforma.
 
-Suma también las empresas, los tipos generados desde OpenAPI y **una sola forma de mostrar los datos** ([`formatos.md`](formatos.md)). El backend está en `../ArquitecturaBaseMutitenant` (`docs/architecture/backend.md`); el árbol completo, archivo por archivo, está en [`arbol.md`](arbol.md). El diseño de cada pantalla está en el [lienzo versionado](../design/lienzo/README.md) (versión 65, 126 tableros; se programa solo lo validado): cada tablero manda sobre cualquier descripción textual. Los colores, la forma y el menú lateral están en el [tema](tema.md), y la sección «UI y pantallas» resume sus reglas.
+Suma también las empresas, los tipos generados desde OpenAPI y **una sola forma de mostrar los datos** ([`formatos.md`](formatos.md)). El backend está en `../ArquitecturaBaseMutitenant` (`docs/architecture/backend.md`); el árbol completo, archivo por archivo, está en [`arbol.md`](arbol.md). El diseño de cada pantalla está en el [lienzo vigente](../design/lienzo/README.md): mandan los ocho tableros «Criterio» y, para cada pantalla, solo su tablero validado, sobre cualquier descripción textual. Los colores, la forma y el menú lateral están en el [tema](tema.md), y la sección «UI y pantallas» resume sus reglas.
 
 ## 1. Stack
 
@@ -82,10 +82,10 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 - **Inicio de cada área** (`/` con sesión de persona, `/org`): su contenido depende de cada producto. En la Etapa 3 ya existen ambos inicios vacíos con su layout, barra y menú lateral, según sus tableros (en el inicio personal, solo el aviso de método propio cuando corresponde). La administración del área B2B se suma en la Etapa 6. Sin resúmenes de relleno.
 - **Menú lateral:** el mismo armazón en las tres áreas; cambian los enlaces.
   - Persona: Inicio y Mi cuenta, más los módulos B2C del producto. **No muestra organizaciones.**
-  - Empresa: arriba, Inicio y los módulos B2B del producto. **Abajo de todo, «Administración»**, que abre un **segundo panel al lado del menú** (`AdminPanel`, se cierra con «‹» o tocando de nuevo «Administración»; abierto en cualquier ruta de administración) con el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Configuración, Página pública y Auditoría. En el teléfono no hay segundo panel: «Administración» se despliega dentro del menú.
+  - Empresa: arriba, Inicio y los módulos B2B del producto. **Abajo de todo, «Administración»**, que abre un **segundo panel al lado del menú** (`AdminPanel`, se cierra con «‹» o tocando de nuevo «Administración»; abierto en cualquier ruta de administración) con el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Configuración, Página pública y Auditoría. En el teléfono no hay menú lateral: la Administración está en «Más», abajo (§4, «Teléfono»).
   - Plataforma: Organizaciones (es el inicio, `/plataforma`), Cuentas (personas y operadores), Recuperaciones, Auditoría, Documentos legales y Configuración.
   - Cada enlace se muestra solo con su permiso (y su módulo, si es de un módulo).
-- **Menú de la cuenta** (`AccessMenu`, arriba a la derecha): el botón muestra el nombre de la persona y dónde está ("Personal" o el nombre de la organización). El menú tiene:
+- **Menú de la cuenta** (`AccessMenu`, arriba a la derecha; en el teléfono, la pantalla «Más»): el botón muestra el nombre de la persona y dónde está ("Personal" o el nombre de la organización). El menú tiene:
   - la cabecera, con el nombre y el correo;
   - la lista «Perfiles», igual en los dos accesos: Personal («Tu perfil personal») y cada organización de la que es miembro, con su rol y su estado, y un ✓ en la activa (las suspendidas, deshabilitadas). Elegir una cambia de acceso o de organización;
   - «Mi cuenta» y «Salir».
@@ -133,14 +133,15 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - Por feature, `errors.ts` hace `switch (error.code)`. `applyApiErrorToForm` lleva los `errors` a los campos; lo que no encaja va en `<FormError>`.
 - Un 403 renderiza `ForbiddenPage`, salvo los códigos que resuelve el `AppShell`: `Legal.AcceptanceRequired` muestra la pantalla bloqueante de términos nuevos (`AcceptTermsPage`), y `Tenancy.Tenant.Suspended`, `Tenancy.Tenant.PendingApproval` y `Tenancy.Tenant.Closed` muestran `OrganizationUnavailablePage` (§3). Un 404 en una ficha muestra `NotFoundPage`. Un id de otra organización o de otro acceso también da 404.
 - **Casos genéricos** (como en cualquier aplicación; los resuelve `shared/api` y el `AppShell`, nunca cada pantalla):
-  - **Sin conexión o error de red:** toast "No pudimos conectarnos. Revisá tu conexión." con «Reintentar». Si el navegador está sin conexión (`navigator.onLine`), además una franja fija arriba, "Sin conexión", que se va sola al volver.
-  - **Error 5xx:** toast "Algo salió mal. Probá de nuevo en un rato." con el código de seguimiento (`traceId`) para copiar.
+  - **Sin conexión:** si el navegador está sin conexión (`navigator.onLine`), solo el cartel «Sin conexión» arriba (en el teléfono, debajo de la barra), que se va solo al volver. TanStack Query pausa las consultas mientras tanto, así que no hay aviso aparte.
+  - **Error de red con conexión:** aviso "No pudimos conectarnos. Revisá tu conexión." con «Reintentar».
+  - **Error 5xx:** aviso "Algo salió mal. Probá de nuevo en un rato." con «Copiar código», que copia el código de seguimiento (`traceId`); el código no se muestra.
   - **429, demasiados pedidos:** con `retryAfterSeconds`, el botón que disparó el pedido queda deshabilitado con la cuenta regresiva ("Reintentá en 0:42"), como en el ingreso. Si no vino de un botón, toast "Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos." **Nunca se reintenta solo.**
   - **Sesión vencida (E3, con Auth):** si falla la renovación silenciosa, se limpia la sesión y `queryClient` y se va a `/login` (la puerta del acceso que tenía) con `returnUrl`. La pantalla de ingreso muestra "Tu sesión venció. Ingresá de nuevo." y, al volver, lleva a la misma ruta. Lo escrito en un formulario sin guardar se pierde, salvo que la pantalla lo guarde como borrador.
   - **409, alguien cambió esto:** aviso sobre la pantalla con «Ver lo nuevo» y «Seguir editando», sin perder lo escrito ([formularios](../rules/formularios.md)).
   - **Salir sin guardar:** con "Cambios sin guardar", navegar a otra ruta o cerrar la pestaña pregunta "¿Salir sin guardar?" (`useBlocker` y `beforeunload`).
   - **Versión nueva del front:** si falla la carga de un chunk después de un despliegue, franja "Hay una versión nueva" con «Actualizar», que recarga la página. No se recarga solo.
-  - **Módulo apagado (E5):** su ruta muestra `NotFoundPage`, igual que un 404.
+  - **Módulo apagado (E5):** su ruta muestra `NotFoundPage`, igual que un 404, sin una línea que explique.
   - **Términos nuevos:** si una respuesta autenticada trae 403 `Legal.AcceptanceRequired`, se muestra `AcceptTermsPage`, que bloquea el uso hasta aceptar. Lee `GET /api/legal/current` y muestra lo que cambió (los dos documentos, solo los términos o solo la privacidad). Se acepta con `POST /api/legal/accept`. Hasta entonces, el back responde ese 403 en las rutas autenticadas de `/api`, salvo `GET /api/me`, `GET /api/legal/*` y `POST /api/legal/accept`; las rutas anónimas no pasan por ese middleware (back: `docs/rules/datos-personales.md`).
 
 ### Auth
@@ -189,93 +190,94 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - En 3a, `/api/me` entrega la zona efectiva para el acceso activo y el hook usa ese valor. Cuando nazcan las pantallas de empresa en E6, `companyId` conectará la zona propia de la empresa. La precedencia completa se verifica desde 3a con un helper puro.
 
 ### UI y pantallas
-Rigen los [tableros del lienzo versionado](../design/lienzo/README.md) (versión 65; los validados mandan sobre cualquier descripción textual), el [tema](tema.md) (tokens y colores: verde petróleo como marca y marco arena en el menú lateral y la barra superior; forma de tarjetas, botones y tablas; el `AdminPanel`) y estas reglas. De `visual-baseline.md` se mantienen solo las migas; **lo que sigue lo reemplaza**.
+Rige el [lienzo vigente](../design/lienzo/README.md): **mandan los ocho tableros «Criterio»** (Marco y pantallas, Botones, Formularios y campos, Tablas y listas, Diálogos, Menús y desplegables, Avisos y errores, y Decisiones por pantalla) y, para cada pantalla, **solo su tablero validado**; lo marcado «· por refinar» no manda. Los colores y la forma salen del [tema](tema.md). Esta sección resume esos tableros; si algo no coincide, manda el tablero.
 
 **Proceso y contenido**
 - **Toda pantalla nueva se dibuja primero** en el lienzo y se programa después de que el usuario la elige.
 - **No se inventan datos ni contenido.** Si no se sabe qué va en una pantalla, queda vacía, con la barra y el menú lateral.
 - Los datos de ejemplo usan nombres neutros (Grupo Delta, Delta S.A.) y solo los roles y permisos que existen en la plantilla: nada de rubros, módulos ni roles de negocio que no se pidieron.
-- Ningún texto que nadie pidió: ni ayudas bajo cada campo, ni notas al pie, ni bajadas de relleno. Quedan los rótulos, los errores, los vacíos y las confirmaciones.
+- **Sin textos que explican.** El estado se dice una vez, arriba, en la segunda línea de la banda: un punto de color y pocas palabras. Donde está la acción va solo un ⓘ; lo que no se puede usar queda apagado y abre lo mismo que el ⓘ: el aviso importante, con el motivo y qué hacer. Ningún párrafo en la pantalla, ni ayudas bajo cada campo, ni notas al pie.
 
-**Densidad**
-- Todo es compacto:
-  - letra de 13 px en el texto y en las tablas;
-  - filas de 42 px;
-  - campos de 36 px con radio de 8;
-  - botones de 34 px;
-  - menú lateral de 232 px y barra superior de 52 px.
-- Nada de tamaños grandes que hagan ver la pantalla tosca.
+**El marco** («Criterio · Marco y pantallas»)
+- Menú lateral arena de 232 px (contraído, 64), igual en los tres perfiles; barra de arriba arena, con las migas a la izquierda y tu menú a la derecha, y nada más.
+- Debajo, la **banda de la página** (`Page`), blanca y de ancho completo: el ícono de la sección en un cuadrado petróleo claro (en una ficha, el «‹» para volver en su lugar), el título de 18 px en negrita y, en la segunda línea, el resumen («11 usuarios · 7 activos · 3 invitaciones»), el estado (punto y palabra) o «Cambios sin guardar». Al lado del título no va nada.
+- Las acciones de la página van a la derecha: hasta tres a la vista, las demás en ⋮ y la principal al final.
+- El contenido va a todo el ancho, con 24 px de margen y cada cosa en su caja: los filtros por un lado, la tabla por otro. **Nunca todo en una sola tarjeta**, ni una caja a medio ancho con el resto vacío.
+- **Tres tipos de pantalla:** el **listado** (banda, filtros en su caja y la tabla con su paginado), la **ficha** (una cosa con sus datos en la banda) y la **edición** (un formulario con «Guardar cambios» en la banda, secciones con título y listas en su caja).
+- **Pestañas:** en una ficha, **una pestaña por cada grupo de datos, aunque tenga una sola fila** (como «Dominio verificado» en la ficha de una organización); también dos vistas del mismo contenido, como «Configuración» y «Recorrido» del bot. La cantidad va en gris al lado del nombre, sin etiqueta, y la acción de la banda cambia con la pestaña («Agregar miembro», «Crear rol»). **Nunca una pestaña «Resumen»**: los datos van en la banda.
 
-**Encabezado de página (`Page`)**
-- Es una **banda blanca de ancho completo**, pegada a la barra superior y con borde abajo. Lleva:
-  - a la izquierda, el ícono de la sección en un cuadrado con el fondo tenue de la marca (`--marca-t`); en una ficha o un editor, el botón «‹» para volver (`backTo`);
-  - el título de 18 px/700, con la pastilla de estado o el aviso «Cambios sin guardar» a su lado;
-  - debajo del título, una línea de resumen de 13 px («11 usuarios · 7 activos · 3 invitaciones»);
-  - a la derecha, **las acciones de la página**.
-- Botones de la página:
-  - la acción principal, con el color de la marca (`--marca`), siempre al final a la derecha;
-  - se ven hasta tres botones; si hay más, los que sobran van en un botón ⋮ («Más acciones») a la izquierda de la principal, con las destructivas al final y en rojo;
-  - en una ficha con pestañas, la acción de la pestaña (por ejemplo «Agregar miembro») aparece solo con esa pestaña;
-  - la barra de filtros no lleva botones.
-- Debajo de la banda va el contenido, sobre el fondo de la pantalla (`--fondo`): la barra de filtros y la tabla, cada una en su tarjeta. **Nunca todo junto en una sola tarjeta.**
-- **Sin bandas grises ni rótulos en mayúsculas.**
+**Botones** («Criterio · Botones»)
+- Cuatro tipos: **principal** (la que hace avanzar; una sola por pantalla y por diálogo, la última a la derecha), **secundario** (todas las demás), **peligro** (con borde en la pantalla; relleno solo en el diálogo que confirma) y **enlace** (una acción chica dentro de una fila o de un texto, nunca la principal).
+- Tamaños: normal de 36 px y letra de 14 (banda, diálogos y formularios); chico de 32 y letra de 13 (encabezado de una caja o tabla, y dentro de una fila); grande de 44 y letra de 15, solo en ingreso y registro, a todo el ancho; de ícono, 32 × 32, solo ⋮, ✕, ☰ y ‹, siempre con nombre.
+- El único ícono es el «+» de agregar, crear o invitar. El texto es un verbo y qué cosa («Invitar usuario», «Descartar cambios»); nunca «Aceptar», «OK», «Sí» ni «Enviar». Mientras trabaja dice qué hace («Guardando…»). Solo «Guardar cambios» se apaga, cuando no hay cambios; lo demás queda habilitado y, si falta algo, se explica.
+- **Editar algo que ya existe** lleva «Descartar cambios», que deja lo guardado sin salir; **crear algo nuevo** lleva «Cancelar», que vuelve.
 
-**Listados**
-- `FilterBar` (tarjeta con radio de 16 y la sombra suave del [tema](tema.md)) + `DataTable` + `Pagination`, con el estado en la URL.
-  - La barra lleva el buscador (32 px) y filtros en pastilla. Cada filtro abre un menú con el conteo de cada opción; con un valor elegido, la pastilla queda marcada. «Limpiar» aparece solo si hay filtros.
-- `DataTable`:
-  - **un dato por columna**: nombre, correo, rol, empresa, estado y vencimiento van en columnas propias; no se apilan dos datos en una celda;
-  - encabezado sobre `--s2` (12 px/600, sin mayúsculas) y filas alternadas;
-  - filas de 42 px en una sola línea;
-  - el estado en `StatusBadge` (pastilla con punto);
-  - los roles de la organización en pastillas;
-  - los números a la derecha;
-  - el vacío es «—» en gris.
-- Las acciones de cada fila van en un **menú ⋮** (`RowActions`): primero las comunes y, separadas al final, las destructivas en rojo. En las últimas filas el menú se abre hacia arriba. Las opciones dependen del estado: por ejemplo, una invitación ofrece «Reenviar invitación» y «Revocar invitación»; un usuario activo, «Deshabilitar», y uno deshabilitado, «Habilitar» (nunca «Activar»).
-- La auditoría usa «Cargar más» (`LoadMore`). La primera columna es «Fecha y hora», en una línea, y el detalle se abre en un diálogo de solo lectura.
+**Tablas y listas** («Criterio · Tablas y listas»)
+- **Tabla** (`FilterBar` + `DataTable` + `Pagination`, con el estado en la URL), para un listado largo que se filtra:
+  - filtros en su propia tarjeta, arriba, sin botones: el buscador siempre, hasta tres filtros a la vista, cada opción con cuántas filas trae, el filtro elegido en petróleo y diciendo qué tiene, y «Limpiar filtros» como enlace solo si hay algo elegido;
+  - encabezado de 40 px sobre arena, letra de 13 en semibold, sin mayúsculas;
+  - filas de 40 px, o de 52 con segunda línea; letra de 13; una sí y otra no en arena muy suave; petróleo claro al pasar el mouse;
+  - un tema por columna. **Una celda puede llevar una segunda línea gris que aclara la primera**: el correo debajo del nombre, el rol en la empresa debajo de la empresa, «Vence …» debajo del estado. Dos datos sin relación nunca van en la misma celda. Sin dato, una sola raya;
+  - el estado es un punto de 8 px y la palabra, sin fondo: verde activo, petróleo pendiente, ámbar atención, gris apagado. Números y montos, a la derecha;
+  - las acciones van en ⋮ (`RowActions`, columna de 48 px): las comunes arriba; las de peligro abajo, en rojo y separadas. Fuera del ⋮, a lo sumo un enlace que pida el estado;
+  - con más de 10 filas, paginado al pie, dentro de la misma caja, de 10 por página. Lo que solo crece (auditoría, eventos) se pide de a tandas con «Cargar más», sin total (`LoadMore`);
+  - a ancho completo; si no entra, se saca una columna, nunca se achica la letra;
+  - cuando no hay filas: «Cargando», «Todavía no hay …» (se crea desde la banda), «Ningún … coincide con los filtros» con «Limpiar filtros», y el error con «Reintentar».
+- **Lista** (`List`), para lo corto que vive dentro de una pantalla (hasta 10 elementos, sin filtros ni paginado; si pueden ser más, es una tabla): la caja lleva su título en el encabezado arena y a lo sumo una acción chica; sin encabezado de columnas; filas de 44 px, o de 56 con segunda línea; lo que aclara la fila («Principal», «Sin verificar») va en esa segunda línea gris, nunca como etiqueta. **Una lista se lee: cambiar una fila o sumar otra abre un diálogo chico**, desde el ⋮ o desde la acción del encabezado.
+- **Lista con grupos que se abren:** solo para los permisos de un rol, y es la única que se abre y se cierra. Cada grupo tiene su casilla de «todos» y la cuenta («3 de 3»); al entrar están abiertos los que tienen algo marcado; una fila por permiso, solo con el nombre.
+- La auditoría usa «Cargar más»; tocar «Qué pasó» abre el detalle en un diálogo de solo lectura.
 
-**Fichas y formularios**
-- La ficha usa la misma banda: «‹», el nombre, la pastilla de estado y los datos clave en la línea de resumen. Las acciones van a la derecha.
-  - **Pestañas solo con dos o más tablas grandes**, debajo de la banda y con su conteo.
-  - No hay pestaña «Resumen»: los datos de la entidad están en la banda y se editan con un diálogo.
-- Un formulario es **una sola hoja** a ancho completo, en dos columnas, con secciones de título de 15 px. Nunca varias tarjetas sueltas.
-- Una pantalla de edición deja editar: tiene campos reales, «Cancelar» y «Guardar cambios» en la banda, y el aviso de cambios sin guardar.
+**Formularios** («Criterio · Formularios y campos»; ficha: [formularios](../rules/formularios.md))
+- El rótulo va arriba, siempre visible, con un asterisco rojo si el dato es obligatorio. Sin ayudas debajo ni ejemplos adentro; solo el buscador lleva texto adentro.
+- El error va debajo del campo, en rojo, y dice qué hacer. Se revisa al tocar «Guardar cambios» y, después del primer error, mientras se escribe. Un error general va en una franja roja clara arriba de los botones; nunca en un aviso que se va solo.
+- El control más simple para cada dato: texto; texto largo (tres líneas de entrada); desplegable (`Select`, `SearchSelect`, que con más de 10 opciones suma un buscador); varios a la vez en un desplegable con casillas (`MultiSelect`, con «Todos» como casilla junto al rótulo, nunca como una opción más); segmentado para dos o tres opciones fijas; casilla para un sí o no que se guarda; interruptor para lo que se aplica en el momento, sin guardar; código en seis casillas.
+- **Una caja por tema, a todo el ancho** (`Section`), con el título en el encabezado arena de 40 px. Adentro, **dos columnas iguales** que ocupan todo el ancho, con las mismas columnas en todas las filas; tres solo si todos los datos son cortos, como en «Tus datos». Un texto largo ocupa las dos columnas. Lo que es una lista (correos, dominios, empresas) va en una caja de lista.
+- Campos de 36 px con radio de 8; el código, de 44. Lo que no se edita se muestra como texto, nunca como un campo gris.
 - Lo que es de la identidad (nombre, idioma y región, zona y métodos de ingreso) se edita en `/cuenta`, nunca en la ficha de un usuario de la organización.
-- Lo corto se edita en un **diálogo** y lo largo en una **pantalla propia** con `useUnsavedChangesGuard`. Nunca un diálogo sobre otro, una tabla dentro de un diálogo, un panel desplegable ni una fila que se expande.
+- Lo corto se edita en un diálogo; lo largo, en una pantalla propia con `useUnsavedChangesGuard`. Nunca un diálogo sobre otro, una tabla dentro de un diálogo, un panel que se despliega ni una fila que se expande; la única excepción son los grupos de permisos de un rol.
 
-**Controles**
-- Siempre el control más simple:
-  - una opción, `Select`;
-  - varias, `MultiSelect`;
-  - lo que se repite, una fila de desplegables con «Sumar otra», como la empresa y sus roles.
-- Las opciones del `Select` y del `MultiSelect` tienen el nombre y, si hace falta, una descripción debajo. El `MultiSelect` suma una casilla por opción. «Todos» es un check junto al rótulo, nunca una opción más.
-- Campos de 36 px con radio de 8 y rótulo de 12 px/600 encima. Los obligatorios llevan un asterisco rojo.
-- Botones de 34 px (40 en las pantallas públicas). El principal lleva el color de la marca (`--marca`, ver [tema](tema.md)); el secundario, blanco con borde; el destructivo, rojo.
+**Menús y desplegables** («Criterio · Menús y desplegables»)
+- El ⋮ de una fila ofrece solo lo que se puede hacer con ella (nada de opciones grises), las comunes arriba y las de peligro abajo, en rojo y después de una franja; cada opción, de 36 px, con su ícono gris y un verbo («Editar», «Reenviar invitación»), y una línea fina entre opciones. Abre debajo, alineado a la derecha, o hacia arriba si no hay lugar.
+- **Tu menú** (`AccessMenu`): arriba, quién sos; después, los perfiles (el actual con tilde; uno que no está disponible, en gris, dice por qué en la segunda línea y al tocarlo abre la pantalla que lo explica); al final, «Mi cuenta» y «Salir».
+- El **menú lateral** es igual en los tres perfiles: arriba, Inicio y los módulos de uso diario (como WhatsApp); abajo de todo, con una línea, «Administración». Los dos abren un segundo panel al lado, uno a la vez. Un grupo con hijos se despliega en el lugar; el activo va en blanco con letra petróleo; contraído muestra solo los íconos; hay una línea fina entre opciones; la flechita que lo contrae es blanca, redonda, de 28 px y con borde arena.
+- Todo menú se abre con un clic y se cierra al elegir, con Escape o con un clic afuera; uno a la vez; se recorre con las flechas. Más de 8 opciones es una pantalla o un desplegable con buscador.
 
-**Diálogos y avisos**
-- Diálogos de 560 px (420 para confirmar), con fondo desenfocado y título de 16 px/600. Debajo del título puede ir el nombre de lo que se edita. Los campos van en dos columnas y la botonera, a la derecha.
+**Diálogos** («Criterio · Diálogos»)
+- Dos anchos: chico de 420 px (uno o dos campos, y confirmaciones) y normal de 560 (hasta seis campos en dos columnas). Encabezado de 48 px sobre arena, con el título de 15 en semibold y el ✕, sin bajada; cuerpo con 20 px de margen; pie de 60 px con línea arriba y, a la derecha, «Cancelar» y la principal, última.
+- La **confirmación** de algo que no se deshace va sin ✕: el título es la pregunta, con el nombre de lo que se toca; el texto dice qué se pierde; el botón repite la acción en rojo relleno.
+- El **aviso importante** (`ImportantNotice`) se abre desde un ⓘ o desde el botón apagado: el título dice qué pasa, el motivo va en una caja roja suave y debajo «Qué podés hacer» en pasos numerados, con un solo botón, «Entendido».
+- El detalle de solo lectura va en una grilla con líneas: el rótulo a la izquierda, sobre arena clara, y el valor a la derecha.
+- Se abre centrado, con el cursor en el primer campo; se cierra con ✕, «Cancelar» o Escape, nunca con un clic afuera. Al terminar se cierra y un aviso confirma lo que pasó. Antes de algo que se paga, se ve el costo estimado.
+- **¿Diálogo o pantalla?** Diálogo: agregar o editar algo corto (hasta seis campos), confirmar o escribir un código. Pantalla propia: más de seis campos o secciones, una tabla o lista adentro, o algo que se comparte con un enlace.
 - Toda acción destructiva se confirma. En la plataforma, el motivo es obligatorio.
-- Los resultados se avisan con un toast abajo a la derecha. Los errores de una regla (por ejemplo, «Tiene que quedar al menos un Dueño») van arriba del formulario o en el toast, según dónde se originan.
+
+**Avisos y errores** («Criterio · Avisos y errores»)
+- Cada cosa tiene un solo lugar:
+  - salió bien: un aviso abajo a la derecha con tilde verde, que se va solo a los 4 segundos («Guardamos tus datos.»);
+  - un formulario tiene algo mal: en el formulario, debajo del campo o en una franja arriba de los botones;
+  - falló una acción directa (un ⋮, un botón): un aviso rojo abajo a la derecha, con ✕, que no se va solo;
+  - algo que sigue pasando: un cartel arriba del contenido, debajo de la banda (petróleo si informa, ámbar si hay que hacer algo, rojo si algo no funciona), con un botón chico si hay algo para hacer;
+  - la pantalla no se puede mostrar: la pantalla de error, con «Reintentar»;
+  - algo que no se deshace: la confirmación, antes.
+- Cómo se escribe: lo que salió bien, en pasado y en plural («Quitamos lucia.fer@gmail.com.»); lo que salió mal, «No pudimos …» y qué hacer. Nada de «Error», «Ups», «Operación exitosa», signos de exclamación, códigos técnicos ni textos en inglés.
 
 **Pantallas públicas (`AuthLayout`)**
-- La pantalla va en dos mitades:
-  - a la izquierda, el formulario (380 px), con la marca arriba y, abajo, el idioma y los enlaces legales;
-  - a la derecha, un panel con el color de la marca.
-- Títulos de 24 px, campos y botones de 40 px, código en casillas de 52 px. Los errores del servidor van en un mensaje de color arriba del botón.
+- La pantalla va en dos mitades: a la izquierda, el formulario (380 px), con la marca arriba y, abajo, el idioma y los enlaces legales; a la derecha, un panel con el color de la marca.
+- Títulos de 24 px, botones grandes de 44 a todo el ancho y el código en seis casillas de 44. Los errores del servidor van en una franja arriba del botón.
 
 **Teléfono** (hasta 767 px)
-- **Con sesión, el teléfono es una app** (lienzo, «Criterio · Marco y pantallas»): barra de título, barra de abajo con «Más», listas de borde a borde y hojas con manija. Lo que sigue en esta sección describe la web achicada anterior; se reescribe con el Paquete 5 de `docs/reviews/2026-10-03-alineacion-lienzo.md` (repo del back). Mientras tanto, manda el lienzo.
-- **El sitio público sin sesión** (portada, `/empresas` y la página de cada organización) se ve como **web móvil**, con ☰ y sin barra de abajo (tableros Landing-Movil, M-Directorio y M-Pagina-Publica).
-- Barra de arriba de 52 px:
-  - ☰ abre el mismo menú lateral por encima del contenido, con un velo;
-  - en el medio, la marca;
-  - el avatar abre el menú de la cuenta (cambiar de acceso u organización, «Mi cuenta» y «Salir») en una hoja desde abajo.
-- La banda del título se mantiene. El resumen va en una línea (con «…» si no entra), y la acción principal va a la derecha con un rótulo corto («+ Invitar»). Las que sobran van en ⋮.
-- Filtros: el buscador ocupa todo el ancho y las pastillas van debajo.
-- **Tablas:** solo las columnas que entran: el dato principal, el estado y el ⋮. El resto se ve al entrar a la fila. Nunca se apilan dos datos en una celda. La auditoría muestra la fecha y «Qué pasó».
-- Los diálogos se abren como hojas desde abajo. Las de un formulario ocupan casi toda la altura, con los campos en una columna y los botones a lo ancho abajo.
-- Al editar (usuario, rol, configuración, cuenta), «Cancelar» y «Guardar» van en una barra fija abajo.
-- Las pantallas públicas van en una columna, sin el panel de la marca.
+- **Con sesión, el teléfono es una app** (tableros M-* y «Criterio · Marco y pantallas»), no la web achicada:
+  - arriba, la barra del teléfono y el título grande (`AppBar`), con la organización o el perfil debajo; en una pantalla interna, «‹» y el título, con el camino debajo («Administración»). Buscar y filtrar son íconos de esa barra; el filtro abre una hoja con las opciones y su conteo;
+  - abajo, hasta cuatro secciones y «Más» con tu inicial (`BottomNav`). «Más» (`/mas`) reúne los perfiles, la Administración, Mi cuenta y Salir. No hay barra de abajo en un chat ni si hay una acción fija abajo;
+  - las listas van de borde a borde, con filas de hasta tres líneas (`ListRow`); el ⋮ va solo si la fila tiene acciones y, si no, se toca la fila; el paginado es «Cargar más»;
+  - **crear algo nuevo es un «+» flotante** abajo a la derecha (`Fab`), también con la lista vacía;
+  - lo que en la compu es un diálogo es una **hoja desde abajo**, con manija y botones de 48 a lo ancho; la confirmación, sin ✕;
+  - los ajustes y las fichas van en grupos blancos sobre fondo gris (`Section`, `SettingsGroup`), con el título gris arriba y a lo sumo una acción en texto; una fila con «›» abre otra pantalla o una hoja para elegir;
+  - **las pantallas de edición llevan fijos abajo «Descartar cambios» y «Guardar cambios»** (`FixedActions`); al crear, «Cancelar» y la acción;
+  - los campos miden 48 px con letra de 16, y los botones, de 44 a 50;
+  - lo pasajero va en una franja oscura abajo, a lo ancho; lo que sigue pasando (sin conexión, versión nueva, «Otra persona cambió esto») va en una banda debajo de la barra de arriba;
+  - prohibido: la marca arriba, la banda con ícono y resumen, cajas con cabecera arena, el ☰, una versión aparte de la pantalla hecha a mano y el scroll de costado.
+- **El sitio público sin sesión** es web, no app: la portada y `/empresas` van en una columna, con ☰ arriba y sin barra de abajo (Landing-Movil, M-Directorio); la página de cada organización es la misma tarjeta, **sin ☰** (M-Pagina-Publica). El ingreso y el registro van en una columna, sin el panel de la marca.
 
 **Código**
 - Colores solo con los tokens de [tema.md](tema.md); las variables de shadcn son alias de esos tokens. Componentes propios en PascalCase; los de shadcn se generan con `npx shadcn@4.21.0 add`.
@@ -283,7 +285,7 @@ Rigen los [tableros del lienzo versionado](../design/lienzo/README.md) (versión
 
 ### Accesibilidad y diseño adaptable
 - **WCAG 2.2 AA.** Cada test de pantalla corre `vitest-axe` y falla con cualquier violación. Las piezas de `shared/ui` resuelven rótulos, nombres de botones, foco y teclado. Ficha: [accesibilidad](../rules/accesibilidad.md).
-- **Tres anchos: 390, 768 y 1440.** En el teléfono, `DataTable` muestra solo las columnas `mobile` (el dato principal y el estado) y el ⋮; los filtros van debajo del buscador; los diálogos se abren como hojas desde abajo (ver "Teléfono" arriba). El acceso B2C y las páginas públicas se piensan primero para el teléfono. Ficha: [responsive](../rules/responsive.md).
+- **Tres anchos: 390, 768 y 1440.** En el teléfono, `Page` arma la pantalla de la app (`AppChrome` le dice si es un teléfono, a dónde vuelve «‹» y qué va debajo del título), `DataTable` muestra la fila de lista de cada pantalla (`mobileRow`), los filtros pasan a la barra y los diálogos se abren como hojas (ver «Teléfono» arriba). El acceso B2C y las páginas públicas se piensan primero para el teléfono. Ficha: [responsive](../rules/responsive.md).
 
 ### Módulos, ediciones simultáneas y altas sin duplicados
 - **Módulos habilitados:** `features` en `/api/me`, y `useFeature` / `<Feature>`. Rutas y links declaran `feature` además de `permission`; apagado = no existe (404).

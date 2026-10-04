@@ -89,9 +89,10 @@ src/
 │   ├── useAccess.ts                                 acceso activo, organización activa, espacio personal, organizaciones
 │   ├── useSwitchAccess.ts                           signinSilent({ access, tenant }) → queryClient.clear() → inicio del acceso
 │   ├── useSwitchAccess.test.ts                      verifica el clear de la caché
-│   ├── AccessMenu.tsx                               menú de la cuenta entero: el botón (nombre y «Personal» o la organización; en el teléfono, el avatar); cabecera con nombre y correo; «Perfiles»: Personal y cada organización con su rol (✓ en el perfil activo; las suspendidas, deshabilitadas); «Mi cuenta»; «Salir»
+│   ├── AccessMenu.tsx                               menú de la cuenta, solo en la compu: el botón (nombre y «Personal» o la organización); cabecera con nombre y correo; «Perfiles»: Personal y cada organización con su rol (✓ en el perfil activo; la que no está disponible, en gris, dice por qué); «Mi cuenta»; «Salir». En el teléfono, todo eso está en «Más»
 │   ├── AccessMenu.test.tsx                          en B2C nunca aparece «Registrá tu empresa»
 │   ├── accessHome.ts                                acceso → ruta de inicio (/, /org, /plataforma)
+│   ├── useProfiles.tsx                              perfiles, cambio de acceso y «Salir»: lo comparten AccessMenu y «Más»
 │   ├── usePublicSite.ts                             [E7] slug y datos públicos del subdominio
 │   └── useCompanyParam.ts                           [E6] companyId de la URL
 │
@@ -101,24 +102,27 @@ src/
 │   ├── AuthLayout.tsx                               [E3]
 │   ├── PersonalLayout.tsx                           [E3] acceso B2C: Inicio, Mi cuenta + módulos B2C (sin organizaciones)
 │   ├── SiteLayout.tsx                               [E3] portada de la plataforma; en [E7], también el directorio y la página pública del subdominio
-│   ├── BusinessLayout.tsx                           [E3] sidebar + AdminPanel + topbar con la organización
+│   ├── BusinessLayout.tsx                           [E3] sidebar + AdminPanel + topbar con la organización; en el teléfono, el marco de app de PrivateLayoutFrame
 │   ├── PlatformLayout.tsx                           [E3]
+│   ├── PrivateLayoutFrame.tsx                       marco de los tres accesos: en la compu, menú lateral, panel y barra; en el teléfono, la app (`AppChrome`, barra de abajo con «Inicio» y «Más»)
+│   ├── MorePage.tsx                                 «Más» del teléfono (/mas): quién sos, Perfiles, Administración, Mi cuenta y Salir (M-Mas-Personal, M-WA-Menu); en la compu vuelve al inicio
 │   ├── navigation/
 │   │   ├── types.ts                                 grupos, ramas, links con permiso
+│   │   ├── administration.ts                        la opción del panel de la que sale una ruta: la usan el panel, las migas y el marco
 │   │   ├── personal.ts
 │   │   ├── business.ts                              arriba Inicio + módulos B2B; abajo «Administración» (AdminPanel): «Gestión de usuarios» ▸ Usuarios, Roles y permisos · Empresas · Configuración · Página pública · Auditoría
 │   │   ├── platform.ts                              Organizaciones (el inicio) · Cuentas · Recuperaciones · Auditoría · Documentos legales · Configuración
 │   │   └── navigation.test.ts                       el permiso de cada link = el de su ruta
 │   └── components/
-│       ├── Sidebar.tsx                              colapsable, drawer en móvil; en el teléfono «Administración» se despliega adentro
+│       ├── Sidebar.tsx                              solo en la compu: colapsable, con una línea fina entre opciones; «Administración» abre el AdminPanel. En el teléfono no se monta
 │       ├── Sidebar.test.tsx
 │       ├── AdminPanel.tsx                           [E3] segundo panel de «Administración» (solo escritorio y solo B2B; 232 px, fondo --panel; tema.md): se abre en cualquier ruta de administración y se cierra con «‹» o tocando de nuevo «Administración»; vacío hasta [E6], que le suma sus enlaces de navigation/business.ts; en el teléfono no se monta
 │       ├── AdminPanel.test.tsx                      se abre en una ruta de administración; «‹» lo cierra; en el teléfono no se monta
-│       ├── Topbar.tsx                               migas + AccessMenu (menú de la cuenta); en el teléfono, ☰, la marca y el avatar
+│       ├── Topbar.tsx                               solo en la compu: migas + AccessMenu (menú de la cuenta)
 │       ├── Breadcrumbs.tsx
 │       ├── Breadcrumbs.test.tsx
-│       ├── OfflineBanner.tsx                        [E1] franja fija arriba "Sin conexión" (navigator.onLine + eventos online/offline), sobre shared/ui/Banner
-│       └── NewVersionBanner.tsx                     [E1] franja "Hay una versión nueva" · «Actualizar» recarga la página; nunca se recarga sola
+│       ├── OfflineBanner.tsx                        [E1] cartel «Sin conexión» (navigator.onLine + eventos online/offline): arriba en la compu; en el teléfono, banda roja clara debajo de la barra (AppNotices)
+│       └── NewVersionBanner.tsx                     [E1] cartel «Hay una versión nueva» · «Actualizar» recarga la página; nunca se recarga sola; en el teléfono, banda debajo de la barra
 │
 ├── areas/
 │   ├── public/                                      dominio principal, sin sesión o con cualquier acceso
@@ -198,12 +202,12 @@ src/
 │   │   │   │   ├── permissionPicker.ts
 │   │   │   │   └── systemRoles.ts
 │   │   │   ├── components/
-│   │   │   │   ├── PermissionPicker.tsx             desplegable por área con "Todos"
-│   │   │   │   └── RoleScopeField.tsx               Toda la organización / Cada empresa / Solo en <empresa>
+│   │   │   │   ├── PermissionPicker.tsx             grupos por área que se abren y se cierran, con su casilla de todos y la cuenta («3 de 3»); al entrar, abiertos los que tienen algo marcado
+│   │   │   │   └── RoleScopeField.tsx               «Vale en»: Toda la organización o una empresa por nombre (sin «Cada empresa», que queda para la API)
 │   │   │   └── pages/
 │   │   │       ├── RolesPage.tsx
 │   │   │       ├── RolesPage.test.tsx
-│   │   │       ├── RoleEditorPage.tsx               una hoja: nombre, «Vale en», descripción y un desplegable de permisos por área
+│   │   │       ├── RoleEditorPage.tsx               datos sueltos (nombre, «Vale en», descripción) y «Permisos» en grupos que se abren; al editar, «Descartar cambios», y al crear, «Cancelar»
 │   │   │       └── RoleEditorPage.test.tsx
 │   │   ├── users/                                   [E6]
 │   │   │   ├── api/users.ts                         /api/users; invitar con POST /api/users/invitations (reenviar y revocar en /api/users/invitations/{id})
@@ -435,32 +439,48 @@ src/
 │       ├── CheckboxField.tsx                        [E1] después de i18n
 │       ├── ConcurrencyBanner.tsx                    [E1] P1 "Otra persona cambió esto…" · «Ver lo nuevo» · «Seguir editando»
 │       ├── ConfirmDialog.tsx                        [E1] pieza propia, después de i18n
-│       ├── DataTable.tsx                            [E1] filas de 42 px, un dato por columna, encabezado gris; cada columna declara su type y la tabla usa ui/format
-│       │                                            (alineación, vacío y tooltip); carga, vacío, error con reintento;
-│       │                                            [E1] P10: en el teléfono solo las columnas `mobile` (primary y status) y el ⋮, nunca tarjetas;
+│       ├── DataTable.tsx                            [E1] encabezado arena de 40 px; filas de 40, o de 52 con una segunda línea gris que aclara la primera; un tema por columna;
+│       │                                            cada columna declara su type y la tabla usa ui/format (alineación, vacío y tooltip); carga, vacío, error con reintento;
+│       │                                            en el teléfono, la fila de lista de la pantalla (`mobileRow`); sin ella, solo las columnas `mobile` y el ⋮;
 │       │                                            en la tablet, sin las `priority: "low"`
 │       ├── DataTable.test.tsx                       [E1] P10 a 390 px renderiza solo las columnas primary y status, y el ⋮
 │       ├── columns-mobile.test.ts                   [E1] P10 toda definición de columnas tiene exactamente una mobile: "primary"
 │       ├── EmptyState.tsx                           [E1] después de i18n
-│       ├── FilterBar.tsx                            [E0] pieza nueva; buscador + filtros en pastilla con conteos + «Limpiar» por props
+│       ├── FilterBar.tsx                            [E0] pieza nueva; buscador + filtros con conteos + «Limpiar filtros», en su tarjeta; en el teléfono, lupa y filtro en la barra y los filtros en una hoja
 │       ├── FormError.tsx                            [E0] pieza nueva; mensaje recibido por props
 │       ├── FormField.tsx                            [E1] campos con i18n
 │       ├── IconButton.tsx                           [E1] de la base, adaptado a los tokens
 │       ├── MultiSelect.tsx                          [E1] de la base, adaptado a los tokens
 │       ├── OtpInput.tsx                             [E3] ingreso y verificación de códigos
-│       ├── Page.tsx                                 [E1] banda blanca: ícono o backTo, título de 18 px, resumen y acciones (las que sobran, en ⋮)
-│       ├── Pagination.tsx                           [E1] se copia y adapta de la base cuando existen pagedResult y shared/format; "1–10 de 1.234" · "Página 1 de 124" · selector 10/20/50/100
+│       ├── Page.tsx                                 [E1] banda blanca: ícono o backTo, título de 18 px, segunda línea, pestañas, cartel y acciones (las que sobran, en ⋮); en el teléfono, la pantalla de la app: título en la barra, «+» flotante y botones fijos abajo
+│       ├── Pagination.tsx                           [E1] "1–10 de 1.234" · "Página 1 de 124" · selector 10/20/50/100; en el teléfono, «Cargar más»
 │       ├── LoadMore.tsx                             [E1] paginado por cursor
 │       ├── RadioGroupField.tsx                     [E1] de la base, adaptado a los tokens
 │       ├── RowActions.tsx                           [E1] menú ⋮ por fila; las destructivas al final, en rojo
+│       ├── Section.tsx                              una caja por tema con el título en el encabezado arena; en el teléfono, grupo blanco sobre gris, tarjeta con margen o campos sueltos
+│       ├── List.tsx                                 lista corta en su caja: filas de 44 o 56, lo que aclara en la segunda línea; en el teléfono, filas de la app y la acción en texto
+│       ├── InfoButton.tsx                           el ⓘ que abre el aviso importante
+│       ├── ImportantNotice.tsx                      aviso importante: motivo en caja roja suave, «Qué podés hacer» y «Entendido»
+│       ├── ReadOnlyField.tsx                        lo que no se edita, como texto (nunca un campo gris)
+│       ├── SearchSelect.tsx                         desplegable de una opción; con más de 10, suma un buscador
 │       ├── SearchInput.tsx                          [E1] de la base, adaptado a los tokens
 │       ├── SegmentedControl.tsx                     [E1] de la base, adaptado a los tokens
-│       ├── Sheet.tsx                                [E1] P10 hoja desde abajo en el teléfono: la forma del Dialog (el de un formulario, casi a toda altura) y del menú de la cuenta; nunca filtros
+│       ├── Sheet.tsx                                [E1] P10 hoja desde abajo en el teléfono, con manija y botones de 48 a lo ancho: la forma del Dialog y de la hoja de filtros
 │       ├── Spinner.tsx                              [E1] de la base, adaptado a los tokens
 │       ├── StatusDot.tsx                            [E0] pieza nueva
 │       ├── Surface.tsx                              [E0] pieza nueva
 │       ├── VerificationBadge.tsx                   [E1] de la base, adaptado a los tokens
-│       └── icons.tsx                                [E1] SVG propios, trazo 1.75
+│       ├── icons.tsx                                [E1] SVG propios, trazo 1.75
+│       └── app/                                     el marco de app del teléfono (tableros M-*, «Criterio · Marco y pantallas»)
+│           ├── AppChrome.tsx                        si es un teléfono, a dónde vuelve «‹», qué va debajo del título y si se esconde la barra de abajo
+│           ├── AppBar.tsx                           barra con el título grande o «‹» y el título; debajo, los avisos que siguen pasando
+│           ├── AppBarTools.tsx                      lugar en la barra para la lupa y el filtro
+│           ├── AppNotices.tsx                       la barra reclama los avisos de toda la app («Sin conexión», «Hay una versión nueva»)
+│           ├── BottomNav.tsx                        barra de abajo: hasta cuatro secciones y «Más»
+│           ├── Fab.tsx                              el «+» flotante para crear
+│           ├── FixedActions.tsx                     botones fijos abajo; esconde la barra de abajo
+│           ├── ListRow.tsx                          fila de lista de borde a borde, hasta tres líneas
+│           └── SettingsGroup.tsx                    título de grupo, grupo blanco sobre gris y filas con «›»
 │
 └── test/                                            [E0]
     ├── HarnessStage.ts                              [E0] lista explícita de etapas cerradas del arnés; permite etapas no contiguas
