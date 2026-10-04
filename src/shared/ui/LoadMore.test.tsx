@@ -19,6 +19,8 @@ describe("LoadMore", () => {
 
     const loadMore = screen.getByRole("button", { name: "Cargar más" });
     expect(loadMore).toHaveClass("h-7", "lg:h-8");
+    // Tablero Auditoria-Org: «Cargar más» con borde, no relleno.
+    expect(loadMore).toHaveAttribute("data-variant", "outline");
     expect(loadMore).not.toHaveClass("min-h-11");
     await userEvent.click(loadMore);
     expect(onLoadMore).toHaveBeenCalledOnce();

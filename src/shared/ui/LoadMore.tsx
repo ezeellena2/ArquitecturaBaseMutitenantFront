@@ -14,7 +14,7 @@ export function LoadMore({ hasMore, isLoading = false, onLoadMore }: LoadMorePro
 
   return (
     <div className="flex min-h-12 items-center justify-center border-t border-[var(--borde)] px-4 py-2">
-      <Button type="button" variant="secondary" size="sm" disabled={isLoading} onClick={onLoadMore}
+      <Button type="button" variant="outline" size="sm" disabled={isLoading} onClick={onLoadMore}
         className="h-7 lg:h-8">
         {isLoading ? t("states.loading") : t("pagination.loadMore")}
       </Button>
