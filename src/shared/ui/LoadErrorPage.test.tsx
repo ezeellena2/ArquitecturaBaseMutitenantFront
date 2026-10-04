@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n } from "@/shared/i18n";
+import { asPhone } from "@/test/utils/phone";
 import { AppChromeProvider } from "./app/AppChrome";
 import { LoadErrorPage } from "./LoadErrorPage";
 
@@ -40,5 +41,20 @@ describe("LoadErrorPage", () => {
     expect(screen.getByRole("link", { name: "Volver a Usuarios" })).toHaveAttribute("href", "/org/usuarios");
     expect(screen.getByRole("heading", { level: 2, name: "No pudimos abrir esta pantalla" })).toHaveClass("text-[22px]");
     expect(screen.getByRole("button", { name: "Reintentar" })).toHaveClass("h-12", "rounded-full", "border-[var(--borde2)]", "text-[var(--t1)]");
+  });
+
+  // Fuera del marco (sin /api/me no hay menú ni barra): ocupa toda la pantalla y, en un teléfono, toma la forma de la
+  // app de M-Error-Org, sin barra.
+  it("fuera del marco ocupa la pantalla y en el teléfono tiene la forma de la app", () => {
+    const restore = asPhone();
+    try {
+      render(<MemoryRouter><LoadErrorPage onRetry={vi.fn()} standalone /></MemoryRouter>);
+
+      expect(screen.getByRole("main")).toHaveClass("min-h-dvh");
+      expect(screen.getByRole("heading", { level: 1, name: "No pudimos abrir esta pantalla" })).toHaveClass("text-[22px]");
+      expect(screen.getByRole("button", { name: "Reintentar" })).toHaveClass("h-12", "rounded-full");
+    } finally {
+      restore();
+    }
   });
 });

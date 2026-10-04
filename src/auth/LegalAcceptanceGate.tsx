@@ -17,7 +17,7 @@ export function LegalAcceptanceGate() {
   useEffect(() => { if (blocked) void queryClient.invalidateQueries({ queryKey: currentUserQueryKey }); }, [blocked, queryClient]);
   if (isPending) return <p role="status" className="p-6">{t("states.loading")}</p>;
   // «Criterio · Avisos» (Pantalla de error): sin /api/me no se puede mostrar nada; «Reintentar» lo vuelve a pedir.
-  if (!data) return <main className="flex min-h-dvh flex-col bg-[var(--fondo)]"><LoadErrorPage onRetry={() => { void refetch(); }} /></main>;
+  if (!data) return <LoadErrorPage standalone onRetry={() => { void refetch(); }} />;
   if (blocked || (data.pendingLegalDocuments?.length ?? 0) > 0) return <Navigate to={accountPagePaths.acceptLegal} state={{ returnTo: location.pathname + location.search }} replace />;
   return <Outlet />;
 }
