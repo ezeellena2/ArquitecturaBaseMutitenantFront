@@ -171,7 +171,7 @@ describe("Mi cuenta", () => {
     await waitFor(() => expect(culture).toBeEnabled());
     culture.focus();
     await user.keyboard("{ArrowDown}");
-    await user.click(await screen.findByRole("option", { name: /^Inglés \(Estados Unidos\)/ }));
+    await user.click(await screen.findByRole("option", { name: /^English \(United States\)/ }));
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(submitted).toMatchObject({ culture: "en-US", version: 42 }));
     expect(await screen.findByRole("heading", { name: "My account" })).toBeVisible();

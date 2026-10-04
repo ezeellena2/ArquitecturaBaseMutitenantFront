@@ -36,13 +36,14 @@ describe("CultureSelect", () => {
     expect(await screen.findByText("27/09/2026 14:35 · 1.234,50")).toBeVisible();
     expect(screen.getByText("09/27/2026 2:35 PM · 1,234.50")).toBeVisible();
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("option", { name: /Inglés \(Estados Unidos\)/ }));
+    // Tablero Cuenta: cada idioma se nombra en su propia lengua, aunque la pantalla esté en español.
+    await user.click(screen.getByRole("option", { name: /English \(United States\)/ }));
     expect(screen.getByRole("status")).toHaveTextContent("en-US");
-    expect(select).toHaveTextContent("Inglés (Estados Unidos)");
+    expect(select).toHaveTextContent("English (United States)");
     expect(select).not.toHaveTextContent("1,234.50");
   });
 
-  it("muestra nombres traducidos desde Cultures y omite culturas deshabilitadas", async () => {
+  it("nombra cada cultura de Cultures en su propia lengua y omite las deshabilitadas", async () => {
     const user = userEvent.setup();
     const fixture = referenceDataFixture("en-US");
     const culture = fixture.cultures[0];
@@ -57,7 +58,7 @@ describe("CultureSelect", () => {
     expect(select).toHaveTextContent("Elegí un idioma");
     await user.click(select);
     expect(screen.getAllByRole("option")).toHaveLength(2);
-    expect(screen.getByRole("option", { name: /^Spanish \(Argentina\)/ })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /^Español \(Argentina\)/ })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: /^English \(United States\)/ })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: /Portuguese/ })).not.toBeInTheDocument();
   });
@@ -72,6 +73,6 @@ describe("CultureSelect", () => {
     renderSelect("pt-BR");
 
     const select = await screen.findByRole("combobox", { name: "Idioma y región" });
-    await waitFor(() => expect(select).toHaveTextContent("Portugués (Brasil)"));
+    await waitFor(() => expect(select).toHaveTextContent("Português (Brasil)"));
   });
 });

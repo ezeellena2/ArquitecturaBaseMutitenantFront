@@ -418,7 +418,7 @@ src/
 │       │   ├── CurrencySelect.tsx                   monedas habilitadas, ordenadas por SortOrder y nombre
 │       │   ├── CountrySelect.tsx                    países habilitados; bandera, nombre traducido y CallingCode
 │       │   ├── TimeZoneSelect.tsx                   zonas habilitadas; SortOrder, offset actual y ciudad
-│       │   └── CultureSelect.tsx                    culturas habilitadas y traducidas
+│       │   └── CultureSelect.tsx                    culturas habilitadas, cada una en su propia lengua
 │       ├── badge.tsx                                [E0] primitiva shadcn (minúscula, `npx shadcn@4.21.0 add`)
 │       ├── button.tsx
 │       ├── checkbox.tsx
