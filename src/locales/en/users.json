@@ -144,5 +144,9 @@
       "companyRolesSaved": "We saved the roles in {{company}}.",
       "companyRemoved": "We removed {{name}} from {{company}}."
     }
+  },
+  "errors": {
+    "lastOwnerRemovingRole": "The organization must keep at least one Owner. Give the role to someone else before removing it from yourself.",
+    "lastOwnerLeaving": "The organization must keep at least one Owner. Give the role to someone else before leaving the organization."
   }
 }

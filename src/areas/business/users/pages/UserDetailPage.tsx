@@ -25,12 +25,14 @@ import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { DateText } from "@/shared/ui/format/DateText";
 import { toast } from "sonner";
+import { toastError } from "@/shared/ui/sonner";
 import { ChoiceSheet, CheckRow, RadioRow } from "../components/AccessSheets";
 import { RolesField } from "../components/RolesField";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { List, ListItem } from "@/shared/ui/List";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { fetchAssignableRoles, fetchCompanyOptions, fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userCompaniesQueryKey, userQueryKey, userRolesQueryKey, usersQueryRoot } from "../api/users";
+import { userErrorMessage } from "../errors";
 import { activeOrganization } from "@/tenancy/access";
 
 type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
@@ -92,12 +94,15 @@ export function UserDetailPage() {
   const loaded = user.data;
   const isDirty = Boolean(loaded && draft && canManage && loaded.state !== "PendingDeletion"
     && (draft.isActive !== (loaded.state === "Active") || !sameRoles(draft.roleIds, organizationRoleIds(loaded))));
+  // La ficha es la de quien está mirando («Lucía (vos)» en el tablero Usuario): los errores de la última Dueña lo dicen.
+  const self = Boolean(loaded?.userId && loaded.userId === currentUser?.id);
   // Tableros Usuario y Avisos: el 409 en su cartel, «Cambios sin guardar» en la banda, el error de guardado en la franja
   // y «¿Salir sin guardar?» antes de irse con cambios.
   const edit = useEditPage({
     isDirty, error: failure,
     onSeeNew: () => { void user.refetch().then(() => { setDraft(null); setFailure(undefined); }); },
     onContinueEditing: () => setFailure(undefined),
+    errorMessage: (error) => userErrorMessage(error, t, { self, action: "save" }),
   });
   const roles = useQueries({ queries: (["Organization", "Company"] as const).map((scope) => ({
     queryKey: userRolesQueryKey(scope), queryFn: () => fetchAssignableRoles(scope), enabled: canManage && user.data !== undefined,
@@ -121,7 +126,7 @@ export function UserDetailPage() {
     mutationFn: (_message: string) => removeUser(memberId, user.data?.version ?? 0),
     // Ya no hay nada que perder: la salida al listado no pregunta.
     onSuccess: async (_result, message) => { toast.success(sentence(message)); await client.invalidateQueries({ queryKey: usersQueryRoot }); edit.allowNextNavigation(); void navigate("/org/usuarios"); },
-    onError: (error) => toastActionError(error, t),
+    onError: (error) => { const message = userErrorMessage(error, t, { self, action: "remove" }); if (message) toastError(message); },
   });
   const revoke = useMutation({
     mutationFn: (invitationId: string) => revokeUserInvitation(invitationId),

@@ -16,6 +16,8 @@ export interface EditPageOptions {
   readonly onSeeNew: () => void;
   /** «Seguir editando»: cierra el aviso del 409 y conserva lo escrito. */
   readonly onContinueEditing: () => void;
+  /** El texto de la franja, si la feature traduce un código propio (su `errors.ts`); por defecto, `actionErrorMessage`. */
+  readonly errorMessage?: (error: unknown) => string | null;
 }
 
 export interface EditPage {
@@ -34,11 +36,11 @@ export interface EditPage {
 /// Lo común de una pantalla que edita algo que ya existe (tableros Avisos y «Criterio · Avisos y errores»): el cartel
 /// del 409 debajo de la banda, «Cambios sin guardar» en la banda, la franja del error de guardado y la pregunta antes de
 /// salir con cambios. Cada error va en un solo lugar.
-export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing }: EditPageOptions): EditPage {
+export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, errorMessage }: EditPageOptions): EditPage {
   const { t } = useTranslation("errors");
   const guard = useUnsavedChangesGuard(isDirty);
   const conflict = error instanceof ApiError && error.code === "General.ConcurrencyConflict";
-  const message = conflict ? null : actionErrorMessage(error, t);
+  const message = conflict ? null : errorMessage ? errorMessage(error) : actionErrorMessage(error, t);
 
   return {
     banner: <ConcurrencyBanner error={error} isDirty={isDirty} onSeeNew={onSeeNew} onContinueEditing={onContinueEditing} />,

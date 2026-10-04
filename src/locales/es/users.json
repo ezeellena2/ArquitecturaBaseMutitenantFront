@@ -144,5 +144,9 @@
       "companyRolesSaved": "Guardamos los roles en {{company}}.",
       "companyRemoved": "Quitamos a {{name}} de {{company}}."
     }
+  },
+  "errors": {
+    "lastOwnerRemovingRole": "Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de quitártelo.",
+    "lastOwnerLeaving": "Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de salir de la organización."
   }
 }

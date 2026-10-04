@@ -292,6 +292,43 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(await screen.findByText(/Otra persona cambió esto mientras lo editabas/)).toBeVisible();
   }, 10_000);
 
+  // Tablero Usuario («Lucía (vos)»): el back dice lo mismo por cualquier camino (decisión 29); si la última Dueña se
+  // saca el rol ella misma, la franja le dice qué hacer.
+  it("si la última Dueña se saca el rol, la franja le dice que se lo dé a otra persona antes", async () => {
+    const user = userEvent.setup();
+    api({ ...member, userId: "ana" });
+    server.use(http.put("/api/users/member-1", () => HttpResponse.json(
+      { status: 409, code: "Tenancy.Member.LastTenantAdmin", title: "Conflicto", detail: "Tiene que quedar al menos un Dueño activo." }, { status: 409 })));
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+
+    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Dueño" }));
+    await user.keyboard("{Escape}");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de quitártelo.");
+    expect(screen.queryByText("Tiene que quedar al menos un Dueño activo.")).not.toBeInTheDocument();
+  }, 10_000);
+
+  // Tablero Usuario: si la última Dueña se quita de la organización, el aviso le dice que antes le dé el rol a otra persona.
+  it("si la última Dueña sale de la organización, el aviso le dice que se lo dé a otra persona antes", async () => {
+    const user = userEvent.setup();
+    api({ ...member, userId: "ana" });
+    server.use(http.delete("/api/users/member-1", () => HttpResponse.json(
+      { status: 409, code: "Tenancy.Member.LastTenantAdmin", title: "Conflicto", detail: "Tiene que quedar al menos un Dueño activo." }, { status: 409 })));
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+
+    await open(user, screen.getByRole("button", { name: "Más acciones" }));
+    await user.click(await screen.findByRole("menuitem", { name: "Quitar de la organización" }));
+    const dialog = await screen.findByRole("dialog", { name: "¿Quitar a Lucía Fernández de Empresa A?" });
+    await user.click(within(dialog).getByRole("button", { name: "Quitar" }));
+
+    expect(await screen.findByText("Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de salir de la organización.")).toBeVisible();
+    expect(screen.queryByText("Tiene que quedar al menos un Dueño activo.")).not.toBeInTheDocument();
+  }, 10_000);
+
   // Tableros Usuario y Avisos: con cambios, un enlace del menú pregunta «¿Salir sin guardar?».
   it("con cambios, salir por el menú pregunta «¿Salir sin guardar?»", async () => {
     const user = userEvent.setup();
