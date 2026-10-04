@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 9700
+ALTO = 10200
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -54,11 +54,14 @@ REGLAS = [
     ("Nada revela si un correo o un teléfono tiene cuenta, en «Recuperar mi cuenta» ni en Mi cuenta: la pantalla sigue igual y a ese correo le llega un aviso en lugar del código. Excepción: «Invitar operador», porque quien tiene permiso de cuentas ya las ve.", "Avisos y errores", "03/10/2026"),
     ("Una celda puede llevar una segunda línea gris que aclara la primera.", "Tablas y listas", "02/10/2026"),
     ("Filas de 40; si alguna fila de la tabla tiene segunda línea, todas son de 52, para que la tabla quede pareja.", "Tablas y listas", "04/10/2026"),
+    ("En las listas del teléfono, una fecha del año en curso va sin el año («27/09» o «27/09 10:42»); de otro año, completa. En la compu, siempre con el año.", "Tablas y listas", "04/10/2026"),
     ("Una lista se lee; cambiar una fila o sumar otra abre un diálogo chico.", "Tablas y listas", "02/10/2026"),
     ("Los permisos de un rol van en grupos que se abren y se cierran.", "Tablas y listas", "02/10/2026"),
     ("Lo que solo crece, como la auditoría, se pide de a tandas con «Cargar más», sin total y sin cantidades en los filtros.", "Tablas y listas", "04/10/2026"),
     ("Dos vistas del mismo contenido pueden ir en pestañas (Bot: Configuración y Recorrido).", "Marco y pantallas", "03/10/2026"),
     ("Una ficha lleva una pestaña por cada grupo de datos, aunque tenga una sola fila (organización, cuenta, empresa).", "Marco y pantallas", "04/10/2026"),
+    ("En el teléfono, una pantalla interna lleva el camino debajo del título («Administración»), también «Sin permiso» y «No encontrada».", "Marco y pantallas", "04/10/2026"),
+    ("En el perfil de una organización, el menú muestra el correo que administra esa organización; si no hay, el principal. En el personal, el principal.", "Menús y desplegables", "04/10/2026"),
     ("Editar algo que ya existe lleva «Descartar cambios», que deja lo guardado sin salir; crear algo nuevo lleva «Cancelar», que vuelve.", "Botones", "04/10/2026"),
     ("Los módulos de uso diario (WhatsApp) van arriba, debajo de Inicio, y abren su propio panel; Administración, abajo con una línea.", "Menús y desplegables", "03/10/2026"),
     ("Antes de algo que se paga (difusión, plantilla), se muestra el costo estimado.", "Diálogos", "03/10/2026"),
@@ -160,6 +163,7 @@ DECISIONES = {
         ("Diálogos", "", "Invitar usuario, Sumar empresa, Agregar y Verificar dominio como hojas; Quitar dominio, confirmación sin ✕ y con el botón rojo.", "Dibujada"),
         ("Auditoría", "", "Qué pasó con la fecha, y dónde y quién debajo; «Cargar más» al final.", "Dibujada"),
         ("Inicio", "C", "Como una billetera: cabecera de color con «Hola, Lucía» y la organización; atajos redondos con un globito rojo con lo pendiente de cada área; «Para resolver» en filas con ícono redondo del color de la urgencia y la acción en un botón cápsula.", "Dibujada"),
+        ("Editar usuario · Estado y Roles", "A", "«Estado» y «Roles de la organización» abren hojas de opciones: el estado con tilde, que se cierra al elegir; los roles con casillas y «Listo». Hasta guardar, «Cambios sin guardar».", "Dibujada"),
     ],
     "Ingreso y avisos · teléfonos (como app)": [
         ("Sesión", "", "Como el arranque de una app: el logo con una ruedita al iniciar o cerrar; al cambiar de lado, la inicial del perfil con un anillo que gira; si falla, «Volver a ingresar» fijo abajo.", "Dibujada"),
@@ -196,6 +200,7 @@ DECISIONES = {
         ("Aviso de baja por la plataforma", "", "«La plataforma inició la baja de tu cuenta», en dos variantes: cuenta activa, con «Ingresar» para cancelarla antes de la fecha; cuenta suspendida, sin «Ingresar» y con el correo de soporte. Por WhatsApp, las plantillas baja_cuenta_plataforma y baja_cuenta_plataforma_suspendida.", "Dibujada"),
         ("Aviso «Alguien pidió recuperar tu cuenta»", "", "A los métodos de la cuenta que siguen andando, antes de que lo revise un operador; nunca a quien lo pidió (ADR 0041). Sin botón; la nota da el correo de soporte. Por WhatsApp, la plantilla recuperacion_aviso_cuenta.", "Dibujada"),
         ("Invitar operador", "B", "La invitación queda pendiente hasta el primer ingreso y vence a los 7 días: «Invitación pendiente» o «Invitación vencida», con «Reenviar invitación» y «Revocar invitación». El correo dice quién invita, los permisos y el vencimiento; sale solo por correo.", "Dibujada"),
+        ("Invitar operador · casos", "A", "Si quien invita no tiene nombre, el correo firma «El equipo de ArquitecturaBase». Si el correo ya tiene una invitación pendiente o vencida: «Ese correo ya tiene una invitación. Reenviala desde la lista.»", "Dibujada"),
     ],
     "Sitio público": [
         ("Portada", "B", "Sin la etiqueta del héroe; después de «Dos lados separados», la sección «Empresas en ArquitecturaBase» con buscador, tres empresas y «Ver todas las empresas», que lleva al directorio. «Empresas», arriba, baja a esa sección. Enter en el buscador abre /empresas con lo escrito. Sin empresas publicadas, dice «Todavía no hay empresas publicadas», como el directorio vacío, y sale «Ver todas las empresas».", "Dibujada"),
@@ -206,8 +211,8 @@ DECISIONES = {
         ("Página pública · teléfono", "", "La misma tarjeta de la compu, con sus tres estados; sin ☰, porque es la página de la organización.", "Dibujada"),
     ],
     "Lo que sigue": [
-        ("Fechas del año en curso", "", "¿Van sin el año, como «27/09 10:42»? ¿Solo en el teléfono o en todas las listas?", "Falta decidir"),
-        ("Correo en el perfil de una organización", "", "¿«Más» y el pie del menú muestran el correo principal o el de esa empresa?", "Falta decidir"),
+        ("Pantalla de error · teléfono", "", "La pieza común «No pudimos abrir esta pantalla» con «Reintentar», en el teléfono.", "Falta dibujar"),
+        ("Franja de error · teléfono", "", "¿Con la letra de 14,5 de los avisos del teléfono?", "Falta decidir"),
     ],
 }
 

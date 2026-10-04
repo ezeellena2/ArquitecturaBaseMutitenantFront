@@ -569,6 +569,10 @@ textarea.in2 { height: auto; min-height: 84px; }
 </style>
 <style data-vuelta="1004-operador-invitacion">
 </style>
+<style data-vuelta="1004-operador-repetido">
+</style>
+<style data-vuelta="1004-consultas">
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{plMenuClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -1052,6 +1056,12 @@ class Component extends DCLogic {
 
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) {
           this.setState({ errCorreo: correo === '' ? 'Escribí el correo.' : 'Revisá el correo: no parece válido.', abierto: null });
+
+          return;
+        }
+
+        if (s.cuentas.some((c) => c.email === correo && (c.estado === 'invitado' || c.estado === 'vencida'))) {
+          this.setState({ errCorreo: 'Ese correo ya tiene una invitación. Reenviala desde la lista.', abierto: null });
 
           return;
         }

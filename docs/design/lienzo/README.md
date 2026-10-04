@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 98** (2026-10-04) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 186 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 99** (2026-10-04) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 186 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -112,6 +112,9 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 | `empresa_dialogo_1004.py` | El error del diálogo de roles de Empresa como franja roja clara arriba de los botones. |
 | `fondo_oscurecido_1004.py` | Saca el difuminado del fondo de los diálogos (`.velo`) en los tableros vivos y en las copias de los generadores: atrás, solo oscurecido. |
 | `banderas_1004.py` | La bandera de cada país en el selector de los teléfonos (el SVG 3:2 de `country-flag-icons`, a 24×16), en la lista y en el control cerrado, en los 13 tableros con un teléfono. Corre después de los generadores de esas pantallas. |
+| `operador_repetido_1004.py` | «Invitar operador» con un correo que ya tiene una invitación: «Ese correo ya tiene una invitación. Reenviala desde la lista.». |
+| `operador_sin_nombre_1004.py` | Mensajes: «Invitación como operador: sin nombre», firmada por «El equipo de ArquitecturaBase». |
+| `consultas_1004.py` | Consultas del 2026-10-04: «Administración» debajo del título en M-Error-Org y M-Auditoria-Org; las hojas de «Estado» y «Roles» en M-Usuario; país y número en dos campos en M-Pagina-Org. Corre después de `banderas_1004.py` y de `operador_repetido_1004.py`. |
 | `config_plat_correos_1004.py` | Configuración de la plataforma con la sección «Contacto»: correo de ventas y de soporte. El teléfono lo arma `telefonos_1004/app_plat_personal.py`. |
 | `plat_menu_wa_1004.py` | Menú de Plataforma en la compu con WhatsApp solo para consultas: «WhatsApp» va directo a Consultas y Administración › WhatsApp lleva a los tableros Plat-WA-*. Corre después de `plat_vuelta_1004.py` y `plat_ajustes_1003.py`. |
 | `plat_wa_1004.py` | Plataforma › WhatsApp en la compu (Etapa 11), a partir de los tableros de WhatsApp de la organización: Consultas, Número, Bot (con su recorrido), Equipos y Plantillas. |

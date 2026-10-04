@@ -36,8 +36,7 @@ for nombre in TABLEROS:
     cuerpo, k = re.subn(r'(role="option" aria-selected="true">)Argentina(<span class="c">\+54</span>)', r"\1" + AR.replace("\\", "\\\\") + r" Argentina\2", cuerpo)
     n += k
     assert n > 0, nombre
-    # En M-Pagina-Org el teléfono va en un solo campo: la bandera, el prefijo y el número juntos.
-    cuerpo = cuerpo.replace("+54</span> · 011 4321-5678", "+54 · 011 4321-5678</span>")
+    # En M-Pagina-Org, consultas_1004.py separa después el país y el número en dos campos.
     t = cab + CSS + "\n" + f"<style {MARCA}>\n</style>\n</helmet>" + cuerpo
     ruta.write_text(t, encoding="utf-8")
     print("ok", nombre, n)
