@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { validateManifest } from "./capturar-etapa-3a.mjs";
-import { buildCases, canvas } from "./capturar-relevamiento.mjs";
+import { buildCases, canvas, mergeManifest } from "./capturar-relevamiento.mjs";
 
 test("el relevamiento tiene cada estado a 1440 y a 390, contra tableros vigentes y con sus datos de prueba", () => {
   const cases = buildCases();
@@ -29,4 +29,14 @@ test("el relevamiento tiene cada estado a 1440 y a 390, contra tableros vigentes
   for (const pair of ["landing", "ingreso-persona-correo", "registro-empresa-lista", "invitacion-sin-cuenta", "cuenta", "roles-lista", "usuarios-lista", "empresas-lista", "configuracion-verificada", "pagina-publica-publicada", "auditoria-lista"]) {
     assert.ok(pairs.has(pair), `falta el par ${pair}`);
   }
+});
+
+test("con --out, el manifest de la tanda suma los casos de cada corrida en el orden del catálogo, sin repetirlos", () => {
+  const catalogCases = buildCases();
+  const folder = mkdtempSync(path.join(os.tmpdir(), "relevamiento-tanda-"));
+  const pair = (name) => catalogCases.filter((entry) => entry.pair === name);
+  mergeManifest(folder, pair("usuarios-lista"), catalogCases);
+  const cases = mergeManifest(folder, [...pair("cuenta"), ...pair("usuarios-lista")], catalogCases);
+  assert.deepEqual(cases.map((entry) => entry.id), ["cuenta-escritorio", "cuenta-movil", "usuarios-lista-escritorio", "usuarios-lista-movil"]);
+  assert.equal(JSON.parse(readFileSync(path.join(folder, "manifest.json"), "utf8")).version, 1);
 });

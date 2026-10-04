@@ -7,8 +7,11 @@
 //
 // - solo el manifiesto:  node scripts/capturar-relevamiento.mjs --manifiesto
 // - capturar:            node scripts/capturar-relevamiento.mjs --app-url http://127.0.0.1:5191 [--pair <par>] [--id <caso>] [--group <grupo>]
-//                        [--lienzo <copia del lienzo>] [--tmp <carpeta de las imágenes sueltas>]
-// - comprobar las PNG:   node scripts/capturar-relevamiento.mjs --verify
+//                        [--lienzo <copia del lienzo>] [--tmp <carpeta de las imágenes sueltas>] [--out <carpeta>]
+//                        (--pair, --id y --group aceptan varios valores separados por comas)
+// - comprobar las PNG:   node scripts/capturar-relevamiento.mjs --verify [--out <carpeta>]
+// Con --out, las PNG y su manifest.json van a otra carpeta (por ejemplo, la de una tanda de la alineación) y el manifest
+// del relevamiento no se toca: es la foto de antes. El manifest de esa carpeta suma los casos de cada corrida.
 // Las imágenes sueltas (tablero y app) quedan en una carpeta temporal (--tmp); en docs/design/capturas/consolidacion/
 // relevamiento solo van el manifest.json, relevamiento.md y las PNG `-lado-a-lado.png`. El manifest tiene la forma de los
 // de las etapas, así que la vista en vivo (scripts/recorrido-lienzo) lo toma.
@@ -153,6 +156,19 @@ export async function captureEntry(browser, canvasUrl, appUrl, entry, { tmp, out
   return { files, target };
 }
 
+/// El manifest de otra carpeta (--out): los casos que ya tenía más los de esta corrida, en el orden del catálogo, con la
+/// misma forma y el mismo control que el del relevamiento.
+export function mergeManifest(outputRoot, entries, catalogCases = buildCases()) {
+  const file = path.join(outputRoot, "manifest.json");
+  const previous = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")).cases : [];
+  const order = new Map(catalogCases.map((entry, index) => [entry.id, index]));
+  const cases = [...new Map([...previous, ...entries].map((entry) => [entry.id, entry])).values()]
+    .sort((left, right) => (order.get(left.id) ?? Infinity) - (order.get(right.id) ?? Infinity));
+  mkdirSync(outputRoot, { recursive: true });
+  writeFileSync(file, `${JSON.stringify({ version: 1, cases }, null, 2)}\n`);
+  return validateManifest(file, canvas);
+}
+
 export function assertSideBySide(cases, outputRoot = output) {
   const missing = cases.filter((entry) => { const file = sideBySideFile(entry, outputRoot); return !existsSync(file) || statSync(file).size === 0; });
   if (missing.length > 0) throw new Error(`Faltan imágenes lado a lado:\n${missing.map((entry) => sideBySideFile(entry, outputRoot)).join("\n")}`);
@@ -164,21 +180,25 @@ function option(args, name) {
 }
 
 const relative = (file) => path.relative(root, file).replaceAll("\\", "/");
+const values = (args, name) => option(args, name)?.split(",").filter(Boolean) ?? null;
 
 async function main(args) {
-  const cases = writeManifest();
+  const outputRoot = option(args, "--out") ? path.resolve(root, option(args, "--out")) : output;
+  const ownFolder = outputRoot !== output;
+  const cases = ownFolder ? buildCases() : writeManifest();
   if (args.includes("--manifiesto")) {
     console.log(`${cases.length} casos en ${relative(manifestFile)}.`);
     return;
   }
-  const pairId = option(args, "--pair");
-  const id = option(args, "--id");
-  const group = option(args, "--group");
-  const selected = cases.filter((entry) => (!pairId || entry.pair === pairId) && (!id || entry.id === id) && (!group || entry.group === group));
+  const pairs = values(args, "--pair");
+  const ids = values(args, "--id");
+  const groups = values(args, "--group");
+  const selected = cases.filter((entry) => (!pairs || pairs.includes(entry.pair)) && (!ids || ids.includes(entry.id))
+    && (!groups || groups.includes(entry.group)));
   if (selected.length === 0) throw new Error("No hay casos para ese filtro.");
   if (args.includes("--verify")) {
-    assertSideBySide(selected);
-    console.log(`${selected.length} imágenes lado a lado del relevamiento verificadas.`);
+    assertSideBySide(selected, outputRoot);
+    console.log(`${selected.length} imágenes lado a lado verificadas en ${relative(outputRoot)}.`);
     return;
   }
   const appUrl = option(args, "--app-url");
@@ -190,10 +210,12 @@ async function main(args) {
   // Con --lienzo se fotografía una copia del lienzo (para que todos los casos de una corrida vean los mismos tableros).
   const server = await startCanvasServer(path.resolve(option(args, "--lienzo") ?? canvas));
   const failed = [];
+  const captured = [];
   try {
     for (const entry of selected) {
       try {
-        const { target } = await captureEntry(browser, server.url, appUrl, entry, { tmp });
+        const { target } = await captureEntry(browser, server.url, appUrl, entry, { tmp, outputRoot });
+        captured.push(entry);
         console.log(`${relative(target)}: ${entry.state}`);
       } catch (error) {
         failed.push(entry.id);
@@ -203,6 +225,7 @@ async function main(args) {
   } finally {
     await server.close();
     await browser.close();
+    if (ownFolder && captured.length > 0) mergeManifest(outputRoot, captured, cases);
   }
   if (failed.length > 0) throw new Error(`No se pudieron capturar: ${failed.join(", ")}`);
 }
