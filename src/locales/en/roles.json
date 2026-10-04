@@ -64,6 +64,11 @@
     "choose": "Choose where it applies",
     "chooseForPermissions": "Choose where the role applies to see its permissions."
   },
+  "scopeInSentence": {
+    "organization": "the whole organization",
+    "company": "each company",
+    "specificCompany": "one specific company"
+  },
   "fields": {
     "name": "Name",
     "scope": "Applies to",

@@ -64,6 +64,11 @@
     "choose": "Elegí dónde vale",
     "chooseForPermissions": "Elegí dónde vale el rol para ver sus permisos."
   },
+  "scopeInSentence": {
+    "organization": "toda la organización",
+    "company": "cada empresa",
+    "specificCompany": "una empresa específica"
+  },
   "fields": {
     "name": "Nombre",
     "scope": "Vale en",

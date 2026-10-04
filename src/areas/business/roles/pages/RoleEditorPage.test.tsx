@@ -201,6 +201,23 @@ describe("RoleEditorPage", () => {
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
   });
 
+  // Tablero Rol: cada área es una fila de 40 con la cuenta a la derecha; cada permiso, una fila de 40, sin descripción.
+  it("en la compu el árbol de permisos tiene filas de 40 con la cuenta a la derecha", async () => {
+    server.use(
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.get("/api/roles/role-custom", () => HttpResponse.json(role)),
+    );
+    renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+
+    const area = await screen.findByRole("checkbox", { name: "Roles" });
+    const row = area.closest("[data-slot='permission-area']")!;
+    expect(row).toHaveClass("min-h-10", "border-b");
+    expect(row).toHaveTextContent("1 de 2");
+    const permission = screen.getByRole("checkbox", { name: "Ver roles" }).closest("label")!;
+    expect(permission).toHaveClass("min-h-10", "pl-[52px]");
+    expect(screen.queryByText("Los roles y sus permisos.")).not.toBeInTheDocument();
+  });
+
   it("al crear, la acción de salida es «Cancelar»", async () => {
     server.use(http.get("/api/permissions", () => HttpResponse.json(permissionGroups)));
     renderRouteWithProviders("/org/roles/new", { as: "business-role-manager" });
@@ -221,7 +238,7 @@ describe("RoleEditorPage", () => {
       renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
 
       await screen.findByRole("textbox", { name: "Nombre" });
-      expect(screen.getByRole("heading", { level: 1, name: "Solo lectura" }).closest("header")).toHaveTextContent("Vale en Toda la organización · 0 usuarios lo tienen");
+      expect(screen.getByRole("heading", { level: 1, name: "Solo lectura" }).closest("header")).toHaveTextContent("Vale en toda la organización · 0 usuarios lo tienen");
       expect(screen.getByRole("heading", { name: "Datos del rol" })).toHaveClass("sr-only");
       expect(screen.getByRole("heading", { level: 2, name: "Permisos" })).toHaveClass("text-[13.5px]");
       expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[13.5px]");

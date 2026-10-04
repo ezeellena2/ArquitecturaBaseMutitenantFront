@@ -10,7 +10,6 @@ import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { ApiError } from "@/shared/api/ApiError";
 import type { CompanyResponse, PermissionGroupResponse, RoleResponse, RoleScope } from "@/shared/api/types";
 import { Button } from "@/shared/ui/button";
-import { CheckboxField } from "@/shared/ui/CheckboxField";
 import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { FormError } from "@/shared/ui/FormError";
@@ -18,7 +17,6 @@ import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
 import { Page } from "@/shared/ui/Page";
 import { Section } from "@/shared/ui/Section";
-import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Textarea } from "@/shared/ui/textarea";
@@ -34,8 +32,8 @@ interface RoleDraft {
   permissions: string[];
 }
 
-// Tablero M-Rol (.ap-chk): la casilla del teléfono mide 22, con borde de 1,5.
-const phoneCheckClass = "size-[22px]! rounded-[6px]! border-[1.5px]! border-[var(--borde2)]! data-[state=checked]:border-[var(--marca)]!";
+// La casilla: en la compu, la de siempre con borde visible; en el teléfono (tablero M-Rol, .ap-chk), de 22 con borde de 1,5.
+const checkClass = "border-[var(--t2)] max-md:size-[22px]! max-md:rounded-[6px]! max-md:border-[1.5px]! max-md:border-[var(--borde2)]! max-md:data-[state=checked]:border-[var(--marca)]!";
 
 const emptyDraft: RoleDraft = { name: "", description: "", scope: undefined, companyId: "", permissions: [] };
 
@@ -73,7 +71,6 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { phone } = useAppChrome();
   const { data: currentUser } = useCurrentUser();
   const canRead = currentUser?.permissions?.includes("roles.read") === true;
   const canManage = currentUser?.permissions?.includes("roles.manage") === true;
@@ -172,7 +169,10 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
     onError: (error) => { if (!(error instanceof Error && error.message === "validation")) setFailure(error); },
   });
 
-  const summary = mode === "edit" && role.data ? t("roles:scopeAndUsers", { scope: valeEnText(role.data.scope), count: role.data.userCount }) : undefined;
+  // «Vale en toda la organización»: en la oración, el alcance va en minúscula.
+  const scopeInSentence = (scope: RoleScope) => scope === "SpecificCompany" ? companyName ?? t("roles:scopeInSentence.specificCompany")
+    : t(scope === "Organization" ? "roles:scopeInSentence.organization" : "roles:scopeInSentence.company");
+  const summary = mode === "edit" && role.data ? t("roles:scopeAndUsers", { scope: scopeInSentence(role.data.scope), count: role.data.userCount }) : undefined;
   const title = mode === "create" ? t("roles:createTitle") : role.data ? displayRoleName(role.data, t) : t("roles:editorTitle");
 
   if (!canRead || mode === "create" && !canManage) return <ForbiddenPage homePath="/org" />;
@@ -286,43 +286,29 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
           {validation.permissions ? <p role="alert" className="mx-4 mt-3 rounded-[8px] border border-[var(--peligro)] bg-[var(--peligro-t)] px-3 py-2 text-[13px] text-[var(--peligro)]">{validation.permissions}</p> : null}
           {!draft.scope ? <p className="p-4 text-[13px] text-[var(--t2)]">{t("roles:scope.chooseForPermissions")}</p>
             : permissions.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
-              : <div className="divide-y divide-[var(--borde)]">
+              : <div className="[&>fieldset:last-child>:last-child]:border-b-0">
                 {visibleGroups.map((group) => {
                   const codes = group.permissions.map((item) => item.code);
                   const selected = codes.filter((code) => draft.permissions.includes(code)).length;
                   const expanded = expandedAreas?.has(group.area) ?? selected > 0;
-                  const toggle = <button type="button" aria-expanded={expanded} aria-label={t("roles:toggleArea", { name: group.name })} onClick={() => toggleArea(group.area)} className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)] max-md:text-[var(--t3)]">
-                    <ChevronRight aria-hidden="true" className={`size-4 transition-transform ${expanded ? "rotate-90" : ""}`} />
-                  </button>;
-                  // Tablero M-Rol: en el teléfono el área es una fila de 52 con la cuenta a la derecha y cada permiso,
-                  // una fila de 50 con la casilla de 22.
-                  if (phone) return <fieldset key={group.area} className="m-0 p-0">
+                  // Tableros Rol y M-Rol: cada área es una fila (40 en la compu, 52 en el teléfono) con la cuenta a la
+                  // derecha, y cada permiso, una fila (40 y 50) con su casilla, sin descripción.
+                  return <fieldset key={group.area} className="m-0 p-0">
                     <legend className="sr-only">{group.name}</legend>
-                    <div className="flex min-h-[52px] items-center gap-3 pr-3.5 pl-3 text-[15.5px] font-semibold text-[var(--t1)]">
-                      {toggle}
-                      <label className="flex min-w-0 flex-1 items-center gap-3">
-                        <Checkbox checked={codes.length > 0 && selected === codes.length} disabled={!editable} onCheckedChange={(checked) => toggleGroup(codes, checked === true)} className={phoneCheckClass} />
+                    <div data-slot="permission-area" className="flex min-h-10 items-center gap-2 border-b border-[var(--borde)] bg-[var(--s2)] pr-4 pl-2 text-[13px] font-semibold text-[var(--t1)] max-md:min-h-[52px] max-md:gap-3 max-md:bg-transparent max-md:pr-3.5 max-md:pl-3 max-md:text-[15.5px]">
+                      <button type="button" aria-expanded={expanded} aria-label={t("roles:toggleArea", { name: group.name })} onClick={() => toggleArea(group.area)} className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-[var(--t2)] hover:bg-[var(--s3)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)] max-md:text-[var(--t3)]">
+                        <ChevronRight aria-hidden="true" className={`size-4 transition-transform ${expanded ? "rotate-90" : ""}`} />
+                      </button>
+                      <label className="flex min-w-0 flex-1 items-center gap-2 max-md:gap-3">
+                        <Checkbox checked={codes.length > 0 && selected === codes.length} disabled={!editable} onCheckedChange={(checked) => toggleGroup(codes, checked === true)} className={checkClass} />
                         <span className="min-w-0 flex-1 truncate">{group.name}</span>
                       </label>
-                      <span className="shrink-0 text-[13px] font-medium text-[var(--t3)]">{t("roles:groupCount", { selected, total: codes.length })}</span>
+                      <span className="shrink-0 font-medium text-[var(--t3)] tabular-nums max-md:text-[13px]">{t("roles:groupCount", { selected, total: codes.length })}</span>
                     </div>
-                    {expanded ? group.permissions.map((permission) => <label key={permission.code} className="flex min-h-[50px] items-center gap-3 border-t border-[var(--borde)] pr-3.5 pl-[46px] text-[15px] text-[var(--t1)]">
-                      <Checkbox checked={draft.permissions.includes(permission.code)} disabled={!editable} onCheckedChange={(checked) => togglePermission(permission.code, checked === true)} className={phoneCheckClass} />
+                    {expanded ? group.permissions.map((permission) => <label key={permission.code} className="flex min-h-10 items-center gap-2.5 border-b border-[var(--borde)] pr-4 pl-[52px] text-[13px] font-medium text-[var(--t1)] max-md:min-h-[50px] max-md:gap-3 max-md:pr-3.5 max-md:pl-[46px] max-md:text-[15px] max-md:font-normal">
+                      <Checkbox checked={draft.permissions.includes(permission.code)} disabled={!editable} onCheckedChange={(checked) => togglePermission(permission.code, checked === true)} className={checkClass} />
                       <span className="min-w-0 flex-1">{permission.name}</span>
                     </label>) : null}
-                  </fieldset>;
-                  return <fieldset key={group.area} className="p-3 lg:p-4">
-                    <legend className="sr-only">{group.name}</legend>
-                    <div className="flex items-center gap-2">
-                      {toggle}
-                      <CheckboxField label={group.name} checked={codes.length > 0 && selected === codes.length}
-                        onCheckedChange={(checked) => toggleGroup(codes, checked)} disabled={!editable}
-                        description={t("roles:groupCount", { selected, total: codes.length })} />
-                    </div>
-                    {expanded ? <div className="mt-1 grid gap-1 lg:ml-9">
-                      {group.permissions.map((permission) => <CheckboxField key={permission.code} label={permission.name}
-                        checked={draft.permissions.includes(permission.code)} onCheckedChange={(checked) => togglePermission(permission.code, checked)} disabled={!editable} />)}
-                    </div> : null}
                   </fieldset>;
                 })}
               </div>}
