@@ -603,6 +603,12 @@ textarea.in2 { height: auto; min-height: 84px; }
 </style>
 <style data-vuelta="1004-sin-revelar">
 </style>
+<style data-vuelta="1004-banderas">
+.bandera { width: 24px; height: 16px; border-radius: 2px; flex-shrink: 0; box-shadow: 0 0 0 1px oklch(0.24 0.014 78 / 0.12); vertical-align: -3px; }
+.ban-pre { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+</style>
+<style data-vuelta="1004-banderas">
+</style>
 </helmet>
 
 <div class="auth">
@@ -628,7 +634,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             <div class="campo2">
               <label class="et" for="f-viejo-tel">Número de WhatsApp</label>
               <div class="tel">
-                <button type="button" class="in2 lg" aria-label="País: Argentina"><span class="val">AR +54</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+                <button type="button" class="in2 lg" aria-label="País: Argentina"><span class="val"><span class="ban-pre"><svg class="bandera" viewBox="0 0 513 342" width="24" height="16" aria-hidden="true"><path fill="#FFF" d="M0 0h512v342H0z"/><path fill="#338AF3" d="M0 0h512v114H0zM0 228h512v114H0z"/><circle fill="#FFDA44" stroke="#d6ab00" stroke-width="5" cx="256.5" cy="171" r="40"/></svg>+54</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
                 <input class="in2 lg {{malViejo}}" id="f-viejo-tel" type="tel" autocomplete="tel-national" value="{{viejo}}" onChange="{{onViejo}}">
               </div>
               <sc-if value="{{errViejo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errViejo}}</span></sc-if>
@@ -657,7 +663,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             <div class="campo2">
               <label class="et" for="f-nuevo-tel">Número de WhatsApp nuevo</label>
               <div class="tel">
-                <button type="button" class="in2 lg" aria-label="País: Argentina"><span class="val">AR +54</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+                <button type="button" class="in2 lg" aria-label="País: Argentina"><span class="val"><span class="ban-pre"><svg class="bandera" viewBox="0 0 513 342" width="24" height="16" aria-hidden="true"><path fill="#FFF" d="M0 0h512v342H0z"/><path fill="#338AF3" d="M0 0h512v114H0zM0 228h512v114H0z"/><circle fill="#FFDA44" stroke="#d6ab00" stroke-width="5" cx="256.5" cy="171" r="40"/></svg>+54</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
                 <input class="in2 lg {{malNuevo}}" id="f-nuevo-tel" type="tel" autocomplete="tel-national" value="{{nuevo}}" onChange="{{onNuevo}}">
               </div>
               <sc-if value="{{errNuevo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errNuevo}}</span></sc-if>
