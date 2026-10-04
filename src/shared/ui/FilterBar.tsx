@@ -75,6 +75,8 @@ export function FilterBar({
       <div data-slot="filter-pills" className="flex flex-wrap items-center gap-2">
       {filters.map((filter) => {
         const selected = filter.options.find((option) => option.value === filter.value);
+        // Sin filtro, el botón dice su propio texto («Vale en: todos») y el menú marca la primera opción, «Todos».
+        const checked = selected ? filter.value : filter.options[0]?.value ?? "";
 
         return (
           <DropdownMenu key={filter.key}>
@@ -97,7 +99,7 @@ export function FilterBar({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" aria-label={filter.menuLabel}>
-              <DropdownMenuRadioGroup value={filter.value} onValueChange={filter.onChange}>
+              <DropdownMenuRadioGroup value={checked} onValueChange={filter.onChange}>
                 {filter.options.map((option) => (
                   <DropdownMenuRadioItem key={option.value} value={option.value}>
                     {option.label}

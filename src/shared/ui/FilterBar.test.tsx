@@ -39,6 +39,23 @@ describe("FilterBar", () => {
     expect(container.querySelector('[data-slot="filter-pills"]')).toContainElement(filterTrigger);
   });
 
+  // Tablero Roles: sin filtro, el botón dice «Vale en: todos» y el menú tiene «Todos» marcado.
+  it("sin filtro muestra su propio texto y marca la opción «Todos»", async () => {
+    render(
+      <FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={vi.fn()}
+        filters={[{
+          key: "vale", label: "Vale en: todos", menuLabel: "Filtrar por dónde vale", value: "", active: false, onChange: vi.fn(),
+          options: [{ value: "all", label: "Todos" }, { value: "Organization", label: "Toda la organización" }],
+        }]} />,
+    );
+
+    const trigger = screen.getByRole("button", { name: "Vale en: todos" });
+    trigger.focus();
+    await userEvent.keyboard("{Enter}");
+    expect(await screen.findByRole("menuitemradio", { name: "Todos" })).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByRole("menuitemradio", { name: "Toda la organización" })).toHaveAttribute("aria-checked", "false");
+  });
+
   it("keeps clear hidden until a search or a filter is active", async () => {
     const onClear = vi.fn();
     const { rerender } = render(
