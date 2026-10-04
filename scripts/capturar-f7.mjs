@@ -186,7 +186,8 @@ function buildCases() {
   const publicPageConflict = [concurrency("PUT", "/api/organization/public-page"), ...publicPage];
   const tomas = userDetailResponses();
   const tomasConflict = [concurrency("PUT", "/api/users/member-1"), ...tomas];
-  const luciaLastOwner = [api("GET", "/api/users/member-lucia", lucia), ...roleLists, userCompanyOptions,
+  // Lucía es quien mira (visual-owner, id «lucia»), como el «Lucía (vos)» del tablero: la franja le dice qué hacer.
+  const luciaLastOwner = [api("GET", "/api/users/member-lucia", { ...lucia, userId: "lucia" }), ...roleLists, userCompanyOptions,
     problem("PUT", "/api/users/member-lucia", "Tenancy.Member.LastTenantAdmin", "Tiene que quedar al menos un Dueño activo.")];
   const avisosLeave = { board: "Avisos", props: { caso: "Salir sin guardar" } };
   const mAvisosLeave = { board: "M-Avisos", props: { caso: "Salir sin guardar" } };
@@ -230,7 +231,7 @@ function buildCases() {
         actions: [openOrgRoles, click("text=Dueño"), click("button.o-capa"), click(".w-bnd .ac button.cb-pri")] },
       phone: { board: "M-Usuario", state: "Ficha de Usuario en el teléfono: la franja con el margen de las tarjetas (el tablero no dibuja el error)." },
       actions: [...orgRoleOnDesk("Dueño"), saveChanges], phoneActions: [...orgRoleOnPhone("Dueño"), saveChanges],
-      ready: { readyText: "Tiene que quedar al menos un Dueño activo." } }),
+      ready: { readyText: "Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de quitártelo." } }),
     ...pair({ id: "usuario-dialogo-error", route: "/org/usuarios/member-1", responses: tomasConflict,
       state: "Ficha de Usuario: el 409 de «Sumar empresa» en la franja del diálogo, arriba de los botones (el tablero no dibuja el error).",
       desktop: { board: "Usuario", props: { usuario: "Tomás (activo)" }, actions: [click("button.cb-sec.ch")] },
@@ -245,7 +246,7 @@ function phase3Cases() {
   const company = companyDetailResponses();
   const companies = companiesListResponses();
   const lastCompanyAdmin = problem("PUT", "/api/companies/company-1/members/member-lucia/roles", "Companies.Membership.LastCompanyAdmin",
-    "No podés quitar al último administrador de la empresa.");
+    "Tiene que quedar al menos un administrador en la empresa.");
   const taxIdUsed = problem("POST", "/api/companies", "Tenancy.Company.TaxIdAlreadyUsed", "Ya hay una empresa con esa identificación fiscal.");
   const rolesError = [appClick("button", "Acciones para Lucía Fernández"), appClick("menuitem", "Cambiar roles"),
     appClick("button", "Roles en la empresa"), appClick("menuitemcheckbox", "Administrador"), appPress("menuitemcheckbox", "Administrador", "Escape"),
@@ -275,11 +276,12 @@ function phase3Cases() {
       actions: [createCompany], ready: { readySelector: '[role="dialog"]' } }),
     ...pair({ id: "sesion-error-api-me", group: "fase-3", route: "/org",
       responses: [api("GET", "/api/me", { status: 500, title: "Error", traceId: "00-f7-fase3-01" }, 500)],
-      state: "Si falla /api/me: un solo aviso, en la pantalla, con «Reintentar».",
+      state: "Si falla /api/me: la «Pantalla de error», con «Reintentar».",
       desktop: { board: "Criterio-Avisos", section: "Cómo se ve cada uno",
-        state: "Si falla /api/me: un solo aviso, en la pantalla, con «Reintentar» (Criterio · Avisos › Pantalla de error)." },
-      phone: { board: "M-Error-Org", state: "Si falla /api/me, en el teléfono: la pantalla de error dibujada más cercana es M-Error-Org (403)." },
-      ready: { readySelector: '[role="alert"]', readyText: "Algo salió mal. Probá de nuevo en un rato." } }),
+        state: "Si falla /api/me: la «Pantalla de error», con «Reintentar» (Criterio · Avisos › Pantalla de error)." },
+      phone: { board: "M-Error-Org", props: { caso: "No se pudo abrir" },
+        state: "Si falla /api/me, en el teléfono: la «Pantalla de error» (M-Error-Org › No se pudo abrir); sin /api/me todavía no hay barra ni marco." },
+      ready: { readySelector: '[role="alert"]', readyText: "No pudimos abrir esta pantalla" } }),
   ];
 }
 

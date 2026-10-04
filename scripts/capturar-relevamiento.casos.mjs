@@ -171,7 +171,7 @@ const stageF7 = [
 function custom({ id, group, state, desktop: onDesktop, phone: onPhone, app, phoneApp = app }) {
   return [["escritorio", desktop, onDesktop, app], ["movil", phone, onPhone, phoneApp]].map(([suffix, viewport, board, appConfig]) => ({
     id: `${id}-${suffix}`, pair: id, group, state: board.state ?? state, board: board.board, props: board.props ?? {}, boardActions: board.boardActions ?? [],
-    viewport, app: appConfig,
+    ...(board.section ? { section: board.section } : {}), viewport, app: appConfig,
   }));
 }
 
@@ -236,6 +236,31 @@ function extraCases(root) {
     ...pairCases(root, { stage: "etapa-6", pair: "usuario-activo", id: "usuario-elegir-roles", group: "usuarios", state: "Usuario: elegir los roles de la organización",
       desktop: { ...openRoles }, phone: { props: { estado: "Elegir los roles" } },
       app: { actions: [appClick("button", "Roles de la organización")], readySelector: '[role="menu"]' }, phoneApp: { actions: [appClick("button", "Roles de la organización")], ...dialog } }),
+    ...alignmentCases(root),
+  ];
+}
+
+// Alineación R2a (avisos y errores): estados que la app ya tiene y ningún generador capturaba.
+function alignmentCases(root) {
+  // La ficha de Lucía, que es quien mira (F7, «usuario-error-al-guardar»): quitarse de la organización siendo la última
+  // Dueña falla, y el aviso rojo de abajo lo dice con su ✕ («Falló una acción directa»). El arnés no tiene los avisos
+  // globales de red y 5xx (usa un QueryClient sin sus cachés): este aviso lo da la pantalla.
+  const luciaApp = (width) => stageCases(root, "consolidacion/f7").find((entry) => entry.pair === "usuario-error-al-guardar" && entry.viewport.width === width).app;
+  const leaving = (app) => ({ ...app, readySelector: "[data-sonner-toast]", readyText: "antes de salir de la organización",
+    responses: [...app.responses.filter((item) => item.method !== "PUT"), api("DELETE", "/api/users/member-lucia",
+      { code: "Tenancy.Member.LastTenantAdmin", title: "Conflicto", detail: "Tiene que quedar al menos un Dueño activo." }, 409)],
+    actions: [appClick("button", "Más acciones"), appClick("menuitem", "Quitar de la organización"), appClick("button", "Quitar")] });
+  const userFails = { path: "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fusuarios%2Fmember-1", captureMode: "harness", userFixture: "visual-owner",
+    readySelector: '[role="alert"]', readyText: "No pudimos abrir esta pantalla",
+    responses: [api("GET", "/api/users/member-1", { status: 500, title: "Error", traceId: "00-r2a-02" }, 500)] };
+  return [
+    ...custom({ id: "aviso-error-accion", group: "avisos", state: "Aviso rojo de una acción directa que falló (la última Dueña se quita de la organización): abajo, con ✕",
+      desktop: { board: "Avisos", props: { caso: "Error del servidor" } }, phone: { board: "M-Avisos", props: { caso: "Error del servidor" } },
+      app: leaving(luciaApp(1440)), phoneApp: leaving(luciaApp(390)) }),
+    ...custom({ id: "usuario-no-carga", group: "errores", state: "Ficha de Usuario que no carga: la «Pantalla de error» con «Reintentar»",
+      desktop: { board: "Criterio-Avisos", section: "Cómo se ve cada uno", state: "Ficha de Usuario que no carga: la «Pantalla de error» (Criterio · Avisos › Pantalla de error)" },
+      phone: { board: "M-Error-Org", props: { caso: "No se pudo abrir" } },
+      app: userFails }),
   ];
 }
 

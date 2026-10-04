@@ -1852,7 +1852,7 @@
             "path": "/api/users/member-lucia",
             "body": {
               "memberId": "member-lucia",
-              "userId": "user-lucia",
+              "userId": "lucia",
               "displayName": "Lucía Fernández",
               "email": "lucia.fernandez@delta.ejemplo.com",
               "state": "Active",
@@ -2274,7 +2274,7 @@
           }
         ],
         "readySelector": "main",
-        "readyText": "Tiene que quedar al menos un Dueño activo."
+        "readyText": "Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de quitártelo."
       }
     },
     {
@@ -2299,7 +2299,7 @@
             "path": "/api/users/member-lucia",
             "body": {
               "memberId": "member-lucia",
-              "userId": "user-lucia",
+              "userId": "lucia",
               "displayName": "Lucía Fernández",
               "email": "lucia.fernandez@delta.ejemplo.com",
               "state": "Active",
@@ -2721,7 +2721,7 @@
           }
         ],
         "readySelector": "main",
-        "readyText": "Tiene que quedar al menos un Dueño activo."
+        "readyText": "Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de quitártelo."
       }
     },
     {
@@ -3670,7 +3670,7 @@
             "body": {
               "code": "Companies.Membership.LastCompanyAdmin",
               "title": "Conflicto",
-              "detail": "No podés quitar al último administrador de la empresa."
+              "detail": "Tiene que quedar al menos un administrador en la empresa."
             },
             "status": 409
           },
@@ -4345,7 +4345,7 @@
             "body": {
               "code": "Companies.Membership.LastCompanyAdmin",
               "title": "Conflicto",
-              "detail": "No podés quitar al último administrador de la empresa."
+              "detail": "Tiene que quedar al menos un administrador en la empresa."
             },
             "status": 409
           },
@@ -6290,7 +6290,7 @@
       "id": "sesion-error-api-me-escritorio",
       "pair": "sesion-error-api-me",
       "group": "fase-3",
-      "state": "Si falla /api/me: un solo aviso, en la pantalla, con «Reintentar» (Criterio · Avisos › Pantalla de error).",
+      "state": "Si falla /api/me: la «Pantalla de error», con «Reintentar» (Criterio · Avisos › Pantalla de error).",
       "board": "Criterio-Avisos",
       "props": {},
       "boardActions": [],
@@ -6317,16 +6317,18 @@
         ],
         "actions": [],
         "readySelector": "[role=\"alert\"]",
-        "readyText": "Algo salió mal. Probá de nuevo en un rato."
+        "readyText": "No pudimos abrir esta pantalla"
       }
     },
     {
       "id": "sesion-error-api-me-movil",
       "pair": "sesion-error-api-me",
       "group": "fase-3",
-      "state": "Si falla /api/me, en el teléfono: la pantalla de error dibujada más cercana es M-Error-Org (403).",
+      "state": "Si falla /api/me, en el teléfono: la «Pantalla de error» (M-Error-Org › No se pudo abrir); sin /api/me todavía no hay barra ni marco.",
       "board": "M-Error-Org",
-      "props": {},
+      "props": {
+        "caso": "No se pudo abrir"
+      },
       "boardActions": [],
       "viewport": {
         "width": 390,
@@ -6350,7 +6352,7 @@
         ],
         "actions": [],
         "readySelector": "[role=\"alert\"]",
-        "readyText": "Algo salió mal. Probá de nuevo en un rato."
+        "readyText": "No pudimos abrir esta pantalla"
       }
     }
   ]
