@@ -1212,11 +1212,27 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await phone.getByRole("textbox", { name: "Correo electrónico" }).fill(businessEmail);
             const phoneBefore = new Set(await pickupFiles());
             await phone.getByRole("button", { name: "Enviar código" }).click();
-            await phone.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+            // Si la puerta de empresa pidió un código hace poco, hay que esperar para pedir otro.
+            const sent = phone.getByRole("heading", { name: "Revisá tu correo" });
+            const retry = phone.getByRole("button", { name: /^Reintentá en/ });
+            await sent.or(retry).first().waitFor({ timeout: 30_000 });
+            if (await retry.isVisible()) {
+              await phone.getByRole("button", { name: "Enviar código" }).waitFor({ timeout: 90_000 });
+              await phone.getByRole("button", { name: "Enviar código" }).click();
+              await sent.waitFor();
+            }
             await enterCode(phone, await codeFromPickup(businessEmail, phoneBefore));
             await phone.getByRole("button", { name: "Verificar" }).click();
             await expectPath(phone, "/org", "ingreso de empresa en el teléfono");
-            await phone.getByRole("navigation", { name: "Secciones" }).getByRole("link", { name: "Más" }).click();
+            // El recorrido anterior publica términos nuevos: si aparecen, se aceptan antes de seguir.
+            const terms = phone.getByRole("heading", { name: "Actualizamos los términos" });
+            const sections = phone.getByRole("navigation", { name: "Secciones" });
+            await terms.or(sections).first().waitFor({ timeout: 30_000 });
+            if (await terms.isVisible()) {
+              await phone.getByRole("checkbox", { name: /Leí y acepto/ }).check();
+              await phone.getByRole("button", { name: "Aceptar y seguir" }).click();
+            }
+            await sections.getByRole("link", { name: "Más" }).click();
             await expectPath(phone, "/mas", "«Más» en el teléfono");
             await phone.getByRole("link", { name: /^Usuarios/ }).click();
             await expectPath(phone, "/org/usuarios", "Usuarios desde «Más»");
