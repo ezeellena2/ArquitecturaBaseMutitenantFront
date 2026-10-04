@@ -8,17 +8,13 @@ import { UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { currentUserQueryKey, fetchCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
-import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { MeResponse } from "@/shared/api/types";
 import { changeCulture } from "@/shared/i18n";
-import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
+import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Page } from "@/shared/ui/Page";
 import { Section } from "@/shared/ui/Section";
 import { FormField } from "@/shared/ui/FormField";
-import { FormError } from "@/shared/ui/FormError";
-import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
-import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import { CultureSelect } from "@/shared/ui/fields/CultureSelect";
@@ -33,12 +29,10 @@ function draft(account: MeResponse): Draft {
 
 export function AccountProfileForm({ account, children }: { account: MeResponse; children?: ReactNode }) {
   const { t } = useTranslation("account");
-  const { t: errors } = useTranslation("errors");
   const queryClient = useQueryClient();
   const [failure, setFailure] = useState<unknown>();
   const form = useForm<Draft>({ resolver: zodResolver(schema), defaultValues: draft(account) });
   const { isDirty, isSubmitting } = form.formState;
-  const guard = useUnsavedChangesGuard(isDirty);
 
   // La relectura va por TanStack Query: si falla, la avisa el manejo global, como cualquier consulta.
   async function reload() {
@@ -50,6 +44,8 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
       return true;
     } catch (error) { setFailure(error); return false; }
   }
+  // El 409 en su cartel, «Cambios sin guardar» en la banda, el error en la franja y «¿Salir sin guardar?».
+  const edit = useEditPage({ isDirty, error: failure, onSeeNew: () => { void reload(); }, onContinueEditing: () => setFailure(undefined) });
   // Por TanStack Query, como toda escritura: los términos nuevos (403) abren la aceptación también desde acá, y la
   // relectura va en onSuccess para que «Reintentar» (sin conexión) termine igual que un guardado al primer intento.
   const update = useMutation({
@@ -69,11 +65,9 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
     <Button type="button" variant="outline" onClick={discard} disabled={isSubmitting}>{t("discard")}</Button>
     <Button type="submit" form="account-profile" disabled={!isDirty || isSubmitting}>{t("save")}</Button>
   </>;
-  const dirty = isDirty ? <span className="font-medium text-[var(--alerta)]">{t("unsaved")}</span> : null;
   return <>
-    <Page title={t("title")} icon={UserRound} status={dirty} actions={actions} phoneBody="gray"
-      banner={<ConcurrencyBanner error={failure} isDirty={isDirty} onSeeNew={() => { void reload(); }} onContinueEditing={() => setFailure(undefined)} />}>
-      {failure instanceof ApiError && failure.code === "General.ConcurrencyConflict" ? null : <FormError className="mb-3" message={actionErrorMessage(failure, errors)} />}
+    <Page title={t("title")} icon={UserRound} status={edit.unsaved} actions={actions} phoneBody="gray" banner={edit.banner}>
+      {edit.formError ? <div className="mb-3">{edit.formError}</div> : null}
       <form id="account-profile" aria-label={t("title")} onSubmit={form.handleSubmit(save)}>
         <Section title={t("data")}>
           {/* Tablero Cuenta: nombre, idioma y zona en tres columnas iguales, al ancho de la tarjeta. */}
@@ -86,6 +80,6 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
       </form>
       {children}
     </Page>
-    <ConfirmDialog open={guard.isBlocked} onOpenChange={(open) => { if (!open) guard.stay(); }} title={errors("unsaved.title")} description={errors("unsaved.description")} confirmLabel={errors("unsaved.leave")} cancelLabel={errors("unsaved.continueEditing")} destructive onConfirm={guard.leave} />
+    {edit.leaveDialog}
   </>;
 }
