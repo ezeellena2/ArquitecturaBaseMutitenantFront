@@ -285,8 +285,8 @@ export function BusinessSignupPage() {
                     onChange={(event) => { setSlug(event.target.value.trim().toLowerCase()); setSlugError(null); setLimitReached(false); }}
                     autoComplete="off" spellCheck={false} />
                 </FormField>
-                {/* Sin aviso de disponibilidad no queda hueco: el tablero no deja espacio bajo la dirección. */}
-                <div className="-mt-4 text-[12px]" aria-live="polite">
+                {/* Vacío no deja hueco: compensa los 22 px de la columna, porque el tablero no deja espacio bajo la dirección. */}
+                <div className="-mt-[22px] text-[12px] [&:not(:empty)]:pt-1.5" aria-live="polite">
                   {slug !== "" && !slugMatchesInput ? <span className="text-[var(--t3)]">{t("common:states.loading")}</span>
                     : slugAvailability === "Available" && !slugError ? <span role="status" className="inline-flex items-center gap-1 text-[var(--ok)]"><Check size={14} />{t("businessSignup.slugAvailable")}</span> : null}
                 </div>
