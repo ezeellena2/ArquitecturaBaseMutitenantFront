@@ -113,13 +113,13 @@ export function SignupPage() {
       </div>
       <Link to="/login" className="inline-flex h-10 w-full items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("signup.backToLogin")}</Link>
     </div> : step === null ? <div className="flex flex-col gap-[22px]">
-      <h1 className="text-[26px] font-bold leading-tight">{t("signup.title")}</h1>
+      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("signup.title")}</h1>
       <form noValidate onSubmit={(event) => {
         if (!acceptedTerms) { event.preventDefault(); requireTerms(); return; }
         void handleSubmit(begin)(event);
       }} className="flex flex-col gap-[22px]">
-        <label className="flex items-start gap-2 text-[13px] text-[var(--t2)]">
-          <input type="checkbox" {...register("acceptedTerms", { onChange: () => clearErrors("acceptedTerms") })} className="mt-0.5 size-4 accent-[var(--marca)]" />
+        <label className="flex items-center gap-2.5 text-[14px] text-[var(--t1)]">
+          <input type="checkbox" {...register("acceptedTerms", { onChange: () => clearErrors("acceptedTerms") })} className="size-[18px] shrink-0 accent-[var(--marca)]" />
           <span>{t("signup.acceptPrefix")} <Link to="/terminos" className="font-semibold text-[var(--marca)] hover:underline">{t("signup.terms")}</Link> {t("signup.acceptJoin")} <Link to="/privacidad" className="font-semibold text-[var(--marca)] hover:underline">{t("signup.privacy")}</Link></span>
         </label>
         {errors.acceptedTerms ? <p role="alert" className="text-[13px] text-[var(--peligro)]">{errors.acceptedTerms.message ?? t("signup.acceptRequired")}</p> : null}
@@ -137,7 +137,7 @@ export function SignupPage() {
       </div>
     </div> : <div className="flex flex-col gap-[22px]">
       <button type="button" onClick={() => { setStep(null); setCode(""); setError(null); }} className="inline-flex items-center gap-1 self-start text-[13px] font-semibold text-[var(--marca)] hover:underline"><ChevronLeft size={16} aria-hidden="true" />{t("login.otherEmail")}</button>
-      <div><h1 className="text-[26px] font-bold leading-tight">{t("login.checkEmail")}</h1>
+      <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.checkEmail")}</h1>
         <p id="signup-code-hint" className="mt-2 text-[13px] text-[var(--t2)]"><Trans ns="auth" i18nKey="login.sentCode" values={{ email: step.email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
       </div>
       <OtpInput length={6} value={code} onChange={(next) => { setCode(next); if (error?.code === "Auth.LoginCode.Invalid") setError(null); }} label={t("login.codeLabel")} invalid={error?.code === "Auth.LoginCode.Invalid"} disabled={verify.isPending} aria-describedby="signup-code-hint" />

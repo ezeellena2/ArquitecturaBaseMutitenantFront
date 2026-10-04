@@ -230,10 +230,10 @@ export function BusinessSignupPage() {
           detail={<Trans ns="auth" i18nKey="businessSignup.approvalDetail" values={{ organization: organizationName.trim(), email: notificationEmail }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />}
           action={t("businessSignup.backHome")} href="/" />
           : step === "email" ? <section className="flex flex-col gap-[22px]">
-            <h1 className="text-[26px] font-bold leading-tight">{t("businessSignup.title")}</h1>
-            <label className="flex items-start gap-2 text-[13px] text-[var(--t2)]">
+            <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.title")}</h1>
+            <label className="flex items-center gap-2.5 text-[14px] text-[var(--t1)]">
               <input type="checkbox" checked={acceptedTerms} onChange={(event) => { setAcceptedTerms(event.target.checked); setTermsError(false); }}
-                className="mt-0.5 size-4 accent-[var(--marca)]" />
+                className="size-[18px] shrink-0 accent-[var(--marca)]" />
               <span>{t("businessSignup.accept")} <Link to="/terminos" className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.terms")}</Link> {t("businessSignup.join")} <Link to="/privacidad" className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.privacy")}</Link></span>
             </label>
             {termsError ? <p role="alert" className="-mt-4 text-[13px] text-[var(--peligro)]">{t("businessSignup.acceptRequired")}</p> : null}
@@ -250,7 +250,7 @@ export function BusinessSignupPage() {
             : step === "code" ? <section className="flex flex-col gap-[22px]">
               <button type="button" onClick={() => { setStep("email"); setCode(""); setRequestError(null); }}
                 className="inline-flex items-center gap-1 self-start text-[13px] font-semibold text-[var(--marca)] hover:underline"><ChevronLeft size={16} aria-hidden="true" />{t("businessSignup.changeEmail")}</button>
-              <div><h1 className="text-[26px] font-bold leading-tight">{t("businessSignup.codeTitle")}</h1>
+              <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.codeTitle")}</h1>
                 <p id="business-signup-code-hint" className="mt-2 text-[13px] text-[var(--t2)]"><Trans ns="auth" i18nKey="businessSignup.sentCode" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p></div>
               <OtpInput length={6} value={code} onChange={(next) => { setCode(next); setRequestError(null); }}
                 label={t("businessSignup.codeLabel")} invalid={requestError?.code === "Auth.LoginCode.Invalid"}
@@ -265,7 +265,7 @@ export function BusinessSignupPage() {
               </div>
             </section>
               : <section className="flex flex-col gap-[22px]">
-                <div><h1 className="text-[26px] font-bold leading-tight">{t("businessSignup.organizationTitle")}</h1>
+                <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.organizationTitle")}</h1>
                   <p className="mt-2 text-[14px] text-[var(--t2)]">{t("businessSignup.ownerNote")}</p></div>
                 {limitReached ? <div role="alert" className="flex items-start gap-2.5 rounded-[10px] bg-[var(--peligro-t)] px-3 py-2.5 text-[13px] leading-normal text-[var(--peligro)]">
                   <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />

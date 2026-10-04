@@ -38,7 +38,9 @@ export function GoogleButton(props: GoogleButtonProps) {
   const label = props.mode === "signup"
     ? t(props.access === "business" ? "businessSignup.google" : "signup.google")
     : t("login.google");
-  const className = "w-full border-[var(--borde2)] text-[var(--t1)]";
+  // Botón secundario del tablero: letra de 14 (el principal, «Crear cuenta» o «Enviar código», es de 15) y el logo a
+  // 10 del texto.
+  const className = "w-full gap-2.5! border-[var(--borde2)] text-[14px]! text-[var(--t1)]";
   if (props.mode === "signup") {
     const culture = effectiveCulture() ?? navigator.language;
     const timeZoneId = browserTimeZone();

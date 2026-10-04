@@ -58,6 +58,17 @@ describe("SignupPage", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Aceptá los Términos y la Política de privacidad.");
   });
 
+  // Tableros Registro y M-Registro: título de 24 con interletra cerrada, Google de 14 y la aceptación de 14 en el color
+  // del texto, con su casilla de 18 a 10 del texto.
+  it("usa las medidas del tablero en el título, Google y la aceptación", async () => {
+    show();
+    expect(screen.getByRole("heading", { name: "Creá tu cuenta" })).toHaveClass("text-[24px]", "leading-[1.2]", "tracking-[-0.02em]");
+    expect(await screen.findByRole("button", { name: "Registrarte con Google" })).toHaveClass("text-[14px]!", "gap-2.5!");
+    const checkbox = screen.getByRole("checkbox", { name: /Acepto los Términos/ });
+    expect(checkbox).toHaveClass("size-[18px]");
+    expect(checkbox.closest("label")).toHaveClass("items-center", "gap-2.5", "text-[14px]", "text-[var(--t1)]");
+  });
+
   it("reproduce Correo a 390: no pide nombre", async () => {
     const originalWidth = window.innerWidth;
     Object.defineProperty(window, "innerWidth", { configurable: true, value: 390 });

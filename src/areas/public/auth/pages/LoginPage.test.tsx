@@ -113,6 +113,9 @@ describe("LoginPage", () => {
     expect(google).toHaveAttribute("href", `/api/auth/external/google?returnUrl=${encodeURIComponent(authorizeUrl)}&access=consumer`);
     const email = within(main).getByRole("textbox", { name: "Correo electrónico" });
     const send = within(main).getByRole("button", { name: "Enviar código" });
+    // Tableros Ingreso y M-Ingreso: título de 24 con interletra cerrada y Google de 14.
+    expect(heading).toHaveClass("text-[24px]", "leading-[1.2]", "tracking-[-0.02em]");
+    expect(google).toHaveClass("text-[14px]!", "gap-2.5!");
     expect(heading.compareDocumentPosition(google) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(google.compareDocumentPosition(email) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(email.compareDocumentPosition(send) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
@@ -195,7 +198,7 @@ describe("LoginPage", () => {
     expect(screen.queryByRole("heading", { name: "Ingresá a tu cuenta" })).not.toBeInTheDocument();
     expect(screen.getByText(/Te mandamos un código a/)).toHaveTextContent("ana@example.com");
     expect(screen.getByText("ana@example.com").tagName).toBe("STRONG");
-    expect(screen.getByRole("heading", { name: "Revisá tu correo" })).toHaveClass("text-2xl");
+    expect(screen.getByRole("heading", { name: "Revisá tu correo" })).toHaveClass("text-[24px]", "tracking-[-0.02em]");
     const group = screen.getByRole("group", { name: "Código" });
     expect(within(group).getAllByRole("textbox")).toHaveLength(6);
     expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toBeDisabled();
