@@ -4,7 +4,7 @@
 
 **El usuario ve cada pantalla antes y durante** (pedido del usuario, 2026-10-04):
 1. **Antes de programarla:** se le muestra su tablero tal como va a quedar, a 1440 y a 390 y con sus estados (captura o el [recorrido del lienzo](../../scripts/recorrido-lienzo/recorrido.mjs)), y se programa recién con su visto bueno. Si no hay tablero o está «· por refinar», primero se dibuja.
-2. **Mientras se programa:** en cada avance se le manda la captura lado a lado, tablero y app, a 1440 y a 390, para que la vea y corrija antes de cerrar la pantalla. No se junta todo para el final.
+2. **Mientras se programa:** en cada avance se le manda la captura lado a lado, tablero y app, a 1440 y a 390, para que la vea y corrija antes de cerrar la pantalla. No se junta todo para el final. Además, se le abre la [vista en vivo](../../scripts/recorrido-lienzo/vivo.mjs): una ventana con el tablero al lado de la app con datos de prueba, que se actualiza sola con cada cambio del código. Se elige la pantalla por su caso de captura (`node scripts/recorrido-lienzo/vivo.mjs etapa-6/usuarios-lista-escritorio`) o, si todavía no tiene caso, por tablero y ruta (`--tablero Directorio --ruta /empresas [--telefono]`).
 
 ## Cómo se hace
 - Toda pantalla usa `Page`: una banda blanca de ancho completo (64 px de alto mínimo) con el ícono de la sección o «‹» (`backTo`), el título y, en la segunda línea, el resumen, el estado (punto y palabra) o «Cambios sin guardar»; a la derecha, hasta tres acciones, el resto en ⋮ y la principal al final. El regreso mide 28 × 28 px y el ⋮, 34 × 34. En el teléfono, `Page` arma la pantalla de la app ([responsive](responsive.md)).
