@@ -971,7 +971,7 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 7820,
+      "h": 8000,
       "page": "criterio",
       "title": "Criterio · Decisiones por pantalla",
       "w": 1440,
@@ -1465,6 +1465,24 @@
       "w": 390,
       "x": 5170,
       "y": 3320
+    },
+    "Cuenta-Metodo.dc.html": {
+      "x": 3290,
+      "y": 1280,
+      "w": 1440,
+      "h": 900,
+      "title": "Mi cuenta · quitar o hacer principal",
+      "page": "personal",
+      "is_interactive": true
+    },
+    "M-Cuenta-Metodo.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "personal",
+      "title": "Mi cuenta · quitar o hacer principal · teléfono",
+      "w": 390,
+      "x": 2820,
+      "y": 1280
     }
   },
   "createdOnFiles": {
@@ -1798,7 +1816,9 @@
     "M-Sesion.dc.html",
     "M-Perfil-Suspendido.dc.html",
     "M-Error-Org.dc.html",
-    "M-Avisos.dc.html"
+    "M-Avisos.dc.html",
+    "Cuenta-Metodo.dc.html",
+    "M-Cuenta-Metodo.dc.html"
   ],
   "pages": [
     {
