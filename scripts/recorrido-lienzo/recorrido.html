@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Recorrido del lienzo</title>
+<style>
+  :root {
+    --fondo: #e7e2d8; --banda: #17393a; --banda-tx: #f6f3ec; --tenue: #b7cbc8; --marca: #0f7a72; --marca-claro: #d6efe9;
+    --ok: #2c965d; --pendiente: #df911a; --refinar: #b6532f; --carta: #ffffff; --texto: #2a2622; --gris: #6b645c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: var(--fondo);
+    font-family: "Segoe UI", system-ui, sans-serif; color: var(--texto); }
+  header { display: flex; gap: 28px; align-items: center; padding: 14px 24px; background: var(--banda); color: var(--banda-tx); }
+  .info { flex: 1; min-width: 0; }
+  .ruta { font-size: 15px; color: var(--tenue); }
+  h1 { margin: 4px 0 6px; font-size: 26px; line-height: 1.2; }
+  .linea { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 18px; }
+  .chip { padding: 3px 12px; border-radius: 999px; font-size: 14px; font-weight: 600; background: rgba(255,255,255,.14); }
+  .chip.Validado { background: var(--ok); }
+  .chip.Para.aprobar, .chip.pendiente { background: var(--pendiente); }
+  .chip.Por.refinar { background: var(--refinar); }
+  .estado { font-weight: 600; }
+  .aviso { margin-top: 8px; padding: 8px 12px; border-radius: 10px; background: #fff3d6; color: #5c3d00; font-size: 15px; }
+  .aviso button { margin-left: 10px; }
+  .controles { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+  .botones { display: flex; gap: 10px; }
+  button, select { font: inherit; font-size: 17px; border-radius: 10px; border: 1px solid #b9b2a6; padding: 10px 18px; cursor: pointer;
+    background: #fff; color: var(--texto); }
+  button.principal { background: var(--marca); border-color: var(--marca); color: #fff; font-weight: 600; min-width: 170px; }
+  button:disabled { opacity: .45; cursor: default; }
+  select { font-size: 15px; padding: 8px 10px; }
+  .ayuda { font-size: 13px; color: var(--tenue); text-align: right; }
+  main { flex: 1; overflow: auto; padding: 16px; display: flex; justify-content: center; align-items: flex-start; }
+  #caja { position: relative; flex-shrink: 0; box-shadow: 0 8px 30px rgba(0,0,0,.18); border-radius: 6px; overflow: hidden; background: #fff; }
+  #caja iframe { border: 0; display: block; transform-origin: top left; background: #fff; }
+  .intro { max-width: 920px; background: var(--carta); border-radius: 18px; padding: 34px 42px; font-size: 18px; line-height: 1.55;
+    box-shadow: 0 8px 30px rgba(0,0,0,.12); }
+  .intro h2 { margin: 0 0 6px; font-size: 30px; }
+  .intro .cuenta { color: var(--gris); margin-bottom: 18px; }
+  .intro .nota { margin-top: 18px; padding: 16px 20px; border-radius: 12px; background: var(--marca-claro); white-space: pre-wrap; font-size: 16px; }
+  .intro .pie { margin-top: 24px; color: var(--gris); font-size: 16px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="info">
+    <div class="ruta" id="ruta"></div>
+    <h1 id="titulo"></h1>
+    <div class="linea" id="linea"></div>
+    <div class="aviso" id="aviso" hidden></div>
+  </div>
+  <div class="controles">
+    <div class="botones">
+      <button id="anterior" type="button">‹ Anterior</button>
+      <button id="siguiente" type="button" class="principal">Siguiente ›</button>
+    </div>
+    <select id="ir" aria-label="Ir a una página"></select>
+    <div class="ayuda">También con las flechas ← → del teclado</div>
+  </div>
+</header>
+<main id="escenario"></main>
+<script type="module">
+  const steps = await (await fetch("/recorrido/pasos.json")).json();
+  const saved = await (await fetch("/recorrido/progreso")).json();
+  let index = Math.min(Math.max(saved.index ?? 0, 0), steps.length - 1);
+  const $ = (id) => document.getElementById(id);
+  const stage = $("escenario");
+
+  for (const step of steps)
+    if (step.kind === "page") $("ir").add(new Option(`Ir a: ${step.pageIndex + 1}. ${step.page} (${step.boards} tableros)`, step.index));
+
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function go(next) {
+    index = Math.min(Math.max(next, 0), steps.length - 1);
+    render();
+    void fetch("/recorrido/progreso", { method: "POST", body: JSON.stringify({ index }) });
+  }
+
+  function onKey(event) {
+    if (event.target instanceof HTMLSelectElement || event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
+    if (event.key === "ArrowRight") { event.preventDefault(); go(index + 1); }
+    if (event.key === "ArrowLeft") { event.preventDefault(); go(index - 1); }
+  }
+  document.addEventListener("keydown", onKey);
+  $("siguiente").addEventListener("click", () => go(index + 1));
+  $("anterior").addEventListener("click", () => go(index - 1));
+  $("ir").addEventListener("change", (event) => { go(Number(event.target.value)); event.target.blur(); });
+
+  // El tablero se ve entero si entra; uno muy alto (como los de Criterio) va al ancho y se baja con la rueda.
+  function fit(step) {
+    const box = $("caja");
+    const frame = box?.querySelector("iframe");
+    if (!frame) return;
+    const width = stage.clientWidth - 32;
+    const height = stage.clientHeight - 32;
+    let scale = Math.min(1, width / step.width);
+    if (step.height * scale <= height * 1.3) scale = Math.min(scale, height / step.height);
+    frame.style.transform = `scale(${scale})`;
+    box.style.width = `${step.width * scale}px`;
+    box.style.height = `${step.height * scale}px`;
+  }
+
+  async function applyState(frame, step) {
+    const win = frame.contentWindow;
+    const start = Date.now();
+    while (!(typeof win.__dcSetProps === "function" && win.__dcRootName?.())) {
+      if (Date.now() - start > 15000) return;
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    if (Object.keys(step.props ?? {}).length) win.__dcSetProps(win.__dcRootName(), step.props);
+  }
+
+  function render() {
+    const step = steps[index];
+    $("anterior").disabled = index === 0;
+    $("siguiente").disabled = index === steps.length - 1;
+    $("ir").value = String(steps.filter((item) => item.kind === "page" && item.index <= index).at(-1).index);
+    $("ruta").textContent = `Página ${step.pageIndex + 1} de ${step.pageCount} · ${step.page} · Paso ${index + 1} de ${step.total}`;
+    $("aviso").hidden = true;
+    const line = $("linea");
+    line.replaceChildren();
+    stage.replaceChildren();
+
+    if (step.kind === "page") {
+      $("titulo").textContent = step.page;
+      line.append(element("span", "chip", `${step.boards} tableros`));
+      const card = element("section", "intro");
+      card.append(element("h2", null, step.page), element("div", "cuenta", `${step.boards} tableros en esta página`));
+      if (step.description) card.append(element("p", null, step.description));
+      for (const note of step.notes) card.append(element("div", "nota", note));
+      card.append(element("div", "pie", "Tocá «Siguiente» para ver el primer tablero. En cada tablero podés tocar botones y enlaces; «Siguiente» sigue el recorrido."));
+      stage.append(card);
+      return;
+    }
+
+    $("titulo").textContent = step.title;
+    line.append(element("span", "chip", step.device), element("span", `chip ${step.status}`, step.status));
+    if (step.state) line.append(element("span", "estado", `Mostrando: ${step.state}`));
+    const box = element("div");
+    box.id = "caja";
+    const frame = document.createElement("iframe");
+    frame.title = step.title;
+    frame.width = String(step.width);
+    frame.height = String(step.height);
+    let first = true;
+    frame.addEventListener("load", async () => {
+      try { frame.contentWindow.addEventListener("keydown", onKey); } catch { /* otro origen: no pasa */ }
+      const shown = decodeURIComponent(frame.contentWindow.location.pathname.slice(1));
+      if (first) {
+        first = false;
+        await applyState(frame, step);
+        return;
+      }
+      // Tocaste un enlace del tablero: se ve otro, pero el recorrido sigue donde estaba.
+      if (shown !== step.file) {
+        const notice = $("aviso");
+        notice.replaceChildren(element("span", null, `Tocaste un enlace y ahora ves «${shown.replace(".dc.html", "")}». «Siguiente» sigue el recorrido.`));
+        const back = element("button", null, "Volver a este paso");
+        back.type = "button";
+        back.addEventListener("click", render);
+        notice.append(back);
+        notice.hidden = false;
+      }
+    });
+    frame.src = `/${encodeURIComponent(step.file)}`;
+    box.append(frame);
+    stage.append(box);
+    fit(step);
+  }
+
+  window.addEventListener("resize", () => fit(steps[index]));
+  render();
+</script>
+</body>
+</html>
