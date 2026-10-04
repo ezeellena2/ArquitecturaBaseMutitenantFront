@@ -35,6 +35,10 @@ describe("ConcurrencyBanner", () => {
     // Tablero «Criterio · Avisos»: un cartel de atención, ámbar, redondeado y sin borde, arriba del contenido.
     expect(screen.getByRole("alert")).toHaveClass("rounded-[10px]", "bg-[var(--alerta-t)]");
     expect(screen.getByRole("alert")).not.toHaveClass("border-b");
+    // Tablero Avisos («Alguien cambió esto», .w-cartel): el mismo cartel de atención (Banner), de 44 de alto con su
+    // botón chico, y el texto sin negrita en --alerta-tx.
+    expect(screen.getByRole("alert")).toHaveClass("min-h-11", "py-1.5", "text-[var(--alerta-tx)]");
+    expect(screen.getByRole("alert").querySelector("strong")).toBeNull();
   });
 
   it("seguir editando cierra el aviso y conserva el formulario", async () => {

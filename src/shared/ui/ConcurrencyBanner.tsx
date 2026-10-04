@@ -2,6 +2,7 @@ import { useState } from "react";
 import { TriangleAlertIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ApiError } from "@/shared/api/ApiError";
+import { Banner } from "./Banner";
 import { Button } from "./button";
 import { useAppChrome } from "./app/AppChrome";
 import { ConfirmDialog } from "./ConfirmDialog";
@@ -43,15 +44,12 @@ export function ConcurrencyBanner({ error, isDirty, onSeeNew, onContinueEditing 
           </span>
         </span>
       </div> : null}
-      {/* Tablero «Criterio · Avisos»: cartel de atención, ámbar y sin borde; va en el lugar de Page para carteles. */}
-      {phone ? null : <div role="alert" className="flex flex-wrap items-center gap-x-2.5 gap-y-2 rounded-[10px] bg-[var(--alerta-t)] px-3.5 py-2.5 text-[13px] text-[var(--alerta)]">
-        <TriangleAlertIcon aria-hidden="true" className="size-[18px] shrink-0" />
-        <strong className="font-semibold">{t("concurrency.banner")}</strong>
-        <div className="ml-auto flex items-center gap-2">
-          <Button type="button" variant="link" size="sm" className="mr-2" onClick={onContinueEditing}>{t("concurrency.continueEditing")}</Button>
-          <Button type="button" variant="outline" size="sm" onClick={seeNew}>{t("concurrency.seeNew")}</Button>
-        </div>
-      </div>}
+      {/* Tablero Avisos («Alguien cambió esto»): el cartel de atención de «Criterio · Avisos», en el lugar de Page para
+          carteles, con «Seguir editando» en texto y «Ver lo nuevo» como botón chico. */}
+      {phone ? null : <Banner tone="warning" role="alert" action={<>
+        <Button type="button" variant="link" size="sm" onClick={onContinueEditing}>{t("concurrency.continueEditing")}</Button>
+        <Button type="button" variant="outline" size="sm" onClick={seeNew}>{t("concurrency.seeNew")}</Button>
+      </>}>{t("concurrency.banner")}</Banner>}
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}

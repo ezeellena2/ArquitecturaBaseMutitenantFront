@@ -13,6 +13,8 @@ interface BannerProps {
   tone?: Tone;
   /// Lo que se puede hacer al respecto ("Agregar correo"). Va a la derecha, sin partirse.
   action?: ReactNode;
+  /// El 409 de una edición es de atención pero pide decidir ya («Ver lo nuevo» o «Seguir editando»): un `alert`.
+  role?: "status" | "alert";
   children: ReactNode;
 }
 
@@ -25,14 +27,14 @@ const tones: Record<Tone, { icon: ComponentType<{ className?: string }>; box: st
 };
 
 /// Un aviso con su ícono, en el cuerpo de la pantalla o de un diálogo: el cartel de «Criterio · Avisos». Lo usan el
-/// inicio y Mi cuenta (falta un correo propio), la invitación aceptada (el mismo aviso) y la ficha de Usuario (pidió la
-/// baja de su cuenta).
-export function Banner({ tone = "info", action, children }: BannerProps) {
+/// inicio y Mi cuenta (falta un correo propio), la invitación aceptada (el mismo aviso), la ficha de Usuario (pidió la
+/// baja de su cuenta) y el 409 de una edición en la compu (ConcurrencyBanner).
+export function Banner({ tone = "info", action, role, children }: BannerProps) {
   const { icon: Icon, box } = tones[tone];
 
   return (
     <div
-      role={tone === "danger" ? "alert" : "status"}
+      role={role ?? (tone === "danger" ? "alert" : "status")}
       className={cn(
         // «Criterio · Avisos» (.cartel) y tableros Inicio-Personal y Usuario (.w-cartel): sin borde, 44 de alto como
         // mínimo (el de un botón chico con su margen), padding 6/8/6/14, radio 10 y letra de 13.
@@ -42,7 +44,7 @@ export function Banner({ tone = "info", action, children }: BannerProps) {
     >
       <Icon className="size-[18px] shrink-0" />
       <p className="min-w-0 flex-1">{children}</p>
-      {action ? <div className="shrink-0">{action}</div> : null}
+      {action ? <div className="flex shrink-0 items-center gap-2.5">{action}</div> : null}
     </div>
   );
 }
