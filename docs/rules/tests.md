@@ -34,7 +34,7 @@
 
 ## Lo verifica
 - El CI (`npm test`) y `harness.test.ts` (E0), que usa `HarnessStage` para exigir solo los tests de etapas cerradas.
-- `isolation.test.tsx` (R2c): el aviso de un test no aparece en el siguiente.
+- `isolation.test.tsx` (E7): el aviso de un test no aparece en el siguiente.
 - `scripts/test-e2e-real.test.mjs` (E3): ninguna etapa desde E3a se cierra si el recorrido real está rojo.
 
 ## Detalle

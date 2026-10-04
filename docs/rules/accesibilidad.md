@@ -35,7 +35,7 @@
 
 ## Lo verifica
 - `vitest-axe` (E0) en cada test de pantalla (`toHaveNoViolations`).
-- `FormField.test.tsx` (R2c): con un `Select` adentro, el desplegable se rotula, es obligatorio y lleva su error.
+- `FormField.test.tsx` (E7): con un `Select` adentro, el desplegable se rotula, es obligatorio y lleva su error.
 - Antes de cerrar una etapa: una pasada de axe en el navegador real, a 1440 y a 390, que cubre el contraste y no se puede hacer en jsdom.
 
 ## Detalle
