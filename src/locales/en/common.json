@@ -30,6 +30,7 @@
   "fields": {
     "currency": "Currency",
     "selectCurrency": "Choose a currency",
+    "country": "Country",
     "searchCountry": "Search country",
     "searchCurrency": "Search currency",
     "searchTimeZone": "Search time zone",

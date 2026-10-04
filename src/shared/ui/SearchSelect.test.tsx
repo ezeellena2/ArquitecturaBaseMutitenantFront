@@ -4,6 +4,7 @@ import { useState } from "react";
 import { describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
+import { AppChromeProvider } from "./app/AppChrome";
 import { FormField } from "./FormField";
 import { SearchSelect, type SearchSelectOption } from "./SearchSelect";
 
@@ -24,6 +25,39 @@ function Harness({ options, initial = "" }: { options: SearchSelectOption[]; ini
     <output data-testid="value">{value}</output>
   </>;
 }
+
+// Tablero M-Cuenta-Agregar («País»): en el teléfono la lista es una hoja desde abajo con el rótulo del campo como título,
+// la ✕ y filas de 52 con letra de 16; la elegida, en petróleo con el tilde, sin fondo.
+describe("SearchSelect en el teléfono", () => {
+  const phone = { phone: true, parent: null, subtitle: null, hideBottomNav: () => {} };
+
+  it("abre una hoja con el título del campo y elige tocando una fila", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<AppChromeProvider value={phone}><Harness options={few} initial="es-AR" /></AppChromeProvider>);
+
+    await user.click(screen.getByRole("combobox", { name: "Idioma y región" }));
+    const sheet = await screen.findByRole("dialog", { name: "Idioma y región" });
+    expect(within(sheet).getByRole("button", { name: "Cerrar" })).toBeVisible();
+    const chosen = within(sheet).getByRole("option", { name: /^Español \(Argentina\)/ });
+    expect(chosen).toHaveClass("min-h-[52px]", "gap-3", "text-[16px]", "font-medium", "text-[var(--marca-tx)]");
+    expect(chosen).not.toHaveClass("bg-[var(--marca-t)]");
+    expect(within(sheet).queryByRole("searchbox")).not.toBeInTheDocument();
+
+    await user.click(within(sheet).getByRole("option", { name: /^English/ }));
+    expect(screen.getByTestId("value")).toHaveTextContent("en-US");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("con más de 10 opciones suma el buscador en la hoja", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<AppChromeProvider value={phone}><Harness options={many} /></AppChromeProvider>);
+
+    await user.click(screen.getByRole("combobox", { name: "Idioma y región" }));
+    const sheet = await screen.findByRole("dialog", { name: "Idioma y región" });
+    await user.type(within(sheet).getByRole("searchbox", { name: "Buscar" }), "cordoba");
+    expect(within(sheet).getAllByRole("option").map((option) => option.textContent)).toEqual(["Córdoba (GMT−3)"]);
+  });
+});
 
 // Tablero «Criterio · Formularios»: un solo control por dato. El desplegable elige una opción y, con más de 10,
 // suma un buscador arriba, adentro de la lista.

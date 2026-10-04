@@ -8,10 +8,11 @@ import { configureI18n } from "@/shared/i18n";
 import { FormatProvider } from "@/shared/format/useFormat";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
+import { AppChromeProvider } from "../app/AppChrome";
 import { FormField } from "../FormField";
 import { PhoneField, type PhoneDraft } from "./PhoneField";
 
-function renderField(props: { allowedCountries?: readonly string[] } = {}) {
+function renderField(props: { allowedCountries?: readonly string[] } = {}, { phone = false } = {}) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   const onValidityChange = vi.fn();
   function Harness() {
@@ -25,7 +26,9 @@ function renderField(props: { allowedCountries?: readonly string[] } = {}) {
       </FormatProvider>
     );
   }
-  render(<QueryClientProvider client={client}><Harness /></QueryClientProvider>);
+  render(<QueryClientProvider client={client}>
+    <AppChromeProvider value={{ phone, parent: null, subtitle: null, hideBottomNav: () => {} }}><Harness /></AppChromeProvider>
+  </QueryClientProvider>);
   return { onValidityChange };
 }
 
@@ -86,6 +89,16 @@ describe("PhoneField", () => {
     expect(screen.getByRole("combobox", { name: "País: Uruguay, +598" })).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent('"country":"UY"');
     expect(input).not.toHaveValue(expect.stringContaining("+598"));
+  });
+
+  // Tablero M-Cuenta-Agregar: en el teléfono el país se elige en la hoja «País», con la bandera, el nombre y el prefijo.
+  it("en el teléfono elige el país en la hoja «País»", async () => {
+    renderField({}, { phone: true });
+    const input = screen.getByRole("textbox", { name: "Teléfono" });
+    await waitFor(() => expect(input).toBeEnabled());
+    await userEvent.setup().click(screen.getByRole("combobox", { name: "País: Argentina, +54" }));
+    const sheet = await screen.findByRole("dialog", { name: "País" });
+    expect(within(sheet).getByRole("option", { name: "Argentina +54" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("no marca válido un número incompleto", async () => {

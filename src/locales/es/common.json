@@ -30,6 +30,7 @@
   "fields": {
     "currency": "Moneda",
     "selectCurrency": "Elegí una moneda",
+    "country": "País",
     "searchCountry": "Buscar país",
     "searchCurrency": "Buscar moneda",
     "searchTimeZone": "Buscar zona horaria",

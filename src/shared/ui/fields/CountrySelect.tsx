@@ -47,7 +47,7 @@ export function CountrySelect({ value, onChange, placeholder, id, disabled, allo
 
   return <SearchSelect id={id} options={options} value={value} onChange={onChange} className={className}
     placeholder={isPending ? t("states.loading") : isError ? t("states.error") : placeholder}
-    searchLabel={t("fields.searchCountry")} selectedLabel={selected ? countryLabel(selected) : undefined}
+    searchLabel={t("fields.searchCountry")} title={t("fields.country")} selectedLabel={selected ? countryLabel(selected) : undefined}
     renderValue={() => (selected ? (renderValue?.(selected) ?? countryLabel(selected)) : null)}
     disabled={disabled || !data} busy={isPending} aria-label={selectedLabel}
     aria-invalid={invalid} aria-describedby={describedBy} />;
