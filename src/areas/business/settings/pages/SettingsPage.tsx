@@ -170,7 +170,7 @@ export function SettingsPage() {
     </Page>
 
     <Dialog open={domainDialogOpen} onOpenChange={setDomainDialogOpen}>
-      <DialogContent className="md:max-w-[420px]">
+      <DialogContent size="sm">
         <DialogHeader><DialogTitle>{t("settings:domains.addTitle")}</DialogTitle></DialogHeader>
         <div className="px-5 py-4"><FormField label={t("settings:domains.domain")} required><Input autoComplete="off" value={domainDraft} onChange={(event) => setDomainDraft(event.target.value)} /></FormField>
           {addDomainError ? <p role="alert" className="mt-2 text-[13px] text-[var(--peligro)]">{addDomainError}</p> : null}</div>
@@ -182,7 +182,7 @@ export function SettingsPage() {
     </Dialog>
 
     <Dialog open={domainToVerify !== null} onOpenChange={(open) => { if (!open && !verifyDomain.isPending) closeVerify(); }}>
-      <DialogContent className="md:max-w-[560px]">
+      <DialogContent>
         <DialogHeader><DialogTitle>{t("settings:domains.verifyTitle", { domain: domainToVerify?.domain ?? "" })}</DialogTitle></DialogHeader>
         <div className="flex flex-col gap-3 px-5 py-4 text-[13px]">
           <p className="text-[var(--t1)]">{t("settings:domains.verifyDescription")}</p>

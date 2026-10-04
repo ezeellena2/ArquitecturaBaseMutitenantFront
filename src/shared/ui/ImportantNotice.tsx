@@ -23,7 +23,7 @@ interface ImportantNoticeProps {
 export function ImportantNotice({ open, onOpenChange, title, reason, detail, steps }: ImportantNoticeProps) {
   const { t } = useTranslation();
   return <Dialog open={open} onOpenChange={onOpenChange}>
-    <DialogContent className="md:max-w-[420px]" showCloseButton>
+    <DialogContent size="sm" showCloseButton>
       <DialogHeader><DialogTitle>{title}</DialogTitle></DialogHeader>
       <DialogBody className="gap-3 text-[13px]">
         <div data-slot="notice-reason" className="flex items-start gap-3 rounded-[10px] bg-[var(--peligro-t)] px-4 py-3.5 text-[var(--peligro-tx)]">

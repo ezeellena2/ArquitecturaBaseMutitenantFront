@@ -64,7 +64,7 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
   }
   if (!method && !reauthTicket && open) return <ChangeLoginMethodDialog action="addEmail" onClose={() => onOpenChange(false)} onAuthorized={setReauthTicket} />;
   return <Dialog open={open} onOpenChange={onOpenChange}>
-    <DialogContent className="md:max-w-[420px]" onCloseAutoFocus={restoreFocus} aria-describedby={methodId ? "method-code-hint" : undefined}>
+    <DialogContent size="sm" onCloseAutoFocus={restoreFocus} aria-describedby={methodId ? "method-code-hint" : undefined}>
       <form noValidate onSubmit={(event) => { event.preventDefault(); if (methodId) void confirm(); else void form.handleSubmit(send)(event); }} >
         <DialogHeader><DialogTitle>{t(method ? "verifyTitle" : "add")}</DialogTitle></DialogHeader>
         <DialogBody>

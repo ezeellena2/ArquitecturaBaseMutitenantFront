@@ -86,4 +86,27 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
 
     expect(screen.getByText("Cerramos todas tus sesiones.")).toHaveClass("text-[13.5px]", "leading-[1.55]", "text-[var(--t2)]", "max-md:text-[14.5px]", "max-md:leading-normal");
   });
+
+  // «Criterio · Diálogos», Los dos anchos: el chico de 420 (uno o dos campos, y confirmaciones) y el normal de 560. Quien
+  // usa el diálogo declara el chico; no hay otros anchos.
+  it("declara el ancho: el chico de 420 o el normal de 560", () => {
+    const { unmount } = render(
+      <Dialog open>
+        <DialogContent size="sm"><DialogHeader><DialogTitle>{"Agregar miembro"}</DialogTitle></DialogHeader></DialogContent>
+      </Dialog>,
+    );
+    const small = screen.getByRole("dialog", { name: "Agregar miembro" });
+    expect(small).toHaveClass("md:max-w-[420px]");
+    expect(small).not.toHaveClass("md:max-w-[560px]");
+    unmount();
+
+    render(
+      <Dialog open>
+        <DialogContent><DialogHeader><DialogTitle>{"Editar empresa"}</DialogTitle></DialogHeader></DialogContent>
+      </Dialog>,
+    );
+    const normal = screen.getByRole("dialog", { name: "Editar empresa" });
+    expect(normal).toHaveClass("md:max-w-[560px]");
+    expect(normal).not.toHaveClass("md:max-w-[420px]");
+  });
 });

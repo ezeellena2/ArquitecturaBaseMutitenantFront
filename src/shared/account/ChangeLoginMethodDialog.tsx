@@ -36,7 +36,7 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, o
     finally { setSaving(false); }
   }
   const busy = saving || reauth.isPending;
-  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent showCloseButton={action !== "remove"} className="md:max-w-[420px]" onCloseAutoFocus={restoreFocus}>
+  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent showCloseButton={action !== "remove"} size="sm" onCloseAutoFocus={restoreFocus}>
     <form onSubmit={(event) => { event.preventDefault(); void confirm(); }}>
       <DialogHeader><DialogTitle>{t(title)}</DialogTitle></DialogHeader>
       <DialogBody>

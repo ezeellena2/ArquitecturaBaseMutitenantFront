@@ -333,7 +333,7 @@ export function UserDetailPage() {
     </ChoiceSheet>
     <Dialog open={companyDialog !== null} onOpenChange={(open) => { if (!open && !save.isPending) closeCompanyDialog(); }}>
       {/* «Criterio · Diálogos»: dos campos, el chico de 420 px. */}
-      <DialogContent className="md:max-w-[420px]">
+      <DialogContent size="sm">
         <DialogHeader><DialogTitle>{companyDialog?.mode === "add" ? t("users:detail.addCompanyTitle") : t("users:detail.changeCompanyRolesTitle", { name: companyName(companyDialog?.companyId ?? "") })}</DialogTitle></DialogHeader>
         <div className="flex flex-col gap-4 p-5">
           {companyDialog?.mode === "add" ? <FormField label={t("users:invite.company")} required>

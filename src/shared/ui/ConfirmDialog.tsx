@@ -35,7 +35,7 @@ export function ConfirmDialog({
       <DialogContent
         showCloseButton={!destructive}
         onCloseAutoFocus={restoreFocus}
-        className="md:max-w-[420px]"
+        size="sm"
       >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
