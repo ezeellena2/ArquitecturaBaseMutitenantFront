@@ -8,7 +8,7 @@ import { PersonalLoginMethodNotice } from "@/shared/account/PersonalLoginMethodN
 export function PersonalHomePage() {
   const { t } = useTranslation();
   const { data } = useCurrentUser();
-  return <Page icon={House} title={t("home.title")}>
-    {data?.needsPersonalLoginMethod ? <PersonalLoginMethodNotice /> : null}
+  return <Page icon={House} title={t("home.title")} phoneBody="flush">
+    {data?.needsPersonalLoginMethod ? <PersonalLoginMethodNotice className="mx-4 mt-2" /> : null}
   </Page>;
 }

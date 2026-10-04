@@ -40,6 +40,8 @@
   --peligro-borde: oklch(0.57 0.2 25 / 0.4);
   --brillo: oklch(1 0 0 / 0.15);
   /* El punto de un estado tiene su propio tono, más claro que el texto (tableros Usuarios y M-Usuarios, .w-est). */
+  /* Tablero M-Inicio-Personal (.ap-sug): el texto de la tarjeta de sugerencia, petróleo oscuro sobre --marca-t. */
+  --sugerencia-tx: oklch(0.3 0.05 195);
   --punto-ok: oklch(0.6 0.13 155);
   --punto-alerta: oklch(0.72 0.15 70);
   --punto-apagado: oklch(0.75 0.01 78);

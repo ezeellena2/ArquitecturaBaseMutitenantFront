@@ -14,6 +14,7 @@ import type { MeResponse } from "@/shared/api/types";
 import { changeCulture } from "@/shared/i18n";
 import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { Page } from "@/shared/ui/Page";
+import { Section } from "@/shared/ui/Section";
 import { FormField } from "@/shared/ui/FormField";
 import { FormError } from "@/shared/ui/FormError";
 import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
@@ -65,21 +66,18 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   </>;
   const dirty = isDirty ? <span className="font-medium text-[var(--alerta)]">{t("unsaved")}</span> : null;
   return <>
-    <Page title={t("title")} icon={UserRound} status={dirty} actions={actions}
+    <Page title={t("title")} icon={UserRound} status={dirty} actions={actions} phoneBody="gray"
       banner={<ConcurrencyBanner error={failure} isDirty={isDirty} onSeeNew={() => { void reload(); }} onContinueEditing={() => setFailure(undefined)} />}>
       {failure && (!(failure instanceof ApiError) || failure.code !== "General.ConcurrencyConflict") ? <FormError className="mb-3" message={failure instanceof Error ? failure.message : errors("server")} /> : null}
       <form id="account-profile" aria-label={t("title")} onSubmit={form.handleSubmit(save)}>
-        <section role="region" aria-labelledby="account-data-title" className="overflow-hidden rounded-[12px] border border-[var(--borde)] bg-[var(--lado-activo)]">
-          <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]">
-            <h2 id="account-data-title">{t("data")}</h2>
-          </header>
+        <Section title={t("data")}>
           {/* Tablero Cuenta: nombre, idioma y zona en tres columnas iguales, al ancho de la tarjeta. */}
-          <div className="grid grid-cols-1 items-start gap-4 px-4 py-4 lg:grid-cols-3 lg:px-5 lg:py-4">
+          <div className="grid grid-cols-1 items-start gap-4 px-4 py-4 lg:grid-cols-3 lg:px-5 lg:py-4 max-md:gap-3.5 max-md:py-3.5">
             <div className="min-w-0"><FormField label={t("name")} error={form.formState.errors.displayName?.message}><Input {...form.register("displayName")} autoComplete="name" /></FormField></div>
             <div className="min-w-0"><Controller control={form.control} name="culture" render={({ field }) => <FormField label={t("culture")} error={form.formState.errors.culture?.message}><CultureSelect value={field.value} onChange={field.onChange} placeholder={t("culture")} /></FormField>} /></div>
             <div className="min-w-0"><Controller control={form.control} name="timeZoneId" render={({ field }) => <FormField label={t("timeZone")} error={form.formState.errors.timeZoneId?.message}><TimeZoneSelect value={field.value} onChange={field.onChange} placeholder={t("timeZone")} /></FormField>} /></div>
           </div>
-        </section>
+        </Section>
       </form>
       {children}
     </Page>

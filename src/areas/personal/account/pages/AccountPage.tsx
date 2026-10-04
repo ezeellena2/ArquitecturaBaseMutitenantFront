@@ -10,13 +10,13 @@ import { LoginMethodsTable } from "../components/LoginMethodsTable";
 import { PersonalLoginMethodNotice } from "@/shared/account/PersonalLoginMethodNotice";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
+import { Section } from "@/shared/ui/Section";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import type { AccountLoginMethod } from "@/shared/api/types";
 import { AddLoginMethodDialog } from "@/shared/account/AddLoginMethodDialog";
 import { VerifyLoginMethodDialog } from "../components/VerifyLoginMethodDialog";
 import { ChangeLoginMethodDialog } from "@/shared/account/ChangeLoginMethodDialog";
-import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { toastError } from "@/shared/ui/sonner";
@@ -35,7 +35,6 @@ export function AccountPage() {
   const [addOpen, setAddOpen] = useState(false);
   const [verifyMethod, setVerifyMethod] = useState<AccountLoginMethod | null>(null);
   const [change, setChange] = useState<{ action: "remove" | "primary"; method: AccountLoginMethod } | null>(null);
-  const mobile = useMediaQuery("(max-width: 767px)");
   const [params, setParams] = useSearchParams();
   const handledGoogle = useRef(false);
   const auth = useAuth();
@@ -64,20 +63,14 @@ export function AccountPage() {
   if (isPending) return <p role="status" className="p-4 text-[13px] lg:px-6 lg:py-5">{t("states.loading")}</p>;
   if (!data) return <div className="flex flex-col gap-3.5 p-4 text-[13px] lg:px-6 lg:py-5"><FormError message={error instanceof Error ? error.message : t("states.error")} /><Button onClick={() => { void refetch(); }}>{t("actions.retry")}</Button></div>;
   return <><AccountProfileForm key={data.id} account={data}>
-    <section role="region" aria-labelledby="account-methods-title" className="overflow-hidden rounded-[12px] border border-[var(--borde)] bg-[var(--lado-activo)]">
-      <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]">
-        <h2 id="account-methods-title">{t("account:methods")}</h2>
-        <Button type="button" variant="outline" size="sm" onClick={() => setAddOpen(true)}><Plus size={14} />{t(mobile ? "account:addShort" : "account:add")}</Button>
-      </header>
+    {/* Tablero M-Cuenta: en el teléfono, «Agregar correo o teléfono» en texto a la derecha del título. */}
+    <Section title={t("account:methods")} action={{ label: t("account:add"), onClick: () => setAddOpen(true) }}>
       {methods.data?.needsPersonalLoginMethod ? <div className="border-b border-[var(--borde)] p-3"><PersonalLoginMethodNotice onAdd={() => setAddOpen(true)} /></div> : null}
       {methods.isPending ? <p className="p-4 text-[13px] text-[var(--t2)]" role="status">{t("states.loading")}</p> : null}
       {methods.error ? <div className="p-4"><FormError message={methods.error.message} /><Button type="button" onClick={() => { void methods.refetch(); }}>{t("actions.retry")}</Button></div> : null}
       {methods.data ? <LoginMethodsTable methods={methods.data.methods} canLinkGoogle={methods.data.canLinkGoogle} onAction={(action, method) => { if (action === "verify") setVerifyMethod(method); else setChange({ action, method }); }} /> : null}
-    </section>
-    <section role="region" aria-labelledby="account-privacy-title" className="overflow-hidden rounded-[12px] border border-[var(--borde)] bg-[var(--lado-activo)]">
-      <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]">
-        <h2 id="account-privacy-title">{t("account:privacy")}</h2>
-      </header>
+    </Section>
+    <Section title={t("account:privacy")}>
       <List label={t("account:privacy")}>
         <ListItem icon={<Trash2 aria-hidden="true" />} title={<span className="inline-flex items-center gap-1.5">{t("account:deletion")}
           {deletionBlocked ? <InfoButton label={t("account:deletionBlockedInfo")} onClick={() => setDeletionBlockedOpen(true)} /> : null}
@@ -87,7 +80,7 @@ export function AccountPage() {
             onClick={() => { if (deletionBlocked) setDeletionBlockedOpen(true); else setDeletionOpen(true); }}>{t("account:requestDeletion")}</Button>
         </ListItem>
       </List>
-    </section>
+    </Section>
   </AccountProfileForm>
   {addOpen ? <AddLoginMethodDialog open onOpenChange={setAddOpen} onComplete={refresh} /> : null}
   {verifyMethod ? <VerifyLoginMethodDialog method={verifyMethod} open onOpenChange={(open) => { if (!open) setVerifyMethod(null); }} onComplete={refresh} /> : null}

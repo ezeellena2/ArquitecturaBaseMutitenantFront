@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { asPhone } from "@/test/utils/phone";
 
 it("mantiene el inicio personal con su banda «Inicio», navegación propia y accesibilidad sin contenido de negocio", async () => {
   const { container } = renderRouteWithProviders("/", { as: "consumer-empty" });
@@ -23,4 +24,18 @@ it("avisa que falta método propio y «Agregar» abre el diálogo en el Inicio",
 
   expect(await screen.findByRole("dialog", { name: "Agregar correo o teléfono" })).toBeVisible();
   expect(router.state.location.pathname).toBe("/");
+});
+
+// Tablero M-Inicio-Personal: en el teléfono el aviso es una tarjeta petróleo clara con «Agregar» como botón principal.
+it("en el teléfono el aviso es una tarjeta con «Agregar» principal", async () => {
+  const restore = asPhone();
+  try {
+    renderRouteWithProviders("/", { as: "consumer-needs-personal-method" });
+    const text = await screen.findByText("Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.");
+    expect(text.parentElement).toHaveClass("rounded-[16px]", "bg-[var(--marca-t)]");
+    expect(text).toHaveClass("text-[15px]", "text-[var(--sugerencia-tx)]");
+    expect(screen.getByRole("button", { name: "Agregar" })).toHaveAttribute("data-variant", "default");
+  } finally {
+    restore();
+  }
 });

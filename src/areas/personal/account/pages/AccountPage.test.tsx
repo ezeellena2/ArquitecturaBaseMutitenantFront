@@ -7,11 +7,32 @@ import { configureI18n, changeCulture } from "@/shared/i18n";
 import { consumerWithoutOrganizations } from "@/test/mocks/currentUsers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { asPhone } from "@/test/utils/phone";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 
 beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); });
 
 describe("Mi cuenta", () => {
+  // Tablero M-Cuenta: en el teléfono, grupos sobre gris con el título arriba; «Agregar correo o teléfono» en texto y
+  // «Dar de baja» en texto rojo, sin ícono.
+  it("en el teléfono son grupos sobre gris con las acciones en texto", async () => {
+    const restore = asPhone();
+    try {
+      server.use(http.get("/api/me/login-methods", () => HttpResponse.json({
+        methods: [], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [],
+      })));
+      renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+
+      expect(await screen.findByRole("heading", { level: 2, name: "Tus datos" })).toHaveClass("text-[13.5px]");
+      const signIn = screen.getByRole("region", { name: "Cómo entrás" });
+      expect(within(signIn).getByRole("button", { name: "Agregar correo o teléfono" })).toHaveClass("text-[var(--marca-tx)]");
+      const privacy = screen.getByRole("region", { name: "Privacidad" });
+      expect(within(privacy).getByRole("button", { name: "Dar de baja" }).parentElement).toHaveClass("max-md:[&>[data-variant=danger]]:text-[var(--peligro)]");
+    } finally {
+      restore();
+    }
+  });
+
   it("muestra carga, error y reintento de las formas de acceso", async () => {
     const user = userEvent.setup();
     let attempts = 0;
