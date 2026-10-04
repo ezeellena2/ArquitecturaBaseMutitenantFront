@@ -28,7 +28,6 @@ const scenarios = [];
 function account(id, extra = {}) { scenarios.push({ id, group: "cuenta", board: "Cuenta", props: { metodos: "Con correo personal", baja: "Puede darse de baja" }, ...extra }); }
 account("cuenta-personal");
 account("cuenta-guardada", { actions: [fill("Nombre y apellido", "Lucía Fernández Pérez"), click("button", "$save")], responses: [response("PUT", "/api/me", {})], afterName: "Lucía Fernández Pérez", boardState: { nombre: "Lucía Fernández Pérez", guardado: { nombre: "Lucía Fernández Pérez", idioma: "es-AR", zona: "America/Argentina/Buenos_Aires" }, aviso: "Guardamos tus datos." }, readyText: "Guardamos tus datos." });
-account("cuenta-navegacion-movil", { mobileOnly: true, actions: [click("button", "Abrir o contraer navegación")], boardState: { abierto: "drawer" } });
 account("cuenta-solo-empresa", { props: { metodos: "Solo el correo de la empresa", baja: "Puede darse de baja" }, methods: [{ ...company, isPrimary: true, canRemove: false, canMakePrimary: false }], needsOwn: true });
 account("cuenta-sucia", { actions: [fill("Nombre y apellido", "Lucía Fernández Pérez")], boardState: { nombre: "Lucía Fernández Pérez" } });
 account("cuenta-descartada", { actions: [fill("Nombre y apellido", "Lucía Fernández Pérez"), click("button", "$discard")], boardState: {} });
@@ -72,8 +71,9 @@ async function actions(page, entries = [], mobile = false) {
       await page.getByRole("textbox", { name: "Código 1" }).fill(action.value);
       continue;
     }
-    const name = action.name === "$discard" ? mobile ? "Descartar" : "Descartar cambios" : action.name === "$save" ? mobile ? "Guardar" : "Guardar cambios" : action.name === "$user" ? mobile ? "Tu cuenta y tus perfiles" : "Lucía Fernández, Personal" : action.name;
-    let locator = page.getByRole(action.role, { name, exact: true });
+    // En el teléfono la cuenta y los perfiles están en «Más», abajo (tableros M-Mas-Personal, «Criterio · Marco»).
+    const name = action.name === "$discard" ? "Descartar cambios" : action.name === "$save" ? "Guardar cambios" : action.name === "$user" ? mobile ? "Más" : "Lucía Fernández, Personal" : action.name;
+    let locator = page.getByRole(action.name === "$user" && mobile ? "link" : action.role, { name, exact: true });
     if (action.nth !== undefined) locator = locator.nth(action.nth);
     if (action.type === "fill") await locator.fill(action.value); else await locator.click();
   }

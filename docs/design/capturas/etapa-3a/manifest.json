@@ -1790,9 +1790,7 @@
         "width": 1440,
         "height": 900
       },
-      "props": {
-        "aviso": "Sin aviso"
-      },
+      "props": {},
       "app": {
         "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
@@ -1810,15 +1808,12 @@
         "width": 390,
         "height": 844
       },
-      "props": {
-        "aviso": "Sin aviso",
-        "vista": "Pantalla"
-      },
+      "props": {},
       "app": {
         "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
         "userFixture": "visual-personal",
-        "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]"
+        "readySelector": "nav[data-slot=\"bottom-nav\"]"
       }
     },
     {
@@ -1833,8 +1828,9 @@
       "props": {},
       "app": {
         "captureMode": "harness",
-        "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
-        "userFixture": "visual-business",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg",
+        "userFixture": "visual-owner",
+        "responses": [{"method":"GET","path":"/api/home","status":200,"body":{"organization":{"users":{"total":11},"roles":{"total":7},"companies":{"total":3},"publicPage":{"state":"Published"},"settings":{"domain":"delta.ejemplo.com"},"audit":{"lastChangeAtUtc":"2026-10-03T13:42:00Z"}},"companies":[],"pending":[{"area":"users","kind":"invitationExpired","subject":"carla.bianchi@delta.ejemplo.com","urgent":false,"sinceUtc":"2026-09-25T15:00:00Z","dueAtUtc":null,"targetId":"member-carla"},{"area":"users","kind":"deletionRequested","subject":"Diego Ríos","urgent":false,"sinceUtc":"2026-09-27T15:00:00Z","dueAtUtc":"2026-10-27T15:00:00Z","targetId":"member-diego"},{"area":"settings","kind":"domainUnverified","subject":"delta.ejemplo.com","urgent":false,"sinceUtc":"2026-10-01T15:00:00Z","dueAtUtc":null,"targetId":"domain-1"}]}}],
         "readySelector": "main",
         "readyText": "Lucía Fernández"
       }
@@ -1848,14 +1844,13 @@
         "width": 390,
         "height": 844
       },
-      "props": {
-        "vista": "Pantalla"
-      },
+      "props": {},
       "app": {
         "captureMode": "harness",
-        "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
-        "userFixture": "visual-business",
-        "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]"
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg",
+        "userFixture": "visual-owner",
+        "responses": [{"method":"GET","path":"/api/home","status":200,"body":{"organization":{"users":{"total":11},"roles":{"total":7},"companies":{"total":3},"publicPage":{"state":"Published"},"settings":{"domain":"delta.ejemplo.com"},"audit":{"lastChangeAtUtc":"2026-10-03T13:42:00Z"}},"companies":[],"pending":[{"area":"users","kind":"invitationExpired","subject":"carla.bianchi@delta.ejemplo.com","urgent":false,"sinceUtc":"2026-09-25T15:00:00Z","dueAtUtc":null,"targetId":"member-carla"},{"area":"users","kind":"deletionRequested","subject":"Diego Ríos","urgent":false,"sinceUtc":"2026-09-27T15:00:00Z","dueAtUtc":"2026-10-27T15:00:00Z","targetId":"member-diego"},{"area":"settings","kind":"domainUnverified","subject":"delta.ejemplo.com","urgent":false,"sinceUtc":"2026-10-01T15:00:00Z","dueAtUtc":null,"targetId":"domain-1"}]}}],
+        "readySelector": "nav[data-slot=\"bottom-nav\"]"
       }
     },
     {
@@ -1867,13 +1862,11 @@
         "width": 1440,
         "height": 900
       },
-      "props": {
-        "aviso": "Sin aviso"
-      },
+      "props": {},
       "boardActions": [
         {
           "type": "click",
-          "selector": ".um-btn"
+          "selector": ".um"
         }
       ],
       "app": {
@@ -1895,27 +1888,19 @@
       "id": "perfiles-personal-movil",
       "pair": "perfiles-personal",
       "group": "inicios",
-      "board": "M-Inicio-Personal",
+      "board": "M-Mas-Personal",
       "viewport": {
         "width": 390,
         "height": 844
       },
-      "props": {
-        "aviso": "Sin aviso",
-        "vista": "Perfiles abiertos"
-      },
+      "props": {},
       "app": {
         "captureMode": "harness",
         "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
         "userFixture": "visual-personal",
-        "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]",
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Tu cuenta y tus perfiles"
-          }
-        ]
+        "readySelector": "nav[data-slot=\"bottom-nav\"]",
+        "actions": [{ "type": "click", "role": "link", "name": "Más" }],
+        "readyText": "Mi cuenta"
       }
     },
     {
@@ -1936,8 +1921,9 @@
       ],
       "app": {
         "captureMode": "harness",
-        "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
-        "userFixture": "visual-business",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg",
+        "userFixture": "visual-owner",
+        "responses": [{"method":"GET","path":"/api/home","status":200,"body":{"organization":{"users":{"total":11},"roles":{"total":7},"companies":{"total":3},"publicPage":{"state":"Published"},"settings":{"domain":"delta.ejemplo.com"},"audit":{"lastChangeAtUtc":"2026-10-03T13:42:00Z"}},"companies":[],"pending":[{"area":"users","kind":"invitationExpired","subject":"carla.bianchi@delta.ejemplo.com","urgent":false,"sinceUtc":"2026-09-25T15:00:00Z","dueAtUtc":null,"targetId":"member-carla"},{"area":"users","kind":"deletionRequested","subject":"Diego Ríos","urgent":false,"sinceUtc":"2026-09-27T15:00:00Z","dueAtUtc":"2026-10-27T15:00:00Z","targetId":"member-diego"},{"area":"settings","kind":"domainUnverified","subject":"delta.ejemplo.com","urgent":false,"sinceUtc":"2026-10-01T15:00:00Z","dueAtUtc":null,"targetId":"domain-1"}]}}],
         "readySelector": "main",
         "readyText": "Lucía Fernández",
         "actions": [
@@ -1953,81 +1939,20 @@
       "id": "perfiles-org-movil",
       "pair": "perfiles-org",
       "group": "inicios",
-      "board": "M-Inicio-Org",
+      "board": "M-WA-Menu",
       "viewport": {
         "width": 390,
         "height": 844
       },
-      "props": {
-        "vista": "Perfiles abiertos"
-      },
+      "props": {},
       "app": {
         "captureMode": "harness",
-        "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
-        "userFixture": "visual-business",
-        "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]",
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Tu cuenta y tus perfiles"
-          }
-        ]
-      }
-    },
-    {
-      "id": "lateral-personal-movil",
-      "pair": "lateral-personal",
-      "group": "inicios",
-      "mobileOnly": true,
-      "board": "M-Inicio-Personal",
-      "viewport": {
-        "width": 390,
-        "height": 844
-      },
-      "props": {
-        "aviso": "Sin aviso",
-        "vista": "Menú lateral abierto"
-      },
-      "app": {
-        "captureMode": "harness",
-        "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
-        "userFixture": "visual-personal",
-        "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]",
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Abrir o contraer navegación"
-          }
-        ]
-      }
-    },
-    {
-      "id": "lateral-org-movil",
-      "pair": "lateral-org",
-      "group": "inicios",
-      "mobileOnly": true,
-      "board": "M-Inicio-Org",
-      "viewport": {
-        "width": 390,
-        "height": 844
-      },
-      "props": {
-        "vista": "Menú lateral abierto"
-      },
-      "app": {
-        "captureMode": "harness",
-        "path": "/src/test/visualApp.html?as=visual-business&route=%2Forg",
-        "userFixture": "visual-business",
-        "readySelector": "button[aria-label=\"Tu cuenta y tus perfiles\"]",
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Abrir o contraer navegación"
-          }
-        ]
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg",
+        "userFixture": "visual-owner",
+        "responses": [{"method":"GET","path":"/api/home","status":200,"body":{"organization":{"users":{"total":11},"roles":{"total":7},"companies":{"total":3},"publicPage":{"state":"Published"},"settings":{"domain":"delta.ejemplo.com"},"audit":{"lastChangeAtUtc":"2026-10-03T13:42:00Z"}},"companies":[],"pending":[{"area":"users","kind":"invitationExpired","subject":"carla.bianchi@delta.ejemplo.com","urgent":false,"sinceUtc":"2026-09-25T15:00:00Z","dueAtUtc":null,"targetId":"member-carla"},{"area":"users","kind":"deletionRequested","subject":"Diego Ríos","urgent":false,"sinceUtc":"2026-09-27T15:00:00Z","dueAtUtc":"2026-10-27T15:00:00Z","targetId":"member-diego"},{"area":"settings","kind":"domainUnverified","subject":"delta.ejemplo.com","urgent":false,"sinceUtc":"2026-10-01T15:00:00Z","dueAtUtc":null,"targetId":"domain-1"}]}}],
+        "readySelector": "nav[data-slot=\"bottom-nav\"]",
+        "actions": [{ "type": "click", "role": "link", "name": "Más" }],
+        "readyText": "Mi cuenta"
       }
     },
     {
@@ -2047,14 +1972,14 @@
         "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Fsin-permiso",
         "userFixture": "visual-error-org",
         "readySelector": "main",
-        "readyText": "Si lo necesitás, pedíselo a quien administra los usuarios de Grupo Delta."
+        "readyText": "No tenés permiso para ver esta página"
       }
     },
     {
       "id": "error-org-403-movil",
       "pair": "error-org-403",
       "group": "errores",
-      "board": "Error-Org",
+      "board": "M-Error-Org",
       "viewport": {
         "width": 390,
         "height": 844
@@ -2064,12 +1989,11 @@
       },
       "app": {
         "captureMode": "harness",
-        "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Fsin-permiso",
+        "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Forg%2Fauditoria",
         "userFixture": "visual-error-org",
         "readySelector": "main",
-        "readyText": "Si lo necesitás, pedíselo a quien administra los usuarios de Grupo Delta."
-      },
-      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+        "readyText": "No tenés permiso para ver esta página"
+      }
     },
     {
       "id": "error-org-404-escritorio",
@@ -2095,7 +2019,7 @@
       "id": "error-org-404-movil",
       "pair": "error-org-404",
       "group": "errores",
-      "board": "Error-Org",
+      "board": "M-Error-Org",
       "viewport": {
         "width": 390,
         "height": 844
@@ -2105,12 +2029,11 @@
       },
       "app": {
         "captureMode": "harness",
-        "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Fno-existe",
+        "path": "/src/test/visualApp.html?as=visual-error-org&route=%2Forg%2Fauditoria%2Fno-existe",
         "userFixture": "visual-error-org",
         "readySelector": "main",
         "readyText": "No encontramos esta página"
-      },
-      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+      }
     },
     {
       "id": "perfil-suspendido-escritorio",
@@ -2136,7 +2059,7 @@
       "id": "perfil-suspendido-movil",
       "pair": "perfil-suspendido",
       "group": "errores",
-      "board": "Perfil-Suspendido",
+      "board": "M-Perfil-Suspendido",
       "viewport": {
         "width": 390,
         "height": 844
@@ -2150,8 +2073,7 @@
         "userFixture": "visual-unavailable-suspended",
         "readySelector": "main",
         "readyText": "Beta S.R.L. está suspendida"
-      },
-      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+      }
     },
     {
       "id": "perfil-espera-escritorio",
@@ -2177,7 +2099,7 @@
       "id": "perfil-espera-movil",
       "pair": "perfil-espera",
       "group": "errores",
-      "board": "Perfil-Suspendido",
+      "board": "M-Perfil-Suspendido",
       "viewport": {
         "width": 390,
         "height": 844
@@ -2191,8 +2113,7 @@
         "userFixture": "visual-unavailable-pending",
         "readySelector": "main",
         "readyText": "Estamos revisando Grupo Delta"
-      },
-      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+      }
     },
     {
       "id": "perfil-cerrado-escritorio",
@@ -2218,7 +2139,7 @@
       "id": "perfil-cerrado-movil",
       "pair": "perfil-cerrado",
       "group": "errores",
-      "board": "Perfil-Suspendido",
+      "board": "M-Perfil-Suspendido",
       "viewport": {
         "width": 390,
         "height": 844
@@ -2232,8 +2153,7 @@
         "userFixture": "visual-unavailable-closed",
         "readySelector": "main",
         "readyText": "Beta S.R.L. está cerrada"
-      },
-      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+      }
     },
     {
       "id": "sesion-iniciando-escritorio",
@@ -2259,7 +2179,7 @@
       "id": "sesion-iniciando-movil",
       "pair": "sesion-iniciando",
       "group": "errores",
-      "board": "Sesion",
+      "board": "M-Sesion",
       "viewport": {
         "width": 390,
         "height": 844
@@ -2273,8 +2193,7 @@
         "userFixture": "visual-personal",
         "readySelector": "main",
         "readyText": "Iniciando sesión…"
-      },
-      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+      }
     },
     {
       "id": "sesion-grupo-delta-escritorio",
@@ -2300,7 +2219,7 @@
       "id": "sesion-grupo-delta-movil",
       "pair": "sesion-grupo-delta",
       "group": "errores",
-      "board": "Sesion",
+      "board": "M-Sesion",
       "viewport": {
         "width": 390,
         "height": 844
@@ -2314,8 +2233,7 @@
         "userFixture": "visual-personal",
         "readySelector": "main",
         "readyText": "Cambiando a Grupo Delta…"
-      },
-      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+      }
     },
     {
       "id": "sesion-personal-escritorio",
@@ -2341,7 +2259,7 @@
       "id": "sesion-personal-movil",
       "pair": "sesion-personal",
       "group": "errores",
-      "board": "Sesion",
+      "board": "M-Sesion",
       "viewport": {
         "width": 390,
         "height": 844
@@ -2355,8 +2273,7 @@
         "userFixture": "visual-personal",
         "readySelector": "main",
         "readyText": "Cambiando a Personal…"
-      },
-      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+      }
     },
     {
       "id": "sesion-cerrando-escritorio",
@@ -2382,7 +2299,7 @@
       "id": "sesion-cerrando-movil",
       "pair": "sesion-cerrando",
       "group": "errores",
-      "board": "Sesion",
+      "board": "M-Sesion",
       "viewport": {
         "width": 390,
         "height": 844
@@ -2396,8 +2313,7 @@
         "userFixture": "visual-personal",
         "readySelector": "main",
         "readyText": "Cerrando sesión…"
-      },
-      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+      }
     },
     {
       "id": "sesion-error-escritorio",
@@ -2423,7 +2339,7 @@
       "id": "sesion-error-movil",
       "pair": "sesion-error",
       "group": "errores",
-      "board": "Sesion",
+      "board": "M-Sesion",
       "viewport": {
         "width": 390,
         "height": 844
@@ -2437,8 +2353,7 @@
         "userFixture": "visual-personal",
         "readySelector": "main",
         "readyText": "No pudimos iniciar tu sesión"
-      },
-      "mobileReference": "sin tablero móvil: pendiente de aprobación del usuario"
+      }
     }
   ]
 }

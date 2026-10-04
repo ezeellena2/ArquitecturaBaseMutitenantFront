@@ -21,7 +21,7 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = path.join(root, "docs/design/capturas/etapa-3a/manifest.json");
-const lienzo = path.join(root, "docs/design/lienzo-v35");
+const lienzo = path.join(root, "docs/design/lienzo");
 const outputRoot = path.join(root, "docs/design/capturas/etapa-3a");
 
 test("la captura oculta también la primera cifra OTP, que admite pegar seis dígitos", async () => {
@@ -106,23 +106,22 @@ test("el servidor del lienzo ofrece Inter local para comparar la misma fuente qu
   }
 });
 
-test("inicios y perfiles tienen pares; los dos laterales abiertos solo tienen tablero móvil", () => {
+test("inicios y perfiles tienen pares", () => {
   const cases = validateManifest(manifest, lienzo).filter((entry) => entry.group === "inicios");
-  const expected = ["inicio-personal", "inicio-org", "perfiles-personal", "perfiles-org", "lateral-personal", "lateral-org"];
+  const expected = ["inicio-personal", "inicio-org", "perfiles-personal", "perfiles-org"];
   assert.deepEqual([...new Set(cases.map((entry) => entry.pair))].sort(), expected.sort());
-  assert.equal(cases.length, 10);
-  assert.ok(cases.filter((entry) => entry.id.startsWith("lateral-")).every((entry) => entry.mobileOnly === true));
+  assert.equal(cases.length, 8);
   assert.ok(cases.every((entry) => entry.app.userFixture && entry.app.path.includes("visualApp.html")));
   assertCapturedPairs(cases, outputRoot);
 });
 
-test("el lateral móvil añade cobertura y solo los inicios móviles vacíos pueden repetirse", () => {
+// Tableros M-Mas-Personal y M-WA-Menu («Criterio · Marco»): en el teléfono no hay lateral ni menú de la cuenta;
+// los perfiles, la Administración y Mi cuenta están en «Más», abajo.
+test("en el teléfono los perfiles están en «Más» y solo los inicios móviles vacíos pueden repetirse", () => {
   const cases = validateManifest(manifest, lienzo).filter((entry) => entry.group === "inicios");
-  assert.equal(cases.filter((entry) => entry.id.startsWith("lateral-") && entry.viewport.width === 1440).length, 0,
-    "el tablero de escritorio no dibuja el lateral contraído y los casos anteriores repetían el inicio");
-  for (const entry of cases.filter((item) => item.id.startsWith("lateral-"))) {
-    assert.equal(entry.viewport.width, 390);
-    assert.ok(entry.app.actions?.some((action) => action.type === "click" && action.name === "Abrir o contraer navegación"));
+  for (const entry of cases.filter((item) => item.id.startsWith("perfiles-") && item.viewport.width === 390)) {
+    assert.ok(["M-Mas-Personal", "M-WA-Menu"].includes(entry.board), entry.id);
+    assert.deepEqual(entry.app.actions, [{ type: "click", role: "link", name: "Más" }]);
   }
   for (const kind of ["app", "board"]) {
     const hashes = new Map();
@@ -141,7 +140,7 @@ test("el lateral móvil añade cobertura y solo los inicios móviles vacíos pue
 test("cada captura del arnés visual se identifica y se distingue del recorrido real", () => {
   const cases = validateManifest(manifest, lienzo);
   const harnessCases = cases.filter((entry) => entry.app.path.startsWith("/src/test/"));
-  assert.equal(harnessCases.length, 30);
+  assert.equal(harnessCases.length, 28);
   for (const entry of harnessCases) assert.equal(entry.app.captureMode, "harness", entry.id);
   for (const entry of cases.filter((item) => !item.app.path.startsWith("/src/test/"))) {
     assert.notEqual(entry.app.captureMode, "harness", entry.id);
@@ -163,22 +162,19 @@ test("errores de organización y estados de sesión cubren toda la matriz 3a", (
   ];
   assert.deepEqual([...new Set(cases.map((entry) => entry.pair))].sort(), expected.sort());
   assert.equal(cases.length, expected.length * 2);
-  assert.ok(cases.filter((entry) => entry.viewport.width === 390).every((entry) =>
-    entry.mobileReference === "sin tablero móvil: pendiente de aprobación del usuario"));
   assertCapturedPairs(cases, outputRoot);
 });
 
-test("los diez estados móviles sin tablero aprobado tienen solo captura de app y se declaran pendientes", () => {
+// Tableros M-Error-Org, M-Perfil-Suspendido y M-Sesion: el teléfono es una app y cada estado tiene su tablero móvil.
+test("los diez estados móviles se comparan con su tablero M-*", () => {
   const cases = validateManifest(manifest, lienzo).filter((entry) =>
     entry.group === "errores" && entry.viewport.width === 390);
   assert.equal(cases.length, 10);
-  const readme = readFileSync(path.join(outputRoot, "errores", "README.md"), "utf8");
-  assert.match(readme, /sin tablero móvil: pendiente de aprobación del usuario/);
-  assert.match(readme, /no tienen referencia móvil comparable/i);
-  assert.doesNotMatch(readme, /recortad[ao].*referencia de textos y orden/i);
   for (const entry of cases) {
+    assert.ok(["M-Error-Org", "M-Perfil-Suspendido", "M-Sesion"].includes(entry.board), entry.id);
+    assert.equal(entry.mobileReference, undefined, entry.id);
     const files = capturePaths(outputRoot, entry);
-    assert.equal(existsSync(files.board), false, `${entry.id} no tiene un tablero móvil aprobado`);
+    assert.equal(existsSync(files.board), true, `${entry.id} tiene su tablero móvil`);
     assert.equal(existsSync(files.app), true, `${entry.id} conserva su captura de app`);
   }
 });
