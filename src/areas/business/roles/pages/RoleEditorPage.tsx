@@ -17,6 +17,9 @@ import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
 import { Page } from "@/shared/ui/Page";
+import { Section } from "@/shared/ui/Section";
+import { useAppChrome } from "@/shared/ui/app/AppChrome";
+import { Checkbox } from "@/shared/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Textarea } from "@/shared/ui/textarea";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
@@ -30,6 +33,9 @@ interface RoleDraft {
   companyId: string;
   permissions: string[];
 }
+
+// Tablero M-Rol (.ap-chk): la casilla del teléfono mide 22, con borde de 1,5.
+const phoneCheckClass = "size-[22px]! rounded-[6px]! border-[1.5px]! border-[var(--borde2)]! data-[state=checked]:border-[var(--marca)]!";
 
 const emptyDraft: RoleDraft = { name: "", description: "", scope: undefined, companyId: "", permissions: [] };
 
@@ -67,6 +73,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { phone } = useAppChrome();
   const { data: currentUser } = useCurrentUser();
   const canRead = currentUser?.permissions?.includes("roles.read") === true;
   const canManage = currentUser?.permissions?.includes("roles.manage") === true;
@@ -165,6 +172,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
     onError: (error) => { if (!(error instanceof Error && error.message === "validation")) setFailure(error); },
   });
 
+  const summary = mode === "edit" && role.data ? t("roles:scopeAndUsers", { scope: valeEnText(role.data.scope), count: role.data.userCount }) : undefined;
   const title = mode === "create" ? t("roles:createTitle") : role.data ? displayRoleName(role.data, t) : t("roles:editorTitle");
 
   if (!canRead || mode === "create" && !canManage) return <ForbiddenPage homePath="/org" />;
@@ -202,6 +210,18 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
     });
   }
 
+  function leave() {
+    if (isDirty) setLeaveConfirmationOpen(true);
+    else { guard.allowNextNavigation(); void navigate("/org/roles"); }
+  }
+
+  // Lienzo v87: al editar, «Descartar cambios» vuelve a lo guardado sin salir, como la ficha de un usuario.
+  function discard() {
+    setDraftState(null);
+    setValidation({});
+    setFailure(undefined);
+  }
+
   async function seeLatest() {
     const result = await role.refetch();
     if (result.data) setDraftState(draftFromRole(result.data));
@@ -213,25 +233,28 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
       icon={Shield}
       title={title}
       backTo={{ to: "/org/roles", label: t("roles:backToList") }}
-      summary={mode === "edit" && role.data ? t("roles:scopeAndUsers", { scope: valeEnText(role.data.scope), count: role.data.userCount }) : undefined}
+      summary={summary}
+      phoneSubtitle={summary}
       status={isSystemRole ? t("roles:system") : undefined}
-      actions={editable ? <div className="hidden items-center gap-2 md:flex">
-        <Button type="button" variant="outline" onClick={() => { if (isDirty) setLeaveConfirmationOpen(true); else { guard.allowNextNavigation(); void navigate("/org/roles"); } }}>{t("roles:cancel")}</Button>
+      actions={editable ? <>
+        {mode === "edit"
+          ? <Button type="button" variant="outline" onClick={discard}>{t("roles:discard")}</Button>
+          : <Button type="button" variant="outline" onClick={leave}>{t("roles:cancel")}</Button>}
         <Button type="button" disabled={save.isPending || mode === "edit" && !isDirty} onClick={() => save.mutate()}>{save.isPending ? t("roles:saving") : mode === "create" ? t("roles:create") : t("roles:save")}</Button>
-      </div> : undefined}
+      </> : undefined}
     >
       <div className="flex flex-col gap-3.5">
         {failure && !(failure instanceof ApiError && failure.code === "General.ConcurrencyConflict")
           ? <FormError message={failure instanceof ApiError ? failure.detail ?? t("common:states.error") : t("common:states.error")} /> : null}
         {permissions.isError ? <FormError message={permissions.error instanceof ApiError ? permissions.error.detail ?? t("common:states.error") : t("common:states.error")} /> : null}
-        <section className="overflow-hidden rounded-[12px] border border-[var(--borde)] bg-[var(--lado-activo)]">
-          <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2>{t("roles:dataTitle")}</h2></header>
-          <div className="flex flex-col gap-3.5 p-4 lg:gap-3.5 lg:p-5">
+        {/* Tablero M-Rol: en el teléfono los datos van sueltos sobre blanco, sin título a la vista. */}
+        <Section title={t("roles:dataTitle")} phone="untitled">
+          <div className="flex flex-col gap-3.5 p-4 lg:gap-3.5 lg:p-5 max-md:p-0">
             <div className="grid gap-3.5 lg:grid-cols-2 lg:gap-x-5">
               <div className="w-full">
                 {editable ? <FormField label={t("roles:fields.name")} required error={validation.name}>
                   <Input value={draft.name} maxLength={60} autoComplete="off" onChange={(event) => changeDraft({ name: event.target.value })} />
-                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.name")}</span><p className="min-h-9 text-[13px] text-[var(--t1)]">{role.data && isSystemRole ? displayRoleName(role.data, t) : draft.name}</p></div>}
+                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{t("roles:fields.name")}</span><p className="min-h-9 text-[13px] text-[var(--t1)] max-md:min-h-0 max-md:text-[16px]">{role.data && isSystemRole ? displayRoleName(role.data, t) : draft.name}</p></div>}
               </div>
               <div className="w-full">
                 {mode === "create" ? <FormField label={t("roles:fields.scope")} required error={validation.scope ?? validation.companyId}>
@@ -248,22 +271,18 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
                       {(companies.data?.items ?? []).filter((company: CompanyResponse) => company.status === "Active").map((company) => <SelectItem key={company.id} value={`company:${company.id}`}>{company.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
-                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.scope")}</span><p className="min-h-9 text-[13px] text-[var(--t1)]">{role.data ? valeEnText(role.data.scope) : ""}</p></div>}
+                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{t("roles:fields.scope")}</span><p className="min-h-9 text-[13px] text-[var(--t1)] max-md:min-h-0 max-md:text-[16px]">{role.data ? valeEnText(role.data.scope) : ""}</p></div>}
               </div>
               <div className="w-full">
               {editable ? <FormField label={t("roles:fields.description")}>
-                <Textarea value={draft.description} maxLength={500} className="min-h-[88px] resize-y" onChange={(event) => changeDraft({ description: event.target.value })} />
-              </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)]">{t("roles:fields.description")}</span><p className="min-h-9 whitespace-pre-wrap text-[13px] text-[var(--t1)]">{role.data && isSystemRole ? displayRoleDescription(role.data, t) ?? t("roles:noDescription") : draft.description || t("roles:noDescription")}</p></div>}
+                <Textarea value={draft.description} maxLength={500} className="min-h-[88px] resize-y max-md:min-h-[104px]" onChange={(event) => changeDraft({ description: event.target.value })} />
+              </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{t("roles:fields.description")}</span><p className="min-h-9 whitespace-pre-wrap text-[13px] text-[var(--t1)] max-md:min-h-0 max-md:text-[16px]">{role.data && isSystemRole ? displayRoleDescription(role.data, t) ?? t("roles:noDescription") : draft.description || t("roles:noDescription")}</p></div>}
             </div>
             </div>
           </div>
-        </section>
+        </Section>
 
-        <section className="overflow-hidden rounded-[12px] border border-[var(--borde)] bg-[var(--lado-activo)]">
-          <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]">
-            <h2>{t("roles:permissionsTitle")}</h2>
-            {draft.scope ? <span className="text-xs font-normal text-[var(--t3)]">{t("roles:permissionCount", { selected: selectedCount, total: availableCount })}</span> : null}
-          </header>
+        <Section title={t("roles:permissionsTitle")} phone="inset" meta={draft.scope ? t("roles:permissionCount", { selected: selectedCount, total: availableCount }) : undefined}>
           {validation.permissions ? <p role="alert" className="mx-4 mt-3 rounded-[8px] border border-[var(--peligro)] bg-[var(--peligro-t)] px-3 py-2 text-[13px] text-[var(--peligro)]">{validation.permissions}</p> : null}
           {!draft.scope ? <p className="p-4 text-[13px] text-[var(--t2)]">{t("roles:scope.chooseForPermissions")}</p>
             : permissions.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
@@ -272,12 +291,30 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
                   const codes = group.permissions.map((item) => item.code);
                   const selected = codes.filter((code) => draft.permissions.includes(code)).length;
                   const expanded = expandedAreas?.has(group.area) ?? selected > 0;
+                  const toggle = <button type="button" aria-expanded={expanded} aria-label={t("roles:toggleArea", { name: group.name })} onClick={() => toggleArea(group.area)} className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)] max-md:text-[var(--t3)]">
+                    <ChevronRight aria-hidden="true" className={`size-4 transition-transform ${expanded ? "rotate-90" : ""}`} />
+                  </button>;
+                  // Tablero M-Rol: en el teléfono el área es una fila de 52 con la cuenta a la derecha y cada permiso,
+                  // una fila de 50 con la casilla de 22.
+                  if (phone) return <fieldset key={group.area} className="m-0 p-0">
+                    <legend className="sr-only">{group.name}</legend>
+                    <div className="flex min-h-[52px] items-center gap-3 pr-3.5 pl-3 text-[15.5px] font-semibold text-[var(--t1)]">
+                      {toggle}
+                      <label className="flex min-w-0 flex-1 items-center gap-3">
+                        <Checkbox checked={codes.length > 0 && selected === codes.length} disabled={!editable} onCheckedChange={(checked) => toggleGroup(codes, checked === true)} className={phoneCheckClass} />
+                        <span className="min-w-0 flex-1 truncate">{group.name}</span>
+                      </label>
+                      <span className="shrink-0 text-[13px] font-medium text-[var(--t3)]">{t("roles:groupCount", { selected, total: codes.length })}</span>
+                    </div>
+                    {expanded ? group.permissions.map((permission) => <label key={permission.code} className="flex min-h-[50px] items-center gap-3 border-t border-[var(--borde)] pr-3.5 pl-[46px] text-[15px] text-[var(--t1)]">
+                      <Checkbox checked={draft.permissions.includes(permission.code)} disabled={!editable} onCheckedChange={(checked) => togglePermission(permission.code, checked === true)} className={phoneCheckClass} />
+                      <span className="min-w-0 flex-1">{permission.name}</span>
+                    </label>) : null}
+                  </fieldset>;
                   return <fieldset key={group.area} className="p-3 lg:p-4">
                     <legend className="sr-only">{group.name}</legend>
                     <div className="flex items-center gap-2">
-                      <button type="button" aria-expanded={expanded} aria-label={t("roles:toggleArea", { name: group.name })} onClick={() => toggleArea(group.area)} className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
-                        <ChevronRight aria-hidden="true" className={`size-4 transition-transform ${expanded ? "rotate-90" : ""}`} />
-                      </button>
+                      {toggle}
                       <CheckboxField label={group.name} checked={codes.length > 0 && selected === codes.length}
                         onCheckedChange={(checked) => toggleGroup(codes, checked)} disabled={!editable}
                         description={t("roles:groupCount", { selected, total: codes.length })} />
@@ -289,11 +326,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
                   </fieldset>;
                 })}
               </div>}
-        </section>
-        {editable ? <div className="sticky bottom-0 z-10 -mx-5 flex gap-2 border-t border-[var(--borde)] bg-[var(--lado-activo)] p-3 md:hidden">
-          <Button type="button" variant="outline" className="flex-1" onClick={() => { if (isDirty) setLeaveConfirmationOpen(true); else { guard.allowNextNavigation(); void navigate("/org/roles"); } }}>{t("roles:cancel")}</Button>
-          <Button type="button" className="flex-1" disabled={save.isPending || mode === "edit" && !isDirty} onClick={() => save.mutate()}>{save.isPending ? t("roles:saving") : mode === "create" ? t("roles:create") : t("roles:save")}</Button>
-        </div> : null}
+        </Section>
       </div>
     </Page>
     <ConfirmDialog open={leaveConfirmationOpen || guard.isBlocked} onOpenChange={(open) => { setLeaveConfirmationOpen(open); if (!open) guard.stay(); }}

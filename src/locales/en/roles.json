@@ -8,6 +8,7 @@
   "toggleArea": "Open or close {{name}}",
   "backToList": "Back to Roles and permissions",
   "cancel": "Cancel",
+  "discard": "Discard changes",
   "save": "Save changes",
   "saving": "Saving…",
   "system": "System",

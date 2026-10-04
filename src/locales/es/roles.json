@@ -8,6 +8,7 @@
   "toggleArea": "Abrir o cerrar {{name}}",
   "backToList": "Volver a Roles y permisos",
   "cancel": "Cancelar",
+  "discard": "Descartar cambios",
   "save": "Guardar cambios",
   "saving": "Guardando…",
   "system": "De sistema",

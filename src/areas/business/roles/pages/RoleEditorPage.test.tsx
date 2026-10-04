@@ -7,6 +7,7 @@ import type { RoleResponse } from "@/shared/api/types";
 import { server } from "@/test/mocks/server";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { asPhone } from "@/test/utils/phone";
 
 const role: RoleResponse = {
   id: "role-custom",
@@ -176,5 +177,59 @@ describe("RoleEditorPage", () => {
     renderRouteWithProviders("/org/roles/new", { as: "business-admin" });
 
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
+  });
+
+  // Lienzo v87: al editar, «Descartar cambios» vuelve a lo guardado sin salir de la pantalla, como en la ficha de un
+  // usuario; al crear, «Cancelar» vuelve a la lista.
+  it("al editar, «Descartar cambios» vuelve a lo guardado sin salir", async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.get("/api/roles/role-custom", () => HttpResponse.json(role)),
+    );
+    renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
+    await user.clear(name);
+    await user.type(name, "Otro nombre");
+    expect(screen.queryByRole("button", { name: "Cancelar" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Descartar cambios" }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Nombre" })).toHaveValue("Solo lectura");
+    expect(screen.getByRole("heading", { level: 1, name: "Solo lectura" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
+  });
+
+  it("al crear, la acción de salida es «Cancelar»", async () => {
+    server.use(http.get("/api/permissions", () => HttpResponse.json(permissionGroups)));
+    renderRouteWithProviders("/org/roles/new", { as: "business-role-manager" });
+
+    expect(await screen.findByRole("button", { name: "Cancelar" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Descartar cambios" })).not.toBeInTheDocument();
+  });
+
+  // Tablero M-Rol: en el teléfono los campos van sueltos, «Vale en» como texto, «Permisos» con la cuenta a la derecha
+  // y los botones fijos abajo.
+  it("en el teléfono los campos van sueltos y los botones fijos abajo", async () => {
+    const restore = asPhone();
+    try {
+      server.use(
+        http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+        http.get("/api/roles/role-custom", () => HttpResponse.json(role)),
+      );
+      renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+
+      await screen.findByRole("textbox", { name: "Nombre" });
+      expect(screen.getByRole("heading", { level: 1, name: "Solo lectura" }).closest("header")).toHaveTextContent("Vale en Toda la organización · 0 usuarios lo tienen");
+      expect(screen.getByRole("heading", { name: "Datos del rol" })).toHaveClass("sr-only");
+      expect(screen.getByRole("heading", { level: 2, name: "Permisos" })).toHaveClass("text-[13.5px]");
+      expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[13.5px]");
+      const fixed = screen.getByRole("button", { name: "Guardar cambios" }).parentElement!;
+      expect(fixed).toHaveAttribute("data-slot", "fixed-actions");
+      expect(screen.getAllByRole("button", { name: "Descartar cambios" })).toHaveLength(1);
+    } finally {
+      restore();
+    }
   });
 });
