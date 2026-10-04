@@ -75,6 +75,13 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("las migas siguen el camino hasta la persona", async () => {
+    api(member);
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+
+    await waitFor(() => expect(screen.getByRole("navigation", { name: "Migas de pan" })).toHaveTextContent("Inicio/Gestión de usuarios/Usuarios/Lucía Fernández"));
+  });
+
   it("deshabilita desde Estado: confirma y guarda estado y roles en un solo pedido", async () => {
     const user = userEvent.setup();
     const put: unknown[] = [];

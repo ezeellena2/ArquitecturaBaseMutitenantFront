@@ -24,6 +24,7 @@ import { DateText } from "@/shared/ui/format/DateText";
 import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { RolesField } from "../components/RolesField";
+import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { fetchAssignableRoles, fetchCompanyOptions, fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userCompaniesQueryKey, userQueryKey, userRolesQueryKey, usersQueryRoot } from "../api/users";
 
 type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
@@ -90,6 +91,7 @@ export function UserDetailPage() {
   const navigate = useNavigate();
   const companiesTitleId = useId();
   const user = useQuery({ queryKey: userQueryKey(memberId), queryFn: () => fetchUser(memberId), enabled: canRead && Boolean(memberId), meta: { silent: true } });
+  useBreadcrumbLeaf(user.data ? user.data.displayName || user.data.email || undefined : undefined);
   const [draft, setDraft] = useState<AccessDraft | null>(null);
   const [companyDialog, setCompanyDialog] = useState<CompanyDialogDraft | null>(null);
   const [failure, setFailure] = useState<unknown>();

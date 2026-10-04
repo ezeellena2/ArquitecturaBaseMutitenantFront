@@ -67,6 +67,13 @@ describe("CompanyDetailPage", () => {
     expect(within(roles).getByRole("combobox", { name: /por página/ })).toBeVisible();
   }, 15_000);
 
+  it("las migas siguen el camino hasta la empresa", async () => {
+    detailApi([member]);
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+
+    await waitFor(() => expect(screen.getByRole("navigation", { name: "Migas de pan" })).toHaveTextContent(/^Inicio\/Empresas\/Delta S\.A\.$/));
+  });
+
   it("quitar pide confirmación (también con la baja pedida); volver a sumar es directo", async () => {
     const user = userEvent.setup();
     const pending = { ...member, memberId: "member-2", displayName: "Diego Ríos", email: "diego@example.com", state: "PendingDeletion" as const };
