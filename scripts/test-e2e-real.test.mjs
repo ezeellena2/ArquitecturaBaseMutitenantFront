@@ -554,42 +554,6 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       await expectProfile(page, "Personal", "cambio desde Perfiles");
       await signOut(page, "Personal");
 
-      // Tableros M-* («Criterio · Marco»): a 390 la app es la de un teléfono, con el mismo front, Api y correo reales.
-      // Se entra por la puerta de empresa, «Más» lleva a Usuarios (lista con «+») y a Mi cuenta (botones fijos abajo),
-      // ‹ vuelve a «Más» y «Salir» cierra la sesión.
-      const phoneContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR", viewport: { width: 390, height: 844 } });
-      try {
-        const phone = await phoneContext.newPage();
-        await phone.goto(new URL("/login/empresa", baseUrl).href);
-        await phone.getByRole("textbox", { name: "Correo electrónico" }).fill(businessEmail);
-        const phoneBefore = new Set(await pickupFiles());
-        await phone.getByRole("button", { name: "Enviar código" }).click();
-        await phone.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
-        await enterCode(phone, await codeFromPickup(businessEmail, phoneBefore));
-        await phone.getByRole("button", { name: "Verificar" }).click();
-        await expectPath(phone, "/org", "ingreso de empresa en el teléfono");
-        await phone.getByRole("navigation", { name: "Secciones" }).getByRole("link", { name: "Más" }).click();
-        await expectPath(phone, "/mas", "«Más» en el teléfono");
-        await phone.getByRole("link", { name: /^Usuarios/ }).click();
-        await expectPath(phone, "/org/usuarios", "Usuarios desde «Más»");
-        await phone.getByRole("button", { name: "Invitar usuario" }).waitFor();
-        assert.equal(await phone.getByRole("table").count(), 0, "a 390 Usuarios es una lista, no una tabla");
-        await phone.getByRole("link", { name: "Volver a Más" }).click();
-        await expectPath(phone, "/mas", "‹ vuelve a «Más»");
-        await phone.getByRole("link", { name: /^Mi cuenta/ }).click();
-        await phone.locator("[data-slot='fixed-actions']").getByRole("button", { name: "Guardar cambios" }).waitFor();
-        await phone.getByRole("link", { name: "Volver a Más" }).click();
-        await expectPath(phone, "/mas", "‹ vuelve a «Más» desde Mi cuenta");
-        await phone.getByRole("button", { name: /^Salir/ }).click();
-        try {
-          await phone.waitForURL((url) => !["/mas", "/org", "/cuenta"].includes(url.pathname), { timeout: 20_000 });
-          await phone.getByRole("navigation", { name: "Secciones" }).waitFor({ state: "detached", timeout: 20_000 });
-        } catch {
-          throw new Error(`El cierre de sesión en el teléfono no salió de la app; ruta actual ${new URL(phone.url()).pathname}.`);
-        }
-      } finally {
-        await phoneContext.close();
-      }
 
       // Cada recorrido usa una identidad/contexto propios; un fallo no saltea los otros.
       const e2eCompanyName = "Sucursal E2E";
@@ -1179,7 +1143,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       const selectedAccountCases = onlyCase
         ? accountCases.filter(([name]) => onlyCase.split(",").some((term) => name.includes(term.trim())))
         : accountCases;
-      assert.ok(selectedAccountCases.length > 0, "MT_E2E_ONLY_CASE debe coincidir con un recorrido de cuenta existente.");
+      assert.ok(selectedAccountCases.length > 0 || onlyCase.includes("390"), "MT_E2E_ONLY_CASE debe coincidir con un recorrido de cuenta existente.");
       for (const [name, journey] of selectedAccountCases) {
         await t.test(name, { timeout: 240_000 }, async () => {
           const accountContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
@@ -1233,6 +1197,47 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             throw new Error(known ? error.message
               : `${name}: falló en “${stage}”${diagnostics ? ` (${diagnostics})` : ""} [${error?.name ?? "Error"}]${safeDetail ? ` ${safeDetail}` : ""}.`);
           } finally { await accountContext.close(); }
+        });
+      }
+      // Va al final: la puerta de empresa ya pidió un código para el mismo correo y hay que esperar para pedir otro.
+      if (!process.env.MT_E2E_ONLY_CASE || process.env.MT_E2E_ONLY_CASE.includes("390")) {
+        await t.test("390: el teléfono es una app (ingreso de empresa, «Más», Usuarios, Mi cuenta y Salir)", { timeout: 240_000 }, async () => {
+          // Tableros M-* («Criterio · Marco»): a 390 la app es la de un teléfono, con el mismo front, Api y correo reales.
+          // Se entra por la puerta de empresa, «Más» lleva a Usuarios (lista con «+») y a Mi cuenta (botones fijos abajo),
+          // ‹ vuelve a «Más» y «Salir» cierra la sesión.
+          const phoneContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR", viewport: { width: 390, height: 844 } });
+          try {
+            const phone = await phoneContext.newPage();
+            await phone.goto(new URL("/login/empresa", baseUrl).href);
+            await phone.getByRole("textbox", { name: "Correo electrónico" }).fill(businessEmail);
+            const phoneBefore = new Set(await pickupFiles());
+            await phone.getByRole("button", { name: "Enviar código" }).click();
+            await phone.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+            await enterCode(phone, await codeFromPickup(businessEmail, phoneBefore));
+            await phone.getByRole("button", { name: "Verificar" }).click();
+            await expectPath(phone, "/org", "ingreso de empresa en el teléfono");
+            await phone.getByRole("navigation", { name: "Secciones" }).getByRole("link", { name: "Más" }).click();
+            await expectPath(phone, "/mas", "«Más» en el teléfono");
+            await phone.getByRole("link", { name: /^Usuarios/ }).click();
+            await expectPath(phone, "/org/usuarios", "Usuarios desde «Más»");
+            await phone.getByRole("button", { name: "Invitar usuario" }).waitFor();
+            assert.equal(await phone.getByRole("table").count(), 0, "a 390 Usuarios es una lista, no una tabla");
+            await phone.getByRole("link", { name: "Volver a Más" }).click();
+            await expectPath(phone, "/mas", "‹ vuelve a «Más»");
+            await phone.getByRole("link", { name: /^Mi cuenta/ }).click();
+            await phone.locator("[data-slot='fixed-actions']").getByRole("button", { name: "Guardar cambios" }).waitFor();
+            await phone.getByRole("link", { name: "Volver a Más" }).click();
+            await expectPath(phone, "/mas", "‹ vuelve a «Más» desde Mi cuenta");
+            await phone.getByRole("button", { name: /^Salir/ }).click();
+            try {
+              await phone.waitForURL((url) => !["/mas", "/org", "/cuenta"].includes(url.pathname), { timeout: 20_000 });
+              await phone.getByRole("navigation", { name: "Secciones" }).waitFor({ state: "detached", timeout: 20_000 });
+            } catch {
+              throw new Error(`El cierre de sesión en el teléfono no salió de la app; ruta actual ${new URL(phone.url()).pathname}.`);
+            }
+          } finally {
+            await phoneContext.close();
+          }
         });
       }
     } finally {
