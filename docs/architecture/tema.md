@@ -64,9 +64,16 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 
 ## Menú lateral y panel de Administración
 - **Arriba:** Inicio y los módulos del producto. **Abajo de todo:** "Administración".
+- **Las opciones** («Criterio · Menús», `layouts/components/menuRow.ts`, igual en el menú y en el panel): miden 32, con 2 px
+  entre una y otra y la línea fina adentro de ese espacio (34 de una a otra, lienzo v92). Las que no están activas van en
+  `--lado-t2`; la activa, en blanco con `--marca-tx`; el grupo que se despliega, en 600 y `--t1`.
+- **La barra de arriba** lleva las migas a la izquierda, todas en `--t2`, y tu menú a la derecha («Criterio · Marco»). El ☰
+  que contrae el menú lateral va solo donde hay panel de Administración, porque con el panel abierto la flechita del borde
+  se oculta; en Personal el menú se contrae con la flechita (tableros Inicio-Personal y Cuenta).
 - **En escritorio**, "Administración" abre un **segundo panel** al lado del menú (`AdminPanel`, 232 px, fondo `--panel`):
   - arriba lleva el título y, sobre su borde derecho, un botón redondo «‹» para cerrarlo;
   - adentro va la misma lista de siempre, con el mismo estilo del menú: el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Configuración, Página pública y Auditoría;
+  - un grupo arranca abierto solo si estás en una de sus pantallas («Gestión de usuarios» en Usuarios, Roles y sus fichas), con sus opciones a 18 de sangría y la línea `--lado-guia`; en las demás pantallas va cerrado, con la flechita a la derecha, y lleva a su primera opción. Lo que la persona abre o cierra a mano vale mientras está en esa pantalla (lienzo v102);
   - **se abre solo en cualquier ruta de administración** y se cierra con «‹» o tocando de nuevo "Administración". Con el panel abierto, "Administración" queda activo en el menú y el botón para contraer el menú lateral se oculta.
 - **En el teléfono** no hay menú lateral ni segundo panel: la Administración es un grupo de «Más», abajo («Criterio · Marco y pantallas»).
 
