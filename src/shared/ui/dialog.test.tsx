@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { configureI18n } from "@/shared/i18n";
-import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
 
 beforeAll(async () => {
   await configureI18n([{ code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true }]);
@@ -70,5 +70,20 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
     const overlay = document.querySelector("[data-slot='dialog-overlay']");
     expect(overlay).toHaveClass("bg-[var(--velo)]");
     expect(overlay?.className).not.toMatch(/backdrop-blur/);
+  });
+
+  // Tableros Cuenta-Baja, Cuenta-Verificar y Avisos (.p-dlg .tx): lo que aclara el título, adentro del cuerpo, va de
+  // 13,5 con interlineado 1,55 en la compu y de 14,5 en el teléfono (.ap-txt-l), gris.
+  it("el texto del diálogo va con la letra de los tableros", () => {
+    render(
+      <Dialog open>
+        <DialogContent>
+          <DialogHeader><DialogTitle>{"¿Dar de baja tu cuenta?"}</DialogTitle></DialogHeader>
+          <DialogBody><DialogDescription>{"Cerramos todas tus sesiones."}</DialogDescription></DialogBody>
+        </DialogContent>
+      </Dialog>,
+    );
+
+    expect(screen.getByText("Cerramos todas tus sesiones.")).toHaveClass("text-[13.5px]", "leading-[1.55]", "text-[var(--t2)]", "max-md:text-[14.5px]", "max-md:leading-normal");
   });
 });

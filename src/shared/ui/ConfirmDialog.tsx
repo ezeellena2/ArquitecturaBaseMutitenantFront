@@ -40,7 +40,9 @@ export function ConfirmDialog({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        {description ? <DialogDescription className="p-5 text-[13px] leading-relaxed text-[var(--t2)] max-md:px-5 max-md:pt-2 max-md:pb-4 max-md:text-[15px] max-md:leading-normal max-md:text-[var(--t1)]">{description}</DialogDescription> : null}
+        {/* Tablero Avisos («¿Salir sin guardar?») y M-Avisos: el texto con la letra de los diálogos, con 20 de margen en la
+            compu y 8/20/16 en la hoja del teléfono. */}
+        {description ? <DialogDescription className="p-5 max-md:pt-2 max-md:pb-4">{description}</DialogDescription> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {cancelLabel ?? t("actions.cancel")}

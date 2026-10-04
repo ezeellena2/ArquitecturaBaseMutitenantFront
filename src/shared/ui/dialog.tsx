@@ -158,6 +158,8 @@ function DialogTitle({
   )
 }
 
+// Tableros Cuenta-Baja, Cuenta-Verificar y Avisos (.p-dlg .tx) y «Criterio · Diálogos» (.texto): lo que aclara el
+// título va en el cuerpo, de 13,5 con interlineado 1,55; en el teléfono, el de las hojas (.ap-txt-l), de 14,5.
 function DialogDescription({
   className,
   ...props
@@ -165,7 +167,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-[13px] leading-normal text-[var(--t2)]", className)}
+      className={cn("text-[13.5px] leading-[1.55] text-[var(--t2)] max-md:text-[14.5px] max-md:leading-normal", className)}
       {...props}
     />
   )

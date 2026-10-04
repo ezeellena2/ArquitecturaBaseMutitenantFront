@@ -167,11 +167,15 @@ describe("ConfirmDialog", () => {
     expect(screen.getByRole("button", { name: "Guardar" })).toHaveAttribute("data-variant", "default");
   });
 
-  // Tablero M-Avisos («Salir sin guardar»): en el teléfono el texto de la hoja va de 15, oscuro.
-  it("en el teléfono el texto va de 15", () => {
+  // «Criterio · Diálogos» (.texto) y tablero Avisos («Salir sin guardar», .p-dlg .tx): en la compu el texto va de 13,5
+  // con interlineado 1,55, gris. En el teléfono, el de las hojas de confirmar (.ap-txt-l de M-Configuracion-Quitar,
+  // M-Cuenta-Metodo…): 14,5 con interlineado 1,5, gris.
+  it("el texto va de 13,5 en la compu y de 14,5 en el teléfono, como los tableros", () => {
     renderWithProviders(<ConfirmDialog open onOpenChange={vi.fn()} title="¿Salir sin guardar?" description="Se pierde lo que cambiaste acá."
       confirmLabel="Salir sin guardar" destructive onConfirm={vi.fn()} />);
 
-    expect(screen.getByText("Se pierde lo que cambiaste acá.")).toHaveClass("max-md:text-[15px]", "max-md:text-[var(--t1)]");
+    const text = screen.getByText("Se pierde lo que cambiaste acá.");
+    expect(text).toHaveClass("text-[13.5px]", "leading-[1.55]", "text-[var(--t2)]", "max-md:text-[14.5px]", "max-md:leading-normal");
+    expect(text).not.toHaveClass("max-md:text-[var(--t1)]");
   });
 });
