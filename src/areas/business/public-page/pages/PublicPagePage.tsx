@@ -13,6 +13,7 @@ import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
+import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Input } from "@/shared/ui/input";
 import { phoneDraftFromE164 } from "@/shared/phone/phoneInput";
 import { PhoneField, type PhoneDraft } from "@/shared/ui/fields/PhoneField";
@@ -157,6 +158,9 @@ export function PublicPagePage() {
   const summary = state ? <>{state}{edit.unsaved ? <><span aria-hidden="true">{" · "}</span>{edit.unsaved}</> : null}</> : undefined;
   // Tablero M-Pagina-Org: los campos van adentro de la tarjeta blanca, uno debajo del otro.
   const fieldsClass = "grid gap-4 p-4 md:grid-cols-2 md:p-5 max-md:gap-3.5 max-md:px-4 max-md:py-3.5";
+
+  // «Criterio · Avisos» (Pantalla de error): la página no cargó y no hay nada que mostrar.
+  if (page.isError && !pageData) return <LoadErrorPage onRetry={() => { void page.refetch(); }} />;
 
   return <>
     <Page

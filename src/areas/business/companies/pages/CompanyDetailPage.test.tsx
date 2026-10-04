@@ -129,6 +129,22 @@ describe("CompanyDetailPage", () => {
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
   });
 
+  // «Criterio · Avisos» (Pantalla de error): si la ficha no carga, no se puede mostrar nada; «Reintentar» la vuelve a pedir.
+  it("si la ficha no carga, dice que no se pudo abrir y «Reintentar» la vuelve a pedir", async () => {
+    const user = userEvent.setup();
+    detailApi([member]);
+    let fail = true;
+    server.use(http.get("/api/companies/company-1", () => fail
+      ? HttpResponse.json({ status: 500, title: "Error", traceId: "00-abc-01" }, { status: 500 })
+      : HttpResponse.json(company)));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+
+    expect(await screen.findByRole("heading", { name: "No pudimos abrir esta pantalla" })).toBeVisible();
+    fail = false;
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Delta S.A." })).toBeVisible();
+  });
+
   it("las migas siguen el camino hasta la empresa", async () => {
     detailApi([member]);
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });

@@ -17,6 +17,7 @@ import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
+import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { FormField } from "@/shared/ui/FormField";
 import { TaxIdText } from "@/shared/ui/format/TaxIdText";
 import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
@@ -151,7 +152,8 @@ export function CompanyDetailPage() {
   });
 
   if (company.isPending) return <Page icon={Building2} title={t("companies:detail.loading")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
-  if (company.isError || !company.data) return <Page icon={Building2} title={t("companies:detail.title")} backTo={{ to: "/org/empresas", label: t("companies:back") }}><div className="p-4"><FormError message={apiErrorMessage(company.error, t)} /><Button type="button" variant="outline" onClick={() => { void company.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
+  // «Criterio · Avisos» (Pantalla de error): la ficha no cargó y no hay nada que mostrar.
+  if (!company.data) return <LoadErrorPage onRetry={() => { void company.refetch(); }} screen={t("companies:detail.title")} back={{ to: "/org/empresas", label: t("companies:back") }} />;
   const data = company.data;
 
   function openEdit() {

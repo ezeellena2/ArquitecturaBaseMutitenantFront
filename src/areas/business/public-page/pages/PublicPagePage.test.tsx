@@ -78,6 +78,21 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(await screen.findByText("Despublicamos tu página.")).toBeVisible();
   });
 
+  // «Criterio · Avisos» (Pantalla de error): si la página no carga, no se puede mostrar nada; «Reintentar» la vuelve a pedir.
+  it("si la página no carga, dice que no se pudo abrir y «Reintentar» la vuelve a pedir", async () => {
+    const user = userEvent.setup();
+    let fail = true;
+    server.use(http.get("/api/organization/public-page", () => fail
+      ? HttpResponse.json({ status: 500, title: "Error", traceId: "00-abc-01" }, { status: 500 })
+      : HttpResponse.json(page)));
+    renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+
+    expect(await screen.findByRole("heading", { name: "No pudimos abrir esta pantalla" })).toBeVisible();
+    fail = false;
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(await screen.findByRole("textbox", { name: "Nombre de la página" })).toHaveValue("Grupo Delta");
+  });
+
   it("borrador: prender el interruptor publica al momento", async () => {
     const user = userEvent.setup();
     const calls: string[] = [];

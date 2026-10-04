@@ -66,6 +66,25 @@ describe("SettingsPage", () => {
     expect(screen.queryByRole("button", { name: "Agregar dominio" })).not.toBeInTheDocument();
   });
 
+  // «Criterio · Avisos» (Pantalla de error): si la configuración no carga, no se puede mostrar nada; «Reintentar» la
+  // vuelve a pedir.
+  it("si la configuración no carga, dice que no se pudo abrir y «Reintentar» la vuelve a pedir", async () => {
+    const user = userEvent.setup();
+    let fail = true;
+    server.use(
+      http.get("/api/organization/settings", () => fail
+        ? HttpResponse.json({ status: 500, title: "Error", traceId: "00-abc-01" }, { status: 500 })
+        : HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+    );
+    renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+
+    expect(await screen.findByRole("heading", { name: "No pudimos abrir esta pantalla" })).toBeVisible();
+    fail = false;
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(await screen.findByRole("textbox", { name: "Nombre de la organización" })).toHaveValue("Grupo Delta");
+  });
+
   it("guarda con versión y quita un dominio con el texto del tablero", async () => {
     let updateBody: unknown;
     let removeUrl: URL | undefined;

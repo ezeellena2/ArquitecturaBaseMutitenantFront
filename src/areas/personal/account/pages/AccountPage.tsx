@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
+import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { List, ListItem } from "@/shared/ui/List";
 import { AccountProfileForm } from "../components/AccountProfileForm";
 import { useQuery } from "@tanstack/react-query";
@@ -30,7 +31,7 @@ import { InfoButton } from "@/shared/ui/InfoButton";
 
 export function AccountPage() {
   const { t } = useTranslation();
-  const { data, isPending, error, refetch } = useCurrentUser();
+  const { data, isPending, refetch } = useCurrentUser();
   // Los métodos muestran su error en la caja, con «Reintentar»: sin aviso abajo que lo repita.
   const methods = useQuery({ queryKey: accountMethodsQueryKey, queryFn: fetchLoginMethods, meta: { silent: true } });
   const queryClient = useQueryClient();
@@ -63,7 +64,8 @@ export function AccountPage() {
     const clean = new URLSearchParams(params); clean.delete("google"); clean.delete("error"); setParams(clean, { replace: true });
   });
   if (isPending) return <p role="status" className="p-4 text-[13px] lg:px-6 lg:py-5">{t("states.loading")}</p>;
-  if (!data) return <div className="flex flex-col gap-3.5 p-4 text-[13px] lg:px-6 lg:py-5"><FormError message={apiErrorMessage(error, t)} /><Button onClick={() => { void refetch(); }}>{t("actions.retry")}</Button></div>;
+  // «Criterio · Avisos» (Pantalla de error): sin /api/me no hay nada que mostrar (LegalAcceptanceGate lo ve primero).
+  if (!data) return <LoadErrorPage onRetry={() => { void refetch(); }} />;
   return <><AccountProfileForm key={data.id} account={data}>
     {/* Tablero M-Cuenta: en el teléfono, «Agregar correo o teléfono» en texto a la derecha del título. */}
     <Section title={t("account:methods")} action={{ label: t("account:add"), onClick: () => setAddOpen(true) }}>

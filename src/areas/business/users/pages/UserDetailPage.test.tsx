@@ -145,6 +145,22 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await waitFor(() => expect(screen.getByRole("navigation", { name: "Migas de pan" })).toHaveTextContent("Inicio/Gestión de usuarios/Usuarios/Lucía Fernández"));
   });
 
+  // «Criterio · Avisos» (Pantalla de error): si la ficha no carga, no se puede mostrar nada; «Reintentar» la vuelve a pedir.
+  it("si la ficha no carga, dice que no se pudo abrir y «Reintentar» la vuelve a pedir", async () => {
+    const user = userEvent.setup();
+    api(member);
+    let fail = true;
+    server.use(http.get("/api/users/member-1", () => fail
+      ? HttpResponse.json({ status: 500, title: "Error", traceId: "00-abc-01" }, { status: 500 })
+      : HttpResponse.json(member)));
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+
+    expect(await screen.findByRole("heading", { name: "No pudimos abrir esta pantalla" })).toBeVisible();
+    fail = false;
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" })).toBeVisible();
+  });
+
   it("deshabilita desde Estado: confirma y guarda estado y roles en un solo pedido", async () => {
     const user = userEvent.setup();
     const put: unknown[] = [];

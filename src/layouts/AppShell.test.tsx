@@ -80,6 +80,7 @@ describe("AppShell", () => {
     expect(onReload).toHaveBeenCalledOnce();
   });
 
+  // «Criterio · Avisos» (Pantalla de error): la misma pieza que una ficha que no carga, con «Reintentar».
   it("contiene un fallo al pintar contenido con una acción manual traducida", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     const onReload = vi.fn();
@@ -91,7 +92,7 @@ describe("AppShell", () => {
     expect(screen.getByRole("heading", { name: "No pudimos abrir esta pantalla" })).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
     expect(onReload).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole("button", { name: "Actualizar" }));
+    await userEvent.click(screen.getByRole("button", { name: "Reintentar" }));
     expect(onReload).toHaveBeenCalledOnce();
   });
 
@@ -104,7 +105,7 @@ describe("AppShell", () => {
     render(<I18nextProvider i18n={i18n}><RouterProvider router={router} /></I18nextProvider>);
 
     expect(await screen.findByRole("heading", { name: "No pudimos abrir esta pantalla" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Actualizar" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reintentar" })).toBeInTheDocument();
   });
 
   it("muestra la organización suspendida con su nombre del ProblemDetails", () => {

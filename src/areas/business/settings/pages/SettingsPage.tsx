@@ -13,6 +13,7 @@ import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
+import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { CultureSelect } from "@/shared/ui/fields/CultureSelect";
 import { CurrencySelect } from "@/shared/ui/fields/CurrencySelect";
 import { TimeZoneSelect } from "@/shared/ui/fields/TimeZoneSelect";
@@ -114,6 +115,9 @@ export function SettingsPage() {
   const showGeneralError = error ? apiErrorMessage(error, t) : undefined;
   const addDomainError = actionErrorMessage(addDomain.error, t);
   const activeDomains = (domains.data ?? []).filter((domain) => domain.status !== "Removed");
+
+  // «Criterio · Avisos» (Pantalla de error): la configuración no cargó y no hay nada que mostrar.
+  if (settings.isError && !settings.data) return <LoadErrorPage onRetry={() => { void settings.refetch(); void domains.refetch(); }} />;
 
   return <>
     <Page banner={edit.banner}

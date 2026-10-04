@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -244,6 +244,25 @@ describe("RoleEditorPage", () => {
     renderRouteWithProviders("/org/roles/new", { as: "business-admin" });
 
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
+  });
+
+  // «Criterio · Avisos» (Pantalla de error): si el rol no carga, no se puede mostrar nada; «Reintentar» lo vuelve a pedir.
+  it("si el rol no carga, dice que no se pudo abrir y «Reintentar» lo vuelve a pedir", async () => {
+    const user = userEvent.setup();
+    let fail = true;
+    server.use(
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.get("/api/roles/role-custom", () => fail
+        ? HttpResponse.json({ status: 500, title: "Error", traceId: "00-abc-01" }, { status: 500 })
+        : HttpResponse.json(role)),
+    );
+    renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+
+    expect(await screen.findByRole("heading", { name: "No pudimos abrir esta pantalla" })).toBeVisible();
+    fail = false;
+    // El aviso de red de otra prueba puede seguir abajo con su propio «Reintentar»: el de la pantalla va en el cuerpo.
+    await user.click(within(screen.getByRole("main")).getByRole("button", { name: "Reintentar" }));
+    expect(await screen.findByRole("textbox", { name: "Nombre" })).toHaveValue("Solo lectura");
   });
 
   // Lienzo v87: al editar, «Descartar cambios» vuelve a lo guardado sin salir de la pantalla, como en la ficha de un

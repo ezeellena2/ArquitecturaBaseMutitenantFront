@@ -466,6 +466,7 @@ src/
 │       ├── RowActions.tsx                           [E1] menú ⋮ por fila; las destructivas al final, en rojo
 │       ├── Section.tsx                              una caja por tema con el título en el encabezado arena; en el teléfono, grupo blanco sobre gris, tarjeta con margen o campos sueltos
 │       ├── List.tsx                                 lista corta en su caja: filas de 44 o 56, lo que aclara en la segunda línea; en el teléfono, filas de la app y la acción en texto
+│       ├── LoadErrorPage.tsx                        «Pantalla de error» (Criterio · Avisos, M-Error-Org «No se pudo abrir»): «No pudimos abrir esta pantalla» y «Reintentar»
 │       ├── InfoButton.tsx                           el ⓘ que abre el aviso importante
 │       ├── ImportantNotice.tsx                      aviso importante: motivo en caja roja suave, «Qué podés hacer» y «Entendido»
 │       ├── ReadOnlyField.tsx                        lo que no se edita, como texto (nunca un campo gris)

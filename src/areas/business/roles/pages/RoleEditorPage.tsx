@@ -15,6 +15,7 @@ import { Button } from "@/shared/ui/button";
 import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { FormError } from "@/shared/ui/FormError";
+import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
 import { Page } from "@/shared/ui/Page";
@@ -183,7 +184,8 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const title = mode === "create" ? t("roles:createTitle") : role.data ? displayRoleName(role.data, t) : t("roles:editorTitle");
 
   if (mode === "edit" && role.isPending) return <Page icon={Shield} title={t("roles:editorTitle")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
-  if (mode === "edit" && role.isError) return <Page icon={Shield} title={t("roles:editorTitle")} backTo={{ to: "/org/roles", label: t("roles:backToList") }}><div className="p-4"><FormError message={apiErrorMessage(role.error, t)} /><Button type="button" onClick={() => { void role.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
+  // «Criterio · Avisos» (Pantalla de error): el rol no cargó y no hay nada que mostrar.
+  if (mode === "edit" && !role.data) return <LoadErrorPage onRetry={() => { void role.refetch(); }} screen={t("roles:editorTitle")} back={{ to: "/org/roles", label: t("roles:backToList") }} />;
 
   function changeDraft(patch: Partial<RoleDraft>) {
     if (patch.scope !== undefined && patch.scope !== draft.scope) setExpandedAreas(null);

@@ -1,17 +1,14 @@
 import { Component, type ReactNode } from "react";
-import { useTranslation } from "react-i18next";
-import { Button } from "@/shared/ui/button";
+import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 
 function reloadPage(): void {
   window.location.reload();
 }
 
+/// Una pantalla que se rompió al pintarse o que no se pudo bajar: la misma «Pantalla de error» que una ficha que no
+/// cargó («Criterio · Avisos»), y «Reintentar» vuelve a cargar la página.
 export function AppErrorPage({ onReload = reloadPage }: { onReload?: () => void }) {
-  const { t } = useTranslation("errors");
-  return <main className="flex min-h-full flex-col items-center justify-center gap-4 p-6">
-    <h1 className="text-xl font-semibold">{t("loadFailed")}</h1>
-    <Button type="button" onClick={onReload}>{t("update")}</Button>
-  </main>;
+  return <main className="flex min-h-full flex-1 flex-col"><LoadErrorPage onRetry={onReload} /></main>;
 }
 
 interface AppErrorBoundaryProps {
