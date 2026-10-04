@@ -50,9 +50,9 @@ export function PhoneField({ value, onChange, onValidityChange, allowedCountries
 
   return (
     <div className="flex gap-2">
-      {/* El país compacto en una caja de 112: la bandera y el prefijo («+54»), decisión del usuario del 2026-10-04; la
-          lista muestra la bandera y el nombre entero. */}
-      <div className="w-[112px] shrink-0">
+      {/* El país compacto: la bandera y el prefijo («+54»), decisión del usuario del 2026-10-04, en una caja de 112 en la
+          compu y de 124 en el teléfono (lienzo v99); la lista muestra la bandera y el nombre entero. */}
+      <div className="w-[112px] shrink-0 max-md:w-[124px]">
         <CountrySelect value={country} onChange={changeCountry} allowedCountries={countries.map((item) => item.code)}
           placeholder={t("phone.country", { country: "" })} disabled={unavailable}
           renderValue={(selected) => <span className="inline-flex items-center gap-1.5">

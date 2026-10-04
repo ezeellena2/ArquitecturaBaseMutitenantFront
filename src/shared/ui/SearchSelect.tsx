@@ -174,7 +174,7 @@ export function SearchSelect({
                 onClick={() => choose(option)}
                 className={cn(
                   "flex min-h-9 cursor-pointer items-center gap-2.5 rounded-[6px] px-2.5 py-1.5",
-                  isSelected ? "bg-[var(--marca-t)] text-[var(--marca-tx)]" : "text-[var(--t1)]",
+                  isSelected ? "bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]" : "text-[var(--t1)]",
                   index === active && !isSelected ? "bg-[var(--s2)]" : undefined,
                 )}
               >

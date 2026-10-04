@@ -59,7 +59,8 @@ describe("PhoneField", () => {
     expect(flag).toHaveClass("h-4", "w-6", "rounded-[2px]", "shadow-[0_0_0_1px_var(--borde-bandera)]");
     expect(flag.parentElement).toHaveClass("gap-1.5");
     expect(country).toHaveTextContent(/^\+54$/);
-    expect(country.parentElement).toHaveClass("w-[112px]");
+    // 112 en la compu (Pagina-Org) y 124 en el teléfono (M-Pagina-Org y M-Cuenta-Agregar, lienzo v99).
+    expect(country.parentElement).toHaveClass("w-[112px]", "max-md:w-[124px]");
 
     fireEvent.change(input, { target: { value: "1123456789" } });
     expect(input).toHaveValue("11 2345-6789");

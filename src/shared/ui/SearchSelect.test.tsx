@@ -43,6 +43,9 @@ describe("SearchSelect · Criterio · Formularios", () => {
     expect(within(list).getByRole("option", { name: /^Español \(Argentina\)/ })).toHaveAttribute("aria-selected", "true");
     // Tableros (.op): 10 px entre el ícono, el nombre y lo que va a la derecha.
     expect(within(list).getByRole("option", { name: /^Español \(Argentina\)/ })).toHaveClass("gap-2.5");
+    // Criterio · Formularios: la elegida, además del fondo petróleo claro, va en semi-negrita.
+    expect(within(list).getByRole("option", { name: /^Español \(Argentina\)/ })).toHaveClass("font-medium");
+    expect(within(list).getByRole("option", { name: /^English/ })).not.toHaveClass("font-medium");
     expect(within(list).getByText("09/27/2026 2:35 PM · 1,234.50")).toHaveClass("text-[12px]", "text-[var(--t3)]");
     await user.keyboard("{ArrowDown}{Enter}");
 
