@@ -141,6 +141,8 @@ describe("SettingsPage", () => {
 
     await user.click(screen.getByRole("button", { name: "Agregar dominio" }));
     const add = await screen.findByRole("dialog", { name: "Agregar dominio" });
+    // «Criterio · Diálogos»: el cuerpo común de los diálogos, con su margen y la distancia entre campos.
+    expect(within(add).getByRole("textbox", { name: "Dominio" }).closest("[data-slot='dialog-body']")).not.toBeNull();
     await user.type(within(add).getByRole("textbox", { name: "Dominio" }), "delta.example.test");
     await user.click(within(add).getByRole("button", { name: "Siguiente" }));
     await waitFor(() => expect(registered).toEqual({ domain: "delta.example.test" }));
@@ -148,6 +150,7 @@ describe("SettingsPage", () => {
     const verify = await screen.findByRole("dialog", { name: "Verificar delta.example.test" });
     expect(verify).toHaveTextContent("Registro TXT a cargar en el DNS de delta.example.test");
     expect(within(verify).getByText("ab-verificacion=7f3c9a2e")).toBeVisible();
+    expect(within(verify).getByText("ab-verificacion=7f3c9a2e").closest("[data-slot='dialog-body']")).not.toBeNull();
     await user.click(within(verify).getByRole("button", { name: "Copiar" }));
     expect(await navigator.clipboard.readText()).toBe("ab-verificacion=7f3c9a2e");
     expect(within(verify).getByRole("button", { name: "Copiado" })).toBeVisible();

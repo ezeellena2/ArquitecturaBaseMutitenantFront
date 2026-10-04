@@ -10,7 +10,7 @@ import type { OrganizationDomainResponse, OrganizationSettingsResponse, UpdateOr
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
@@ -172,8 +172,11 @@ export function SettingsPage() {
     <Dialog open={domainDialogOpen} onOpenChange={setDomainDialogOpen}>
       <DialogContent size="sm">
         <DialogHeader><DialogTitle>{t("settings:domains.addTitle")}</DialogTitle></DialogHeader>
-        <div className="px-5 py-4"><FormField label={t("settings:domains.domain")} required><Input autoComplete="off" value={domainDraft} onChange={(event) => setDomainDraft(event.target.value)} /></FormField>
-          {addDomainError ? <p role="alert" className="mt-2 text-[13px] text-[var(--peligro)]">{addDomainError}</p> : null}</div>
+        {/* «Criterio · Diálogos»: el cuerpo común, y el error general en la franja arriba de los botones. */}
+        <DialogBody>
+          <FormField label={t("settings:domains.domain")} required><Input autoComplete="off" value={domainDraft} onChange={(event) => setDomainDraft(event.target.value)} /></FormField>
+          <FormError message={addDomainError} />
+        </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => setDomainDialogOpen(false)}>{t("common:actions.cancel")}</Button>
           <Button type="button" disabled={!domainDraft.trim() || addDomain.isPending} onClick={() => addDomain.mutate({ domain: domainDraft.trim() }, { onSuccess: async (domain) => { setDomainDraft(""); setDomainDialogOpen(false); openVerify(domain); await client.invalidateQueries({ queryKey: organizationDomainsKey }); } })}>{t("settings:domains.next")}</Button>
@@ -184,8 +187,9 @@ export function SettingsPage() {
     <Dialog open={domainToVerify !== null} onOpenChange={(open) => { if (!open && !verifyDomain.isPending) closeVerify(); }}>
       <DialogContent>
         <DialogHeader><DialogTitle>{t("settings:domains.verifyTitle", { domain: domainToVerify?.domain ?? "" })}</DialogTitle></DialogHeader>
-        <div className="flex flex-col gap-3 px-5 py-4 text-[13px]">
-          <p className="text-[var(--t1)]">{t("settings:domains.verifyDescription")}</p>
+        {/* Tablero Configuracion-Verificar: lo que hay que hacer, con la letra de los diálogos, y el registro TXT. */}
+        <DialogBody>
+          <DialogDescription>{t("settings:domains.verifyDescription")}</DialogDescription>
           <div className="flex flex-col gap-1.5">
             <span className="text-[12px] font-semibold text-[var(--t1)] lg:text-[13px]">{t("settings:domains.txtLabel", { domain: domainToVerify?.domain ?? "" })}</span>
             <div className="flex items-center gap-3 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] py-2 pl-3 pr-2">
@@ -194,7 +198,7 @@ export function SettingsPage() {
             </div>
           </div>
           {verifyFailure ? <FormError message={verifyFailure} /> : null}
-        </div>
+        </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" disabled={verifyDomain.isPending} onClick={closeVerify}>{t("common:actions.cancel")}</Button>
           <Button type="button" disabled={verifyDomain.isPending} onClick={() => { if (domainToVerify) { setVerifyFailure(null); verifyDomain.mutate(domainToVerify); } }}>{t("settings:domains.check")}</Button>
