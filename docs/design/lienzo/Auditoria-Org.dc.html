@@ -563,6 +563,8 @@ textarea.in2 { height: auto; min-height: 84px; }
 .w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
   content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 </style>
+<style data-vuelta="1004-auditoria-sin-cantidades">
+</style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -666,7 +668,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             <sc-if value="{{abiertoPeriodo}}" hint-placeholder-val="{{no}}">
               <div class="menu izq" role="listbox" aria-label="Filtrar por período">
                 <sc-for list="{{opcionesPeriodo}}" as="o" hint-placeholder-count="3">
-                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}<span class="menu-cnt">{{o.c}}</span></button>
+                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}</button>
                 </sc-for>
               </div>
             </sc-if>
@@ -676,7 +678,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             <sc-if value="{{abiertoTema}}" hint-placeholder-val="{{no}}">
               <div class="menu izq" role="listbox" aria-label="Filtrar por tema">
                 <sc-for list="{{opcionesTema}}" as="o" hint-placeholder-count="3">
-                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}<span class="menu-cnt">{{o.c}}</span></button>
+                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}</button>
                 </sc-for>
               </div>
             </sc-if>
@@ -686,7 +688,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             <sc-if value="{{abiertoQuien}}" hint-placeholder-val="{{no}}">
               <div class="menu izq" role="listbox" aria-label="Filtrar por persona">
                 <sc-for list="{{opcionesQuien}}" as="o" hint-placeholder-count="3">
-                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}<span class="menu-cnt">{{o.c}}</span></button>
+                  <button type="button" role="option" aria-selected="{{o.sel}}" class="menu-it {{o.clase}}" onClick="{{o.elegir}}">{{o.n}}</button>
                 </sc-for>
               </div>
             </sc-if>
