@@ -86,13 +86,27 @@
     return [...candidates].find((node) => (node.getAttribute("aria-label") ?? node.textContent ?? "").trim() === name);
   }
 
-  // Las acciones del tablero (abrir un menú, un diálogo), como las aplican las capturas.
+  // Escribir en un campo del tablero como lo haría una persona: los campos son de React, así que además de cambiar el valor
+  // hay que avisarle con el evento de escritura.
+  function fillField(doc, name, value) {
+    const field = findByName(doc, "textbox", name);
+    if (!field) return;
+    Object.getOwnPropertyDescriptor(Object.getPrototypeOf(field), "value").set.call(field, value);
+    field.dispatchEvent(new Event("input", { bubbles: true }));
+    field.blur();
+  }
+
+  // Las acciones del tablero, como las aplican los generadores de capturas: clic (por selector CSS, `text=` o rol y nombre)
+  // y escribir en un campo.
   async function boardActions(doc, actions) {
     for (const action of actions) {
-      const target = action.selector?.startsWith("text=")
-        ? [...doc.querySelectorAll("body *")].reverse().find((node) => node.textContent.trim() === action.selector.slice(5))
-        : action.selector ? doc.querySelector(action.selector) : findByName(doc, action.role, action.name);
-      target?.click();
+      if (action.type === "fill") fillField(doc, action.name, action.value);
+      else {
+        const target = action.selector?.startsWith("text=")
+          ? [...doc.querySelectorAll("body *")].reverse().find((node) => node.textContent.trim() === action.selector.slice(5))
+          : action.selector ? doc.querySelector(action.selector) : findByName(doc, action.role, action.name);
+        target?.click();
+      }
       await new Promise((resolve) => setTimeout(resolve, 350));
     }
   }

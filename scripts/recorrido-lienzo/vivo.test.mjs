@@ -35,6 +35,11 @@ test("muestra el tablero al lado de la app con sus datos de prueba y cambia a te
     await page.getByRole("combobox", { name: "Pantalla" }).selectOption("etapa-6/usuarios-invitar");
     await page.getByRole("button", { name: "Compu" }).click();
     await app.getByRole("dialog", { name: "Invitar usuario" }).waitFor({ timeout: 60_000 });
+
+    // Una tanda de la consolidación que escribe en un campo del tablero: aparece «Cambios sin guardar» en los dos.
+    await page.getByRole("combobox", { name: "Pantalla" }).selectOption("consolidacion/f7/configuracion-cambios-sin-guardar");
+    await page.frameLocator("iframe[title='Tablero']").getByText("Cambios sin guardar").first().waitFor({ timeout: 30_000 });
+    await app.getByText("Cambios sin guardar").first().waitFor({ timeout: 60_000 });
   } finally {
     await browser.close();
     await live.close();
