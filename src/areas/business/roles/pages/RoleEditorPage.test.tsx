@@ -74,6 +74,44 @@ describe("RoleEditorPage", () => {
     expect(await screen.findByRole("heading", { name: "Operaciones" })).toBeVisible();
   }, 10_000);
 
+  // B2: el back guarda la respuesta de cada clave; con la misma clave y otro cuerpo daría 422 hasta recargar.
+  it("después de un nombre repetido, corregirlo y crear de nuevo manda otra clave y crea el rol", async () => {
+    const user = userEvent.setup();
+    const sent: Array<{ key: string | null; name: unknown }> = [];
+    const created = { ...role, id: "role-created", name: "Operaciones Sur" };
+    server.use(
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.post("/api/roles", async ({ request }) => {
+        const body = await request.json() as { name?: unknown };
+        sent.push({ key: request.headers.get("Idempotency-Key"), name: body.name });
+        return sent.length === 1
+          ? HttpResponse.json({ code: "Roles.Role.AlreadyExists", detail: "Ya existe un rol con ese nombre." }, { status: 409 })
+          : HttpResponse.json(created.id, { status: 201 });
+      }),
+      http.get("/api/roles/role-created", () => HttpResponse.json(created)),
+    );
+
+    renderRouteWithProviders("/org/roles/new", { as: "business-role-manager" });
+
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
+    await user.type(name, "Operaciones");
+    await user.click(screen.getByRole("combobox", { name: "Vale en" }));
+    await user.click(await screen.findByRole("option", { name: "Toda la organización" }));
+    await user.click(await screen.findByRole("button", { name: "Abrir o cerrar Roles" }));
+    await user.click(await screen.findByRole("checkbox", { name: "Ver roles" }));
+    await user.click(screen.getAllByRole("button", { name: "Crear rol" })[0]);
+
+    expect(await screen.findByText("Ya existe un rol con ese nombre.")).toBeVisible();
+    await user.type(name, " Sur");
+    await user.click(screen.getAllByRole("button", { name: "Crear rol" })[0]);
+
+    expect(await screen.findByRole("heading", { name: "Operaciones Sur" })).toBeVisible();
+    expect(sent.map((request) => request.name)).toEqual(["Operaciones", "Operaciones Sur"]);
+    expect(sent[0]?.key).toMatch(/^[0-9a-f-]{36}$/i);
+    expect(sent[1]?.key).toMatch(/^[0-9a-f-]{36}$/i);
+    expect(sent[1]?.key).not.toBe(sent[0]?.key);
+  }, 10_000);
+
   it("«Vale en» ofrece toda la organización o cada empresa por nombre, y crea el rol de la empresa elegida", async () => {
     const user = userEvent.setup();
     let createBody: unknown;

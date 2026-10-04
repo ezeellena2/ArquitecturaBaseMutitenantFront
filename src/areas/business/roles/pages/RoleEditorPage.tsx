@@ -8,7 +8,8 @@ import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { ApiError } from "@/shared/api/ApiError";
-import type { CompanyResponse, PermissionGroupResponse, RoleResponse, RoleScope } from "@/shared/api/types";
+import type { CompanyResponse, CreateRoleRequest, PermissionGroupResponse, RoleResponse, RoleScope, UpdateRoleRequest } from "@/shared/api/types";
+import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { Button } from "@/shared/ui/button";
 import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
@@ -114,60 +115,67 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const [leaveConfirmationOpen, setLeaveConfirmationOpen] = useState(false);
   const [failure, setFailure] = useState<unknown>();
   const [validation, setValidation] = useState<{ name?: string; scope?: string; companyId?: string; permissions?: string }>({});
-  const idempotencyKey = useMemo(() => crypto.randomUUID(), []);
   const visibleGroups = useMemo(() => groupsForScope(permissions.data ?? [], draft.scope), [permissions.data, draft.scope]);
   const selectedCount = visibleGroups.reduce((total, group) => total + group.permissions.filter((item) => draft.permissions.includes(item.code)).length, 0);
   const availableCount = visibleGroups.reduce((total, group) => total + group.permissions.length, 0);
 
   useBreadcrumbLeaf(mode === "create" ? t("roles:createTitle") : role.data ? displayRoleName(role.data, t) : undefined);
 
-  const save = useMutation({
-    mutationFn: async () => {
-      if (draft.name.trim() === "") {
-        setValidation((current) => ({ ...current, name: t("roles:validation.nameRequired") }));
-        throw new Error("validation");
-      }
-      if (!draft.scope) {
-        setValidation((current) => ({ ...current, scope: t("roles:validation.scopeRequired") }));
-        throw new Error("validation");
-      }
-      if (draft.scope === "SpecificCompany" && !draft.companyId) {
-        setValidation((current) => ({ ...current, companyId: t("roles:validation.companyRequired") }));
-        throw new Error("validation");
-      }
-      if (draft.permissions.length === 0) {
-        setValidation((current) => ({ ...current, permissions: t("roles:validation.permissionsRequired") }));
-        throw new Error("validation");
-      }
+  // El alta usa una clave por formulario que se renueva después de un 4xx: corregido el nombre, el segundo envío
+  // no choca con la respuesta guardada del primero (B2).
+  const create = useIdempotentMutation((request: CreateRoleRequest, key) => createRole(request, key));
+  const update = useMutation({ mutationFn: (request: UpdateRoleRequest) => updateRole(roleId!, request) });
+  const saving = create.isPending || update.isPending;
 
-      const request = {
-        name: draft.name.trim(),
-        description: draft.description.trim() || null,
-        scope: draft.scope,
-        // The selected-company catalog arrives in E6; edits preserve an existing company id.
-        companyId: draft.scope === "SpecificCompany" ? draft.companyId : null,
-        permissions: draft.permissions,
-      };
-      if (mode === "create") return { id: await createRole(request, idempotencyKey) };
-      await updateRole(roleId!, { ...request, version: role.data!.version });
-      return { id: roleId! };
-    },
-    onSuccess: async ({ id }) => {
-      setFailure(undefined);
-      setValidation({});
-      toast.success(t(mode === "create" ? "roles:created" : "roles:updated", { name: draft.name.trim() }));
-      await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
-      if (mode === "create") {
-        await queryClient.invalidateQueries({ queryKey: roleQueryKey(id) });
-        guard.allowNextNavigation();
-        void navigate(`/org/roles/${encodeURIComponent(id)}`, { replace: true });
-      } else {
-        await queryClient.invalidateQueries({ queryKey: roleQueryKey(id) });
-        setDraftState(draft);
-      }
-    },
-    onError: (error) => { if (!(error instanceof Error && error.message === "validation")) setFailure(error); },
-  });
+  /// Se valida antes de enviar; muestra el primer dato que falta, como hasta ahora.
+  function validRequest(): CreateRoleRequest | null {
+    if (draft.name.trim() === "") {
+      setValidation((current) => ({ ...current, name: t("roles:validation.nameRequired") }));
+      return null;
+    }
+    if (!draft.scope) {
+      setValidation((current) => ({ ...current, scope: t("roles:validation.scopeRequired") }));
+      return null;
+    }
+    if (draft.scope === "SpecificCompany" && !draft.companyId) {
+      setValidation((current) => ({ ...current, companyId: t("roles:validation.companyRequired") }));
+      return null;
+    }
+    if (draft.permissions.length === 0) {
+      setValidation((current) => ({ ...current, permissions: t("roles:validation.permissionsRequired") }));
+      return null;
+    }
+    return {
+      name: draft.name.trim(),
+      description: draft.description.trim() || null,
+      scope: draft.scope,
+      companyId: draft.scope === "SpecificCompany" ? draft.companyId : null,
+      permissions: draft.permissions,
+    };
+  }
+
+  async function saved(id: string, savedDraft: RoleDraft) {
+    setFailure(undefined);
+    setValidation({});
+    toast.success(t(mode === "create" ? "roles:created" : "roles:updated", { name: savedDraft.name.trim() }));
+    await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
+    await queryClient.invalidateQueries({ queryKey: roleQueryKey(id) });
+    if (mode === "create") {
+      guard.allowNextNavigation();
+      void navigate(`/org/roles/${encodeURIComponent(id)}`, { replace: true });
+    } else {
+      setDraftState(savedDraft);
+    }
+  }
+
+  function save() {
+    const request = validRequest();
+    if (!request) return;
+    const submitted = draft;
+    setFailure(undefined);
+    if (mode === "create") create.mutate(request, { onSuccess: (id) => saved(id, submitted), onError: setFailure });
+    else update.mutate({ ...request, version: role.data!.version }, { onSuccess: () => saved(roleId!, submitted), onError: setFailure });
+  }
 
   // «Vale en toda la organización»: en la oración, el alcance va en minúscula.
   const scopeInSentence = (scope: RoleScope) => scope === "SpecificCompany" ? companyName ?? t("roles:scopeInSentence.specificCompany")
@@ -240,7 +248,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
         {mode === "edit"
           ? <Button type="button" variant="outline" onClick={discard}>{t("roles:discard")}</Button>
           : <Button type="button" variant="outline" onClick={leave}>{t("roles:cancel")}</Button>}
-        <Button type="button" disabled={save.isPending || mode === "edit" && !isDirty} onClick={() => save.mutate()}>{save.isPending ? t("roles:saving") : mode === "create" ? t("roles:create") : t("roles:save")}</Button>
+        <Button type="button" disabled={saving || mode === "edit" && !isDirty} onClick={save}>{saving ? t("roles:saving") : mode === "create" ? t("roles:create") : t("roles:save")}</Button>
       </> : undefined}
     >
       <div className="flex flex-col gap-3.5">
