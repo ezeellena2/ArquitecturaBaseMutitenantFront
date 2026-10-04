@@ -34,6 +34,26 @@ export function HomeIcon(props: IconProps) {
   );
 }
 
+/// «Inicio» en la barra de abajo del teléfono (tableros M-*, .ap-nav): el techo y las paredes, sin puerta.
+export function AppHomeIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 11.5 12 5l8 6.5" />
+      <path d="M6.5 10v9h11v-9" />
+    </Icon>
+  );
+}
+
+/// El candado del 403 (tableros Error-Org y M-Error-Org): el cuerpo y el arco, sin cerradura.
+export function LockIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <rect x="5" y="10.5" width="14" height="10" rx="2" />
+      <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
+    </Icon>
+  );
+}
+
 export function UsersIcon(props: IconProps) {
   return (
     <Icon {...props}>

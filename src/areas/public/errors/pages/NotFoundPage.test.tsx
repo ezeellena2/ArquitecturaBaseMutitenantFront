@@ -13,6 +13,8 @@ describe("NotFoundPage", () => {
     expect(screen.getByRole("heading", { name: "No encontramos esta página" })).toBeVisible();
     expect(screen.queryByText("Puede que la hayan borrado o que la dirección esté mal.")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/org");
+    // La lupa del tablero.
+    expect(container.querySelector('path[d="m16 16 3.5 3.5"]')).not.toBeNull();
     expect(await axe(container)).toHaveNoViolations();
   });
 });

@@ -29,7 +29,7 @@ describe("marco de app del teléfono", () => {
 
   it("la barra de abajo marca la sección y «Más» lleva la inicial", () => {
     render(<MemoryRouter><BottomNav label="Secciones" items={[
-      { key: "home", label: "Inicio", to: "/org", icon: House, active: false },
+      { key: "home", label: "Inicio", to: "/org", icon: <House />, active: false },
       { key: "more", label: "Más", to: "/org/mas", avatar: "L", active: true },
     ]} /></MemoryRouter>);
 

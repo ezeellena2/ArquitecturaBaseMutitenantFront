@@ -8,6 +8,7 @@ import { useLocalStorage } from "@/shared/hooks/useLocalStorage";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { AppChromeProvider, type AppChrome } from "@/shared/ui/app/AppChrome";
 import { BottomNav } from "@/shared/ui/app/BottomNav";
+import { AppHomeIcon } from "@/shared/ui/icons";
 import { AdminPanel } from "./components/AdminPanel";
 import { Breadcrumbs } from "./components/Breadcrumbs";
 import { Sidebar } from "./components/Sidebar";
@@ -79,7 +80,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
     <div className="flex h-svh flex-col bg-[var(--lado-activo)]">
       <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">{children ?? <Outlet />}</main>
       {home?.to && navigation.moreTo && !bottomNavHidden ? <BottomNav label={t("navigation.sections")} items={[
-        { key: "home", label: t(home.labelKey), to: home.to, icon: home.icon, active: onHome && !activeSectionHidden },
+        { key: "home", label: t(home.labelKey), to: home.to, icon: <AppHomeIcon className="size-6" />, active: onHome && !activeSectionHidden },
         { key: "more", label: t("navigation.more"), to: navigation.moreTo, avatar: name.charAt(0).toUpperCase() || undefined, active: !onHome && !activeSectionHidden },
       ]} /> : null}
     </div>

@@ -60,6 +60,8 @@ describe("PrivateLayoutFrame", () => {
     expect(screen.queryByRole("complementary", { name: "Navegación principal" })).not.toBeInTheDocument();
     const sections = screen.getByRole("navigation", { name: "Secciones" });
     expect(within(sections).getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
+    // Tableros M-* (.ap-nav): la casita de Inicio es el techo y las paredes, sin puerta.
+    expect(within(sections).getByRole("link", { name: "Inicio" }).querySelector('path[d="M4 11.5 12 5l8 6.5"]')).not.toBeNull();
     expect(within(sections).getByRole("link", { name: "Más" })).toHaveAttribute("href", "/mas");
     expect(within(sections).getByText("A")).toBeInTheDocument();
   });

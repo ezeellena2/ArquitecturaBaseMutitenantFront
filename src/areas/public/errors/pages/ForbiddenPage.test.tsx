@@ -14,6 +14,8 @@ describe("ForbiddenPage", () => {
     expect(screen.getByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
     expect(screen.queryByText(/pedíselo a quien administra/i)).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/org");
+    // El candado del tablero: el cuerpo y el arco, sin cerradura.
+    expect(container.querySelector('path[d="M8 10.5V8a4 4 0 0 1 8 0v2.5"]')).not.toBeNull();
     expect(await axe(container)).toHaveNoViolations();
   });
 
