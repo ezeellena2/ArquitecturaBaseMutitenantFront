@@ -34,14 +34,16 @@ describe("Sidebar", () => {
     expect(await axe(container, { rules: { region: { enabled: false } } })).toHaveNoViolations();
   });
 
-  // Tablero Inicio-Org y Usuarios (v77): una línea fina entre cada opción, Administración con su escudo y ›; abierta,
-  // en blanco con ‹, como la opción en la que estás.
-  it("separa las opciones con una línea fina y marca Administración abierta", () => {
+  // «Criterio · Menús» (v92): opciones de 32 separadas por 2 px, con la línea fina adentro de ese espacio (34 de una a
+  // otra); Administración con su escudo y ›; abierta, en blanco con ‹, como la opción en la que estás.
+  it("separa las opciones con una línea fina en el espacio entre ellas y marca Administración abierta", () => {
     const props = { account: null, context: null, collapsed: false, onToggleAdministration: vi.fn(), onToggleCollapsed: vi.fn() };
     const { rerender } = render(<MemoryRouter initialEntries={["/"]}><Sidebar {...props} navigation={personalNavigation} administrationOpen={false} /></MemoryRouter>);
     const items = screen.getAllByRole("listitem");
-    expect(items[0]).not.toHaveClass("border-t");
-    expect(items[1]).toHaveClass("border-t", "border-[var(--lado-borde)]");
+    expect(items[0].parentElement).toHaveClass("gap-0.5");
+    expect(items[0]).not.toHaveClass("before:h-px");
+    expect(items[1]).toHaveClass("relative", "before:absolute", "before:-top-0.5", "before:h-px", "before:bg-[var(--lado-borde)]");
+    expect(items[1]).not.toHaveClass("border-t", "pt-0.5");
 
     rerender(<MemoryRouter initialEntries={["/org"]}><Sidebar {...props} navigation={businessNavigation} administrationOpen={false} /></MemoryRouter>);
     const closed = screen.getByRole("button", { name: "Administración" });

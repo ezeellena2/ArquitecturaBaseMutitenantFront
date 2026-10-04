@@ -37,7 +37,7 @@ export function Sidebar({ navigation, account, context, collapsed, administratio
       {collapsed ? <ChevronRight size={15} aria-hidden="true" /> : <ChevronLeft size={15} aria-hidden="true" />}
     </button> : null}
     <nav aria-label={t("navigation.general")} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1">
-      <ul className="flex flex-col gap-1">
+      <ul className="flex flex-col gap-0.5">
         {navigation.links.map((entry, index) => {
           const Icon = entry.icon;
           const active = entry.path === pathname;

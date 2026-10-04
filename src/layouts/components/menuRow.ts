@@ -9,5 +9,8 @@ export const menuRowClass = (active: boolean) => `${rowBase} ${active
 /// El grupo que se despliega en el lugar («Gestión de usuarios»), en negrita y en el color del texto.
 export const menuGroupClass = `${rowBase} font-semibold text-[var(--t1)] hover:bg-[var(--lado-hover)]`;
 
-/// Una línea fina entre cada opción, como la que separa Administración.
-export const menuLineClass = (index: number) => index > 0 ? "border-t border-[var(--lado-borde)] pt-0.5" : "";
+/// Una línea fina entre cada opción, como la que separa Administración. Va adentro de los 2 px que separan las opciones
+/// (la lista lleva `gap-0.5`), así que no suma alto: 34 de una opción a la otra (v92).
+export const menuLineClass = (index: number) => index > 0
+  ? "relative before:absolute before:inset-x-0 before:-top-0.5 before:h-px before:bg-[var(--lado-borde)]"
+  : "";

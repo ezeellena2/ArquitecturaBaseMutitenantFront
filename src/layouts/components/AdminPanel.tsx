@@ -21,7 +21,7 @@ export function AdminPanel({ panel, open, onClose }: { panel: NavigationPanel | 
     <button type="button" aria-label={t("layout.sidebar.closeAdministration")} onClick={onClose} className="absolute -right-3.5 top-16 z-30 flex size-7 items-center justify-center rounded-full border border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t1)] shadow-sm">
       <ChevronLeft size={15} aria-hidden="true" />
     </button>
-    <ul className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-2 py-3">
+    <ul className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-3">
       {sections.map((section, index) => {
         const expanded = expandedSections[section.labelKey] ?? true;
         return <li key={section.labelKey} className={menuLineClass(index)}>
@@ -31,7 +31,7 @@ export function AdminPanel({ panel, open, onClose }: { panel: NavigationPanel | 
             <span className="flex-1">{t(section.labelKey)}</span>
             <ChevronDown size={16} aria-hidden="true" className={expanded ? "" : "-rotate-90"} />
           </button>
-          {expanded ? <ul className="mt-1 ml-[22px] flex flex-col gap-1 border-l border-[var(--lado-borde)] pl-3">
+          {expanded ? <ul className="mt-0.5 ml-[22px] flex flex-col gap-0.5 border-l border-[var(--lado-borde)] pl-3">
             {section.links.map((entry, childIndex) => <li key={entry.labelKey} className={menuLineClass(childIndex)}>
               <Link to={entry.path} aria-current={entry === activeLink ? "page" : undefined} className={menuRowClass(entry === activeLink)}>{t(entry.labelKey)}</Link>
             </li>)}

@@ -38,10 +38,17 @@ describe("AdminPanel", () => {
       expect(within(panel).getByRole("link", { name }).querySelector("svg")).not.toBeNull();
     }
     expect(within(panel).getByRole("button", { name: "Gestión de usuarios" }).querySelector("svg")).not.toBeNull();
+    // «Criterio · Menús» (v92): 2 px entre opciones, con la línea fina adentro de ese espacio; los hijos de «Gestión de
+    // usuarios» arrancan 2 px debajo del grupo.
     const [first, ...rest] = within(panel).getAllByRole("listitem");
-    expect(first).not.toHaveClass("border-t");
+    expect(first).not.toHaveClass("before:h-px");
+    expect(first.parentElement).toHaveClass("gap-0.5");
     const users = within(panel).getByRole("link", { name: "Usuarios" }).closest("li");
-    for (const item of rest.filter((entry) => entry !== users)) expect(item).toHaveClass("border-t", "border-[var(--lado-borde)]");
+    expect(users?.parentElement).toHaveClass("mt-0.5", "gap-0.5");
+    for (const item of rest.filter((entry) => entry !== users)) {
+      expect(item).toHaveClass("before:absolute", "before:-top-0.5", "before:h-px", "before:bg-[var(--lado-borde)]");
+      expect(item).not.toHaveClass("border-t");
+    }
   });
 
   it("en una ruta hija marca la opción de la que sale", () => {
