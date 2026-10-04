@@ -5,13 +5,12 @@ import { Trans, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
-import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import type { OrganizationUserResponse, RoleResponse, UpdateOrganizationUserRequest } from "@/shared/api/types";
+import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
-import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
@@ -37,6 +36,8 @@ type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
 type CompanyDialogDraft = { mode: "add" | "roles"; companyId: string; roleIds: string[] };
 type AccessDraft = { isActive: boolean; roleIds: string[] };
 type UserState = OrganizationUserResponse["state"];
+/// De dónde salió un guardado: su error va en la franja de la ficha o en la del diálogo, arriba de sus botones.
+type SaveOrigin = "page" | "dialog";
 
 // Tablero Usuario: punto de color y palabra, sin pastilla.
 const stateDot: Record<UserState, string> = {
@@ -81,7 +82,19 @@ export function UserDetailPage() {
   const [draft, setDraft] = useState<AccessDraft | null>(null);
   const [companyDialog, setCompanyDialog] = useState<CompanyDialogDraft | null>(null);
   const [failure, setFailure] = useState<unknown>();
+  const [dialogFailure, setDialogFailure] = useState<unknown>();
   const [confirmAction, setConfirmAction] = useState<"disable" | "remove" | "revoke" | null>(null);
+  // Antes de las salidas tempranas: la pregunta de salida y el cartel del 409 siguen el borrador del acceso.
+  const loaded = user.data;
+  const isDirty = Boolean(loaded && draft && canManage && loaded.state !== "PendingDeletion"
+    && (draft.isActive !== (loaded.state === "Active") || !sameRoles(draft.roleIds, organizationRoleIds(loaded))));
+  // Tableros Usuario y Avisos: el 409 en su cartel, «Cambios sin guardar» en la banda, el error de guardado en la franja
+  // y «¿Salir sin guardar?» antes de irse con cambios.
+  const edit = useEditPage({
+    isDirty, error: failure,
+    onSeeNew: () => { void user.refetch().then(() => { setDraft(null); setFailure(undefined); }); },
+    onContinueEditing: () => setFailure(undefined),
+  });
   const roles = useQueries({ queries: (["Organization", "Company"] as const).map((scope) => ({
     queryKey: userRolesQueryKey(scope), queryFn: () => fetchAssignableRoles(scope), enabled: canManage && user.data !== undefined,
     meta: { silent: true },
@@ -92,13 +105,14 @@ export function UserDetailPage() {
   const activeCompanies = (companies.data?.items ?? []).filter((company) => company.status === "Active");
   const refresh = () => Promise.all([client.invalidateQueries({ queryKey: userQueryKey(memberId) }), client.invalidateQueries({ queryKey: usersQueryRoot })]);
   const save = useMutation({
-    mutationFn: ({ request }: { request: UpdateOrganizationUserRequest; message: string; keepDraft?: boolean }) => updateUser(memberId, request),
-    onSuccess: async (_result, { message, keepDraft }) => { setFailure(undefined); if (!keepDraft) setDraft(null); setCompanyDialog(null); toast.success(sentence(message)); await refresh(); },
-    onError: (error) => setFailure(error),
+    mutationFn: ({ request }: { request: UpdateOrganizationUserRequest; message: string; keepDraft?: boolean; origin: SaveOrigin }) => updateUser(memberId, request),
+    onSuccess: async (_result, { message, keepDraft }) => { setFailure(undefined); setDialogFailure(undefined); if (!keepDraft) setDraft(null); setCompanyDialog(null); toast.success(sentence(message)); await refresh(); },
+    onError: (error, { origin }) => { if (origin === "dialog") setDialogFailure(error); else setFailure(error); },
   });
   const remove = useMutation({
     mutationFn: (_message: string) => removeUser(memberId, user.data?.version ?? 0),
-    onSuccess: async (_result, message) => { toast.success(sentence(message)); await client.invalidateQueries({ queryKey: usersQueryRoot }); void navigate("/org/usuarios"); },
+    // Ya no hay nada que perder: la salida al listado no pregunta.
+    onSuccess: async (_result, message) => { toast.success(sentence(message)); await client.invalidateQueries({ queryKey: usersQueryRoot }); edit.allowNextNavigation(); void navigate("/org/usuarios"); },
     onError: (error) => toastActionError(error, t),
   });
   const revoke = useMutation({
@@ -121,8 +135,7 @@ export function UserDetailPage() {
   const saved: AccessDraft = { isActive: member.state === "Active", roleIds: organizationRoleIds(member) };
   const current = draft ?? saved;
   const shownState: UserState = isMember ? (current.isActive ? "Active" : "Inactive") : member.state;
-  const isDirty = editable && (current.isActive !== saved.isActive || !sameRoles(current.roleIds, saved.roleIds));
-  const saveError = failure instanceof ApiError ? failure : undefined;
+  const dialogError = actionErrorMessage(dialogFailure, t);
   const registryById = new Map((companies.data?.items ?? []).map((company) => [company.id, company]));
   const preservedCompanyIds = new Set(member.companies.filter((company) => company.status !== "Active"
     || registryById.get(company.companyId)?.status === "Inactive").map((company) => company.companyId));
@@ -144,17 +157,17 @@ export function UserDetailPage() {
     try {
       await save.mutateAsync({
         request: { ...(isMember ? { isActive: current.isActive } : {}), roleIds: current.roleIds, companies: changeableAssignments, version: member.version },
-        message: t("users:detail.messages.saved", { name: displayName }),
+        message: t("users:detail.messages.saved", { name: displayName }), origin: "page",
       });
     } catch { /* El error queda visible en la franja o en el cartel de concurrencia. */ }
   }
 
   // Las empresas se guardan al momento, desde el diálogo o el ⋮: no esperan a «Guardar cambios».
-  async function saveCompanies(assignments: CompanyAssignmentDraft[], message: string) {
-    setFailure(undefined);
+  async function saveCompanies(assignments: CompanyAssignmentDraft[], message: string, origin: SaveOrigin) {
+    if (origin === "dialog") setDialogFailure(undefined); else setFailure(undefined);
     try {
-      await save.mutateAsync({ request: { roleIds: saved.roleIds, companies: assignments, version: member.version }, message, keepDraft: true });
-    } catch { /* El error queda visible en la franja o en el cartel de concurrencia. */ }
+      await save.mutateAsync({ request: { roleIds: saved.roleIds, companies: assignments, version: member.version }, message, keepDraft: true, origin });
+    } catch { /* El error queda visible en la franja de la ficha o en la del diálogo. */ }
   }
 
   async function saveCompanyDialog() {
@@ -162,11 +175,27 @@ export function UserDetailPage() {
     const name = companyName(companyDialog.companyId);
     if (companyDialog.mode === "add") {
       await saveCompanies([...changeableAssignments, { companyId: companyDialog.companyId, roleIds: companyDialog.roleIds }],
-        t("users:detail.messages.companyAdded", { name: displayName, company: name }));
+        t("users:detail.messages.companyAdded", { name: displayName, company: name }), "dialog");
       return;
     }
     await saveCompanies(changeableAssignments.map((assignment) => assignment.companyId === companyDialog.companyId
-      ? { ...assignment, roleIds: companyDialog.roleIds } : assignment), t("users:detail.messages.companyRolesSaved", { company: name }));
+      ? { ...assignment, roleIds: companyDialog.roleIds } : assignment), t("users:detail.messages.companyRolesSaved", { company: name }), "dialog");
+  }
+
+  function openCompanyDialog(next: CompanyDialogDraft) {
+    setCompanyDialog(next);
+    setDialogFailure(undefined);
+  }
+
+  // ✕, Escape y «Cancelar» cierran igual: el error del diálogo se va con él.
+  function closeCompanyDialog() {
+    setCompanyDialog(null);
+    setDialogFailure(undefined);
+  }
+
+  function changeCompanyDialog(next: CompanyDialogDraft) {
+    setCompanyDialog(next);
+    setDialogFailure(undefined);
   }
 
   function resendInvitation() {
@@ -201,13 +230,13 @@ export function UserDetailPage() {
     : <Trans ns="users" i18nKey="detail.since" components={{ date: <DateText value={member.createdAtUtc} kind="date" /> }} />;
   const summary = <>
     <span className="inline-flex items-center gap-1.5 text-[var(--t1)]"><span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${stateDot[shownState]}`} />{t(`users:states.${shownState}`)}</span>
-    {isDirty ? <><Separator /><span className="font-medium text-[var(--alerta)]">{t("users:detail.unsaved")}</span></> : null}
+    {edit.unsaved ? <><Separator />{edit.unsaved}</> : null}
     {member.email ? <><Separator />{member.email}</> : null}
     <Separator />{detail}
   </>;
 
   return <>
-    <Page banner={<ConcurrencyBanner error={saveError} isDirty={isDirty || companyDialog !== null} onSeeNew={() => { void user.refetch().then(() => { setDraft(null); setCompanyDialog(null); setFailure(undefined); }); }} onContinueEditing={() => setFailure(undefined)} />} icon={UserRound} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
+    <Page banner={edit.banner} icon={UserRound} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
       phoneSubtitle={member.email ?? undefined} phoneBody="gray"
       moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [
         { label: t("users:actions.resend"), onSelect: resendInvitation, hidden: !isInvitation || !canInvite || !member.invitationId },
@@ -224,7 +253,8 @@ export function UserDetailPage() {
           </Button>
         </> : undefined}>
       <div className="flex flex-col gap-4 max-md:gap-0">
-        {saveError?.code === "General.ConcurrencyConflict" ? null : <FormError message={actionErrorMessage(failure, t)} />}
+        {/* Tablero Usuario: el error de guardado, en una franja debajo de la banda; en el teléfono, con el margen de las tarjetas. */}
+        {edit.formError ? <div className="max-md:mx-4 max-md:mt-3.5">{edit.formError}</div> : null}
         {pendingDeletion ? <Banner tone="warning"><Trans ns="users" i18nKey="detail.deletionScheduled" components={{ date: <DateText value={member.deletionScheduledForUtc} kind="date" /> }} /></Banner> : null}
 
         <Section title={t("users:detail.accessTitle")}>
@@ -251,7 +281,7 @@ export function UserDetailPage() {
 
         <Section title={t("users:detail.companyAccess")} action={editable ? { label: t("users:detail.addCompany"),
           disabled: !companies.data || activeCompanies.every((company) => assignedCompanyIds.has(company.id)) || save.isPending,
-          onClick: () => { setCompanyDialog({ mode: "add", companyId: "", roleIds: [] }); setFailure(undefined); } } : undefined}>
+          onClick: () => openCompanyDialog({ mode: "add", companyId: "", roleIds: [] }) } : undefined}>
             {member.companies.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)] md:px-5">{t("users:detail.noCompanies")}</p> : <List label={t("users:detail.companyAccess")}>
               {member.companies.map((company) => {
                 const preserved = preservedCompanyIds.has(company.companyId);
@@ -260,9 +290,9 @@ export function UserDetailPage() {
                 return <ListItem key={company.companyId} icon={<Building2 aria-hidden="true" />} title={company.companyName}
                   detail={preserved ? <>{roleNames}<Separator />{t("users:detail.companyInactive")}</> : roleNames}>
                   {editable && !preserved ? <RowActions label={t("users:detail.companyActions", { name: company.companyName })} actions={[
-                    { label: t("users:detail.changeCompanyRoles"), accessibleName: t("users:detail.changeCompanyRoles"), icon: Settings2, onSelect: () => { setCompanyDialog({ mode: "roles", ...assignment }); setFailure(undefined); } },
+                    { label: t("users:detail.changeCompanyRoles"), accessibleName: t("users:detail.changeCompanyRoles"), icon: Settings2, onSelect: () => openCompanyDialog({ mode: "roles", ...assignment }) },
                     { label: t("users:detail.removeCompanyAction"), accessibleName: t("users:detail.removeCompanyAction"), icon: Trash2, destructive: true,
-                      onSelect: () => { void saveCompanies(changeableAssignments.filter((item) => item.companyId !== company.companyId), t("users:detail.messages.companyRemoved", { name: displayName, company: company.companyName })); } },
+                      onSelect: () => { void saveCompanies(changeableAssignments.filter((item) => item.companyId !== company.companyId), t("users:detail.messages.companyRemoved", { name: displayName, company: company.companyName }), "page"); } },
                   ]} /> : null}
                 </ListItem>;
               })}
@@ -281,22 +311,24 @@ export function UserDetailPage() {
       {orgRoles.map((role) => <CheckRow key={role.id} label={role.name} checked={current.roleIds.includes(role.id)}
         onCheckedChange={(checked) => changeDraft({ roleIds: checked ? [...current.roleIds, role.id] : current.roleIds.filter((id) => id !== role.id) })} />)}
     </ChoiceSheet>
-    <Dialog open={companyDialog !== null} onOpenChange={(open) => { if (!open && !save.isPending) setCompanyDialog(null); }}>
+    <Dialog open={companyDialog !== null} onOpenChange={(open) => { if (!open && !save.isPending) closeCompanyDialog(); }}>
       <DialogContent className="md:max-w-[480px]">
         <DialogHeader><DialogTitle>{companyDialog?.mode === "add" ? t("users:detail.addCompanyTitle") : t("users:detail.changeCompanyRolesTitle", { name: companyName(companyDialog?.companyId ?? "") })}</DialogTitle></DialogHeader>
         <div className="flex flex-col gap-4 p-5">
           {companyDialog?.mode === "add" ? <FormField label={t("users:invite.company")} required>
-            <Select value={companyDialog.companyId} onValueChange={(companyId) => setCompanyDialog({ ...companyDialog, companyId, roleIds: [] })}>
+            <Select value={companyDialog.companyId} onValueChange={(companyId) => changeCompanyDialog({ ...companyDialog, companyId, roleIds: [] })}>
               <SelectTrigger className="w-full" aria-label={t("users:invite.company")}><SelectValue placeholder={t("users:invite.chooseCompany")} /></SelectTrigger>
               <SelectContent position="popper">{activeCompanies.filter((company) => !assignedCompanyIds.has(company.id)).map((company) => <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>)}</SelectContent>
             </Select>
           </FormField> : null}
           {companyDialog?.companyId ? <RolesField label={t("users:invite.companyRoles")} allLabel={t("users:detail.allRoles")}
             options={dialogCompanyRoles.map((role: RoleResponse) => ({ value: role.id, label: role.name }))} value={companyDialog.roleIds}
-            onChange={(roleIds) => setCompanyDialog({ ...companyDialog, roleIds })} placeholder={t("users:detail.noRoles")} /> : null}
+            onChange={(roleIds) => changeCompanyDialog({ ...companyDialog, roleIds })} placeholder={t("users:detail.noRoles")} /> : null}
+          {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
+          {dialogError ? <FormError message={dialogError} /> : null}
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" disabled={save.isPending} onClick={() => setCompanyDialog(null)}>{t("common:actions.cancel")}</Button>
+          <Button type="button" variant="outline" disabled={save.isPending} onClick={closeCompanyDialog}>{t("common:actions.cancel")}</Button>
           <Button type="button" disabled={save.isPending || !companyDialog?.companyId} onClick={() => { void saveCompanyDialog(); }}>{save.isPending ? t("common:states.saving") : companyDialog?.mode === "add" ? t("users:detail.addCompanyConfirm") : t("users:detail.saveCompanyRoles")}</Button>
         </DialogFooter>
       </DialogContent>
@@ -304,5 +336,6 @@ export function UserDetailPage() {
     <ConfirmDialog open={confirmation !== null} onOpenChange={(open) => { if (!open) setConfirmAction(null); }} destructive
       title={confirmation?.title ?? ""} description={confirmation?.description} confirmLabel={confirmation?.label ?? ""}
       onConfirm={() => confirmation?.run()} />
+    {edit.leaveDialog}
   </>;
 }

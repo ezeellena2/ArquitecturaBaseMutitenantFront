@@ -266,4 +266,48 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     expect(await screen.findByText(/Otra persona cambió esto mientras lo editabas/)).toBeVisible();
   }, 10_000);
+
+  // Tableros Usuario y Avisos: con cambios, un enlace del menú pregunta «¿Salir sin guardar?».
+  it("con cambios, salir por el menú pregunta «¿Salir sin guardar?»", async () => {
+    const user = userEvent.setup();
+    api(member);
+    const { router } = renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+
+    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
+    await user.keyboard("{Escape}");
+    expect(subline("Lucía Fernández")).toHaveTextContent(/^Activo · Cambios sin guardar · lucia@example\.com/);
+
+    await user.click(screen.getByRole("link", { name: "Empresas" }));
+    expect(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).toBeVisible();
+    expect(router.state.location.pathname).toBe("/org/usuarios/member-1");
+  }, 10_000);
+
+  // «Criterio · Diálogos»: el error general de un diálogo va arriba de sus botones; el 409 también, una sola vez y sin el
+  // cartel de la ficha. Al cerrar el diálogo, no queda nada.
+  it("un 409 al sumar una empresa va en la franja del diálogo, arriba de los botones, y en ningún otro lado", async () => {
+    const user = userEvent.setup();
+    api(member);
+    server.use(http.put("/api/users/member-1", () => HttpResponse.json({ status: 409, code: "General.ConcurrencyConflict", title: "Conflicto",
+      detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar." }, { status: 409 })));
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+
+    await user.click(await screen.findByRole("button", { name: "Sumar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
+    await open(user, within(dialog).getByRole("combobox", { name: "Empresa" }));
+    await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
+    await user.click(within(dialog).getByRole("button", { name: "Sumar" }));
+
+    const alert = await within(dialog).findByRole("alert");
+    expect(alert).toHaveTextContent("Otra persona cambió esto. Revisá la versión más reciente antes de guardar.");
+    expect(alert.compareDocumentPosition(within(dialog).getByRole("button", { name: "Cancelar" })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
+    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
+
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Sumar empresa" })).not.toBeInTheDocument());
+    expect(screen.queryAllByRole("alert", { hidden: true })).toHaveLength(0);
+  }, 10_000);
 });

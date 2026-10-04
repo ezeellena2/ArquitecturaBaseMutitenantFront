@@ -111,7 +111,6 @@
     "since": "desde el <date/>",
     "expiresOn": "vence el <date/>",
     "expiredOn": "venció el <date/>",
-    "unsaved": "Cambios sin guardar",
     "moreActions": "Más acciones",
     "discard": "Descartar cambios",
     "status": "Estado",
