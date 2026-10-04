@@ -199,8 +199,12 @@ p("T-Plat-Legales", estado() + barra("Documentos legales", "Administración", vo
 
 p("T-Plat-Config", estado() + barra("Configuración", "Administración", volver="T-Plat-Mas.dc.html")
   + '<div class="ap-cuerpo" style="padding: 4px 20px 0; gap: 14px;">'
+  + '<span class="ap-gtit" style="margin: 4px 0 -2px; font-size: 16px; font-weight: 700; color: var(--t1);">Registro y altas</span>'
   + campo("Registro de personas", "Abierto", req=False, flecha=True) + campo("Alta de organizaciones", "Requiere aprobación", req=False, flecha=True)
-  + campo("Organizaciones propias por persona", "3", req=False) + "</div>" + GUARDAR, "Configuración de la plataforma")
+  + campo("Organizaciones propias por persona", "3", req=False)
+  + '<span class="ap-gtit" style="margin: 14px 0 -2px; font-size: 16px; font-weight: 700; color: var(--t1);">Contacto</span>'
+  + campo("Correo de ventas", "ventas@ejemplo.com", req=False) + campo("Correo de soporte", "soporte@ejemplo.com", req=False) + "</div>" + GUARDAR,
+  "Configuración de la plataforma")
 
 AU = [("Ingresó con el autenticador", "27/09 10:55", "Plataforma · Martín Sosa", ""),
       ("Cuenta bloqueada 15 minutos por 10 códigos incorrectos", "27/09 10:20", "mariana.lopez@gmail.com · Sistema", ""),

@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 8480
+ALTO = 8540
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -175,12 +175,13 @@ DECISIONES = {
         ("Teléfonos", "", "En la barra de abajo, «Chats» pasa a «Consultas»; «Más» lleva WhatsApp (Número, Bot, Equipos, Plantillas).", "Dibujada"),
     ],
     "Plataforma · compu": [
-        ("Menú", "B", "Gestión, WhatsApp (Chats, Contactos, Difusiones) y Administración, con la configuración de WhatsApp dentro de Administración.", "Dibujada"),
+        ("Menú", "B", "Gestión, WhatsApp (directo a Consultas desde el 03/10) y Administración, con Número, Bot, Equipos y Plantillas de WhatsApp dentro.", "Dibujada"),
         ("Organizaciones", "", "Organización (alta y origen debajo), Dueño (correo debajo), Empresas, Miembros y Estado.", "Dibujada"),
         ("Ficha de una organización", "", "Con pestañas (Historial, Dueños, Módulos, Dominio verificado, Página pública); el primer módulo es WhatsApp.", "Dibujada"),
         ("Cuentas", "", "Cuenta (nombre y correo), Perfiles, Último ingreso (cómo entró debajo) y Estado; sin Teléfono.", "Dibujada"),
         ("Ficha de una cuenta", "", "Los métodos como en Mi cuenta: filas sin encabezado, el tipo y quién lo administra debajo, y el estado solo si pide atención.", "Dibujada"),
         ("Recuperaciones · Auditoría · Legales · Configuración", "", "Cuenta con la fecha debajo; auditoría sin ojo ni cantidad y detalle en grilla; legales como lista («Versión N · vigente desde…»); «Registro y altas» con su encabezado.", "Dibujada"),
+        ("Configuración · Contacto", "", "Correo de ventas y correo de soporte, debajo de «Registro y altas»: son los que muestran el registro de empresa cerrado o en el límite y la cuenta suspendida.", "Dibujada"),
     ],
     "Sitio público": [
         ("Portada", "B", "Sin la etiqueta del héroe; después de «Dos lados separados», la sección «Empresas en ArquitecturaBase» con buscador, tres empresas y «Ver todas las empresas», que lleva al directorio. «Empresas», arriba, baja a esa sección.", "Dibujada"),

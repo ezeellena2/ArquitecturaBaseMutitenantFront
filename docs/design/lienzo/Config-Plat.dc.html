@@ -560,6 +560,8 @@ textarea.in2 { height: auto; min-height: 84px; }
 .w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
   content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 </style>
+<style data-vuelta="1004-correos-Config-Plat">
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{plMenuClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -638,6 +640,17 @@ textarea.in2 { height: auto; min-height: 84px; }
               <input class="in2 {{malLimite}}" id="f-Limite" type="number" autocomplete="off" placeholder="" value="{{Limite}}" onChange="{{onLimite}}">
               <sc-if value="{{errLimite}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errLimite}}</span></sc-if>
             </div>
+            <h2>Contacto</h2>
+            <div class="campo2">
+              <label class="et" for="f-Ventas">Correo de ventas</label>
+              <input class="in2 {{malVentas}}" id="f-Ventas" type="email" autocomplete="off" value="{{Ventas}}" onChange="{{onVentas}}">
+              <sc-if value="{{errVentas}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errVentas}}</span></sc-if>
+            </div>
+            <div class="campo2">
+              <label class="et" for="f-Soporte">Correo de soporte</label>
+              <input class="in2 {{malSoporte}}" id="f-Soporte" type="email" autocomplete="off" value="{{Soporte}}" onChange="{{onSoporte}}">
+              <sc-if value="{{errSoporte}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errSoporte}}</span></sc-if>
+            </div>
 
         </div>
       </div>
@@ -679,7 +692,7 @@ class Component extends DCLogic {
   constructor(props) {
     super(props);
     
-    this.state = { plNav: 'administracion', abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', guardado: { registro: 'open', alta: 'approval', limite: '3' }, registro: 'open', alta: 'approval', limite: '3', errLimite: '' };
+    this.state = { plNav: 'administracion', abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', guardado: { registro: 'open', alta: 'approval', limite: '3', ventas: 'ventas@ejemplo.com', soporte: 'soporte@ejemplo.com' }, registro: 'open', alta: 'approval', limite: '3', ventas: 'ventas@ejemplo.com', soporte: 'soporte@ejemplo.com', errLimite: '', errVentas: '', errSoporte: '' };
   }
 
   avisar(texto, tipo = 'ok') {
@@ -871,26 +884,41 @@ class Component extends DCLogic {
       plAbrirAdministracion: () => this.setState({ plNav: s.plNav === 'administracion' ? null : 'administracion' }),
       plCerrar: () => this.setState({ plNav: null }),
 
-      sucio: s.registro !== s.guardado.registro || s.alta !== s.guardado.alta || s.limite !== s.guardado.limite,
-      limpio: !(s.registro !== s.guardado.registro || s.alta !== s.guardado.alta || s.limite !== s.guardado.limite),
-      descartar: () => this.setState({ ...s.guardado, errLimite: '', abierto: null }),
+      sucio: s.registro !== s.guardado.registro || s.alta !== s.guardado.alta || s.limite !== s.guardado.limite || s.ventas !== s.guardado.ventas || s.soporte !== s.guardado.soporte,
+      limpio: !(s.registro !== s.guardado.registro || s.alta !== s.guardado.alta || s.limite !== s.guardado.limite || s.ventas !== s.guardado.ventas || s.soporte !== s.guardado.soporte),
+      descartar: () => this.setState({ ...s.guardado, errLimite: '', errVentas: '', errSoporte: '', abierto: null }),
       // PUT /api/platform/settings: cambia PlatformSettings y queda en la auditoría de seguridad con el motivo.
       guardar: () => {
         const n = Number(s.limite);
 
-        if (!Number.isInteger(n) || n < 1 || n > 50) {
-          this.setState({ errLimite: 'Usá un número de 1 a 50.', abierto: null });
+        const correo = (v) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.trim());
+        const errores = {
+          errLimite: !Number.isInteger(n) || n < 1 || n > 50 ? 'Usá un número de 1 a 50.' : '',
+          errVentas: correo(s.ventas) ? '' : 'Ingresá un correo válido.',
+          errSoporte: correo(s.soporte) ? '' : 'Ingresá un correo válido.',
+        };
+
+        if (errores.errLimite || errores.errVentas || errores.errSoporte) {
+          this.setState({ ...errores, abierto: null });
 
           return;
         }
 
-        this.pedirConfirmacion({ titulo: '¿Guardar la configuración?', texto: 'Cambia cómo entran las personas y las organizaciones nuevas. Lo que ya existe no cambia.', boton: 'Guardar', peligro: false, motivo: true, accion: () => { this.setState({ guardado: { registro: s.registro, alta: s.alta, limite: s.limite } }); this.avisar('Guardamos la configuración.'); } });
+        this.pedirConfirmacion({ titulo: '¿Guardar la configuración?', texto: 'Cambia cómo entran las personas y las organizaciones nuevas. Lo que ya existe no cambia.', boton: 'Guardar', peligro: false, motivo: true, accion: () => { this.setState({ guardado: { registro: s.registro, alta: s.alta, limite: s.limite, ventas: s.ventas.trim(), soporte: s.soporte.trim() } }); this.avisar('Guardamos la configuración.'); } });
       },
       ...this.uno('Registro', 'registro', REGISTRO, ''),
       ...this.uno('Alta', 'alta', ALTA, ''),
       Limite: s.limite,
       onLimite: (e) => this.setState({ limite: e.target.value, errLimite: '' }),
       malLimite: s.errLimite ? 'mal' : '',
+      Ventas: s.ventas,
+      onVentas: (e) => this.setState({ ventas: e.target.value, errVentas: '' }),
+      malVentas: s.errVentas ? 'mal' : '',
+      errVentas: s.errVentas,
+      Soporte: s.soporte,
+      onSoporte: (e) => this.setState({ soporte: e.target.value, errSoporte: '' }),
+      malSoporte: s.errSoporte ? 'mal' : '',
+      errSoporte: s.errSoporte,
       errLimite: s.errLimite,
     };
   }
