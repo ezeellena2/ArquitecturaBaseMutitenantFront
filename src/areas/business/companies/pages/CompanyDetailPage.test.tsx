@@ -41,6 +41,38 @@ function detailApi(members: unknown[]) {
   );
 }
 
+// La ficha con Lucía y el rol Administrador; `put` responde el guardado de sus roles. Cuenta las lecturas de la ficha.
+function rolesApi(put: () => Response) {
+  const reads = { company: 0, members: 0 };
+  server.use(
+    http.get("/api/companies/company-1", () => { reads.company += 1; return HttpResponse.json(company); }),
+    http.get("/api/companies/company-1/members/paged", () => { reads.members += 1; return HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false }); }),
+    http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: 1, active: 1, pendingDeletion: 0, inactive: 0, invited: 0 })),
+    http.get("/api/roles/paged", () => HttpResponse.json({ items: [companyAdmin], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+    http.put("/api/companies/company-1/members/member-1/roles", put),
+  );
+  return reads;
+}
+
+async function openRolesDialog(user: ReturnType<typeof userEvent.setup>) {
+  expect(await screen.findByText("Lucía Fernández")).toBeVisible();
+  (await screen.findByRole("button", { name: "Acciones para Lucía Fernández" })).focus();
+  await user.keyboard("{Enter}");
+  await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
+  const dialog = await screen.findByRole("dialog", { name: "Roles de Lucía Fernández" });
+  await user.click(within(dialog).getByRole("button", { name: "Roles en la empresa" }));
+  await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
+  await user.keyboard("{Escape}");
+  return dialog;
+}
+
+// «Criterio · Diálogos»: la franja va después del último campo y antes de «Cancelar».
+function expectAboveButtons(dialog: HTMLElement, alert: HTMLElement, lastField: string) {
+  const following = (from: Node, to: Node) => Boolean(from.compareDocumentPosition(to) & Node.DOCUMENT_POSITION_FOLLOWING);
+  expect(following(within(dialog).getByRole("button", { name: lastField }), alert)).toBe(true);
+  expect(following(alert, within(dialog).getByRole("button", { name: "Cancelar" }))).toBe(true);
+}
+
 describe("CompanyDetailPage", () => {
   it("tablero Empresa: banda, columnas, filtros y la pestaña Roles con los roles propios de la empresa", async () => {
     const user = userEvent.setup();
@@ -177,6 +209,58 @@ describe("CompanyDetailPage", () => {
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 
     await waitFor(() => expect(requestBody).toEqual({ roleIds: ["role-company-admin"], version: 8 }));
+  }, 10_000);
+
+  // «Criterio · Diálogos» y lienzo v97 (diálogo de roles): el error general del diálogo, también el 409, va en su franja
+  // arriba de los botones, una sola vez; la ficha no muestra además el cartel del 409.
+  it("un 409 en el diálogo de roles sale una sola vez, en la franja del diálogo arriba de los botones", async () => {
+    const user = userEvent.setup();
+    rolesApi(() => HttpResponse.json({ status: 409, code: "General.ConcurrencyConflict", title: "Conflicto",
+      detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar." }, { status: 409 }));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    const dialog = await openRolesDialog(user);
+    await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+
+    const alert = await within(dialog).findByRole("alert");
+    expect(alert).toHaveTextContent("Otra persona cambió esto. Revisá la versión más reciente antes de guardar.");
+    expectAboveButtons(dialog, alert, "Roles en la empresa");
+    expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
+    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
+  }, 10_000);
+
+  // Tablero Empresa (v97): «Tiene que quedar al menos…» en la franja con su ícono, no en dos lugares.
+  it("la regla del último administrador va en una sola franja, arriba de los botones", async () => {
+    const user = userEvent.setup();
+    rolesApi(() => HttpResponse.json({ status: 409, code: "Companies.Membership.LastCompanyAdmin", title: "Conflicto",
+      detail: "No podés quitar al último administrador de la empresa." }, { status: 409 }));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    const dialog = await openRolesDialog(user);
+    await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+
+    const alert = await within(dialog).findByRole("alert");
+    expect(alert).toHaveTextContent("Tiene que quedar al menos una persona administradora activa en la empresa.");
+    expect(alert.querySelector("svg")).not.toBeNull();
+    expectAboveButtons(dialog, alert, "Roles en la empresa");
+    expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
+  }, 10_000);
+
+  // Después de un 409 en un diálogo, la ficha quedó vieja: al cerrarlo (Cancelar, ✕ o Escape) se vuelve a leer. La ficha
+  // de Empresa no tiene cambios sin guardar propios: siempre se relee.
+  it("al cerrar el diálogo después de un 409, la ficha se vuelve a leer", async () => {
+    const user = userEvent.setup();
+    const reads = rolesApi(() => HttpResponse.json({ status: 409, code: "General.ConcurrencyConflict", title: "Conflicto",
+      detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar." }, { status: 409 }));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    const dialog = await openRolesDialog(user);
+    await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+    await within(dialog).findByRole("alert");
+    const before = { ...reads };
+
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(reads.company).toBeGreaterThan(before.company));
+    await waitFor(() => expect(reads.members).toBeGreaterThan(before.members));
+    expect(screen.queryAllByRole("alert", { hidden: true })).toHaveLength(0);
   }, 10_000);
 
   it("agrega una persona existente con encabezado idempotente", async () => {

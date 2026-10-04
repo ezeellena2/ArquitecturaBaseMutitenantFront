@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Building2, Pencil, Plus, Power, ShieldCheck, UserRound } from "lucide-react";
 // «Delta S.A.» + «. Quedaste…» no repite el punto final del nombre.
 const sentence = (text: string) => text.replace("..", ".");
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { usePermissions } from "@/auth/usePermissions";
@@ -13,7 +13,6 @@ import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
-import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FilterBar } from "@/shared/ui/FilterBar";
@@ -107,6 +106,13 @@ export function CompanyDetailPage() {
   const [editDraft, setEditDraft] = useState<CompanyDraft>(emptyCompanyDraft);
   const { cuitType, taxIdValid } = useCompanyTaxIdValid(editDraft);
   const [editFailure, setEditFailure] = useState<unknown>();
+  // Un 409 de concurrencia en un diálogo deja la ficha vieja: al cerrarlo se vuelve a leer (la ficha no tiene cambios
+  // sin guardar propios). Va aparte del error, que se borra al cambiar algo en el diálogo.
+  const staleAfterDialog = useRef(false);
+  const failDialog = (setError: (error: unknown) => void) => (error: unknown) => {
+    if (error instanceof ApiError && error.code === "General.ConcurrencyConflict") staleAfterDialog.current = true;
+    setError(error);
+  };
   const existingMemberIds = useQuery({ queryKey: ["companies", id, "all-member-ids"], queryFn: () => fetchCompanyMemberIds(id), enabled: addOpen && canManageMembers, meta: { silent: true } });
   const alreadyAssigned = new Set(existingMemberIds.data ?? []);
   const candidateQuery = useQuery({ queryKey: ["organization-members", "company-candidates"], queryFn: fetchOrganizationMembers, enabled: addOpen && canManageMembers, meta: { silent: true } });
@@ -123,7 +129,7 @@ export function CompanyDetailPage() {
   const changeMemberRoles = useMutation({
     mutationFn: (member: CompanyMemberResponse) => updateCompanyMemberRoles(id, member.memberId, { roleIds: roleDraft, version: member.version }),
     onSuccess: async (_result, member) => { setRoleTarget(null); setMutationError(undefined); toast.success(t("companies:messages.rolesUpdated", { name: member.displayName })); await invalidate(); },
-    onError: setMutationError,
+    onError: failDialog(setMutationError),
   });
   const changeMemberState = useMutation({
     mutationFn: (member: CompanyMemberResponse) => changeCompanyMemberStatus(id, member.memberId, { status: member.membershipStatus === "Active" ? "Inactive" : "Active", version: member.version }),
@@ -141,7 +147,7 @@ export function CompanyDetailPage() {
       return updateCompany(id, payload);
     },
     onSuccess: async () => { setEditOpen(false); setEditFailure(undefined); toast.success(t("companies:messages.detailUpdated")); await invalidate(); },
-    onError: setEditFailure,
+    onError: failDialog(setEditFailure),
   });
 
   if (company.isPending) return <Page icon={Building2} title={t("companies:detail.loading")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
@@ -154,6 +160,16 @@ export function CompanyDetailPage() {
     setEditOpen(true);
   }
 
+  // La X, Escape y «Cancelar» cierran igual: el error se va con el diálogo y, si hubo un 409, la ficha se vuelve a leer.
+  function afterDialog() {
+    if (!staleAfterDialog.current) return;
+    staleAfterDialog.current = false;
+    void invalidate();
+  }
+  function closeAdd() { setAddOpen(false); setMutationError(undefined); afterDialog(); }
+  function closeRoles() { setRoleTarget(null); setMutationError(undefined); afterDialog(); }
+  function closeEdit() { setEditOpen(false); setEditFailure(undefined); afterDialog(); }
+
   function submitEdit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!editDraft.name.trim() || !taxIdValid) return;
@@ -165,7 +181,7 @@ export function CompanyDetailPage() {
     if (!selectedMemberId) return;
     addMember.mutate({ memberId: selectedMemberId, roleIds }, {
       onSuccess: async () => { setAddOpen(false); setSelectedMemberId(""); setRoleIds([]); toast.success(t("companies:messages.memberAdded", { name: candidates.find((member) => member.memberId === selectedMemberId)?.displayName ?? "" })); await invalidate(); },
-      onError: setMutationError,
+      onError: failDialog(setMutationError),
     });
   }
 
@@ -199,7 +215,7 @@ export function CompanyDetailPage() {
 
   return <>
     <Tabs value={tab} onValueChange={(value) => setTab(value as CompanyTab)} className="contents!">
-    <Page banner={<ConcurrencyBanner error={editFailure ?? mutationError} isDirty={false} onSeeNew={() => { setEditDraft(draftFromCompany(data)); setEditFailure(undefined); setMutationError(undefined); void company.refetch(); }} onContinueEditing={() => { setEditFailure(undefined); setMutationError(undefined); }} />} icon={Building2} title={data.name} backTo={{ to: "/org/empresas", label: t("companies:back") }}
+    <Page icon={Building2} title={data.name} backTo={{ to: "/org/empresas", label: t("companies:back") }}
       phoneBody="flush"
       // Tablero M-Empresa: debajo del título, el CUIT y la zona; crear es un «+» flotante según la pestaña.
       phoneSubtitle={<>{data.taxId ? <><TaxIdText value={data.taxId} withType />{" · "}</> : null}<TimeZoneText value={data.timeZoneId} /></>}
@@ -253,14 +269,11 @@ export function CompanyDetailPage() {
     </Page>
     </Tabs>
 
-    <Dialog open={addOpen} onOpenChange={(open) => { setAddOpen(open); if (!open) setMutationError(undefined); }}>
+    <Dialog open={addOpen} onOpenChange={(open) => { if (!open) closeAdd(); }}>
       <DialogContent mobileFullHeight>
         <DialogHeader><DialogTitle>{t("companies:addMember.title")}</DialogTitle><DialogDescription>{data.name}</DialogDescription></DialogHeader>
         <form onSubmit={submitAdd} className="flex min-h-0 flex-col">
           <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
-            <FormError message={actionErrorMessage(mutationError, t)} />
-            {candidateQuery.isError ? <FormError message={apiErrorMessage(candidateQuery.error, t)} /> : null}
-            {existingMemberIds.isError ? <FormError message={apiErrorMessage(existingMemberIds.error, t)} /> : null}
             <FormField label={t("companies:addMember.user")} required>
               <Select value={selectedMemberId} onValueChange={(value) => setSelectedMemberId(value)} disabled={candidateQuery.isPending || existingMemberIds.isPending || candidates.length === 0}>
                 <SelectTrigger className="w-full" aria-label={t("companies:addMember.user")}><SelectValue placeholder={candidateQuery.isPending || existingMemberIds.isPending ? t("common:states.loading") : t("companies:addMember.chooseUser")} /></SelectTrigger>
@@ -270,27 +283,32 @@ export function CompanyDetailPage() {
             <FormField label={t("companies:addMember.roles")}>
               <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleIds} onChange={setRoleIds} placeholder={t("companies:addMember.chooseRoles")} />
             </FormField>
+            {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
+            {candidateQuery.isError ? <FormError message={apiErrorMessage(candidateQuery.error, t)} /> : null}
+            {existingMemberIds.isError ? <FormError message={apiErrorMessage(existingMemberIds.error, t)} /> : null}
+            <FormError message={actionErrorMessage(mutationError, t)} />
           </div>
           <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
-            <Button type="button" variant="outline" onClick={() => setAddOpen(false)}>{t("common:actions.cancel")}</Button>
+            <Button type="button" variant="outline" onClick={closeAdd}>{t("common:actions.cancel")}</Button>
             <Button type="submit" disabled={!selectedMemberId || addMember.isPending}>{addMember.isPending ? t("common:states.saving") : t("companies:actions.addMember")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
 
-    <Dialog open={roleTarget !== null} onOpenChange={(open) => { if (!open) { setRoleTarget(null); setMutationError(undefined); } }}>
+    <Dialog open={roleTarget !== null} onOpenChange={(open) => { if (!open) closeRoles(); }}>
       <DialogContent mobileFullHeight>
         <DialogHeader><DialogTitle>{roleTarget ? t("companies:editMemberRoles.title", { name: roleTarget.displayName }) : t("companies:editMemberRoles.title", { name: "" })}</DialogTitle><DialogDescription>{data.name}</DialogDescription></DialogHeader>
         <div className="flex flex-col gap-4 px-5 py-4">
-          <FormError message={actionErrorMessage(mutationError, t)} />
           <FormField label={t("companies:editMemberRoles.roles")}>
-            <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleDraft} onChange={setRoleDraft} placeholder={t("companies:addMember.chooseRoles")} />
+            <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleDraft} onChange={(next) => { setRoleDraft(next); setMutationError(undefined); }} placeholder={t("companies:addMember.chooseRoles")} />
           </FormField>
-          {mutationError instanceof ApiError && mutationError.code === "Companies.Membership.LastCompanyAdmin" ? <p role="alert" className="text-[13px] text-[var(--alerta)]">{t("companies:editMemberRoles.lastAdmin")}</p> : null}
+          {/* Tablero Empresa (v97): el error, una sola vez, en la franja con su ícono arriba de los botones. */}
+          <FormError message={mutationError instanceof ApiError && mutationError.code === "Companies.Membership.LastCompanyAdmin"
+            ? t("companies:editMemberRoles.lastAdmin") : actionErrorMessage(mutationError, t)} />
         </div>
         <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
-          <Button type="button" variant="outline" onClick={() => setRoleTarget(null)}>{t("common:actions.cancel")}</Button>
+          <Button type="button" variant="outline" onClick={closeRoles}>{t("common:actions.cancel")}</Button>
           <Button type="button" disabled={!roleTarget || changeMemberRoles.isPending} onClick={() => roleTarget && changeMemberRoles.mutate(roleTarget)}>{changeMemberRoles.isPending ? t("common:states.saving") : t("companies:editMemberRoles.save")}</Button>
         </DialogFooter>
       </DialogContent>
@@ -306,16 +324,16 @@ export function CompanyDetailPage() {
       description={t("companies:confirm.deactivateDescription")}
       confirmLabel={t("companies:confirm.deactivateConfirm")} destructive onConfirm={() => changeCompanyState.mutate()} />
 
-    <Dialog open={editOpen} onOpenChange={(open) => { setEditOpen(open); if (!open) setEditFailure(undefined); }}>
+    <Dialog open={editOpen} onOpenChange={(open) => { if (!open) closeEdit(); }}>
       <DialogContent mobileFullHeight>
         <DialogHeader><DialogTitle>{t("companies:editTitle")}</DialogTitle></DialogHeader>
         <form onSubmit={submitEdit} className="flex min-h-0 flex-col">
           <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
-            <FormError message={actionErrorMessage(editFailure, t)} />
             <CompanyFields draft={editDraft} onChange={setEditDraft} taxIdValid={taxIdValid} />
+            <FormError message={actionErrorMessage(editFailure, t)} />
           </div>
           <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
-            <Button type="button" variant="outline" onClick={() => setEditOpen(false)}>{t("common:actions.cancel")}</Button>
+            <Button type="button" variant="outline" onClick={closeEdit}>{t("common:actions.cancel")}</Button>
             <Button type="submit" disabled={saveCompany.isPending || !taxIdValid}>{saveCompany.isPending ? t("common:states.saving") : t("companies:form.save")}</Button>
           </DialogFooter>
         </form>
