@@ -19,6 +19,7 @@ function Tabs({
   )
 }
 
+// En el teléfono las pestañas se reparten el ancho, como M-Empresa.
 function TabsList({
   className,
   ...props
@@ -26,7 +27,7 @@ function TabsList({
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
-      className={cn("inline-flex h-11 w-full items-center justify-start gap-7 bg-transparent p-0 text-[14px]", className)}
+      className={cn("inline-flex h-11 w-full items-center justify-start gap-7 bg-transparent p-0 text-[14px] max-md:grid max-md:auto-cols-fr max-md:grid-flow-col max-md:gap-0", className)}
       {...props}
     />
   )
@@ -40,7 +41,7 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "inline-flex h-11 items-center gap-1.5 px-0 text-[14px] font-medium whitespace-nowrap text-[var(--t2)] outline-none transition-colors hover:text-[var(--t1)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex h-11 items-center gap-1.5 px-0 text-[14px] font-medium max-md:justify-center whitespace-nowrap text-[var(--t2)] outline-none transition-colors hover:text-[var(--t1)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] disabled:pointer-events-none disabled:opacity-50",
         "data-[state=active]:font-semibold data-[state=active]:text-[var(--marca-tx)] data-[state=active]:shadow-[inset_0_-2px_0_var(--marca)]",
         className
       )}

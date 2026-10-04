@@ -86,5 +86,11 @@
     "hasUsers_one": "Cannot deactivate: {{count}} user has the role {{name}}. Remove it first.",
     "hasUsers_other": "Cannot deactivate: {{count}} users have the role {{name}}. Remove it from them first."
   },
-  "emptyFiltered": "No role matches the filters"
+  "emptyFiltered": "No role matches the filters",
+  "phone": {
+    "users_one": "{{count}} user",
+    "users_other": "{{count}} users",
+    "permissions_one": "{{count}} permission",
+    "permissions_other": "{{count}} permissions"
+  }
 }

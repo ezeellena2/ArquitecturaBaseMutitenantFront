@@ -1,6 +1,8 @@
 import type { Column } from "@/shared/ui/DataTable";
 import type { RoleResponse, RoleScope } from "@/shared/api/types";
 import { Link } from "react-router";
+import type { ReactNode } from "react";
+import { ListRow } from "@/shared/ui/app/ListRow";
 
 type TranslateRole = (key: string) => string;
 
@@ -58,4 +60,12 @@ export function createRoleColumns(t: TranslateRole, companyNames: ReadonlyMap<st
     { ...roleColumnDefinitions.userCount, header: t("roles:columns.users"), className: "w-[112px]" },
     { ...roleColumnDefinitions.permissions, header: t("roles:columns.permissions"), className: "w-[112px]", value: visiblePermissionCount },
   ];
+}
+
+/// Tablero M-Roles: en el teléfono cada rol es una fila con cuántos lo tienen a la derecha, dónde vale (y si es de
+/// sistema) y cuántos permisos tiene.
+export function rolePhoneRow(role: RoleResponse, t: TranslateRole & ((key: string, options: { count: number }) => string), companyNames: ReadonlyMap<string, string>, trailing: ReactNode): ReactNode {
+  const scope = scopeLabel(role.scope, t, role.companyId ? companyNames.get(role.companyId) : undefined);
+  return <ListRow key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={displayRoleName(role, t)} meta={t("roles:phone.users", { count: role.userCount })}
+    lines={[role.isSystemRole ? `${t("roles:system")} · ${scope}` : scope, t("roles:phone.permissions", { count: visiblePermissionCount(role) })]} trailing={trailing} />;
 }

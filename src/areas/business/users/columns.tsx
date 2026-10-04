@@ -4,6 +4,36 @@ import type { Column } from "@/shared/ui/DataTable";
 import type { OrganizationUserResponse } from "@/shared/api/types";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { DateText } from "@/shared/ui/format/DateText";
+import type { ReactNode } from "react";
+import { ListRow, RowAvatar } from "@/shared/ui/app/ListRow";
+import { StatusDot, type StatusTone } from "@/shared/ui/StatusDot";
+
+const stateTones: Record<OrganizationUserResponse["state"], StatusTone> = {
+  Active: "success", PendingDeletion: "warning", Inactive: "neutral", Invited: "pending", Expired: "warning",
+};
+
+/// Tablero M-Usuarios: en el teléfono cada persona es una fila con su círculo, el correo y, en la línea de abajo, el
+/// estado con su punto, los roles de la organización y la empresa. Una invitación sin nombre lleva «@».
+export function userPhoneRow(user: OrganizationUserResponse, t: TFunction, trailing: ReactNode): ReactNode {
+  const invitation = user.state === "Invited" || user.state === "Expired";
+  const organizationRoles = user.roles.filter((role) => role.scope === "Organization").map((role) => role.name);
+  const [first, ...others] = user.companies;
+  const company = first ? (others.length > 0 ? t("users:columns.companyAndMore", { company: first.companyName, count: others.length })
+    : organizationRoles.length === 0 && first.roles.length > 0 ? `${first.companyName} · ${first.roles.map((role) => role.name).join(", ")}` : first.companyName) : null;
+  const details = invitation
+    ? (user.invitationExpiresAtUtc ? [<>{t(user.state === "Expired" ? "users:columns.expiredPrefix" : "users:columns.expiresPrefix")} <DateText value={user.invitationExpiresAtUtc} kind="date" /></>] : [])
+    : [...organizationRoles, ...(company ? [company] : [])];
+  const status = <span className="inline-flex max-w-full items-center gap-1">
+    <StatusDot tone={stateTones[user.state]} label={userStateLabel(user.state, t)} className="text-[13px] text-[var(--t2)]" />
+    {details.map((detail, index) => <span key={index} className="truncate">{" · "}{detail}</span>)}
+  </span>;
+  const named = Boolean(user.displayName);
+  return <ListRow key={user.memberId} to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}
+    leading={<RowAvatar name={user.displayName || user.email || ""} invitation={!named && invitation} />}
+    title={user.displayName || user.email || ""}
+    lines={named ? [user.email ?? "", status] : [company ?? "", status]}
+    trailing={trailing} />;
+}
 
 export function userStateLabel(state: OrganizationUserResponse["state"], t: TFunction): string {
   return t(`users:states.${state}`);

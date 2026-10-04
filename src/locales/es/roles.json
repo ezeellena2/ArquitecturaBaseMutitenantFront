@@ -86,5 +86,11 @@
     "hasUsers_one": "No se puede inactivar: {{count}} usuario tiene el rol {{name}}. Quitáselo primero.",
     "hasUsers_other": "No se puede inactivar: {{count}} usuarios tienen el rol {{name}}. Quitáselo primero."
   },
-  "emptyFiltered": "Ningún rol coincide con los filtros"
+  "emptyFiltered": "Ningún rol coincide con los filtros",
+  "phone": {
+    "users_one": "{{count}} usuario",
+    "users_other": "{{count}} usuarios",
+    "permissions_one": "{{count}} permiso",
+    "permissions_other": "{{count}} permisos"
+  }
 }

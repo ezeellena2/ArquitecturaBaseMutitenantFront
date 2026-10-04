@@ -51,7 +51,9 @@ import {
   updateCompanyMemberRoles,
   type CompanyMembersQuery,
 } from "../api/companies";
-import { createCompanyMemberColumns } from "../columns";
+import { companyMemberPhoneRow, createCompanyMemberColumns } from "../columns";
+import { ListRow } from "@/shared/ui/app/ListRow";
+import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyTaxIdValid, type CompanyDraft } from "../components/CompanyFields";
 
@@ -76,6 +78,7 @@ export function CompanyDetailPage() {
   const canReadRoles = currentUser?.permissions?.includes("roles.read") === true;
   const canManageRoles = currentUser?.permissions?.includes("roles.manage") === true;
   const queryClient = useQueryClient();
+  const { phone } = useAppChrome();
   const filters = useFilters(["state", "roleId"] as const);
   const pagination = usePagination(undefined, { defaultSort: "displayName" });
   const debouncedSearch = useDebouncedValue(pagination.search ?? "");
@@ -169,17 +172,15 @@ export function CompanyDetailPage() {
     });
   }
 
-  const memberColumns: Column<CompanyMemberResponse>[] = [
-    ...createCompanyMemberColumns(t),
-    {
-      id: "actions", header: t("companies:columns.actions"), type: "actions",
-      cell: (member) => <RowActions label={t("companies:memberActions", { name: member.displayName })} actions={[
+  const memberActions = (member: CompanyMemberResponse) => <RowActions label={t("companies:memberActions", { name: member.displayName })} actions={[
         { label: t("companies:actions.changeRoles"), accessibleName: t("companies:actions.changeRoles"), icon: ShieldCheck, onSelect: () => { setRoleTarget(member); setRoleDraft(member.roles.map((role) => role.id)); setMutationError(undefined); }, hidden: !canManageMembers || member.state !== "Active" || member.membershipStatus !== "Active" || data.status !== "Active" },
         { label: t("companies:actions.viewUser"), accessibleName: t("companies:actions.viewUser"), icon: UserRound, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); } },
         // Tablero Empresa: «Quitar de la empresa» (también con la baja pedida) pide confirmación; «Volver a sumar» es directo.
         { label: t(member.membershipStatus === "Active" ? "companies:actions.removeMember" : "companies:actions.restoreMember"), accessibleName: t(member.membershipStatus === "Active" ? "companies:actions.removeMember" : "companies:actions.restoreMember"), icon: Power, onSelect: () => { if (member.membershipStatus === "Active") setStatusTarget(member); else changeMemberState.mutate(member); }, destructive: member.membershipStatus === "Active", hidden: !canManageMembers || data.status !== "Active" },
-      ]} />,
-    },
+      ]} />;
+  const memberColumns: Column<CompanyMemberResponse>[] = [
+    ...createCompanyMemberColumns(t),
+    { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: memberActions },
   ];
   // Sin filtro el botón dice «Estado: todos» o «Rol: todos» y el menú ofrece «Todos», como el tablero.
   const filteredState = state ?? "";
@@ -188,19 +189,26 @@ export function CompanyDetailPage() {
   // Pestaña Roles: solo los roles propios de esta empresa.
   const ownRoles = activeRoles.filter((role) => role.scope === "SpecificCompany" && role.companyId === id);
   const canAdd = canManageMembers && data.status === "Active";
+  const roleActions = (role: RoleResponse) => <RowActions label={t("companies:roleActions", { name: role.name })} actions={[
+    { label: t("companies:actions.edit"), accessibleName: t("companies:actions.edit"), icon: Pencil, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); } },
+  ]} />;
   const roleColumns: Column<RoleResponse>[] = [
     { id: "name", header: t("companies:roleColumns.name"), type: "custom", mobile: "primary", cell: (role) => <Link to={`/org/roles/${encodeURIComponent(role.id)}`} className="font-medium text-[var(--t1)] hover:underline">{role.name}</Link> },
     // Anchos del tablero Empresa (Roles): el rol se lleva el resto; Usuarios y Permisos, 120 px.
     { id: "userCount", header: t("companies:roleColumns.users"), type: "integer", className: "w-[132px]", value: (role) => role.userCount },
     { id: "permissions", header: t("companies:roleColumns.permissions"), type: "integer", className: "w-[132px]", value: (role) => role.permissions.length, mobile: "status" },
-    { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: (role) => <RowActions label={t("companies:roleActions", { name: role.name })} actions={[
-      { label: t("companies:actions.edit"), accessibleName: t("companies:actions.edit"), icon: Pencil, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); } },
-    ]} /> },
+    { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: (role) => roleActions(role) },
   ];
 
   return <>
     <Tabs value={tab} onValueChange={(value) => setTab(value as CompanyTab)} className="contents!">
     <Page banner={<ConcurrencyBanner error={editFailure ?? mutationError} isDirty={false} onSeeNew={() => { setEditDraft(draftFromCompany(data)); setEditFailure(undefined); setMutationError(undefined); void company.refetch(); }} onContinueEditing={() => { setEditFailure(undefined); setMutationError(undefined); }} />} icon={Building2} title={data.name} backTo={{ to: "/org/empresas", label: t("companies:back") }}
+      phoneBody="flush"
+      // Tablero M-Empresa: debajo del título, el CUIT y la zona; crear es un «+» flotante según la pestaña.
+      phoneSubtitle={<>{data.taxId ? <><TaxIdText value={data.taxId} withType />{" · "}</> : null}<TimeZoneText value={data.timeZoneId} /></>}
+      fab={tab === "members"
+        ? canAdd ? { label: t("companies:actions.addMember"), onClick: () => { setMutationError(undefined); setAddOpen(true); } } : undefined
+        : canManageRoles ? { label: t("companies:detail.createRole"), to: `/org/roles/new?scope=SpecificCompany&companyId=${encodeURIComponent(id)}` } : undefined}
       // Tablero Empresa: el estado primero, con punto y palabra; después el CUIT y la zona, formateados.
       summary={<>
         <span className="inline-flex items-center gap-1.5 text-[var(--t1)]"><span aria-hidden="true" className={`size-2 rounded-full ${data.status === "Active" ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-apagado)]"}`} />{t(`companies:status.${data.status}`)}</span>
@@ -212,7 +220,7 @@ export function CompanyDetailPage() {
         {canAdd && tab === "members" ? <Button type="button" onClick={() => { setMutationError(undefined); setAddOpen(true); }}><Plus aria-hidden="true" className="size-4" />{t("companies:actions.addMember")}</Button> : null}
         {canManageRoles && tab === "roles" ? <Button asChild><Link to={`/org/roles/new?scope=SpecificCompany&companyId=${encodeURIComponent(id)}`}><Plus aria-hidden="true" className="size-4" />{t("companies:detail.createRole")}</Link></Button> : null}
       </>}
-      moreActions={canManageCompany ? { label: t("companies:actions.more"), items: [{ label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), onSelect: () => { if (data.status === "Active") setCompanyStatusConfirm(true); else changeCompanyState.mutate(); }, destructive: data.status === "Active" }] } : undefined}
+      moreActions={canManageCompany ? { label: t("companies:actions.more"), items: [{ label: t("companies:actions.editCompany"), onSelect: openEdit, hidden: !phone }, { label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), onSelect: () => { if (data.status === "Active") setCompanyStatusConfirm(true); else changeCompanyState.mutate(); }, destructive: data.status === "Active" }] } : undefined}
       // Tablero «Criterio · Marco»: las pestañas van en su banda, debajo de la de la página, con la cantidad en gris.
       tabs={<TabsList aria-label={t("companies:detail.tabsLabel")}>
         <TabsTrigger value="members">{t("companies:detail.members")}<TabCount>{members.data?.totalCount ?? data.memberCount}</TabCount></TabsTrigger>
@@ -227,8 +235,8 @@ export function CompanyDetailPage() {
                 { key: "state", label: t("companies:detail.filters.state"), menuLabel: t("companies:detail.filters.stateMenu"), value: filteredState, active: state !== undefined, onChange: (value) => filters.setFilter("state", value === "all" ? undefined : value), options: states.map((value) => ({ value: value ?? "all", label: value ? t(`companies:detail.filters.states.${value}`) : t("companies:detail.filters.allStates"), count: countForState(value) })) },
               ]}
               clearLabel={t("common:actions.clear")} onClear={filters.clear} />
-            <Surface className="overflow-hidden">
-              <DataTable columns={memberColumns} rows={members.data?.items ?? []} rowKey={(member) => member.memberId} isLoading={members.isPending} isFetching={members.isFetching}
+            <Surface className="overflow-hidden" phoneFlush>
+              <DataTable columns={memberColumns} mobileRow={(member) => companyMemberPhoneRow(member, t, memberActions(member))} rows={members.data?.items ?? []} rowKey={(member) => member.memberId} isLoading={members.isPending} isFetching={members.isFetching}
                 error={members.error ? failureMessage(members.error, t("common:states.error")) : undefined} onRetry={() => { void members.refetch(); void counts.refetch(); }}
                 emptyTitle={state || roleId || withoutRoles || pagination.search ? t("companies:detail.empty.filtered") : t("companies:detail.empty.all")} emptyAction={state || roleId || withoutRoles || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined}
                 sort={pagination.sort} onSortChange={pagination.toggleSort} />
@@ -237,8 +245,9 @@ export function CompanyDetailPage() {
           </>}
         </TabsContent>
         {canReadRoles ? <TabsContent value="roles">
-          <Surface className="overflow-hidden">
-            <DataTable columns={roleColumns} rows={ownRoles.slice((rolePage - 1) * rolePageSize, rolePage * rolePageSize)} rowKey={(role) => role.id} isLoading={roles.isPending} isFetching={roles.isFetching} error={roles.error ? failureMessage(roles.error, t("common:states.error")) : undefined} onRetry={() => { void roles.refetch(); }} emptyTitle={t("companies:detail.rolesEmpty")} />
+          <Surface className="overflow-hidden" phoneFlush>
+            <DataTable columns={roleColumns} mobileRow={(role) => <ListRow key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={role.name}
+              meta={t("roles:phone.users", { count: role.userCount })} lines={[t("roles:phone.permissions", { count: role.permissions.length })]} trailing={roleActions(role)} />} rows={ownRoles.slice((rolePage - 1) * rolePageSize, rolePage * rolePageSize)} rowKey={(role) => role.id} isLoading={roles.isPending} isFetching={roles.isFetching} error={roles.error ? failureMessage(roles.error, t("common:states.error")) : undefined} onRetry={() => { void roles.refetch(); }} emptyTitle={t("companies:detail.rolesEmpty")} />
             {roles.data ? <Pagination page={rolePage} pageSize={rolePageSize} totalCount={ownRoles.length} totalPages={Math.max(1, Math.ceil(ownRoles.length / rolePageSize))}
               hasPrevious={rolePage > 1} hasNext={rolePage * rolePageSize < ownRoles.length} onPageChange={setRolePage}
               onPageSizeChange={(size) => { setRolePageSize(size); setRolePage(1); }} /> : null}

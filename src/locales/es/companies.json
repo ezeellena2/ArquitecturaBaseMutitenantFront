@@ -147,5 +147,9 @@
   "summaryTotal_other": "{{count}} empresas",
   "summaryActive_one": "{{count}} activa",
   "summaryActive_other": "{{count}} activas",
-  "roleActions": "Acciones para {{name}}"
+  "roleActions": "Acciones para {{name}}",
+  "phone": {
+    "members_one": "{{count}} miembro",
+    "members_other": "{{count}} miembros"
+  }
 }

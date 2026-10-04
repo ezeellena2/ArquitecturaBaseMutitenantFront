@@ -7,6 +7,7 @@ import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { asPhone } from "@/test/utils/phone";
 
 const ownerRole = {
   id: "role-owner", name: "Dueño", isSystemRole: true, scope: "Organization" as const, companyId: null,
@@ -24,6 +25,28 @@ beforeEach(async () => {
 });
 
 describe("UsersPage", () => {
+  // Tablero M-Usuarios: en el teléfono, filas de borde a borde con el círculo y el estado, y crear es un «+» flotante.
+  it("en el teléfono es una lista con «+» para invitar", async () => {
+    const restore = asPhone();
+    try {
+      server.use(
+        http.get("/api/users/paged", () => HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+        http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 1, pendingDeletion: 0, invited: 0, expired: 0, inactive: 0 })),
+        http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      );
+      renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+
+      const row = await screen.findByRole("link", { name: /Lucía Fernández/ });
+      expect(row).toHaveAttribute("href", "/org/usuarios/member-1");
+      expect(screen.queryByRole("table")).not.toBeInTheDocument();
+      expect(within(row.closest("li")!).getByText("Activo")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Invitar usuario" })).toHaveClass("fixed", "size-14");
+      expect(screen.getByRole("link", { name: "Volver a Más" })).toHaveAttribute("href", "/mas");
+    } finally {
+      restore();
+    }
+  });
+
   it("muestra conteos y resultados, y mantiene búsqueda y estado en la URL", async () => {
     const user = userEvent.setup();
     const requests: URL[] = [];

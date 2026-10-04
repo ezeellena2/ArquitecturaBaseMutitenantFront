@@ -29,7 +29,7 @@ import {
   rolesQueryKeyRoot,
   type RolesQuery,
 } from "../api/roles";
-import { createRoleColumns, displayRoleName } from "../columns";
+import { createRoleColumns, displayRoleName, rolePhoneRow } from "../columns";
 
 // «Vale en» (tablero Roles): toda la organización o una empresa por nombre, en un solo filtro.
 const roleFilterKeys = ["vale"] as const;
@@ -94,13 +94,7 @@ export function RolesPage() {
   if (!canRead) return <ForbiddenPage homePath="/org" />;
 
   const companyNames = new Map((companies.data?.items ?? []).map((company) => [company.id, company.name]));
-  const columns: Column<RoleResponse>[] = [
-    ...createRoleColumns(t, companyNames),
-    {
-      id: "actions",
-      header: t("roles:columns.actions"),
-      type: "actions",
-      cell: (role) => <RowActions
+  const rowActions = (role: RoleResponse) => <RowActions
         label={t("roles:rowActions", { name: displayRoleName(role, t) })}
         actions={[
           { label: t("roles:viewPermissions"), accessibleName: t("roles:viewPermissions"), icon: Eye, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); }, hidden: !role.isSystemRole && canManage },
@@ -113,8 +107,10 @@ export function RolesPage() {
             }
           }, destructive: true, hidden: role.isSystemRole || !canManage },
         ]}
-      />,
-    },
+      />;
+  const columns: Column<RoleResponse>[] = [
+    ...createRoleColumns(t, companyNames),
+    { id: "actions", header: t("roles:columns.actions"), type: "actions", cell: rowActions },
   ];
 
   const listSummary = roles.data ? scopeCounts.every((count) => count.data !== undefined)
@@ -130,6 +126,8 @@ export function RolesPage() {
       icon={Shield}
       title={t("roles:title")}
       summary={listSummary}
+      phoneBody="flush"
+      fab={canManage ? { label: t("roles:create"), to: "/org/roles/new" } : undefined}
       actions={canManage ? <Button asChild><Link to="/org/roles/new"><Plus aria-hidden="true" className="size-4" />{t("roles:create")}</Link></Button> : undefined}
     >
       <div className="flex flex-col gap-3">
@@ -154,9 +152,10 @@ export function RolesPage() {
           clearLabel={t("common:actions.clear")}
           onClear={filters.clear}
         />
-        <Surface className="overflow-hidden">
+        <Surface className="overflow-hidden" phoneFlush>
           <DataTable
             columns={columns}
+            mobileRow={(role) => rolePhoneRow(role, t, companyNames, rowActions(role))}
             rows={roles.data?.items ?? []}
             rowKey={(role) => role.id}
             isLoading={roles.isPending}

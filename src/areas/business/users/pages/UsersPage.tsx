@@ -29,7 +29,7 @@ import { Surface } from "@/shared/ui/Surface";
 import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { changeUserStatus, fetchAssignableRoles, fetchCompanyOptions, fetchUserCounts, fetchUsers, inviteUser, removeUser, resendUserInvitation, revokeUserInvitation, userCompaniesQueryKey, userCountsQueryKey, userRolesQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
-import { createUserColumns } from "../columns";
+import { createUserColumns, userPhoneRow } from "../columns";
 
 const userFilterKeys = ["state", "companyId"] as const;
 // Orden del filtro «Estado» del tablero Usuarios.
@@ -138,9 +138,7 @@ export function UsersPage() {
 
   if (!canRead) return <ForbiddenPage homePath="/org" />;
 
-  const tableColumns: Column<OrganizationUserResponse>[] = [
-    ...createUserColumns(t),
-    { id: "actions", header: t("users:columns.actions"), type: "actions", cell: (member) => <RowActions
+  const rowActions = (member: OrganizationUserResponse) => <RowActions
       label={t("users:rowActions", { name: member.displayName || member.email || "" })}
       actions={[
         { label: t("users:actions.view"), accessibleName: t("users:actions.view"), icon: Pencil, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); } },
@@ -150,7 +148,10 @@ export function UsersPage() {
         { label: t("users:actions.revoke"), accessibleName: t("users:actions.revoke"), icon: Trash2, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("revoke"); }, hidden: !canManage || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
         { label: t("users:actions.remove"), accessibleName: t("users:actions.remove"), icon: Trash2, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("remove"); }, hidden: !canManage || member.state !== "PendingDeletion" },
       ]}
-    /> },
+    />;
+  const tableColumns: Column<OrganizationUserResponse>[] = [
+    ...createUserColumns(t),
+    { id: "actions", header: t("users:columns.actions"), type: "actions", cell: rowActions },
   ];
   const stateCount = (value: OrganizationUserState | undefined) => countFor(counts.data, value);
   // «N invitaciones» del tablero: las pendientes y las vencidas.
@@ -182,7 +183,9 @@ export function UsersPage() {
 
 
   return <>
-    <Page icon={Users} title={t("users:title")} summary={listSummary} actions={canInvite ? <Button type="button" onClick={() => setInviteOpen(true)}><Plus aria-hidden="true" className="size-4" />{t("users:invite.open")}</Button> : undefined}>
+    <Page icon={Users} title={t("users:title")} summary={listSummary} phoneBody="flush"
+      fab={canInvite ? { label: t("users:invite.open"), onClick: () => setInviteOpen(true) } : undefined}
+      actions={canInvite ? <Button type="button" onClick={() => setInviteOpen(true)}><Plus aria-hidden="true" className="size-4" />{t("users:invite.open")}</Button> : undefined}>
       <div className="flex flex-col gap-3">
         <FilterBar
           label={t("users:filters.label")}
@@ -198,9 +201,10 @@ export function UsersPage() {
           clearLabel={t("common:actions.clear")}
           onClear={filters.clear}
         />
-        <Surface className="overflow-hidden">
+        <Surface className="overflow-hidden" phoneFlush>
           <DataTable
             columns={tableColumns}
+            mobileRow={(member) => userPhoneRow(member, t, rowActions(member))}
             rows={users.data?.items ?? []}
             rowKey={(member) => member.memberId}
             isLoading={users.isPending}

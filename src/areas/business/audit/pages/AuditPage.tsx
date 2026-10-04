@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { LoadMore } from "@/shared/ui/LoadMore";
 import { Page } from "@/shared/ui/Page";
+import { ListRow } from "@/shared/ui/app/ListRow";
 import { Surface } from "@/shared/ui/Surface";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { DateText } from "@/shared/ui/format/DateText";
@@ -72,7 +73,8 @@ export function AuditPage() {
   // Como el tablero: cualquier filtro distinto de «Últimos 30 días» sin búsqueda ni tema ni persona cuenta.
   const filtered = Boolean(category || actorId || pagination.search || filters.values.period && period !== "30");
   return <>
-    <Page icon={ClipboardList} title={t("audit:title")}>
+    {/* Tablero M-Auditoria-Org: en el teléfono, debajo del título va el período elegido. */}
+    <Page icon={ClipboardList} title={t("audit:title")} phoneBody="flush" phoneSubtitle={t(`audit:period.${({ "0": "today", "7": "days7", "30": "days30", all: "all" } as Record<string, string>)[periodValue] ?? "days30"}`)}>
       <div className="flex flex-col gap-3">
         <FilterBar
           label={t("audit:filters.label")}
@@ -108,9 +110,13 @@ export function AuditPage() {
           clearLabel={t("common:actions.clear")}
           onClear={filters.clear}
         />
-        <Surface className="overflow-hidden">
+        <Surface className="overflow-hidden" phoneFlush>
           <DataTable
             columns={columns}
+            // Tablero M-Auditoria-Org: qué pasó (en dos renglones si hace falta), cuándo a la derecha, y dónde y quién abajo.
+            mobileRow={(row) => <ListRow key={row.id} wrapTitle title={row.actionText} onClick={() => setSelected(row)}
+              meta={<DateText value={row.occurredAtUtc} kind="dateTime" />}
+              lines={[[row.whereText, row.actorDisplayName ?? row.actorText].filter(Boolean).join(" · ")]} />}
             rows={rows}
             rowKey={(row) => row.id}
             isLoading={audit.isPending}

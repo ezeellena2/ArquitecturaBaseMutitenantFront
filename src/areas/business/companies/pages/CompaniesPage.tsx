@@ -35,7 +35,7 @@ import {
   updateCompany,
   type CompaniesQuery,
 } from "../api/companies";
-import { createCompanyColumns } from "../columns";
+import { createCompanyColumns, companyPhoneRow } from "../columns";
 import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyTaxIdValid, type CompanyDraft } from "../components/CompanyFields";
 
 const statusValues = [undefined, "Active", "Inactive"] as const;
@@ -138,25 +138,24 @@ export function CompaniesPage() {
     else void create.mutateAsync(request).then(() => finishSave(true)).catch((error: unknown) => setFailure(error));
   }
 
-  const columns: Column<CompanyResponse>[] = [
-    ...createCompanyColumns(t).slice(0, -1),
-    {
-      id: "actions", header: t("companies:columns.actions"), type: "actions",
-      cell: (company) => <RowActions label={t("companies:rowActions", { name: company.name })} actions={[
+  const rowActions = (company: CompanyResponse) => <RowActions label={t("companies:rowActions", { name: company.name })} actions={[
         // Tablero Empresas: «Ver ficha», «Editar» y, después de la franja, «Inactivar» en rojo; «Activar» es directo.
         { label: t("companies:actions.view"), accessibleName: t("companies:actions.view"), icon: Eye, onSelect: () => { void navigate(`/org/empresas/${encodeURIComponent(company.id)}`); } },
         { label: t("companies:actions.edit"), accessibleName: t("companies:actions.edit"), icon: Pencil, onSelect: () => openEdit(company), hidden: !canManage },
         { label: t(company.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), accessibleName: t(company.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), icon: Power, destructive: company.status === "Active",
           onSelect: () => { if (company.status === "Active") setStatusTarget(company); else updateStatus.mutate(company); }, hidden: !canManage },
-      ]} />,
-    },
+      ]} />;
+  const columns: Column<CompanyResponse>[] = [
+    ...createCompanyColumns(t).slice(0, -1),
+    { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: rowActions },
   ];
   const listSummary = counts.data
     ? `${t("companies:summaryTotal", { count: counts.data.all })} · ${t("companies:summaryActive", { count: counts.data.active })}`
     : companies.data ? t("companies:summaryFallback", { count: companies.data.totalCount, total: companies.data.totalCount }) : undefined;
 
   return <>
-    <Page icon={Building2} title={t("companies:title")} summary={listSummary}
+    <Page icon={Building2} title={t("companies:title")} summary={listSummary} phoneBody="flush"
+      fab={canManage ? { label: t("companies:create"), onClick: openCreate } : undefined}
       actions={canManage ? <Button type="button" onClick={openCreate}><Plus aria-hidden="true" className="size-4" />{t("companies:create")}</Button> : undefined}>
       <div className="flex flex-col gap-3">
         <FilterBar
@@ -175,9 +174,10 @@ export function CompaniesPage() {
           onClear={filters.clear}
         />
         {counts.isError ? <FormError message={errorMessage(counts.error, t("common:states.error"))} /> : null}
-        <Surface className="overflow-hidden">
+        <Surface className="overflow-hidden" phoneFlush>
           <DataTable
             columns={columns}
+            mobileRow={(company) => companyPhoneRow(company, t, rowActions(company))}
             rows={companies.data?.items ?? []}
             rowKey={(company) => company.id}
             isLoading={companies.isPending}

@@ -19,7 +19,7 @@ export function ListRow({ leading, title, meta, lines = [], trailing, to, onClic
 }) {
   const body = <>
     {leading}
-    <span className="flex min-w-0 flex-1 flex-col gap-0.5 pr-2.5">
+    <span className="flex min-w-0 flex-1 flex-col gap-0.5 pr-2.5 leading-[1.3]">
       <span className="flex items-start justify-between gap-2">
         <span className={cn("min-w-0 flex-1 text-[15.5px] font-medium text-[var(--t1)]", wrapTitle ? "[overflow-wrap:anywhere]" : "truncate")}>{title}</span>
         {meta ? <span className="shrink-0 pt-0.5 text-[12.5px] text-[var(--t3)]">{meta}</span> : null}

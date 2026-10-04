@@ -4,6 +4,32 @@ import type { CompanyResponse } from "@/shared/api/types";
 import type { Column } from "@/shared/ui/DataTable";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { TaxIdText } from "@/shared/ui/format/TaxIdText";
+import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
+import type { ReactNode } from "react";
+import { ListRow, RowAvatar } from "@/shared/ui/app/ListRow";
+import { StatusDot } from "@/shared/ui/StatusDot";
+
+/// Tablero M-Empresas: en el teléfono cada empresa es una fila con sus miembros a la derecha, el CUIT y, abajo, el
+/// estado con su punto y la zona.
+export function companyPhoneRow(company: CompanyResponse, t: TFunction, trailing: ReactNode): ReactNode {
+  return <ListRow key={company.id} to={`/org/empresas/${encodeURIComponent(company.id)}`} title={company.name}
+    meta={t("companies:phone.members", { count: company.memberCount })}
+    lines={[company.taxId ? <TaxIdText value={company.taxId} withType /> : t("companies:withoutTaxId"),
+      <span className="inline-flex max-w-full items-center gap-1"><StatusDot tone={company.status === "Active" ? "success" : "neutral"} label={t(`companies:status.${company.status}`)} className="text-[13px] text-[var(--t2)]" />
+        <span className="truncate">{" · "}<TimeZoneText value={company.timeZoneId} /></span></span>]}
+    trailing={trailing} />;
+}
+
+/// Tablero M-Empresa: en el teléfono cada miembro es una fila con su círculo, el correo y, abajo, sus roles y el estado.
+export function companyMemberPhoneRow(member: import("@/shared/api/types").CompanyMemberResponse, t: TFunction, trailing: ReactNode): ReactNode {
+  const roles = member.roles.map((role) => role.name).join(", ");
+  const active = member.membershipStatus === "Active" && member.state === "Active";
+  const label = t(member.membershipStatus === "Inactive" ? "companies:memberStates.Inactive" : `companies:memberStates.${member.state}`);
+  return <ListRow key={member.memberId} leading={<RowAvatar name={member.displayName} />} title={member.displayName}
+    lines={[member.email ?? "", <span className="inline-flex max-w-full items-center gap-1">{roles ? <span className="truncate">{roles}{" · "}</span> : null}
+      <StatusDot tone={active ? "success" : member.state === "PendingDeletion" ? "warning" : "neutral"} label={label} className="text-[13px] text-[var(--t2)]" /></span>]}
+    trailing={trailing} />;
+}
 
 export function createCompanyColumns(t: TFunction): Column<CompanyResponse>[] {
   return [
