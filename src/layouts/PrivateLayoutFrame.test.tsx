@@ -6,6 +6,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { configureI18n } from "@/shared/i18n";
 import { beginSignOut, cancelSignOut } from "@/auth/signOutStatus";
 import { businessNavigation } from "./navigation/business";
+import { personalNavigation } from "./navigation/personal";
 import { Page } from "@/shared/ui/Page";
 import { PrivateLayoutFrame } from "./PrivateLayoutFrame";
 
@@ -43,6 +44,19 @@ describe("PrivateLayoutFrame", () => {
     await userEvent.click(screen.getByRole("button", { name: "Administración" }));
     await userEvent.click(screen.getByRole("link", { name: "Auditoría" }));
     expect(screen.getByRole("navigation", { name: "Administración" })).toBeVisible();
+  });
+
+  // Tableros Inicio-Personal y Cuenta («Criterio · Marco»: las migas y tu menú, nada más). El ☰ contrae el menú cuando
+  // el panel de Administración tapa la flechita del borde; sin panel, alcanza la flechita.
+  it("en Personal la barra no lleva ☰ y el menú se contrae con la flechita del borde", () => {
+    render(<MemoryRouter initialEntries={["/"]}><PrivateLayoutFrame navigation={personalNavigation} scope="personal"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
+    expect(screen.queryByRole("button", { name: "Abrir o contraer navegación" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Contraer menú" })).toBeVisible();
+  });
+
+  it("en la organización la barra lleva ☰ para contraer el menú con el panel abierto", () => {
+    render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
+    expect(screen.getByRole("button", { name: "Abrir o contraer navegación" })).toBeVisible();
   });
 
   it("en Inicio arranca con el panel cerrado", () => {

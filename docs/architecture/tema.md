@@ -26,6 +26,7 @@ Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena
 | `--lado` | `oklch(0.925 0.02 75)` | **marco arena:** menú lateral y barra superior |
 | `--lado-borde` | `oklch(0.87 0.022 75)` | bordes del marco |
 | `--lado-hover` | `oklch(0.895 0.022 75)` | hover en el marco |
+| `--lado-t2` | `oklch(0.42 0.018 60)` | texto de las opciones del menú lateral y del panel que no están activas |
 | `--lado-activo` | `#fff` | ítem activo del menú (pastilla blanca, con `--marca-tx`) |
 | `--panel` | `oklch(0.905 0.022 75)` | segundo panel de Administración, un tono más oscuro que el marco |
 | `--fila-alterna` | `oklch(0.968 0.012 78)` | filas alternadas de las tablas |

@@ -47,7 +47,8 @@ describe("Sidebar", () => {
     const closed = screen.getByRole("button", { name: "Administración" });
     expect(closed.querySelector(".lucide-shield-check")).not.toBeNull();
     expect(closed.querySelector(".lucide-chevron-right")).not.toBeNull();
-    expect(closed).toHaveClass("min-h-[32px]", "text-[var(--t2)]");
+    // Las opciones que no están activas van en el gris del marco (--lado-t2), como en el lienzo.
+    expect(closed).toHaveClass("min-h-[32px]", "text-[var(--lado-t2)]");
 
     rerender(<MemoryRouter initialEntries={["/org"]}><Sidebar {...props} navigation={businessNavigation} administrationOpen /></MemoryRouter>);
     const open = screen.getByRole("button", { name: "Administración" });

@@ -42,7 +42,8 @@ describe("Breadcrumbs", () => {
     ["/org/usuarios", "Inicio/Gestión de usuarios/Usuarios", "Usuarios"],
   ])("en %s muestra «%s»", (path, text, current) => {
     expect(crumbs(path)).toHaveTextContent(text);
-    expect(screen.getByText(current, { selector: "[aria-current=page]" })).toBeInTheDocument();
+    // «Criterio · Marco»: todo el camino en el mismo gris, también la pantalla en la que estás.
+    expect(screen.getByText(current, { selector: "[aria-current=page]" })).not.toHaveClass("font-medium", "font-semibold", "text-[var(--t1)]");
   });
 
   it("en una ficha suma la opción como enlace y el nombre al final", () => {

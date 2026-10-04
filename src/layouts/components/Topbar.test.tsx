@@ -23,4 +23,12 @@ describe("Topbar", () => {
     fireEvent.click(screen.getByRole("button", { name: "Abrir o contraer navegación" }));
     expect(onToggleNavigation).toHaveBeenCalledOnce();
   });
+
+  // Tablero Inicio-Personal y «Criterio · Marco»: sin panel de Administración, la barra lleva las migas y tu menú, sin ☰.
+  it("sin quien contraiga el menú no muestra el ☰", () => {
+    render(<Topbar breadcrumbs={<span>{"Inicio"}</span>} />);
+
+    expect(screen.queryByRole("button", { name: "Abrir o contraer navegación" })).not.toBeInTheDocument();
+    expect(screen.getByText("Inicio")).toBeVisible();
+  });
 });

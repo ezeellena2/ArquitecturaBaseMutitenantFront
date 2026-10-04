@@ -10,6 +10,7 @@ import { invitationAntiforgeryQueryKey, invitationPaths, invitationPreviewQueryK
 import type { AcceptInvitationRequest, AcceptInvitationResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { AuthLayout } from "@/layouts/AuthLayout";
+import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/button";
 import { DateText } from "@/shared/ui/format/DateText";
 import { FormError } from "@/shared/ui/FormError";
@@ -179,7 +180,7 @@ function InvitationFlow() {
             <p className="mt-1.5 break-all text-sm text-[var(--t2)]"><Trans ns="invitations" i18nKey="join.forEmail" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
           </div>
           <div className="flex items-center gap-3.5 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] px-3 py-2.5">
-            <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--marca)] text-base font-semibold text-[var(--lado-activo)]">{initials(inviter, "O").charAt(0)}</span>
+            <Avatar size="large" initials={initials(inviter, "O").charAt(0)} />
             <span className="flex min-w-0 flex-col leading-[1.3]">
               <span className="truncate text-[15px] font-semibold text-[var(--t1)]">{t("join.invitedBy", { inviter })}</span>
               <span className="text-[13px] text-[var(--t3)]">
