@@ -20,6 +20,7 @@ import { Switch } from "@/shared/ui/switch";
 import { Textarea } from "@/shared/ui/textarea";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { DateText } from "@/shared/ui/format/DateText";
+import { initials } from "@/shared/lib/initials";
 import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { checkOrganizationSlug, fetchPublicPage, publicPageQueryKey, setPublicPagePublished, slugAvailabilityQueryKey, updatePublicPage } from "../api/publicPage";
@@ -188,7 +189,7 @@ export function PublicPagePage() {
           <Box title={t("publicPage:pageTitle")}>
             <div className="flex items-center gap-3 border-b border-[var(--borde)] px-4 py-2.5 md:px-5">
               {draft.logoDataUri ? <img src={draft.logoDataUri} alt={t("publicPage:logoAlt")} className="size-9 rounded-[9px] object-contain" />
-                : <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-[9px] bg-[var(--marca-t)] text-[12px] font-semibold text-[var(--marca-tx)]">{draft.name.slice(0, 2).toUpperCase()}</span>}
+                : <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-[9px] bg-[var(--marca-t)] text-[12px] font-semibold text-[var(--marca-tx)]">{initials(draft.name)}</span>}
               <span className="text-[13px] text-[var(--t1)]">{t("publicPage:logoTitle")}</span>
               <span className="ml-auto flex items-center gap-2">
                 {draft.logoDataUri ? <Button type="button" variant="outline" size="sm" onClick={() => setDraftState({ ...draft, logoDataUri: null, uploadedLogoBase64: null, logoContentType: null, removeLogo: true })}>{t("publicPage:removeLogo")}</Button> : null}

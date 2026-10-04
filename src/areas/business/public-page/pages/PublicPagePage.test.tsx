@@ -103,6 +103,8 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
 
     const pageBox = await screen.findByRole("region", { name: "Página" });
     expect(within(pageBox).getByText("Logo")).toBeVisible();
+    // Sin imagen, la inicial de cada palabra, como el tablero («GD»).
+    expect(within(pageBox).getByText("GD")).toBeVisible();
     expect(within(pageBox).getByText("Subir imagen")).toBeVisible();
     expect(within(pageBox).getByText(".plataforma.com")).toBeVisible();
     expect(screen.getByRole("region", { name: "Contacto" })).toBeVisible();

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import type { HomeCompanyCard, HomeOrganizationSummary } from "@/shared/api/types";
 import { useFormat } from "@/shared/format/useFormat";
+import { initials } from "@/shared/lib/initials";
 import { StatusDot, type StatusTone } from "@/shared/ui/StatusDot";
 import { areaIcons, areaPaths, dotAsText, type HomeArea } from "./pendingItems";
 
@@ -46,10 +47,6 @@ export function AreaCards({ organization }: { organization: HomeOrganizationSumm
       return <Card key={area} to={areaPaths[area]} icon={<Icon className="size-[18px]" />} title={t(`cards.${area}.title`)} detail={detail} />;
     })}
   </nav>;
-}
-
-function initials(name: string): string {
-  return name.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]!.toLocaleUpperCase()).join("");
 }
 
 /** Tablero Inicio-Miembro: las empresas donde la persona tiene roles. */
