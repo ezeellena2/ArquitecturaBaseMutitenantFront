@@ -25,7 +25,10 @@ it("exige motivo, confirma con código del principal y devuelve fecha", async ()
     }),
   );
   renderWithProviders(<AccountDeletionDialog graceDays={30} onClose={() => {}} onComplete={complete} />);
-  expect(screen.queryByRole("button", { name: "Cerrar" })).not.toBeInTheDocument();
+  // Tablero Cuenta-Baja: el diálogo lleva su ✕. En el teléfono (M-Cuenta-Baja) es la hoja de una confirmación, sin ✕.
+  expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("max-md:hidden");
+  // M-Cuenta-Baja: en el teléfono, el motivo arranca con el alto de un campo de una línea y crece con lo escrito.
+  expect(screen.getByRole("textbox", { name: "Motivo" })).toHaveClass("max-md:min-h-12");
   expect(screen.queryByText(/exportar/i)).not.toBeInTheDocument();
   const code = await screen.findByRole("textbox", { name: "Código 1" });
   expect(screen.getByRole("button", { name: "Dar de baja" })).toBeEnabled();

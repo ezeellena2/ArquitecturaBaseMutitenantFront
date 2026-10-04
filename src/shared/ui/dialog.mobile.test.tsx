@@ -50,6 +50,19 @@ describe("Dialog mobile layout", () => {
     expect(close.querySelector("svg")).toHaveClass("size-[22px]", "md:size-4");
   });
 
+  // Un diálogo que en el teléfono es la hoja de una confirmación (Cuenta-Baja y M-Cuenta-Baja): la ✕ va solo en la compu.
+  it("can keep the ✕ only on the desktop", () => {
+    render(
+      <Dialog open>
+        <DialogContent showCloseButton="desktop">
+          <DialogHeader><DialogTitle>{"¿Dar de baja tu cuenta?"}</DialogTitle></DialogHeader>
+        </DialogContent>
+      </Dialog>,
+    );
+
+    expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("max-md:hidden", "md:flex");
+  });
+
   // Una hoja a todo el alto (Empresa y Empresas): arriba la manija y el título, el cuerpo ocupa lo que sobra y los botones
   // van abajo de todo. El título no queda flotando en el medio.
   it("gives form dialogs nearly the full phone height with the title on top and confirmations a narrower desktop width", () => {

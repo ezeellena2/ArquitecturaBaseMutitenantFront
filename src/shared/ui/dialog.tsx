@@ -56,7 +56,8 @@ function DialogContent({
   onInteractOutside,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showCloseButton?: boolean
+  /** `"desktop"`: la ✕ solo en la compu, para un diálogo que en el teléfono es la hoja de una confirmación (Cuenta-Baja). */
+  showCloseButton?: boolean | "desktop"
   mobileFullHeight?: boolean
   /** «Criterio · Diálogos», Los dos anchos: el chico de 420 (uno o dos campos, y confirmaciones) o el normal de 560. */
   size?: "sm" | "default"
@@ -91,7 +92,10 @@ function DialogContent({
         {showCloseButton ? (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="absolute top-[21px] right-1.5 flex size-11 items-center justify-center rounded-full text-[var(--t1)] md:top-2 md:right-2 md:size-8 md:rounded-[8px] md:text-[var(--t2)] transition-colors hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0"
+            className={cn(
+              "absolute top-[21px] right-1.5 flex size-11 items-center justify-center rounded-full text-[var(--t1)] md:top-2 md:right-2 md:size-8 md:rounded-[8px] md:text-[var(--t2)] transition-colors hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
+              showCloseButton === "desktop" && "max-md:hidden md:flex"
+            )}
           >
             <XIcon className="size-[22px] md:size-4" />
             <span className="sr-only">{t("actions.close")}</span>
