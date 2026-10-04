@@ -22,15 +22,16 @@ export function FormField({ label, htmlFor, hint, error, required, aside, varian
   const messageId = `${controlId}-message`;
   const message = error ?? hint;
 
-  // Ingreso y registro (tableros Ingreso, Registro y sus M-*): rótulo de 12,5 a 6 del campo, en cualquier tamaño.
-  const labelElement = <Label htmlFor={controlId} className={cn("gap-1!", variant === "auth" ? "text-[12.5px] font-semibold text-[var(--t2)]" : "text-[12px] font-semibold text-[var(--t2)] max-md:text-[13.5px] lg:text-[13px]")}>
+  // «Criterio · Formularios»: rótulo de 12,5 a 6 del campo; en el teléfono de la app (tableros M-*), de 13,5. En ingreso y
+  // registro (tableros Ingreso, Registro y sus M-*), de 12,5 en cualquier tamaño.
+  const labelElement = <Label htmlFor={controlId} className={cn("gap-1! text-[12.5px] font-semibold text-[var(--t2)]", variant === "auth" ? "" : "max-md:text-[13.5px]")}>
     {label}
     {/* Tablero «Criterio · Formularios»: el asterisco de obligatorio va en rojo. */}
     {required ? <span aria-hidden="true" className="text-[var(--peligro)]">{" *"}</span> : null}
   </Label>;
 
   return (
-    <div className={variant === "auth" ? "flex flex-col gap-1.5" : "flex flex-col gap-1.5 lg:gap-2"}>
+    <div className="flex flex-col gap-1.5">
       {aside ? <div className="flex items-center justify-between gap-3">{labelElement}{aside}</div> : labelElement}
       {cloneElement(children, {
         id: controlId,
@@ -43,7 +44,7 @@ export function FormField({ label, htmlFor, hint, error, required, aside, varian
         <p
           id={messageId}
           role={error ? "alert" : undefined}
-          className={error ? "text-[13px] text-[var(--peligro)]" : "text-[13px] text-[var(--t2)]"}
+          className={error ? "text-[12.5px] text-[var(--peligro)]" : "text-[12.5px] text-[var(--t2)]"}
         >
           {message}
         </p>

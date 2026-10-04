@@ -48,7 +48,18 @@ describe("FormField", () => {
     expect(input).toHaveAttribute("aria-required", "true");
     expect(input).toHaveClass("h-9", "text-[13px]", "rounded-[8px]");
     expect(input).not.toHaveClass("lg:h-11", "lg:text-[15px]");
-    expect(screen.getByText("Nombre")).toHaveClass("text-[12px]", "lg:text-[13px]", "font-semibold", "text-[var(--t2)]");
+    // «Criterio · Formularios» y tableros Cuenta, Configuración, Rol y Usuario: el rótulo de 12,5 en la compu, a 6 del
+    // campo, y el mensaje debajo también de 12,5.
+    expect(screen.getByText("Nombre")).toHaveClass("text-[12.5px]", "font-semibold", "text-[var(--t2)]");
+    expect(screen.getByText("Nombre")).not.toHaveClass("lg:text-[13px]", "text-[12px]");
+    expect(screen.getByText("Nombre").parentElement).toHaveClass("gap-1.5");
+    expect(screen.getByText("Nombre").parentElement).not.toHaveClass("lg:gap-2");
+  });
+
+  it("escribe el error del campo en 12,5", () => {
+    render(<FormField label="Correo" error="Revisá el correo."><Input /></FormField>);
+
+    expect(screen.getByRole("alert")).toHaveClass("text-[12.5px]", "text-[var(--peligro)]");
   });
 
   // Tableros M-* (.ap-cmp): en el teléfono el campo mide 48, con radio 12 y letra de 16, y el rótulo es de 13,5.

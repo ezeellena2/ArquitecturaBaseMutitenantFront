@@ -259,7 +259,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
               <div className="w-full">
                 {editable ? <FormField label={t("roles:fields.name")} required error={validation.name}>
                   <Input value={draft.name} maxLength={60} autoComplete="off" onChange={(event) => changeDraft({ name: event.target.value })} />
-                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{t("roles:fields.name")}</span><p className="min-h-9 text-[13px] text-[var(--t1)] max-md:min-h-0 max-md:text-[16px]">{role.data && isSystemRole ? displayRoleName(role.data, t) : draft.name}</p></div>}
+                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12.5px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{t("roles:fields.name")}</span><p className="min-h-9 text-[13px] text-[var(--t1)] max-md:min-h-0 max-md:text-[16px]">{role.data && isSystemRole ? displayRoleName(role.data, t) : draft.name}</p></div>}
               </div>
               <div className="w-full">
                 {mode === "create" ? <FormField label={t("roles:fields.scope")} required error={validation.scope ?? validation.companyId}>
@@ -276,12 +276,12 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
                       {(companies.data?.items ?? []).filter((company: CompanyResponse) => company.status === "Active").map((company) => <SelectItem key={company.id} value={`company:${company.id}`}>{company.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
-                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{t("roles:fields.scope")}</span><p className="min-h-9 text-[13px] text-[var(--t1)] max-md:min-h-0 max-md:text-[16px]">{role.data ? valeEnText(role.data.scope) : ""}</p></div>}
+                </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12.5px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{t("roles:fields.scope")}</span><p className="min-h-9 text-[13px] text-[var(--t1)] max-md:min-h-0 max-md:text-[16px]">{role.data ? valeEnText(role.data.scope) : ""}</p></div>}
               </div>
               <div className="w-full">
               {editable ? <FormField label={t("roles:fields.description")}>
                 <Textarea value={draft.description} maxLength={500} className="min-h-[88px] resize-y max-md:min-h-[104px]" onChange={(event) => changeDraft({ description: event.target.value })} />
-              </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{t("roles:fields.description")}</span><p className="min-h-9 whitespace-pre-wrap text-[13px] text-[var(--t1)] max-md:min-h-0 max-md:text-[16px]">{role.data && isSystemRole ? displayRoleDescription(role.data, t) ?? t("roles:noDescription") : draft.description || t("roles:noDescription")}</p></div>}
+              </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12.5px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{t("roles:fields.description")}</span><p className="min-h-9 whitespace-pre-wrap text-[13px] text-[var(--t1)] max-md:min-h-0 max-md:text-[16px]">{role.data && isSystemRole ? displayRoleDescription(role.data, t) ?? t("roles:noDescription") : draft.description || t("roles:noDescription")}</p></div>}
             </div>
             </div>
           </div>
