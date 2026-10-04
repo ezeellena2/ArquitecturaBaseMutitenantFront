@@ -695,18 +695,12 @@
       "id": "pagina-publica-error-al-guardar-escritorio",
       "pair": "pagina-publica-error-al-guardar",
       "group": "fase-2",
-      "state": "Página pública: el error de guardado en la franja del formulario, no en un aviso (el tablero no dibuja la franja).",
-      "board": "Pagina-Org",
+      "state": "Página pública: el 409 al guardar, solo en su cartel, como en Configuración (Avisos › Alguien cambió esto).",
+      "board": "Avisos",
       "props": {
-        "estado": "Publicada"
+        "caso": "Alguien cambió esto"
       },
-      "boardActions": [
-        {
-          "type": "fill",
-          "name": "Nombre de la página",
-          "value": "Grupo Delta Sur"
-        }
-      ],
+      "boardActions": [],
       "viewport": {
         "width": 1440,
         "height": 900
@@ -720,9 +714,9 @@
             "method": "PUT",
             "path": "/api/organization/public-page",
             "body": {
-              "code": "PublicSite.PublicPage.VersionConflict",
+              "code": "General.ConcurrencyConflict",
               "title": "Conflicto",
-              "detail": "La página cambió desde que la abriste. Actualizala antes de guardar."
+              "detail": "Otra persona cambió esto. Revisá la versión más reciente antes de guardar."
             },
             "status": 409
           },
@@ -760,16 +754,18 @@
           }
         ],
         "readySelector": "main",
-        "readyText": "La página cambió desde que la abriste."
+        "readyText": "Otra persona cambió esto mientras lo editabas."
       }
     },
     {
       "id": "pagina-publica-error-al-guardar-movil",
       "pair": "pagina-publica-error-al-guardar",
       "group": "fase-2",
-      "state": "Página pública: el error de guardado en la franja del formulario, no en un aviso (el tablero no dibuja la franja).",
-      "board": "M-Pagina-Org",
-      "props": {},
+      "state": "Página pública: el 409 al guardar, solo en su cartel, como en Configuración (Avisos › Alguien cambió esto).",
+      "board": "M-Avisos",
+      "props": {
+        "caso": "Alguien cambió esto"
+      },
       "boardActions": [],
       "viewport": {
         "width": 390,
@@ -784,9 +780,9 @@
             "method": "PUT",
             "path": "/api/organization/public-page",
             "body": {
-              "code": "PublicSite.PublicPage.VersionConflict",
+              "code": "General.ConcurrencyConflict",
               "title": "Conflicto",
-              "detail": "La página cambió desde que la abriste. Actualizala antes de guardar."
+              "detail": "Otra persona cambió esto. Revisá la versión más reciente antes de guardar."
             },
             "status": 409
           },
@@ -824,7 +820,7 @@
           }
         ],
         "readySelector": "main",
-        "readyText": "La página cambió desde que la abriste."
+        "readyText": "Otra persona cambió esto mientras lo editabas."
       }
     },
     {

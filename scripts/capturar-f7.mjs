@@ -182,8 +182,8 @@ function buildCases() {
   const settings = settingsResponses("Verified");
   const settingsConflict = [concurrency("PUT", "/api/organization/settings"), ...settings];
   const publicPage = publicPageResponses("Publicada");
-  const publicPageConflict = [problem("PUT", "/api/organization/public-page", "PublicSite.PublicPage.VersionConflict",
-    "La página cambió desde que la abriste. Actualizala antes de guardar."), ...publicPage];
+  // El back responde el 409 de la página pública como el de Configuración: General.ConcurrencyConflict.
+  const publicPageConflict = [concurrency("PUT", "/api/organization/public-page"), ...publicPage];
   const tomas = userDetailResponses();
   const tomasConflict = [concurrency("PUT", "/api/users/member-1"), ...tomas];
   const luciaLastOwner = [api("GET", "/api/users/member-lucia", lucia), ...roleLists, userCompanyOptions,
@@ -213,10 +213,9 @@ function buildCases() {
       phone: { board: "M-Pagina-Org", state: "Página pública en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)." },
       actions: [appFill("Nombre de la página", "Grupo Delta Sur")] }),
     ...pair({ id: "pagina-publica-error-al-guardar", route: "/org/pagina", responses: publicPageConflict,
-      state: "Página pública: el error de guardado en la franja del formulario, no en un aviso (el tablero no dibuja la franja).",
-      desktop: { board: "Pagina-Org", props: { estado: "Publicada" }, actions: [fill("Nombre de la página", "Grupo Delta Sur")] },
-      phone: { board: "M-Pagina-Org" },
-      actions: [appFill("Nombre de la página", "Grupo Delta Sur"), saveChanges], ready: { readyText: "La página cambió desde que la abriste." } }),
+      state: "Página pública: el 409 al guardar, solo en su cartel, como en Configuración (Avisos › Alguien cambió esto).",
+      desktop: { board: "Avisos", props: { caso: "Alguien cambió esto" } }, phone: { board: "M-Avisos", props: { caso: "Alguien cambió esto" } },
+      actions: [appFill("Nombre de la página", "Grupo Delta Sur"), saveChanges], ready: { readyText: "Otra persona cambió esto mientras lo editabas." } }),
     ...pair({ id: "pagina-publica-salir-sin-guardar", route: "/org/pagina", responses: publicPage,
       state: "Página pública con cambios: salir pregunta «¿Salir sin guardar?» (tablero Avisos).", desktop: avisosLeave, phone: mAvisosLeave,
       actions: [appFill("Nombre de la página", "Grupo Delta Sur"), appClick("link", "Empresas")],
