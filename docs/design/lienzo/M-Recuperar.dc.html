@@ -609,6 +609,8 @@ textarea.in2 { height: auto; min-height: 84px; }
 .w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
   content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 </style>
+<style data-vuelta="1004-sin-revelar">
+</style>
 </helmet>
 
 <div class="auth auth-m">
@@ -718,7 +720,7 @@ const PASOS = {
   '3. Pedido recibido': { paso: 'listo', viejo: 'lucia.fernandez@delta.ejemplo.com', nuevo: 'lucia.fer@gmail.com' },
 };
 const VACIO = ['', '', '', '', '', ''];
-const OCUPADOS = ['beto.ramirez@beta.ejemplo.com', 'ana.gomez@gmail.com'];
+// Si el correo o el WhatsApp nuevo ya es de otra cuenta, la pantalla sigue igual: le llega un aviso en lugar del código.
 const CORREO = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 class Component extends DCLogic {
@@ -821,7 +823,6 @@ class Component extends DCLogic {
       enviarCodigo: () => {
         if (!this.valido(s.nuevoTipo, nuevo)) { this.setState({ errNuevo: nuevoTel ? 'Ingresá un número de celular válido.' : 'Ingresá un correo electrónico válido.' }); return; }
         if (nuevo === s.viejo.trim().toLowerCase()) { this.setState({ errNuevo: nuevoTel ? 'Tiene que ser un número distinto del de antes.' : 'Tiene que ser un correo distinto del de antes.' }); return; }
-        if (OCUPADOS.includes(nuevo)) { this.setState({ errNuevo: 'Ese correo ya lo usa otra cuenta.' }); return; }
         this.setState({ paso: 'codigo', errNuevo: '', errCodigo: '', cod: [...VACIO] });
       },
       volverNuevo: () => this.setState({ paso: 'nuevo' }),

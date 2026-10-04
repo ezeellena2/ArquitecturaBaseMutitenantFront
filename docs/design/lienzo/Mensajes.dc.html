@@ -568,6 +568,8 @@
 .w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
   content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 </style>
+<style data-vuelta="1004-sin-revelar">
+</style>
 </helmet>
 
 <div class="msg-root">
@@ -644,7 +646,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Código para verificar un método","Enlace para entrar (bot)","Invitación a una organización","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Membresía terminada","Exportación de datos lista","Baja pedida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: aprobada","Recuperación: rechazada"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Código para verificar un método","Enlace para entrar (bot)","Invitación a una organización","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Membresía terminada","Exportación de datos lista","Baja pedida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: ya tiene una cuenta","Recuperación: aprobada","Recuperación: rechazada"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
 // Mensajes que manda el sistema en los flujos de la plantilla. Salen por el outbox, con textos de Notifications.resx
 // (y los del módulo WhatsApp), en la cultura de la persona y con fechas de DisplayFormatter (es-AR, Buenos Aires).
 // Correo: la estructura de _Layout.html, LoginCode.html e Invitation.html de ArquitecturaBase.
@@ -832,6 +834,21 @@ const MENSAJES = [
     },
     // Plantilla `recuperacion_recibida`: sin variables.
     wa: { plantilla: 'recuperacion_recibida', texto: [N('Recibimos tu pedido para recuperar tu cuenta de ArquitecturaBase. Lo revisa una persona de la plataforma y te avisamos por acá. Si no pediste esto, ignorá este mensaje.')] },
+  },
+  {
+    n: 'Recuperación: ya tiene una cuenta',
+    // Decisión 16 de la Etapa 5: si el método nuevo de «Recuperar mi cuenta» ya es de otra cuenta, le llega esto en lugar del código.
+    // La pantalla de quien pidió la recuperación no cambia: no revela que ese correo o número tiene cuenta.
+    correo: {
+      asunto: 'Ya tenés una cuenta con este correo',
+      para: 'ana.gomez@gmail.com',
+      titulo: 'Ya tenés una cuenta con este correo',
+      parrafos: [P('Alguien pidió recuperar una cuenta de ArquitecturaBase y nos dio este correo para escribirle. Este correo ya es de una cuenta, así que no mandamos ningún código.'),
+        P('Si fuiste vos, entrá con este correo: no hace falta recuperar nada.')],
+      notas: [P('Si no fuiste vos, ignorá este mensaje.')],
+    },
+    // Plantilla `recuperacion_metodo_en_uso`: sin variables.
+    wa: { plantilla: 'recuperacion_metodo_en_uso', texto: [N('Alguien pidió recuperar una cuenta de ArquitecturaBase con este número, pero este número ya es de una cuenta. Si fuiste vos, entrá con este número: no hace falta recuperar nada. Si no fuiste vos, ignorá este mensaje.')] },
   },
   {
     n: 'Recuperación: aprobada',
