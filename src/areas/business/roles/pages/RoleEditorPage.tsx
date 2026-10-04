@@ -8,7 +8,7 @@ import { usePermissions } from "@/auth/usePermissions";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { ApiError } from "@/shared/api/ApiError";
-import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
+import { actionErrorMessage, apiErrorMessage, isNotFoundError } from "@/shared/api/errorMessage";
 import type { CompanyResponse, CreateRoleRequest, PermissionGroupResponse, RoleResponse, RoleScope, UpdateRoleRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { Button } from "@/shared/ui/button";
@@ -16,6 +16,7 @@ import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { FormError } from "@/shared/ui/FormError";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
+import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
 import { Page } from "@/shared/ui/Page";
@@ -25,6 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/shared/ui/textarea";
 import { fetchCompanyOptions, fetchPermissionGroups, fetchRole, permissionGroupsQueryKey, roleQueryKey, rolesQueryKeyRoot, createRole, updateRole } from "../api/roles";
 import { displayRoleDescription, displayRoleName } from "../columns";
+import { homeOf } from "@/tenancy/access";
 
 interface RoleDraft {
   name: string;
@@ -184,8 +186,11 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const title = mode === "create" ? t("roles:createTitle") : role.data ? displayRoleName(role.data, t) : t("roles:editorTitle");
 
   if (mode === "edit" && role.isPending) return <Page icon={Shield} title={t("roles:editorTitle")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
-  // «Criterio · Avisos» (Pantalla de error): el rol no cargó y no hay nada que mostrar.
-  if (mode === "edit" && !role.data) return <LoadErrorPage onRetry={() => { void role.refetch(); }} screen={t("roles:editorTitle")} back={{ to: "/org/roles", label: t("roles:backToList") }} />;
+  // «Criterio · Avisos» (Pantalla de error): el rol no cargó y no hay nada que mostrar; si no existe (404),
+  // «No encontramos esta página» (errores.md).
+  if (mode === "edit" && !role.data) return isNotFoundError(role.error)
+    ? <NotFoundPage homePath={homeOf("business")} screen={t("roles:editorTitle")} back={{ to: "/org/roles", label: t("roles:backToList") }} />
+    : <LoadErrorPage onRetry={() => { void role.refetch(); }} screen={t("roles:editorTitle")} back={{ to: "/org/roles", label: t("roles:backToList") }} />;
 
   function changeDraft(patch: Partial<RoleDraft>) {
     if (patch.scope !== undefined && patch.scope !== draft.scope) setExpandedAreas(null);

@@ -253,6 +253,20 @@ describe("RoleEditorPage", () => {
   });
 
   // «Criterio · Avisos» (Pantalla de error): si el rol no carga, no se puede mostrar nada; «Reintentar» lo vuelve a pedir.
+  // errores.md: un 404 en una ficha (también un id de otra organización) es «No encontramos esta página», como Error-Org.
+  it("si el rol no existe, dice que no encontramos la página y lleva al inicio", async () => {
+    server.use(
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.get("/api/roles/role-custom", () => HttpResponse.json(
+        { status: 404, code: "Roles.Role.NotFound", title: "No encontrado", detail: "No encontramos ese rol." }, { status: 404 })),
+    );
+    renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+
+    expect(await screen.findByRole("heading", { name: "No encontramos esta página" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/org");
+    expect(screen.queryByRole("button", { name: "Reintentar" })).not.toBeInTheDocument();
+  });
+
   it("si el rol no carga, dice que no se pudo abrir y «Reintentar» lo vuelve a pedir", async () => {
     const user = userEvent.setup();
     let fail = true;

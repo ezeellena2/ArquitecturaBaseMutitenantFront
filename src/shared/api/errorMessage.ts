@@ -8,6 +8,12 @@ export function isGenericApiError(error: unknown): error is ApiError {
   return error instanceof ApiError && (error.isNetworkError || error.status >= 500 || error.status === 429);
 }
 
+/// Lo que pidió la pantalla no existe para quien mira (404, también un id de otra organización o de otro acceso): la
+/// ficha muestra `NotFoundPage` en lugar de la pantalla de error con «Reintentar».
+export function isNotFoundError(error: unknown): error is ApiError {
+  return error instanceof ApiError && error.status === 404;
+}
+
 /// El texto de un error donde pasó, en el idioma de la persona («Criterio · Avisos y errores»): sin conexión y 5xx con
 /// el texto común; lo demás, también un 429, con el `detail` que ya tradujo el back («Esperá un minuto antes de volver a
 /// invitar…»). Nunca el `message` crudo ni un código técnico.

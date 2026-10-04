@@ -145,6 +145,18 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await waitFor(() => expect(screen.getByRole("navigation", { name: "Migas de pan" })).toHaveTextContent("Inicio/Gestión de usuarios/Usuarios/Lucía Fernández"));
   });
 
+  // errores.md: un 404 en una ficha (también un id de otra organización) es «No encontramos esta página», como Error-Org.
+  it("si la persona no existe, dice que no encontramos la página y lleva al inicio", async () => {
+    api(member);
+    server.use(http.get("/api/users/member-1", () => HttpResponse.json(
+      { status: 404, code: "Tenancy.Member.NotFound", title: "No encontrado", detail: "No encontramos a esa persona." }, { status: 404 })));
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+
+    expect(await screen.findByRole("heading", { name: "No encontramos esta página" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/org");
+    expect(screen.queryByRole("button", { name: "Reintentar" })).not.toBeInTheDocument();
+  });
+
   // «Criterio · Avisos» (Pantalla de error): si la ficha no carga, no se puede mostrar nada; «Reintentar» la vuelve a pedir.
   it("si la ficha no carga, dice que no se pudo abrir y «Reintentar» la vuelve a pedir", async () => {
     const user = userEvent.setup();

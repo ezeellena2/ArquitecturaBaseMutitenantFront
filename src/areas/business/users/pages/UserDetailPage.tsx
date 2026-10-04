@@ -5,7 +5,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
-import { actionErrorMessage, toastActionError } from "@/shared/api/errorMessage";
+import { actionErrorMessage, isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import type { OrganizationUserResponse, RoleResponse, UpdateOrganizationUserRequest } from "@/shared/api/types";
 import { ApiError } from "@/shared/api/ApiError";
@@ -15,6 +15,7 @@ import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { FormError } from "@/shared/ui/FormError";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
+import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { FormField } from "@/shared/ui/FormField";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
@@ -34,7 +35,7 @@ import { List, ListItem } from "@/shared/ui/List";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { fetchAssignableRoles, fetchCompanyOptions, fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userCompaniesQueryKey, userQueryKey, userRolesQueryKey, usersQueryRoot } from "../api/users";
 import { userErrorMessage } from "../errors";
-import { activeOrganization } from "@/tenancy/access";
+import { activeOrganization, homeOf } from "@/tenancy/access";
 
 type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
 type CompanyDialogDraft = { mode: "add" | "roles"; companyId: string; roleIds: string[] };
@@ -137,8 +138,11 @@ export function UserDetailPage() {
   const resend = useIdempotentMutation((invitationId: string, key) => resendUserInvitation(invitationId, key));
 
   if (user.isPending) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.loading")}><p role="status">{t("common:states.loading")}</p></Page>;
-  // «Criterio · Avisos» (Pantalla de error): la ficha no cargó y no hay nada que mostrar.
-  if (user.error && !user.data) return <LoadErrorPage onRetry={() => { void user.refetch(); }} screen={t("users:detail.title")} back={{ to: "/org/usuarios", label: t("users:back") }} />;
+  // «Criterio · Avisos» (Pantalla de error): la ficha no cargó y no hay nada que mostrar; si no existe (404),
+  // «No encontramos esta página» (errores.md).
+  if (user.error && !user.data) return isNotFoundError(user.error)
+    ? <NotFoundPage homePath={homeOf("business")} screen={t("users:detail.title")} back={{ to: "/org/usuarios", label: t("users:back") }} />
+    : <LoadErrorPage onRetry={() => { void user.refetch(); }} screen={t("users:detail.title")} back={{ to: "/org/usuarios", label: t("users:back") }} />;
   if (!user.data) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.title")}><EmptyState title={t("users:empty.missing")} /></Page>;
 
   const member = user.data;

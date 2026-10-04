@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { usePermissions } from "@/auth/usePermissions";
 import { ApiError } from "@/shared/api/ApiError";
-import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
+import { actionErrorMessage, apiErrorMessage, isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
 import type { AddCompanyMemberRequest, CompanyMemberResponse, RoleResponse, UpdateCompanyRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
@@ -18,6 +18,7 @@ import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTi
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
+import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { FormField } from "@/shared/ui/FormField";
 import { TaxIdText } from "@/shared/ui/format/TaxIdText";
 import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
@@ -52,6 +53,7 @@ import { companyMemberPhoneRow, createCompanyMemberColumns } from "../columns";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
+import { homeOf } from "@/tenancy/access";
 import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyTaxIdValid, type CompanyDraft } from "../components/CompanyFields";
 
 type CompanyTab = "members" | "roles";
@@ -152,8 +154,11 @@ export function CompanyDetailPage() {
   });
 
   if (company.isPending) return <Page icon={Building2} title={t("companies:detail.loading")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
-  // «Criterio · Avisos» (Pantalla de error): la ficha no cargó y no hay nada que mostrar.
-  if (!company.data) return <LoadErrorPage onRetry={() => { void company.refetch(); }} screen={t("companies:detail.title")} back={{ to: "/org/empresas", label: t("companies:back") }} />;
+  // «Criterio · Avisos» (Pantalla de error): la ficha no cargó y no hay nada que mostrar; si no existe (404),
+  // «No encontramos esta página» (errores.md).
+  if (!company.data) return isNotFoundError(company.error)
+    ? <NotFoundPage homePath={homeOf("business")} screen={t("companies:detail.title")} back={{ to: "/org/empresas", label: t("companies:back") }} />
+    : <LoadErrorPage onRetry={() => { void company.refetch(); }} screen={t("companies:detail.title")} back={{ to: "/org/empresas", label: t("companies:back") }} />;
   const data = company.data;
 
   function openEdit() {
