@@ -56,6 +56,7 @@ export function referenceDataFixture(culture = "es-AR"): ReferenceData {
 }
 
 export const handlers: RequestHandler[] = [
+  http.get("/api/home", () => HttpResponse.json({ organization: null, companies: [], pending: [] })),
   http.get("/api/me/login-methods", () => HttpResponse.json({ methods: [
     { id: "email-ana", type: "Email", value: "ana@example.test", isVerified: true, isPrimary: true, canRemove: false, canMakePrimary: false },
   ], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] })),

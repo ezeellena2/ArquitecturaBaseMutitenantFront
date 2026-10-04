@@ -1,0 +1,84 @@
+{
+  "areas": "Organization areas",
+  "shortcutPending": "{{area}}, {{count}} to resolve",
+  "cards": {
+    "users": {
+      "title": "Users",
+      "short": "Users",
+      "count_one": "{{count}} user",
+      "count_other": "{{count}} users"
+    },
+    "roles": {
+      "title": "Roles and permissions",
+      "short": "Roles",
+      "count_one": "{{count}} role",
+      "count_other": "{{count}} roles"
+    },
+    "companies": {
+      "title": "Companies",
+      "short": "Companies",
+      "count_one": "{{count}} company",
+      "count_other": "{{count}} companies"
+    },
+    "publicPage": {
+      "title": "Public page",
+      "short": "Page",
+      "Published": "Published",
+      "Draft": "Draft",
+      "Blocked": "Unpublished"
+    },
+    "settings": {
+      "title": "Settings",
+      "short": "Settings",
+      "noDomain": "No domain"
+    },
+    "audit": {
+      "title": "Audit",
+      "short": "Audit",
+      "lastChange": "Last change {{when}}",
+      "noChanges": "No changes yet"
+    }
+  },
+  "greeting": "Hi, {{name}}",
+  "greetingUnnamed": "Hi",
+  "yourCompanies": "Your companies",
+  "members_one": "{{count}} member",
+  "members_other": "{{count}} members",
+  "toResolve": {
+    "title": "To resolve",
+    "empty": "Nothing to resolve",
+    "pending": "Pending",
+    "area": "Area",
+    "state": "Status",
+    "since": "Since",
+    "action": "Action"
+  },
+  "pending": {
+    "invitationExpired": {
+      "detail": "Invitation",
+      "state": "Expired",
+      "phoneState": "Invitation expired",
+      "action": "Resend"
+    },
+    "deletionRequested": {
+      "detail": "Deleted on {{date}}",
+      "state": "Deletion requested",
+      "action": "View"
+    },
+    "domainUnverified": {
+      "title": "Email domain",
+      "state": "Pending",
+      "action": "Verify"
+    },
+    "publicPageDraft": {
+      "title": "Public page",
+      "state": "Draft",
+      "action": "View"
+    },
+    "publicPageBlocked": {
+      "title": "Public page",
+      "state": "Unpublished by the platform",
+      "action": "View"
+    }
+  }
+}

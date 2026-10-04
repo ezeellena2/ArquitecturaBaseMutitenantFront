@@ -372,6 +372,282 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/platform/tenants/{id}/domains": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OrganizationDomainResponse"][];
+                        "application/json": components["schemas"]["OrganizationDomainResponse"][];
+                        "text/json": components["schemas"]["OrganizationDomainResponse"][];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/tenants/{id}/domains/{domain}/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    domain: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PlatformTenantStateHttpRequest"];
+                    "text/json": components["schemas"]["PlatformTenantStateHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformTenantStateHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/tenants/{id}/domains/{domain}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    domain: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PlatformTenantStateHttpRequest"];
+                    "text/json": components["schemas"]["PlatformTenantStateHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformTenantStateHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform/tenants/{id}/features": {
         parameters: {
             query?: never;
@@ -2810,6 +3086,70 @@ export interface paths {
                 };
             };
         };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/home": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["HomeResponse"];
+                        "application/json": components["schemas"]["HomeResponse"];
+                        "text/json": components["schemas"]["HomeResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -7411,6 +7751,51 @@ export interface components {
         GoogleSignupAntiforgeryResponse: {
             requestToken: string;
         };
+        /** @description El último cambio de la auditoría; `null` si todavía no hay. */
+        HomeAudit: {
+            /** Format: date-time */
+            lastChangeAtUtc?: null | string;
+        };
+        /** @description «Tus empresas»: una empresa donde la persona tiene roles; los miembros, solo si puede verlos. */
+        HomeCompanyCard: {
+            /** Format: uuid */
+            companyId: string;
+            name: string;
+            roles: string[];
+            /** Format: int32 */
+            memberCount?: null | number;
+        };
+        HomeCount: {
+            /** Format: int32 */
+            total: number;
+        };
+        /** @description Una tarjeta por área, con su dato real; `null` si quien mira no tiene el permiso del área. */
+        HomeOrganizationSummary: {
+            users?: null | components["schemas"]["HomeCount"];
+            roles?: null | components["schemas"]["HomeCount"];
+            companies?: null | components["schemas"]["HomeCount"];
+            publicPage?: null | components["schemas"]["HomePublicPage"];
+            settings?: null | components["schemas"]["HomeSettings"];
+            audit?: null | components["schemas"]["HomeAudit"];
+        };
+        HomePublicPage: {
+            state: components["schemas"]["HomePublicPageState"];
+        };
+        /** @enum {string} */
+        HomePublicPageState: "Published" | "Draft" | "Blocked";
+        /**
+         * @description Inicio de la organización (ADR 0040). Quien tiene permisos de la organización ve las tarjetas de sus áreas; quien
+         *     solo tiene roles en empresas ve «Tus empresas». Debajo, «Para resolver».
+         */
+        HomeResponse: {
+            organization?: null | components["schemas"]["HomeOrganizationSummary"];
+            companies: components["schemas"]["HomeCompanyCard"][];
+            pending: components["schemas"]["PendingItem"][];
+        };
+        /** @description El dominio de correo de la organización; `null` si no tiene. */
+        HomeSettings: {
+            domain?: null | string;
+        };
         /** @description Solo datos presentables de la invitación autorizada; jamás hashes ni secretos. */
         InvitationPreviewResponse: {
             state: components["schemas"]["InvitationPreviewState"];
@@ -7745,6 +8130,22 @@ export interface components {
             returnUrl: string;
             /** Format: date-time */
             expiresAtUtc: string;
+        };
+        /**
+         * @description Una fila de «Para resolver». `Area` y `Kind` son claves estables: el front arma el texto, el estado y la
+         *     acción. `SinceUtc` ordena; `DueAtUtc` es la fecha del detalle (por ejemplo, cuándo se elimina).
+         */
+        PendingItem: {
+            area: string;
+            kind: string;
+            subject?: null | string;
+            urgent: boolean;
+            /** Format: date-time */
+            sinceUtc?: null | string;
+            /** Format: date-time */
+            dueAtUtc?: null | string;
+            /** Format: uuid */
+            targetId?: null | string;
         };
         /**
          * @description Identifica un documento legal y su versión pendiente de aceptación. Permite que el front solicite la

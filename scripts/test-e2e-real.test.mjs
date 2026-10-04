@@ -756,6 +756,14 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await adminPage.getByRole("button", { name: "Verificar", exact: true }).click();
           await expectPath(adminPage, "/org", "ingreso del Dueño para invitar desde Usuarios");
 
+          setStage("ve el inicio real: las áreas y la página en borrador para resolver");
+          const areas = adminPage.getByRole("navigation", { name: "Áreas de la organización" });
+          await areas.getByRole("link", { name: /^Usuarios/ }).waitFor();
+          await areas.getByRole("link", { name: /^Auditoría/ }).waitFor();
+          const toResolve = adminPage.getByRole("region", { name: "Para resolver" });
+          await toResolve.getByText("Borrador", { exact: true }).waitFor();
+          assert.equal(await toResolve.getByRole("link", { name: "Ver", exact: true }).getAttribute("href"), "/org/pagina");
+
           setStage("crea una empresa desde el flujo real de Empresas");
           await adminPage.goto(new URL("/org/empresas", baseUrl).href);
           await adminPage.getByRole("heading", { name: "Empresas", exact: true }).waitFor();

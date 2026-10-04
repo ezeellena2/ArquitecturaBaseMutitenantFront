@@ -1,0 +1,84 @@
+{
+  "areas": "Áreas de la organización",
+  "shortcutPending": "{{area}}, {{count}} para resolver",
+  "cards": {
+    "users": {
+      "title": "Usuarios",
+      "short": "Usuarios",
+      "count_one": "{{count}} usuario",
+      "count_other": "{{count}} usuarios"
+    },
+    "roles": {
+      "title": "Roles y permisos",
+      "short": "Roles",
+      "count_one": "{{count}} rol",
+      "count_other": "{{count}} roles"
+    },
+    "companies": {
+      "title": "Empresas",
+      "short": "Empresas",
+      "count_one": "{{count}} empresa",
+      "count_other": "{{count}} empresas"
+    },
+    "publicPage": {
+      "title": "Página pública",
+      "short": "Página",
+      "Published": "Publicada",
+      "Draft": "Borrador",
+      "Blocked": "Despublicada"
+    },
+    "settings": {
+      "title": "Configuración",
+      "short": "Configuración",
+      "noDomain": "Sin dominio"
+    },
+    "audit": {
+      "title": "Auditoría",
+      "short": "Auditoría",
+      "lastChange": "Último cambio {{when}}",
+      "noChanges": "Sin cambios todavía"
+    }
+  },
+  "greeting": "Hola, {{name}}",
+  "greetingUnnamed": "Hola",
+  "yourCompanies": "Tus empresas",
+  "members_one": "{{count}} miembro",
+  "members_other": "{{count}} miembros",
+  "toResolve": {
+    "title": "Para resolver",
+    "empty": "Nada para resolver",
+    "pending": "Pendiente",
+    "area": "Área",
+    "state": "Estado",
+    "since": "Desde",
+    "action": "Acción"
+  },
+  "pending": {
+    "invitationExpired": {
+      "detail": "Invitación",
+      "state": "Vencida",
+      "phoneState": "Invitación vencida",
+      "action": "Reenviar"
+    },
+    "deletionRequested": {
+      "detail": "Se elimina el {{date}}",
+      "state": "Baja pedida",
+      "action": "Ver"
+    },
+    "domainUnverified": {
+      "title": "Dominio de correo",
+      "state": "Pendiente",
+      "action": "Verificar"
+    },
+    "publicPageDraft": {
+      "title": "Página pública",
+      "state": "Borrador",
+      "action": "Ver"
+    },
+    "publicPageBlocked": {
+      "title": "Página pública",
+      "state": "Despublicada por la plataforma",
+      "action": "Ver"
+    }
+  }
+}

@@ -33,7 +33,8 @@ describe("rutas de ingreso 3a", () => {
     renderRouteWithProviders("/org", { as: "business-admin" });
     expect(await screen.findByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByRole("button", { name: "Administración" })).toBeVisible();
-    expect(screen.getByRole("main")).toBeEmptyDOMElement();
+    // Tablero Inicio-Org: la banda «Inicio» con la organización (ADR 0040).
+    expect(within(screen.getByRole("main")).getByRole("heading", { level: 1, name: "Inicio" })).toBeVisible();
   });
 
   it.each([
