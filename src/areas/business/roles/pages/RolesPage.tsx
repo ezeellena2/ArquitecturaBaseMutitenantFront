@@ -17,7 +17,6 @@ import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
-import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import type { RoleResponse } from "@/shared/api/types";
 import {
   deleteRole,
@@ -28,7 +27,6 @@ import {
   type RolesQuery,
 } from "../api/roles";
 import { createRoleColumns, displayRoleName, rolePhoneRow } from "../columns";
-import { homeOf } from "@/tenancy/access";
 
 // «Vale en» (tablero Roles): toda la organización o una empresa por nombre, en un solo filtro.
 const roleFilterKeys = ["vale"] as const;
@@ -37,7 +35,6 @@ const roleCountScopes = [undefined, "Organization", "Company"] as const;
 export function RolesPage() {
   const { t } = useTranslation(["roles", "common"]);
   const { can } = usePermissions();
-  const canRead = can("roles.read");
   const canManage = can("roles.manage");
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -49,27 +46,25 @@ export function RolesPage() {
       scope: values.vale === "Organization" ? "Organization" : undefined,
       companyId: values.vale && values.vale !== "Organization" ? values.vale : undefined,
     }),
-    queryKey: rolesQueryKey, queryFn: fetchRoles, enabled: canRead, meta: { silent: true, blocksView: true },
+    queryKey: rolesQueryKey, queryFn: fetchRoles, meta: { silent: true, blocksView: true },
   });
   const vale = filters.values.vale;
   const debouncedSearch = query.search ?? undefined;
   const companies = useQuery({
     queryKey: ["role-company-options"],
     queryFn: fetchCompanyOptions,
-    enabled: canRead && can("companies.read"),
+    enabled: can("companies.read"),
     meta: { silent: true },
   });
   const activeCompanies = (companies.data?.items ?? []).filter((company) => company.status === "Active");
   const companyCounts = useQueries({ queries: activeCompanies.map((company) => ({
     queryKey: [...rolesQueryKeyRoot, "company-count", company.id, debouncedSearch ?? ""],
     queryFn: () => fetchRoles({ page: 1, pageSize: 10, search: debouncedSearch || undefined, companyId: company.id }),
-    enabled: canRead,
     meta: { silent: true },
   })) });
   const scopeCounts = useQueries({ queries: roleCountScopes.map((countScope) => ({
     queryKey: [...rolesQueryKeyRoot, "scope-count", countScope ?? "all", debouncedSearch ?? ""],
     queryFn: () => fetchRoles({ page: 1, pageSize: 10, search: debouncedSearch || undefined, scope: countScope }),
-    enabled: canRead,
     meta: { silent: true },
   })) });
   const [roleToDelete, setRoleToDelete] = useState<RoleResponse | null>(null);
@@ -82,8 +77,6 @@ export function RolesPage() {
     },
     onError: (error) => toastActionError(error, t),
   });
-
-  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
 
   const companyNames = new Map((companies.data?.items ?? []).map((company) => [company.id, company.name]));
   const rowActions = (role: RoleResponse) => <RowActions

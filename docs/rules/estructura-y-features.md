@@ -15,7 +15,7 @@
 └── pages/               una pantalla por archivo, lazy en routes.tsx
 ```
 Las carpetas que la feature no necesita no se crean (`settings/` puede tener solo `api/` y `pages/`).
-- Una ruta nueva va en `app/routes.tsx` y en `layouts/navigation/<área>.ts`, con el mismo permiso.
+- Una ruta nueva se declara una vez en el manifiesto de su área (`layouts/navigation/<área>.ts`: camino, permiso, módulo y, si va en el menú, rótulo e ícono); `app/routes.tsx` le suma su pantalla con `lazyPage`.
 - Si dos features necesitan lo mismo, se mueve a `shared/` (por ejemplo `shared/api/roles.ts`); no se importa de la otra feature.
 - Imports con alias `@/`. `import type` para los tipos.
 

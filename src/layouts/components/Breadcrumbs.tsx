@@ -10,7 +10,7 @@ export function Breadcrumbs({ navigation }: { navigation: NavigationConfig }) {
   const { t } = useTranslation();
   const pathname = useLocation().pathname.replace(/\/+$/, "") || "/";
   const leaf = useCurrentBreadcrumbLeaf();
-  const home = navigation.links.find((entry) => entry.to !== null);
+  const home = navigation.links.at(0);
   if (!home) return null;
 
   const crumbs: { label: string; to?: string }[] = [];
@@ -18,17 +18,17 @@ export function Breadcrumbs({ navigation }: { navigation: NavigationConfig }) {
   if (administration) {
     const { link, section } = administration;
     if (section) crumbs.push({ label: t(section.labelKey) });
-    crumbs.push(pathname === link.to ? { label: t(link.labelKey) } : { label: t(link.labelKey), to: link.to! });
-    if (pathname !== link.to && leaf) crumbs.push({ label: leaf });
+    crumbs.push(pathname === link.path ? { label: t(link.labelKey) } : { label: t(link.labelKey), to: link.path });
+    if (pathname !== link.path && leaf) crumbs.push({ label: leaf });
   } else {
-    const current = navigation.links.find((entry) => entry !== home && entry.to === pathname);
+    const current = navigation.links.find((entry) => entry !== home && entry.path === pathname);
     if (current) crumbs.push({ label: t(current.labelKey) });
   }
 
   return <nav aria-label={t("layout.breadcrumbs.label")} className="min-w-0 text-[13px] text-[var(--t2)]">
     <ol className="flex min-w-0 items-center gap-1.5 truncate">
-      <li className={`truncate ${pathname === home.to ? "font-semibold text-[var(--t1)]" : ""}`} aria-current={pathname === home.to ? "page" : undefined}>
-        {pathname === home.to ? t(home.labelKey) : <Link to={home.to!} className="hover:underline">{t(home.labelKey)}</Link>}
+      <li className={`truncate ${pathname === home.path ? "font-semibold text-[var(--t1)]" : ""}`} aria-current={pathname === home.path ? "page" : undefined}>
+        {pathname === home.path ? t(home.labelKey) : <Link to={home.path} className="hover:underline">{t(home.labelKey)}</Link>}
       </li>
       {crumbs.map((crumb, index) => {
         const current = index === crumbs.length - 1 && !crumb.to;

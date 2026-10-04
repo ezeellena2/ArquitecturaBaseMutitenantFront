@@ -3,8 +3,8 @@ import type { NavigationConfig } from "./types";
 
 export const personalNavigation: NavigationConfig = {
   links: [
-    { labelKey: "navigation.dashboard", icon: House, to: "/" },
-    { labelKey: "accessMenu.myAccount", icon: UserRound, to: "/cuenta" },
+    { path: "/", labelKey: "navigation.dashboard", icon: House },
+    { path: "/cuenta", labelKey: "accessMenu.myAccount", icon: UserRound },
   ],
   administration: null,
   moreTo: "/mas",

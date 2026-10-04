@@ -7,6 +7,8 @@ import { routes } from "./routes";
 import { ProtectedRoute } from "@/auth/ProtectedRoute";
 import { AccessRoute } from "@/auth/AccessRoute";
 import { LegalAcceptanceGate } from "@/auth/LegalAcceptanceGate";
+import { businessRoutes } from "@/layouts/navigation/business";
+import type { AppRoute } from "@/layouts/navigation/types";
 
 describe("rutas de ingreso 3a", () => {
   it("declara la portada privada con ProtectedRoute y AccessRoute consumer", () => {
@@ -75,6 +77,15 @@ describe("rutas de ingreso 3a", () => {
     expect(await screen.findByRole("heading", { name: "Términos y condiciones" })).toBeVisible();
     legal.unmount();
   });
+
+  // F5: el permiso de cada ruta se declara una vez, en el manifiesto, y lo aplica la ruta; la pantalla no lo repite.
+  it.each(Object.entries<AppRoute>(businessRoutes).filter(([, route]) => route.permission !== undefined))(
+    "la ruta %s pide el permiso de su manifiesto: sin él, «No tenés permiso» dentro de la organización", async (_name, route) => {
+      renderRouteWithProviders(route.path.replaceAll(/:\w+/g, "x"), { as: "business-no-permissions" });
+
+      expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
+      expect(screen.getByRole("complementary", { name: "Navegación principal" })).toBeVisible();
+    });
 
   it("monta 403 y 404 con retorno al inicio del acceso", async () => {
     const denied = renderRouteWithProviders("/sin-permiso", { as: "business-admin" });

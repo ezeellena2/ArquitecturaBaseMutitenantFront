@@ -1,13 +1,14 @@
 # Accesos, permisos y módulos
 
-**Regla:** cada pantalla pertenece a **un acceso** (persona, empresa o plataforma) o al **sitio público**. El front **muestra u oculta**; el backend **decide**. Dentro del acceso B2B, cada ruta y cada enlace declaran su permiso (y su módulo, si es de un módulo) en `routes.tsx` y en la navegación.
+**Regla:** cada pantalla pertenece a **un acceso** (persona, empresa o plataforma) o al **sitio público**. El front **muestra u oculta**; el backend **decide**. Dentro del acceso B2B, cada ruta declara su permiso (y su módulo, si es de un módulo) una sola vez, en el manifiesto de su área, del que salen `routes.tsx` y el menú.
 
 ## Cómo se hace
 - **Ruta por acceso:**
   - `<AccessRoute access="consumer">` para `/` con sesión, `/<módulo>` B2C;
-  - `<AccessRoute access="business"><ProtectedRoute permission="roles.read" /></AccessRoute>` para `/org/…`;
+  - `<AccessRoute access="business">` para `/org/…`;
   - `<AccessRoute access="platform">` para `/plataforma/…`;
   - las rutas públicas (`/` sin sesión, `/login…`, `/registro…`, `/recuperar`, `/invitacion`, `/auth/callback`, `/terminos`, `/privacidad` y las del subdominio) no llevan `AccessRoute`.
+- **Manifiesto de rutas:** cada ruta del área se declara una vez en `layouts/navigation/<área>.ts` (`businessRoutes`): camino, permiso, módulo y, si va en el menú, rótulo e ícono. El menú (`businessNavigation`) usa esas mismas entradas y muestra cada una solo con su permiso y su módulo (`visibleNavigation`). `app/routes.tsx` le suma a cada una su pantalla con `lazyPage` y la guarda `<RequirePermission>`: sin el permiso, «No tenés permiso» dentro del marco; con el módulo apagado, `NotFoundPage`. La pantalla no repite la comprobación.
 - **Host:** con el subdominio de una organización (`<slug>.plataforma.com`; una página pública por organización, no por empresa), `routes.tsx` arma **solo** las rutas de `storefront` (y `/auth/callback`: el ingreso desde el subdominio vuelve a su propio origen). `usePublicSite()` devuelve el slug del subdominio y los datos públicos de esa organización.
 - **Acción:** `const { can, canInCompany } = usePermissions()`. `can("roles.manage")` lee `effectivePermissions.organization` de `/api/me`. En una empresa del grupo, `canInCompany(companyId, "company.members.manage")` lee la lista de esa empresa en `effectivePermissions.companies`; si la empresa no figura (el back todavía no llena el mapa), la de la organización. Los códigos son una unión tipada (`OrganizationPermission` y `CompanyPermission`), copia del catálogo del back.
 - **Acceso activo:** `useAccess()` devuelve `access`, la organización activa (en B2B), si la persona tiene espacio personal y sus organizaciones.
@@ -29,15 +30,15 @@
 - Mostrar "crear una empresa" en el acceso B2C, o mostrar organizaciones en el espacio personal.
 - Usar el subdominio para mostrar algo de la administración de la organización (esa vive en `/org`).
 - Preguntar por roles (`user.roles.includes("TenantAdmin")`) o leer la lista plana `permissions` de `/api/me`: los permisos salen de `usePermissions`.
-- Una ruta privada sin `AccessRoute`, o un permiso declarado en un solo lugar.
+- Una ruta privada sin `AccessRoute`, o un permiso de ruta declarado fuera del manifiesto (en la pantalla, en `routes.tsx` o en el menú).
 - Cambiar de acceso sin limpiar la caché.
 - Guardar el acceso o la organización en localStorage: lo sabe el token.
 
 ## Copiá de
-- `src/app/routes.tsx` y `src/layouts/navigation/business.ts` (E3–E4) · `src/tenancy/useSwitchAccess.ts` (E3) · `src/auth/usePermissions.ts` (E7).
+- `src/app/routes.tsx` y `src/layouts/navigation/business.ts` (E3–E4) · `src/tenancy/useSwitchAccess.ts` (E3) · `src/auth/usePermissions.ts` (E7) · `src/app/RequirePermission.tsx` (E7).
 
 ## Lo verifica
-- `routes.test.tsx` (E3) y `navigation.test.tsx` (E4): el mismo permiso en los dos lugares desde E4; el mismo módulo desde E5.
+- `routes.test.tsx` (E3): cada ruta del manifiesto pide su permiso; `visible.test.ts` (E7): el menú son rutas del manifiesto y cada enlace se ve solo con su permiso y su módulo; `RequirePermission.test.tsx` (E7): sin el permiso, «No tenés permiso»; con el módulo apagado, la ruta no existe.
 - `AccessRoute.test.tsx` (E3), `useSwitchAccess.test.tsx` (E3) y `AccessMenu.test.tsx` (E3): limpia la caché al cambiar; una persona sin organizaciones no ve «Ir a mi empresa» y en B2C nunca aparece «Registrá tu empresa».
 - `routes-by-host.test.ts` (E7): un subdominio no monta rutas de `/org`.
 - `usePermissions.test.ts` (E7): `can` lee `effectivePermissions`; `canInCompany`, la empresa del mapa o, si no figura, la organización; los códigos son los del catálogo del back.

@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Building2, Pencil, Plus, Power, ShieldCheck, UserRound } from "lucide-react";
-import { homeOf } from "@/tenancy/access";
 // «Delta S.A.» + «. Quedaste…» no repite el punto final del nombre.
 const sentence = (text: string) => text.replace("..", ".");
 import { useState, type FormEvent } from "react";
@@ -30,7 +29,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Surface } from "@/shared/ui/Surface";
 import { TabCount, Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { toast } from "sonner";
-import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import {
   addCompanyMember,
   changeCompanyMemberStatus,
@@ -67,7 +65,6 @@ export function CompanyDetailPage() {
   const id = companyId ?? "";
   const navigate = useNavigate();
   const { can, canInCompany } = usePermissions();
-  const canRead = can("companies.read");
   const canManageCompany = can("companies.manage");
   const canReadMembers = canInCompany(id, "company.members.read");
   const canManageMembers = canInCompany(id, "company.members.manage");
@@ -89,7 +86,7 @@ export function CompanyDetailPage() {
   });
   const { state, roleId, withoutRoles } = memberQuery;
   const debouncedSearch = memberQuery.search ?? undefined;
-  const company = useQuery({ queryKey: companyQueryKey(id), queryFn: () => fetchCompany(id), enabled: canRead && Boolean(id), meta: { silent: true, blocksView: true } });
+  const company = useQuery({ queryKey: companyQueryKey(id), queryFn: () => fetchCompany(id), enabled: Boolean(id), meta: { silent: true, blocksView: true } });
   useBreadcrumbLeaf(company.data?.name);
   const counts = useQuery({ queryKey: companyMembersCountQueryKey(id, debouncedSearch || undefined), queryFn: () => fetchCompanyMemberCounts(id, debouncedSearch || undefined), enabled: canReadMembers && Boolean(id), meta: { silent: true } });
   const roles = useQuery({ queryKey: ["roles", "company-options", id], queryFn: () => fetchAssignableCompanyRoles(id), enabled: (canReadRoles || canReadMembers) && Boolean(id), meta: { silent: true } });
@@ -147,7 +144,6 @@ export function CompanyDetailPage() {
     onError: setEditFailure,
   });
 
-  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
   if (company.isPending) return <Page icon={Building2} title={t("companies:detail.loading")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   if (company.isError || !company.data) return <Page icon={Building2} title={t("companies:detail.title")} backTo={{ to: "/org/empresas", label: t("companies:back") }}><div className="p-4"><FormError message={apiErrorMessage(company.error, t)} /><Button type="button" variant="outline" onClick={() => { void company.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
   const data = company.data;

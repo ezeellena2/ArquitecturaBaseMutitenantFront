@@ -10,6 +10,7 @@ import { AppBar } from "@/shared/ui/app/AppBar";
 import { GroupTitle, SettingsGroup, SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { initials, useProfiles } from "@/tenancy/useProfiles";
 import { businessNavigation } from "./navigation/business";
+import { visibleNavigation } from "./navigation/visible";
 import { activeOrganization, homeOf } from "@/tenancy/access";
 
 /// Tableros M-Mas-Personal y M-WA-Menu: la pestaña «Más» del teléfono. Arriba quién sos; después tus perfiles, para
@@ -19,16 +20,13 @@ export function MorePage() {
   const { t } = useTranslation();
   const phone = useMediaQuery("(max-width: 767px)");
   const { data: user } = useCurrentUser();
-  const { can } = usePermissions();
+  const permissions = usePermissions();
   const { name, email, access, profiles, signOut, status } = useProfiles();
   if (!phone) return <Navigate to={homeOf(access ?? "consumer")} replace />;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
 
-  const panel = businessNavigation.administration;
-  const administration = access === "business" && panel
-    ? [...(panel.sections ?? []).flatMap((section) => section.links), ...panel.links]
-      .filter((entry) => entry.to && (!entry.permission || can(entry.permission)))
-    : [];
+  const panel = visibleNavigation(businessNavigation, permissions).administration;
+  const administration = access === "business" && panel ? [...(panel.sections ?? []).flatMap((section) => section.links), ...panel.links] : [];
   const subtitle = access === "business" ? activeOrganization(user)?.name : t("accessMenu.personal");
 
   return <div className="flex min-h-full flex-col bg-[var(--s2)]">
@@ -53,7 +51,7 @@ export function MorePage() {
     {administration.length > 0 ? <>
       <GroupTitle>{t("navigation.administration")}</GroupTitle>
       <SettingsGroup label={t("navigation.administration")}>
-        {administration.map((entry) => <SettingsItem key={entry.labelKey} title={t(entry.phoneLabelKey ?? entry.labelKey)} to={entry.to!} />)}
+        {administration.map((entry) => <SettingsItem key={entry.labelKey} title={t(entry.phoneLabelKey ?? entry.labelKey)} to={entry.path} />)}
       </SettingsGroup>
     </> : null}
 

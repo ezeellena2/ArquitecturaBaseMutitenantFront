@@ -21,7 +21,6 @@ import { Input } from "@/shared/ui/input";
 import { Page } from "@/shared/ui/Page";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Section } from "@/shared/ui/Section";
-import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { List, ListItem } from "@/shared/ui/List";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { CultureText } from "@/shared/ui/format/CultureText";
@@ -33,7 +32,7 @@ import {
   fetchOrganizationDomains, fetchOrganizationSettings, organizationDomainsKey, organizationSettingsKey,
   registerOrganizationDomain, removeOrganizationDomain, updateOrganizationSettings, verifyOrganizationDomain,
 } from "../api/settings";
-import { activeOrganization, homeOf } from "@/tenancy/access";
+import { activeOrganization } from "@/tenancy/access";
 
 type SettingsDraft = Pick<OrganizationSettingsResponse, "name" | "defaultCulture" | "defaultTimeZoneId" | "defaultCurrency">;
 
@@ -45,12 +44,11 @@ export function SettingsPage() {
   const { t } = useTranslation(["settings", "common"]);
   const { data: currentUser } = useCurrentUser();
   const { can } = usePermissions();
-  const canRead = can("settings.read");
   const canManage = can("settings.manage");
   const organizationName = activeOrganization(currentUser)?.name ?? "";
   const client = useQueryClient();
-  const settings = useQuery({ queryKey: organizationSettingsKey, queryFn: fetchOrganizationSettings, enabled: canRead, meta: { silent: true, blocksView: true } });
-  const domains = useQuery({ queryKey: organizationDomainsKey, queryFn: fetchOrganizationDomains, enabled: canRead, meta: { silent: true } });
+  const settings = useQuery({ queryKey: organizationSettingsKey, queryFn: fetchOrganizationSettings, meta: { silent: true, blocksView: true } });
+  const domains = useQuery({ queryKey: organizationDomainsKey, queryFn: fetchOrganizationDomains, meta: { silent: true } });
   const [draftState, setDraftState] = useState<SettingsDraft | null>(null);
   const [failure, setFailure] = useState<unknown>();
   const [domainDialogOpen, setDomainDialogOpen] = useState(false);
@@ -87,8 +85,6 @@ export function SettingsPage() {
     onSuccess: async (_result, domain) => { setDomainToRemove(null); toast.success(t("settings:domains.removed", { domain: domain.domain })); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
     onError: (error) => toastActionError(error, t),
   });
-
-  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
 
   function openVerify(domain: OrganizationDomainResponse) {
     setDomainToVerify(domain);

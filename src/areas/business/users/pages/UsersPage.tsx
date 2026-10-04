@@ -17,7 +17,6 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 import { Input } from "@/shared/ui/input";
 import { Page } from "@/shared/ui/Page";
@@ -28,7 +27,7 @@ import { Surface } from "@/shared/ui/Surface";
 import { toast } from "sonner";
 import { changeUserStatus, fetchAssignableRoles, fetchCompanyOptions, fetchUserCounts, fetchUsers, inviteUser, removeUser, resendUserInvitation, revokeUserInvitation, userCompaniesQueryKey, userCountsQueryKey, userRolesQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
 import { createUserColumns, userPhoneRow } from "../columns";
-import { activeOrganization, homeOf } from "@/tenancy/access";
+import { activeOrganization } from "@/tenancy/access";
 
 const userFilterKeys = ["state", "companyId"] as const;
 // Orden del filtro «Estado» del tablero Usuarios.
@@ -53,7 +52,6 @@ export function UsersPage() {
   const format = useFormat();
   const { data: currentUser } = useCurrentUser();
   const { can } = usePermissions();
-  const canRead = can("users.read");
   const canInvite = can("users.invite");
   const canManage = can("users.manage");
   const canFilterByCompany = can("companies.read");
@@ -72,24 +70,24 @@ export function UsersPage() {
         withoutCompany: companyFilter === withoutCompanyValue ? true : undefined,
       };
     },
-    queryKey: usersQueryKey, queryFn: fetchUsers, enabled: canRead, meta: { silent: true, blocksView: true },
+    queryKey: usersQueryKey, queryFn: fetchUsers, meta: { silent: true, blocksView: true },
   });
   const { state, companyId, withoutCompany, search: debouncedSearch } = query;
   const companyFilter = withoutCompany ? withoutCompanyValue : companyId;
   const countQuery = { search: debouncedSearch, companyId, withoutCompany };
   const counts = useQuery({
-    queryKey: userCountsQueryKey(countQuery), queryFn: () => fetchUserCounts(countQuery), enabled: canRead,
+    queryKey: userCountsQueryKey(countQuery), queryFn: () => fetchUserCounts(countQuery),
     placeholderData: keepPreviousData, meta: { silent: true },
   });
   const companies = useQuery({
-    queryKey: userCompaniesQueryKey, queryFn: fetchCompanyOptions, enabled: canRead && canFilterByCompany,
+    queryKey: userCompaniesQueryKey, queryFn: fetchCompanyOptions, enabled: canFilterByCompany,
     meta: { silent: true },
   });
   // Conteos del filtro «Empresa»: cada empresa y «Sin empresa», con la búsqueda y el estado elegidos.
   const companyCountTargets = ["all", ...(companies.data?.items ?? []).filter((company) => company.status === "Active").map((company) => company.id), withoutCompanyValue];
   const companyCounts = useQueries({ queries: companyCountTargets.map((target) => {
     const targetQuery = { search: debouncedSearch || undefined, ...(target === withoutCompanyValue ? { withoutCompany: true } : target === "all" ? {} : { companyId: target }) };
-    return { queryKey: userCountsQueryKey(targetQuery), queryFn: () => fetchUserCounts(targetQuery), enabled: canRead && canFilterByCompany, meta: { silent: true } };
+    return { queryKey: userCountsQueryKey(targetQuery), queryFn: () => fetchUserCounts(targetQuery), enabled: canFilterByCompany, meta: { silent: true } };
   }) });
   const [inviteOpen, setInviteOpen] = useState(false);
   const roleQueries = useQueries({ queries: (["Organization", "Company"] as const).map((scope) => ({
@@ -126,8 +124,6 @@ export function UsersPage() {
     onSuccess: async (_result, user) => { toast.success(t("users:messages.removed", { name: user.displayName || user.email || "", organization: organizationName })); setTarget(null); setConfirmAction(null); await invalidate(); },
     onError: (error) => toastActionError(error, t),
   });
-
-  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
 
   const rowActions = (member: OrganizationUserResponse) => <RowActions
       label={t("users:rowActions", { name: member.displayName || member.email || "" })}

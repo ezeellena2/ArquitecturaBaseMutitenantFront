@@ -22,7 +22,7 @@ beforeAll(async () => {
 
 describe("navegación por acceso en 3a", () => {
   it("Personal muestra Inicio y Mi cuenta cuando existe su ruta en 3b", () => {
-    expect(personalNavigation.links.map((entry) => entry.to)).toEqual(["/", "/cuenta"]);
+    expect(personalNavigation.links.map((entry) => entry.path)).toEqual(["/", "/cuenta"]);
     expect(personalNavigation.administration).toBeNull();
     render(<MemoryRouter><PersonalLayout><h1>{"Inicio personal"}</h1></PersonalLayout></MemoryRouter>);
     expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-[232px]");
@@ -34,12 +34,12 @@ describe("navegación por acceso en 3a", () => {
   });
 
   it("Empresa muestra las áreas E6 en el panel de administración, abierto en sus rutas", () => {
-    expect(businessNavigation.links.map((entry) => entry.to)).toEqual(["/org"]);
+    expect(businessNavigation.links.map((entry) => entry.path)).toEqual(["/org"]);
     expect(businessNavigation.administration?.sections?.[0].links).toMatchObject([
-      { labelKey: "navigation.users", to: "/org/usuarios", permission: "users.read" },
-      { labelKey: "navigation.roles", to: "/org/roles", permission: "roles.read" },
+      { labelKey: "navigation.users", path: "/org/usuarios", permission: "users.read" },
+      { labelKey: "navigation.roles", path: "/org/roles", permission: "roles.read" },
     ]);
-    expect(businessNavigation.administration?.links.map((entry) => entry.to)).toEqual([
+    expect(businessNavigation.administration?.links.map((entry) => entry.path)).toEqual([
       "/org/empresas", "/org/configuracion", "/org/pagina", "/org/auditoria",
     ]);
     render(<MemoryRouter initialEntries={["/org/roles"]}><BusinessLayout><h1>{"Inicio organización"}</h1></BusinessLayout></MemoryRouter>);

@@ -15,7 +15,6 @@ import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { RowActions } from "@/shared/ui/RowActions";
@@ -32,7 +31,7 @@ import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { List, ListItem } from "@/shared/ui/List";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { fetchAssignableRoles, fetchCompanyOptions, fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userCompaniesQueryKey, userQueryKey, userRolesQueryKey, usersQueryRoot } from "../api/users";
-import { activeOrganization, homeOf } from "@/tenancy/access";
+import { activeOrganization } from "@/tenancy/access";
 
 type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
 type CompanyDialogDraft = { mode: "add" | "roles"; companyId: string; roleIds: string[] };
@@ -70,7 +69,6 @@ export function UserDetailPage() {
   const { memberId = "" } = useParams();
   const { data: currentUser } = useCurrentUser();
   const { can } = usePermissions();
-  const canRead = can("users.read");
   const canInvite = can("users.invite");
   const canManage = can("users.manage");
   const organizationName = activeOrganization(currentUser)?.name ?? "";
@@ -78,7 +76,7 @@ export function UserDetailPage() {
   const navigate = useNavigate();
   const { phone } = useAppChrome();
   const [sheet, setSheet] = useState<"state" | "roles" | null>(null);
-  const user = useQuery({ queryKey: userQueryKey(memberId), queryFn: () => fetchUser(memberId), enabled: canRead && Boolean(memberId), meta: { silent: true, blocksView: true } });
+  const user = useQuery({ queryKey: userQueryKey(memberId), queryFn: () => fetchUser(memberId), enabled: Boolean(memberId), meta: { silent: true, blocksView: true } });
   useBreadcrumbLeaf(user.data ? user.data.displayName || user.data.email || undefined : undefined);
   const [draft, setDraft] = useState<AccessDraft | null>(null);
   const [companyDialog, setCompanyDialog] = useState<CompanyDialogDraft | null>(null);
@@ -110,7 +108,6 @@ export function UserDetailPage() {
   });
   const resend = useIdempotentMutation((invitationId: string, key) => resendUserInvitation(invitationId, key));
 
-  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
   if (user.isPending) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.loading")}><p role="status">{t("common:states.loading")}</p></Page>;
   if (user.error) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.title")}><FormError message={apiErrorMessage(user.error, t)} /></Page>;
   if (!user.data) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.title")}><EmptyState title={t("users:empty.missing")} /></Page>;

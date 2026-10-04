@@ -42,11 +42,10 @@ export function Sidebar({ navigation, account, context, collapsed, administratio
       <ul className="flex flex-col gap-1">
         {navigation.links.map((entry, index) => {
           const Icon = entry.icon;
-          const active = entry.to === pathname;
+          const active = entry.path === pathname;
           const content = <><Icon size={18} strokeWidth={1.75} aria-hidden="true" /><span className={showLabels ? "" : "sr-only"}>{t(entry.labelKey)}</span></>;
           return <li key={entry.labelKey} className={index > 0 ? "border-t border-[var(--lado-borde)] pt-0.5" : ""}>
-            {entry.to ? <Link to={entry.to} aria-current={active ? "page" : undefined} className={rowClass(active)}>{content}</Link>
-              : <span aria-disabled="true" className={rowClass(false)}>{content}</span>}
+            <Link to={entry.path} aria-current={active ? "page" : undefined} className={rowClass(active)}>{content}</Link>
           </li>;
         })}
       </ul>

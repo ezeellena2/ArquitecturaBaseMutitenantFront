@@ -59,9 +59,11 @@ src/
 ├── app/                                             [E0]
 │   ├── providers.tsx                                [E0] solo QueryClientProvider con QueryClient mínimo local; la configuración de shared/api/queryClient, i18n y Toaster se suman en [E1], Auth en [E3]
 │   ├── router.tsx                                   createBrowserRouter
-│   ├── routes.tsx                                   [E0] una ruta vacía; [E3] rutas por acceso y AppShell;
+│   ├── routes.tsx                                   [E0] una ruta vacía; [E3] rutas por acceso y AppShell; las pantallas de la organización salen del manifiesto de layouts/navigation/business.ts, con lazyPage y RequirePermission;
 │   │                                                [E7] árbol por host (dominio principal o subdominio de organización)
-│   ├── routes.test.tsx                              [E3] acceso de cada ruta; permiso en [E4] y módulo en [E5]
+│   ├── routes.test.tsx                              [E3] acceso de cada ruta; cada ruta del manifiesto pide su permiso
+│   ├── RequirePermission.tsx                        [E7] la guarda de una ruta del manifiesto: módulo apagado → 404; sin permiso → «No tenés permiso», dentro del marco
+│   ├── RequirePermission.test.tsx                   [E7]
 │   └── routes-by-host.test.ts                       [E7] un subdominio no monta /org, /cuenta ni /plataforma
 │
 ├── auth/                                            [E3]
@@ -74,7 +76,7 @@ src/
 │   ├── signOutStatus.ts
 │   ├── useSignOut.ts                                Salir igual en toda la app: «Cerrando sesión…», queryClient.clear() y signoutRedirect
 │   ├── useSignOut.test.tsx
-│   ├── ProtectedRoute.tsx                           sesión + permiso
+│   ├── ProtectedRoute.tsx                           sesión
 │   ├── ProtectedRoute.test.tsx
 │   ├── AccessRoute.tsx                              access="consumer" | "business" | "platform"; manda al inicio del acceso de la sesión
 │   ├── AccessRoute.test.tsx
@@ -106,12 +108,14 @@ src/
 │   ├── PrivateLayoutFrame.tsx                       marco de los tres accesos: en la compu, menú lateral, panel y barra; en el teléfono, la app (`AppChrome`, barra de abajo con «Inicio» y «Más»)
 │   ├── MorePage.tsx                                 «Más» del teléfono (/mas): quién sos, Perfiles, Administración, Mi cuenta y Salir (M-Mas-Personal, M-WA-Menu); en la compu vuelve al inicio
 │   ├── navigation/
-│   │   ├── types.ts                                 grupos, ramas, links con permiso
+│   │   ├── types.ts                                 AppRoute (camino, permiso, módulo, rótulo e ícono), grupos y ramas del menú
 │   │   ├── administration.ts                        la opción del panel de la que sale una ruta: la usan el panel, las migas y el marco
 │   │   ├── personal.ts
-│   │   ├── business.ts                              arriba Inicio + módulos B2B; abajo «Administración» (AdminPanel): «Gestión de usuarios» ▸ Usuarios, Roles y permisos · Empresas · Configuración · Página pública · Auditoría
+│   │   ├── business.ts                              el manifiesto de rutas de la organización (businessRoutes) y el menú que sale de él: arriba Inicio + módulos B2B; abajo «Administración» (AdminPanel): «Gestión de usuarios» ▸ Usuarios, Roles y permisos · Empresas · Configuración · Página pública · Auditoría
 │   │   ├── platform.ts                              Organizaciones (el inicio) · Cuentas · Recuperaciones · Auditoría · Documentos legales · Configuración
-│   │   └── navigation.test.ts                       el permiso de cada link = el de su ruta
+│   │   ├── visible.ts                               [E7] el menú que la sesión puede ver (permiso y módulo): lo usan el menú lateral y «Más»
+│   │   ├── visible.test.ts                          [E7] cada enlace es una ruta del manifiesto
+│   │   └── navigation.test.ts                       los enlaces de cada acceso
 │   └── components/
 │       ├── Sidebar.tsx                              solo en la compu: colapsable, con una línea fina entre opciones; «Administración» abre el AdminPanel. En el teléfono no se monta
 │       ├── Sidebar.test.tsx

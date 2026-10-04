@@ -20,7 +20,6 @@ import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { toast } from "sonner";
-import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import {
   changeCompanyStatus,
   companiesCountQueryKey,
@@ -34,7 +33,6 @@ import {
 } from "../api/companies";
 import { createCompanyColumns, companyPhoneRow } from "../columns";
 import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyTaxIdValid, type CompanyDraft } from "../components/CompanyFields";
-import { homeOf } from "@/tenancy/access";
 
 const statusValues = [undefined, "Active", "Inactive"] as const;
 const companyFilterKeys = ["status"] as const;
@@ -45,7 +43,6 @@ const sentence = (text: string) => text.replace("..", ".");
 export function CompaniesPage() {
   const { t } = useTranslation(["companies", "common"]);
   const { can } = usePermissions();
-  const canRead = can("companies.read");
   const canManage = can("companies.manage");
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -56,14 +53,13 @@ export function CompaniesPage() {
       ...page,
       status: values.status === "Active" || values.status === "Inactive" ? values.status : undefined,
     }),
-    queryKey: companiesQueryKey, queryFn: fetchCompanies, enabled: canRead, meta: { silent: true, blocksView: true },
+    queryKey: companiesQueryKey, queryFn: fetchCompanies, meta: { silent: true, blocksView: true },
   });
   const { status } = query;
   const debouncedSearch = query.search ?? undefined;
   const counts = useQuery({
     queryKey: companiesCountQueryKey(debouncedSearch),
     queryFn: () => fetchCompanyCounts(debouncedSearch),
-    enabled: canRead,
     meta: { silent: true },
   });
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -99,8 +95,6 @@ export function CompaniesPage() {
     },
     onError: (error) => toastActionError(error, t),
   });
-
-  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
 
   function openCreate() {
     setEditingCompany(null);

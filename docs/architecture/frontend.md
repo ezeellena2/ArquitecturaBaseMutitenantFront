@@ -29,10 +29,10 @@ Mismo stack y mismas versiones que ArquitecturaBaseFront. **El `node_modules` vi
 
 ```
 src/
-├─ app/          providers · router · routes: elige el árbol de rutas por host (dominio principal o subdominio de organización)
+├─ app/          providers · router · routes: elige el árbol de rutas por host (dominio principal o subdominio de organización) · RequirePermission
 ├─ auth/         AuthProvider · authConfig · SessionRecovery · ProtectedRoute · AccessRoute · useCurrentUser · usePermissions (can, canInCompany, hasFeature)
 ├─ tenancy/      access.ts (inicio, puerta, organización activa y estados de cada acceso) · useAccess · useSwitchAccess (persona ↔ empresa, y entre organizaciones) · AccessMenu · useCompanyParam · usePublicSite (subdominio)
-├─ layouts/      PersonalLayout · BusinessLayout · PlatformLayout (mismo armazón: Sidebar + Topbar) · SiteLayout (sitio y páginas públicas) · AuthLayout · navigation/ · components/
+├─ layouts/      PersonalLayout · BusinessLayout · PlatformLayout (mismo armazón: Sidebar + Topbar) · SiteLayout (sitio y páginas públicas) · AuthLayout · navigation/ (el manifiesto de rutas y el menú de cada área) · components/
 ├─ areas/        una feature no importa de otra, ni un área de otra; lo común sube a shared/
 │  ├─ public/    auth (ingresar como persona o como empresa, registro de personas, «Registrá tu empresa», invitación) · site (portada y directorio de la plataforma) · legal (términos, privacidad y la aceptación bloqueante de una versión nueva) · errors
 │  ├─ storefront/ página pública de una organización, en su subdominio + lo que publiquen los módulos del producto
@@ -52,7 +52,7 @@ src/
 
 ## 3. Rutas
 
-Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts/navigation/*.ts`.
+Van en español. Cada ruta de un área se declara una vez en su manifiesto (`layouts/navigation/<área>.ts`: camino, permiso, módulo y, si va en el menú, rótulo e ícono), del que salen `routes.tsx` (con `RequirePermission` y `lazyPage`) y el menú.
 
 **Dominio principal** (`plataforma.com`):
 

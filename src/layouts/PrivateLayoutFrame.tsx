@@ -15,7 +15,8 @@ import { Breadcrumbs } from "./components/Breadcrumbs";
 import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
 import { findAdministrationEntry } from "./navigation/administration";
-import type { NavigationConfig, NavigationLink } from "./navigation/types";
+import type { NavigationConfig } from "./navigation/types";
+import { visibleNavigation } from "./navigation/visible";
 import { activeOrganization } from "@/tenancy/access";
 
 interface PrivateLayoutFrameProps {
@@ -29,19 +30,8 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isSigningOut = useIsSigningOut();
   const { data: user } = useCurrentUser();
-  const { can } = usePermissions();
-  const visibleNavigation = useMemo(() => {
-    const visible = (entry: NavigationLink) => !entry.permission || can(entry.permission);
-    const links = navigation.links.filter(visible);
-    const source = navigation.administration;
-    const sections = source?.sections?.map((section) => ({ ...section, links: section.links.filter(visible) }))
-      .filter((section) => section.links.length > 0);
-    const panelLinks = source?.links.filter(visible) ?? [];
-    const administration = source && (panelLinks.length > 0 || (sections?.length ?? 0) > 0)
-      ? { ...source, links: panelLinks, ...(source.sections ? { sections } : {}) }
-      : null;
-    return { ...navigation, links, administration };
-  }, [navigation, can]);
+  const permissions = usePermissions();
+  const shownNavigation = useMemo(() => visibleNavigation(navigation, permissions), [navigation, permissions]);
   const [collapsed, setCollapsed] = useLocalStorage("sidebarCollapsed", false);
   // En una pantalla de Administración el panel arranca abierto, también al recargar; en las demás, cerrado. Lo que
   // la persona abre o cierra vale hasta que cambia de pantalla. Se mira la navegación completa y no la visible,
@@ -64,8 +54,8 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
 
   // Tableros M-* («Criterio · Marco»): en el teléfono, Inicio y «Más» abajo; las demás pantallas se abren desde
   // «Más» y vuelven a él con ‹. Debajo del título va el camino («Administración») o la organización.
-  const home = navigation.links.find((entry) => entry.to !== null);
-  const onHome = home?.to === pathname;
+  const home = navigation.links.at(0);
+  const onHome = home?.path === pathname;
   const onMore = navigation.moreTo === pathname;
   const chrome = useMemo<AppChrome>(() => ({
     phone: isMobile,
@@ -81,8 +71,8 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   if (isMobile) return <AppChromeProvider value={chrome}>
     <div className="flex h-svh flex-col bg-[var(--lado-activo)]">
       <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">{children ?? <Outlet />}</main>
-      {home?.to && navigation.moreTo && !bottomNavHidden ? <BottomNav label={t("navigation.sections")} items={[
-        { key: "home", label: t(home.labelKey), to: home.to, icon: <AppHomeIcon className="size-6" />, active: onHome && !activeSectionHidden },
+      {home && navigation.moreTo && !bottomNavHidden ? <BottomNav label={t("navigation.sections")} items={[
+        { key: "home", label: t(home.labelKey), to: home.path, icon: <AppHomeIcon className="size-6" />, active: onHome && !activeSectionHidden },
         { key: "more", label: t("navigation.more"), to: navigation.moreTo, avatar: name.charAt(0).toUpperCase() || undefined, active: !onHome && !activeSectionHidden },
       ]} /> : null}
     </div>
@@ -91,7 +81,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   return <AppChromeProvider value={chrome}>
     <div className="flex h-svh print:h-auto">
       <Sidebar
-        navigation={visibleNavigation}
+        navigation={shownNavigation}
         account={account}
         context={context}
         collapsed={collapsed}
@@ -99,7 +89,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
         onToggleAdministration={() => setToggledAdministration({ pathname, open: !administrationOpen })}
         onToggleCollapsed={() => setCollapsed((value) => !value)}
       />
-      <AdminPanel panel={visibleNavigation.administration} open={administrationOpen} onClose={() => setToggledAdministration({ pathname, open: false })} />
+      <AdminPanel panel={shownNavigation.administration} open={administrationOpen} onClose={() => setToggledAdministration({ pathname, open: false })} />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <Topbar onToggleNavigation={() => setCollapsed((value) => !value)} breadcrumbs={<Breadcrumbs navigation={navigation} />} />
         <main className="relative min-h-0 flex-1 scroll-pt-14 overflow-y-auto bg-[var(--fondo)] print:overflow-visible">{children ?? <Outlet />}</main>

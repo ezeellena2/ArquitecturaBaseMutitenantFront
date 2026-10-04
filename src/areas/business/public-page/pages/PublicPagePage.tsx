@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Globe } from "lucide-react";
 import { useId, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { usePermissions } from "@/auth/usePermissions";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { PublicPageResponse, TenantSlugAvailability, UpdatePublicPageRequest } from "@/shared/api/types";
@@ -22,13 +21,11 @@ import { Page } from "@/shared/ui/Page";
 import { Section } from "@/shared/ui/Section";
 import { Switch } from "@/shared/ui/switch";
 import { Textarea } from "@/shared/ui/textarea";
-import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { DateText } from "@/shared/ui/format/DateText";
 import { initials } from "@/shared/lib/initials";
 import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { checkOrganizationSlug, fetchPublicPage, publicPageQueryKey, setPublicPagePublished, slugAvailabilityQueryKey, updatePublicPage } from "../api/publicPage";
-import { homeOf } from "@/tenancy/access";
 
 interface PageDraft {
   slug: string;
@@ -88,11 +85,9 @@ function slugStateText(state: TenantSlugAvailability | undefined, t: (key: strin
 
 export function PublicPagePage() {
   const { t } = useTranslation(["publicPage", "common"]);
-  const { can } = usePermissions();
-  const canManage = can("publicpage.manage");
   const client = useQueryClient();
   const visibleId = useId();
-  const page = useQuery({ queryKey: publicPageQueryKey, queryFn: fetchPublicPage, enabled: canManage, meta: { silent: true, blocksView: true } });
+  const page = useQuery({ queryKey: publicPageQueryKey, queryFn: fetchPublicPage, meta: { silent: true, blocksView: true } });
   const [draftState, setDraftState] = useState<PageDraft | null>(null);
   const draft = draftState ?? (page.data ? draftFromPage(page.data) : null);
   const debouncedSlug = useDebouncedValue(draft?.slug.trim() ?? "");
@@ -100,7 +95,7 @@ export function PublicPagePage() {
   const slugAvailability = useQuery({
     queryKey: slugAvailabilityQueryKey(debouncedSlug),
     queryFn: () => checkOrganizationSlug(debouncedSlug),
-    enabled: canManage && slugChanged && debouncedSlug.length > 0,
+    enabled: slugChanged && debouncedSlug.length > 0,
     meta: { silent: true },
   });
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -118,8 +113,6 @@ export function PublicPagePage() {
     onSuccess: async (_result, published) => { toast.success(t(published ? "publicPage:published" : "publicPage:unpublished")); await client.invalidateQueries({ queryKey: publicPageQueryKey }); },
     onError: (error) => toastActionError(error, t),
   });
-
-  if (!canManage) return <ForbiddenPage homePath={homeOf("business")} />;
 
   const pageData = page.data;
   const isDirty = Boolean(pageData && draft && JSON.stringify(draft) !== JSON.stringify(draftFromPage(pageData)));

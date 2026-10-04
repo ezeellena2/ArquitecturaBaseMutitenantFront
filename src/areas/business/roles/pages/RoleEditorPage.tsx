@@ -22,10 +22,8 @@ import { Section } from "@/shared/ui/Section";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Textarea } from "@/shared/ui/textarea";
-import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { fetchCompanyOptions, fetchPermissionGroups, fetchRole, permissionGroupsQueryKey, roleQueryKey, rolesQueryKeyRoot, createRole, updateRole } from "../api/roles";
 import { displayRoleDescription, displayRoleName } from "../columns";
-import { homeOf } from "@/tenancy/access";
 
 interface RoleDraft {
   name: string;
@@ -75,12 +73,11 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { can } = usePermissions();
-  const canRead = can("roles.read");
   const canManage = can("roles.manage");
   const role = useQuery({
     queryKey: roleQueryKey(roleId ?? ""),
     queryFn: () => fetchRole(roleId!),
-    enabled: canRead && mode === "edit" && Boolean(roleId),
+    enabled: mode === "edit" && Boolean(roleId),
     meta: { silent: true, blocksView: true },
   });
   const requestedScope = searchParams.get("scope");
@@ -91,7 +88,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const permissions = useQuery({
     queryKey: permissionGroupsQueryKey,
     queryFn: fetchPermissionGroups,
-    enabled: canRead && (mode === "edit" || canManage),
+    enabled: mode === "edit" || canManage,
     meta: { silent: true },
   });
   const [draftState, setDraftState] = useState<RoleDraft | null>(() => mode === "create" ? initialCreateDraft : null);
@@ -185,7 +182,6 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const summary = mode === "edit" && role.data ? t("roles:scopeAndUsers", { scope: scopeInSentence(role.data.scope), count: role.data.userCount }) : undefined;
   const title = mode === "create" ? t("roles:createTitle") : role.data ? displayRoleName(role.data, t) : t("roles:editorTitle");
 
-  if (!canRead || mode === "create" && !canManage) return <ForbiddenPage homePath={homeOf("business")} />;
   if (mode === "edit" && role.isPending) return <Page icon={Shield} title={t("roles:editorTitle")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   if (mode === "edit" && role.isError) return <Page icon={Shield} title={t("roles:editorTitle")} backTo={{ to: "/org/roles", label: t("roles:backToList") }}><div className="p-4"><FormError message={apiErrorMessage(role.error, t)} /><Button type="button" onClick={() => { void role.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
 

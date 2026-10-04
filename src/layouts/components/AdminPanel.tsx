@@ -36,17 +36,17 @@ export function AdminPanel({ panel, open, onClose }: { panel: NavigationPanel | 
             <ChevronDown size={16} aria-hidden="true" className={expanded ? "" : "-rotate-90"} />
           </button>
           {expanded ? <ul className="mt-1 ml-[22px] flex flex-col gap-1 border-l border-[var(--lado-borde)] pl-3">
-            {section.links.map((entry, childIndex) => entry.to ? <li key={entry.labelKey} className={lineClass(childIndex)}>
-              <Link to={entry.to} aria-current={entry === activeLink ? "page" : undefined} className={rowClass(entry === activeLink)}>{t(entry.labelKey)}</Link>
-            </li> : null)}
+            {section.links.map((entry, childIndex) => <li key={entry.labelKey} className={lineClass(childIndex)}>
+              <Link to={entry.path} aria-current={entry === activeLink ? "page" : undefined} className={rowClass(entry === activeLink)}>{t(entry.labelKey)}</Link>
+            </li>)}
           </ul> : null}
         </li>;
       })}
-      {panel.links.map((entry, index) => entry.to ? <li key={entry.labelKey} className={lineClass(sections.length + index)}>
-        <Link to={entry.to} aria-current={entry === activeLink ? "page" : undefined} className={rowClass(entry === activeLink)}>
+      {panel.links.map((entry, index) => <li key={entry.labelKey} className={lineClass(sections.length + index)}>
+        <Link to={entry.path} aria-current={entry === activeLink ? "page" : undefined} className={rowClass(entry === activeLink)}>
           <entry.icon size={18} strokeWidth={1.75} aria-hidden="true" />{t(entry.labelKey)}
         </Link>
-      </li> : null)}
+      </li>)}
     </ul>
   </nav>;
 }

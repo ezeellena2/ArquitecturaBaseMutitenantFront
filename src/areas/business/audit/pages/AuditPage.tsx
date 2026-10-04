@@ -2,7 +2,6 @@ import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-qu
 import { ClipboardList } from "lucide-react";
 import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { usePermissions } from "@/auth/usePermissions";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useFilters } from "@/shared/hooks/useFilters";
 import { usePagination } from "@/shared/hooks/usePagination";
@@ -16,19 +15,15 @@ import { LoadMore } from "@/shared/ui/LoadMore";
 import { Page } from "@/shared/ui/Page";
 import { ListRow } from "@/shared/ui/app/ListRow";
 import { Surface } from "@/shared/ui/Surface";
-import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { DateText } from "@/shared/ui/format/DateText";
 import type { OrganizationAuditEntryResponse } from "@/shared/api/types";
 import { auditQueryRoot, fetchAudit, fetchAuditActors } from "../api/audit";
-import { homeOf } from "@/tenancy/access";
 
 const auditFilterKeys = ["period", "category", "actorId"] as const;
 const auditCategories = ["users", "roles", "companies", "settings", "organization"] as const;
 
 export function AuditPage() {
   const { t } = useTranslation(["audit", "common"]);
-  const { can } = usePermissions();
-  const canRead = can("audit.read");
   const filters = useFilters(auditFilterKeys);
   // Por cursor («Cargar más», sin páginas ni total): de usePagination solo usa la búsqueda en la URL.
   const pagination = usePagination();
@@ -43,19 +38,15 @@ export function AuditPage() {
     queryFn: ({ pageParam }) => fetchAudit({ ...baseQuery, after: pageParam, limit: 25 }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextCursor ?? undefined : undefined,
-    enabled: canRead,
     placeholderData: keepPreviousData,
     meta: { silent: true, blocksView: true },
   });
   const actors = useQuery({
     queryKey: [...auditQueryRoot, "actors", { period, category, search: search || undefined }],
     queryFn: () => fetchAuditActors({ period, category, search: search || undefined }),
-    enabled: canRead,
     meta: { silent: true },
   });
   const [selected, setSelected] = useState<OrganizationAuditEntryResponse | null>(null);
-
-  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
 
   const rows = audit.data?.pages.flatMap((page) => page.items) ?? [];
   const columns: Column<OrganizationAuditEntryResponse>[] = [
