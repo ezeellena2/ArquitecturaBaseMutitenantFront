@@ -285,7 +285,8 @@ export function BusinessSignupPage() {
                     onChange={(event) => { setSlug(event.target.value.trim().toLowerCase()); setSlugError(null); setLimitReached(false); }}
                     autoComplete="off" spellCheck={false} />
                 </FormField>
-                <div className="-mt-4 min-h-5 text-[12px]" aria-live="polite">
+                {/* Sin aviso de disponibilidad no queda hueco: el tablero no deja espacio bajo la dirección. */}
+                <div className="-mt-4 text-[12px]" aria-live="polite">
                   {slug !== "" && !slugMatchesInput ? <span className="text-[var(--t3)]">{t("common:states.loading")}</span>
                     : slugAvailability === "Available" && !slugError ? <span role="status" className="inline-flex items-center gap-1 text-[var(--ok)]"><Check size={14} />{t("businessSignup.slugAvailable")}</span> : null}
                 </div>
@@ -319,10 +320,11 @@ export function BusinessSignupPage() {
   }
 }
 
+// Tablero Registro-Empresa: el dominio va en una caja gris aparte, pegada al campo.
 function SlugInput({ suffix, className, ...inputProps }: React.ComponentProps<"input"> & { suffix: string }) {
-  return <div className="flex items-center rounded-md border border-input bg-transparent focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50">
-    <Input {...inputProps} className={`min-w-0 flex-1 border-0 shadow-none focus-visible:ring-0 ${className ?? ""}`} />
-    <span className="shrink-0 pr-3 text-sm text-[var(--t3)]">{suffix}</span>
+  return <div className="flex items-stretch overflow-hidden rounded-md border border-input bg-transparent focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50">
+    <Input {...inputProps} className={`min-w-0 flex-1 rounded-none border-0 shadow-none focus-visible:ring-0 ${className ?? ""}`} />
+    <span data-slug-suffix className="flex shrink-0 items-center border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[13px] text-[var(--t2)]">{suffix}</span>
   </div>;
 }
 

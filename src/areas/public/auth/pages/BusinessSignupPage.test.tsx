@@ -114,6 +114,8 @@ describe("BusinessSignupPage", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Primera empresa" }), { target: { value: "Acme Argentina" } });
     expect(await screen.findByRole("status")).toHaveTextContent("Disponible");
     expect(screen.getByText(".plataforma.com")).toBeVisible();
+    // Tablero Registro-Empresa: el dominio en una caja gris aparte, no como texto dentro del campo.
+    expect(screen.getByText(".plataforma.com")).toHaveClass("bg-[var(--s2)]", "border-l");
     fireEvent.click(screen.getByRole("button", { name: "Crear organización" }));
 
     expect(await screen.findByRole("heading", { name: "Acme está lista" })).toBeVisible();
