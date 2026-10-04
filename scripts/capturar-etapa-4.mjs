@@ -71,7 +71,7 @@ const permissionGroups = [
   { area: "publicpage", name: "Página pública", permissions: [
     { code: "publicpage.manage", name: "Administrar página pública", description: "Configurar la página pública." },
   ] },
-  { area: "company", name: "Miembros de empresa", permissions: [
+  { area: "company", name: "Miembros", permissions: [
     { code: "company.members.read", name: "Ver miembros", description: "El listado de miembros de la empresa." },
     { code: "company.members.manage", name: "Administrar miembros", description: "Editar y administrar miembros de la empresa." },
   ] },
@@ -85,8 +85,15 @@ const roleListResponses = [
   api("GET", "/api/roles/paged", pageOf(allVisualRoles)),
 ];
 
+// Las tres empresas del tablero Empresas: «Vale en» muestra su nombre y no «Una empresa específica».
+const companyOptions = api("GET", "/api/companies/paged", pageOf([
+  ["20000000-0000-0000-0000-000000000001", "Delta S.A."],
+  ["20000000-0000-0000-0000-000000000002", "Delta Sur S.R.L."],
+  ["20000000-0000-0000-0000-000000000003", "Delta Norte S.A."],
+].map(([id, name]) => ({ id, name, taxId: null, timeZoneId: "America/Argentina/Buenos_Aires", status: "Active", memberCount: 1, version: 1, createdAtUtc: "2026-10-02T12:00:00Z" }))));
+
 function editorResponses(role) {
-  return [api("GET", `/api/roles/${role.id}`, role), api("GET", "/api/permissions", permissionGroups)];
+  return [api("GET", `/api/roles/${role.id}`, role), api("GET", "/api/permissions", permissionGroups), companyOptions];
 }
 
 export function buildCases() {
@@ -130,8 +137,8 @@ export function buildCases() {
   })));
 
   const roleScenarios = [
-    { pair: "roles-lista", board: "Roles", mobileBoard: "M-Roles", path: "/org/roles", responses: roleListResponses, readyText: "Dueño" },
-    { pair: "rol-crear", board: "Rol", mobileBoard: "M-Rol", path: "/org/roles/new", boardMode: "Crear un rol", responses: [api("GET", "/api/permissions", permissionGroups)], readyText: "Elegí dónde vale el rol para ver sus permisos." },
+    { pair: "roles-lista", board: "Roles", mobileBoard: "M-Roles", path: "/org/roles", responses: [...roleListResponses, companyOptions], readyText: "Dueño" },
+    { pair: "rol-crear", board: "Rol", mobileBoard: "M-Rol", path: "/org/roles/new", boardMode: "Crear un rol", responses: [api("GET", "/api/permissions", permissionGroups), companyOptions], readyText: "Elegí dónde vale el rol para ver sus permisos." },
     { pair: "rol-recursos-humanos", board: "Rol", mobileBoard: "M-Rol", path: `/org/roles/${humanResourcesRole.id}`, boardMode: "Editar el rol Recursos humanos", role: humanResourcesRole, responses: editorResponses(humanResourcesRole) },
     { pair: "rol-solo-lectura", board: "Rol", mobileBoard: "M-Rol", path: `/org/roles/${companyReaderRole.id}`, boardMode: "Editar el rol Solo lectura", role: companyReaderRole, responses: editorResponses(companyReaderRole) },
     { pair: "rol-dueno", board: "Rol", mobileBoard: "M-Rol", path: `/org/roles/${ownerRole.id}`, boardMode: "Ver el rol Dueño", role: ownerRole, responses: editorResponses(ownerRole) },
@@ -144,12 +151,14 @@ export function buildCases() {
     pair: scenario.pair,
     group: "roles",
     board,
-    props: scenario.boardMode ? { modo: scenario.boardMode } : {},
+    // M-Rol es la pantalla de app (lienzo v71) y no tiene variantes; la compu conserva el modo del tablero Rol.
+    props: scenario.boardMode && viewport === "escritorio" ? { modo: scenario.boardMode } : {},
     viewport: { width, height },
     app: {
-      path: `/src/test/visualApp.html?as=visual-role-manager&route=${encodeURIComponent(scenario.path)}`,
+      // Lucía, Dueña de Grupo Delta, como en los tableros: ve las empresas para «Vale en».
+      path: `/src/test/visualApp.html?as=visual-owner&route=${encodeURIComponent(scenario.path)}`,
       captureMode: "harness",
-      userFixture: "visual-role-manager",
+      userFixture: "visual-owner",
       responses: scenario.responses,
       readySelector: "main",
       ...(width === 1440 ? { actions: [{ type: "click", role: "button", name: "Administración" }] } : {}),

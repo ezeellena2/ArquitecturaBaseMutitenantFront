@@ -20,9 +20,10 @@ test("Mi cuenta y Roles usan solo referencias v60 validadas en ambos tamaños", 
   assert.ok(validated.some((entry) => entry.board === "Roles" && entry.viewport.width === 1440));
   assert.ok(validated.some((entry) => entry.board === "M-Roles" && entry.viewport.width === 390));
   assert.ok(validated.some((entry) => entry.board === "Rol" && entry.props.modo === "Crear un rol"));
-  assert.ok(validated.some((entry) => entry.board === "M-Rol" && entry.props.modo === "Ver el rol Dueño"));
+  // M-Rol es la pantalla de app (lienzo v71), sin variantes: cada rol se compara con el mismo tablero de teléfono.
+  assert.ok(validated.some((entry) => entry.board === "M-Rol" && entry.pair === "rol-dueno" && Object.keys(entry.props).length === 0));
   assert.ok(validated.some((entry) => entry.board === "Rol" && entry.props.modo === "Editar el rol Recursos humanos"));
-  assert.ok(validated.some((entry) => entry.board === "M-Rol" && entry.props.modo === "Editar el rol Solo lectura"));
+  assert.ok(validated.some((entry) => entry.board === "M-Rol" && entry.pair === "rol-solo-lectura" && Object.keys(entry.props).length === 0));
   assert.ok(validated.filter((entry) => entry.group === "cuenta" && entry.viewport.width === 390 && entry.pair !== "cuenta")
     .every((entry) => entry.note?.includes("no tiene tablero móvil del diálogo")));
   assert.ok(validated.every((entry) => entry.app.captureMode === "harness"));

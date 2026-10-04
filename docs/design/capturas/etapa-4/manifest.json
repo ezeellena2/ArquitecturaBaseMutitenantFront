@@ -975,9 +975,9 @@
         "height": 900
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Froles",
         "captureMode": "harness",
-        "userFixture": "visual-role-manager",
+        "userFixture": "visual-owner",
         "responses": [
           {
             "method": "GET",
@@ -1254,6 +1254,51 @@
               "page": 1,
               "pageSize": 10,
               "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "20000000-0000-0000-0000-000000000001",
+                  "name": "Delta S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000002",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000003",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
               "totalPages": 1,
               "hasPrevious": false,
               "hasNext": false
@@ -1283,9 +1328,9 @@
         "height": 844
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Froles",
         "captureMode": "harness",
-        "userFixture": "visual-role-manager",
+        "userFixture": "visual-owner",
         "responses": [
           {
             "method": "GET",
@@ -1567,6 +1612,51 @@
               "hasNext": false
             },
             "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "20000000-0000-0000-0000-000000000001",
+                  "name": "Delta S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000002",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000003",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
           }
         ],
         "readySelector": "main",
@@ -1586,9 +1676,9 @@
         "height": 900
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Fnew",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Froles%2Fnew",
         "captureMode": "harness",
-        "userFixture": "visual-role-manager",
+        "userFixture": "visual-owner",
         "responses": [
           {
             "method": "GET",
@@ -1692,7 +1782,7 @@
               },
               {
                 "area": "company",
-                "name": "Miembros de empresa",
+                "name": "Miembros",
                 "permissions": [
                   {
                     "code": "company.members.read",
@@ -1707,6 +1797,51 @@
                 ]
               }
             ],
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "20000000-0000-0000-0000-000000000001",
+                  "name": "Delta S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000002",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000003",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
             "status": 200
           }
         ],
@@ -1726,17 +1861,15 @@
       "pair": "rol-crear",
       "group": "roles",
       "board": "M-Rol",
-      "props": {
-        "modo": "Crear un rol"
-      },
+      "props": {},
       "viewport": {
         "width": 390,
         "height": 844
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Fnew",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Froles%2Fnew",
         "captureMode": "harness",
-        "userFixture": "visual-role-manager",
+        "userFixture": "visual-owner",
         "responses": [
           {
             "method": "GET",
@@ -1840,7 +1973,7 @@
               },
               {
                 "area": "company",
-                "name": "Miembros de empresa",
+                "name": "Miembros",
                 "permissions": [
                   {
                     "code": "company.members.read",
@@ -1855,6 +1988,51 @@
                 ]
               }
             ],
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "20000000-0000-0000-0000-000000000001",
+                  "name": "Delta S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000002",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000003",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
             "status": 200
           }
         ],
@@ -1875,9 +2053,9 @@
         "height": 900
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Frole-human-resources",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Froles%2Frole-human-resources",
         "captureMode": "harness",
-        "userFixture": "visual-role-manager",
+        "userFixture": "visual-owner",
         "responses": [
           {
             "method": "GET",
@@ -2002,7 +2180,7 @@
               },
               {
                 "area": "company",
-                "name": "Miembros de empresa",
+                "name": "Miembros",
                 "permissions": [
                   {
                     "code": "company.members.read",
@@ -2017,6 +2195,51 @@
                 ]
               }
             ],
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "20000000-0000-0000-0000-000000000001",
+                  "name": "Delta S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000002",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000003",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
             "status": 200
           }
         ],
@@ -2035,17 +2258,15 @@
       "pair": "rol-recursos-humanos",
       "group": "roles",
       "board": "M-Rol",
-      "props": {
-        "modo": "Editar el rol Recursos humanos"
-      },
+      "props": {},
       "viewport": {
         "width": 390,
         "height": 844
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Frole-human-resources",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Froles%2Frole-human-resources",
         "captureMode": "harness",
-        "userFixture": "visual-role-manager",
+        "userFixture": "visual-owner",
         "responses": [
           {
             "method": "GET",
@@ -2170,7 +2391,7 @@
               },
               {
                 "area": "company",
-                "name": "Miembros de empresa",
+                "name": "Miembros",
                 "permissions": [
                   {
                     "code": "company.members.read",
@@ -2185,6 +2406,51 @@
                 ]
               }
             ],
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "20000000-0000-0000-0000-000000000001",
+                  "name": "Delta S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000002",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000003",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
             "status": 200
           }
         ],
@@ -2204,9 +2470,9 @@
         "height": 900
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Frole-company-reader",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Froles%2Frole-company-reader",
         "captureMode": "harness",
-        "userFixture": "visual-role-manager",
+        "userFixture": "visual-owner",
         "responses": [
           {
             "method": "GET",
@@ -2329,7 +2595,7 @@
               },
               {
                 "area": "company",
-                "name": "Miembros de empresa",
+                "name": "Miembros",
                 "permissions": [
                   {
                     "code": "company.members.read",
@@ -2344,6 +2610,51 @@
                 ]
               }
             ],
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "20000000-0000-0000-0000-000000000001",
+                  "name": "Delta S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000002",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000003",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
             "status": 200
           }
         ],
@@ -2362,17 +2673,15 @@
       "pair": "rol-solo-lectura",
       "group": "roles",
       "board": "M-Rol",
-      "props": {
-        "modo": "Editar el rol Solo lectura"
-      },
+      "props": {},
       "viewport": {
         "width": 390,
         "height": 844
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Frole-company-reader",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Froles%2Frole-company-reader",
         "captureMode": "harness",
-        "userFixture": "visual-role-manager",
+        "userFixture": "visual-owner",
         "responses": [
           {
             "method": "GET",
@@ -2495,7 +2804,7 @@
               },
               {
                 "area": "company",
-                "name": "Miembros de empresa",
+                "name": "Miembros",
                 "permissions": [
                   {
                     "code": "company.members.read",
@@ -2510,6 +2819,51 @@
                 ]
               }
             ],
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "20000000-0000-0000-0000-000000000001",
+                  "name": "Delta S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000002",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000003",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
             "status": 200
           }
         ],
@@ -2529,9 +2883,9 @@
         "height": 900
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Frole-owner",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Froles%2Frole-owner",
         "captureMode": "harness",
-        "userFixture": "visual-role-manager",
+        "userFixture": "visual-owner",
         "responses": [
           {
             "method": "GET",
@@ -2667,7 +3021,7 @@
               },
               {
                 "area": "company",
-                "name": "Miembros de empresa",
+                "name": "Miembros",
                 "permissions": [
                   {
                     "code": "company.members.read",
@@ -2682,6 +3036,51 @@
                 ]
               }
             ],
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "20000000-0000-0000-0000-000000000001",
+                  "name": "Delta S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000002",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000003",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
             "status": 200
           }
         ],
@@ -2700,17 +3099,15 @@
       "pair": "rol-dueno",
       "group": "roles",
       "board": "M-Rol",
-      "props": {
-        "modo": "Ver el rol Dueño"
-      },
+      "props": {},
       "viewport": {
         "width": 390,
         "height": 844
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-role-manager&route=%2Forg%2Froles%2Frole-owner",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Froles%2Frole-owner",
         "captureMode": "harness",
-        "userFixture": "visual-role-manager",
+        "userFixture": "visual-owner",
         "responses": [
           {
             "method": "GET",
@@ -2846,7 +3243,7 @@
               },
               {
                 "area": "company",
-                "name": "Miembros de empresa",
+                "name": "Miembros",
                 "permissions": [
                   {
                     "code": "company.members.read",
@@ -2861,6 +3258,51 @@
                 ]
               }
             ],
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "20000000-0000-0000-0000-000000000001",
+                  "name": "Delta S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000002",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "20000000-0000-0000-0000-000000000003",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 1,
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
             "status": 200
           }
         ],

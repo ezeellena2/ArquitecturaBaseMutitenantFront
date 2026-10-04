@@ -14,14 +14,18 @@ const pageOf = (items, pageSize = 10, totalCount = items.length) => ({
   items, page: 1, pageSize, totalCount, totalPages: Math.ceil(totalCount / pageSize), hasPrevious: false, hasNext: totalCount > pageSize,
 });
 
+// Datos de los tableros de Organización (Grupo Delta): las capturas comparan contra lo mismo que dibuja el lienzo.
 const owner = {
   id: "role-owner", name: "Dueño", description: null, scope: "Organization", companyId: null,
-  isSystemRole: true, userCount: 1, permissions: ["users.read", "users.invite", "users.manage", "roles.read", "roles.manage", "roles.assign", "companies.read", "companies.manage", "settings.read", "settings.manage", "audit.read", "publicpage.manage", "company.members.read", "company.members.manage"],
+  isSystemRole: true, userCount: 1, permissions: ["users.read", "users.invite", "users.manage", "roles.read", "roles.manage", "roles.assign", "companies.read", "companies.manage", "settings.read", "settings.manage", "audit.read", "publicpage.manage"],
   version: 1, createdAtUtc: "2026-10-02T12:00:00Z",
 };
 const peopleRole = {
   ...owner, id: "role-people", name: "Recursos humanos", description: "Invita, edita y deshabilita usuarios.",
-  isSystemRole: false, userCount: 2, permissions: ["users.read", "users.invite", "users.manage"],
+  isSystemRole: false, userCount: 0, permissions: ["users.read", "users.invite", "users.manage"],
+};
+const auditorRole = {
+  ...owner, id: "role-auditor", name: "Auditor", description: null, isSystemRole: false, userCount: 1, permissions: ["users.read", "audit.read"],
 };
 const companyAdmin = {
   ...owner, id: "role-company-admin", name: "Administrador", scope: "AnyCompany", companyId: null,
@@ -29,12 +33,14 @@ const companyAdmin = {
 };
 const companyReader = {
   ...owner, id: "role-company-reader", name: "Solo lectura", scope: "SpecificCompany", companyId: "company-1",
-  isSystemRole: false, permissions: ["company.members.read"], userCount: 1,
+  isSystemRole: false, permissions: ["company.members.read"], userCount: 4,
 };
-const roles = [owner, peopleRole, companyAdmin, companyReader];
+const southReader = { ...companyReader, id: "role-company-reader-south", companyId: "company-3", userCount: 1 };
+const northReader = { ...companyReader, id: "role-company-reader-north", companyId: "company-4", userCount: 0 };
+const roles = [owner, peopleRole, auditorRole, companyAdmin, companyReader, southReader, northReader];
 const company = {
   id: "company-1", name: "Delta S.A.", taxId: { country: "AR", type: "AR-CUIT", number: "30712345678" },
-  timeZoneId: "America/Argentina/Buenos_Aires", status: "Active", memberCount: 2, version: 3, createdAtUtc: "2026-10-02T12:00:00Z",
+  timeZoneId: "America/Argentina/Buenos_Aires", status: "Active", memberCount: 6, version: 3, createdAtUtc: "2026-10-02T12:00:00Z",
 };
 const addableCompany = {
   ...company, id: "company-2", name: "Beta S.R.L.", taxId: null, memberCount: 1, version: 1,
@@ -46,42 +52,64 @@ const member = {
   }], invitationId: null, invitationIssuedAtUtc: null, invitationExpiresAtUtc: null, version: 8,
   createdAtUtc: "2026-10-02T12:00:00Z",
 };
+const inCompany = (companyId, companyName, role) => ({ companyId, companyName, status: "Active", roles: [role] });
 const organizationUserRows = [
-  ["member-lucia", "Lucía Fernández", "lucia@example.test", "Active"],
-  ["member-1", "Tomás Acosta", "tomas@example.test", "Active"],
-  ["member-julieta", "Julieta Sosa", "julieta@example.test", "Active"],
-  ["member-diego", "Diego Ríos", "diego@example.test", "PendingDeletion"],
-  ["member-paula", "Paula Méndez", "paula@example.test", "Active"],
-  ["member-martin", "Martín Paz", "martin@example.test", "Active"],
-  ["member-carolina", "Carolina Vega", "carolina@example.test", "Active"],
-  ["member-marcos", "Marcos Giménez", "marcos@example.test", "Inactive"],
-  ["member-sofia", "Sofía Herrera", "sofia@example.test", "Invited"],
-  ["member-valentina", "valentina.ruiz@gmail.com", "valentina.ruiz@gmail.com", "Invited"],
-].map(([memberId, displayName, email, state]) => ({
+  ["member-lucia", "Lucía Fernández", "lucia.fernandez", "Active", [owner], [inCompany("company-1", "Delta S.A.", companyAdmin)]],
+  ["member-1", "Tomás Acosta", "tomas.acosta", "Active", [], [inCompany("company-1", "Delta S.A.", companyReader)]],
+  ["member-julieta", "Julieta Sosa", "julieta.sosa", "Active", [auditorRole], []],
+  ["member-diego", "Diego Ríos", "diego.rios", "PendingDeletion", [], [inCompany("company-1", "Delta S.A.", companyReader)]],
+  ["member-paula", "Paula Méndez", "paula.mendez", "Active", [], [inCompany("company-1", "Delta S.A.", companyReader), inCompany("company-3", "Delta Sur S.R.L.", southReader)]],
+  ["member-martin", "Martín Paz", "martin.paz", "Active", [], [inCompany("company-1", "Delta S.A.", companyReader)]],
+  ["member-carolina", "Carolina Vega", "carolina.vega", "Active", [], [inCompany("company-3", "Delta Sur S.R.L.", companyAdmin), inCompany("company-4", "Delta Norte S.A.", companyAdmin)]],
+  ["member-marcos", "Marcos Giménez", "marcos.gimenez", "Inactive", [], []],
+  ["member-sofia", "Sofía Herrera", "sofia.herrera", "Invited", [], [inCompany("company-1", "Delta S.A.", companyReader)], "2026-10-02T15:00:00Z"],
+  ["member-valentina", "", "valentina.ruiz@gmail.com", "Invited", [], [inCompany("company-4", "Delta Norte S.A.", northReader)], "2026-10-03T15:00:00Z"],
+].map(([memberId, displayName, emailUser, state, organizationRoles, companies, invitationExpiresAtUtc = null]) => ({
   ...member, memberId, userId: state === "Invited" ? null : memberId.replace("member-", "user-"),
-  displayName, email, state, hasManagedEmail: state === "Active",
+  displayName, email: emailUser.includes("@") ? emailUser : `${emailUser}@delta.ejemplo.com`, state,
+  hasManagedEmail: !emailUser.includes("@"), roles: organizationRoles, companies,
   invitationId: state === "Invited" ? `invitation-${memberId}` : null,
+  invitationIssuedAtUtc: invitationExpiresAtUtc ? "2026-09-25T15:00:00Z" : null, invitationExpiresAtUtc,
+  deletionScheduledForUtc: state === "PendingDeletion" ? "2026-10-27T15:00:00Z" : null,
 }));
-const companyMember = {
-  memberId: member.memberId, userId: member.userId, displayName: member.displayName, email: member.email,
-  state: "Active", membershipStatus: "Active", roles: [companyAdmin], version: 8, createdAtUtc: member.createdAtUtc,
-};
-const actors = [{ actorId: "user-owner", actorKind: "User", actorText: "Persona", displayName: "Lucía Fernández" }];
+// Tablero Empresa: los seis miembros de Delta S.A.
+const companyMembers = [
+  ["member-lucia", "Lucía Fernández", "lucia.fernandez", "Active", [companyAdmin]],
+  ["member-1", "Tomás Acosta", "tomas.acosta", "Active", [companyReader]],
+  ["member-diego", "Diego Ríos", "diego.rios", "PendingDeletion", [companyReader]],
+  ["member-paula", "Paula Méndez", "paula.mendez", "Active", [companyReader]],
+  ["member-martin", "Martín Paz", "martin.paz", "Active", [companyReader]],
+  ["member-marcos", "Marcos Giménez", "marcos.gimenez", "Inactive", []],
+].map(([memberId, displayName, emailUser, state, memberRoles]) => ({
+  memberId, userId: memberId.replace("member-", "user-"), displayName, email: `${emailUser}@delta.ejemplo.com`,
+  state, membershipStatus: state === "Inactive" ? "Inactive" : "Active", roles: memberRoles, version: 8, createdAtUtc: member.createdAtUtc,
+}));
+const actors = [
+  { actorId: "user-lucia", actorKind: "User", actorText: "Persona", displayName: "Lucía Fernández" },
+  { actorId: "user-carolina", actorKind: "User", actorText: "Persona", displayName: "Carolina Vega" },
+  { actorId: null, actorKind: "System", actorText: "Sistema", displayName: null },
+];
+const lucia = { actorKind: "User", actorText: "Persona", actorId: "user-lucia", actorDisplayName: "Lucía Fernández", actorEmail: "lucia.fernandez@delta.ejemplo.com" };
+const carolina = { actorKind: "User", actorText: "Persona", actorId: "user-carolina", actorDisplayName: "Carolina Vega", actorEmail: "carolina.vega@delta.ejemplo.com" };
+const system = { actorKind: "System", actorText: "Sistema", actorId: null, actorDisplayName: null, actorEmail: null };
+// Tablero Auditoria-Org. «Cambió los roles…» va como lo escribe hoy el back: una entrada por asignación, con sus
+// columnas («un registro» y la empresa como identificador). Agruparla por persona y empresa es de la consolidación.
 const auditEntries = [
-  ["CompanyMembershipRolesChanged", "Cambió los roles de Tomás Acosta", "Delta S.A.", "Tomás Acosta", "2026-09-27T13:42:00Z"],
-  ["UserInvited", "Invitó a valentina.ruiz@gmail.com", "", "valentina.ruiz@gmail.com", "2026-09-27T12:15:00Z"],
-  ["OrganizationUserAdded", "Agregó a Paula Méndez", "", "Paula Méndez", "2026-09-26T21:03:00Z"],
-  ["RoleCreated", "Creó el rol Recursos humanos", "", "Recursos humanos", "2026-09-26T14:20:00Z"],
-  ["OrganizationUserDisabled", "Deshabilitó a Marcos Giménez", "", "Marcos Giménez", "2026-09-24T19:40:00Z"],
-  ["InvitationExpired", "Venció la invitación a carla.bianchi@delta.ejemplo.com", "", "carla.bianchi@delta.ejemplo.com", "2026-09-23T11:00:00Z"],
-  ["CompanyUpdated", "Cambió la zona de Delta Sur S.R.L.", "Delta Sur S.R.L.", "Delta Sur S.R.L.", "2026-09-22T15:31:00Z"],
-  ["OrganizationSettingsUpdated", "Cambió el idioma y la región predeterminados", "", "Grupo Delta", "2026-09-20T18:12:00Z"],
-].map(([action, actionText, whereText, affectedDisplayName, occurredAtUtc], index) => ({
-  id: `audit-${index + 1}`, occurredAtUtc, action, actionText,
-  entityType: index === 0 ? "CompanyMembership" : "Organization",
-  entityText: index === 0 ? "Acceso a empresa" : "Organización", affectedDisplayName, whereText,
-  actorKind: "User", actorText: "Persona", actorId: "user-owner", actorDisplayName: "Lucía Fernández",
-  changes: index === 0 ? [{ field: "Roles", oldValue: "", newValue: "Administrador" }] : [],
+  ["Created", "Cambió los roles de Tomás Acosta", "Delta S.A.", "Tomás Acosta", "2026-09-27T13:42:00Z", "RoleAssignment", lucia, [
+    { field: "Empresa", oldValue: null, newValue: "0199a6c2-4f1e-7c3a-9b21-5d0e8f7a6c11" },
+    { field: "un registro", oldValue: null, newValue: "0199a6c2-51b3-7d40-8e62-1a2b3c4d5e6f" },
+    { field: "un registro", oldValue: null, newValue: "0199a6c2-5a77-7e91-a3c4-7f8e9d0c1b2a" },
+  ]],
+  ["Created", "Invitó a valentina.ruiz@gmail.com", "Delta Norte S.A.", "valentina.ruiz@gmail.com", "2026-09-27T12:15:00Z", "Invitation", lucia, []],
+  ["Created", "Agregó a Paula Méndez", "Delta Sur S.R.L.", "Paula Méndez", "2026-09-26T21:03:00Z", "CompanyMembership", carolina, []],
+  ["Created", "Creó el rol Recursos humanos", "Toda la organización", "Recursos humanos", "2026-09-26T14:20:00Z", "Role", lucia, [{ field: "Nombre", oldValue: null, newValue: "Recursos humanos" }]],
+  ["Updated", "Deshabilitó a Marcos Giménez", "Toda la organización", "Marcos Giménez", "2026-09-24T19:40:00Z", "Member", lucia, [{ field: "Estado", oldValue: "Active", newValue: "Inactive" }]],
+  ["Updated", "Venció la invitación a carla.bianchi@delta.ejemplo.com", "Delta Sur S.R.L.", "carla.bianchi@delta.ejemplo.com", "2026-09-23T11:00:00Z", "Invitation", system, []],
+  ["Updated", "Cambió la zona de Delta Sur S.R.L.", "Delta Sur S.R.L.", "Delta Sur S.R.L.", "2026-09-22T15:31:00Z", "Company", carolina, [{ field: "Zona horaria", oldValue: "America/Argentina/Buenos_Aires", newValue: "America/Argentina/Cordoba" }]],
+  ["Updated", "Cambió el idioma y la región predeterminados", "Toda la organización", "Grupo Delta", "2026-09-20T18:12:00Z", "TenantSettings", lucia, [{ field: "Idioma y región", oldValue: "en-US", newValue: "es-AR" }]],
+].map(([action, actionText, whereText, affectedDisplayName, occurredAtUtc, entityType, actor, changes], index) => ({
+  id: `audit-${index + 1}`, occurredAtUtc, action, actionText, entityType, entityText: entityType, affectedDisplayName, whereText,
+  ...actor, changes,
 }));
 const permissionGroups = [
   { area: "users", name: "Usuarios", permissions: ["users.read", "users.invite", "users.manage"].map((code) => ({ code, name: code, description: "Permiso de organización." })) },
@@ -93,11 +121,10 @@ const permissionGroups = [
 ];
 
 const roleLists = [
-  api("GET", "/api/roles/paged", pageOf([companyAdmin, companyReader], 10, 2), 200, { scope: "Company" }),
-  api("GET", "/api/roles/paged", pageOf([owner, peopleRole], 10, 2), 200, { scope: "Organization" }),
+  api("GET", "/api/roles/paged", pageOf([companyAdmin, companyReader, southReader, northReader], 10, 4), 200, { scope: "Company" }),
+  api("GET", "/api/roles/paged", pageOf([owner, peopleRole, auditorRole], 10, 3), 200, { scope: "Organization" }),
   api("GET", "/api/roles/paged", pageOf(roles, 10, roles.length)),
 ];
-const companyOptions = api("GET", "/api/companies/paged", pageOf([company], 100, 1), 200, { page: "1", pageSize: "100", sort: "name" });
 const userCompanyOptions = api("GET", "/api/companies/paged", pageOf([company, addableCompany], 100, 2), 200, { page: "1", pageSize: "100", sort: "name" });
 const companyRows = [company, {
   ...company, id: "company-3", name: "Delta Sur S.R.L.",
@@ -106,6 +133,8 @@ const companyRows = [company, {
   ...company, id: "company-4", name: "Delta Norte S.A.", taxId: null, memberCount: 3,
 }];
 const companiesPage = api("GET", "/api/companies/paged", pageOf(companyRows), 200, { page: "1", pageSize: "10" });
+// «Vale en», el filtro «Empresa» y los nombres de las empresas salen de las tres del tablero Empresas.
+const companyOptions = api("GET", "/api/companies/paged", pageOf(companyRows, 100, 3), 200, { page: "1", pageSize: "100", sort: "name" });
 const organizationUsers = api("GET", "/api/users/paged", pageOf(organizationUserRows, 10, 11), 200, { page: "1", pageSize: "10" });
 
 function commonAdminResponses() {
@@ -134,9 +163,10 @@ function userDetailResponses() {
 
 function settingsResponses(domainState = "Verified") {
   const domain = {
-    id: "domain-1", domain: "delta.example.test", status: domainState,
-    txtRecordName: domainState === "Pending" ? "_ab-verification.delta.example.test" : null,
-    txtRecordValue: domainState === "Pending" ? "ab-verification=visual-only" : null,
+    // Como el back: el registro TXT se carga en el dominio con el prefijo ab-verificacion=.
+    id: "domain-1", domain: "delta.ejemplo.com", status: domainState,
+    txtRecordName: domainState === "Pending" ? "delta.ejemplo.com" : null,
+    txtRecordValue: domainState === "Pending" ? "ab-verificacion=7f3c9a2e41b8d605" : null,
     createdAtUtc: "2026-10-02T12:00:00Z", verifiedAtUtc: domainState === "Verified" ? "2026-10-02T12:05:00Z" : null, version: 4,
   };
   return [
@@ -152,8 +182,9 @@ function publicPageResponses(state = "Published") {
   const blocked = state === "Despublicada por la plataforma";
   const published = state === "Publicada";
   return [api("GET", "/api/organization/public-page", {
-    slug: "grupo-delta", name: "Página de Grupo Delta", description: "Servicios para empresas.", logoDataUri: null,
-    contactEmail: "contacto@example.test", contactPhone: null, address: null, website: null,
+    slug: "delta", name: "Grupo Delta", description: "Grupo Delta y sus empresas, en un solo lugar.", logoDataUri: null,
+    contactEmail: "contacto@delta.ejemplo.com", contactPhone: "+541143215678", address: "Av. Corrientes 1234, piso 5, Buenos Aires",
+    website: "https://delta.ejemplo.com",
     isPublished: published, publishBlockedAtUtc: blocked ? "2026-09-26T12:00:00Z" : null,
     publishBlockedReason: blocked ? "Datos de contacto falsos" : null, version: 5,
   })];
@@ -168,7 +199,7 @@ function auditResponses() {
 
 function buildCases() {
   const scenarios = [];
-  const both = ({ pair, board, mobileBoard, path, responses = [], actions = [], boardActions = [], mobileBoardActions = boardActions, props = {}, mobileProps = props, readySelector = "main", fixture = "business-e6-admin", readyText }) => {
+  const both = ({ pair, board, mobileBoard, path, responses = [], actions = [], boardActions = [], mobileBoardActions = boardActions, props = {}, mobileProps = props, readySelector = "main", fixture = "visual-owner", readyText }) => {
     for (const [width, height, viewport, boardName] of [
       [1440, 900, "escritorio", board], [390, 844, "movil", mobileBoard ?? board],
     ]) {
@@ -180,7 +211,7 @@ function buildCases() {
         app: {
           path: `/src/test/visualApp.html?as=${fixture}&route=${encodeURIComponent(path)}`,
           captureMode: "harness", userFixture: fixture, responses,
-          actions: [...(fixture === "business-e6-admin" && viewport === "escritorio" ? [{ type: "click", role: "button", name: "Administración" }] : []), ...actions],
+          actions: [...(fixture === "visual-owner" && viewport === "escritorio" ? [{ type: "click", role: "button", name: "Administración" }] : []), ...actions],
           readySelector, ...(readyText ? { readyText } : {}),
         },
       });
@@ -196,20 +227,20 @@ function buildCases() {
 
   both({ pair: "usuario-activo", board: "Usuario", mobileBoard: "M-Usuario", path: "/org/usuarios/member-1", responses: [
     ...userDetailResponses(), ...commonAdminResponses(),
-  ], props: { usuario: "Tomás (activo)" } });
+  ], props: { usuario: "Tomás (activo)" }, mobileProps: {} });
   both({ pair: "usuario-roles-empresa", board: "Usuario", mobileBoard: "M-Usuario", path: "/org/usuarios/member-1", responses: userDetailResponses(),
-    props: { usuario: "Tomás (activo)" },
+    props: { usuario: "Tomás (activo)" }, mobileProps: {},
     boardActions: [{ type: "click", selector: 'button[aria-label^="Acciones de "]' }, { type: "click", selector: 'button[role="menuitem"]:not(.pel)' }],
     mobileBoardActions: [],
     actions: [{ type: "click", role: "button", name: "Acciones de Delta S.A." }, { type: "click", role: "menuitem", name: "Cambiar roles" }],
     readySelector: '[role="dialog"]' });
   both({ pair: "usuario-sumar-empresa", board: "Usuario", mobileBoard: "M-Usuario", path: "/org/usuarios/member-1", responses: userDetailResponses(),
-    props: { usuario: "Tomás (activo)" }, boardActions: [{ type: "click", selector: "button.cb-sec.ch" }],
+    props: { usuario: "Tomás (activo)" }, mobileProps: {}, boardActions: [{ type: "click", selector: "button.cb-sec.ch" }],
     mobileBoardActions: [],
     actions: [{ type: "click", role: "button", name: "Sumar empresa" }], readySelector: '[role="dialog"]' });
-  both({ pair: "roles-lista", board: "Roles", mobileBoard: "M-Roles", path: "/org/roles", responses: roleLists });
-  both({ pair: "rol-editar", board: "Rol", mobileBoard: "M-Rol", path: "/org/roles/role-people", props: { modo: "Editar el rol Recursos humanos" },
-    responses: [api("GET", "/api/roles/role-people", peopleRole), api("GET", "/api/permissions", permissionGroups)] });
+  both({ pair: "roles-lista", board: "Roles", mobileBoard: "M-Roles", path: "/org/roles", responses: [...roleLists, companyOptions] });
+  both({ pair: "rol-editar", mobileProps: {}, board: "Rol", mobileBoard: "M-Rol", path: "/org/roles/role-people", props: { modo: "Editar el rol Recursos humanos" },
+    responses: [api("GET", "/api/roles/role-people", peopleRole), api("GET", "/api/permissions", permissionGroups), companyOptions] });
 
   both({ pair: "empresas-lista", board: "Empresas", mobileBoard: "M-Empresas", path: "/org/empresas", responses: [
     companiesPage, api("GET", "/api/companies/filter-counts", { all: 3, active: 3, inactive: 0 }),
@@ -222,12 +253,13 @@ function buildCases() {
 
   const companyResponses = [
     api("GET", "/api/companies/company-1", company),
-    api("GET", "/api/companies/company-1/members/paged", pageOf([companyMember]), 200, { page: "1", pageSize: "10" }),
-    api("GET", "/api/companies/company-1/members/filter-counts", { all: 2, active: 2, pendingDeletion: 0, inactive: 0, invited: 0 }),
+    api("GET", "/api/companies/company-1/members/paged", pageOf(companyMembers), 200, { page: "1", pageSize: "10" }),
+    api("GET", "/api/companies/company-1/members/filter-counts", { all: 6, active: 4, pendingDeletion: 1, inactive: 1, invited: 0 }),
     ...commonAdminResponses(),
   ];
-  both({ pair: "empresa-miembros", board: "Empresa", mobileBoard: "M-Empresa", path: "/org/empresas/company-1", responses: companyResponses, props: { pestana: "Miembros" } });
-  both({ pair: "empresa-roles", board: "Empresa", mobileBoard: "M-Empresa", path: "/org/empresas/company-1", responses: companyResponses, props: { pestana: "Roles" } });
+  both({ pair: "empresa-miembros", mobileProps: {}, board: "Empresa", mobileBoard: "M-Empresa", path: "/org/empresas/company-1", responses: companyResponses, props: { pestana: "Miembros" } });
+  both({ pair: "empresa-roles", mobileProps: {}, board: "Empresa", mobileBoard: "M-Empresa", path: "/org/empresas/company-1", responses: companyResponses, props: { pestana: "Roles" },
+    actions: [{ type: "click", role: "tab", name: "Roles" }] });
   both({ pair: "empresa-editar", board: "Empresa", mobileBoard: "M-Empresa", path: "/org/empresas/company-1", responses: companyResponses,
     boardActions: [{ type: "click", selector: "button.b-sec" }],
     mobileBoardActions: [{ type: "click", selector: 'button[aria-label="Más acciones"]' }, { type: "click", selector: 'button[role="menuitem"]:not(.pel)' }],
@@ -238,7 +270,7 @@ function buildCases() {
   both({ pair: "configuracion-agregar-dominio", board: "Configuracion-Dominio", mobileBoard: "Configuracion-Dominio", path: "/org/configuracion", responses: settingsResponses("Sin dominio"),
     actions: [{ type: "click", role: "button", name: "Agregar dominio" }], readySelector: '[role="dialog"]' });
   both({ pair: "configuracion-quitar-dominio", board: "Configuracion-Quitar", mobileBoard: "Configuracion-Quitar", path: "/org/configuracion", responses: settingsResponses("Verified"),
-    actions: [{ type: "click", role: "button", name: "Acciones de delta.example.test" }, { type: "click", role: "menuitem", name: "Quitar" }], readySelector: '[role="dialog"]' });
+    actions: [{ type: "click", role: "button", name: "Acciones de delta.ejemplo.com" }, { type: "click", role: "menuitem", name: "Quitar" }], readySelector: '[role="dialog"]' });
 
   for (const state of ["Publicada", "Borrador", "Despublicada por la plataforma"]) {
     const suffix = state === "Publicada" ? "publicada" : state === "Borrador" ? "borrador" : "bloqueada";
