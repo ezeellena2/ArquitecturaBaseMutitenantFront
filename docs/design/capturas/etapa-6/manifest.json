@@ -2793,14 +2793,9 @@
       "id": "usuarios-invitar-movil",
       "pair": "usuarios-invitar",
       "group": "organizacion",
-      "board": "M-Usuarios",
+      "board": "M-Usuarios-Invitar",
       "props": {},
-      "boardActions": [
-        {
-          "type": "click",
-          "selector": "button.b-pri"
-        }
-      ],
+      "boardActions": [],
       "viewport": {
         "width": 390,
         "height": 844
@@ -8476,12 +8471,7 @@
       "group": "organizacion",
       "board": "M-Empresas",
       "props": {},
-      "boardActions": [
-        {
-          "type": "click",
-          "selector": "button.b-pri"
-        }
-      ],
+      "boardActions": [],
       "viewport": {
         "width": 390,
         "height": 844
@@ -11768,16 +11758,7 @@
       "group": "organizacion",
       "board": "M-Empresa",
       "props": {},
-      "boardActions": [
-        {
-          "type": "click",
-          "selector": "button[aria-label=\"Más acciones\"]"
-        },
-        {
-          "type": "click",
-          "selector": "button[role=\"menuitem\"]:not(.pel)"
-        }
-      ],
+      "boardActions": [],
       "viewport": {
         "width": 390,
         "height": 844
@@ -12403,6 +12384,11 @@
           {
             "type": "click",
             "role": "button",
+            "name": "Más acciones"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
             "name": "Editar empresa"
           }
         ],
@@ -13284,7 +13270,7 @@
           }
         ],
         "readySelector": "[role=\"dialog\"]",
-        "readyText": "La página fue despublicada por la plataforma"
+        "readyText": "Datos de contacto falsos"
       }
     },
     {
@@ -13344,7 +13330,7 @@
           }
         ],
         "readySelector": "[role=\"dialog\"]",
-        "readyText": "La página fue despublicada por la plataforma"
+        "readyText": "Datos de contacto falsos"
       }
     },
     {

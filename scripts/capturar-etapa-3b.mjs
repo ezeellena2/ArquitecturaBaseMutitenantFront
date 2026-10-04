@@ -36,7 +36,8 @@ account("cuenta-descartada", { actions: [fill("Nombre y apellido", "Lucía Fern�
 account("cuenta-idiomas", { actions: [click("combobox", "Idioma y región")], boardState: { abierto: "Idioma" } });
 account("cuenta-zonas", { actions: [click("combobox", "Zona horaria")], boardState: { abierto: "Zona" } });
 account("cuenta-menu-usuario", { actions: [click("button", "$user")], boardState: { abierto: "usuario" } });
-account("cuenta-menu-ultimo-propio", { actions: [methodMenu(personal.value)], boardState: { abierto: "fila:2" } });
+// Sin «cuenta-menu-ultimo-propio»: el back no le da acciones al principal (canRemove y canMakePrimary en falso), así
+// que su fila no lleva ⋮ («Criterio · Menús»: solo las acciones que valen).
 account("cuenta-menu-empresa", { actions: [methodMenu(company.value)], boardState: { abierto: "fila:1" } });
 account("cuenta-google-vinculado", { methods: [company, { ...personal, canRemove: true }, google], boardState: { metodos: [...boardMethods, boardGoogle] } });
 account("cuenta-pendiente", { methods: [company, personal, pending], boardState: { metodos: [...boardMethods, boardEmail] } });
@@ -73,8 +74,9 @@ async function actions(page, entries = [], mobile = false) {
       await page.getByRole("textbox", { name: "Código 1" }).fill(action.value);
       continue;
     }
-    // En el teléfono la cuenta y los perfiles están en «Más», abajo (tableros M-Mas-Personal, «Criterio · Marco»).
-    const name = action.name === "$discard" ? "Descartar cambios" : action.name === "$save" ? "Guardar cambios" : action.name === "$user" ? mobile ? "Más" : "Lucía Fernández, Personal" : action.name;
+    // En el teléfono la cuenta y los perfiles están en «Más» (tableros M-Mas-Personal, «Criterio · Marco»), y Mi cuenta
+    // vuelve a él con el «‹».
+    const name = action.name === "$discard" ? "Descartar cambios" : action.name === "$save" ? "Guardar cambios" : action.name === "$user" ? mobile ? "Volver a Más" : "Lucía Fernández, Personal" : action.name;
     let locator = page.getByRole(action.name === "$user" && mobile ? "link" : action.role, { name, exact: true });
     if (action.nth !== undefined) locator = locator.nth(action.nth);
     if (action.type === "fill") await locator.fill(action.value); else await locator.click();
@@ -159,14 +161,16 @@ for (const [key, label] of [["verificar-metodo", "Código para verificar un mét
 }
 mkdirSync(output, { recursive: true });
 writeFileSync(manifestFile, JSON.stringify({ version: 1, cases }, null, 2) + "\n");
-validateManifest(manifestFile, path.join(root, "docs/design/lienzo-v35"));
+const canvasDir = path.join(root, "docs/design/lienzo-v35");
+validateManifest(manifestFile, canvasDir);
 if (process.argv.includes("--verify")) { assertCapturedPairs(cases, output); console.log(`${cases.length} pares visuales 3b completos.`); }
 else {
   const appUrl = process.argv[process.argv.indexOf("--app-url") + 1];
   if (!process.argv.includes("--app-url")) throw new Error("Indicá --app-url del servidor Vite visual.");
   const id = process.argv.includes("--id") ? process.argv[process.argv.indexOf("--id") + 1] : null;
   const browser = await chromium.launch({ headless: true });
-  const canvas = await startCanvasServer();
+  // Hasta pasarla al lienzo vigente (plan de consolidación), la 3b fotografía la copia v35, cuyos estados inyecta.
+  const canvas = await startCanvasServer(canvasDir);
   try {
     for (const entry of cases.filter((item) => !id || item.pair === id)) {
       await capture(browser, canvas.url, appUrl, entry);

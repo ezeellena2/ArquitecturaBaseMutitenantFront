@@ -208,7 +208,7 @@ function auditResponses() {
 
 function buildCases() {
   const scenarios = [];
-  const both = ({ pair, board, mobileBoard, path, responses = [], actions = [], boardActions = [], mobileBoardActions = boardActions, props = {}, mobileProps = props, readySelector = "main", fixture = "visual-owner", readyText }) => {
+  const both = ({ pair, board, mobileBoard, path, responses = [], actions = [], mobileActions = actions, boardActions = [], mobileBoardActions = boardActions, props = {}, mobileProps = props, readySelector = "main", fixture = "visual-owner", readyText }) => {
     for (const [width, height, viewport, boardName] of [
       [1440, 900, "escritorio", board], [390, 844, "movil", mobileBoard ?? board],
     ]) {
@@ -221,7 +221,7 @@ function buildCases() {
           path: `/src/test/visualApp.html?as=${fixture}&route=${encodeURIComponent(path)}`,
           captureMode: "harness", userFixture: fixture, responses,
           // En las rutas de Administración el panel ya arranca abierto, como en los tableros.
-          actions,
+          actions: viewport === "movil" ? mobileActions : actions,
           readySelector, ...(readyText ? { readyText } : {}),
         },
       });
@@ -232,8 +232,9 @@ function buildCases() {
   both({ pair: "registro-empresa", board: "Registro-Empresa", mobileBoard: "M-Registro-Empresa", path: "/registro/empresa?google=complete",
     fixture: "consumer-empty", responses: [api("GET", "/api/auth/external/google/antiforgery", { requestToken: "visual-antiforgery" })], props: { estado: "Tu organización" } });
   both({ pair: "usuarios-lista", board: "Usuarios", mobileBoard: "M-Usuarios", path: "/org/usuarios", responses: usersApi });
-  both({ pair: "usuarios-invitar", board: "Usuarios", mobileBoard: "M-Usuarios", path: "/org/usuarios", responses: usersApi,
-    boardActions: [{ type: "click", selector: "button.b-pri" }], actions: [{ type: "click", role: "button", name: "Invitar usuario" }], readySelector: '[role="dialog"]' });
+  // En el teléfono, invitar tiene su tablero (la hoja de M-Usuarios-Invitar): el de la lista ya no tiene b-pri, sino el «+».
+  both({ pair: "usuarios-invitar", board: "Usuarios", mobileBoard: "M-Usuarios-Invitar", path: "/org/usuarios", responses: usersApi,
+    boardActions: [{ type: "click", selector: "button.b-pri" }], mobileBoardActions: [], actions: [{ type: "click", role: "button", name: "Invitar usuario" }], readySelector: '[role="dialog"]' });
 
   both({ pair: "usuario-activo", board: "Usuario", mobileBoard: "M-Usuario", path: "/org/usuarios/member-1", responses: [
     ...userDetailResponses(), ...commonAdminResponses(),
@@ -258,7 +259,8 @@ function buildCases() {
   both({ pair: "empresas-crear", board: "Empresas", mobileBoard: "M-Empresas", path: "/org/empresas", responses: [
     companiesPage, api("GET", "/api/companies/filter-counts", { all: 3, active: 3, inactive: 0 }),
     api("POST", "/api/companies", "company-new", 201),
-  ], boardActions: [{ type: "click", selector: "button.b-pri" }],
+  // El lienzo no dibuja la hoja de crear empresa en el teléfono: se compara con la lista de M-Empresas y su «+».
+  ], boardActions: [{ type: "click", selector: "button.b-pri" }], mobileBoardActions: [],
   actions: [{ type: "click", role: "button", name: "Crear empresa" }], readySelector: '[role="dialog"]' });
 
   const companyResponses = [
@@ -272,8 +274,12 @@ function buildCases() {
     actions: [{ type: "click", role: "tab", name: "Roles" }] });
   both({ pair: "empresa-editar", board: "Empresa", mobileBoard: "M-Empresa", path: "/org/empresas/company-1", responses: companyResponses,
     boardActions: [{ type: "click", selector: "button.b-sec" }],
-    mobileBoardActions: [{ type: "click", selector: 'button[aria-label="Más acciones"]' }, { type: "click", selector: 'button[role="menuitem"]:not(.pel)' }],
-    actions: [{ type: "click", role: "button", name: "Editar empresa" }], readySelector: '[role="dialog"]' });
+    // En el teléfono, «Editar empresa» va en el ⋮ de la barra; el ⋮ de M-Empresa no abre nada (el lienzo no dibuja esa
+    // hoja), así que el tablero queda en la ficha.
+    mobileBoardActions: [],
+    actions: [{ type: "click", role: "button", name: "Editar empresa" }],
+    mobileActions: [{ type: "click", role: "button", name: "Más acciones" }, { type: "click", role: "menuitem", name: "Editar empresa" }],
+    readySelector: '[role="dialog"]' });
 
   both({ pair: "configuracion-verificada", board: "Configuracion", mobileBoard: "M-Configuracion", path: "/org/configuracion", responses: settingsResponses("Verified"), props: { dominio: "Verificado" }, mobileProps: {} });
   both({ pair: "configuracion-pendiente", board: "Configuracion", mobileBoard: null, path: "/org/configuracion", responses: settingsResponses("Pending"), props: { dominio: "Pendiente" } });
@@ -289,7 +295,7 @@ function buildCases() {
         boardActions: [{ type: "click", selector: ".o-i", force: true }],
         actions: [{ type: "press", role: "button", name: "Ver el motivo y qué podés hacer", key: "Enter" }],
         readySelector: '[role="dialog"]',
-        readyText: "La página fue despublicada por la plataforma",
+        readyText: "Datos de contacto falsos",
       } : {}) });
   }
 
