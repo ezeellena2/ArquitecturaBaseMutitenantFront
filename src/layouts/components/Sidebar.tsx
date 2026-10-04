@@ -19,6 +19,12 @@ export interface SidebarProps {
   onCloseMobile: () => void;
 }
 
+// Tableros Inicio-Org y Usuarios (v77): opciones de 32 con ícono de 18 y una línea fina entre cada una;
+// la opción en la que estás, y Administración abierta, en blanco.
+const rowClass = (active: boolean) => `flex min-h-[32px] items-center gap-2.5 rounded-[8px] px-2.5 text-[13px] ${active
+  ? "bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm"
+  : "text-[var(--t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)]"}`;
+
 function SidebarBody({ navigation, account, context, isMobile, collapsed, administrationOpen, onToggleAdministration, onToggleCollapsed, onCloseMobile }: SidebarProps) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
@@ -38,20 +44,23 @@ function SidebarBody({ navigation, account, context, isMobile, collapsed, admini
     {!isMobile && !administrationOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className="absolute -right-3.5 top-[78px] z-30 flex size-7 items-center justify-center rounded-full border border-[var(--lado-borde)] bg-[var(--lado-activo)] text-[var(--t2)] shadow-sm">
       {collapsed ? <ChevronRight size={15} aria-hidden="true" /> : <ChevronLeft size={15} aria-hidden="true" />}
     </button> : null}
-    <nav aria-label={t("navigation.general")} className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-[11px]">
-      {navigation.links.map((entry) => {
-        const Icon = entry.icon;
-        const active = entry.to === pathname;
-        const content = <><Icon size={18} strokeWidth={1.75} aria-hidden="true" /><span className={showLabels ? "" : "sr-only"}>{t(entry.labelKey)}</span></>;
-        const rowClass = `flex min-h-[32px] items-center gap-2.5 rounded-[8px] px-2.5 text-[13px] ${active ? "bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm" : "text-[var(--t2)] hover:bg-[var(--lado-hover)]"}`;
-        return entry.to ? <Link key={entry.labelKey} to={entry.to} aria-current={active ? "page" : undefined} onClick={isMobile ? onCloseMobile : undefined} className={rowClass}>{content}</Link>
-          : <span key={entry.labelKey} aria-disabled="true" className={rowClass}>{content}</span>;
-      })}
+    <nav aria-label={t("navigation.general")} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-2 py-[11px]">
+      <ul className="flex flex-col gap-1">
+        {navigation.links.map((entry, index) => {
+          const Icon = entry.icon;
+          const active = entry.to === pathname;
+          const content = <><Icon size={18} strokeWidth={1.75} aria-hidden="true" /><span className={showLabels ? "" : "sr-only"}>{t(entry.labelKey)}</span></>;
+          return <li key={entry.labelKey} className={index > 0 ? "border-t border-[var(--lado-borde)] pt-0.5" : ""}>
+            {entry.to ? <Link to={entry.to} aria-current={active ? "page" : undefined} onClick={isMobile ? onCloseMobile : undefined} className={rowClass(active)}>{content}</Link>
+              : <span aria-disabled="true" className={rowClass(false)}>{content}</span>}
+          </li>;
+        })}
+      </ul>
       {navigation.administration ? <div className="mt-auto border-t border-[var(--lado-borde)] pt-2">
-        <button type="button" aria-expanded={adminExpanded} aria-label={t(navigation.administration.labelKey)} onClick={isMobile ? () => setMobileAdministrationOpen((value) => !value) : onToggleAdministration} className={`flex min-h-[36px] w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-[13px] font-semibold text-[var(--t1)] ${adminExpanded ? "bg-[var(--lado-activo)]" : "hover:bg-[var(--lado-hover)]"}`}>
+        <button type="button" aria-expanded={adminExpanded} aria-label={t(navigation.administration.labelKey)} onClick={isMobile ? () => setMobileAdministrationOpen((value) => !value) : onToggleAdministration} className={`${rowClass(adminExpanded)} w-full text-left`}>
           <navigation.administration.icon size={18} strokeWidth={1.75} aria-hidden="true" />
           <span className={showLabels ? "flex-1" : "sr-only"}>{t(navigation.administration.labelKey)}</span>
-          {showLabels ? <ChevronRight size={15} className={adminExpanded ? "rotate-90" : ""} aria-hidden="true" /> : null}
+          {!showLabels ? null : adminExpanded && !isMobile ? <ChevronLeft size={16} aria-hidden="true" /> : <ChevronRight size={16} className={adminExpanded ? "rotate-90" : ""} aria-hidden="true" />}
         </button>
         {isMobile && mobileAdministrationOpen ? <div className="ml-5 border-l border-[var(--lado-borde)] pl-2">
           {navigation.administration.sections?.map((section) => <div key={section.labelKey} className="py-1">

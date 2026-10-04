@@ -1307,13 +1307,6 @@
           }
         ],
         "readySelector": "main",
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
         "readyText": "Dueño"
       }
     },
@@ -1846,13 +1839,6 @@
           }
         ],
         "readySelector": "main",
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
         "readyText": "Elegí dónde vale el rol para ver sus permisos."
       }
     },
@@ -2243,14 +2229,7 @@
             "status": 200
           }
         ],
-        "readySelector": "main",
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ]
+        "readySelector": "main"
       }
     },
     {
@@ -2658,14 +2637,7 @@
             "status": 200
           }
         ],
-        "readySelector": "main",
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ]
+        "readySelector": "main"
       }
     },
     {
@@ -3084,14 +3056,7 @@
             "status": 200
           }
         ],
-        "readySelector": "main",
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ]
+        "readySelector": "main"
       }
     },
     {

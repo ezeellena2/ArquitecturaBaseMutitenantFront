@@ -964,13 +964,7 @@
             }
           }
         ],
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
+        "actions": [],
         "readySelector": "main"
       }
     },
@@ -2789,11 +2783,6 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Administración"
-          },
-          {
-            "type": "click",
-            "role": "button",
             "name": "Invitar usuario"
           }
         ],
@@ -4545,13 +4534,7 @@
             }
           }
         ],
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
+        "actions": [],
         "readySelector": "main"
       }
     },
@@ -5809,11 +5792,6 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Administración"
-          },
-          {
-            "type": "click",
-            "role": "button",
             "name": "Acciones de Delta S.A."
           },
           {
@@ -6667,11 +6645,6 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Administración"
-          },
-          {
-            "type": "click",
-            "role": "button",
             "name": "Sumar empresa"
           }
         ],
@@ -7448,13 +7421,7 @@
             }
           }
         ],
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
+        "actions": [],
         "readySelector": "main"
       }
     },
@@ -8015,13 +7982,7 @@
             }
           }
         ],
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
+        "actions": [],
         "readySelector": "main"
       }
     },
@@ -8312,13 +8273,7 @@
             "status": 200
           }
         ],
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
+        "actions": [],
         "readySelector": "main"
       }
     },
@@ -8506,11 +8461,6 @@
           }
         ],
         "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          },
           {
             "type": "click",
             "role": "button",
@@ -9255,13 +9205,7 @@
             }
           }
         ],
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
+        "actions": [],
         "readySelector": "main"
       }
     },
@@ -10528,11 +10472,6 @@
           }
         ],
         "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          },
           {
             "type": "click",
             "role": "tab",
@@ -11817,11 +11756,6 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Administración"
-          },
-          {
-            "type": "click",
-            "role": "button",
             "name": "Editar empresa"
           }
         ],
@@ -12550,13 +12484,7 @@
             "status": 204
           }
         ],
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
+        "actions": [],
         "readySelector": "main"
       }
     },
@@ -12712,13 +12640,7 @@
             "status": 204
           }
         ],
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
+        "actions": [],
         "readySelector": "main"
       }
     },
@@ -12868,11 +12790,6 @@
           }
         ],
         "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          },
           {
             "type": "click",
             "role": "button",
@@ -13035,11 +12952,6 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Administración"
-          },
-          {
-            "type": "click",
-            "role": "button",
             "name": "Acciones de delta.ejemplo.com"
           },
           {
@@ -13181,13 +13093,7 @@
             "status": 200
           }
         ],
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
+        "actions": [],
         "readySelector": "main"
       }
     },
@@ -13275,13 +13181,7 @@
             "status": 200
           }
         ],
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
+        "actions": [],
         "readySelector": "main"
       }
     },
@@ -13376,11 +13276,6 @@
           }
         ],
         "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          },
           {
             "type": "press",
             "role": "button",
@@ -13673,13 +13568,7 @@
             "status": 200
           }
         ],
-        "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          }
-        ],
+        "actions": [],
         "readySelector": "main"
       }
     },
@@ -14032,11 +13921,6 @@
           }
         ],
         "actions": [
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Administración"
-          },
           {
             "type": "fill",
             "role": "textbox",

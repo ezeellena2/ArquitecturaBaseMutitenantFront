@@ -1,5 +1,4 @@
 import { render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { configureI18n } from "@/shared/i18n";
@@ -33,7 +32,7 @@ describe("navegación por acceso en 3a", () => {
     expect(screen.queryByText("Organizaciones")).not.toBeInTheDocument();
   });
 
-  it("Empresa muestra las áreas E6 en el panel de administración", async () => {
+  it("Empresa muestra las áreas E6 en el panel de administración, abierto en sus rutas", () => {
     expect(businessNavigation.links.map((entry) => entry.to)).toEqual(["/org"]);
     expect(businessNavigation.administration?.sections?.[0].links).toMatchObject([
       { labelKey: "navigation.users", to: "/org/usuarios", permission: "users.read" },
@@ -45,7 +44,6 @@ describe("navegación por acceso en 3a", () => {
     render(<MemoryRouter initialEntries={["/org/roles"]}><BusinessLayout><h1>{"Inicio organización"}</h1></BusinessLayout></MemoryRouter>);
     expect(within(screen.getByRole("complementary", { name: "Navegación principal" })).getByRole("link", { name: "Inicio" })).toHaveAttribute("href", "/org");
     expect(screen.getByText("Empresa A")).toBeVisible();
-    await userEvent.click(screen.getByRole("button", { name: "Administración" }));
     expect(screen.getByRole("navigation", { name: "Administración" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Gestión de usuarios" })).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByRole("link", { name: "Roles y permisos" })).toHaveAttribute("href", "/org/roles");

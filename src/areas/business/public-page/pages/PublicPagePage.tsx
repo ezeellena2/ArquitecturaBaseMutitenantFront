@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CircleAlert, Globe, Globe2, Info } from "lucide-react";
+import { CircleAlert, Globe, Info } from "lucide-react";
 import { useId, useState, type ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -159,7 +159,7 @@ export function PublicPagePage() {
 
   return <>
     <Page
-      icon={Globe2}
+      icon={Globe}
       title={t("publicPage:title")}
       summary={pageData ? <span className={`inline-flex items-center gap-1.5 ${blocked ? "text-[var(--peligro)]" : "text-[var(--t1)]"}`}>
         <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${stateDot}`} />{stateText}

@@ -5,6 +5,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n } from "@/shared/i18n";
 import { businessNavigation } from "../navigation/business";
+import { personalNavigation } from "../navigation/personal";
 import { Sidebar } from "./Sidebar";
 
 beforeAll(async () => {
@@ -31,6 +32,27 @@ describe("Sidebar", () => {
     await userEvent.click(screen.getByRole("button", { name: "Contraer menú" }));
     expect(onToggleCollapsed).toHaveBeenCalledOnce();
     expect(await axe(container, { rules: { region: { enabled: false } } })).toHaveNoViolations();
+  });
+
+  // Tablero Inicio-Org y Usuarios (v77): una línea fina entre cada opción, Administración con su escudo y ›; abierta,
+  // en blanco con ‹, como la opción en la que estás.
+  it("separa las opciones con una línea fina y marca Administración abierta", () => {
+    const props = { account: null, context: null, isMobile: false, mobileOpen: false, collapsed: false, onToggleAdministration: vi.fn(), onToggleCollapsed: vi.fn(), onCloseMobile: vi.fn() };
+    const { rerender } = render(<MemoryRouter initialEntries={["/"]}><Sidebar {...props} navigation={personalNavigation} administrationOpen={false} /></MemoryRouter>);
+    const items = screen.getAllByRole("listitem");
+    expect(items[0]).not.toHaveClass("border-t");
+    expect(items[1]).toHaveClass("border-t", "border-[var(--lado-borde)]");
+
+    rerender(<MemoryRouter initialEntries={["/org"]}><Sidebar {...props} navigation={businessNavigation} administrationOpen={false} /></MemoryRouter>);
+    const closed = screen.getByRole("button", { name: "Administración" });
+    expect(closed.querySelector(".lucide-shield-check")).not.toBeNull();
+    expect(closed.querySelector(".lucide-chevron-right")).not.toBeNull();
+    expect(closed).toHaveClass("min-h-[32px]", "text-[var(--t2)]");
+
+    rerender(<MemoryRouter initialEntries={["/org"]}><Sidebar {...props} navigation={businessNavigation} administrationOpen /></MemoryRouter>);
+    const open = screen.getByRole("button", { name: "Administración" });
+    expect(open).toHaveClass("bg-[var(--lado-activo)]", "font-semibold", "text-[var(--marca-tx)]", "ring-1");
+    expect(open.querySelector(".lucide-chevron-left")).not.toBeNull();
   });
 
   it("en teléfono usa cajón con velo, cierra con Escape y no monta segundo panel", async () => {

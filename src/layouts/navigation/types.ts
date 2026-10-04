@@ -16,6 +16,7 @@ export interface NavigationPanel {
 
 export interface NavigationSection {
   labelKey: string;
+  icon: LucideIcon;
   links: readonly NavigationLink[];
 }
 

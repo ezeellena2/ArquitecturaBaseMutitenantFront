@@ -1,5 +1,5 @@
 import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ScrollText } from "lucide-react";
+import { ClipboardList } from "lucide-react";
 import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -72,7 +72,7 @@ export function AuditPage() {
   // Como el tablero: cualquier filtro distinto de «Últimos 30 días» sin búsqueda ni tema ni persona cuenta.
   const filtered = Boolean(category || actorId || pagination.search || filters.values.period && period !== "30");
   return <>
-    <Page icon={ScrollText} title={t("audit:title")}>
+    <Page icon={ClipboardList} title={t("audit:title")}>
       <div className="flex flex-col gap-3">
         <FilterBar
           label={t("audit:filters.label")}

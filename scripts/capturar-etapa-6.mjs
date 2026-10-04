@@ -211,7 +211,8 @@ function buildCases() {
         app: {
           path: `/src/test/visualApp.html?as=${fixture}&route=${encodeURIComponent(path)}`,
           captureMode: "harness", userFixture: fixture, responses,
-          actions: [...(fixture === "visual-owner" && viewport === "escritorio" ? [{ type: "click", role: "button", name: "Administración" }] : []), ...actions],
+          // En las rutas de Administración el panel ya arranca abierto, como en los tableros.
+          actions,
           readySelector, ...(readyText ? { readyText } : {}),
         },
       });

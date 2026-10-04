@@ -161,7 +161,7 @@ export function buildCases() {
       userFixture: "visual-owner",
       responses: scenario.responses,
       readySelector: "main",
-      ...(width === 1440 ? { actions: [{ type: "click", role: "button", name: "Administración" }] } : {}),
+      // En las rutas de Administración el panel ya arranca abierto, como en los tableros.
       ...(scenario.readyText ? { readyText: scenario.readyText } : {}),
     },
   })));
