@@ -79,7 +79,7 @@ export function UserDetailPage() {
   const navigate = useNavigate();
   const { phone } = useAppChrome();
   const [sheet, setSheet] = useState<"state" | "roles" | null>(null);
-  const user = useQuery({ queryKey: userQueryKey(memberId), queryFn: () => fetchUser(memberId), enabled: canRead && Boolean(memberId), meta: { silent: true } });
+  const user = useQuery({ queryKey: userQueryKey(memberId), queryFn: () => fetchUser(memberId), enabled: canRead && Boolean(memberId), meta: { silent: true, blocksView: true } });
   useBreadcrumbLeaf(user.data ? user.data.displayName || user.data.email || undefined : undefined);
   const [draft, setDraft] = useState<AccessDraft | null>(null);
   const [companyDialog, setCompanyDialog] = useState<CompanyDialogDraft | null>(null);

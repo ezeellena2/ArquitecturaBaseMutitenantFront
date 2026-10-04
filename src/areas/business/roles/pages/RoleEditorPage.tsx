@@ -79,7 +79,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
     queryKey: roleQueryKey(roleId ?? ""),
     queryFn: () => fetchRole(roleId!),
     enabled: canRead && mode === "edit" && Boolean(roleId),
-    meta: { silent: true },
+    meta: { silent: true, blocksView: true },
   });
   const requestedScope = searchParams.get("scope");
   const requestedCompanyId = searchParams.get("companyId") ?? "";

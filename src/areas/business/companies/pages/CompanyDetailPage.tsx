@@ -87,7 +87,7 @@ export function CompanyDetailPage() {
   const roleId = filters.values.roleId === "none" ? undefined : filters.values.roleId;
   const withoutRoles = filters.values.roleId === "none" ? true : undefined;
   const memberQuery: CompanyMembersQuery = { page: pagination.page, pageSize: pagination.pageSize, sort: pagination.sort, search: debouncedSearch || undefined, state, roleId, withoutRoles };
-  const company = useQuery({ queryKey: companyQueryKey(id), queryFn: () => fetchCompany(id), enabled: canRead && Boolean(id), meta: { silent: true } });
+  const company = useQuery({ queryKey: companyQueryKey(id), queryFn: () => fetchCompany(id), enabled: canRead && Boolean(id), meta: { silent: true, blocksView: true } });
   useBreadcrumbLeaf(company.data?.name);
   const members = useQuery({ queryKey: companyMembersQueryKey(id, memberQuery), queryFn: () => fetchCompanyMembers(id, memberQuery), enabled: canReadMembers && Boolean(id), placeholderData: keepPreviousData, meta: { silent: true } });
   const counts = useQuery({ queryKey: companyMembersCountQueryKey(id, debouncedSearch || undefined), queryFn: () => fetchCompanyMemberCounts(id, debouncedSearch || undefined), enabled: canReadMembers && Boolean(id), meta: { silent: true } });

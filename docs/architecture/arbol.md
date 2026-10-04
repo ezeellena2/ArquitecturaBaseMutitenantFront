@@ -328,11 +328,12 @@ src/
 │
 ├── shared/
 │   ├── api/                                         [E1]
-│   │   ├── httpClient.ts                            fetch, Bearer, Accept-Language, una renovación ante 401
+│   │   ├── httpClient.ts                            fetch, Bearer, Accept-Language, una renovación ante 401; solo transporta
 │   │   ├── httpClient.test.ts
 │   │   ├── ApiError.ts                              code, detail, traceId, errors, retryAfterSeconds
 │   │   ├── problemDetails.ts
-│   │   ├── queryClient.ts                           manejo global de errores
+│   │   ├── accessErrorStore.ts                      el 403 que bloquea la vista (consulta principal o términos nuevos), para AppShell
+│   │   ├── queryClient.ts                           createQueryClient: manejo global de errores; el 403 de meta.blocksView bloquea la vista
 │   │   ├── queryClient.test.ts
 │   │   ├── formErrors.ts                            applyApiErrorToForm
 │   │   ├── formErrors.test.ts

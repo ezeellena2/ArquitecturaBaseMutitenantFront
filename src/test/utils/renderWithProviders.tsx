@@ -1,10 +1,10 @@
-import { QueryClient } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import type { ReactElement, ReactNode } from "react";
 import type { AuthContextProps } from "react-oidc-context";
 import { RouterProvider, createMemoryRouter } from "react-router";
 import { AppProviders } from "@/app/providers";
 import { routes } from "@/app/routes";
+import { createQueryClient } from "@/shared/api/queryClient";
 import { currentUsers, type CurrentUserFixture } from "../mocks/currentUsers";
 import { fixtureAuth } from "../mocks/authContext";
 import { meHandlerFor } from "../mocks/handlers";
@@ -22,10 +22,10 @@ function anonymousAuth(): AuthContextProps {
 }
 
 /// Renderiza con los mismos providers que la app: traducciones y datos.
-/// Cada render entrega un QueryClient nuevo a todos los providers, incluido el catálogo inicial,
-/// y sin reintentos para que un error llegue derecho a la aserción.
+/// Cada render entrega un QueryClient nuevo a todos los providers, incluido el catálogo inicial, con los mismos
+/// avisos de error que la app y sin reintentos para que un error llegue derecho a la aserción.
 export function renderWithProviders(ui: ReactElement, options?: { as?: CurrentUserFixture }) {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  const queryClient = createQueryClient({ queries: { retry: false }, mutations: { retry: false } });
   if (options?.as) server.use(meHandlerFor(currentUsers[options.as]));
   const authContext = options?.as ? fixtureAuth(options.as) : anonymousAuth();
 

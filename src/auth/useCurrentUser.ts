@@ -14,5 +14,7 @@ export function useCurrentUser() {
     queryFn: () => api.get<MeResponse>("/api/me"),
     enabled: auth?.isAuthenticated === true,
     staleTime: 5 * 60_000,
+    // La sesión entera depende de /api/me: su 403 reemplaza la pantalla, como el de la consulta principal.
+    meta: { blocksView: true },
   });
 }

@@ -83,7 +83,7 @@ export function UsersPage() {
   };
   const users = useQuery({
     queryKey: usersQueryKey(query), queryFn: () => fetchUsers(query), enabled: canRead,
-    placeholderData: keepPreviousData, meta: { silent: true },
+    placeholderData: keepPreviousData, meta: { silent: true, blocksView: true },
   });
   const countQuery = { search: debouncedSearch || undefined, companyId, withoutCompany };
   const counts = useQuery({

@@ -43,7 +43,7 @@ export function AuditPage() {
     getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextCursor ?? undefined : undefined,
     enabled: canRead,
     placeholderData: keepPreviousData,
-    meta: { silent: true },
+    meta: { silent: true, blocksView: true },
   });
   const actors = useQuery({
     queryKey: [...auditQueryRoot, "actors", { period, category, search: search || undefined }],

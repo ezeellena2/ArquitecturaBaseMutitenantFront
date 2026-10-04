@@ -2,9 +2,10 @@ import "@testing-library/jest-dom/vitest";
 import "vitest-axe/extend-expect";
 import * as axeMatchers from "vitest-axe/matchers";
 import type { AxeMatchers } from "vitest-axe";
-import { configure } from "@testing-library/react";
+import { cleanup, configure } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, beforeEach, expect } from "vitest";
 import i18n from "@/shared/i18n";
+import { clearAccessError } from "@/shared/api/accessErrorStore";
 import { server } from "./mocks/server";
 
 declare module "vitest" {
@@ -19,6 +20,14 @@ expect.extend(axeMatchers);
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+// El bloqueo de la vista (403 de una consulta principal, términos nuevos) vive en un store del módulo: cada test
+// empieza sin bloqueo. Primero se desmonta lo del test; si no, al limpiar la pantalla bloqueada vuelve a montarse,
+// repite la consulta y publica de nuevo.
+afterEach(() => {
+  cleanup();
+  clearAccessError();
+});
 
 // Los namespaces se descubren por archivos. i18n queda sin cultura hasta que
 // shared/referenceData entregue Cultures (o el test configure su fixture).

@@ -1,7 +1,6 @@
 import { ApiError } from "./ApiError";
 import { isProblemDetails, type ProblemDetails } from "./problemDetails";
 import { effectiveCulture } from "@/shared/i18n";
-import { clearAccessError, publishAccessError } from "./accessErrorStore";
 
 interface HttpClientOptions {
   getAccessToken?: () => string | undefined;
@@ -25,7 +24,6 @@ export function resetHttpClient(): void {
   notifiedExpiredToken = undefined;
   renewalInFlight = undefined;
   lastRenewal = undefined;
-  clearAccessError();
 }
 
 function currentOrRenewedToken(previousToken: string, renew: () => Promise<string | undefined>): Promise<string | undefined> {
@@ -111,12 +109,9 @@ async function receive(path: string, init: RequestInit, allowNotModified = false
     }
   }
 
+  // Solo transporta: qué pantalla muestra un 403 lo decide la consulta que lo pidió (queryClient).
   if (!response.ok && !(allowNotModified && response.status === 304)) {
-    const error = new ApiError(response.status, await readProblem(response));
-    // Solo una lectura protegida bloquea la vista; una mutación entrega el error al formulario.
-    if (error.status === 403 && !path.startsWith("/api/auth/")
-      && (init.method === "GET" || error.code === "Legal.AcceptanceRequired")) publishAccessError(error);
-    throw error;
+    throw new ApiError(response.status, await readProblem(response));
   }
 
   return response;

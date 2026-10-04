@@ -5,7 +5,7 @@ import { server } from "@/test/mocks/server";
 import { ApiError } from "./ApiError";
 import { api, configureHttpClient, resetHttpClient } from "./httpClient";
 import type { PagedResult } from "./pagedResult";
-import { getAccessError, clearAccessError } from "./accessErrorStore";
+import { getAccessError } from "./accessErrorStore";
 
 beforeAll(async () => {
   await configureI18n([
@@ -16,15 +16,21 @@ beforeAll(async () => {
 
 describe("httpClient", () => {
   beforeEach(() => resetHttpClient());
-  it("publica el bloqueo legal también en una escritura para abrir la aceptación", async () => {
-    server.use(http.put("/api/me", () => HttpResponse.json({ code: "Legal.AcceptanceRequired", traceId: "test" }, { status: 403 })));
-    await expect(api.put("/api/me", {})).rejects.toMatchObject({ code: "Legal.AcceptanceRequired" });
-    expect(getAccessError()?.code).toBe("Legal.AcceptanceRequired");
-  });
   afterEach(async () => {
     resetHttpClient();
-    clearAccessError();
     await changeCulture("es-AR");
+  });
+
+  // F1: qué pantalla muestra un 403 lo decide la consulta (queryClient), no el transporte.
+  it("solo transporta: un 403 llega con su ProblemDetails y no cambia la pantalla", async () => {
+    server.use(
+      http.get("/api/me", () => HttpResponse.json({ code: "Tenancy.Tenant.Suspended", organizationName: "Beta S.R.L.", tenantId: "beta" }, { status: 403 })),
+      http.put("/api/me", () => HttpResponse.json({ code: "Legal.AcceptanceRequired", traceId: "test" }, { status: 403 })),
+    );
+
+    await expect(api.get("/api/me")).rejects.toMatchObject({ status: 403, code: "Tenancy.Tenant.Suspended", problem: { organizationName: "Beta S.R.L.", tenantId: "beta" } });
+    await expect(api.put("/api/me", {})).rejects.toMatchObject({ status: 403, code: "Legal.AcceptanceRequired", traceId: "test" });
+    expect(getAccessError()).toBeNull();
   });
 
   it("envía Bearer solo cuando hay token y conserva los headers del caller", async () => {
@@ -128,24 +134,5 @@ describe("httpClient", () => {
     const caught = await api.get("/api/test-client").catch((error: unknown) => error);
     expect(caught).toBeInstanceOf(ApiError);
     expect(caught).toMatchObject({ status: 0, isNetworkError: true });
-  });
-
-  it("publica 403 protegidos para AppShell y deja los de ingreso a la pantalla", async () => {
-    server.use(
-      http.get("/api/me", () => HttpResponse.json({ code: "Tenancy.Tenant.Suspended", organizationName: "Beta S.R.L.", tenantId: "beta" }, { status: 403 })),
-      http.post("/api/auth/login-code/verify", () => HttpResponse.json({ code: "Tenancy.Member.Inactive" }, { status: 403 })),
-    );
-    await expect(api.get("/api/me")).rejects.toMatchObject({ status: 403, code: "Tenancy.Tenant.Suspended" });
-    expect(getAccessError()?.problem).toMatchObject({ organizationName: "Beta S.R.L.", tenantId: "beta" });
-    clearAccessError();
-    await expect(api.post("/api/auth/login-code/verify", {})).rejects.toMatchObject({ status: 403 });
-    expect(getAccessError()).toBeNull();
-  });
-
-  it("deja el 403 de una mutación en su formulario sin bloquear toda la app", async () => {
-    server.use(http.post("/api/org/action", () => HttpResponse.json({ code: "Authorization.Forbidden" }, { status: 403 })));
-
-    await expect(api.post("/api/org/action", {})).rejects.toMatchObject({ status: 403, code: "Authorization.Forbidden" });
-    expect(getAccessError()).toBeNull();
   });
 });

@@ -14,7 +14,8 @@
   ```
 - **Formularios:** `applyApiErrorToForm(error, setError, fieldMap)`. Lo que no encaja en un campo va en `<FormError>` sobre la botonera.
 - **ConfirmDialog o acción de fila:** toast con el mensaje.
-- **Pantalla:** un 403 renderiza `ForbiddenPage`; un 404 en una ficha, `NotFoundPage` (también un id de otra organización o de otro acceso); `Tenancy.Tenant.Suspended`, `Tenancy.Tenant.PendingApproval` y `Tenancy.Tenant.Closed` renderizan `OrganizationUnavailablePage` con su estado (Suspendida, Espera aprobación o Cerrada), y `Tenancy.Access.Wrong` lleva al inicio del acceso correcto.
+- **Pantalla:** un 403 de la **consulta principal** renderiza `ForbiddenPage`; un 404 en una ficha, `NotFoundPage` (también un id de otra organización o de otro acceso); `Tenancy.Tenant.Suspended`, `Tenancy.Tenant.PendingApproval` y `Tenancy.Tenant.Closed` renderizan `OrganizationUnavailablePage` con su estado (Suspendida, Espera aprobación o Cerrada), y `Tenancy.Access.Wrong` lleva al inicio del acceso correcto.
+- **Qué consulta bloquea la vista:** la principal de la pantalla (el listado, la ficha, la configuración) lo declara con `meta: { blocksView: true }`, y `QueryCache.onError` publica su 403 para el `AppShell`. El 403 de una consulta secundaria (las opciones de un filtro, un conteo, los roles de una pestaña) queda en su lugar y la pantalla sigue a la vista. `httpClient` solo transporta: nunca decide qué pantalla se ve. `Legal.AcceptanceRequired` sigue su camino: bloquea desde cualquier consulta o mutación y lo resuelve `LegalAcceptanceGate`.
 - Query que maneja su error en pantalla: `meta: { silent: true }`.
 - Si falla el catálogo inicial, `AppProviders` muestra el error y un botón «Reintentar»; el Toaster sigue montado aunque el contenido principal espere datos o traducciones.
 - Si Vite emite `vite:preloadError`, `AppShell` muestra la franja de versión nueva sin cancelar el evento. Los fallos de render y de ruta se contienen en una pantalla traducida con «Actualizar»; la recarga sucede solo al pulsarlo.
@@ -31,7 +32,8 @@
 
 ## Lo verifica
 - Tests de pantalla: cada `code` que traduce la feature tiene un test (tests.md).
-- `formErrors.test.ts` (E1), `queryClient.test.ts` (E1).
+- `formErrors.test.ts` (E1), `queryClient.test.ts` (E1; el 403 de la consulta principal, de una secundaria y de los términos nuevos).
+- `CompanyDetailPage.test.tsx`: el 403 de los roles (secundaria) no reemplaza la ficha; el de la ficha, sí.
 
 ## Detalle
 [frontend.md §4, "Errores"](../architecture/frontend.md#errores)

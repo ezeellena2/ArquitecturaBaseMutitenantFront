@@ -3,7 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
@@ -39,6 +39,8 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   const form = useForm<Draft>({ resolver: zodResolver(schema), defaultValues: draft(account) });
   const { isDirty, isSubmitting } = form.formState;
   const guard = useUnsavedChangesGuard(isDirty);
+  // Por TanStack Query, como toda escritura: así los términos nuevos (403) abren la aceptación también desde acá.
+  const update = useMutation({ mutationFn: updateMe });
 
   async function reload() {
     try {
@@ -53,7 +55,7 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   async function save(values: Draft) {
     setFailure(undefined);
     try {
-      await updateMe({ ...values, displayName: values.displayName.trim() || null });
+      await update.mutateAsync({ ...values, displayName: values.displayName.trim() || null });
       if (await reload()) toast.success(t("saved"));
     } catch (error) {
       if (!(error instanceof ApiError) || !applyApiErrorToForm(error, form.setError, { DisplayName: "displayName", displayName: "displayName", Culture: "culture", culture: "culture", TimeZoneId: "timeZoneId", timeZoneId: "timeZoneId" })) setFailure(error);

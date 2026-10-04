@@ -1,8 +1,10 @@
+import { MutationObserver, type QueryMeta } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { beforeAll, afterEach, describe, expect, it, vi } from "vitest";
 import i18n, { configureI18n } from "@/shared/i18n";
 import { ApiError } from "./ApiError";
-import { queryClient } from "./queryClient";
+import { getAccessError } from "./accessErrorStore";
+import { createQueryClient, queryClient } from "./queryClient";
 
 beforeAll(async () => {
   await configureI18n([
@@ -107,5 +109,42 @@ describe("queryClient", () => {
       duration: Number.POSITIVE_INFINITY,
       closeButton: true,
     }));
+  });
+});
+
+// F1: el cliente HTTP solo transporta; la pantalla «sin permiso» la decide la consulta que lo declara en `meta`.
+describe("bloqueo de la vista por un 403", () => {
+  async function failWith(error: ApiError, meta?: QueryMeta): Promise<void> {
+    const client = createQueryClient({ queries: { retry: false } });
+    await client.fetchQuery({ queryKey: ["vista"], queryFn: () => Promise.reject(error), meta }).catch(() => undefined);
+  }
+
+  it("lo publica cuando viene de la consulta principal de la pantalla", async () => {
+    const error = new ApiError(403, { code: "Authorization.Forbidden" });
+    await failWith(error, { silent: true, blocksView: true });
+    expect(getAccessError()).toBe(error);
+  });
+
+  it("no lo publica cuando viene de una consulta secundaria", async () => {
+    await failWith(new ApiError(403, { code: "Authorization.Forbidden" }), { silent: true });
+    expect(getAccessError()).toBeNull();
+  });
+
+  it("los términos nuevos siguen su camino desde cualquier consulta o mutación", async () => {
+    const fromQuery = new ApiError(403, { code: "Legal.AcceptanceRequired" });
+    await failWith(fromQuery, { silent: true });
+    expect(getAccessError()).toBe(fromQuery);
+
+    const fromMutation = new ApiError(403, { code: "Legal.AcceptanceRequired" });
+    const client = createQueryClient();
+    await new MutationObserver(client, { mutationFn: () => Promise.reject(fromMutation) }).mutate().catch(() => undefined);
+    expect(getAccessError()).toBe(fromMutation);
+  });
+
+  it("deja el 403 de una mutación en su formulario", async () => {
+    const client = createQueryClient();
+    await new MutationObserver(client, { mutationFn: () => Promise.reject(new ApiError(403, { code: "Authorization.Forbidden" })) })
+      .mutate().catch(() => undefined);
+    expect(getAccessError()).toBeNull();
   });
 });

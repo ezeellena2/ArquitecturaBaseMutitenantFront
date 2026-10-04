@@ -45,7 +45,7 @@ export function SettingsPage() {
   const canManage = currentUser?.permissions?.includes("settings.manage") === true;
   const organizationName = currentUser?.organizations.find((organization) => organization.id === currentUser.activeTenantId)?.name ?? "";
   const client = useQueryClient();
-  const settings = useQuery({ queryKey: organizationSettingsKey, queryFn: fetchOrganizationSettings, enabled: canRead, meta: { silent: true } });
+  const settings = useQuery({ queryKey: organizationSettingsKey, queryFn: fetchOrganizationSettings, enabled: canRead, meta: { silent: true, blocksView: true } });
   const domains = useQuery({ queryKey: organizationDomainsKey, queryFn: fetchOrganizationDomains, enabled: canRead, meta: { silent: true } });
   const [draftState, setDraftState] = useState<SettingsDraft | null>(null);
   const [failure, setFailure] = useState<unknown>();

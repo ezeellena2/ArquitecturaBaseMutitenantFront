@@ -11,6 +11,7 @@ import { routes } from "@/app/routes";
 import { ApiError } from "@/shared/api/ApiError";
 import { api } from "@/shared/api/httpClient";
 import { publishAccessError, clearAccessError, getAccessError } from "@/shared/api/accessErrorStore";
+import { createQueryClient } from "@/shared/api/queryClient";
 import i18n, { configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
 import { visualBusiness } from "@/test/mocks/currentUsers";
@@ -117,7 +118,7 @@ describe("AppShell", () => {
     expect(screen.queryByText("Contenido")).not.toBeInTheDocument();
   });
 
-  it("usa el ProblemDetails HTTP de tenant suspendido para mostrar el estado de la organización", async () => {
+  it("usa el ProblemDetails HTTP de tenant suspendido de la consulta principal para mostrar el estado de la organización", async () => {
     const tenantId = "be638f04-f371-451d-bbbe-729e99bdf8be";
     server.use(http.get("/api/protected-test", () => HttpResponse.json({
       type: "https://www.rfc-editor.org/rfc/rfc9110.html#name-403-forbidden",
@@ -125,13 +126,16 @@ describe("AppShell", () => {
       code: "Tenancy.Tenant.Suspended", traceId: "test-trace",
       organizationName: "Empresa A", tenantId,
     }, { status: 403 })));
-    const client = new QueryClient();
+    const client = createQueryClient({ queries: { retry: false } });
     const auth = { isAuthenticated: true, user: { profile: { access: "business" } } } as unknown as AuthContextProps;
     render(<I18nextProvider i18n={i18n}><AuthContext.Provider value={auth}><QueryClientProvider client={client}>
       <MemoryRouter><AppShell><main>{"Contenido"}</main></AppShell></MemoryRouter>
     </QueryClientProvider></AuthContext.Provider></I18nextProvider>);
 
-    await act(async () => { await expect(api.get("/api/protected-test")).rejects.toBeInstanceOf(ApiError); });
+    await act(async () => {
+      await expect(client.fetchQuery({ queryKey: ["protegida"], queryFn: () => api.get("/api/protected-test"), meta: { silent: true, blocksView: true } }))
+        .rejects.toBeInstanceOf(ApiError);
+    });
 
     expect(screen.getByRole("heading", { name: "Empresa A está suspendida" })).toBeVisible();
     expect(screen.queryByText("Contenido")).not.toBeInTheDocument();

@@ -20,7 +20,7 @@ export function BusinessHomePage() {
   const format = useFormat();
   const { data: currentUser } = useCurrentUser();
   const phone = useMediaQuery("(max-width: 767px)");
-  const home = useQuery({ queryKey: homeQueryKey, queryFn: fetchHome });
+  const home = useQuery({ queryKey: homeQueryKey, queryFn: fetchHome, meta: { blocksView: true } });
   const organizationName = currentUser?.organizations.find((organization) => organization.id === currentUser.activeTenantId)?.name ?? "";
   const rows = (home.data?.pending ?? [])
     .map((item, index) => describePending(item, index, t, format.formatDate))

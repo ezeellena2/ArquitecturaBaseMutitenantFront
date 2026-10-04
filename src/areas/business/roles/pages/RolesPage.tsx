@@ -59,7 +59,7 @@ export function RolesPage() {
     queryFn: () => fetchRoles(query),
     enabled: canRead,
     placeholderData: keepPreviousData,
-    meta: { silent: true },
+    meta: { silent: true, blocksView: true },
   });
   const companies = useQuery({
     queryKey: ["role-company-options"],

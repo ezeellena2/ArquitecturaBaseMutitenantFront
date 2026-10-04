@@ -71,7 +71,7 @@ export function CompaniesPage() {
     queryFn: () => fetchCompanies(query),
     enabled: canRead,
     placeholderData: keepPreviousData,
-    meta: { silent: true },
+    meta: { silent: true, blocksView: true },
   });
   const counts = useQuery({
     queryKey: companiesCountQueryKey(debouncedSearch || undefined),

@@ -78,6 +78,25 @@ describe("CompanyDetailPage", () => {
       .toEqual(["Miembro", "Roles en la empresa", "Estado", "Acciones"]);
   });
 
+  // F1: el 403 bloquea la vista solo si viene de la consulta principal; el de los roles (una consulta secundaria)
+  // deja la ficha y sus miembros a la vista.
+  it("un 403 en una consulta secundaria no reemplaza la pantalla", async () => {
+    detailApi([member]);
+    server.use(http.get("/api/roles/paged", () => HttpResponse.json({ code: "Authorization.Forbidden", detail: "No tenés permiso." }, { status: 403 })));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+
+    expect(await screen.findByRole("heading", { level: 1, name: "Delta S.A." })).toBeVisible();
+    expect(await screen.findByText("Lucía Fernández")).toBeVisible();
+    await waitFor(() => expect(screen.queryByRole("heading", { name: "No tenés permiso para ver esta página" })).not.toBeInTheDocument());
+  });
+
+  it("un 403 en la ficha muestra la pantalla sin permiso", async () => {
+    server.use(http.get("/api/companies/company-1", () => HttpResponse.json({ code: "Authorization.Forbidden", detail: "No tenés permiso." }, { status: 403 })));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+
+    expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
+  });
+
   it("las migas siguen el camino hasta la empresa", async () => {
     detailApi([member]);
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });

@@ -90,7 +90,7 @@ export function PublicPagePage() {
   const canManage = currentUser?.permissions?.includes("publicpage.manage") === true;
   const client = useQueryClient();
   const visibleId = useId();
-  const page = useQuery({ queryKey: publicPageQueryKey, queryFn: fetchPublicPage, enabled: canManage, meta: { silent: true } });
+  const page = useQuery({ queryKey: publicPageQueryKey, queryFn: fetchPublicPage, enabled: canManage, meta: { silent: true, blocksView: true } });
   const [draftState, setDraftState] = useState<PageDraft | null>(null);
   const draft = draftState ?? (page.data ? draftFromPage(page.data) : null);
   const debouncedSlug = useDebouncedValue(draft?.slug.trim() ?? "");
