@@ -124,8 +124,9 @@ export function AuditPage() {
       </div>
     </Page>
     <Dialog open={selected !== null} onOpenChange={(open) => { if (!open) setSelected(null); }}>
-      <DialogContent className="md:max-w-[640px]">
-        {/* Tablero Auditoria-Org: qué pasó; Quién (nombre · correo), Dónde y cada cambio «antes → después». */}
+      {/* «Criterio · Diálogos»: el diálogo normal, de 560, como Auditoria-Org. Qué pasó; Quién (nombre · correo), Dónde y
+          cada cambio «antes → después». */}
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{selected?.actionText ?? t("audit:details")}</DialogTitle>
         </DialogHeader>

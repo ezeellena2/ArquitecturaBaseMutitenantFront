@@ -236,7 +236,8 @@ export function PublicPagePage() {
     </Page>
 
     <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-      <DialogContent className="md:max-w-[600px]">
+      {/* «Criterio · Diálogos»: el diálogo normal, de 560 (el tablero no dibuja la vista previa). */}
+      <DialogContent>
         <DialogHeader><DialogTitle>{t("publicPage:preview")}</DialogTitle><DialogDescription className="sr-only">{t("publicPage:previewDescription")}</DialogDescription></DialogHeader>
         {draft ? <div className="flex flex-col gap-4 px-5 py-4">
           <div className="flex items-center gap-3">{draft.logoDataUri ? <img src={draft.logoDataUri} alt={t("publicPage:logoAlt")} className="size-12 rounded-lg object-contain" /> : null}<h2 className="text-lg font-bold text-[var(--t1)]">{draft.name}</h2></div>

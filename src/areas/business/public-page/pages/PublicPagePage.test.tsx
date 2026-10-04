@@ -103,6 +103,13 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(visible).not.toBeChecked();
     expect(subline()).toHaveTextContent(/^Borrador$/);
     expect(screen.getByRole("button", { name: "Vista previa" })).toBeVisible();
+    // «Criterio · Diálogos»: la vista previa con uno de los dos anchos de la pieza, el normal de 560.
+    await user.click(screen.getByRole("button", { name: "Vista previa" }));
+    const preview = await screen.findByRole("dialog", { name: "Vista previa" });
+    expect(preview).toHaveClass("md:max-w-[560px]");
+    expect(preview).not.toHaveClass("md:max-w-[600px]");
+    await user.click(within(preview).getAllByRole("button", { name: "Cerrar" }).at(-1)!);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     await user.click(visible);
     await waitFor(() => expect(calls).toEqual(["publish {\"version\":8}"]));
     expect(await screen.findByText("Publicamos tu página.")).toBeVisible();

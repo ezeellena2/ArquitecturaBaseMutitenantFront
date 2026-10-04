@@ -68,6 +68,9 @@ describe("AuditPage", () => {
     await user.click(screen.getByRole("button", { name: "Ver el detalle de Cambió los roles de Tomás Acosta" }));
     // Detalle: Quién (nombre · correo), Dónde, «antes → después» y «Cerrar»; la fecha no se repite bajo el título.
     const detail = await screen.findByRole("dialog", { name: "Cambió los roles de Tomás Acosta" });
+    // «Criterio · Diálogos»: uno de los dos anchos de la pieza, el normal de 560 (Auditoria-Org).
+    expect(detail).toHaveClass("md:max-w-[560px]");
+    expect(detail).not.toHaveClass("md:max-w-[640px]");
     expect(detail).not.toHaveTextContent("02/10/2026");
     expect(detail).toHaveTextContent("QuiénLucía · lucia@example.com");
     expect(detail).toHaveTextContent("DóndeDelta S.A.");
