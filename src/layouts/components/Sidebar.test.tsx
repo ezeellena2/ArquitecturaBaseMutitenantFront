@@ -17,7 +17,7 @@ describe("Sidebar", () => {
     const onToggleAdministration = vi.fn();
     const onToggleCollapsed = vi.fn();
     const { container } = render(<MemoryRouter initialEntries={["/org"]}>
-      <Sidebar navigation={businessNavigation} account={{ name: "Ana", email: "ana@example.com" }} context={{ title: "Empresa A", detail: "Organización" }} isMobile={false} mobileOpen={false} collapsed={false} administrationOpen={false} onToggleAdministration={onToggleAdministration} onToggleCollapsed={onToggleCollapsed} onCloseMobile={vi.fn()} />
+      <Sidebar navigation={businessNavigation} account={{ name: "Ana", email: "ana@example.com" }} context={{ title: "Empresa A", detail: "Organización" }} collapsed={false} administrationOpen={false} onToggleAdministration={onToggleAdministration} onToggleCollapsed={onToggleCollapsed} />
     </MemoryRouter>);
     expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-[232px]");
     expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
@@ -37,7 +37,7 @@ describe("Sidebar", () => {
   // Tablero Inicio-Org y Usuarios (v77): una línea fina entre cada opción, Administración con su escudo y ›; abierta,
   // en blanco con ‹, como la opción en la que estás.
   it("separa las opciones con una línea fina y marca Administración abierta", () => {
-    const props = { account: null, context: null, isMobile: false, mobileOpen: false, collapsed: false, onToggleAdministration: vi.fn(), onToggleCollapsed: vi.fn(), onCloseMobile: vi.fn() };
+    const props = { account: null, context: null, collapsed: false, onToggleAdministration: vi.fn(), onToggleCollapsed: vi.fn() };
     const { rerender } = render(<MemoryRouter initialEntries={["/"]}><Sidebar {...props} navigation={personalNavigation} administrationOpen={false} /></MemoryRouter>);
     const items = screen.getAllByRole("listitem");
     expect(items[0]).not.toHaveClass("border-t");
@@ -55,18 +55,5 @@ describe("Sidebar", () => {
     expect(open.querySelector(".lucide-chevron-left")).not.toBeNull();
   });
 
-  it("en teléfono usa cajón con velo, cierra con Escape y no monta segundo panel", async () => {
-    const onCloseMobile = vi.fn();
-    render(<MemoryRouter initialEntries={["/org"]}>
-      <Sidebar navigation={businessNavigation} account={{ name: "Ana", email: "ana@example.com" }} context={{ title: "Empresa A", detail: "Organización" }} isMobile mobileOpen collapsed={false} administrationOpen={false} onToggleAdministration={vi.fn()} onToggleCollapsed={vi.fn()} onCloseMobile={onCloseMobile} />
-    </MemoryRouter>);
-    expect(screen.getByRole("dialog", { name: "Navegación principal" })).toHaveClass("w-[280px]");
-    expect(screen.getByRole("link", { name: "Inicio" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Administración" })).toBeVisible();
-    expect(screen.queryByRole("navigation", { name: "Administración" })).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Administración" }));
-    expect(screen.getByRole("link", { name: "Roles y permisos" })).toBeVisible();
-    await userEvent.keyboard("{Escape}");
-    expect(onCloseMobile).toHaveBeenCalledOnce();
-  });
+
 });

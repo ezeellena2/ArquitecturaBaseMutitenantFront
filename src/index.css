@@ -144,7 +144,7 @@ body {
   background-color: var(--fondo);
   color: var(--t1);
 }
-/* En el teléfono, los avisos suben por encima de la barra de acciones de Mi cuenta. */
+/* En el teléfono, los avisos suben por encima de la acción fija de abajo (tablero M-Avisos). */
 @media (max-width: 767px) {
-  body:has([data-account-actions]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 72px; }
+  body:has([data-slot="fixed-actions"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 84px; }
 }

@@ -1,8 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
-import { Dialog, DialogContent, DialogTitle } from "@/shared/ui/dialog";
 import { BrandMark } from "@/shared/ui/BrandMark";
 import type { NavigationConfig } from "../navigation/types";
 
@@ -10,13 +8,10 @@ export interface SidebarProps {
   navigation: NavigationConfig;
   account: { name: string; email: string | null } | null;
   context: { title: string; detail: string } | null;
-  isMobile: boolean;
-  mobileOpen: boolean;
   collapsed: boolean;
   administrationOpen: boolean;
   onToggleAdministration: () => void;
   onToggleCollapsed: () => void;
-  onCloseMobile: () => void;
 }
 
 // Tableros Inicio-Org y Usuarios (v77): opciones de 32 con ícono de 18 y una línea fina entre cada una;
@@ -25,14 +20,13 @@ const rowClass = (active: boolean) => `flex min-h-[32px] items-center gap-2.5 ro
   ? "bg-[var(--lado-activo)] font-semibold text-[var(--marca-tx)] ring-1 ring-[var(--borde)] shadow-sm"
   : "text-[var(--t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)]"}`;
 
-function SidebarBody({ navigation, account, context, isMobile, collapsed, administrationOpen, onToggleAdministration, onToggleCollapsed, onCloseMobile }: SidebarProps) {
+/// El menú lateral de la compu. En el teléfono no existe: la app lleva la barra de abajo y «Más» (tableros M-*).
+export function Sidebar({ navigation, account, context, collapsed, administrationOpen, onToggleAdministration, onToggleCollapsed }: SidebarProps) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const [mobileAdministrationOpen, setMobileAdministrationOpen] = useState(false);
-  const showLabels = isMobile || !collapsed;
-  const adminExpanded = isMobile ? mobileAdministrationOpen : administrationOpen;
+  const showLabels = !collapsed;
 
-  return <>
+  return <aside aria-label={t("layout.sidebar.navigation")} className={`relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] ${collapsed ? "w-16" : "w-[232px]"}`}>
     <div className="flex h-[52px] shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]">
       <BrandMark />
       {showLabels ? <span>{t("app.name")}</span> : null}
@@ -41,7 +35,7 @@ function SidebarBody({ navigation, account, context, isMobile, collapsed, admini
       <span className="font-semibold text-[var(--t1)]">{context.title}</span>
       <span className="mt-1 text-[var(--t3)]">{context.detail}</span>
     </div> : null}
-    {!isMobile && !administrationOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className="absolute -right-3.5 top-[78px] z-30 flex size-7 items-center justify-center rounded-full border border-[var(--lado-borde)] bg-[var(--lado-activo)] text-[var(--t2)] shadow-sm">
+    {!administrationOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className="absolute -right-3.5 top-[78px] z-30 flex size-7 items-center justify-center rounded-full border border-[var(--lado-borde)] bg-[var(--lado-activo)] text-[var(--t2)] shadow-sm">
       {collapsed ? <ChevronRight size={15} aria-hidden="true" /> : <ChevronLeft size={15} aria-hidden="true" />}
     </button> : null}
     <nav aria-label={t("navigation.general")} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-2 py-[11px]">
@@ -51,43 +45,22 @@ function SidebarBody({ navigation, account, context, isMobile, collapsed, admini
           const active = entry.to === pathname;
           const content = <><Icon size={18} strokeWidth={1.75} aria-hidden="true" /><span className={showLabels ? "" : "sr-only"}>{t(entry.labelKey)}</span></>;
           return <li key={entry.labelKey} className={index > 0 ? "border-t border-[var(--lado-borde)] pt-0.5" : ""}>
-            {entry.to ? <Link to={entry.to} aria-current={active ? "page" : undefined} onClick={isMobile ? onCloseMobile : undefined} className={rowClass(active)}>{content}</Link>
+            {entry.to ? <Link to={entry.to} aria-current={active ? "page" : undefined} className={rowClass(active)}>{content}</Link>
               : <span aria-disabled="true" className={rowClass(false)}>{content}</span>}
           </li>;
         })}
       </ul>
       {navigation.administration ? <div className="mt-auto border-t border-[var(--lado-borde)] pt-2">
-        <button type="button" aria-expanded={adminExpanded} aria-label={t(navigation.administration.labelKey)} onClick={isMobile ? () => setMobileAdministrationOpen((value) => !value) : onToggleAdministration} className={`${rowClass(adminExpanded)} w-full text-left`}>
+        <button type="button" aria-expanded={administrationOpen} aria-label={t(navigation.administration.labelKey)} onClick={onToggleAdministration} className={`${rowClass(administrationOpen)} w-full text-left`}>
           <navigation.administration.icon size={18} strokeWidth={1.75} aria-hidden="true" />
           <span className={showLabels ? "flex-1" : "sr-only"}>{t(navigation.administration.labelKey)}</span>
-          {!showLabels ? null : adminExpanded && !isMobile ? <ChevronLeft size={16} aria-hidden="true" /> : <ChevronRight size={16} className={adminExpanded ? "rotate-90" : ""} aria-hidden="true" />}
+          {!showLabels ? null : administrationOpen ? <ChevronLeft size={16} aria-hidden="true" /> : <ChevronRight size={16} aria-hidden="true" />}
         </button>
-        {isMobile && mobileAdministrationOpen ? <div className="ml-5 border-l border-[var(--lado-borde)] pl-2">
-          {navigation.administration.sections?.map((section) => <div key={section.labelKey} className="py-1">
-            <p className="px-2 py-1 text-xs font-semibold text-[var(--t3)]">{t(section.labelKey)}</p>
-            {section.links.map((entry) => entry.to ? <Link key={entry.labelKey} to={entry.to} onClick={onCloseMobile} className="flex min-h-[32px] items-center rounded-lg px-2 text-[13px] text-[var(--t2)]">{t(entry.labelKey)}</Link> : null)}
-          </div>)}
-          {navigation.administration.links.map((entry) => entry.to ? <Link key={entry.labelKey} to={entry.to} onClick={onCloseMobile} className="flex min-h-[32px] items-center rounded-lg px-2 text-[13px] text-[var(--t2)]">{t(entry.labelKey)}</Link> : null)}
-        </div> : null}
       </div> : null}
     </nav>
     {account ? <div className="flex min-h-[60px] items-center gap-2.5 border-t border-[var(--lado-borde)] px-3">
       <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{account.name.charAt(0).toUpperCase()}</span>
       {showLabels ? <span className="flex min-w-0 flex-col text-[13px] leading-[1.3]"><span className="truncate font-semibold text-[var(--t1)]">{account.name}</span>{account.email ? <span className="truncate text-[var(--t3)]">{account.email}</span> : null}</span> : null}
     </div> : null}
-  </>;
-}
-
-export function Sidebar(props: SidebarProps) {
-  const { t } = useTranslation();
-  if (props.isMobile) return <Dialog open={props.mobileOpen} onOpenChange={(open) => { if (!open) props.onCloseMobile(); }}>
-    <DialogContent showCloseButton={false} aria-describedby={undefined} className="bottom-auto left-0 top-0 flex h-dvh max-h-dvh w-[280px] flex-col gap-0 rounded-none border-0 border-r border-[var(--lado-borde)] bg-[var(--lado)] p-0 shadow-none md:left-0 md:top-0 md:translate-x-0 md:translate-y-0 md:rounded-none">
-      <DialogTitle className="sr-only">{t("layout.sidebar.navigation")}</DialogTitle>
-      <SidebarBody {...props} />
-    </DialogContent>
-  </Dialog>;
-
-  return <aside aria-label={t("layout.sidebar.navigation")} className={`relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] ${props.collapsed ? "w-16" : "w-[232px]"}`}>
-    <SidebarBody {...props} />
   </aside>;
 }

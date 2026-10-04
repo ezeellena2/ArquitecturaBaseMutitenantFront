@@ -1,0 +1,37 @@
+import { screen, within } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { axe } from "vitest-axe";
+import { asPhone } from "@/test/utils/phone";
+import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+
+let restore: () => void = () => {};
+beforeEach(() => { restore = asPhone(); });
+afterEach(() => restore());
+
+// Tableros M-Mas-Personal y M-WA-Menu: «Más» junta quién sos, tus perfiles, Administración, Mi cuenta y Salir.
+describe("Más en el teléfono", () => {
+  it("en una organización muestra perfiles, Administración según permisos, Mi cuenta y Salir", async () => {
+    const { container } = renderRouteWithProviders("/mas", { as: "business-e6-admin" });
+
+    expect(await screen.findByRole("heading", { level: 1, name: "Más" })).toHaveClass("text-[24px]");
+    const profiles = screen.getByRole("list", { name: "Perfiles" });
+    expect(within(profiles).getByText("Personal")).toBeInTheDocument();
+    expect(within(profiles).getByText("Empresa A")).toBeInTheDocument();
+    const administration = screen.getByRole("list", { name: "Administración" });
+    expect(within(administration).getByRole("link", { name: "Usuarios" })).toHaveAttribute("href", "/org/usuarios");
+    expect(within(administration).getByRole("link", { name: "Auditoría" })).toHaveAttribute("href", "/org/auditoria");
+    expect(screen.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("href", "/cuenta");
+    expect(screen.getByRole("button", { name: "Salir" })).toBeVisible();
+    expect(within(screen.getByRole("navigation", { name: "Secciones" })).getByRole("link", { name: "Más" })).toHaveAttribute("aria-current", "page");
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("en el perfil personal no hay Administración", async () => {
+    renderRouteWithProviders("/mas", { as: "consumer-with-organizations" });
+
+    expect(await screen.findByRole("heading", { level: 1, name: "Más" })).toBeVisible();
+    expect(screen.getByText("Personal", { selector: "[data-slot='app-bar'] span" })).toBeInTheDocument();
+    expect(screen.queryByRole("list", { name: "Administración" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Mi cuenta" })).toBeVisible();
+  });
+});

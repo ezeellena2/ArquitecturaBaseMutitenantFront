@@ -100,9 +100,10 @@ describe("Mi cuenta", () => {
     try {
       const user = userEvent.setup();
       renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
-      const actions = await screen.findByRole("group", { name: "Acciones de la cuenta" });
-      expect(actions).toHaveAttribute("data-account-actions");
-      expect(within(actions).getByRole("button", { name: "Descartar" })).toBeEnabled();
+      // Tablero M-Cuenta: la acción va fija abajo, con los textos enteros.
+      const discard = await screen.findByRole("button", { name: "Descartar cambios" });
+      expect(discard.closest("[data-slot='fixed-actions']")).not.toBeNull();
+      expect(discard).toBeEnabled();
       const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
       await user.type(name, " nuevo");
       expect(screen.getByText("Cambios sin guardar")).toHaveClass("text-[var(--alerta)]");

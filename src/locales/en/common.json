@@ -98,6 +98,8 @@
     "close": "Close notification"
   },
   "navigation": {
+    "sections": "Sections",
+    "more": "More",
     "general": "General",
     "administration": "Administration",
     "dashboard": "Home",
@@ -110,6 +112,9 @@
     "audit": "Audit"
   },
   "layout": {
+    "app": {
+      "backToMore": "Back to More"
+    },
     "sidebar": {
       "navigation": "Main navigation",
       "organization": "Organization",
@@ -135,6 +140,7 @@
     "signingOut": "Signing you out…"
   },
   "accessMenu": {
+    "current": "Current profile",
     "personal": "Personal",
     "personalDetail": "Your personal profile",
     "profiles": "Profiles",

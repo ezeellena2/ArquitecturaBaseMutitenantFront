@@ -12,7 +12,6 @@ import { ApiError } from "@/shared/api/ApiError";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { MeResponse } from "@/shared/api/types";
 import { changeCulture } from "@/shared/i18n";
-import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { Page } from "@/shared/ui/Page";
 import { FormField } from "@/shared/ui/FormField";
@@ -35,7 +34,6 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   const { t } = useTranslation("account");
   const { t: errors } = useTranslation("errors");
   const queryClient = useQueryClient();
-  const mobile = useMediaQuery("(max-width: 767px)");
   const [failure, setFailure] = useState<unknown>();
   const form = useForm<Draft>({ resolver: zodResolver(schema), defaultValues: draft(account) });
   const { isDirty, isSubmitting } = form.formState;
@@ -62,12 +60,12 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   }
   function discard() { form.reset(); setFailure(undefined); }
   const actions = <>
-    <Button type="button" variant="outline" onClick={discard} disabled={isSubmitting}>{t(mobile ? "discardMobile" : "discard")}</Button>
-    <Button type="submit" form="account-profile" disabled={!isDirty || isSubmitting}>{t(mobile ? "saveMobile" : "save")}</Button>
+    <Button type="button" variant="outline" onClick={discard} disabled={isSubmitting}>{t("discard")}</Button>
+    <Button type="submit" form="account-profile" disabled={!isDirty || isSubmitting}>{t("save")}</Button>
   </>;
   const dirty = isDirty ? <span className="font-medium text-[var(--alerta)]">{t("unsaved")}</span> : null;
   return <>
-    <Page title={t("title")} icon={UserRound} status={dirty} actions={!mobile ? actions : undefined}
+    <Page title={t("title")} icon={UserRound} status={dirty} actions={actions}
       banner={<ConcurrencyBanner error={failure} isDirty={isDirty} onSeeNew={() => { void reload(); }} onContinueEditing={() => setFailure(undefined)} />}>
       {failure && (!(failure instanceof ApiError) || failure.code !== "General.ConcurrencyConflict") ? <FormError className="mb-3" message={failure instanceof Error ? failure.message : errors("server")} /> : null}
       <form id="account-profile" aria-label={t("title")} onSubmit={form.handleSubmit(save)}>
@@ -85,7 +83,6 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
       </form>
       {children}
     </Page>
-    {mobile ? <div role="group" aria-label={t("pageActions")} data-account-actions className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t border-[var(--borde)] bg-[var(--lado-activo)] px-3 py-2.5 [&>button]:flex-1">{actions}</div> : null}
     <ConfirmDialog open={guard.isBlocked} onOpenChange={(open) => { if (!open) guard.stay(); }} title={errors("unsaved.title")} description={errors("unsaved.description")} confirmLabel={errors("unsaved.leave")} cancelLabel={errors("unsaved.continueEditing")} destructive onConfirm={guard.leave} />
   </>;
 }

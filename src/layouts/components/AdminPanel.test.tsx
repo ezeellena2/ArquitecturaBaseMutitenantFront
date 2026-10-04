@@ -17,7 +17,7 @@ beforeAll(async () => {
 describe("AdminPanel", () => {
   it("con un panel configurado abre y cierra con ‹", async () => {
     const onClose = vi.fn();
-    render(<MemoryRouter><AdminPanel panel={futurePanel} open isMobile={false} onClose={onClose} /></MemoryRouter>);
+    render(<MemoryRouter><AdminPanel panel={futurePanel} open onClose={onClose} /></MemoryRouter>);
     expect(screen.getByRole("navigation", { name: "Administración" })).toHaveClass("w-[232px]", "bg-[var(--panel)]");
     expect(screen.getByRole("button", { name: "Cerrar Administración" })).toHaveClass("size-7");
     expect(screen.queryByRole("link", { name: "Usuarios" })).not.toBeInTheDocument();
@@ -28,7 +28,7 @@ describe("AdminPanel", () => {
   // Tablero Usuarios (v77): cada opción con su ícono de 18 y una línea fina entre opciones, también entre las de
   // «Gestión de usuarios»; la sección en la que estás, en blanco.
   it("marca la sección activa, con ícono en cada opción y una línea fina entre ellas", () => {
-    render(<MemoryRouter initialEntries={["/org/auditoria"]}><AdminPanel panel={businessNavigation.administration} open isMobile={false} onClose={vi.fn()} /></MemoryRouter>);
+    render(<MemoryRouter initialEntries={["/org/auditoria"]}><AdminPanel panel={businessNavigation.administration} open onClose={vi.fn()} /></MemoryRouter>);
     const panel = screen.getByRole("navigation", { name: "Administración" });
     const audit = within(panel).getByRole("link", { name: "Auditoría" });
     expect(audit).toHaveAttribute("aria-current", "page");
@@ -45,12 +45,9 @@ describe("AdminPanel", () => {
   });
 
   it("en una ruta hija marca la opción de la que sale", () => {
-    render(<MemoryRouter initialEntries={["/org/usuarios/abc"]}><AdminPanel panel={businessNavigation.administration} open isMobile={false} onClose={vi.fn()} /></MemoryRouter>);
+    render(<MemoryRouter initialEntries={["/org/usuarios/abc"]}><AdminPanel panel={businessNavigation.administration} open onClose={vi.fn()} /></MemoryRouter>);
     expect(screen.getByRole("link", { name: "Usuarios" })).toHaveAttribute("aria-current", "page");
   });
 
-  it("no se monta en teléfono", () => {
-    render(<MemoryRouter><AdminPanel panel={futurePanel} open isMobile onClose={vi.fn()} /></MemoryRouter>);
-    expect(screen.queryByRole("navigation", { name: "Administración" })).not.toBeInTheDocument();
-  });
+
 });

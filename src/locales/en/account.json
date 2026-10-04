@@ -1,6 +1,5 @@
 {
   "title": "My account",
-  "pageActions": "Account actions",
   "unsaved": "Unsaved changes",
   "discard": "Discard changes",
   "save": "Save changes",
@@ -71,8 +70,6 @@
   "goHome": "Go to home",
   "googleFailed": "We could not complete sign-in with Google.",
   "nameTooLong": "The name is too long.",
-  "discardMobile": "Discard",
-  "saveMobile": "Save",
   "googleAlreadyUsed": "This Google account is already associated with another account.",
   "googleEmailNotVerified": "Your Google account does not have a verified email."
 }

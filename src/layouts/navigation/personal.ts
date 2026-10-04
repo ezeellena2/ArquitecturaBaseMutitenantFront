@@ -7,4 +7,5 @@ export const personalNavigation: NavigationConfig = {
     { labelKey: "accessMenu.myAccount", icon: UserRound, to: "/cuenta" },
   ],
   administration: null,
+  moreTo: "/mas",
 };

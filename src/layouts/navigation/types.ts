@@ -23,4 +23,6 @@ export interface NavigationSection {
 export interface NavigationConfig {
   links: readonly NavigationLink[];
   administration: NavigationPanel | null;
+  /** En el teléfono, la pantalla «Más» de la barra de abajo: perfiles, Administración, Mi cuenta y Salir. */
+  moreTo?: string;
 }

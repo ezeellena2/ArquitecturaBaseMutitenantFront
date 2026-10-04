@@ -6,6 +6,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { configureI18n } from "@/shared/i18n";
 import { beginSignOut, cancelSignOut } from "@/auth/signOutStatus";
 import { businessNavigation } from "./navigation/business";
+import { Page } from "@/shared/ui/Page";
 import { PrivateLayoutFrame } from "./PrivateLayoutFrame";
 
 const viewport = vi.hoisted(() => ({ mobile: false }));
@@ -50,14 +51,30 @@ describe("PrivateLayoutFrame", () => {
     expect(screen.queryByRole("navigation", { name: "Administración" })).not.toBeInTheDocument();
   });
 
-  it("el botón de la barra abre el cajón móvil y lo cierra sin segundo panel", async () => {
+  // Tableros M-* («Criterio · Marco»): el teléfono es una app. Nada de ☰, marca ni cajón; abajo, Inicio y «Más».
+  it("en el teléfono es una app: sin barra de la compu, con Inicio y «Más» abajo", () => {
     viewport.mobile = true;
-    render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation}><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
-    await userEvent.click(screen.getByRole("button", { name: "Abrir o contraer navegación" }));
-    expect(screen.getByRole("dialog", { name: "Navegación principal" })).toBeVisible();
-    expect(screen.queryByRole("navigation", { name: "Administración" })).not.toBeInTheDocument();
-    await userEvent.keyboard("{Escape}");
-    expect(screen.queryByRole("dialog", { name: "Navegación principal" })).not.toBeInTheDocument();
+    render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
+
+    expect(screen.queryByRole("button", { name: "Abrir o contraer navegación" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("complementary", { name: "Navegación principal" })).not.toBeInTheDocument();
+    const sections = screen.getByRole("navigation", { name: "Secciones" });
+    expect(within(sections).getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
+    expect(within(sections).getByRole("link", { name: "Más" })).toHaveAttribute("href", "/mas");
+    expect(within(sections).getByText("A")).toBeInTheDocument();
+  });
+
+  it("en el teléfono, una pantalla de Administración vuelve a «Más» y la marca abajo", () => {
+    viewport.mobile = true;
+    session.permissions = ["users.read"];
+    render(<MemoryRouter initialEntries={["/org/usuarios"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business">
+      <Page title="Usuarios"><p>{"lista"}</p></Page>
+    </PrivateLayoutFrame></MemoryRouter>);
+
+    expect(screen.getByRole("heading", { level: 1, name: "Usuarios" })).toHaveClass("text-[20px]");
+    expect(screen.getByRole("link", { name: "Volver a Más" })).toHaveAttribute("href", "/mas");
+    expect(screen.getByText("Administración")).toBeInTheDocument();
+    expect(within(screen.getByRole("navigation", { name: "Secciones" })).getByRole("link", { name: "Más" })).toHaveAttribute("aria-current", "page");
   });
 
   it("durante el cierre reemplaza el layout para no mostrar datos de sesión vacíos", () => {

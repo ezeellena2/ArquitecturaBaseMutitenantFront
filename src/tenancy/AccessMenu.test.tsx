@@ -150,19 +150,6 @@ describe("AccessMenu", () => {
     expect(switchAccess).toHaveBeenCalledWith({ access: "business", tenantId: "gamma" });
   });
 
-  it("en teléfono abre la hoja de perfiles desde el avatar", async () => {
-    vi.stubGlobal("matchMedia", (query: string) => ({
-      matches: query === "(max-width: 767px)", media: query,
-      addEventListener: () => {}, removeEventListener: () => {},
-    }));
-    const { user } = setup(businessUser);
-
-    await user.click(screen.getByRole("button", { name: "Tu cuenta y tus perfiles" }));
-    const sheet = screen.getByRole("dialog", { name: "Menú de Ana" });
-    expect(within(sheet).getByText("Perfiles")).toBeVisible();
-    expect(within(sheet).getByText("Empresa A")).toBeVisible();
-  });
-
   it("Salir borra los datos del perfil y redirige al cierre OIDC", async () => {
     const { user, client } = setup(businessUser);
     screen.getByRole("button", { name: "Ana, Empresa A" }).focus();

@@ -98,6 +98,8 @@
     "close": "Cerrar aviso"
   },
   "navigation": {
+    "sections": "Secciones",
+    "more": "Más",
     "general": "General",
     "administration": "Administración",
     "dashboard": "Inicio",
@@ -110,6 +112,9 @@
     "audit": "Auditoría"
   },
   "layout": {
+    "app": {
+      "backToMore": "Volver a Más"
+    },
     "sidebar": {
       "navigation": "Navegación principal",
       "organization": "Organización",
@@ -135,6 +140,7 @@
     "signingOut": "Cerrando sesión…"
   },
   "accessMenu": {
+    "current": "Perfil actual",
     "personal": "Personal",
     "personalDetail": "Tu perfil personal",
     "profiles": "Perfiles",

@@ -1,6 +1,5 @@
 {
   "title": "Mi cuenta",
-  "pageActions": "Acciones de la cuenta",
   "unsaved": "Cambios sin guardar",
   "discard": "Descartar cambios",
   "save": "Guardar cambios",
@@ -71,8 +70,6 @@
   "goHome": "Ir al inicio",
   "googleFailed": "No pudimos completar el ingreso con Google.",
   "nameTooLong": "El nombre es demasiado largo.",
-  "discardMobile": "Descartar",
-  "saveMobile": "Guardar",
   "googleAlreadyUsed": "Esta cuenta de Google ya está asociada a otra cuenta.",
   "googleEmailNotVerified": "Tu cuenta de Google no tiene el email verificado."
 }

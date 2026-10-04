@@ -12,11 +12,11 @@ const rowClass = (active: boolean) => `flex min-h-[32px] items-center gap-2.5 ro
   : "text-[var(--t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)]"}`;
 const lineClass = (index: number) => index > 0 ? "border-t border-[var(--lado-borde)] pt-0.5" : "";
 
-export function AdminPanel({ panel, open, isMobile, onClose }: { panel: NavigationPanel | null; open: boolean; isMobile: boolean; onClose: () => void }) {
+export function AdminPanel({ panel, open, onClose }: { panel: NavigationPanel | null; open: boolean; onClose: () => void }) {
   const { t } = useTranslation();
   const pathname = useLocation().pathname;
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
-  if (!panel || !open || isMobile) return null;
+  if (!panel || !open) return null;
   const activeLink = findAdministrationEntry(panel, pathname)?.link;
   const sections = panel.sections ?? [];
 

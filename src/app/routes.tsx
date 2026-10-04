@@ -67,6 +67,11 @@ export const routes: RouteObject[] = [
         const { AccountPage } = await import("@/areas/personal/account/pages/AccountPage");
         return { Component: () => <AccountLayout><AccountPage /></AccountLayout> };
       }, errorElement: <AppErrorPage /> },
+      // Tableros M-Mas-Personal y M-WA-Menu: la pestaña «Más» del teléfono, en cualquiera de los accesos.
+      { path: "/mas", lazy: async () => {
+        const { MorePage } = await import("@/layouts/MorePage");
+        return { Component: () => <AccountLayout><MorePage /></AccountLayout> };
+      }, errorElement: <AppErrorPage /> },
       { element: <AccessRoute access="business" />, children: [
         { path: "/org", element: <BusinessLayout />, children: [
           { index: true, element: <BusinessHomePage /> },

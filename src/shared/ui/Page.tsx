@@ -1,5 +1,10 @@
 import type { ComponentType, ReactNode } from "react";
 import { Link } from "react-router";
+import { cn } from "@/shared/lib/utils";
+import { AppBar, AppIconButton } from "./app/AppBar";
+import { useAppChrome } from "./app/AppChrome";
+import { Fab } from "./app/Fab";
+import { FixedActions } from "./app/FixedActions";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +35,19 @@ interface PageProps {
   tabs?: ReactNode;
   children: ReactNode;
   bodyClassName?: string;
+  /** En el teléfono, lo que dice debajo del título si no es el camino ni la organización (el correo de una persona). */
+  phoneSubtitle?: ReactNode;
+  /** En el teléfono, crear algo nuevo es un «+» flotante en lugar de la acción principal de la banda. */
+  fab?: { label: string; onClick?: () => void; to?: string };
+  /** En el teléfono: `padded` con margen de 20, `flush` para listas de borde a borde, `gray` para grupos de ajustes. */
+  phoneBody?: "padded" | "flush" | "gray";
 }
+
+const phoneBodyClasses = {
+  padded: "flex flex-1 flex-col gap-4 px-5 pt-2 pb-6 text-[15px]",
+  flush: "flex flex-1 flex-col text-[15px]",
+  gray: "flex flex-1 flex-col pb-6 text-[15px]",
+} as const;
 
 /// Banda de ancho completo y cuerpo con su propio margen. Las acciones adicionales se pasan ya
 /// traducidas y van en el menú ⋮; la principal queda a la derecha.
@@ -46,10 +63,43 @@ export function Page({
   tabs,
   children,
   bodyClassName = "flex flex-col gap-3.5 p-4 text-[13px] lg:px-6 lg:py-5",
+  phoneSubtitle,
+  fab,
+  phoneBody = "padded",
 }: PageProps): ReactNode {
+  const chrome = useAppChrome();
   const visibleMoreActions = moreActions?.items.filter((action) => !action.hidden) ?? [];
   const regularActions = visibleMoreActions.filter((action) => !action.destructive);
   const destructiveActions = visibleMoreActions.filter((action) => action.destructive);
+  const moreMenuItems = <>
+    {regularActions.map((action) => (
+      <DropdownMenuItem key={action.label} onSelect={action.onSelect}>
+        {action.label}
+      </DropdownMenuItem>
+    ))}
+    {regularActions.length > 0 && destructiveActions.length > 0 ? <DropdownMenuSeparator /> : null}
+    {destructiveActions.map((action) => (
+      <DropdownMenuItem key={action.label} variant="destructive" onSelect={action.onSelect}>
+        {action.label}
+      </DropdownMenuItem>
+    ))}
+  </>;
+
+  // Tableros M-* («Criterio · Marco»): en el teléfono la pantalla es de una app. Arriba, ‹ (si es una ficha o se
+  // llega desde «Más») con el título y el camino; el ⋮ en la barra; crear es un «+» flotante y guardar va fijo abajo.
+  if (chrome.phone) {
+    const back = backTo ?? chrome.parent ?? undefined;
+    return <div className={cn("flex min-h-full flex-col", phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--lado-activo)]")}>
+      <AppBar title={title} back={back} subtitle={phoneSubtitle ?? status ?? chrome.subtitle ?? undefined}
+        actions={visibleMoreActions.length > 0 && moreActions ? <DropdownMenu>
+          <DropdownMenuTrigger asChild><AppIconButton label={moreActions.label}><MoreVerticalIcon /></AppIconButton></DropdownMenuTrigger>
+          <DropdownMenuContent align="end">{moreMenuItems}</DropdownMenuContent>
+        </DropdownMenu> : undefined} />
+      {tabs ? <div data-slot="page-tabs" className="border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4">{tabs}</div> : null}
+      <div className={phoneBodyClasses[phoneBody]}>{banner}{children}</div>
+      {fab ? <Fab label={fab.label} onClick={fab.onClick} to={fab.to} /> : actions ? <FixedActions>{actions}</FixedActions> : null}
+    </div>;
+  }
 
   return (
     <>
@@ -96,19 +146,7 @@ export function Page({
                     <MoreVerticalIcon className="size-4" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {regularActions.map((action) => (
-                    <DropdownMenuItem key={action.label} onSelect={action.onSelect}>
-                      {action.label}
-                    </DropdownMenuItem>
-                  ))}
-                  {regularActions.length > 0 && destructiveActions.length > 0 ? <DropdownMenuSeparator /> : null}
-                  {destructiveActions.map((action) => (
-                    <DropdownMenuItem key={action.label} variant="destructive" onSelect={action.onSelect}>
-                      {action.label}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
+                <DropdownMenuContent align="end">{moreMenuItems}</DropdownMenuContent>
               </DropdownMenu>
             ) : null}
             {actions ? <span className="flex shrink-0 items-center gap-2">{actions}</span> : null}
