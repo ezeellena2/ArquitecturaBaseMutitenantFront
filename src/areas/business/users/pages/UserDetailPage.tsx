@@ -16,7 +16,7 @@ import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { FormError } from "@/shared/ui/FormError";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { FormField } from "@/shared/ui/FormField";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Page } from "@/shared/ui/Page";
@@ -332,10 +332,11 @@ export function UserDetailPage() {
         onCheckedChange={(checked) => changeDraft({ roleIds: checked ? [...current.roleIds, role.id] : current.roleIds.filter((id) => id !== role.id) })} />)}
     </ChoiceSheet>
     <Dialog open={companyDialog !== null} onOpenChange={(open) => { if (!open && !save.isPending) closeCompanyDialog(); }}>
-      {/* «Criterio · Diálogos»: dos campos, el chico de 420 px. */}
+      {/* «Criterio · Diálogos»: dos campos, el chico de 420 px. Tablero Usuario (v100): «Roles en la empresa» aparece al
+          elegir la empresa y es opcional. */}
       <DialogContent size="sm">
         <DialogHeader><DialogTitle>{companyDialog?.mode === "add" ? t("users:detail.addCompanyTitle") : t("users:detail.changeCompanyRolesTitle", { name: companyName(companyDialog?.companyId ?? "") })}</DialogTitle></DialogHeader>
-        <div className="flex flex-col gap-4 p-5">
+        <DialogBody>
           {companyDialog?.mode === "add" ? <FormField label={t("users:invite.company")} required>
             <Select value={companyDialog.companyId} onValueChange={(companyId) => changeCompanyDialog({ ...companyDialog, companyId, roleIds: [] })}>
               <SelectTrigger className="w-full" aria-label={t("users:invite.company")}><SelectValue placeholder={t("users:invite.chooseCompany")} /></SelectTrigger>
@@ -347,7 +348,7 @@ export function UserDetailPage() {
             onChange={(roleIds) => changeCompanyDialog({ ...companyDialog, roleIds })} placeholder={t("users:detail.noRoles")} /> : null}
           {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
           {dialogError ? <FormError message={dialogError} /> : null}
-        </div>
+        </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" disabled={save.isPending} onClick={closeCompanyDialog}>{t("common:actions.cancel")}</Button>
           <Button type="button" disabled={save.isPending || !companyDialog?.companyId} onClick={() => { void saveCompanyDialog(); }}>{save.isPending ? t("common:states.saving") : companyDialog?.mode === "add" ? t("users:detail.addCompanyConfirm") : t("users:detail.saveCompanyRoles")}</Button>

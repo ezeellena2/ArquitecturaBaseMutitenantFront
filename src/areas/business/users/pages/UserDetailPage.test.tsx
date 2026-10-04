@@ -259,8 +259,17 @@ describe("UserDetailPage (tablero Usuario)", () => {
 
     await user.click(await screen.findByRole("button", { name: "Sumar empresa" }));
     const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
-    await open(user, within(dialog).getByRole("combobox", { name: "Empresa" }));
+    // Tablero Usuario (v100): «Empresa» es obligatoria, con asterisco; «Roles en la empresa» es opcional, sin asterisco,
+    // y aparece al elegir la empresa. El cuerpo es el de los diálogos (en el teléfono, el de la hoja de M-Usuario-Empresa).
+    const labels = () => [...dialog.querySelectorAll("label")].map((label) => label.textContent);
+    const companyField = within(dialog).getByRole("combobox", { name: "Empresa" });
+    expect(labels()).toContain("Empresa *");
+    expect(companyField.closest("[data-slot='dialog-body']")).not.toBeNull();
+    expect(within(dialog).queryByRole("button", { name: "Roles en la empresa" })).not.toBeInTheDocument();
+    await open(user, companyField);
     await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
+    expect(within(dialog).getByRole("button", { name: "Roles en la empresa" })).toBeVisible();
+    expect(labels()).toContain("Roles en la empresa");
     await open(user, within(dialog).getByRole("button", { name: "Roles en la empresa" }));
     await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
     await user.keyboard("{Escape}");
