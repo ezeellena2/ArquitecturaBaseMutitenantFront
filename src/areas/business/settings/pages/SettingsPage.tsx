@@ -4,12 +4,11 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
-import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import type { OrganizationDomainResponse, OrganizationSettingsResponse, UpdateOrganizationSettingsRequest } from "@/shared/api/types";
+import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Button } from "@/shared/ui/button";
-import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
@@ -104,24 +103,32 @@ export function SettingsPage() {
 
   const draft = draftState ?? (settings.data ? settingsDraft(settings.data) : null);
   const isDirty = Boolean(settings.data && draft && JSON.stringify(draft) !== JSON.stringify(settingsDraft(settings.data)));
+  // Tableros Configuracion y Avisos: el 409 en su cartel, «Cambios sin guardar» solo en la banda, el error de guardado en
+  // la franja y «¿Salir sin guardar?» antes de irse con cambios.
+  const edit = useEditPage({
+    isDirty, error: failure,
+    onSeeNew: () => { void settings.refetch().then((result) => { if (result.data) setDraftState(settingsDraft(result.data)); setFailure(undefined); }); },
+    onContinueEditing: () => setFailure(undefined),
+  });
   const error = settings.error ?? domains.error;
-  const saveError = failure instanceof ApiError ? failure : undefined;
   const showGeneralError = error ? apiErrorMessage(error, t) : undefined;
   const addDomainError = actionErrorMessage(addDomain.error, t);
   const activeDomains = (domains.data ?? []).filter((domain) => domain.status !== "Removed");
 
   return <>
-    <Page banner={<ConcurrencyBanner error={saveError} isDirty={isDirty} onSeeNew={() => { void settings.refetch().then((result) => { if (result.data) setDraftState(settingsDraft(result.data)); setFailure(undefined); }); }} onContinueEditing={() => setFailure(undefined)} />}
+    <Page banner={edit.banner}
       icon={SlidersHorizontal}
       title={t("settings:title")}
+      summary={edit.unsaved}
+      phoneSubtitle={edit.unsaved}
       actions={canManage && draft && settings.data ? <>
-        <Button type="button" variant="outline" onClick={() => setDraftState(settingsDraft(settings.data!))}>{t("settings:discard")}</Button>
+        <Button type="button" variant="outline" onClick={() => { setDraftState(settingsDraft(settings.data!)); setFailure(undefined); }}>{t("settings:discard")}</Button>
         <Button type="button" disabled={!isDirty || save.isPending} onClick={() => save.mutate({ ...draft, version: settings.data!.version })}>{t("settings:save")}</Button>
       </> : undefined}
     >
       <div className="flex flex-col gap-4 max-md:gap-3.5">
         {showGeneralError ? <FormError message={showGeneralError} /> : null}
-        {saveError?.code === "General.ConcurrencyConflict" ? null : <FormError message={actionErrorMessage(failure, t)} />}
+        {edit.formError}
         {/* Tablero M-Configuracion: en el teléfono los datos van sueltos sobre blanco, sin título a la vista. */}
         <Section title={t("settings:dataTitle")} phone="untitled">
           {settings.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft ? <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5 max-md:gap-3.5 max-md:p-0">
@@ -200,5 +207,6 @@ export function SettingsPage() {
       destructive
       onConfirm={() => { if (domainToRemove) removeDomain.mutate(domainToRemove); }}
     />
+    {edit.leaveDialog}
   </>;
 }

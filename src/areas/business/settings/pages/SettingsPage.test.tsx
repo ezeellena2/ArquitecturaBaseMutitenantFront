@@ -174,4 +174,50 @@ describe("SettingsPage", () => {
     expect(await screen.findAllByText("Guardamos la configuración.")).not.toHaveLength(0);
     await waitFor(() => expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled());
   });
+
+  // B11 (tablero Avisos › «Salir sin guardar»): con el nombre cambiado, la banda dice «Cambios sin guardar» y un enlace
+  // del menú pregunta antes de salir; «Seguir editando» se queda con lo escrito.
+  it("con cambios, un enlace del menú pregunta «¿Salir sin guardar?»", async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+    );
+    const { router } = renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+
+    const name = await screen.findByRole("textbox", { name: "Nombre de la organización" });
+    await user.clear(name);
+    await user.type(name, "Grupo Delta Sur");
+    await user.click(screen.getByRole("link", { name: "Empresas" }));
+    const dialog = await screen.findByRole("dialog", { name: "¿Salir sin guardar?" });
+    expect(dialog).toHaveTextContent("Se pierde lo que cambiaste acá.");
+    expect(router.state.location.pathname).toBe("/org/configuracion");
+
+    await user.click(within(dialog).getByRole("button", { name: "Seguir editando" }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "¿Salir sin guardar?" })).not.toBeInTheDocument());
+    expect(screen.getByRole("textbox", { name: "Nombre de la organización" })).toHaveValue("Grupo Delta Sur");
+
+    await user.click(screen.getByRole("link", { name: "Empresas" }));
+    await user.click(within(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).getByRole("button", { name: "Salir sin guardar" }));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/org/empresas"));
+  });
+
+  // Tablero Configuracion: con cambios, la segunda línea de la banda dice solo «Cambios sin guardar».
+  it("con cambios, la banda dice «Cambios sin guardar»", async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+    );
+    renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+
+    const name = await screen.findByRole("textbox", { name: "Nombre de la organización" });
+    const subline = () => screen.getByRole("heading", { level: 1, name: "Configuración" }).parentElement!.querySelector("[data-slot='page-subline']");
+    expect(subline()).toBeNull();
+    await user.clear(name);
+    await user.type(name, "Grupo Delta Sur");
+    expect(subline()).toHaveTextContent(/^Cambios sin guardar$/);
+    await user.click(screen.getByRole("button", { name: "Descartar cambios" }));
+    expect(subline()).toBeNull();
+  });
 });
