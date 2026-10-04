@@ -7830,17 +7830,17 @@
                 "permissions": [
                   {
                     "code": "users.read",
-                    "name": "users.read",
+                    "name": "Ver usuarios",
                     "description": "Permiso de organización."
                   },
                   {
                     "code": "users.invite",
-                    "name": "users.invite",
+                    "name": "Invitar usuarios",
                     "description": "Permiso de organización."
                   },
                   {
                     "code": "users.manage",
-                    "name": "users.manage",
+                    "name": "Administrar usuarios",
                     "description": "Permiso de organización."
                   }
                 ]
@@ -7851,17 +7851,17 @@
                 "permissions": [
                   {
                     "code": "roles.read",
-                    "name": "roles.read",
+                    "name": "Ver roles",
                     "description": "Permiso de organización."
                   },
                   {
                     "code": "roles.manage",
-                    "name": "roles.manage",
+                    "name": "Administrar roles",
                     "description": "Permiso de organización."
                   },
                   {
                     "code": "roles.assign",
-                    "name": "roles.assign",
+                    "name": "Asignar roles",
                     "description": "Permiso de organización."
                   }
                 ]
@@ -7872,12 +7872,12 @@
                 "permissions": [
                   {
                     "code": "companies.read",
-                    "name": "companies.read",
+                    "name": "Ver empresas",
                     "description": "Permiso de organización."
                   },
                   {
                     "code": "companies.manage",
-                    "name": "companies.manage",
+                    "name": "Administrar empresas",
                     "description": "Permiso de organización."
                   }
                 ]
@@ -7888,12 +7888,12 @@
                 "permissions": [
                   {
                     "code": "settings.read",
-                    "name": "settings.read",
+                    "name": "Ver la configuración",
                     "description": "Permiso de organización."
                   },
                   {
                     "code": "settings.manage",
-                    "name": "settings.manage",
+                    "name": "Cambiar la configuración",
                     "description": "Permiso de organización."
                   }
                 ]
@@ -7904,7 +7904,7 @@
                 "permissions": [
                   {
                     "code": "audit.read",
-                    "name": "audit.read",
+                    "name": "Ver la auditoría",
                     "description": "Permiso de organización."
                   }
                 ]
@@ -7915,7 +7915,7 @@
                 "permissions": [
                   {
                     "code": "publicpage.manage",
-                    "name": "publicpage.manage",
+                    "name": "Administrar la página pública",
                     "description": "Permiso de organización."
                   }
                 ]
@@ -8033,17 +8033,17 @@
                 "permissions": [
                   {
                     "code": "users.read",
-                    "name": "users.read",
+                    "name": "Ver usuarios",
                     "description": "Permiso de organización."
                   },
                   {
                     "code": "users.invite",
-                    "name": "users.invite",
+                    "name": "Invitar usuarios",
                     "description": "Permiso de organización."
                   },
                   {
                     "code": "users.manage",
-                    "name": "users.manage",
+                    "name": "Administrar usuarios",
                     "description": "Permiso de organización."
                   }
                 ]
@@ -8054,17 +8054,17 @@
                 "permissions": [
                   {
                     "code": "roles.read",
-                    "name": "roles.read",
+                    "name": "Ver roles",
                     "description": "Permiso de organización."
                   },
                   {
                     "code": "roles.manage",
-                    "name": "roles.manage",
+                    "name": "Administrar roles",
                     "description": "Permiso de organización."
                   },
                   {
                     "code": "roles.assign",
-                    "name": "roles.assign",
+                    "name": "Asignar roles",
                     "description": "Permiso de organización."
                   }
                 ]
@@ -8075,12 +8075,12 @@
                 "permissions": [
                   {
                     "code": "companies.read",
-                    "name": "companies.read",
+                    "name": "Ver empresas",
                     "description": "Permiso de organización."
                   },
                   {
                     "code": "companies.manage",
-                    "name": "companies.manage",
+                    "name": "Administrar empresas",
                     "description": "Permiso de organización."
                   }
                 ]
@@ -8091,12 +8091,12 @@
                 "permissions": [
                   {
                     "code": "settings.read",
-                    "name": "settings.read",
+                    "name": "Ver la configuración",
                     "description": "Permiso de organización."
                   },
                   {
                     "code": "settings.manage",
-                    "name": "settings.manage",
+                    "name": "Cambiar la configuración",
                     "description": "Permiso de organización."
                   }
                 ]
@@ -8107,7 +8107,7 @@
                 "permissions": [
                   {
                     "code": "audit.read",
-                    "name": "audit.read",
+                    "name": "Ver la auditoría",
                     "description": "Permiso de organización."
                   }
                 ]
@@ -8118,7 +8118,7 @@
                 "permissions": [
                   {
                     "code": "publicpage.manage",
-                    "name": "publicpage.manage",
+                    "name": "Administrar la página pública",
                     "description": "Permiso de organización."
                   }
                 ]

@@ -111,13 +111,22 @@ const auditEntries = [
   id: `audit-${index + 1}`, occurredAtUtc, action, actionText, entityType, entityText: entityType, affectedDisplayName, whereText,
   ...actor, changes,
 }));
+// Los nombres de Permissions.resx del back (es): la pantalla los muestra, nunca el código.
+const permissionNames = {
+  "users.read": "Ver usuarios", "users.invite": "Invitar usuarios", "users.manage": "Administrar usuarios",
+  "roles.read": "Ver roles", "roles.manage": "Administrar roles", "roles.assign": "Asignar roles",
+  "companies.read": "Ver empresas", "companies.manage": "Administrar empresas",
+  "settings.read": "Ver la configuración", "settings.manage": "Cambiar la configuración",
+  "audit.read": "Ver la auditoría", "publicpage.manage": "Administrar la página pública",
+};
+const permissionGroup = (area, name, codes) => ({ area, name, permissions: codes.map((code) => ({ code, name: permissionNames[code], description: "Permiso de organización." })) });
 const permissionGroups = [
-  { area: "users", name: "Usuarios", permissions: ["users.read", "users.invite", "users.manage"].map((code) => ({ code, name: code, description: "Permiso de organización." })) },
-  { area: "roles", name: "Roles", permissions: ["roles.read", "roles.manage", "roles.assign"].map((code) => ({ code, name: code, description: "Permiso de organización." })) },
-  { area: "companies", name: "Empresas", permissions: ["companies.read", "companies.manage"].map((code) => ({ code, name: code, description: "Permiso de organización." })) },
-  { area: "settings", name: "Configuración", permissions: ["settings.read", "settings.manage"].map((code) => ({ code, name: code, description: "Permiso de organización." })) },
-  { area: "audit", name: "Auditoría", permissions: [{ code: "audit.read", name: "audit.read", description: "Permiso de organización." }] },
-  { area: "publicpage", name: "Página pública", permissions: [{ code: "publicpage.manage", name: "publicpage.manage", description: "Permiso de organización." }] },
+  permissionGroup("users", "Usuarios", ["users.read", "users.invite", "users.manage"]),
+  permissionGroup("roles", "Roles", ["roles.read", "roles.manage", "roles.assign"]),
+  permissionGroup("companies", "Empresas", ["companies.read", "companies.manage"]),
+  permissionGroup("settings", "Configuración", ["settings.read", "settings.manage"]),
+  permissionGroup("audit", "Auditoría", ["audit.read"]),
+  permissionGroup("publicpage", "Página pública", ["publicpage.manage"]),
 ];
 
 const roleLists = [

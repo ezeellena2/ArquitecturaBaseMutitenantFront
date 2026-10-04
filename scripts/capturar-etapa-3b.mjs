@@ -24,6 +24,8 @@ const response = (method, apiPath, body, status = 200) => ({ method, path: apiPa
 const proof = response("POST", "/api/me/reauth", { sourceMethodId: "2", destination: "lu•••@gmail.com", resendAfterSeconds: 60 });
 const requestEmail = response("POST", "/api/me/login-methods", { methodId: "4", resendAfterSeconds: 60 });
 const codeError = response("POST", "/api/me/login-methods/4/verify", { code: "Auth.LoginCode.Invalid", detail: "El código no es correcto." }, 400);
+// Como el back (AccountLoginMethodsService): el principal primero y después el resto, en su orden.
+const byPrimary = (methods) => methods && [...methods].sort((left, right) => Number(right.isPrimary) - Number(left.isPrimary));
 const scenarios = [];
 function account(id, extra = {}) { scenarios.push({ id, group: "cuenta", board: "Cuenta", props: { metodos: "Con correo personal", baja: "Puede darse de baja" }, ...extra }); }
 account("cuenta-personal");
@@ -143,9 +145,9 @@ const { visualPersonal } = await import("../src/test/mocks/currentUsers.ts");
 const cases = scenarios.flatMap((scenario) => [1440, 390].map((width) => {
   const params = new URLSearchParams({ as: "visual-personal", route: scenario.route ?? "/cuenta", ...(scenario.session ? { session: scenario.session } : {}) });
   return { id: `${scenario.id}-${width === 390 ? "movil" : "escritorio"}`, pair: scenario.id, group: scenario.group, board: `${width === 390 ? "M-" : ""}${scenario.board}`, props: scenario.props, viewport: { width, height: width === 390 ? 844 : 900 }, boardState: scenario.mobileOnly && width !== 390 ? {} : scenario.boardState, note: scenario.note,
-    app: { path: `/src/test/visualApp.html?${params}`, captureMode: "harness", actions: scenario.mobileOnly && width !== 390 ? [] : scenario.actions, readyText: scenario.readyText, readySelector: scenario.readySelector, afterMethods: scenario.afterMethods, afterName: scenario.afterName, responses: [
+    app: { path: `/src/test/visualApp.html?${params}`, captureMode: "harness", actions: scenario.mobileOnly && width !== 390 ? [] : scenario.actions, readyText: scenario.readyText, readySelector: scenario.readySelector, afterMethods: byPrimary(scenario.afterMethods), afterName: scenario.afterName, responses: [
       response("GET", "/api/me", { ...visualPersonal, needsPersonalLoginMethod: scenario.needsOwn ?? false, pendingLegalDocuments: scenario.legal ?? [] }),
-      response("GET", "/api/me/login-methods", { methods: scenario.methods ?? [company, personal], canLinkGoogle: !scenario.methods?.some((method) => method.type === "Google"), needsPersonalLoginMethod: scenario.needsOwn ?? false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] }), ...(scenario.responses ?? []),
+      response("GET", "/api/me/login-methods", { methods: byPrimary(scenario.methods ?? [company, personal]), canLinkGoogle: !scenario.methods?.some((method) => method.type === "Google"), needsPersonalLoginMethod: scenario.needsOwn ?? false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] }), ...(scenario.responses ?? []),
     ] } };
 }));
 for (const [key, label] of [["verificar-metodo", "Código para verificar un método"], ["metodo-agregado", "Método de ingreso agregado"], ["metodo-quitado", "Método de ingreso quitado"], ["principal-cambiado", "Método principal cambiado"], ["baja-pedida", "Baja pedida"], ["baja-cancelada", "Baja cancelada"], ["cuenta-eliminada", "Cuenta eliminada"]]) {

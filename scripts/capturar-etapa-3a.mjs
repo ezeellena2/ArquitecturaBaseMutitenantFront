@@ -201,6 +201,11 @@ export async function installApiMocks(context, responses = [], userFixture) {
       });
       return;
     }
+    // Como el back: el registro con Google pide antes su token antiforgery; sin él, el botón queda apagado.
+    if (requestPath === "/api/auth/external/google/antiforgery" && request.method() === "GET") {
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ requestToken: "capture-antiforgery" }) });
+      return;
+    }
     await route.fulfill({
       status: 501, contentType: "application/problem+json",
       body: JSON.stringify({ code: "Capture.UnmockedRoute", traceId: "capture" }),
