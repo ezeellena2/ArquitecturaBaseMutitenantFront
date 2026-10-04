@@ -7,7 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
 import { OtpInput } from "@/shared/ui/OtpInput";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
-import { makeLoginMethodPrimary, removeLoginMethod } from "../api/loginMethods";
+import { makeLoginMethodPrimary, removeLoginMethod } from "./api/loginMethods";
 import { useAccountReauth } from "./useAccountReauth";
 
 export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, onAuthorized }: {

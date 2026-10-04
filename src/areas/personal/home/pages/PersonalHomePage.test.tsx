@@ -1,4 +1,5 @@
 import { screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
@@ -14,9 +15,12 @@ it("mantiene el inicio personal con su banda «Inicio», navegación propia y ac
   expect(await axe(container)).toHaveNoViolations();
 });
 
-it("avisa que falta método propio y enlaza Mi cuenta desde Personal", async () => {
-  renderRouteWithProviders("/", { as: "consumer-needs-personal-method" });
+// Tablero Inicio-Personal: «Agregar» abre Cuenta-Agregar ahí mismo, sin ir a Mi cuenta (punto 1.12).
+it("avisa que falta método propio y «Agregar» abre el diálogo en el Inicio", async () => {
+  const { router } = renderRouteWithProviders("/", { as: "consumer-needs-personal-method" });
   expect(await screen.findByText("Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.")).toBeVisible();
-  // El tablero abre Cuenta-Agregar en el Inicio; hace falta el diálogo compartido (nota para Codex).
-  expect(screen.getByRole("link", { name: "Agregar" })).toHaveAttribute("href", "/cuenta");
+  await userEvent.click(screen.getByRole("button", { name: "Agregar" }));
+
+  expect(await screen.findByRole("dialog", { name: "Agregar correo o teléfono" })).toBeVisible();
+  expect(router.state.location.pathname).toBe("/");
 });

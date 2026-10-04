@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import { server } from "@/test/mocks/server";
 import { ApiError } from "@/shared/api/ApiError";
 import { updateMe } from "./account";
-import { addLoginEmail, removeLoginMethod, makeLoginMethodPrimary, verifyLoginMethod, fetchLoginMethods, linkGoogle } from "./loginMethods";
-import { requestReauth, verifyReauth } from "./reauth";
+import { addLoginEmail, removeLoginMethod, makeLoginMethodPrimary, verifyLoginMethod, fetchLoginMethods, linkGoogle } from "@/shared/account/api/loginMethods";
+import { requestReauth, verifyReauth } from "@/shared/account/api/reauth";
 import { requestAccountDeletion } from "./deletion";
 
 describe("clientes de la cuenta", () => {

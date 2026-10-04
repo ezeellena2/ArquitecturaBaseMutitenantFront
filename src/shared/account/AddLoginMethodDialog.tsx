@@ -16,7 +16,7 @@ import { FormError } from "@/shared/ui/FormError";
 import { EmailField } from "@/shared/ui/fields/EmailField";
 import { OtpInput } from "@/shared/ui/OtpInput";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
-import { addLoginEmail, sendLoginMethodCode, verifyLoginMethod } from "../api/loginMethods";
+import { addLoginEmail, sendLoginMethodCode, verifyLoginMethod } from "./api/loginMethods";
 import { ChangeLoginMethodDialog } from "./ChangeLoginMethodDialog";
 
 interface Props { open: boolean; onOpenChange: (open: boolean) => void; onComplete: () => void; method?: AccountLoginMethod }

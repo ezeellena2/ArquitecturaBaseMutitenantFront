@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shared/ui/button";
-import { linkGoogle } from "../api/loginMethods";
-import { ChangeLoginMethodDialog } from "./ChangeLoginMethodDialog";
+import { linkGoogle } from "@/shared/account/api/loginMethods";
+import { ChangeLoginMethodDialog } from "@/shared/account/ChangeLoginMethodDialog";
 
 export function AccountGoogleButton({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation("account");

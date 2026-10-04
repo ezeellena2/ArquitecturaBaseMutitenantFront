@@ -33,11 +33,11 @@ describe("contrato funcional de cuenta entre repos", () => {
       .toBe("#/components/schemas/ChangeLoginMethodHttpRequest");
     expect(openapi.components.schemas.ChangeLoginMethodHttpRequest.properties).toHaveProperty("reauthTicket");
     expect(openapi.components.schemas.ReauthAction.enum).toEqual(expect.arrayContaining(["AddEmail", "LinkGoogle"]));
-    expect(readFront("src/areas/personal/account/components/AddLoginMethodDialog.tsx"))
+    expect(readFront("src/shared/account/AddLoginMethodDialog.tsx"))
       .toContain("addLoginEmail({ email, reauthTicket }, key)");
-    expect(readFront("src/areas/personal/account/api/loginMethods.ts"))
+    expect(readFront("src/shared/account/api/loginMethods.ts"))
       .toContain("linkGoogle(request: ChangeLoginMethodRequest)");
-    expect(readFront("src/areas/personal/account/components/ChangeLoginMethodDialog.tsx"))
+    expect(readFront("src/shared/account/ChangeLoginMethodDialog.tsx"))
       .toContain('action === "addEmail" ? "AddEmail" : "LinkGoogle"');
     for (const field of ["version", "pendingLegalDocuments", "needsPersonalLoginMethod", "sourceMethodId", "targetMethodId",
       "reauthTicket", "cancelTicket", "scheduledForUtc", "timeZoneId", "returnUrl"]) expect(schema).toContain(`${field}`);

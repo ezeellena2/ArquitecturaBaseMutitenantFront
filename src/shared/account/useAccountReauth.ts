@@ -4,7 +4,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import type { RequestReauthRequest, ReauthCodeResponse } from "@/shared/api/types";
-import { requestReauth, verifyReauth } from "../api/reauth";
+import { requestReauth, verifyReauth } from "./api/reauth";
 
 /** La prueba queda en memoria y se reutiliza si la mutación final perdió su respuesta. */
 export function useAccountReauth(context: RequestReauthRequest) {

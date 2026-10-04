@@ -14,7 +14,7 @@ import { Textarea } from "@/shared/ui/textarea";
 import { OtpInput } from "@/shared/ui/OtpInput";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { requestAccountDeletion } from "../api/deletion";
-import { useAccountReauth } from "./useAccountReauth";
+import { useAccountReauth } from "@/shared/account/useAccountReauth";
 
 export function AccountDeletionDialog({ graceDays, onClose, onComplete }: { graceDays: number; onClose: () => void; onComplete: (scheduledForUtc: string) => void }) {
   const { t } = useTranslation("account");
