@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 8900
+ALTO = 9000
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -187,6 +187,7 @@ DECISIONES = {
         ("Ficha de una cuenta", "", "Los métodos como en Mi cuenta: filas sin encabezado, el tipo y quién lo administra debajo, y el estado solo si pide atención.", "Dibujada"),
         ("Recuperaciones · Auditoría · Legales · Configuración", "", "Cuenta con la fecha debajo; auditoría sin ojo ni cantidad y detalle en grilla; legales como lista («Versión N · vigente desde…»); «Registro y altas» con su encabezado.", "Dibujada"),
         ("Configuración · Contacto", "", "Correo de ventas y correo de soporte, debajo de «Registro y altas»: son los que muestran el registro de empresa cerrado o en el límite y la cuenta suspendida.", "Dibujada"),
+        ("Aviso de baja por la plataforma", "", "«La plataforma inició la baja de tu cuenta», en dos variantes: cuenta activa, con «Ingresar» para cancelarla antes de la fecha; cuenta suspendida, sin «Ingresar» y con el correo de soporte. Por WhatsApp, las plantillas baja_cuenta_plataforma y baja_cuenta_plataforma_suspendida.", "Dibujada"),
     ],
     "Sitio público": [
         ("Portada", "B", "Sin la etiqueta del héroe; después de «Dos lados separados», la sección «Empresas en ArquitecturaBase» con buscador, tres empresas y «Ver todas las empresas», que lleva al directorio. «Empresas», arriba, baja a esa sección.", "Dibujada"),
