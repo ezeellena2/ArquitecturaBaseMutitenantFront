@@ -971,7 +971,7 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 8600,
+      "h": 8900,
       "page": "criterio",
       "title": "Criterio · Decisiones por pantalla",
       "w": 1440,
@@ -1591,6 +1591,60 @@
       "w": 390,
       "x": 7050,
       "y": 2300
+    },
+    "WA-Alta.dc.html": {
+      "x": 0,
+      "y": 8360,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Números · conectar",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "WA-Alta-Meta.dc.html": {
+      "x": 1520,
+      "y": 8360,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Números · ventana de Meta",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "WA-Alta-Coexistencia.dc.html": {
+      "x": 3040,
+      "y": 8360,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Números · ventana de Meta · número de la app",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "M-WA-Alta.dc.html": {
+      "x": 3290,
+      "y": 6340,
+      "w": 390,
+      "h": 844,
+      "title": "Números · conectar · teléfono",
+      "page": "propuesta-whatsapp",
+      "is_interactive": true
+    },
+    "Plat-WA-Alta.dc.html": {
+      "x": 9120,
+      "y": 3260,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Número · conectar",
+      "page": "plataforma",
+      "is_interactive": true
+    },
+    "M-Plat-WA-Alta.dc.html": {
+      "x": 7520,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Número · conectar · teléfono",
+      "page": "plataforma",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -1840,6 +1894,9 @@
     "WA-Contacto.dc.html",
     "WA-Admin.dc.html",
     "WA-Admin-Vacio.dc.html",
+    "WA-Alta.dc.html",
+    "WA-Alta-Meta.dc.html",
+    "WA-Alta-Coexistencia.dc.html",
     "WA-Admin-Editar.dc.html",
     "M-WA-Chats.dc.html",
     "M-WA-Conversacion.dc.html",
@@ -1896,6 +1953,7 @@
     "M-WA-Difusion-Resultados.dc.html",
     "M-WA-Admin-Pago.dc.html",
     "M-WA-Admin-Vacio.dc.html",
+    "M-WA-Alta.dc.html",
     "M-WA-Respuestas.dc.html",
     "M-WA-Bot-Recorrido.dc.html",
     "M-WA-Equipos.dc.html",
@@ -1929,6 +1987,7 @@
     "M-Cuenta-Metodo.dc.html",
     "Plat-WA-Chats.dc.html",
     "Plat-WA-Numero.dc.html",
+    "Plat-WA-Alta.dc.html",
     "Plat-WA-Bot.dc.html",
     "Plat-WA-Bot-Recorrido.dc.html",
     "Plat-WA-Equipos.dc.html",
@@ -1936,6 +1995,7 @@
     "M-Plat-WA-Chats.dc.html",
     "M-Plat-WA-Conversacion.dc.html",
     "M-Plat-WA-Numero.dc.html",
+    "M-Plat-WA-Alta.dc.html",
     "M-Plat-WA-Bot.dc.html",
     "M-Plat-WA-Equipos.dc.html",
     "M-Plat-WA-Plantillas.dc.html"

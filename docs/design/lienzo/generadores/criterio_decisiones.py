@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 8600
+ALTO = 8900
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -115,6 +115,8 @@ DECISIONES = {
         ("Ficha del contacto", "B", "Datos en la segunda línea de arriba y pestañas «Conversaciones | Difusiones».", "Dibujada"),
         ("Difusiones", "A", "Lista; «Nueva difusión» en pantalla propia con vista previa y costo; resultados con los números y cada contacto.", "Dibujada"),
         ("Números", "A", "Tabla con Atiende a, Estado y Este mes; «Falta medio de pago» en rojo con ⓘ.", "Dibujada"),
+        ("Conectar número", "A", "«Atiende a» antes de abrir la ventana de Meta, para que «Cancelar» no deje nada a medias; sin empresas, se abre directo. Después, «Número conectado», «No se conectó el número» o el código del error de Meta. Recién conectado, el número dice «Conectado»: Meta revisa el nombre visible recién cuando sube el límite de mensajes.", "Dibujada"),
+        ("Ventana de Meta", "A", "La de Meta tal cual, en inglés como en sus capturas (con Facebook en español, Meta la traduce): títulos, campos y botones copiados, los párrafos largos en gris y «Meta» en texto en lugar del logo. Si el número ya está en la app WhatsApp Business, Meta pasa sola a la coexistencia (perfil, código QR) y el número queda «también en la app».", "Dibujada"),
         ("Bot", "A y B", "Pestañas «Configuración» (cajas) y «Recorrido» (diagrama); la opción del menú pasa a un equipo o contesta un texto.", "Dibujada"),
         ("Equipos", "A", "Tabla; crear y editar en un diálogo.", "Dibujada"),
         ("Plantillas", "B", "Lista con estado en Meta; «Nueva plantilla» en un diálogo con nombre, tipo y texto.", "Dibujada"),
@@ -140,6 +142,7 @@ DECISIONES = {
         ("Resultados", "B", "Los números son también el filtro, en una fila que se desliza; «No llegaron» suma los que no recibieron.", "Dibujada"),
         ("Números", "A", "Lista de tres líneas con ⋮ (Cambiar a quién atiende, Desconectar) y «+»; «Falta medio de pago» abre el aviso como hoja.", "Dibujada"),
         ("Sin números", "A", "La frase y el «+» de siempre.", "Dibujada"),
+        ("Conectar número", "", "«Atiende a» en una hoja y sus opciones en otra; «Ventana de Meta abierta», en hoja; los avisos, abajo. La ventana de Meta no se dibuja: en el celular se abre a pantalla completa y Meta no publica cómo se ve.", "Dibujada"),
         ("Bot · Equipos · Plantillas · Cargar teléfonos · Mensajes", "", "Decididos con los mismos criterios: ajustes en grupos, recorrido como línea de pasos, listas con ⋮ y «+», acción fija abajo, Mensajes con su propia barra (Inicio, Mensajes, Más).", "Dibujada"),
     ],
     "Organización · teléfonos (como app)": [
@@ -171,6 +174,7 @@ DECISIONES = {
         ("Qué hace", "A", "Solo consultas, además de los códigos, invitaciones y avisos: sin Contactos ni Difusiones, porque una difusión puede bajar la calidad del número y cortar los códigos. «WhatsApp» va directo a la bandeja; Administración › WhatsApp lleva Número, Bot, Equipos y Plantillas.", "Decidido"),
         ("Consultas", "", "La bandeja de la organización sin Clientes ni Internos; en la conversación, «Ver la cuenta» abre su ficha.", "Dibujada"),
         ("Número", "", "En filas, no una tabla de una fila: el número con su estado y «Qué hace» (códigos y avisos, siempre; consultas, con interruptor). Sin medio de pago, el ⓘ avisa que los códigos salen solo por correo.", "Dibujada"),
+        ("Conectar número", "", "Sin «Atiende a»: abre la ventana de Meta directo. Si Meta informa un error, el código va al soporte de Meta.", "Dibujada"),
         ("Bot", "", "Sin selector de número ni «Además»; la opción «Entrar a mi cuenta» manda el enlace para entrar y es del sistema.", "Dibujada"),
         ("Equipos · Plantillas", "", "Equipos de operadores, sin bandeja. Plantillas en pestañas: «Para consultas» y «Del sistema» (las de la Etapa 8, que no se borran).", "Dibujada"),
         ("Teléfonos", "", "En la barra de abajo, «Chats» pasa a «Consultas»; «Más» lleva WhatsApp (Número, Bot, Equipos, Plantillas).", "Dibujada"),
