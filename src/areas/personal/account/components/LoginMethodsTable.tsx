@@ -37,8 +37,8 @@ function MethodMenu({ method, onAction }: { method: AccountLoginMethod; onAction
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
       {method.canMakePrimary ? <DropdownMenuItem onSelect={() => onAction("primary", method)}><Star size={16} />{t("makePrimary")}</DropdownMenuItem> : null}
-      {method.canMakePrimary ? <DropdownMenuSeparator /> : null}
-      <DropdownMenuItem variant="destructive" disabled={!method.canRemove} onSelect={() => onAction("remove", method)}><Trash2 size={16} />{t(method.type === "Google" ? "unlink" : "remove")}</DropdownMenuItem>
+      {method.canMakePrimary && method.canRemove ? <DropdownMenuSeparator /> : null}
+      {method.canRemove ? <DropdownMenuItem variant="destructive" onSelect={() => onAction("remove", method)}><Trash2 size={16} />{t(method.type === "Google" ? "unlink" : "remove")}</DropdownMenuItem> : null}
     </DropdownMenuContent>
   </DropdownMenu>;
 }
@@ -51,7 +51,7 @@ export function LoginMethodsTable({ methods, canLinkGoogle = false, onAction }: 
       <MethodIcon method={method} />
       <span className="flex min-w-0 flex-1 flex-col"><span className="truncate font-medium text-[var(--t1)]">{method.value}</span><MethodDetail method={method} /></span>
       {!method.isVerified ? <Button type="button" variant="link" size="sm" className="px-1 text-[13px]" onClick={() => onAction("verify", method)}>{t("verify")}</Button> : null}
-      <MethodMenu method={method} onAction={onAction} />
+      {method.canMakePrimary || method.canRemove ? <MethodMenu method={method} onAction={onAction} /> : null}
     </li>)}
     {canLinkGoogle ? <li className="flex min-h-14 items-center gap-3 border-b border-[var(--borde)] px-4 py-2 odd:bg-[var(--fila-alterna)] last:border-0">
       <img src={googleMark} width="16" height="16" alt="" aria-hidden="true" />

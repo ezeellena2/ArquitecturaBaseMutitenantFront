@@ -30,6 +30,8 @@ function DropdownMenuTrigger({
   )
 }
 
+// Tablero «Criterio · Menús»: opción de 36 con ícono gris, ancho de 220 a 320, una línea fina entre opciones y
+// una franja antes de las de peligro.
 function DropdownMenuContent({
   className,
   sideOffset = 4,
@@ -41,7 +43,7 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[200px] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-[10px] border-[var(--borde)] bg-[var(--lado-activo)] p-1 text-[var(--t1)] shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
+          "z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[220px] max-w-[320px] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-[10px] border border-[var(--borde)] bg-[var(--lado-activo)] p-0 text-[var(--t1)] shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
           className
         )}
         {...props}
@@ -73,7 +75,7 @@ function DropdownMenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-          "relative flex min-h-[34px] cursor-default items-center gap-2 rounded-[8px] px-2.5 py-1.5 text-[13px] outline-hidden select-none focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 data-[variant=destructive]:text-[var(--peligro)] data-[variant=destructive]:focus:bg-[var(--peligro-t)] data-[variant=destructive]:focus:text-[var(--peligro)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-[var(--t2)] data-[variant=destructive]:*:[svg]:text-[var(--peligro)]!",
+          "relative flex min-h-9 cursor-default items-center gap-2 border-t border-[var(--borde)] px-3.5 py-1.5 text-[13px] outline-hidden select-none first:border-t-0 focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 data-[variant=destructive]:text-[var(--peligro)] data-[variant=destructive]:focus:bg-[var(--peligro-t)] data-[variant=destructive]:focus:text-[var(--peligro)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-[var(--t2)] data-[variant=destructive]:*:[svg]:text-[var(--peligro)]!",
         className
       )}
       {...props}
@@ -91,7 +93,7 @@ function DropdownMenuCheckboxItem({
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
       className={cn(
-        "relative flex min-h-[34px] cursor-default items-center gap-2 rounded-[8px] py-1.5 pr-2 pl-8 text-[13px] outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[15px]",
+        "relative flex min-h-9 cursor-default items-center gap-2 border-t border-[var(--borde)] py-1.5 pr-3.5 pl-8 text-[13px] outline-hidden select-none first:border-t-0 focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[15px]",
         className
       )}
       checked={checked}
@@ -127,7 +129,7 @@ function DropdownMenuRadioItem({
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       className={cn(
-        "relative flex min-h-[34px] cursor-default items-center gap-2 rounded-[8px] py-1.5 pr-2 pl-8 text-[13px] outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[15px]",
+        "relative flex min-h-9 cursor-default items-center gap-2 border-t border-[var(--borde)] py-1.5 pr-3.5 pl-8 text-[13px] outline-hidden select-none first:border-t-0 focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[15px]",
         className
       )}
       {...props}
@@ -154,7 +156,7 @@ function DropdownMenuLabel({
       data-slot="dropdown-menu-label"
       data-inset={inset}
       className={cn(
-        "px-2 py-1.5 text-[12px] font-medium data-[inset]:pl-8 lg:px-2.5 lg:text-[13px]",
+        "px-3.5 py-1.5 text-[12px] font-medium data-[inset]:pl-8 lg:text-[13px]",
         className
       )}
       {...props}
@@ -169,7 +171,7 @@ function DropdownMenuSeparator({
   return (
     <DropdownMenuPrimitive.Separator
       data-slot="dropdown-menu-separator"
-      className={cn("-mx-1 my-1 h-px bg-border", className)}
+      className={cn("h-1.5 border-t border-[var(--borde)] bg-[var(--s2)]", className)}
       {...props}
     />
   )

@@ -28,7 +28,7 @@ describe("RowActions", () => {
     trigger.focus();
     await userEvent.keyboard("{Enter}");
     const menu = await screen.findByRole("menu");
-    expect(menu).toHaveClass("min-w-[200px]");
+    expect(menu).toHaveClass("min-w-[220px]");
     expect(menu).not.toHaveClass("lg:min-w-[220px]");
     await userEvent.click(await screen.findByRole("menuitem", { name: "Editar los roles de Ana" }));
 

@@ -62,7 +62,7 @@
     "chooseCompany": "Elegí una empresa"
   },
   "actions": {
-    "view": "Ver y editar",
+    "view": "Editar",
     "resend": "Reenviar invitación",
     "enable": "Habilitar",
     "disable": "Deshabilitar",

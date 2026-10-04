@@ -62,7 +62,7 @@
     "chooseCompany": "Choose a company"
   },
   "actions": {
-    "view": "View and edit",
+    "view": "Edit",
     "resend": "Resend invitation",
     "enable": "Enable",
     "disable": "Disable",

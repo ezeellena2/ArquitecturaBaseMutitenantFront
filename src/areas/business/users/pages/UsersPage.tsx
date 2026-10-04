@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, Eye, Plus, Power, RotateCw, Trash2, UserRound } from "lucide-react";
+import { ChevronDown, Pencil, Plus, Power, RotateCw, Trash2, UserRound } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
@@ -143,7 +143,7 @@ export function UsersPage() {
     { id: "actions", header: t("users:columns.actions"), type: "actions", cell: (member) => <RowActions
       label={t("users:rowActions", { name: member.displayName || member.email || "" })}
       actions={[
-        { label: t("users:actions.view"), accessibleName: t("users:actions.view"), icon: Eye, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); } },
+        { label: t("users:actions.view"), accessibleName: t("users:actions.view"), icon: Pencil, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); } },
         { label: t("users:actions.resend"), accessibleName: t("users:actions.resend"), icon: RotateCw, onSelect: () => { if (member.invitationId) void resend.mutateAsync(member.invitationId).then(async () => { toast.success(t("users:messages.resent", { email: member.email ?? "" })); await invalidate(); }).catch((error: unknown) => toastError(failureMessage(error, t("common:states.error")))); }, hidden: !canInvite || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
         { label: t("users:actions.enable"), accessibleName: t("users:actions.enable"), icon: Power, onSelect: () => changeStatus.mutate({ ...member, isActive: true }), hidden: !canManage || member.state !== "Inactive" },
         { label: t("users:actions.disable"), accessibleName: t("users:actions.disable"), icon: Power, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("disable"); }, hidden: !canManage || member.state !== "Active" },

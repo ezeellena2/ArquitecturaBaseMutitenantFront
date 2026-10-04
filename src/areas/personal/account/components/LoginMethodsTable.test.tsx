@@ -11,18 +11,14 @@ beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); a
 const method: AccountLoginMethod = { id: "only", type: "Email", value: "ana@example.test", isVerified: true, isPrimary: true, canRemove: false, canMakePrimary: false };
 
 describe("métodos de cuenta", () => {
-  it("muestra principal y bloquea quitar el último según el servidor", async () => {
-    const user = userEvent.setup();
-    const onAction = vi.fn();
-    renderWithProviders(<LoginMethodsTable methods={[method]} onAction={onAction} />);
+  it("muestra principal y, si el servidor no deja quitar el último, no ofrece ⋮", () => {
+    renderWithProviders(<LoginMethodsTable methods={[method]} onAction={vi.fn()} />);
     expect(screen.getByText("Principal")).toBeVisible();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
     expect(screen.getByRole("list")).toBeVisible();
     expect(screen.getByText("Principal")).not.toHaveClass("rounded-full");
-    await user.click(screen.getByRole("button", { name: "Acciones de ana@example.test" }));
-    expect(screen.getByRole("menuitem", { name: "Quitar" })).toHaveAttribute("aria-disabled", "true");
-    expect(onAction).not.toHaveBeenCalled();
-    await user.keyboard("{Escape}");
+    // Criterio · Menús: solo lo que se puede hacer con esa fila; nada de opciones grises.
+    expect(screen.queryByRole("button", { name: "Acciones de ana@example.test" })).not.toBeInTheDocument();
   });
   it("ofrece verificar un pendiente y entrega su id", async () => {
     const user = userEvent.setup();
