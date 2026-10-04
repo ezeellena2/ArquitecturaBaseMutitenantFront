@@ -209,8 +209,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   }
 
   return <>
-    <ConcurrencyBanner error={failure} isDirty={isDirty} onSeeNew={() => { void seeLatest(); }} onContinueEditing={() => setFailure(undefined)} />
-    <Page
+    <Page banner={<ConcurrencyBanner error={failure} isDirty={isDirty} onSeeNew={() => { void seeLatest(); }} onContinueEditing={() => setFailure(undefined)} />}
       icon={ShieldCheck}
       title={title}
       backTo={{ to: "/org/roles", label: t("roles:backToList") }}

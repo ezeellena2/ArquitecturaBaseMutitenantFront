@@ -29,7 +29,8 @@ export function ConcurrencyBanner({ error, isDirty, onSeeNew, onContinueEditing 
 
   return (
     <>
-      <div role="alert" className="flex flex-wrap items-center gap-x-2.5 gap-y-2 border-b border-[var(--alerta)] bg-[var(--alerta-t)] px-4 py-2.5 text-[13px] text-[var(--alerta)] md:px-6">
+      {/* Tablero «Criterio · Avisos»: cartel de atención, ámbar y sin borde; va en el lugar de Page para carteles. */}
+      <div role="alert" className="flex flex-wrap items-center gap-x-2.5 gap-y-2 rounded-[10px] bg-[var(--alerta-t)] px-3.5 py-2.5 text-[13px] text-[var(--alerta)]">
         <TriangleAlertIcon aria-hidden="true" className="size-[18px] shrink-0" />
         <strong className="font-semibold">{t("concurrency.banner")}</strong>
         <div className="ml-auto flex gap-2">

@@ -210,8 +210,7 @@ export function UserDetailPage() {
   </>;
 
   return <>
-    <ConcurrencyBanner error={saveError} isDirty={isDirty || companyDialog !== null} onSeeNew={() => { void user.refetch().then(() => { setDraft(null); setCompanyDialog(null); setFailure(undefined); }); }} onContinueEditing={() => setFailure(undefined)} />
-    <Page icon={UserRound} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
+    <Page banner={<ConcurrencyBanner error={saveError} isDirty={isDirty || companyDialog !== null} onSeeNew={() => { void user.refetch().then(() => { setDraft(null); setCompanyDialog(null); setFailure(undefined); }); }} onContinueEditing={() => setFailure(undefined)} />} icon={UserRound} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
       moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [
         { label: t("users:actions.resend"), onSelect: resendInvitation, hidden: !isInvitation || !canInvite || !member.invitationId },
         { label: t("users:actions.revoke"), onSelect: () => setConfirmAction("revoke"), destructive: true, hidden: !isInvitation || !member.invitationId },

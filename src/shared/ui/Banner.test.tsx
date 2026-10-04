@@ -9,6 +9,8 @@ describe("Banner", () => {
     const banner = screen.getByRole("status");
     expect(banner).toHaveTextContent("Falta el correo.");
     expect(banner).toHaveClass("bg-[var(--marca-t)]");
+    // Agregado de la revisión de capturas: el cartel va sin borde, como en «Criterio · Avisos».
+    expect(banner).not.toHaveClass("border");
     expect(screen.getByText("Falta el correo.")).toHaveClass("text-[13px]");
     expect(banner).toContainElement(screen.getByRole("button", { name: "Agregar correo" }));
   });

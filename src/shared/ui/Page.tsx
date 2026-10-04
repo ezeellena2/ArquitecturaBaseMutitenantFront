@@ -24,6 +24,8 @@ interface PageProps {
   status?: ReactNode;
   actions?: ReactNode;
   moreActions?: { label: string; items: readonly PageOverflowAction[] };
+  /** Un cartel de algo que sigue pasando (tablero «Criterio · Avisos»): debajo de la banda, arriba del contenido. */
+  banner?: ReactNode;
   children: ReactNode;
   bodyClassName?: string;
 }
@@ -38,6 +40,7 @@ export function Page({
   status,
   actions,
   moreActions,
+  banner,
   children,
   bodyClassName = "flex flex-col gap-3.5 p-4 text-[13px] lg:px-6 lg:py-5",
 }: PageProps): ReactNode {
@@ -68,9 +71,10 @@ export function Page({
             {summary === null || summary === undefined ? (
               status ? <p data-slot="page-subline" className="truncate text-[13px] text-[var(--t2)]">{status}</p> : null
             ) : (
+              // Tableros Usuario y Rol: el estado va primero; después, el resumen.
               <p data-slot="page-subline" className="flex min-w-0 items-center gap-1 text-[13px] text-[var(--t2)]">
+                {status ? <><span className="shrink-0">{status}</span><span aria-hidden="true">{"·"}</span></> : null}
                 <span className="truncate">{summary}</span>
-                {status ? <><span aria-hidden="true">{"·"}</span><span className="truncate">{status}</span></> : null}
               </p>
             )}
           </div>
@@ -108,7 +112,7 @@ export function Page({
           </div>
         ) : null}
       </header>
-      <div className={bodyClassName}>{children}</div>
+      <div className={bodyClassName}>{banner}{children}</div>
     </>
   );
 }

@@ -67,8 +67,8 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   </>;
   const dirty = isDirty ? <span className="font-medium text-[var(--alerta)]">{t("unsaved")}</span> : null;
   return <>
-    <Page title={t("title")} icon={UserRound} status={dirty} actions={!mobile ? actions : undefined}>
-      <ConcurrencyBanner error={failure} isDirty={isDirty} onSeeNew={() => { void reload(); }} onContinueEditing={() => setFailure(undefined)} />
+    <Page title={t("title")} icon={UserRound} status={dirty} actions={!mobile ? actions : undefined}
+      banner={<ConcurrencyBanner error={failure} isDirty={isDirty} onSeeNew={() => { void reload(); }} onContinueEditing={() => setFailure(undefined)} />}>
       {failure && (!(failure instanceof ApiError) || failure.code !== "General.ConcurrencyConflict") ? <FormError className="mb-3" message={failure instanceof Error ? failure.message : errors("server")} /> : null}
       <form id="account-profile" aria-label={t("title")} onSubmit={form.handleSubmit(save)}>
         <section role="region" aria-labelledby="account-data-title" className="overflow-hidden rounded-[12px] border border-[var(--borde)] bg-[var(--lado-activo)]">

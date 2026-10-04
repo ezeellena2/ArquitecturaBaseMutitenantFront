@@ -180,6 +180,33 @@ describe("Page", () => {
     });
   });
 
+  // Tableros Usuario y Rol: el estado va primero en la segunda línea, antes del resumen.
+  it("pone el estado antes del resumen en la segunda línea", () => {
+    renderWithProviders(
+      <MemoryRouter>
+        <Page title="Dueño" summary="Vale en toda la organización · 1 usuario lo tiene" status="De sistema"><p>{"contenido"}</p></Page>
+      </MemoryRouter>,
+    );
+
+    const subline = screen.getByText("De sistema").closest("[data-slot='page-subline']");
+    expect(subline?.textContent).toBe("De sistema·Vale en toda la organización · 1 usuario lo tiene");
+  });
+
+  // Tablero «Criterio · Avisos»: el cartel va arriba del contenido, debajo de la banda, a todo el ancho.
+  it("deja el cartel debajo de la banda y antes del contenido", () => {
+    renderWithProviders(
+      <MemoryRouter>
+        <Page title="Configuración" banner={<div role="alert">{"Alguien cambió estos datos."}</div>}><p>{"contenido"}</p></Page>
+      </MemoryRouter>,
+    );
+
+    const banner = screen.getByRole("alert");
+    const header = screen.getByRole("banner");
+    expect(header.compareDocumentPosition(banner) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(header).not.toContainElement(banner);
+    expect(banner.nextElementSibling).toBe(screen.getByText("contenido"));
+  });
+
   it("keeps the section icon and has no way back when the screen is not a child", () => {
     const { container } = renderWithProviders(
       <MemoryRouter>

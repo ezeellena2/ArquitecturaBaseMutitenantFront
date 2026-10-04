@@ -7,6 +7,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import type { PublicPageResponse, TenantSlugAvailability, UpdatePublicPageRequest } from "@/shared/api/types";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { Button } from "@/shared/ui/button";
+import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ImportantNotice } from "@/shared/ui/ImportantNotice";
 import { InfoButton } from "@/shared/ui/InfoButton";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
@@ -74,6 +75,10 @@ function publicUrl(slug: string): string {
   return url.toString();
 }
 
+function isConcurrencyConflict(error: unknown): boolean {
+  return error instanceof ApiError && error.code === "General.ConcurrencyConflict";
+}
+
 function slugStateText(state: TenantSlugAvailability | undefined, t: (key: string) => string): string | undefined {
   if (!state) return undefined;
   return t(`publicPage:slug.${state}`);
@@ -112,7 +117,8 @@ export function PublicPagePage() {
   const update = useMutation({
     mutationFn: updatePublicPage,
     onSuccess: async () => { setDraftState(null); toast.success(t("publicPage:saved")); await client.invalidateQueries({ queryKey: publicPageQueryKey }); },
-    onError: (error) => toastError(error instanceof ApiError ? error.detail ?? t("common:states.error") : t("common:states.error")),
+    // El conflicto de concurrencia va en su cartel, debajo de la banda; los demás errores, en un aviso.
+    onError: (error) => { if (!isConcurrencyConflict(error)) toastError(error instanceof ApiError ? error.detail ?? t("common:states.error") : t("common:states.error")); },
   });
   // Tablero Pagina-Org: el interruptor de «Publicación» se aplica al momento, sin esperar a «Guardar cambios».
   const publication = useMutation({
@@ -163,6 +169,7 @@ export function PublicPagePage() {
     <Page
       icon={Globe}
       title={t("publicPage:title")}
+      banner={<ConcurrencyBanner error={update.error} isDirty={isDirty} onSeeNew={() => { setDraftState(null); update.reset(); void page.refetch(); }} onContinueEditing={() => update.reset()} />}
       summary={pageData ? <span className={`inline-flex items-center gap-1.5 ${blocked ? "text-[var(--peligro)]" : "text-[var(--t1)]"}`}>
         <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${stateDot}`} />{stateText}
       </span> : undefined}

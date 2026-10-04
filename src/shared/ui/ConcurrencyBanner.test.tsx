@@ -31,6 +31,9 @@ describe("ConcurrencyBanner", () => {
       </I18nextProvider>,
     );
     expect(screen.getByRole("alert")).toHaveTextContent("Otra persona cambió esto mientras lo editabas");
+    // Tablero «Criterio · Avisos»: un cartel de atención, ámbar, redondeado y sin borde, arriba del contenido.
+    expect(screen.getByRole("alert")).toHaveClass("rounded-[10px]", "bg-[var(--alerta-t)]");
+    expect(screen.getByRole("alert")).not.toHaveClass("border-b");
   });
 
   it("seguir editando cierra el aviso y conserva el formulario", async () => {

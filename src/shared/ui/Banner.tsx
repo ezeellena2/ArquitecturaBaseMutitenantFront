@@ -19,17 +19,17 @@ interface BannerProps {
 const tones: Record<Tone, { icon: ComponentType<{ className?: string }>; box: string; iconClass: string }> = {
   info: {
     icon: InfoIcon,
-    box: "border-[var(--marca-tx)] bg-[var(--marca-t)]",
+    box: "bg-[var(--marca-t)]",
     iconClass: "text-[var(--marca-tx)]",
   },
   warning: {
     icon: TriangleAlertIcon,
-    box: "border-[var(--alerta)] bg-[var(--alerta-t)]",
+    box: "bg-[var(--alerta-t)]",
     iconClass: "text-[var(--alerta)]",
   },
   danger: {
     icon: CircleAlertIcon,
-    box: "border-[var(--peligro)] bg-[var(--peligro-t)]",
+    box: "bg-[var(--peligro-t)]",
     iconClass: "text-[var(--peligro)]",
   },
 };
@@ -44,7 +44,8 @@ export function Banner({ tone = "info", action, children }: BannerProps) {
     <div
       role={tone === "danger" ? "alert" : "status"}
       className={cn(
-        "flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[10px] border px-3.5 py-2.5",
+        // Tablero «Criterio · Avisos»: el cartel va sin borde; el color de fondo dice qué tipo de aviso es.
+        "flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[10px] px-3.5 py-2.5",
         box,
       )}
     >

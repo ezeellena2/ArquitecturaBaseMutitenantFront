@@ -103,8 +103,7 @@ export function SettingsPage() {
   const activeDomains = (domains.data ?? []).filter((domain) => domain.status !== "Removed");
 
   return <>
-    <ConcurrencyBanner error={saveError} isDirty={isDirty} onSeeNew={() => { void settings.refetch().then((result) => { if (result.data) setDraftState(settingsDraft(result.data)); setFailure(undefined); }); }} onContinueEditing={() => setFailure(undefined)} />
-    <Page
+    <Page banner={<ConcurrencyBanner error={saveError} isDirty={isDirty} onSeeNew={() => { void settings.refetch().then((result) => { if (result.data) setDraftState(settingsDraft(result.data)); setFailure(undefined); }); }} onContinueEditing={() => setFailure(undefined)} />}
       icon={SlidersHorizontal}
       title={t("settings:title")}
       actions={canManage && draft && settings.data ? <>

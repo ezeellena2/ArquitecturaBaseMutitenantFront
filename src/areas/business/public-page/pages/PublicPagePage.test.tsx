@@ -90,6 +90,26 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Página despublicada" })).not.toBeInTheDocument());
   });
 
+  // Paquete 2: Página pública también avisa con el cartel de concurrencia, debajo de la banda, y no con un aviso
+  // que se va solo.
+  it("si otra persona cambió la página, muestra el cartel y conserva lo escrito", async () => {
+    const user = userEvent.setup();
+    api(page);
+    server.use(http.put("/api/organization/public-page", () => HttpResponse.json(
+      { code: "General.ConcurrencyConflict", title: "Conflicto" }, { status: 409, headers: { "Content-Type": "application/problem+json" } })));
+    renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+
+    const name = await within(await screen.findByRole("region", { name: "Página" })).findByRole("textbox", { name: "Nombre de la página" });
+    await user.clear(name);
+    await user.type(name, "Grupo Delta Norte");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas")).toBeVisible();
+    expect(name).toHaveValue("Grupo Delta Norte");
+    await user.click(screen.getByRole("button", { name: "Seguir editando" }));
+    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas")).not.toBeInTheDocument();
+  });
+
   it("el logo va en «Página», el contacto en «Contacto», y guarda con la versión actual", async () => {
     const user = userEvent.setup();
     let updateBody: unknown;

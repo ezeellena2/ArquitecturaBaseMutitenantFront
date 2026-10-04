@@ -199,8 +199,7 @@ export function CompanyDetailPage() {
   ];
 
   return <>
-    <ConcurrencyBanner error={editFailure ?? mutationError} isDirty={false} onSeeNew={() => { setEditDraft(draftFromCompany(data)); setEditFailure(undefined); setMutationError(undefined); void company.refetch(); }} onContinueEditing={() => { setEditFailure(undefined); setMutationError(undefined); }} />
-    <Page icon={Building2} title={data.name} backTo={{ to: "/org/empresas", label: t("companies:back") }}
+    <Page banner={<ConcurrencyBanner error={editFailure ?? mutationError} isDirty={false} onSeeNew={() => { setEditDraft(draftFromCompany(data)); setEditFailure(undefined); setMutationError(undefined); void company.refetch(); }} onContinueEditing={() => { setEditFailure(undefined); setMutationError(undefined); }} />} icon={Building2} title={data.name} backTo={{ to: "/org/empresas", label: t("companies:back") }}
       // Tablero Empresa: el estado primero, con punto y palabra; después el CUIT y la zona, formateados.
       summary={<>
         <span className="inline-flex items-center gap-1.5 text-[var(--t1)]"><span aria-hidden="true" className={`size-2 rounded-full ${data.status === "Active" ? "bg-[var(--ok)]" : "bg-[var(--t3)]"}`} />{t(`companies:status.${data.status}`)}</span>
