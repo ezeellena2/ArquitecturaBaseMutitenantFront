@@ -29,7 +29,7 @@ Si una regla no está escrita: **copiá cómo lo resuelve ArquitecturaBase** (`.
 
 ## Forma de trabajo
 - Commits chicos, en español, con conventional commits. Cada cambio coherente se commitea con sus tests focales y las verificaciones de build y lint del alcance afectado en verde.
-- **Toda pantalla nueva se dibuja primero** en el [lienzo versionado](docs/design/lienzo/README.md), con las piezas de "Gestión de usuarios" y los textos del contrato real. Se programa después de que el usuario la elige.
+- **Toda pantalla nueva se dibuja primero** en el [lienzo versionado](docs/design/lienzo/README.md), con las piezas de "Gestión de usuarios" y los textos del contrato real. Se programa después de que el usuario la elige. **El usuario ve cada pantalla antes y durante:** antes de programarla, su tablero tal como va a quedar (1440 y 390, con sus estados); mientras se programa, la captura lado a lado, tablero y app, en cada avance ([pantallas-y-ui](docs/rules/pantallas-y-ui.md)).
 - Donde hay lógica, escribir primero un test focal que falle y hacerlo pasar. Al cerrar una etapa y en CI, ejecutar `npm run build`, `npm run lint`, `npm test` y `npm run contracts:check` completos y limpios.
 
 ## Reglas

@@ -2,6 +2,10 @@
 
 **Regla:** **toda pantalla nueva se dibuja primero** en el [lienzo vigente](../design/lienzo/README.md), a 1440 y a 390, con las piezas reales de "Gestión de usuarios", y se programa recién cuando el usuario elige. **Mandan los ocho tableros «Criterio»** (Marco y pantallas, Botones, Formularios y campos, Tablas y listas, Diálogos, Menús y desplegables, Avisos y errores, y Decisiones por pantalla) y, para cada pantalla, **solo su tablero validado**: lo marcado «· por refinar» no manda. El tablero manda sobre cualquier descripción textual. Se arma solo con piezas de `shared/ui`. **Con sesión, el teléfono es una app.**
 
+**El usuario ve cada pantalla antes y durante** (pedido del usuario, 2026-10-04):
+1. **Antes de programarla:** se le muestra su tablero tal como va a quedar, a 1440 y a 390 y con sus estados (captura o el [recorrido del lienzo](../../scripts/recorrido-lienzo/recorrido.mjs)), y se programa recién con su visto bueno. Si no hay tablero o está «· por refinar», primero se dibuja.
+2. **Mientras se programa:** en cada avance se le manda la captura lado a lado, tablero y app, a 1440 y a 390, para que la vea y corrija antes de cerrar la pantalla. No se junta todo para el final.
+
 ## Cómo se hace
 - Toda pantalla usa `Page`: una banda blanca de ancho completo (64 px de alto mínimo) con el ícono de la sección o «‹» (`backTo`), el título y, en la segunda línea, el resumen, el estado (punto y palabra) o «Cambios sin guardar»; a la derecha, hasta tres acciones, el resto en ⋮ y la principal al final. El regreso mide 28 × 28 px y el ⋮, 34 × 34. En el teléfono, `Page` arma la pantalla de la app ([responsive](responsive.md)).
 - El cuerpo de `Page` conserva 24 px a los costados, 20 px arriba y abajo y 14 px entre cajas en la computadora.
@@ -33,7 +37,7 @@
 - el tablero correspondiente de [`docs/design/lienzo/`](../design/lienzo/README.md) (solo los tableros validados); para la convención de código, `src/areas/business/users/pages/UsersPage.tsx` y `UserDetailPage.tsx` (E6), `src/shared/ui/Page.tsx`, `Section.tsx` y `docs/architecture/tema.md`
 
 ## Lo verifica
-- La revisión del usuario sobre el tablero, antes de programar.
+- La revisión del usuario sobre el tablero, antes de programar, y sobre las capturas lado a lado de cada avance.
 - Tests de pantalla (tests.md), con su caso «en el teléfono …» (`asPhone()`). `oxlint`.
 - `theme-tokens.test.ts` (E0): los tokens de tema.md existen en `index.css`, ningún componente usa un color literal, y ninguna ficha ni componente usa una variable de color que no sea de tema.md (salvo los alias de shadcn en `index.css`).
 - Las capturas a 1440 y 390 contra el tablero, al cerrar la etapa.
