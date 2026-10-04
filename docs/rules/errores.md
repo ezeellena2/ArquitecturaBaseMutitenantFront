@@ -18,7 +18,7 @@
 - **ConfirmDialog o acción de fila:** `onError: (error) => toastActionError(error, t)`, un aviso abajo, en rojo y sin irse solo.
 - **Pantalla:** un 403 de la **consulta principal** renderiza `ForbiddenPage`; un 404 en una ficha, `NotFoundPage` (también un id de otra organización o de otro acceso); `Tenancy.Tenant.Suspended`, `Tenancy.Tenant.PendingApproval` y `Tenancy.Tenant.Closed` renderizan `OrganizationUnavailablePage` con su estado (Suspendida, Espera aprobación o Cerrada), y `Tenancy.Access.Wrong` lleva al inicio del acceso correcto.
 - **Qué consulta bloquea la vista:** la principal de la pantalla (el listado, la ficha, la configuración) lo declara con `meta: { blocksView: true }`, y `QueryCache.onError` publica su 403 para el `AppShell`. El 403 de una consulta secundaria (las opciones de un filtro, un conteo, los roles de una pestaña) queda en su lugar y la pantalla sigue a la vista. `httpClient` solo transporta: nunca decide qué pantalla se ve. `Legal.AcceptanceRequired` sigue su camino: bloquea desde cualquier consulta o mutación y lo resuelve `LegalAcceptanceGate`.
-- Query que maneja su error en pantalla: `meta: { silent: true }`.
+- Query que maneja su error en pantalla: `meta: { silent: true }`. También `/api/me` (`useCurrentUser`, con `blocksView`): si falla, lo muestra `LegalAcceptanceGate` con «Reintentar», sin el aviso de abajo; si falla la relectura de Mi cuenta, lo dice su franja.
 - Si falla el catálogo inicial, `AppProviders` muestra el error y un botón «Reintentar»; el Toaster sigue montado aunque el contenido principal espere datos o traducciones.
 - Si Vite emite `vite:preloadError`, `AppShell` muestra la franja de versión nueva sin cancelar el evento. Los fallos de render y de ruta se contienen en una pantalla traducida con «Actualizar»; la recarga sucede solo al pulsarlo.
 - **Genéricos:** `shared/api` y `AppShell` resuelven red, 5xx, 429 (`retryAfterSeconds` y cuenta regresiva en el botón, sin reintento automático), 409, salir sin guardar y versión nueva en E1. La sesión vencida requiere Auth y se conecta en E3; módulo apagado, en E5. Una pantalla no los reimplementa ([frontend.md, "Errores"](../architecture/frontend.md#errores)).
@@ -36,6 +36,7 @@
 - Tests de pantalla: cada `code` que traduce la feature tiene un test (tests.md).
 - `formErrors.test.ts` (E1), `queryClient.test.ts` (E1; el 403 de la consulta principal, de una secundaria y de los términos nuevos).
 - `CompanyDetailPage.test.tsx` (E7): el 403 de los roles (secundaria) no reemplaza la ficha; el de la ficha, sí.
+- `LegalAcceptanceGate.test.tsx` (E7): si falla `/api/me`, un solo aviso, con «Reintentar». `AccountPage.test.tsx` (E7): si falla la relectura después de guardar, la franja lo dice una sola vez.
 - `errorMessage.test.ts` (E7): el texto de cada error y que la pantalla no repita lo que avisó el `MutationCache`; `queryClient.test.ts` (E7): los avisos de las mutaciones y `meta.handlesError`; `RoleEditorPage.test.tsx` (E7): sin conexión al guardar, un solo aviso con «Reintentar», que vuelve a guardar.
 
 ## Detalle
