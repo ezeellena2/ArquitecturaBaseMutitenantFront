@@ -34,6 +34,11 @@ describe("CompaniesPage", () => {
 
     expect(await screen.findByRole("heading", { level: 1, name: "Empresas" })).toBeVisible();
     expect(await screen.findByRole("link", { name: "Delta S.A." })).toHaveAttribute("href", "/org/empresas/company-1");
+    // Tablero Empresas: el nombre en el color del texto y «Miembros» angosta, con el número a la derecha.
+    expect(screen.getByRole("link", { name: "Delta S.A." })).toHaveClass("font-medium", "text-[var(--t1)]");
+    expect(screen.getByRole("columnheader", { name: "Empresa" })).toHaveClass("w-[35%]");
+    expect(screen.getByRole("columnheader", { name: "Miembros" })).toHaveClass("w-[112px]", "text-right");
+    expect(screen.getByRole("columnheader", { name: "Estado" })).toHaveClass("w-[162px]");
     expect(screen.queryByRole("columnheader", { name: "CUIT" })).not.toBeInTheDocument();
     expect(screen.getByText("CUIT 30-71234567-8")).toBeVisible();
     // Tablero Empresas: «1 empresa · 1 activa» y el filtro «Estado: todas».

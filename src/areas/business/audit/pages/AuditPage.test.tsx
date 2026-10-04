@@ -52,10 +52,11 @@ describe("AuditPage", () => {
     // Tablero Auditoria-Org: banda sin bajada, «Fecha y hora», filtros «Tema: todos» y «Quién: todos», sin el ojo.
     const heading = screen.getByRole("heading", { level: 1, name: "Auditoría" });
     expect(heading.parentElement!.querySelector("[data-slot='page-subline']")).toBeNull();
-    // Columnas del tablero: 140px, 2.4fr, 1.4fr y 1.2fr; la fecha alineada a la izquierda como su encabezado.
-    expect(screen.getByRole("columnheader", { name: "Fecha y hora" })).toHaveClass("w-[140px]", "text-left!");
-    expect(screen.getByRole("columnheader", { name: "Dónde" })).toHaveClass("w-[24%]");
-    expect(screen.getByRole("columnheader", { name: "Quién" })).toHaveClass("w-[21%]");
+    // Columnas del tablero: 140px, 2.4fr, 1.4fr y 1.2fr, más los márgenes de cada celda.
+    expect(screen.getByRole("columnheader", { name: "Fecha y hora" })).toHaveClass("w-[162px]");
+    expect(screen.getByRole("columnheader", { name: "Fecha y hora" })).not.toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: "Dónde" })).toHaveClass("w-[23%]");
+    expect(screen.getByRole("columnheader", { name: "Quién" })).toHaveClass("w-[20%]");
     expect(screen.getByRole("searchbox", { name: "Buscar en la auditoría" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Tema: todos" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Quién: todos" })).toBeVisible();

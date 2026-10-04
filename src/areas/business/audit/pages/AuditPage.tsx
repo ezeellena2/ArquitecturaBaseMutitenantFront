@@ -56,7 +56,7 @@ export function AuditPage() {
 
   const rows = audit.data?.pages.flatMap((page) => page.items) ?? [];
   const columns: Column<OrganizationAuditEntryResponse>[] = [
-    { id: "occurredAtUtc", header: t("audit:columns.when"), type: "custom", mobile: "status", className: "w-[140px] max-md:w-[25%] text-left!", cell: (row) => <div className="whitespace-normal text-left"><DateText value={row.occurredAtUtc} kind="dateTime" className="whitespace-normal" /></div> },
+    { id: "occurredAtUtc", header: t("audit:columns.when"), type: "custom", mobile: "status", className: "w-[162px] max-md:w-[25%]", cell: (row) => <div className="whitespace-normal text-left"><DateText value={row.occurredAtUtc} kind="dateTime" className="whitespace-normal" /></div> },
     {
       id: "action", header: t("audit:columns.action"), type: "custom", mobile: "primary",
       // Tablero Auditoria-Org: tocar «Qué pasó» abre el detalle; sin el ojo.
@@ -64,9 +64,9 @@ export function AuditPage() {
         className="block w-full truncate text-left text-[var(--t1)] hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
         onClick={() => setSelected(row)}>{row.actionText}</button>,
     },
-    // Columnas del tablero: 140px, 2.4fr, 1.4fr y 1.2fr; «Qué pasó» se lleva el resto.
-    { id: "where", header: t("audit:columns.where"), type: "text", className: "w-[24%]", value: (row) => row.whereText },
-    { id: "actor", header: t("audit:columns.who"), type: "text", className: "w-[21%]", value: (row) => row.actorDisplayName ?? row.actorText },
+    // Columnas del tablero: 140px, 2.4fr, 1.4fr y 1.2fr, más los márgenes de cada celda; «Qué pasó» se lleva el resto.
+    { id: "where", header: t("audit:columns.where"), type: "text", className: "w-[23%]", value: (row) => row.whereText },
+    { id: "actor", header: t("audit:columns.who"), type: "text", className: "w-[20%]", value: (row) => row.actorDisplayName ?? row.actorText },
   ];
   const periodValue = period;
   // Como el tablero: cualquier filtro distinto de «Últimos 30 días» sin búsqueda ni tema ni persona cuenta.

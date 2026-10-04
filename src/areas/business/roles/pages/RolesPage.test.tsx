@@ -80,6 +80,12 @@ describe("RolesPage", () => {
     expect(screen.getByRole("link", { name: "Crear rol" })).toHaveAttribute("href", "/org/roles/new");
     expect(screen.getByRole("columnheader", { name: "Rol" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Vale en" })).toBeVisible();
+    // Tablero Roles: el nombre en el color del texto, «Vale en» a la izquierda y los números en columnas angostas.
+    expect(screen.getByRole("link", { name: "Dueño" })).toHaveClass("font-medium", "text-[var(--t1)]");
+    expect(screen.getByRole("columnheader", { name: "Rol" })).toHaveClass("w-[39%]");
+    expect(screen.getByRole("columnheader", { name: "Vale en" })).not.toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: "Usuarios" })).toHaveClass("w-[112px]", "text-right");
+    expect(screen.getByRole("columnheader", { name: "Permisos" })).toHaveClass("w-[112px]", "text-right");
     expect(screen.queryByRole("columnheader", { name: "Descripción" })).not.toBeInTheDocument();
     expect(screen.queryByRole("columnheader", { name: "Tipo" })).not.toBeInTheDocument();
     expect(screen.getAllByText("De sistema")).toHaveLength(2);

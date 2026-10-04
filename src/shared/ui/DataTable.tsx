@@ -146,6 +146,17 @@ function isNumericColumn<TRow>(column: Column<TRow>): boolean {
     || column.type === "fileSize" || column.type === "duration";
 }
 
+// Tablero «Criterio · Tablas»: 16 px a los costados de la fila y 12 entre columnas (6 por celda), iguales en el
+// encabezado y en las filas. El ⋮ va en una columna de 50, a 12 del borde, como en los tableros.
+function edgeClass<TRow>(column: Column<TRow>): string {
+  return column.type === "actions" ? "w-[50px] px-1.5 first:pl-4 last:pr-3" : "px-1.5 first:pl-4 last:pr-4";
+}
+
+// Números y montos a la derecha; el estado, como el resto del texto, a la izquierda.
+function alignClass<TRow>(column: Column<TRow>): string | undefined {
+  return isNumericColumn(column) || column.type === "actions" ? "text-right tabular-nums" : undefined;
+}
+
 /** Tabla de datos tipados: el componente de formato y la visibilidad salen de cada columna. */
 export function DataTable<TRow>({
   columns,
@@ -187,11 +198,11 @@ export function DataTable<TRow>({
               scope="col"
               aria-sort={ariaSort(column, sort)}
               className={cn(
-                "bg-[var(--cab)] px-3 text-[13px] font-semibold normal-case text-[var(--t2)] whitespace-normal",
+                "h-10 bg-[var(--cab)] py-0 text-[13px] font-semibold normal-case text-[var(--t2)] whitespace-normal",
+                edgeClass(column),
                 column.className,
-                column.type === "actions" ? "w-[5%] max-md:w-[14%]" : undefined,
                 columnVisibility(column),
-                isNumericColumn(column) || column.mobile === "status" || column.type === "actions" ? "text-right tabular-nums" : undefined,
+                alignClass(column),
               )}
             >
               {column.sortable && onSortChange ? (
@@ -210,11 +221,11 @@ export function DataTable<TRow>({
               <TableCell
                 key={column.id}
                 className={cn(
-                  "overflow-hidden px-4 py-0 whitespace-nowrap",
+                  "overflow-hidden py-2 whitespace-nowrap",
+                  edgeClass(column),
                   column.className,
-                  column.type === "actions" ? "w-[5%] max-md:w-[14%]" : undefined,
                   columnVisibility(column),
-                  isNumericColumn(column) || column.mobile === "status" || column.type === "actions" ? "text-right tabular-nums" : undefined,
+                  alignClass(column),
                 )}
               >
                 {columnCell(column, row)}

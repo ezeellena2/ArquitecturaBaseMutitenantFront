@@ -120,11 +120,16 @@ describe("DataTable", () => {
     expect(table).toHaveClass("opacity-60");
   });
 
-  it("usa encabezado arena de 13 px y filas compactas de 40 px", () => {
+  // Tablero «Criterio · Tablas» y Usuarios: encabezado de 40, filas de 40 (52 con segunda línea), 16 px a los
+  // costados y 12 entre columnas, iguales en el encabezado y en las filas, y ⋮ en una columna de 50.
+  it("usa encabezado arena de 40, filas de 40 y los mismos márgenes que el tablero", () => {
     render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} />);
     expect(screen.getByRole("table")).toHaveClass("text-[13px]");
-    expect(screen.getByRole("columnheader", { name: "Nombre" })).toHaveClass("bg-[var(--cab)]", "text-[13px]", "normal-case", "whitespace-normal");
+    const header = screen.getByRole("columnheader", { name: "Nombre" });
+    expect(header).toHaveClass("h-10", "bg-[var(--cab)]", "text-[13px]", "normal-case", "whitespace-normal", "px-1.5", "first:pl-4", "last:pr-4");
     expect(screen.getAllByRole("row")[1]).toHaveClass("h-10", "odd:bg-[var(--fila-alterna)]");
+    expect(screen.getAllByRole("cell")[0]).toHaveClass("px-1.5", "py-2", "first:pl-4", "last:pr-4");
+    expect(screen.getByRole("columnheader", { name: "Acciones" })).toHaveClass("w-[50px]", "last:pr-3", "text-right");
   });
 
   it("muestra el estado con un punto y texto, sin pastilla", () => {
@@ -145,6 +150,7 @@ describe("DataTable", () => {
     expect(screen.getByRole("columnheader", { name: "Fecha" })).toHaveClass("hidden", "md:table-cell");
     expect(screen.getByRole("columnheader", { name: "Correo" })).toHaveClass("hidden", "lg:table-cell");
     expect(screen.getByRole("button", { name: "Acciones de Ana García" }).closest("td")).not.toHaveClass("hidden");
-    expect(screen.getByRole("columnheader", { name: "Estado" })).toHaveClass("text-right");
+    // El estado va a la izquierda, como en el tablero; solo los números y montos van a la derecha.
+    expect(screen.getByRole("columnheader", { name: "Estado" })).not.toHaveClass("text-right");
   });
 });

@@ -189,9 +189,10 @@ export function CompanyDetailPage() {
   const ownRoles = activeRoles.filter((role) => role.scope === "SpecificCompany" && role.companyId === id);
   const canAdd = canManageMembers && data.status === "Active";
   const roleColumns: Column<RoleResponse>[] = [
-    { id: "name", header: t("companies:roleColumns.name"), type: "custom", mobile: "primary", cell: (role) => <Link to={`/org/roles/${encodeURIComponent(role.id)}`} className="font-medium text-[var(--marca-tx)] hover:underline">{role.name}</Link> },
-    { id: "userCount", header: t("companies:roleColumns.users"), type: "integer", value: (role) => role.userCount },
-    { id: "permissions", header: t("companies:roleColumns.permissions"), type: "integer", value: (role) => role.permissions.length, mobile: "status" },
+    { id: "name", header: t("companies:roleColumns.name"), type: "custom", mobile: "primary", cell: (role) => <Link to={`/org/roles/${encodeURIComponent(role.id)}`} className="font-medium text-[var(--t1)] hover:underline">{role.name}</Link> },
+    // Anchos del tablero Empresa (Roles): el rol se lleva el resto; Usuarios y Permisos, 120 px.
+    { id: "userCount", header: t("companies:roleColumns.users"), type: "integer", className: "w-[132px]", value: (role) => role.userCount },
+    { id: "permissions", header: t("companies:roleColumns.permissions"), type: "integer", className: "w-[132px]", value: (role) => role.permissions.length, mobile: "status" },
     { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: (role) => <RowActions label={t("companies:roleActions", { name: role.name })} actions={[
       { label: t("companies:actions.edit"), accessibleName: t("companies:actions.edit"), icon: Pencil, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); } },
     ]} /> },

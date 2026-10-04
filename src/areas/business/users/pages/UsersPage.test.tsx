@@ -40,6 +40,12 @@ describe("UsersPage", () => {
 
     expect(await screen.findByRole("heading", { level: 1, name: "Usuarios" })).toBeVisible();
     expect(await screen.findByRole("link", { name: "Lucía Fernández" })).toHaveAttribute("href", "/org/usuarios/member-1");
+    // Tablero Usuarios: el nombre en el color del texto, no en verde, y las columnas con sus anchos.
+    expect(screen.getByRole("link", { name: "Lucía Fernández" })).toHaveClass("font-medium", "text-[var(--t1)]");
+    expect(screen.getByRole("link", { name: "Lucía Fernández" })).not.toHaveClass("text-[var(--marca-tx)]");
+    expect(screen.getByRole("columnheader", { name: "Usuario" })).toHaveClass("w-[30%]");
+    expect(screen.getByRole("columnheader", { name: "Rol en la organización" })).toHaveClass("w-[19%]");
+    expect(screen.getByRole("columnheader", { name: "Estado" })).toHaveClass("w-[202px]");
     expect(screen.getByRole("columnheader", { name: "Usuario" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Rol en la organización" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Empresa" })).toBeVisible();

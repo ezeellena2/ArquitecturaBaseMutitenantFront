@@ -11,17 +11,18 @@ export function ToResolve({ rows }: { rows: readonly PendingRow[] }) {
   const { t } = useTranslation("home");
   const titleId = useId();
   const columns: Column<PendingRow>[] = [
-    { id: "title", header: t("toResolve.pending"), type: "custom", mobile: "primary", cell: (row) =>
+    { id: "title", header: t("toResolve.pending"), type: "custom", mobile: "primary", className: "w-[37%]", cell: (row) =>
       <span className="flex min-w-0 flex-col">
         <span className="truncate text-[var(--t1)]">{row.title}</span>
         {row.detail ? <span className="truncate text-xs text-[var(--t3)]">{row.detail}</span> : null}
       </span> },
     { id: "area", header: t("toResolve.area"), type: "text", className: "w-[19%]", value: (row) => row.areaLabel },
-    { id: "state", header: t("toResolve.state"), type: "custom", className: "w-[24%]", cell: (row) =>
+    { id: "state", header: t("toResolve.state"), type: "custom", cell: (row) =>
       <StatusDot tone={row.tone} label={row.state} className={dotAsText} /> },
-    { id: "since", header: t("toResolve.since"), type: "date", className: "w-[110px]", value: (row) => row.since },
-    // Columnas del tablero: 1.6fr, 0.8fr, 1fr, 110px y 96px. DataTable fija la de acciones en 5%; el ! la deja en 96px.
-    { id: "action", header: t("toResolve.action"), type: "actions", className: "w-24!", cell: (row) =>
+    { id: "since", header: t("toResolve.since"), type: "date", className: "w-[122px]", value: (row) => row.since },
+    // Columnas del tablero: 1.6fr, 0.8fr, 1fr, 110px y 96px, más los márgenes de cada celda. DataTable fija la de
+    // acciones en 50 px; el ! la deja en la del tablero.
+    { id: "action", header: t("toResolve.action"), type: "actions", className: "w-[118px]!", cell: (row) =>
       <Link to={row.to} className="text-[13px] font-semibold text-[var(--marca-tx)] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">{row.action}</Link> },
   ];
   return <Surface className="overflow-hidden">

@@ -12,14 +12,15 @@ export function userStateLabel(state: OrganizationUserResponse["state"], t: TFun
 export function createUserColumns(t: TFunction): Column<OrganizationUserResponse>[] {
   return [
     {
-      id: "displayName", header: t("users:columns.person"), type: "custom", mobile: "primary", sortable: true,
+      // Anchos del tablero Usuarios: 1.6fr, 1fr, 1.3fr y 190 px, más los márgenes de cada celda.
+      id: "displayName", header: t("users:columns.person"), type: "custom", mobile: "primary", sortable: true, className: "w-[30%]",
       cell: (user) => <div className="min-w-0">
-        <Link className="block truncate font-medium text-[var(--marca-tx)] hover:underline" to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}>{user.displayName || user.email || <EmptyValue />}</Link>
+        <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}>{user.displayName || user.email || <EmptyValue />}</Link>
         {user.displayName && user.email && user.displayName !== user.email ? <span className="hidden truncate text-xs text-[var(--t3)] md:block">{user.email}</span> : null}
       </div>,
     },
     {
-      id: "roles", header: t("users:columns.organizationRoles"), type: "text",
+      id: "roles", header: t("users:columns.organizationRoles"), type: "text", className: "w-[19%]",
       value: (user) => user.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || null,
     },
     {
@@ -35,10 +36,10 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
       },
     },
     {
-      id: "state", header: t("users:columns.state"), type: "custom", mobile: "status", className: "w-[18%] max-md:w-[38%]",
+      id: "state", header: t("users:columns.state"), type: "custom", mobile: "status", className: "w-[202px] max-md:w-[38%]",
       cell: (user) => <span className="flex flex-col gap-0.5">
-        <span className="inline-flex items-center gap-1.5 text-[13px] text-[var(--t2)]">
-          <span aria-hidden="true" className={`size-2 rounded-full ${user.state === "Active" ? "bg-[var(--ok)]" : user.state === "PendingDeletion" ? "bg-[var(--alerta)]" : user.state === "Inactive" ? "bg-[var(--t3)]" : "bg-[var(--marca-tx)]"}`} />
+        <span className="inline-flex items-center gap-1.5 text-[13px] text-[var(--t1)]">
+          <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${user.state === "Active" ? "bg-[var(--ok)]" : user.state === "PendingDeletion" ? "bg-[var(--alerta)]" : user.state === "Inactive" ? "bg-[var(--t3)]" : "bg-[var(--marca-tx)]"}`} />
           {userStateLabel(user.state, t)}
         </span>
         {user.invitationExpiresAtUtc && (user.state === "Invited" || user.state === "Expired") ? <span className="text-xs text-[var(--t3)]">{t(user.state === "Expired" ? "users:columns.expiredPrefix" : "users:columns.expiresPrefix")} <DateText value={user.invitationExpiresAtUtc} kind="date" /></span> : null}
