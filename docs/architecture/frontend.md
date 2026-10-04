@@ -31,7 +31,7 @@ Mismo stack y mismas versiones que ArquitecturaBaseFront. **El `node_modules` vi
 src/
 ├─ app/          providers · router · routes: elige el árbol de rutas por host (dominio principal o subdominio de organización)
 ├─ auth/         AuthProvider · authConfig · SessionRecovery · ProtectedRoute · AccessRoute · useCurrentUser · usePermissions · Can
-├─ tenancy/      useAccess · useSwitchAccess (persona ↔ empresa, y entre organizaciones) · AccessMenu · useCompanyParam · usePublicSite (subdominio)
+├─ tenancy/      access.ts (inicio, puerta, organización activa y estados de cada acceso) · useAccess · useSwitchAccess (persona ↔ empresa, y entre organizaciones) · AccessMenu · useCompanyParam · usePublicSite (subdominio)
 ├─ layouts/      PersonalLayout · BusinessLayout · PlatformLayout (mismo armazón: Sidebar + Topbar) · SiteLayout (sitio y páginas públicas) · AuthLayout · navigation/ · components/
 ├─ areas/        una feature no importa de otra, ni un área de otra; lo común sube a shared/
 │  ├─ public/    auth (ingresar como persona o como empresa, registro de personas, «Registrá tu empresa», invitación) · site (portada y directorio de la plataforma) · legal (términos, privacidad y la aceptación bloqueante de una versión nueva) · errors
@@ -77,7 +77,7 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 | `/auth/callback` | volver del servidor de ingreso: el canje del código va al propio origen | público |
 
 - **Árbol de rutas por host:** `routes.tsx` mira el host. Con un subdominio de organización arma las rutas de `storefront` (y `/auth/callback`); con el dominio principal, las demás. El subdominio **nunca** da acceso a la administración de la organización: esa vive en `plataforma.com/org`.
-- **Área según el acceso:** `useAccess` lee `access` de `/api/me`. Después de ingresar se va al inicio del acceso: persona → `/`, empresa → `/org`, operador → `/plataforma`. `AccessRoute` manda al inicio correcto si se entra a una ruta de otro acceso (por ejemplo, un enlace viejo).
+- **Área según el acceso:** `useAccess` lee `access` de `/api/me`. Después de ingresar se va al inicio del acceso: persona → `/`, empresa → `/org`, operador → `/plataforma` (`homeOf` en `tenancy/access.ts`, el único lugar con esas rutas y las puertas de ingreso). `AccessRoute` manda al inicio correcto si se entra a una ruta de otro acceso (por ejemplo, un enlace viejo).
 - **Ingresar desde un subdominio:** "Ingresá para continuar" hace el ingreso **como persona** y vuelve a la misma página del subdominio. El SPA y la Api se sirven desde el **mismo origen en cada host** (dominio principal y cada subdominio), así que no hay CORS. El issuer es fijo (el dominio principal): `authorize` y `logout` navegan al dominio principal, y el canje del código, la renovación y `userinfo` van a `/connect/*` del propio subdominio (ver "Auth").
 - **Inicio de cada área** (`/` con sesión de persona, `/org`): su contenido depende de cada producto. En la Etapa 3 ya existen ambos inicios vacíos con su layout, barra y menú lateral, según sus tableros (en el inicio personal, solo el aviso de método propio cuando corresponde). La administración del área B2B se suma en la Etapa 6. Sin resúmenes de relleno.
 - **Menú lateral:** el mismo armazón en las tres áreas; cambian los enlaces.

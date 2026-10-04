@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useMemo, useRef, useState, type Rea
 import { AuthContext } from "react-oidc-context";
 import { Outlet, useLocation } from "react-router";
 import { ForbiddenPage } from "@/areas/public/errors/pages/ForbiddenPage";
-import { OrganizationUnavailablePage, type UnavailableCode } from "@/areas/public/errors/pages/OrganizationUnavailablePage";
+import { OrganizationUnavailablePage } from "@/areas/public/errors/pages/OrganizationUnavailablePage";
 import { clearAccessError, useAccessError } from "@/shared/api/accessErrorStore";
 import { AppErrorBoundary } from "./AppErrorBoundary";
 import { NewVersionBanner } from "./components/NewVersionBanner";
@@ -11,6 +11,7 @@ import { AppNoticesProvider } from "@/shared/ui/app/AppNotices";
 import { BusinessLayout } from "./BusinessLayout";
 import { useDeletionRequestedDate } from "@/auth/deletionRequestStatus";
 import { DeletionRequestedPage } from "@/areas/personal/account/components/DeletionRequestedPage";
+import { homeOf, isUnavailableCode, parseAccess } from "@/tenancy/access";
 
 interface AppShellProps {
   children?: ReactNode;
@@ -66,20 +67,18 @@ export function AppShell({ children, onReload = () => window.location.reload() }
     claim,
   }), [offline, newVersion, onReload, claim]);
 
-  const unavailableCodes: UnavailableCode[] = [
-    "Tenancy.Tenant.Suspended", "Tenancy.Tenant.PendingApproval", "Tenancy.Tenant.Closed",
-  ];
+  const access = parseAccess(auth?.user?.profile.access) ?? "consumer";
+  const code = accessError?.code;
   const organizationName = accessError?.problem.organizationName;
   const tenantId = accessError?.problem.tenantId;
-  const unavailable = accessError && unavailableCodes.includes(accessError.code as UnavailableCode)
-    && typeof organizationName === "string" && typeof tenantId === "string";
-  const content = deletionDate ? <DeletionRequestedPage date={deletionDate} /> : unavailable
-    ? <OrganizationUnavailablePage code={accessError.code as UnavailableCode} organizationName={organizationName} organizationId={tenantId} />
-    : accessError && accessError.code !== "Legal.AcceptanceRequired"
-      ? auth?.user?.profile.access === "business"
-        ? <BusinessLayout><ForbiddenPage organizationName={typeof organizationName === "string" ? organizationName : undefined} /></BusinessLayout>
-        : <main className="min-h-dvh bg-[var(--fondo)]"><ForbiddenPage organizationName={typeof organizationName === "string" ? organizationName : undefined} homePath="/" /></main>
-      : children ?? <Outlet />;
+  const content = deletionDate ? <DeletionRequestedPage date={deletionDate} />
+    : isUnavailableCode(code) && typeof organizationName === "string" && typeof tenantId === "string"
+      ? <OrganizationUnavailablePage code={code} organizationName={organizationName} organizationId={tenantId} />
+      : accessError && code !== "Legal.AcceptanceRequired"
+        ? access === "business"
+          ? <BusinessLayout><ForbiddenPage organizationName={typeof organizationName === "string" ? organizationName : undefined} homePath={homeOf(access)} /></BusinessLayout>
+          : <main className="min-h-dvh bg-[var(--fondo)]"><ForbiddenPage organizationName={typeof organizationName === "string" ? organizationName : undefined} homePath={homeOf(access)} /></main>
+        : children ?? <Outlet />;
 
   return (
     <AppNoticesProvider value={notices}>

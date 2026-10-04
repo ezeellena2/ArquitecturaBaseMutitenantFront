@@ -28,6 +28,7 @@ import {
   type RolesQuery,
 } from "../api/roles";
 import { createRoleColumns, displayRoleName, rolePhoneRow } from "../columns";
+import { homeOf } from "@/tenancy/access";
 
 // «Vale en» (tablero Roles): toda la organización o una empresa por nombre, en un solo filtro.
 const roleFilterKeys = ["vale"] as const;
@@ -82,7 +83,7 @@ export function RolesPage() {
     onError: (error) => toastActionError(error, t),
   });
 
-  if (!canRead) return <ForbiddenPage homePath="/org" />;
+  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
 
   const companyNames = new Map((companies.data?.items ?? []).map((company) => [company.id, company.name]));
   const rowActions = (role: RoleResponse) => <RowActions

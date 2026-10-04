@@ -31,6 +31,7 @@ import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { List, ListItem } from "@/shared/ui/List";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { fetchAssignableRoles, fetchCompanyOptions, fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userCompaniesQueryKey, userQueryKey, userRolesQueryKey, usersQueryRoot } from "../api/users";
+import { activeOrganization, homeOf } from "@/tenancy/access";
 
 type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
 type CompanyDialogDraft = { mode: "add" | "roles"; companyId: string; roleIds: string[] };
@@ -70,7 +71,7 @@ export function UserDetailPage() {
   const canRead = currentUser?.permissions?.includes("users.read") === true;
   const canInvite = currentUser?.permissions?.includes("users.invite") === true;
   const canManage = currentUser?.permissions?.includes("users.manage") === true;
-  const organizationName = currentUser?.organizations.find((organization) => organization.id === currentUser.activeTenantId)?.name ?? "";
+  const organizationName = activeOrganization(currentUser)?.name ?? "";
   const client = useQueryClient();
   const navigate = useNavigate();
   const { phone } = useAppChrome();
@@ -107,7 +108,7 @@ export function UserDetailPage() {
   });
   const resend = useIdempotentMutation((invitationId: string, key) => resendUserInvitation(invitationId, key));
 
-  if (!canRead) return <ForbiddenPage homePath="/org" />;
+  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
   if (user.isPending) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.loading")}><p role="status">{t("common:states.loading")}</p></Page>;
   if (user.error) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.title")}><FormError message={apiErrorMessage(user.error, t)} /></Page>;
   if (!user.data) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.title")}><EmptyState title={t("users:empty.missing")} /></Page>;

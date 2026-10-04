@@ -29,6 +29,7 @@ import {
 } from "../api/businessSignup";
 import { GoogleButton } from "../components/GoogleButton";
 import { loginCodeErrorKey } from "../errors";
+import { homeOf, loginPathOf } from "@/tenancy/access";
 
 type Step = "email" | "code" | "details" | "success" | "approval" | "closed";
 
@@ -211,7 +212,7 @@ export function BusinessSignupPage() {
   }
 
   async function enterOrganization() {
-    await auth.signinRedirect({ extraQueryParams: { access: "business" }, state: { returnTo: "/org" } });
+    await auth.signinRedirect({ extraQueryParams: { access: "business" }, state: { returnTo: homeOf("business") } });
   }
 
   const requestErrorText = requestError
@@ -245,7 +246,7 @@ export function BusinessSignupPage() {
             <FormError message={requestErrorText} />
             <Button type="button" size="lg" className="w-full" disabled={requestCode.isPending || retry.isRunning}
               onClick={() => { if (acceptedTerms) void sendCode(); else setTermsError(true); }}>{retry.label ?? t("businessSignup.continue")}</Button>
-            <div className="text-center text-[13px] text-[var(--t2)]">{t("businessSignup.alreadyRegistered")} <Link to="/login/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.loginBusiness")}</Link></div>
+            <div className="text-center text-[13px] text-[var(--t2)]">{t("businessSignup.alreadyRegistered")} <Link to={loginPathOf("business")} className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.loginBusiness")}</Link></div>
           </section>
             : step === "code" ? <section className="flex flex-col gap-[22px]">
               <button type="button" onClick={() => { setStep("email"); setCode(""); setRequestError(null); }}

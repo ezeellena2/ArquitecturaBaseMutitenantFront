@@ -4,10 +4,11 @@ import { Link } from "react-router";
 import { AppBar } from "./app/AppBar";
 import { useAppChrome } from "./app/AppChrome";
 
-export function ErrorPageFrame({ icon, title, homePath = "/org", onHomeClick }: {
+/// «Ir al inicio» lleva al inicio del acceso de la sesión: quien la usa lo sabe (homeOf en tenancy/access.ts).
+export function ErrorPageFrame({ icon, title, homePath, onHomeClick }: {
   icon: ReactNode;
   title: string;
-  homePath?: string;
+  homePath: string;
   onHomeClick?: () => void;
 }) {
   const { t } = useTranslation("errors");

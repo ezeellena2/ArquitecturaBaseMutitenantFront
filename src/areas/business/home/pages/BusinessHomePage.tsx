@@ -10,6 +10,7 @@ import { AreaCards, CompanyCards } from "../components/HomeCards";
 import { PhoneHome } from "../components/PhoneHome";
 import { describePending, type PendingRow } from "../components/pendingItems";
 import { ToResolve } from "../components/ToResolve";
+import { activeOrganization } from "@/tenancy/access";
 
 /**
  * Inicio de la organización (ADR 0040). La API decide qué ve cada persona: con permisos de la organización, las
@@ -21,7 +22,7 @@ export function BusinessHomePage() {
   const { data: currentUser } = useCurrentUser();
   const phone = useMediaQuery("(max-width: 767px)");
   const home = useQuery({ queryKey: homeQueryKey, queryFn: fetchHome, meta: { blocksView: true } });
-  const organizationName = currentUser?.organizations.find((organization) => organization.id === currentUser.activeTenantId)?.name ?? "";
+  const organizationName = activeOrganization(currentUser)?.name ?? "";
   const rows = (home.data?.pending ?? [])
     .map((item, index) => describePending(item, index, t, format.formatDate))
     .filter((row): row is PendingRow => row !== null);

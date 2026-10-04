@@ -32,6 +32,7 @@ import {
   fetchOrganizationDomains, fetchOrganizationSettings, organizationDomainsKey, organizationSettingsKey,
   registerOrganizationDomain, removeOrganizationDomain, updateOrganizationSettings, verifyOrganizationDomain,
 } from "../api/settings";
+import { activeOrganization, homeOf } from "@/tenancy/access";
 
 type SettingsDraft = Pick<OrganizationSettingsResponse, "name" | "defaultCulture" | "defaultTimeZoneId" | "defaultCurrency">;
 
@@ -44,7 +45,7 @@ export function SettingsPage() {
   const { data: currentUser } = useCurrentUser();
   const canRead = currentUser?.permissions?.includes("settings.read") === true;
   const canManage = currentUser?.permissions?.includes("settings.manage") === true;
-  const organizationName = currentUser?.organizations.find((organization) => organization.id === currentUser.activeTenantId)?.name ?? "";
+  const organizationName = activeOrganization(currentUser)?.name ?? "";
   const client = useQueryClient();
   const settings = useQuery({ queryKey: organizationSettingsKey, queryFn: fetchOrganizationSettings, enabled: canRead, meta: { silent: true, blocksView: true } });
   const domains = useQuery({ queryKey: organizationDomainsKey, queryFn: fetchOrganizationDomains, enabled: canRead, meta: { silent: true } });
@@ -85,7 +86,7 @@ export function SettingsPage() {
     onError: (error) => toastActionError(error, t),
   });
 
-  if (!canRead) return <ForbiddenPage homePath="/org" />;
+  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
 
   function openVerify(domain: OrganizationDomainResponse) {
     setDomainToVerify(domain);

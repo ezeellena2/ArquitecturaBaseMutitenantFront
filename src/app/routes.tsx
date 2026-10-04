@@ -13,6 +13,7 @@ import { SiteLayout } from "@/layouts/SiteLayout";
 import { AppErrorPage } from "@/layouts/AppErrorBoundary";
 import { AppShell } from "@/layouts/AppShell";
 import { ForbiddenRoute, HomeRoute, NotFoundRoute } from "./RouteViews";
+import { homeOf, loginPathOf } from "@/tenancy/access";
 
 export const routes: RouteObject[] = [
   { element: <AppShell />, errorElement: <AppErrorPage />, children: [
@@ -20,7 +21,7 @@ export const routes: RouteObject[] = [
     const { LoginPage } = await import("@/areas/public/auth/pages/LoginPage");
     return { Component: () => <LoginPage access="consumer" /> };
   }, errorElement: <AppErrorPage /> },
-  { path: "/login/empresa", lazy: async () => {
+  { path: loginPathOf("business"), lazy: async () => {
     const { LoginPage } = await import("@/areas/public/auth/pages/LoginPage");
     return { Component: () => <LoginPage access="business" /> };
   }, errorElement: <AppErrorPage /> },
@@ -73,7 +74,7 @@ export const routes: RouteObject[] = [
         return { Component: () => <AccountLayout><MorePage /></AccountLayout> };
       }, errorElement: <AppErrorPage /> },
       { element: <AccessRoute access="business" />, children: [
-        { path: "/org", element: <BusinessLayout />, children: [
+        { path: homeOf("business"), element: <BusinessLayout />, children: [
           { index: true, element: <BusinessHomePage /> },
           { path: "roles", lazy: async () => {
             const { RolesPage } = await import("@/areas/business/roles/pages/RolesPage");
@@ -118,7 +119,7 @@ export const routes: RouteObject[] = [
         ] },
       ] },
       { element: <AccessRoute access="platform" />, children: [
-        { path: "/plataforma", element: <PlatformLayout /> },
+        { path: homeOf("platform"), element: <PlatformLayout /> },
       ] },
       ] },
     ] },

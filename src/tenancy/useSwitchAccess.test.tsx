@@ -7,7 +7,7 @@ import { MemoryRouter, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/shared/api/ApiError";
 import { clearAccessError, getAccessError, publishAccessError } from "@/shared/api/accessErrorStore";
-import { accessHome } from "./accessHome";
+import { homeOf } from "./access";
 import { useSwitchAccess } from "./useSwitchAccess";
 
 const signinSilent = vi.fn<() => Promise<User | null>>();
@@ -75,8 +75,8 @@ describe("useSwitchAccess", () => {
   });
 
   it("mapea el inicio de cada acceso sin reusar el lado previo", () => {
-    expect(accessHome("consumer")).toBe("/");
-    expect(accessHome("business")).toBe("/org");
-    expect(accessHome("platform")).toBe("/plataforma");
+    expect(homeOf("consumer")).toBe("/");
+    expect(homeOf("business")).toBe("/org");
+    expect(homeOf("platform")).toBe("/plataforma");
   });
 });

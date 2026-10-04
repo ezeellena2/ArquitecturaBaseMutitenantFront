@@ -1,9 +1,10 @@
 import { Building2, ClipboardList, Globe, House, Key, ShieldCheck, SlidersHorizontal, Users } from "lucide-react";
 import type { NavigationConfig } from "./types";
+import { homeOf } from "@/tenancy/access";
 
 // Íconos del tablero Usuarios (v77), los mismos que las tarjetas del Inicio.
 export const businessNavigation: NavigationConfig = {
-  links: [{ labelKey: "navigation.dashboard", icon: House, to: "/org" }],
+  links: [{ labelKey: "navigation.dashboard", icon: House, to: homeOf("business") }],
   moreTo: "/mas",
   administration: {
     labelKey: "navigation.administration",

@@ -17,7 +17,7 @@ export const accountPaths = {
   cancelDeletion: "/api/auth/deletion/cancel",
 } as const;
 
-export const accountPagePaths = { account: "/cuenta", acceptLegal: "/aceptar-terminos", login: "/login", businessLogin: "/login/empresa" } as const;
+export const accountPagePaths = { account: "/cuenta", acceptLegal: "/aceptar-terminos" } as const;
 export const accountErrorCodes = {
   pendingDeletion: "Identity.Account.PendingDeletion",
   legalAcceptanceRequired: "Legal.AcceptanceRequired",

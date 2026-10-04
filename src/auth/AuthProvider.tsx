@@ -6,6 +6,7 @@ import i18n from "@/shared/i18n";
 import { authConfig } from "./authConfig";
 import { rememberExpiredSessionNotice } from "./sessionExpiredNotice";
 import { rememberRecoveryAccess } from "./recoveryAccess";
+import { accessOfPath, loginPathOf, parseAccess } from "@/tenancy/access";
 
 let session: AuthContextProps | undefined;
 
@@ -15,9 +16,10 @@ const httpClientOptions = {
   getCulture: () => i18n.language,
   renewAccessToken: async () => (await session?.signinSilent())?.access_token,
   onSessionExpired: async () => {
-    const access = session?.user?.profile.access;
     const returnUrl = `${globalThis.location.pathname}${globalThis.location.search}`;
-    const loginPath = access === "business" || returnUrl.startsWith("/org") ? "/login/empresa" : "/login";
+    // La puerta de empresa si la sesión era de empresa o si estaba en una ruta de empresa; si no, la de la persona.
+    const sessionAccess = parseAccess(session?.user?.profile.access);
+    const loginPath = loginPathOf(sessionAccess === "business" ? sessionAccess : accessOfPath(globalThis.location.pathname));
     const query = new URLSearchParams({ returnUrl, session: "expired" });
 
     rememberExpiredSessionNotice();

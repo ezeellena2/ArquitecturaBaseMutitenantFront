@@ -15,6 +15,7 @@ import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
 import { findAdministrationEntry } from "./navigation/administration";
 import type { NavigationConfig } from "./navigation/types";
+import { activeOrganization } from "@/tenancy/access";
 
 interface PrivateLayoutFrameProps {
   navigation: NavigationConfig;
@@ -55,9 +56,9 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   const hideActiveSection = useCallback((hidden: boolean) => setActiveSectionHidden(hidden), []);
   const name = user?.displayName || user?.email || "";
   const account = user ? { name, email: user.email ?? null } : null;
-  const activeOrganization = user?.organizations.find((item) => item.id === user.activeTenantId);
+  const organization = activeOrganization(user);
   const context = scope === "personal" ? { title: t("accessMenu.personal"), detail: t("accessMenu.personalDetail") }
-    : scope === "business" && activeOrganization ? { title: activeOrganization.name, detail: t("layout.sidebar.organization") }
+    : scope === "business" && organization ? { title: organization.name, detail: t("layout.sidebar.organization") }
       : null;
 
   // Tableros M-* («Criterio · Marco»): en el teléfono, Inicio y «Más» abajo; las demás pantallas se abren desde

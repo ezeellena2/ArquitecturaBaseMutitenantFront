@@ -1,18 +1,16 @@
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { Clock3, ChevronRight, LockKeyhole, TriangleAlert } from "lucide-react";
 import { LogOutIcon } from "@/shared/ui/icons";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "react-oidc-context";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
-import { beginSignOut, cancelSignOut, useIsSigningOut } from "@/auth/signOutStatus";
+import { useIsSigningOut } from "@/auth/signOutStatus";
+import { useSignOut } from "@/auth/useSignOut";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useSwitchAccess, type SwitchTarget } from "@/tenancy/useSwitchAccess";
 import { BrandMark } from "@/shared/ui/BrandMark";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { GroupTitle, SettingsGroup, SettingsItem } from "@/shared/ui/app/SettingsGroup";
-
-export type UnavailableCode = "Tenancy.Tenant.Suspended" | "Tenancy.Tenant.PendingApproval" | "Tenancy.Tenant.Closed";
+import { isSelectable, loginPathOf, type UnavailableCode } from "@/tenancy/access";
 
 function initials(name: string): string {
   return name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("");
@@ -26,15 +24,14 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
   const { t } = useTranslation(["errors", "common", "auth"]);
   const { data: account } = useCurrentUser();
   const switching = useSwitchAccess();
-  const auth = useAuth();
-  const queryClient = useQueryClient();
+  const signOut = useSignOut();
   const isSigningOut = useIsSigningOut();
   const [targetName, setTargetName] = useState("");
   const phone = useMediaQuery("(max-width: 767px)");
 
   if (isSigningOut) return <SessionStatusPage status="closing" />;
   if (switching.isSwitching) return <SessionStatusPage status="switching" targetName={targetName} />;
-  if (switching.hasError) return <SessionStatusPage status="error" loginPath="/login/empresa" />;
+  if (switching.hasError) return <SessionStatusPage status="error" loginPath={loginPathOf("business")} />;
 
   const pending = code === "Tenancy.Tenant.PendingApproval";
   const closed = code === "Tenancy.Tenant.Closed";
@@ -42,22 +39,11 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
   const description = t(`errors:errorPage.unavailable.${pending ? "pendingDescription" : closed ? "closedDescription" : "suspendedDescription"}`);
   const Icon = pending ? Clock3 : closed ? LockKeyhole : TriangleAlert;
   const iconTone = pending ? "bg-[var(--marca-t)] text-[var(--marca-tx)]" : closed ? "bg-[var(--s3)] text-[var(--t2)]" : "bg-[var(--alerta-t)] text-[var(--alerta)]";
-  const organizations = account?.organizations.filter((item) => item.id !== organizationId && item.status === "Active" && item.memberStatus === "Active" && item.isSelectable !== false) ?? [];
+  const organizations = account?.organizations.filter((item) => item.id !== organizationId && isSelectable(item)) ?? [];
 
   function changeProfile(target: SwitchTarget, name: string): void {
     setTargetName(name);
     void switching.switchAccess(target);
-  }
-
-  async function signOut(): Promise<void> {
-    beginSignOut();
-    queryClient.clear();
-    try {
-      const result: unknown = await auth.signoutRedirect();
-      if (result === null) cancelSignOut();
-    } catch {
-      cancelSignOut();
-    }
   }
 
   // Tablero M-Perfil-Suspendido: en el teléfono el fondo es gris y sin la marca; arriba el aviso, después

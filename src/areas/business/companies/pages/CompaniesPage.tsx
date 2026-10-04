@@ -34,6 +34,7 @@ import {
 } from "../api/companies";
 import { createCompanyColumns, companyPhoneRow } from "../columns";
 import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyTaxIdValid, type CompanyDraft } from "../components/CompanyFields";
+import { homeOf } from "@/tenancy/access";
 
 const statusValues = [undefined, "Active", "Inactive"] as const;
 const companyFilterKeys = ["status"] as const;
@@ -99,7 +100,7 @@ export function CompaniesPage() {
     onError: (error) => toastActionError(error, t),
   });
 
-  if (!canRead) return <ForbiddenPage homePath="/org" />;
+  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
 
   function openCreate() {
     setEditingCompany(null);

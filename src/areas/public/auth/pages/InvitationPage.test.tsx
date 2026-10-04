@@ -250,10 +250,11 @@ describe("InvitationPage", () => {
     expect(screen.getByRole("button", { name: "Aceptar invitación" })).toBeEnabled();
   });
 
-  it("permite salir y seguir con la cuenta invitada o volver al acceso actual sin aceptar", async () => {
-    // Tablero Invitacion (sesión ajena): «Seguir como Lucía», con el nombre que trae la vista previa.
+  // Salir es la misma secuencia de toda la app (useSignOut): limpia la caché y el servidor de ingreso vuelve a la
+  // invitación, así que después de salir esta pantalla ya no sigue.
+  it("permite salir y seguir con la cuenta invitada sin aceptar", async () => {
     previewResponse = { ...basePreview, state: "WrongSession", currentAccountEmail: "lucia@example.test", currentAccountName: "Lucía Fernández" };
-    const { container, router } = show({ signedInAs: "business" });
+    show({ signedInAs: "business" });
     expect(await screen.findByText("Entraste como lucia@example.test y la invitación es para invitada@example.test.")).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: "Salir y seguir como invitada@example.test" }));
     await waitFor(() => expect(signoutRedirect).toHaveBeenCalledOnce());
@@ -261,6 +262,13 @@ describe("InvitationPage", () => {
     expect(options.post_logout_redirect_uri).toBe(`${window.location.origin}/invitacion`);
     expect(options.extraQueryParams.preserveInvitation).toBe("true");
     expect(acceptRequests).toHaveLength(0);
+  });
+
+  it("permite volver al acceso actual sin aceptar", async () => {
+    // Tablero Invitacion (sesión ajena): «Seguir como Lucía», con el nombre que trae la vista previa.
+    previewResponse = { ...basePreview, state: "WrongSession", currentAccountEmail: "lucia@example.test", currentAccountName: "Lucía Fernández" };
+    const { container, router } = show({ signedInAs: "business" });
+    expect(await screen.findByText("Entraste como lucia@example.test y la invitación es para invitada@example.test.")).toBeVisible();
 
     fireEvent.click(screen.getByRole("button", { name: "Seguir como Lucía" }));
     await waitFor(() => expect(router.state.location.pathname).toBe("/org"));

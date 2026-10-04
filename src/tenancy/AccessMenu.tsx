@@ -2,7 +2,7 @@ import { Check, ChevronDown, UserRound } from "lucide-react";
 import { Link } from "react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAccess } from "./useAccess";
+import { activeOrganization } from "./access";
 import { initials, useProfiles, type ProfileEntry } from "./useProfiles";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -34,14 +34,12 @@ function ProfileRow({ profile, onClose }: { profile: ProfileEntry; onClose: () =
 /// cuenta y Salir. En el teléfono lo mismo vive en la pestaña «Más».
 export function AccessMenu() {
   const { t } = useTranslation();
-  const { activeTenantId, organizations } = useAccess();
   const { account, name, email, access, profiles, signOut, status } = useProfiles();
   const [open, setOpen] = useState(false);
 
   if (!account) return null;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
-  const currentOrganization = organizations.find((organization) => organization.id === activeTenantId);
-  const activeName = access === "consumer" ? t("accessMenu.personal") : currentOrganization?.name ?? "";
+  const activeName = access === "consumer" ? t("accessMenu.personal") : activeOrganization(account)?.name ?? "";
   const itemClass = "flex w-full min-h-[34px] items-center gap-2 rounded-[6px] px-2.5 py-1.5 text-[13px] text-[var(--t1)] hover:bg-[var(--s2)]";
 
   return <DropdownMenu open={open} onOpenChange={setOpen}>

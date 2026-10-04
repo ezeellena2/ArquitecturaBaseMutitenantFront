@@ -27,6 +27,7 @@ import { Surface } from "@/shared/ui/Surface";
 import { toast } from "sonner";
 import { changeUserStatus, fetchAssignableRoles, fetchCompanyOptions, fetchUserCounts, fetchUsers, inviteUser, removeUser, resendUserInvitation, revokeUserInvitation, userCompaniesQueryKey, userCountsQueryKey, userRolesQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
 import { createUserColumns, userPhoneRow } from "../columns";
+import { activeOrganization, homeOf } from "@/tenancy/access";
 
 const userFilterKeys = ["state", "companyId"] as const;
 // Orden del filtro «Estado» del tablero Usuarios.
@@ -54,7 +55,7 @@ export function UsersPage() {
   const canInvite = currentUser?.permissions?.includes("users.invite") === true;
   const canManage = currentUser?.permissions?.includes("users.manage") === true;
   const canFilterByCompany = currentUser?.permissions?.includes("companies.read") === true;
-  const organizationName = currentUser?.organizations.find((organization) => organization.id === currentUser.activeTenantId)?.name ?? "";
+  const organizationName = activeOrganization(currentUser)?.name ?? "";
   const client = useQueryClient();
   const navigate = useNavigate();
   const { filters, pagination, query, result: users, paginationProps } = usePagedQuery({
@@ -124,7 +125,7 @@ export function UsersPage() {
     onError: (error) => toastActionError(error, t),
   });
 
-  if (!canRead) return <ForbiddenPage homePath="/org" />;
+  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
 
   const rowActions = (member: OrganizationUserResponse) => <RowActions
       label={t("users:rowActions", { name: member.displayName || member.email || "" })}

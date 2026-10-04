@@ -11,6 +11,8 @@
 - **Host:** con el subdominio de una organización (`<slug>.plataforma.com`; una página pública por organización, no por empresa), `routes.tsx` arma **solo** las rutas de `storefront` (y `/auth/callback`: el ingreso desde el subdominio vuelve a su propio origen). `usePublicSite()` devuelve el slug del subdominio y los datos públicos de esa organización.
 - **Acción:** `<Can permission="roles.manage">…</Can>`. En una empresa del grupo: `<CanInCompany companyId={id} permission="company.members.manage">`.
 - **Acceso activo:** `useAccess()` devuelve `access`, la organización activa (en B2B), si la persona tiene espacio personal y sus organizaciones.
+- **Rutas y estados de cada acceso:** `tenancy/access.ts` es el único lugar que los sabe: el tipo `Access` del contrato, `homeOf(access)` (el inicio), `loginPathOf(access)` (la puerta), `accessOfPath(path)`, `activeOrganization(me)`, `isSelectable(organization)` y `unavailableCodeOf(status)`. Fuera de ahí no hay un literal `"/org"` ni `"/login/empresa"`: un acceso nuevo se suma en ese archivo.
+- **Salir:** `useSignOut()`, la misma secuencia en el menú, «Más», la organización no disponible, los términos y la invitación.
 - **Cambiar de acceso u organización:** `useSwitchAccess({ access, tenantId })`:
   1. pantalla «Cambiando a …»;
   2. `signinSilent({ forceIframeAuth: true, extraQueryParams: { access, tenant } })`: `oidc-client-ts` usa el refresh token si existe e ignora esos parámetros; el iframe fuerza `authorize` para emitir el token del acceso solicitado;
@@ -38,6 +40,7 @@
 - `routes.test.tsx` (E3) y `navigation.test.tsx` (E4): el mismo permiso en los dos lugares desde E4; el mismo módulo desde E5.
 - `AccessRoute.test.tsx` (E3), `useSwitchAccess.test.tsx` (E3) y `AccessMenu.test.tsx` (E3): limpia la caché al cambiar; una persona sin organizaciones no ve «Ir a mi empresa» y en B2C nunca aparece «Registrá tu empresa».
 - `routes-by-host.test.ts` (E7): un subdominio no monta rutas de `/org`.
+- `access.test.ts`: el inicio, la puerta, la ruta y los estados de cada acceso; `access-paths.test.ts`: ningún literal `"/org"` ni `"/login/empresa"` fuera de `tenancy/access.ts`; `useSignOut.test.tsx`.
 
 ## Detalle
 [frontend.md §3](../architecture/frontend.md#3-rutas) · back: `docs/architecture/multitenancy.md` y `docs/rules/modulos-habilitados.md`

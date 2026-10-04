@@ -13,7 +13,9 @@ import { AuthLayout } from "@/layouts/AuthLayout";
 import { Button } from "@/shared/ui/button";
 import { DateText } from "@/shared/ui/format/DateText";
 import { FormError } from "@/shared/ui/FormError";
-import { beginSignOut, cancelSignOut } from "@/auth/signOutStatus";
+import { useSignOut } from "@/auth/useSignOut";
+import { accountPagePaths } from "@/shared/api/accountContract";
+import { homeOf, parseAccess } from "@/tenancy/access";
 
 function initials(value: string | null | undefined, fallback: string): string {
   const name = value?.trim();
@@ -35,6 +37,7 @@ function InvitationFlow() {
   const { t } = useTranslation("invitations");
   const { t: tErrors } = useTranslation("errors");
   const auth = useAuth();
+  const signOut = useSignOut();
   const location = useLocation();
   const navigate = useNavigate();
   const [token, setToken] = useState<string | null>(null);
@@ -96,7 +99,7 @@ function InvitationFlow() {
     }
   }
 
-  async function enterAsBusiness(returnTo: "/org" | "/cuenta") {
+  async function enterAsBusiness(returnTo: string) {
     setActionError(null);
     try {
       await auth.signinRedirect({
@@ -111,27 +114,20 @@ function InvitationFlow() {
   useEffect(() => {
     if (!entering || entered.current) return;
     entered.current = true;
-    void enterAsBusiness("/org");
+    void enterAsBusiness(homeOf("business"));
   });
 
   async function signOutAndContinue() {
-    beginSignOut();
     setActionError(null);
-    try {
-      const result: unknown = await auth.signoutRedirect({
-        post_logout_redirect_uri: new URL(invitationPaths.page, window.location.origin).toString(),
-        extraQueryParams: { preserveInvitation: "true" },
-      });
-      if (result === null) cancelSignOut();
-    } catch {
-      cancelSignOut();
-      setActionError(tErrors("server"));
-    }
+    const signedOut = await signOut({
+      post_logout_redirect_uri: new URL(invitationPaths.page, window.location.origin).toString(),
+      extraQueryParams: { preserveInvitation: "true" },
+    });
+    if (!signedOut) setActionError(tErrors("server"));
   }
 
   function returnToOwnAccess() {
-    const access = auth.user?.profile.access;
-    navigate(access === "business" ? "/org" : access === "platform" ? "/plataforma" : "/", { replace: true });
+    navigate(homeOf(parseAccess(auth.user?.profile.access) ?? "consumer"), { replace: true });
   }
 
   const loading = loadedLocationKey !== location.key || antiforgery.isPending
@@ -164,9 +160,9 @@ function InvitationFlow() {
           </div> : null}
           <div className="flex flex-col gap-2.5">
             {needsPersonalMethod ? <>
-              <Button type="button" size="lg" onClick={() => void enterAsBusiness("/cuenta")}>{t("accepted.addNow")}</Button>
-              <Button type="button" variant="outline" size="lg" onClick={() => void enterAsBusiness("/org")}>{t("accepted.later")}</Button>
-            </> : <Button type="button" size="lg" onClick={() => void enterAsBusiness("/org")}>{t("accepted.openOrganization")}</Button>}
+              <Button type="button" size="lg" onClick={() => void enterAsBusiness(accountPagePaths.account)}>{t("accepted.addNow")}</Button>
+              <Button type="button" variant="outline" size="lg" onClick={() => void enterAsBusiness(homeOf("business"))}>{t("accepted.later")}</Button>
+            </> : <Button type="button" size="lg" onClick={() => void enterAsBusiness(homeOf("business"))}>{t("accepted.openOrganization")}</Button>}
           </div>
           <FormError message={actionError} />
         </div> : invitation.state === "Expired" || invitation.state === "Invalid" || invitation.state === "OrganizationSuspended" ? <div className="flex flex-col gap-[22px]">

@@ -2,11 +2,10 @@ import { useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-import type { AccessKind } from "@/auth/AccessRoute";
-import { accessHome } from "./accessHome";
+import { homeOf, type Access } from "./access";
 import { clearAccessError } from "@/shared/api/accessErrorStore";
 
-export type SwitchTarget = { access: AccessKind; tenantId?: string };
+export type SwitchTarget = { access: Access; tenantId?: string };
 
 export function useSwitchAccess() {
   const auth = useAuth();
@@ -32,7 +31,7 @@ export function useSwitchAccess() {
 
       queryClient.clear();
       clearAccessError();
-      navigate(accessHome(target.access), { replace: true });
+      navigate(homeOf(target.access), { replace: true });
     } catch {
       setHasError(true);
     } finally {

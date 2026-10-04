@@ -9,6 +9,7 @@ import { AppBar } from "@/shared/ui/app/AppBar";
 import { GroupTitle, SettingsGroup, SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { initials, useProfiles } from "@/tenancy/useProfiles";
 import { businessNavigation } from "./navigation/business";
+import { activeOrganization, homeOf } from "@/tenancy/access";
 
 /// Tableros M-Mas-Personal y M-WA-Menu: la pestaña «Más» del teléfono. Arriba quién sos; después tus perfiles, para
 /// cambiar de uno a otro; en una organización, Administración con lo que tus permisos dejan ver; al final Mi cuenta y
@@ -18,8 +19,7 @@ export function MorePage() {
   const phone = useMediaQuery("(max-width: 767px)");
   const { data: user } = useCurrentUser();
   const { name, email, access, profiles, signOut, status } = useProfiles();
-  const home = access === "business" ? "/org" : "/";
-  if (!phone) return <Navigate to={home} replace />;
+  if (!phone) return <Navigate to={homeOf(access ?? "consumer")} replace />;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
 
   const permissions = new Set(user?.permissions ?? []);
@@ -28,9 +28,7 @@ export function MorePage() {
     ? [...(panel.sections ?? []).flatMap((section) => section.links), ...panel.links]
       .filter((entry) => entry.to && (!entry.permission || permissions.has(entry.permission)))
     : [];
-  const subtitle = access === "business"
-    ? user?.organizations.find((organization) => organization.id === user.activeTenantId)?.name
-    : t("accessMenu.personal");
+  const subtitle = access === "business" ? activeOrganization(user)?.name : t("accessMenu.personal");
 
   return <div className="flex min-h-full flex-col bg-[var(--s2)]">
     <AppBar title={t("navigation.more")} subtitle={subtitle} />

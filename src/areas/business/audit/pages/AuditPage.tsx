@@ -20,6 +20,7 @@ import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { DateText } from "@/shared/ui/format/DateText";
 import type { OrganizationAuditEntryResponse } from "@/shared/api/types";
 import { auditQueryRoot, fetchAudit, fetchAuditActors } from "../api/audit";
+import { homeOf } from "@/tenancy/access";
 
 const auditFilterKeys = ["period", "category", "actorId"] as const;
 const auditCategories = ["users", "roles", "companies", "settings", "organization"] as const;
@@ -54,7 +55,7 @@ export function AuditPage() {
   });
   const [selected, setSelected] = useState<OrganizationAuditEntryResponse | null>(null);
 
-  if (!canRead) return <ForbiddenPage homePath="/org" />;
+  if (!canRead) return <ForbiddenPage homePath={homeOf("business")} />;
 
   const rows = audit.data?.pages.flatMap((page) => page.items) ?? [];
   const columns: Column<OrganizationAuditEntryResponse>[] = [

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { BrandMark } from "@/shared/ui/BrandMark";
+import { loginPathOf } from "@/tenancy/access";
 
 export function SiteLayout({ children, variant = "landing" }: { children: ReactNode; variant?: "landing" | "legal" }) {
   const { t } = useTranslation("site");
@@ -19,7 +20,7 @@ export function SiteLayout({ children, variant = "landing" }: { children: ReactN
           <a href="#empezar" className="text-[var(--t2)] hover:text-[var(--t1)]">{t("navigation.getStarted")}</a>
         </nav>}
         <div className="ml-auto flex items-center gap-1 text-[13px] font-semibold md:gap-2 md:text-[14px]">
-          <Link to="/login/empresa" aria-label={t("navigation.businessLogin")} className="inline-flex h-9 items-center rounded-[8px] px-2 text-[var(--t2)] hover:bg-[var(--s2)] md:h-10 md:rounded-[10px] md:px-[18px]">
+          <Link to={loginPathOf("business")} aria-label={t("navigation.businessLogin")} className="inline-flex h-9 items-center rounded-[8px] px-2 text-[var(--t2)] hover:bg-[var(--s2)] md:h-10 md:rounded-[10px] md:px-[18px]">
             <span className="hidden md:inline">{t("navigation.businessLogin")}</span><span className="md:hidden">{t("navigation.businesses")}</span>
           </Link>
           <Link to="/login" className="inline-flex h-9 items-center rounded-[8px] bg-[var(--marca)] px-3 text-[var(--lado-activo)] hover:bg-[var(--marca-h)] md:h-10 md:rounded-[10px] md:bg-transparent md:px-[18px] md:text-[var(--t2)] md:hover:bg-[var(--s2)]">{t("navigation.login")}</Link>

@@ -28,6 +28,7 @@ import { initials } from "@/shared/lib/initials";
 import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { checkOrganizationSlug, fetchPublicPage, publicPageQueryKey, setPublicPagePublished, slugAvailabilityQueryKey, updatePublicPage } from "../api/publicPage";
+import { homeOf } from "@/tenancy/access";
 
 interface PageDraft {
   slug: string;
@@ -118,7 +119,7 @@ export function PublicPagePage() {
     onError: (error) => toastActionError(error, t),
   });
 
-  if (!canManage) return <ForbiddenPage homePath="/org" />;
+  if (!canManage) return <ForbiddenPage homePath={homeOf("business")} />;
 
   const pageData = page.data;
   const isDirty = Boolean(pageData && draft && JSON.stringify(draft) !== JSON.stringify(draftFromPage(pageData)));

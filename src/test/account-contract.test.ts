@@ -65,7 +65,8 @@ describe("contrato funcional de cuenta entre repos", () => {
     expect(callback).toContain("pendingCookie.Write(HttpContext, result.Error)");
     expect(callback).toContain('"/login/empresa"');
     expect(contract).toContain('"/cuenta"');
-    expect(contract).toContain('"/login/empresa"');
+    // La puerta de empresa a la que vuelve el back vive con las demás rutas de cada acceso.
+    expect(readFront("src/tenancy/access.ts")).toContain('"/login/empresa"');
     expect(readBack("src/ArquitecturaBaseMultitenant.Application/Services/Legal/AccountDeletionCanceller.cs")).toContain("ticket.ReturnUrl!");
   });
 

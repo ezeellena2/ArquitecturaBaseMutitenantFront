@@ -1,12 +1,11 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "react-oidc-context";
 import { useCurrentUser } from "@/auth/useCurrentUser";
-import { beginSignOut, cancelSignOut } from "@/auth/signOutStatus";
+import { useSignOut } from "@/auth/useSignOut";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { useAccess } from "./useAccess";
 import { useSwitchAccess } from "./useSwitchAccess";
+import { isSelectable, loginPathOf } from "./access";
 
 export function initials(name: string): string {
   return name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("");
@@ -28,8 +27,7 @@ export interface ProfileEntry {
 /// otro sin volver a ingresar, y Salir. Mientras cambia de perfil o si falla, `status` es la pantalla que va.
 export function useProfiles() {
   const { t } = useTranslation();
-  const auth = useAuth();
-  const queryClient = useQueryClient();
+  const signOut = useSignOut();
   const { data: account } = useCurrentUser();
   const { access, activeTenantId, hasPersonalSpace, organizations } = useAccess();
   const switching = useSwitchAccess();
@@ -42,17 +40,6 @@ export function useProfiles() {
     void switching.switchAccess(target);
   }
 
-  async function signOut() {
-    beginSignOut();
-    queryClient.clear();
-    try {
-      const result: unknown = await auth.signoutRedirect();
-      if (result === null) cancelSignOut();
-    } catch {
-      cancelSignOut();
-    }
-  }
-
   const profiles: ProfileEntry[] = [];
   if (hasPersonalSpace || access === "business") profiles.push({
     key: "personal", name: personal, detail: t("accessMenu.personalDetail"), checked: access === "consumer", unavailable: false,
@@ -60,7 +47,7 @@ export function useProfiles() {
   });
   for (const organization of organizations) {
     const checked = access === "business" && activeTenantId === organization.id;
-    const unavailable = organization.status !== "Active" || organization.memberStatus !== "Active" || organization.isSelectable === false;
+    const unavailable = !isSelectable(organization);
     const detail = organization.status === "Suspended" ? t("accessMenu.suspended")
       : organization.status === "PendingApproval" ? t("accessMenu.pendingApproval")
         : organization.status === "Closed" ? t("accessMenu.closed")
@@ -73,7 +60,7 @@ export function useProfiles() {
   }
 
   const status: ReactNode = switching.isSwitching ? <SessionStatusPage status="switching" targetName={targetName} />
-    : switching.hasError ? <SessionStatusPage status="error" loginPath={access === "business" ? "/login/empresa" : "/login"} />
+    : switching.hasError ? <SessionStatusPage status="error" loginPath={loginPathOf(access)} />
       : null;
 
   return { account, name, email: account?.email ?? null, access, profiles, signOut, status };

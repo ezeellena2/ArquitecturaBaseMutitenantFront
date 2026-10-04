@@ -72,9 +72,11 @@ src/
 │   ├── SessionRecovery.test.tsx
 │   ├── sessionRecoveryStatus.ts
 │   ├── signOutStatus.ts
+│   ├── useSignOut.ts                                Salir igual en toda la app: «Cerrando sesión…», queryClient.clear() y signoutRedirect
+│   ├── useSignOut.test.tsx
 │   ├── ProtectedRoute.tsx                           sesión + permiso
 │   ├── ProtectedRoute.test.tsx
-│   ├── AccessRoute.tsx                              access="consumer" | "business" | "platform"
+│   ├── AccessRoute.tsx                              access="consumer" | "business" | "platform"; manda al inicio del acceso de la sesión
 │   ├── AccessRoute.test.tsx
 │   ├── useCurrentUser.ts                            GET /api/me, key ["current-user"]
 │   ├── usePermissions.ts                            [E4]
@@ -86,12 +88,13 @@ src/
 │   └── useLanguagePreference.ts                     PUT /api/me con rollback
 │
 ├── tenancy/                                         [E3] accesos (B2C / B2B / plataforma)
+│   ├── access.ts                                    el tipo Access del contrato, homeOf, loginPathOf, accessOfPath, activeOrganization, isSelectable y los estados no disponibles: el único lugar con «/org» y «/login/empresa»
+│   ├── access.test.ts
 │   ├── useAccess.ts                                 acceso activo, organización activa, espacio personal, organizaciones
 │   ├── useSwitchAccess.ts                           signinSilent({ access, tenant }) → queryClient.clear() → inicio del acceso
 │   ├── useSwitchAccess.test.ts                      verifica el clear de la caché
 │   ├── AccessMenu.tsx                               menú de la cuenta, solo en la compu: el botón (nombre y «Personal» o la organización); cabecera con nombre y correo; «Perfiles»: Personal y cada organización con su rol (✓ en el perfil activo; la que no está disponible, en gris, dice por qué); «Mi cuenta»; «Salir». En el teléfono, todo eso está en «Más»
 │   ├── AccessMenu.test.tsx                          en B2C nunca aparece «Registrá tu empresa»
-│   ├── accessHome.ts                                acceso → ruta de inicio (/, /org, /plataforma)
 │   ├── useProfiles.tsx                              perfiles, cambio de acceso y «Salir»: lo comparten AccessMenu y «Más»
 │   ├── usePublicSite.ts                             [E7] slug y datos públicos del subdominio
 │   └── useCompanyParam.ts                           [E6] companyId de la URL
@@ -269,7 +272,7 @@ src/
 │       │   │   ├── OrganizationDomainTab.tsx        Dominio verificado: registro TXT, Verificar o Quitar, con motivo
 │       │   │   └── OrganizationPublicPageTab.tsx    Página pública: Ver página, Despublicar (vuelve a borrador con el bloqueo) o Permitir publicar (levanta el bloqueo), con motivo: POST /api/platform/tenants/{id}/public-site/unpublish y …/allow-publish
 │       │   └── pages/
-│       │       ├── OrganizationsPage.tsx            /plataforma: el listado es el inicio del acceso platform (accessHome.ts)
+│       │       ├── OrganizationsPage.tsx            /plataforma: el listado es el inicio del acceso platform (homeOf en tenancy/access.ts)
 │       │       └── OrganizationPage.tsx             /plataforma/organizaciones/:id: banda con el estado y sus acciones (y el motivo si está suspendida o cerrada); pestañas debajo
 │       ├── accounts/                                /plataforma/cuentas: cuentas y operadores
 │       │   ├── api/

@@ -26,6 +26,7 @@ import { getPendingDeletion, cancelAccountDeletion } from "../api/deletion";
 import { PendingDeletionPanel } from "../components/PendingDeletionPanel";
 import { toast } from "sonner";
 import { toastError } from "@/shared/ui/sonner";
+import { homeOf, isUnavailableCode, loginPathOf, type UnavailableCode } from "@/tenancy/access";
 
 export interface LoginPageProps {
   access: "consumer" | "business";
@@ -34,12 +35,11 @@ export interface LoginPageProps {
 
 const followAuthorize = (url: string) => globalThis.location.assign(url);
 
-const unavailableResults = {
+const unavailableResults: Record<UnavailableCode, { title: string; description: string; Icon: typeof TriangleAlert; tone: string }> = {
   "Tenancy.Tenant.Suspended": { title: "suspendedTitle", description: "suspendedDescription", Icon: TriangleAlert, tone: "bg-[var(--alerta-t)] text-[var(--alerta)]" },
   "Tenancy.Tenant.PendingApproval": { title: "pendingTitle", description: "pendingDescription", Icon: Clock3, tone: "bg-[var(--marca-t)] text-[var(--marca-tx)]" },
   "Tenancy.Tenant.Closed": { title: "closedTitle", description: "closedDescription", Icon: LockKeyhole, tone: "bg-[var(--s3)] text-[var(--t2)]" },
-} as const;
-type UnavailableCode = keyof typeof unavailableResults;
+};
 
 export function LoginPage({ access, completeLogin = followAuthorize }: LoginPageProps) {
   const { t } = useTranslation(["auth", "errors"]);
@@ -80,7 +80,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     if (returnUrl || pending || googlePending || startedOidc.current) return;
     startedOidc.current = true;
     if (redirectError && !googleProofExpired) carryLoginRedirectError(redirectError);
-    const destination = access === "business" ? "/org" : "/";
+    const destination = homeOf(access);
     const returnTo = safeReturnUrl(searchParams.get("returnUrl"), destination);
     void auth.signinRedirect({
       state: { returnTo },
@@ -144,7 +144,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       if (caught.code === "Identity.Account.LockedOut") setCode("");
       if (caught.code === "Tenancy.Access.NotMember") setResult("noBusiness");
       else if (caught.code === "Tenancy.Member.Inactive") { setError(caught); setResult("inactive"); }
-      else if (caught.code && caught.code in unavailableResults) { setError(caught); setResult(caught.code as UnavailableCode); }
+      else if (isUnavailableCode(caught.code)) { setError(caught); setResult(caught.code); }
       else setError(caught);
     }
   }
@@ -169,7 +169,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const codeSpent = error?.code === "Auth.LoginCode.TooManyAttempts" || error?.code === "Identity.Account.LockedOut";
   const accountClosed = error?.code === "Identity.Account.Suspended";
   const organizationName = typeof error?.problem.organizationName === "string" ? error.problem.organizationName : "";
-  const unavailable = result && result in unavailableResults ? unavailableResults[result as UnavailableCode] : null;
+  const unavailable = isUnavailableCode(result) ? unavailableResults[result] : null;
 
   return <AuthLayout access={access}>
     {pending ? <PendingDeletionPanel pending={pending} onCancel={() => { void cancelDeletion(); }} busy={cancel.isPending} failure={cancelFailure} /> : result === "noBusiness" ? <div className="flex flex-col gap-[22px] text-center">
@@ -203,7 +203,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <div className="flex flex-col gap-2 text-center text-[13px] text-[var(--t2)]">
         {access === "consumer" ? <>
           <div>{t("login.noAccount")} <Link to="/registro" className="font-semibold text-[var(--marca)] hover:underline">{t("login.createOne")}</Link></div>
-          <div>{t("login.haveBusiness")} <Link to="/login/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("login.enterAsBusiness")}</Link></div>
+          <div>{t("login.haveBusiness")} <Link to={loginPathOf("business")} className="font-semibold text-[var(--marca)] hover:underline">{t("login.enterAsBusiness")}</Link></div>
         </> : <>
           <div>{t("login.businessNotRegistered")} <Link to="/registro/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("login.registerIt")}</Link></div>
           <div>{t("login.enterAsPersonQuestion")} <Link to="/login" className="font-semibold text-[var(--marca)] hover:underline">{t("login.enterHere")}</Link></div>
