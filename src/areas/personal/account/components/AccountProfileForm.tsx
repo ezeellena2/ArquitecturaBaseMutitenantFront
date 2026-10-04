@@ -75,10 +75,11 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
           <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]">
             <h2 id="account-data-title">{t("data")}</h2>
           </header>
-          <div className="flex flex-wrap items-start gap-4 px-4 py-4 lg:px-5 lg:py-4">
-            <div className="w-full max-w-full lg:w-[360px]"><FormField label={t("name")} error={form.formState.errors.displayName?.message}><Input {...form.register("displayName")} autoComplete="name" /></FormField></div>
-            <div className="w-full max-w-full lg:w-[260px]"><Controller control={form.control} name="culture" render={({ field }) => <FormField label={t("culture")} error={form.formState.errors.culture?.message}><CultureSelect value={field.value} onChange={field.onChange} variant="compact" placeholder={t("culture")} /></FormField>} /></div>
-            <div className="w-full max-w-full lg:w-[260px]"><Controller control={form.control} name="timeZoneId" render={({ field }) => <FormField label={t("timeZone")} error={form.formState.errors.timeZoneId?.message}><TimeZoneSelect value={field.value} onChange={field.onChange} variant="compact" placeholder={t("timeZone")} /></FormField>} /></div>
+          {/* Tablero Cuenta: nombre, idioma y zona en tres columnas iguales, al ancho de la tarjeta. */}
+          <div className="grid grid-cols-1 items-start gap-4 px-4 py-4 lg:grid-cols-3 lg:px-5 lg:py-4">
+            <div className="min-w-0"><FormField label={t("name")} error={form.formState.errors.displayName?.message}><Input {...form.register("displayName")} autoComplete="name" /></FormField></div>
+            <div className="min-w-0"><Controller control={form.control} name="culture" render={({ field }) => <FormField label={t("culture")} error={form.formState.errors.culture?.message}><CultureSelect value={field.value} onChange={field.onChange} variant="compact" placeholder={t("culture")} /></FormField>} /></div>
+            <div className="min-w-0"><Controller control={form.control} name="timeZoneId" render={({ field }) => <FormField label={t("timeZone")} error={form.formState.errors.timeZoneId?.message}><TimeZoneSelect value={field.value} onChange={field.onChange} variant="compact" placeholder={t("timeZone")} /></FormField>} /></div>
           </div>
         </section>
       </form>

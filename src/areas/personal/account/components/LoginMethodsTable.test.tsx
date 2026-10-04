@@ -42,5 +42,7 @@ describe("métodos de cuenta", () => {
     expect(within(row).getByText("Google")).toBeVisible();
     expect(within(row).getByText("Sin vincular")).toBeVisible();
     expect(within(row).getByRole("button", { name: "Vincular Google" })).toBeVisible();
+    // Tablero Cuenta: «Vincular» es un botón con borde, no un enlace.
+    expect(within(row).getByRole("button", { name: "Vincular Google" })).toHaveAttribute("data-variant", "outline");
   });
 });

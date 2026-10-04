@@ -99,14 +99,15 @@ export function AccountPage() {
     <DialogContent className="md:max-w-[420px]" showCloseButton>
       <DialogHeader><DialogTitle>{t("account:deletionBlockedTitle")}</DialogTitle></DialogHeader>
       <div className="flex flex-col gap-3 px-5 py-4 text-[13px]">
-        <div className="flex items-start gap-2.5 rounded-[10px] bg-[var(--peligro-t)] px-3.5 py-3 text-[var(--peligro)]">
+        {/* Tablero Cuenta (única Dueña): aviso en bordó y negrita; pasos con el número en un círculo gris relleno. */}
+        <div className="flex items-start gap-3 rounded-[10px] bg-[var(--peligro-t)] px-4 py-3.5 text-[var(--peligro-tx)]">
           <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-          <strong className="text-[14px] font-semibold">{t("account:deletionBlockedReason", { organizations: soleOwnerOf })}</strong>
+          <strong className="text-[15px] font-semibold">{t("account:deletionBlockedReason", { organizations: soleOwnerOf })}</strong>
         </div>
-        <span className="text-[12px] font-semibold text-[var(--t2)]">{t("account:whatCanYouDo")}</span>
-        <ol className="flex flex-col gap-2">
-          {[t("account:deletionBlockedStep1", { organizations: soleOwnerOf }), t("account:deletionBlockedStep2")].map((step, index) => <li key={step} className="flex items-center gap-2.5 text-[var(--t1)]">
-            <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center rounded-full border border-[var(--borde)] text-[11px] text-[var(--t2)]">{index + 1}</span>{step}
+        <span className="text-[12.5px] font-semibold text-[var(--t3)]">{t("account:whatCanYouDo")}</span>
+        <ol className="flex flex-col gap-2.5">
+          {[t("account:deletionBlockedStep1", { organizations: soleOwnerOf }), t("account:deletionBlockedStep2")].map((step, index) => <li key={step} className="flex items-center gap-2.5 text-[13.5px] text-[var(--t1)]">
+            <span aria-hidden="true" data-step-number className="flex size-[22px] shrink-0 items-center justify-center rounded-full bg-[var(--s3)] text-[12px] font-semibold text-[var(--t2)]">{index + 1}</span>{step}
           </li>)}
         </ol>
       </div>
