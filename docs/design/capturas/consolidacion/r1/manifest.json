@@ -7835,6 +7835,1286 @@
       }
     },
     {
+      "id": "empresa-roles-escritorio",
+      "pair": "empresa-roles",
+      "group": "empresas",
+      "state": "Empresa: la ficha, pestaña Roles",
+      "board": "Empresa",
+      "props": {
+        "pestana": "Roles"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fempresas%2Fcompany-1",
+        "captureMode": "harness",
+        "userFixture": "visual-owner",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/companies/company-1",
+            "body": {
+              "id": "company-1",
+              "name": "Delta S.A.",
+              "taxId": {
+                "country": "AR",
+                "type": "AR-CUIT",
+                "number": "30712345678"
+              },
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "status": "Active",
+              "memberCount": 6,
+              "version": 3,
+              "createdAtUtc": "2026-10-02T12:00:00Z"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/company-1/members/paged",
+            "body": {
+              "items": [
+                {
+                  "memberId": "member-lucia",
+                  "userId": "user-lucia",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "state": "Active",
+                  "membershipStatus": "Active",
+                  "roles": [
+                    {
+                      "id": "role-company-admin",
+                      "name": "Administrador",
+                      "description": null,
+                      "scope": "AnyCompany",
+                      "companyId": null,
+                      "isSystemRole": true,
+                      "userCount": 2,
+                      "permissions": [
+                        "company.members.read",
+                        "company.members.manage"
+                      ],
+                      "version": 1,
+                      "createdAtUtc": "2026-10-02T12:00:00Z"
+                    }
+                  ],
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "memberId": "member-1",
+                  "userId": "user-1",
+                  "displayName": "Tomás Acosta",
+                  "email": "tomas.acosta@delta.ejemplo.com",
+                  "state": "Active",
+                  "membershipStatus": "Active",
+                  "roles": [
+                    {
+                      "id": "role-company-reader",
+                      "name": "Solo lectura",
+                      "description": null,
+                      "scope": "SpecificCompany",
+                      "companyId": "company-1",
+                      "isSystemRole": false,
+                      "userCount": 4,
+                      "permissions": [
+                        "company.members.read"
+                      ],
+                      "version": 1,
+                      "createdAtUtc": "2026-10-02T12:00:00Z"
+                    }
+                  ],
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "memberId": "member-diego",
+                  "userId": "user-diego",
+                  "displayName": "Diego Ríos",
+                  "email": "diego.rios@delta.ejemplo.com",
+                  "state": "PendingDeletion",
+                  "membershipStatus": "Active",
+                  "roles": [
+                    {
+                      "id": "role-company-reader",
+                      "name": "Solo lectura",
+                      "description": null,
+                      "scope": "SpecificCompany",
+                      "companyId": "company-1",
+                      "isSystemRole": false,
+                      "userCount": 4,
+                      "permissions": [
+                        "company.members.read"
+                      ],
+                      "version": 1,
+                      "createdAtUtc": "2026-10-02T12:00:00Z"
+                    }
+                  ],
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "memberId": "member-paula",
+                  "userId": "user-paula",
+                  "displayName": "Paula Méndez",
+                  "email": "paula.mendez@delta.ejemplo.com",
+                  "state": "Active",
+                  "membershipStatus": "Active",
+                  "roles": [
+                    {
+                      "id": "role-company-reader",
+                      "name": "Solo lectura",
+                      "description": null,
+                      "scope": "SpecificCompany",
+                      "companyId": "company-1",
+                      "isSystemRole": false,
+                      "userCount": 4,
+                      "permissions": [
+                        "company.members.read"
+                      ],
+                      "version": 1,
+                      "createdAtUtc": "2026-10-02T12:00:00Z"
+                    }
+                  ],
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "memberId": "member-martin",
+                  "userId": "user-martin",
+                  "displayName": "Martín Paz",
+                  "email": "martin.paz@delta.ejemplo.com",
+                  "state": "Active",
+                  "membershipStatus": "Active",
+                  "roles": [
+                    {
+                      "id": "role-company-reader",
+                      "name": "Solo lectura",
+                      "description": null,
+                      "scope": "SpecificCompany",
+                      "companyId": "company-1",
+                      "isSystemRole": false,
+                      "userCount": 4,
+                      "permissions": [
+                        "company.members.read"
+                      ],
+                      "version": 1,
+                      "createdAtUtc": "2026-10-02T12:00:00Z"
+                    }
+                  ],
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "memberId": "member-marcos",
+                  "userId": "user-marcos",
+                  "displayName": "Marcos Giménez",
+                  "email": "marcos.gimenez@delta.ejemplo.com",
+                  "state": "Inactive",
+                  "membershipStatus": "Inactive",
+                  "roles": [],
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 6,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "page": "1",
+              "pageSize": "10"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/company-1/members/filter-counts",
+            "body": {
+              "all": 6,
+              "active": 4,
+              "pendingDeletion": 1,
+              "inactive": 1,
+              "invited": 0
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "role-company-admin",
+                  "name": "Administrador",
+                  "description": null,
+                  "scope": "AnyCompany",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 2,
+                  "permissions": [
+                    "company.members.read",
+                    "company.members.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader",
+                  "name": "Solo lectura",
+                  "description": null,
+                  "scope": "SpecificCompany",
+                  "companyId": "company-1",
+                  "isSystemRole": false,
+                  "userCount": 4,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-south",
+                  "name": "Solo lectura",
+                  "description": null,
+                  "scope": "SpecificCompany",
+                  "companyId": "company-3",
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-north",
+                  "name": "Solo lectura",
+                  "description": null,
+                  "scope": "SpecificCompany",
+                  "companyId": "company-4",
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "scope": "Company"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "role-owner",
+                  "name": "Dueño",
+                  "description": null,
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage",
+                    "roles.read",
+                    "roles.manage",
+                    "roles.assign",
+                    "companies.read",
+                    "companies.manage",
+                    "settings.read",
+                    "settings.manage",
+                    "audit.read",
+                    "publicpage.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-people",
+                  "name": "Recursos humanos",
+                  "description": "Invita, edita y deshabilita usuarios.",
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-auditor",
+                  "name": "Auditor",
+                  "description": null,
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "audit.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "scope": "Organization"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "role-owner",
+                  "name": "Dueño",
+                  "description": null,
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage",
+                    "roles.read",
+                    "roles.manage",
+                    "roles.assign",
+                    "companies.read",
+                    "companies.manage",
+                    "settings.read",
+                    "settings.manage",
+                    "audit.read",
+                    "publicpage.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-people",
+                  "name": "Recursos humanos",
+                  "description": "Invita, edita y deshabilita usuarios.",
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-auditor",
+                  "name": "Auditor",
+                  "description": null,
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "audit.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-admin",
+                  "name": "Administrador",
+                  "description": null,
+                  "scope": "AnyCompany",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 2,
+                  "permissions": [
+                    "company.members.read",
+                    "company.members.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader",
+                  "name": "Solo lectura",
+                  "description": null,
+                  "scope": "SpecificCompany",
+                  "companyId": "company-1",
+                  "isSystemRole": false,
+                  "userCount": 4,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-south",
+                  "name": "Solo lectura",
+                  "description": null,
+                  "scope": "SpecificCompany",
+                  "companyId": "company-3",
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-north",
+                  "name": "Solo lectura",
+                  "description": null,
+                  "scope": "SpecificCompany",
+                  "companyId": "company-4",
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "company-1",
+                  "name": "Delta S.A.",
+                  "taxId": {
+                    "country": "AR",
+                    "type": "AR-CUIT",
+                    "number": "30712345678"
+                  },
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 6,
+                  "version": 3,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "company-3",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": {
+                    "country": "AR",
+                    "type": "AR-CUIT",
+                    "number": "30715554442"
+                  },
+                  "timeZoneId": "America/Argentina/Cordoba",
+                  "status": "Active",
+                  "memberCount": 4,
+                  "version": 3,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "company-4",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 3,
+                  "version": 3,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "page": "1",
+              "pageSize": "100",
+              "sort": "name"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/users/paged",
+            "body": {
+              "items": [
+                {
+                  "memberId": "member-1",
+                  "userId": "user-1",
+                  "displayName": "Tomás Acosta",
+                  "email": "tomas@example.test",
+                  "state": "Active",
+                  "hasManagedEmail": true,
+                  "membershipStatus": "Active",
+                  "roles": [
+                    {
+                      "id": "role-owner",
+                      "name": "Dueño",
+                      "description": null,
+                      "scope": "Organization",
+                      "companyId": null,
+                      "isSystemRole": true,
+                      "userCount": 1,
+                      "permissions": [
+                        "users.read",
+                        "users.invite",
+                        "users.manage",
+                        "roles.read",
+                        "roles.manage",
+                        "roles.assign",
+                        "companies.read",
+                        "companies.manage",
+                        "settings.read",
+                        "settings.manage",
+                        "audit.read",
+                        "publicpage.manage"
+                      ],
+                      "version": 1,
+                      "createdAtUtc": "2026-10-02T12:00:00Z"
+                    }
+                  ],
+                  "companies": [
+                    {
+                      "companyId": "company-1",
+                      "companyName": "Delta S.A.",
+                      "status": "Active",
+                      "roles": [
+                        {
+                          "id": "role-company-admin",
+                          "name": "Administrador",
+                          "description": null,
+                          "scope": "AnyCompany",
+                          "companyId": null,
+                          "isSystemRole": true,
+                          "userCount": 2,
+                          "permissions": [
+                            "company.members.read",
+                            "company.members.manage"
+                          ],
+                          "version": 1,
+                          "createdAtUtc": "2026-10-02T12:00:00Z"
+                        }
+                      ]
+                    }
+                  ],
+                  "invitationId": null,
+                  "invitationIssuedAtUtc": null,
+                  "invitationExpiresAtUtc": null,
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "page": "1",
+              "pageSize": "100"
+            }
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Roles"
+          }
+        ],
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "empresa-roles-movil",
+      "pair": "empresa-roles",
+      "group": "empresas",
+      "state": "Empresa en el teléfono: pestaña Roles (el tablero dibuja una sola pestaña)",
+      "board": "M-Empresa",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fempresas%2Fcompany-1",
+        "captureMode": "harness",
+        "userFixture": "visual-owner",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/companies/company-1",
+            "body": {
+              "id": "company-1",
+              "name": "Delta S.A.",
+              "taxId": {
+                "country": "AR",
+                "type": "AR-CUIT",
+                "number": "30712345678"
+              },
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "status": "Active",
+              "memberCount": 6,
+              "version": 3,
+              "createdAtUtc": "2026-10-02T12:00:00Z"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/company-1/members/paged",
+            "body": {
+              "items": [
+                {
+                  "memberId": "member-lucia",
+                  "userId": "user-lucia",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "state": "Active",
+                  "membershipStatus": "Active",
+                  "roles": [
+                    {
+                      "id": "role-company-admin",
+                      "name": "Administrador",
+                      "description": null,
+                      "scope": "AnyCompany",
+                      "companyId": null,
+                      "isSystemRole": true,
+                      "userCount": 2,
+                      "permissions": [
+                        "company.members.read",
+                        "company.members.manage"
+                      ],
+                      "version": 1,
+                      "createdAtUtc": "2026-10-02T12:00:00Z"
+                    }
+                  ],
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "memberId": "member-1",
+                  "userId": "user-1",
+                  "displayName": "Tomás Acosta",
+                  "email": "tomas.acosta@delta.ejemplo.com",
+                  "state": "Active",
+                  "membershipStatus": "Active",
+                  "roles": [
+                    {
+                      "id": "role-company-reader",
+                      "name": "Solo lectura",
+                      "description": null,
+                      "scope": "SpecificCompany",
+                      "companyId": "company-1",
+                      "isSystemRole": false,
+                      "userCount": 4,
+                      "permissions": [
+                        "company.members.read"
+                      ],
+                      "version": 1,
+                      "createdAtUtc": "2026-10-02T12:00:00Z"
+                    }
+                  ],
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "memberId": "member-diego",
+                  "userId": "user-diego",
+                  "displayName": "Diego Ríos",
+                  "email": "diego.rios@delta.ejemplo.com",
+                  "state": "PendingDeletion",
+                  "membershipStatus": "Active",
+                  "roles": [
+                    {
+                      "id": "role-company-reader",
+                      "name": "Solo lectura",
+                      "description": null,
+                      "scope": "SpecificCompany",
+                      "companyId": "company-1",
+                      "isSystemRole": false,
+                      "userCount": 4,
+                      "permissions": [
+                        "company.members.read"
+                      ],
+                      "version": 1,
+                      "createdAtUtc": "2026-10-02T12:00:00Z"
+                    }
+                  ],
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "memberId": "member-paula",
+                  "userId": "user-paula",
+                  "displayName": "Paula Méndez",
+                  "email": "paula.mendez@delta.ejemplo.com",
+                  "state": "Active",
+                  "membershipStatus": "Active",
+                  "roles": [
+                    {
+                      "id": "role-company-reader",
+                      "name": "Solo lectura",
+                      "description": null,
+                      "scope": "SpecificCompany",
+                      "companyId": "company-1",
+                      "isSystemRole": false,
+                      "userCount": 4,
+                      "permissions": [
+                        "company.members.read"
+                      ],
+                      "version": 1,
+                      "createdAtUtc": "2026-10-02T12:00:00Z"
+                    }
+                  ],
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "memberId": "member-martin",
+                  "userId": "user-martin",
+                  "displayName": "Martín Paz",
+                  "email": "martin.paz@delta.ejemplo.com",
+                  "state": "Active",
+                  "membershipStatus": "Active",
+                  "roles": [
+                    {
+                      "id": "role-company-reader",
+                      "name": "Solo lectura",
+                      "description": null,
+                      "scope": "SpecificCompany",
+                      "companyId": "company-1",
+                      "isSystemRole": false,
+                      "userCount": 4,
+                      "permissions": [
+                        "company.members.read"
+                      ],
+                      "version": 1,
+                      "createdAtUtc": "2026-10-02T12:00:00Z"
+                    }
+                  ],
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "memberId": "member-marcos",
+                  "userId": "user-marcos",
+                  "displayName": "Marcos Giménez",
+                  "email": "marcos.gimenez@delta.ejemplo.com",
+                  "state": "Inactive",
+                  "membershipStatus": "Inactive",
+                  "roles": [],
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 6,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "page": "1",
+              "pageSize": "10"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/company-1/members/filter-counts",
+            "body": {
+              "all": 6,
+              "active": 4,
+              "pendingDeletion": 1,
+              "inactive": 1,
+              "invited": 0
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "role-company-admin",
+                  "name": "Administrador",
+                  "description": null,
+                  "scope": "AnyCompany",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 2,
+                  "permissions": [
+                    "company.members.read",
+                    "company.members.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader",
+                  "name": "Solo lectura",
+                  "description": null,
+                  "scope": "SpecificCompany",
+                  "companyId": "company-1",
+                  "isSystemRole": false,
+                  "userCount": 4,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-south",
+                  "name": "Solo lectura",
+                  "description": null,
+                  "scope": "SpecificCompany",
+                  "companyId": "company-3",
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-north",
+                  "name": "Solo lectura",
+                  "description": null,
+                  "scope": "SpecificCompany",
+                  "companyId": "company-4",
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "scope": "Company"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "role-owner",
+                  "name": "Dueño",
+                  "description": null,
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage",
+                    "roles.read",
+                    "roles.manage",
+                    "roles.assign",
+                    "companies.read",
+                    "companies.manage",
+                    "settings.read",
+                    "settings.manage",
+                    "audit.read",
+                    "publicpage.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-people",
+                  "name": "Recursos humanos",
+                  "description": "Invita, edita y deshabilita usuarios.",
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-auditor",
+                  "name": "Auditor",
+                  "description": null,
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "audit.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "scope": "Organization"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/roles/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "role-owner",
+                  "name": "Dueño",
+                  "description": null,
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage",
+                    "roles.read",
+                    "roles.manage",
+                    "roles.assign",
+                    "companies.read",
+                    "companies.manage",
+                    "settings.read",
+                    "settings.manage",
+                    "audit.read",
+                    "publicpage.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-people",
+                  "name": "Recursos humanos",
+                  "description": "Invita, edita y deshabilita usuarios.",
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "users.read",
+                    "users.invite",
+                    "users.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-auditor",
+                  "name": "Auditor",
+                  "description": null,
+                  "scope": "Organization",
+                  "companyId": null,
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "users.read",
+                    "audit.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-admin",
+                  "name": "Administrador",
+                  "description": null,
+                  "scope": "AnyCompany",
+                  "companyId": null,
+                  "isSystemRole": true,
+                  "userCount": 2,
+                  "permissions": [
+                    "company.members.read",
+                    "company.members.manage"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader",
+                  "name": "Solo lectura",
+                  "description": null,
+                  "scope": "SpecificCompany",
+                  "companyId": "company-1",
+                  "isSystemRole": false,
+                  "userCount": 4,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-south",
+                  "name": "Solo lectura",
+                  "description": null,
+                  "scope": "SpecificCompany",
+                  "companyId": "company-3",
+                  "isSystemRole": false,
+                  "userCount": 1,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "role-company-reader-north",
+                  "name": "Solo lectura",
+                  "description": null,
+                  "scope": "SpecificCompany",
+                  "companyId": "company-4",
+                  "isSystemRole": false,
+                  "userCount": 0,
+                  "permissions": [
+                    "company.members.read"
+                  ],
+                  "version": 1,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/companies/paged",
+            "body": {
+              "items": [
+                {
+                  "id": "company-1",
+                  "name": "Delta S.A.",
+                  "taxId": {
+                    "country": "AR",
+                    "type": "AR-CUIT",
+                    "number": "30712345678"
+                  },
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 6,
+                  "version": 3,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "company-3",
+                  "name": "Delta Sur S.R.L.",
+                  "taxId": {
+                    "country": "AR",
+                    "type": "AR-CUIT",
+                    "number": "30715554442"
+                  },
+                  "timeZoneId": "America/Argentina/Cordoba",
+                  "status": "Active",
+                  "memberCount": 4,
+                  "version": 3,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                },
+                {
+                  "id": "company-4",
+                  "name": "Delta Norte S.A.",
+                  "taxId": null,
+                  "timeZoneId": "America/Argentina/Buenos_Aires",
+                  "status": "Active",
+                  "memberCount": 3,
+                  "version": 3,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "page": "1",
+              "pageSize": "100",
+              "sort": "name"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/users/paged",
+            "body": {
+              "items": [
+                {
+                  "memberId": "member-1",
+                  "userId": "user-1",
+                  "displayName": "Tomás Acosta",
+                  "email": "tomas@example.test",
+                  "state": "Active",
+                  "hasManagedEmail": true,
+                  "membershipStatus": "Active",
+                  "roles": [
+                    {
+                      "id": "role-owner",
+                      "name": "Dueño",
+                      "description": null,
+                      "scope": "Organization",
+                      "companyId": null,
+                      "isSystemRole": true,
+                      "userCount": 1,
+                      "permissions": [
+                        "users.read",
+                        "users.invite",
+                        "users.manage",
+                        "roles.read",
+                        "roles.manage",
+                        "roles.assign",
+                        "companies.read",
+                        "companies.manage",
+                        "settings.read",
+                        "settings.manage",
+                        "audit.read",
+                        "publicpage.manage"
+                      ],
+                      "version": 1,
+                      "createdAtUtc": "2026-10-02T12:00:00Z"
+                    }
+                  ],
+                  "companies": [
+                    {
+                      "companyId": "company-1",
+                      "companyName": "Delta S.A.",
+                      "status": "Active",
+                      "roles": [
+                        {
+                          "id": "role-company-admin",
+                          "name": "Administrador",
+                          "description": null,
+                          "scope": "AnyCompany",
+                          "companyId": null,
+                          "isSystemRole": true,
+                          "userCount": 2,
+                          "permissions": [
+                            "company.members.read",
+                            "company.members.manage"
+                          ],
+                          "version": 1,
+                          "createdAtUtc": "2026-10-02T12:00:00Z"
+                        }
+                      ]
+                    }
+                  ],
+                  "invitationId": null,
+                  "invitationIssuedAtUtc": null,
+                  "invitationExpiresAtUtc": null,
+                  "version": 8,
+                  "createdAtUtc": "2026-10-02T12:00:00Z"
+                }
+              ],
+              "page": 1,
+              "pageSize": 100,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200,
+            "query": {
+              "page": "1",
+              "pageSize": "100"
+            }
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Roles"
+          }
+        ],
+        "readySelector": "main"
+      }
+    },
+    {
       "id": "configuracion-verificada-escritorio",
       "pair": "configuracion-verificada",
       "group": "configuracion",

@@ -27,7 +27,7 @@ export function companyMemberPhoneRow(member: import("@/shared/api/types").Compa
   const label = t(member.membershipStatus === "Inactive" ? "companies:memberStates.Inactive" : `companies:memberStates.${member.state}`);
   return <ListRow key={member.memberId} leading={<RowAvatar name={member.displayName} />} title={member.displayName}
     lines={[member.email ?? "", <span key="state" className="inline-flex max-w-full items-center gap-1">{roles ? <span className="truncate">{roles}{" · "}</span> : null}
-      <StatusDot tone={active ? "success" : member.state === "PendingDeletion" ? "warning" : "neutral"} label={label} className="text-[13px] text-[var(--t2)]" /></span>]}
+      <StatusDot tone={active ? "success" : member.state === "PendingDeletion" ? "warning" : "neutral"} label={label} className="text-[12.5px] text-[var(--t2)]" /></span>]}
     trailing={trailing} />;
 }
 

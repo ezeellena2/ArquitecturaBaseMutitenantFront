@@ -32,9 +32,12 @@ describe("FilterBar", () => {
 
     expect(bar).toHaveClass("flex-col", "md:flex-row");
     expect(searchContainer).toHaveClass("w-full", "md:w-[300px]");
-    expect(search).toHaveClass("h-8", "lg:h-9");
-    expect(filterTrigger).toHaveClass("h-8", "lg:h-9");
-    expect(filterTrigger).not.toHaveClass("min-h-11");
+    // Tableros Usuarios, Roles, Empresas, Empresa y Auditoría: el buscador y los filtros de 32, también en la compu
+    // grande; el buscador con el borde claro y los filtros sin negrita.
+    expect(search).toHaveClass("h-8", "border-[var(--borde)]");
+    expect(search).not.toHaveClass("lg:h-9");
+    expect(filterTrigger).toHaveClass("h-8", "font-normal");
+    expect(filterTrigger).not.toHaveClass("lg:h-9", "min-h-11");
     expect(bar.firstElementChild).toBe(searchContainer);
     expect(container.querySelector('[data-slot="filter-pills"]')).toContainElement(filterTrigger);
   });

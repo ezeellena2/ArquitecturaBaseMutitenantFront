@@ -104,6 +104,8 @@ export function FilterBar({
     </Dialog>
   </>;
 
+  // Tableros Usuarios, Roles, Empresas, Empresa y Auditoría: el buscador de 300 × 32 sobre gris claro con el borde fino,
+  // y los filtros en píldoras de 32 sin negrita; el elegido, en petróleo.
   return (
     <Surface
       role="search"
@@ -121,7 +123,7 @@ export function FilterBar({
           onChange={(event) => onSearchChange(event.target.value)}
           aria-label={searchLabel}
           placeholder={searchLabel}
-          className="h-8 bg-[var(--s2)] pl-8 text-[13px] lg:h-9"
+          className="h-8 border-[var(--borde)] bg-[var(--s2)] pl-8 text-[13px]"
         />
       </div>
       <div data-slot="filter-pills" className="flex flex-wrap items-center gap-2">
@@ -137,10 +139,10 @@ export function FilterBar({
                 type="button"
                 variant="outline"
                 className={cn(
-                  "h-8 rounded-full px-3 text-[13px] shadow-none lg:h-9",
+                  "h-8 rounded-full px-3 text-[13px] shadow-none",
                   filter.active
-                    ? "border-[var(--marca)] bg-[var(--marca-t)] text-[var(--marca-tx)]"
-                    : "border-[var(--borde)] bg-[var(--lado-activo)] text-[var(--t2)]",
+                    ? "border-[var(--marca)] bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]"
+                    : "border-[var(--borde)] bg-[var(--lado-activo)] font-normal text-[var(--t2)]",
                 )}
               >
                 {selected?.label ?? filter.label}

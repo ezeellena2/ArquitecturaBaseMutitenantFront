@@ -67,8 +67,10 @@ describe("marco de app del teléfono", () => {
     const row = screen.getByRole("listitem");
     expect(row).toHaveClass("relative", "py-3", "pl-4", "after:bg-[var(--borde)]");
     expect(screen.getByText("Tomás Acosta")).toHaveClass("text-[15.5px]", "font-medium");
-    expect(screen.getByText("tomas@delta.test")).toHaveClass("text-[14px]", "text-[var(--t2)]");
-    expect(screen.getByText("Activo · Delta S.A.")).toHaveClass("text-[13px]", "text-[var(--t3)]");
+    // Con un círculo a la izquierda es la fila de una persona (M-Usuarios, .w-conv): el correo en gris claro y la
+    // tercera línea en 12,5.
+    expect(screen.getByText("tomas@delta.test")).toHaveClass("text-[14px]", "text-[var(--t3)]");
+    expect(screen.getByText("Activo · Delta S.A.")).toHaveClass("text-[12.5px]", "text-[var(--t3)]");
   });
 
   it("los ajustes van en grupos blancos con su título arriba", () => {

@@ -33,6 +33,24 @@ describe("listas en el teléfono", () => {
     expect(screen.getByText("T")).toHaveClass("size-11", "rounded-full", "bg-[var(--marca)]");
   });
 
+  // Tableros M-* (.ap-fila y .w-conv): las líneas con la altura normal de la letra, 80 px por fila de tres líneas. Con el
+  // círculo de una persona (M-Usuarios, M-Empresa), el círculo va arriba, el correo en gris claro y la tercera línea en 12,5.
+  it("las líneas van con la altura normal de la letra; la fila de una persona lleva el círculo arriba y la tercera línea en 12,5", () => {
+    const { unmount } = render(<MemoryRouter><ul><ListRow to="/org/usuarios/1" leading={<RowAvatar name="Tomás Acosta" />} title="Tomás Acosta"
+      lines={["tomas@delta.test", "Activo"]} /></ul></MemoryRouter>);
+    const person = screen.getByRole("link", { name: /Tomás Acosta/ });
+    expect(person).toHaveClass("items-start");
+    expect(screen.getByText("tomas@delta.test").parentElement).toHaveClass("leading-[normal]");
+    expect(screen.getByText("tomas@delta.test")).toHaveClass("text-[14px]", "text-[var(--t3)]");
+    expect(screen.getByText("Activo")).toHaveClass("text-[12.5px]", "text-[var(--t3)]");
+    unmount();
+
+    render(<MemoryRouter><ul><ListRow to="/org/roles/1" title="Dueño" lines={["De sistema", "12 permisos"]} /></ul></MemoryRouter>);
+    expect(screen.getByRole("link", { name: /Dueño/ })).toHaveClass("items-center");
+    expect(screen.getByText("De sistema")).toHaveClass("text-[14px]", "text-[var(--t2)]");
+    expect(screen.getByText("12 permisos")).toHaveClass("text-[13px]", "text-[var(--t3)]");
+  });
+
   it("la tabla es una lista de filas cuando la pantalla da una fila de teléfono", () => {
     render(<MemoryRouter><AppChromeProvider value={phone}>
       <DataTable columns={columns} rows={rows} rowKey={(row) => row.id} mobileRow={(row) => <ListRow title={row.name} lines={[row.email]} />} />
