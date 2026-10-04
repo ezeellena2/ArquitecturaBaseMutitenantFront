@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Globe } from "lucide-react";
 import { useId, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useCurrentUser } from "@/auth/useCurrentUser";
+import { usePermissions } from "@/auth/usePermissions";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { PublicPageResponse, TenantSlugAvailability, UpdatePublicPageRequest } from "@/shared/api/types";
@@ -88,8 +88,8 @@ function slugStateText(state: TenantSlugAvailability | undefined, t: (key: strin
 
 export function PublicPagePage() {
   const { t } = useTranslation(["publicPage", "common"]);
-  const { data: currentUser } = useCurrentUser();
-  const canManage = currentUser?.permissions?.includes("publicpage.manage") === true;
+  const { can } = usePermissions();
+  const canManage = can("publicpage.manage");
   const client = useQueryClient();
   const visibleId = useId();
   const page = useQuery({ queryKey: publicPageQueryKey, queryFn: fetchPublicPage, enabled: canManage, meta: { silent: true, blocksView: true } });

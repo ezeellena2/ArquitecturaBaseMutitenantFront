@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { Outlet, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
+import { usePermissions } from "@/auth/usePermissions";
 import { useIsSigningOut } from "@/auth/signOutStatus";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { useLocalStorage } from "@/shared/hooks/useLocalStorage";
@@ -14,7 +15,7 @@ import { Breadcrumbs } from "./components/Breadcrumbs";
 import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
 import { findAdministrationEntry } from "./navigation/administration";
-import type { NavigationConfig } from "./navigation/types";
+import type { NavigationConfig, NavigationLink } from "./navigation/types";
 import { activeOrganization } from "@/tenancy/access";
 
 interface PrivateLayoutFrameProps {
@@ -28,9 +29,9 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isSigningOut = useIsSigningOut();
   const { data: user } = useCurrentUser();
+  const { can } = usePermissions();
   const visibleNavigation = useMemo(() => {
-    const permissions = new Set(user?.permissions ?? []);
-    const visible = (entry: { permission?: string }) => !entry.permission || permissions.has(entry.permission);
+    const visible = (entry: NavigationLink) => !entry.permission || can(entry.permission);
     const links = navigation.links.filter(visible);
     const source = navigation.administration;
     const sections = source?.sections?.map((section) => ({ ...section, links: section.links.filter(visible) }))
@@ -40,7 +41,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
       ? { ...source, links: panelLinks, ...(source.sections ? { sections } : {}) }
       : null;
     return { ...navigation, links, administration };
-  }, [navigation, user?.permissions]);
+  }, [navigation, can]);
   const [collapsed, setCollapsed] = useLocalStorage("sidebarCollapsed", false);
   // En una pantalla de Administración el panel arranca abierto, también al recargar; en las demás, cerrado. Lo que
   // la persona abre o cierra vale hasta que cambia de pantalla. Se mira la navegación completa y no la visible,

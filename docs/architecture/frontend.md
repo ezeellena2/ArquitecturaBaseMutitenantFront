@@ -30,7 +30,7 @@ Mismo stack y mismas versiones que ArquitecturaBaseFront. **El `node_modules` vi
 ```
 src/
 ├─ app/          providers · router · routes: elige el árbol de rutas por host (dominio principal o subdominio de organización)
-├─ auth/         AuthProvider · authConfig · SessionRecovery · ProtectedRoute · AccessRoute · useCurrentUser · usePermissions · Can
+├─ auth/         AuthProvider · authConfig · SessionRecovery · ProtectedRoute · AccessRoute · useCurrentUser · usePermissions (can, canInCompany, hasFeature)
 ├─ tenancy/      access.ts (inicio, puerta, organización activa y estados de cada acceso) · useAccess · useSwitchAccess (persona ↔ empresa, y entre organizaciones) · AccessMenu · useCompanyParam · usePublicSite (subdominio)
 ├─ layouts/      PersonalLayout · BusinessLayout · PlatformLayout (mismo armazón: Sidebar + Topbar) · SiteLayout (sitio y páginas públicas) · AuthLayout · navigation/ · components/
 ├─ areas/        una feature no importa de otra, ni un área de otra; lo común sube a shared/
@@ -100,7 +100,7 @@ Van en español. El permiso de cada una se declara en `routes.tsx` y en `layouts
 - **Métodos de ingreso** (en `/cuenta`; diseño en `multitenancy.md` §3.1 del back): en la Etapa 3 se gestionan correo y Google; `Phone` es solo modelo. Sumar y verificar un teléfono se habilita cuando el módulo WhatsApp registra su canal (Etapa 8); la opción aparece si `GET /api/auth/methods` trae ese canal. Sumar un método pide verificarlo con un código que llega a ese dato. Quitar un método, cambiarlo o elegir el principal pide un código en **otro** método ya verificado (`ReauthTicket`, válido 5 minutos). El diálogo muestra el destino enmascarado. Siempre tiene que quedar al menos un método propio o activo, y todo cambio se avisa en todos los métodos.
 - **Baja de la cuenta** (en `/cuenta`, sección Privacidad; diseño en `multitenancy.md` §3.2 del back): diálogo con motivo y código a su método principal, la sugerencia de exportar antes, los errores de la política (único Dueño, operador, bloqueos de módulos) y, al confirmar, sesión cerrada con "Tu cuenta se elimina el dd/mm/aaaa". En la organización, un usuario con la baja pedida se ve con el estado "Baja pedida"; en la plataforma, la cuenta también.
 - **Una persona nunca ve "crear empresa" en el lado Personal:** «Registrá tu empresa» (`/registro/empresa`, `BusinessSignupPage`) nace en E6. Desde E6 está en la portada, en la puerta de empresas (`/login/empresa`) y en «Crear cuenta» (`/registro`); nunca en el lado Personal ni en el menú de la cuenta. En 3a se ocultan todos esos controles en todas las pantallas; no se muestran deshabilitados.
-- **Empresas del grupo:** el `companyId` sale de la URL (`useCompanyParam`) y `CanInCompany` evalúa `permissions.companies[companyId]`.
+- **Empresas del grupo:** el `companyId` sale de la URL (`useCompanyParam`) y `canInCompany` (`usePermissions`) evalúa `effectivePermissions.companies[companyId]`; si la empresa no figura, los permisos de la organización.
 - **Organización suspendida, en espera de aprobación o cerrada:** `OrganizationUnavailablePage`, con los tres estados del tablero Perfil-Suspendido. El 403 `Tenancy.Tenant.Suspended` muestra «Suspendida», `Tenancy.Tenant.PendingApproval` muestra «Espera aprobación» y `Tenancy.Tenant.Closed` muestra «Cerrada». La página lleva el menú «Elegí otro perfil», con Personal y las otras organizaciones (en la espera no aparece la organización que se está revisando), y «Salir».
 
 ## 4. Convenciones
@@ -288,7 +288,7 @@ Rige el [lienzo vigente](../design/lienzo/README.md): **mandan los ocho tableros
 - **Tres anchos: 390, 768 y 1440.** En el teléfono, `Page` arma la pantalla de la app (`AppChrome` le dice si es un teléfono, a dónde vuelve «‹» y qué va debajo del título), `DataTable` muestra la fila de lista de cada pantalla (`mobileRow`), los filtros pasan a la barra y los diálogos se abren como hojas (ver «Teléfono» arriba). El acceso B2C y las páginas públicas se piensan primero para el teléfono. Ficha: [responsive](../rules/responsive.md).
 
 ### Módulos, ediciones simultáneas y altas sin duplicados
-- **Módulos habilitados:** `features` en `/api/me`, y `useFeature` / `<Feature>`. Rutas y links declaran `feature` además de `permission`; apagado = no existe (404).
+- **Módulos habilitados:** `features` en `/api/me`, y `usePermissions().hasFeature`. Rutas y links declaran `feature` además de `permission`; apagado = no existe (404).
 - **Ediciones simultáneas:** la `version` viaja en cada `PUT` o `DELETE`; un 409 `General.ConcurrencyConflict` muestra el aviso con "Ver lo nuevo" y "Seguir editando".
 - **Altas y envíos:** `useIdempotentMutation`, con la clave creada al abrir el formulario.
 - **Datos con forma propia:** `EmailField`, `PhoneField` y `TaxIdField`. Los largos de texto salen del contrato generado.

@@ -79,12 +79,8 @@ src/
 │   ├── AccessRoute.tsx                              access="consumer" | "business" | "platform"; manda al inicio del acceso de la sesión
 │   ├── AccessRoute.test.tsx
 │   ├── useCurrentUser.ts                            GET /api/me, key ["current-user"]
-│   ├── usePermissions.ts                            [E4]
-│   ├── usePermissions.test.ts                       [E4]
-│   ├── Can.tsx                                      [E4]
-│   ├── CanInCompany.tsx                             [E6]
-│   ├── useFeature.ts                                [E5] P8 módulos del acceso activo (features de /api/me); apagado = 404
-│   ├── Feature.tsx                                  [E5] P8 muestra u oculta según el módulo
+│   ├── usePermissions.ts                            [E7] can, canInCompany y hasFeature (P8) sobre effectivePermissions y features de /api/me; los códigos tipados del catálogo del back
+│   ├── usePermissions.test.ts                       [E7]
 │   └── useLanguagePreference.ts                     PUT /api/me con rollback
 │
 ├── tenancy/                                         [E3] accesos (B2C / B2B / plataforma)
@@ -513,7 +509,7 @@ P3   src/shared/ui/fields/EmailField.tsx
 P5   src/shared/ui/fields/TaxIdField.tsx
 P6   src/shared/api/useIdempotentMutation.ts
 P7   src/areas/public/legal/ · src/areas/platform/legal/
-P8   src/auth/useFeature.ts · src/auth/Feature.tsx · src/areas/platform/tenants/tabs/OrganizationModulesTab.tsx
+P8   src/auth/usePermissions.ts (hasFeature) · src/areas/platform/tenants/tabs/OrganizationModulesTab.tsx
 P9   src/test/setup.ts
 P10  src/shared/ui/Sheet.tsx · src/shared/ui/DataTable.tsx · src/shared/ui/DataTable.test.tsx · src/shared/ui/columns-mobile.test.ts
 ```

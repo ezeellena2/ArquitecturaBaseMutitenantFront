@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import type { OrganizationPermission } from "@/auth/usePermissions";
 
 export interface NavigationLink {
   labelKey: string;
@@ -6,7 +7,7 @@ export interface NavigationLink {
   phoneLabelKey?: string;
   icon: LucideIcon;
   to: string | null;
-  permission?: string;
+  permission?: OrganizationPermission;
 }
 
 export interface NavigationPanel {

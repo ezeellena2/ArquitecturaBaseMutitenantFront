@@ -3,7 +3,7 @@ import { Building2, Eye, Pencil, Plus, Power } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { useCurrentUser } from "@/auth/useCurrentUser";
+import { usePermissions } from "@/auth/usePermissions";
 import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { CompanyResponse } from "@/shared/api/types";
 import type { CreateCompanyRequest } from "@/shared/api/types";
@@ -44,9 +44,9 @@ const sentence = (text: string) => text.replace("..", ".");
 
 export function CompaniesPage() {
   const { t } = useTranslation(["companies", "common"]);
-  const { data: currentUser } = useCurrentUser();
-  const canRead = currentUser?.permissions?.includes("companies.read") === true;
-  const canManage = currentUser?.permissions?.includes("companies.manage") === true;
+  const { can } = usePermissions();
+  const canRead = can("companies.read");
+  const canManage = can("companies.manage");
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { filters, pagination, query, result: companies, paginationProps } = usePagedQuery({

@@ -19,7 +19,7 @@
 - El `.npmrc` de la raíz mantiene `legacy-peer-deps=true` porque `openapi-typescript` 7.13 declara TypeScript 5 como peer y la plantilla usa TypeScript 6. Se retira solo cuando el generador declare compatibilidad con TypeScript 6 y pasen `npm ci` sin ese ajuste, `npm run build`, `npm test` y `contracts:check`.
 - **Altas y envíos:** `useIdempotentMutation(fn)` en lugar de `useMutation`. Genera la `Idempotency-Key` al montar y la conserva ante red o 5xx. La renueva después de un éxito o de un 4xx definitivo para que un formulario corregido pueda enviarse con otro cuerpo. Un 409 `Request.InProgress` conserva la clave, espera y reintenta hasta 30 veces; al desmontar cancela la espera y no vuelve a enviar. Lo que sigue al envío va en `mutate(variables, { onSuccess, onError })`: si se corta la red, «Reintentar» repite la misma mutación con la misma clave y corre esos pasos. `useIdempotentMutation(fn, { meta })` lleva la `meta` al manejo global de errores ([errores](errores.md)).
 - **Ediciones:** la `version` que trae la ficha viaja en el `PUT` o `DELETE` ([formularios](formularios.md), "Ediciones simultáneas").
-- **Módulos:** una query de un módulo apagado no se dispara; `useFeature("reportes")` lo dice ([accesos-y-permisos](accesos-y-permisos.md)).
+- **Módulos:** una query de un módulo apagado no se dispara; `usePermissions().hasFeature("reportes")` lo dice ([accesos-y-permisos](accesos-y-permisos.md)).
 - **El front no calcula dinero ni reglas de negocio:** muestra lo que llega y los totales vienen del back.
 - Al cambiar de acceso u organización, `queryClient.clear()` (lo hace `useSwitchAccess`).
 

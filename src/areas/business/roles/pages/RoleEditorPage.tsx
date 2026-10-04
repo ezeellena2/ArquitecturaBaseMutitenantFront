@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import { toast } from "sonner";
-import { useCurrentUser } from "@/auth/useCurrentUser";
+import { usePermissions } from "@/auth/usePermissions";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { ApiError } from "@/shared/api/ApiError";
@@ -74,9 +74,9 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { data: currentUser } = useCurrentUser();
-  const canRead = currentUser?.permissions?.includes("roles.read") === true;
-  const canManage = currentUser?.permissions?.includes("roles.manage") === true;
+  const { can } = usePermissions();
+  const canRead = can("roles.read");
+  const canManage = can("roles.manage");
   const role = useQuery({
     queryKey: roleQueryKey(roleId ?? ""),
     queryFn: () => fetchRole(roleId!),
@@ -101,7 +101,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const companies = useQuery({
     queryKey: ["role-company-options"],
     queryFn: fetchCompanyOptions,
-    enabled: currentUser?.permissions?.includes("companies.read") === true && (mode === "create" || draft.scope === "SpecificCompany"),
+    enabled: can("companies.read") && (mode === "create" || draft.scope === "SpecificCompany"),
     meta: { silent: true },
   });
   const companyName = draft.companyId ? companies.data?.items.find((company) => company.id === draft.companyId)?.name : undefined;

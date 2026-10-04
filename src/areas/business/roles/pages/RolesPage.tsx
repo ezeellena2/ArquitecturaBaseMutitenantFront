@@ -3,7 +3,7 @@ import { Eye, Pencil, Plus, Shield, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
-import { useCurrentUser } from "@/auth/useCurrentUser";
+import { usePermissions } from "@/auth/usePermissions";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { Column } from "@/shared/ui/DataTable";
@@ -36,9 +36,9 @@ const roleCountScopes = [undefined, "Organization", "Company"] as const;
 
 export function RolesPage() {
   const { t } = useTranslation(["roles", "common"]);
-  const { data: currentUser } = useCurrentUser();
-  const canRead = currentUser?.permissions?.includes("roles.read") === true;
-  const canManage = currentUser?.permissions?.includes("roles.manage") === true;
+  const { can } = usePermissions();
+  const canRead = can("roles.read");
+  const canManage = can("roles.manage");
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { filters, pagination, query, result: roles, paginationProps } = usePagedQuery({
@@ -56,7 +56,7 @@ export function RolesPage() {
   const companies = useQuery({
     queryKey: ["role-company-options"],
     queryFn: fetchCompanyOptions,
-    enabled: canRead && currentUser?.permissions?.includes("companies.read") === true,
+    enabled: canRead && can("companies.read"),
     meta: { silent: true },
   });
   const activeCompanies = (companies.data?.items ?? []).filter((company) => company.status === "Active");

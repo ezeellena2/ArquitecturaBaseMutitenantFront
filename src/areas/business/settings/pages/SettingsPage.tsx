@@ -3,6 +3,7 @@ import { Globe, SlidersHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
+import { usePermissions } from "@/auth/usePermissions";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -43,8 +44,9 @@ function settingsDraft(settings: OrganizationSettingsResponse): SettingsDraft {
 export function SettingsPage() {
   const { t } = useTranslation(["settings", "common"]);
   const { data: currentUser } = useCurrentUser();
-  const canRead = currentUser?.permissions?.includes("settings.read") === true;
-  const canManage = currentUser?.permissions?.includes("settings.manage") === true;
+  const { can } = usePermissions();
+  const canRead = can("settings.read");
+  const canManage = can("settings.manage");
   const organizationName = activeOrganization(currentUser)?.name ?? "";
   const client = useQueryClient();
   const settings = useQuery({ queryKey: organizationSettingsKey, queryFn: fetchOrganizationSettings, enabled: canRead, meta: { silent: true, blocksView: true } });

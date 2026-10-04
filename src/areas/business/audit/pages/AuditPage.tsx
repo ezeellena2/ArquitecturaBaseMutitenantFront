@@ -2,7 +2,7 @@ import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-qu
 import { ClipboardList } from "lucide-react";
 import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCurrentUser } from "@/auth/useCurrentUser";
+import { usePermissions } from "@/auth/usePermissions";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useFilters } from "@/shared/hooks/useFilters";
 import { usePagination } from "@/shared/hooks/usePagination";
@@ -27,8 +27,8 @@ const auditCategories = ["users", "roles", "companies", "settings", "organizatio
 
 export function AuditPage() {
   const { t } = useTranslation(["audit", "common"]);
-  const { data: currentUser } = useCurrentUser();
-  const canRead = currentUser?.permissions?.includes("audit.read") === true;
+  const { can } = usePermissions();
+  const canRead = can("audit.read");
   const filters = useFilters(auditFilterKeys);
   // Por cursor («Cargar más», sin páginas ni total): de usePagination solo usa la búsqueda en la URL.
   const pagination = usePagination();

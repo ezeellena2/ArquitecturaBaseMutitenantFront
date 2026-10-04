@@ -12,7 +12,8 @@ import { platformNavigation } from "./platform";
 vi.mock("@/tenancy/AccessMenu", () => ({ AccessMenu: () => <button type="button">{"Cuenta"}</button> }));
 vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: {
   displayName: "Ana", email: "ana@example.com", activeTenantId: "empresa-a",
-  organizations: [{ id: "empresa-a", name: "Empresa A" }], permissions: ["users.read", "roles.read", "companies.read", "settings.read", "publicpage.manage", "audit.read"],
+  organizations: [{ id: "empresa-a", name: "Empresa A" }], features: [],
+  effectivePermissions: { organization: ["users.read", "roles.read", "companies.read", "settings.read", "publicpage.manage", "audit.read"], companies: {} },
 } }) }));
 
 beforeAll(async () => {

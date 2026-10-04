@@ -3,6 +3,7 @@ import { LogOutIcon } from "@/shared/ui/icons";
 import { useTranslation } from "react-i18next";
 import { Navigate } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
+import { usePermissions } from "@/auth/usePermissions";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { cn } from "@/shared/lib/utils";
 import { AppBar } from "@/shared/ui/app/AppBar";
@@ -18,15 +19,15 @@ export function MorePage() {
   const { t } = useTranslation();
   const phone = useMediaQuery("(max-width: 767px)");
   const { data: user } = useCurrentUser();
+  const { can } = usePermissions();
   const { name, email, access, profiles, signOut, status } = useProfiles();
   if (!phone) return <Navigate to={homeOf(access ?? "consumer")} replace />;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
 
-  const permissions = new Set(user?.permissions ?? []);
   const panel = businessNavigation.administration;
   const administration = access === "business" && panel
     ? [...(panel.sections ?? []).flatMap((section) => section.links), ...panel.links]
-      .filter((entry) => entry.to && (!entry.permission || permissions.has(entry.permission)))
+      .filter((entry) => entry.to && (!entry.permission || can(entry.permission)))
     : [];
   const subtitle = access === "business" ? activeOrganization(user)?.name : t("accessMenu.personal");
 

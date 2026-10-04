@@ -9,7 +9,7 @@
   - `<AccessRoute access="platform">` para `/plataforma/…`;
   - las rutas públicas (`/` sin sesión, `/login…`, `/registro…`, `/recuperar`, `/invitacion`, `/auth/callback`, `/terminos`, `/privacidad` y las del subdominio) no llevan `AccessRoute`.
 - **Host:** con el subdominio de una organización (`<slug>.plataforma.com`; una página pública por organización, no por empresa), `routes.tsx` arma **solo** las rutas de `storefront` (y `/auth/callback`: el ingreso desde el subdominio vuelve a su propio origen). `usePublicSite()` devuelve el slug del subdominio y los datos públicos de esa organización.
-- **Acción:** `<Can permission="roles.manage">…</Can>`. En una empresa del grupo: `<CanInCompany companyId={id} permission="company.members.manage">`.
+- **Acción:** `const { can, canInCompany } = usePermissions()`. `can("roles.manage")` lee `effectivePermissions.organization` de `/api/me`. En una empresa del grupo, `canInCompany(companyId, "company.members.manage")` lee la lista de esa empresa en `effectivePermissions.companies`; si la empresa no figura (el back todavía no llena el mapa), la de la organización. Los códigos son una unión tipada (`OrganizationPermission` y `CompanyPermission`), copia del catálogo del back.
 - **Acceso activo:** `useAccess()` devuelve `access`, la organización activa (en B2B), si la persona tiene espacio personal y sus organizaciones.
 - **Rutas y estados de cada acceso:** `tenancy/access.ts` es el único lugar que los sabe: el tipo `Access` del contrato, `homeOf(access)` (el inicio), `loginPathOf(access)` (la puerta), `accessOfPath(path)`, `activeOrganization(me)`, `isSelectable(organization)` y `unavailableCodeOf(status)`. Fuera de ahí no hay un literal `"/org"` ni `"/login/empresa"`: un acceso nuevo se suma en ese archivo.
 - **Salir:** `useSignOut()`, la misma secuencia en el menú, «Más», la organización no disponible, los términos y la invitación.
@@ -19,7 +19,7 @@
   3. `queryClient.clear()`;
   4. el inicio del acceso nuevo.
 - **Módulos habilitados:** `GET /api/me` trae `features` del acceso activo.
-  - `useFeature("x")` y `<Feature name="x">` muestran u ocultan.
+  - `usePermissions().hasFeature("x")` muestra u oculta.
   - Las rutas y los enlaces de un módulo declaran `feature` además de `permission`. Apagado, el enlace no aparece y la ruta muestra `NotFoundPage`, como el 404 del back.
 - **Términos nuevos:** si una respuesta trae `Legal.AcceptanceRequired`, se muestra la pantalla de aceptación, que bloquea.
 - **La cuenta** (`/cuenta`) es de la identidad y se ve desde los dos accesos.
@@ -28,18 +28,19 @@
 ## Prohibido
 - Mostrar "crear una empresa" en el acceso B2C, o mostrar organizaciones en el espacio personal.
 - Usar el subdominio para mostrar algo de la administración de la organización (esa vive en `/org`).
-- Preguntar por roles (`user.roles.includes("TenantAdmin")`).
+- Preguntar por roles (`user.roles.includes("TenantAdmin")`) o leer la lista plana `permissions` de `/api/me`: los permisos salen de `usePermissions`.
 - Una ruta privada sin `AccessRoute`, o un permiso declarado en un solo lugar.
 - Cambiar de acceso sin limpiar la caché.
 - Guardar el acceso o la organización en localStorage: lo sabe el token.
 
 ## Copiá de
-- `src/app/routes.tsx` y `src/layouts/navigation/business.ts` (E3–E4) · `src/tenancy/useSwitchAccess.ts` (E3).
+- `src/app/routes.tsx` y `src/layouts/navigation/business.ts` (E3–E4) · `src/tenancy/useSwitchAccess.ts` (E3) · `src/auth/usePermissions.ts` (E7).
 
 ## Lo verifica
 - `routes.test.tsx` (E3) y `navigation.test.tsx` (E4): el mismo permiso en los dos lugares desde E4; el mismo módulo desde E5.
 - `AccessRoute.test.tsx` (E3), `useSwitchAccess.test.tsx` (E3) y `AccessMenu.test.tsx` (E3): limpia la caché al cambiar; una persona sin organizaciones no ve «Ir a mi empresa» y en B2C nunca aparece «Registrá tu empresa».
 - `routes-by-host.test.ts` (E7): un subdominio no monta rutas de `/org`.
+- `usePermissions.test.ts` (E7): `can` lee `effectivePermissions`; `canInCompany`, la empresa del mapa o, si no figura, la organización; los códigos son los del catálogo del back.
 - `access.test.ts` (E7): el inicio, la puerta, la ruta y los estados de cada acceso; `access-paths.test.ts` (E7): ningún literal `"/org"` ni `"/login/empresa"` fuera de `tenancy/access.ts`; `useSignOut.test.tsx` (E7).
 
 ## Detalle

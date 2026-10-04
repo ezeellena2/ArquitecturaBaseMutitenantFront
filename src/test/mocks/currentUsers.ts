@@ -1,4 +1,11 @@
+import type { Permission } from "@/auth/usePermissions";
 import type { MeResponse } from "@/shared/api/types";
+
+/// Como /api/me: los permisos de la organización van en `effectivePermissions` y `permissions` los repite. El mapa por
+/// empresa llega vacío hasta que el back lo llene.
+function withPermissions(user: MeResponse, organization: readonly Permission[]): MeResponse {
+  return { ...user, permissions: [...organization], effectivePermissions: { organization: [...organization], companies: {} } };
+}
 
 export const consumerWithoutOrganizations: MeResponse = {
   id: "ana",
@@ -19,44 +26,34 @@ export const consumerWithoutOrganizations: MeResponse = {
   pendingLegalDocuments: [],
 };
 
-export const businessUser: MeResponse = {
+export const businessUser: MeResponse = withPermissions({
   ...consumerWithoutOrganizations,
   access: "business",
   activeTenantId: "empresa-a",
   organizations: [{ id: "empresa-a", name: "Empresa A", roleName: null, status: "Active", memberStatus: "Active", isSelectable: true }],
-  permissions: ["users.read", "roles.read"],
-};
+}, ["users.read", "roles.read"]);
 
 export const consumerWithOrganizations: MeResponse = {
   ...consumerWithoutOrganizations,
   organizations: [{ id: "empresa-a", name: "Empresa A", roleName: null, status: "Active", memberStatus: "Active", isSelectable: true }],
 };
 
-export const businessWithoutPermissions: MeResponse = {
-  ...businessUser,
-  permissions: [],
-};
+export const businessWithoutPermissions: MeResponse = withPermissions(businessUser, []);
 
-export const businessRoleManager: MeResponse = {
-  ...businessUser,
-  permissions: ["roles.read", "roles.manage"],
-};
+export const businessRoleManager: MeResponse = withPermissions(businessUser, ["roles.read", "roles.manage"]);
 
-export const businessE6Admin: MeResponse = {
-  ...businessUser,
-  permissions: ["users.read", "users.invite", "users.manage", "roles.read", "roles.manage", "companies.read", "companies.manage", "company.members.read", "company.members.manage", "settings.read", "settings.manage", "publicpage.manage", "audit.read"],
-};
+/// La Dueña: el rol de toda la organización trae también los permisos de miembros de cada empresa.
+const ownerPermissions: readonly Permission[] = ["users.read", "users.invite", "users.manage", "roles.read", "roles.manage", "companies.read", "companies.manage", "company.members.read", "company.members.manage", "settings.read", "settings.manage", "publicpage.manage", "audit.read"];
+
+export const businessE6Admin: MeResponse = withPermissions(businessUser, ownerPermissions);
 
 /** Solo ve Configuración: los datos se leen como texto, sin campos grises. */
-export const businessSettingsReader: MeResponse = {
-  ...businessUser,
-  permissions: ["settings.read"],
-};
+export const businessSettingsReader: MeResponse = withPermissions(businessUser, ["settings.read"]);
 
+/// Como el back: los permisos de la plataforma no viajan en /api/me hasta su backoffice (E9).
 export const platformOperator: MeResponse = {
   ...consumerWithoutOrganizations,
   access: "platform",
-  permissions: ["platform.tenants.read"],
 };
 
 const visualOrganizations: MeResponse["organizations"] = [
@@ -80,15 +77,9 @@ export const visualBusiness: MeResponse = {
 };
 
 /** Lucía como Dueña de Grupo Delta: con «Administración», como en los tableros de Organización. */
-export const visualOwner: MeResponse = {
-  ...visualBusiness,
-  permissions: businessE6Admin.permissions,
-};
+export const visualOwner: MeResponse = withPermissions(visualBusiness, ownerPermissions);
 
-export const visualRoleManager: MeResponse = {
-  ...visualBusiness,
-  permissions: ["roles.read", "roles.manage"],
-};
+export const visualRoleManager: MeResponse = withPermissions(visualBusiness, ["roles.read", "roles.manage"]);
 
 export const visualErrorOrganization: MeResponse = {
   ...visualBusiness,
