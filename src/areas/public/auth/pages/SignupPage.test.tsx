@@ -67,6 +67,8 @@ describe("SignupPage", () => {
     const checkbox = screen.getByRole("checkbox", { name: /Acepto los Términos/ });
     expect(checkbox).toHaveClass("size-[18px]");
     expect(checkbox.closest("label")).toHaveClass("items-center", "gap-2.5", "text-[14px]", "text-[var(--t1)]");
+    // Los dos enlaces de abajo, a 22 entre sí, como el resto de la columna (en el ingreso van a 8).
+    expect(screen.getByRole("link", { name: "Ingresá" }).parentElement?.parentElement).toHaveClass("gap-[22px]");
   });
 
   it("reproduce Correo a 390: no pide nombre", async () => {

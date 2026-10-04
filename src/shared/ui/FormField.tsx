@@ -22,14 +22,15 @@ export function FormField({ label, htmlFor, hint, error, required, aside, varian
   const messageId = `${controlId}-message`;
   const message = error ?? hint;
 
-  const labelElement = <Label htmlFor={controlId} className={cn("gap-1!", variant === "auth" ? "text-[12px] font-semibold text-[var(--t2)]" : "text-[12px] font-semibold text-[var(--t2)] max-md:text-[13.5px] lg:text-[13px]")}>
+  // Ingreso y registro (tableros Ingreso, Registro y sus M-*): rótulo de 12,5 a 6 del campo, en cualquier tamaño.
+  const labelElement = <Label htmlFor={controlId} className={cn("gap-1!", variant === "auth" ? "text-[12.5px] font-semibold text-[var(--t2)]" : "text-[12px] font-semibold text-[var(--t2)] max-md:text-[13.5px] lg:text-[13px]")}>
     {label}
     {/* Tablero «Criterio · Formularios»: el asterisco de obligatorio va en rojo. */}
     {required ? <span aria-hidden="true" className="text-[var(--peligro)]">{" *"}</span> : null}
   </Label>;
 
   return (
-    <div className="flex flex-col gap-1.5 lg:gap-2">
+    <div className={variant === "auth" ? "flex flex-col gap-1.5" : "flex flex-col gap-1.5 lg:gap-2"}>
       {aside ? <div className="flex items-center justify-between gap-3">{labelElement}{aside}</div> : labelElement}
       {cloneElement(children, {
         id: controlId,

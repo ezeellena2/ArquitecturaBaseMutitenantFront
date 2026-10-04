@@ -131,7 +131,8 @@ export function SignupPage() {
         <FormError message={error ? t(loginCodeErrorKey(error)) : null} />
         <Button type="submit" size="lg" className="w-full" disabled={request.isPending || retry.isRunning}>{retry.label ?? t("signup.create")}</Button>
       </form>
-      <div className="flex flex-col gap-2 text-center text-[13px] text-[var(--t2)]">
+      {/* Tablero Registro: los dos enlaces a 22 entre sí, como el resto de la columna (en Ingreso van a 8). */}
+      <div className="flex flex-col gap-[22px] text-center text-[13px] text-[var(--t2)]">
         <div>{t("signup.haveAccount")} <Link to="/login" className="font-semibold text-[var(--marca)] hover:underline">{t("signup.login")}</Link></div>
         <div>{t("login.haveBusiness")} <Link to="/registro/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("login.registerIt")}</Link></div>
       </div>

@@ -85,7 +85,10 @@ describe("FormField", () => {
       </FormField>,
     );
 
-    expect(screen.getByText("Correo electrónico")).toHaveClass("text-[12px]", "font-semibold", "text-[var(--t2)]");
+    // Tableros Ingreso, Registro y sus M-*: rótulo de 12,5, a 6 del campo en la compu y en el teléfono.
+    expect(screen.getByText("Correo electrónico")).toHaveClass("text-[12.5px]", "font-semibold", "text-[var(--t2)]");
+    expect(screen.getByText("Correo electrónico").parentElement).toHaveClass("gap-1.5");
+    expect(screen.getByText("Correo electrónico").parentElement).not.toHaveClass("lg:gap-2");
     expect(screen.getByLabelText("Correo electrónico")).toHaveClass("h-11", "rounded-[10px]", "text-[15px]");
   });
 });
