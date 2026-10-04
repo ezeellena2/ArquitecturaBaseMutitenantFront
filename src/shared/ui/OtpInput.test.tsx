@@ -5,14 +5,27 @@ import { axe } from "vitest-axe";
 import { OtpInput } from "./OtpInput";
 
 describe("OtpInput", () => {
-  it("distribuye seis casillas en todo el ancho como en el lienzo, con nombre accesible", async () => {
-    const { container } = render(<OtpInput length={6} value="" onChange={vi.fn()} label="Código" />);
-    expect(screen.getByRole("group", { name: "Código" })).toHaveClass("grid-cols-6");
+  // Tableros Ingreso y Registro (y sus M-*): seis casillas a todo el ancho, de 44, radio 8 y número de 22, también en el
+  // teléfono. Las medidas del campo del teléfono (48, radio 12, letra de 16) no se cuelan en el código.
+  it("en el ingreso, distribuye seis casillas en todo el ancho como en el lienzo, con nombre accesible", async () => {
+    const { container } = render(<OtpInput variant="auth" length={6} value="" onChange={vi.fn()} label="Código" />);
+    expect(screen.getByRole("group", { name: "Código" })).toHaveClass("grid", "grid-cols-6", "gap-2");
     expect(screen.getAllByRole("textbox")).toHaveLength(6);
-    // Tableros Ingreso y «Criterio · Formularios»: casillas de 44 con radio 8, borde de campo y número de 22.
-    expect(screen.getByRole("textbox", { name: "Código 1" })).toHaveClass("h-11", "w-full", "rounded-[8px]", "border-[var(--borde2)]", "text-[22px]");
-    expect(screen.getByRole("textbox", { name: "Código 1" })).toHaveAttribute("autocomplete", "one-time-code");
+    const box = screen.getByRole("textbox", { name: "Código 1" });
+    expect(box).toHaveClass("h-11", "w-full", "rounded-[8px]", "border-[var(--borde2)]", "text-[22px]", "max-md:h-11", "max-md:rounded-[8px]", "max-md:text-[22px]");
+    expect(box).not.toHaveClass("max-md:h-12", "max-md:rounded-[12px]", "max-md:text-[16px]");
+    expect(box).toHaveAttribute("autocomplete", "one-time-code");
     expect(await axe(container, { rules: { region: { enabled: false } } })).toHaveNoViolations();
+  });
+
+  // «Criterio · Formularios» (Código) y Cuenta-Verificar: en un diálogo, casillas de 40 × 44 a la izquierda, con radio 8 y
+  // número de 18. En la hoja del teléfono (M-Cuenta-Verificar), a todo el ancho, de 52, con radio 12 y número de 22.
+  it("en un diálogo, casillas de 40 a la izquierda; en la hoja del teléfono, a todo el ancho", () => {
+    render(<OtpInput length={6} value="" onChange={vi.fn()} label="Código" />);
+    expect(screen.getByRole("group", { name: "Código" })).toHaveClass("flex", "gap-2", "max-md:grid", "max-md:grid-cols-6");
+    const box = screen.getByRole("textbox", { name: "Código 1" });
+    expect(box).toHaveClass("h-11", "w-10", "rounded-[8px]", "text-[18px]", "max-md:h-[52px]", "max-md:w-full", "max-md:rounded-[12px]", "max-md:text-[22px]");
+    expect(box).not.toHaveClass("w-full", "max-md:h-12", "max-md:text-[16px]");
   });
 
   it("avanza al escribir, distribuye al pegar y vuelve con Backspace", async () => {

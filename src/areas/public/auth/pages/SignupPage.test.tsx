@@ -119,7 +119,11 @@ describe("SignupPage", () => {
     expect(screen.getByRole("group", { name: "Código" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toHaveClass("bg-[var(--lado-activo)]");
     expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).not.toHaveClass("bg-background");
-    expect(screen.getByRole("button", { name: "Verificar y crear la cuenta" })).toBeDisabled();
+    // Tablero Registro y «Criterio · Botones»: el botón está activo con los casilleros vacíos; si falta el código, la franja
+    // dice qué falta.
+    expect(screen.getByRole("button", { name: "Verificar y crear la cuenta" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "Verificar y crear la cuenta" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Escribí los 6 números del código.");
   });
 
   it("verifica el código, muestra error con intentos y luego permite entrar", async () => {

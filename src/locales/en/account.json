@@ -42,7 +42,6 @@
   "sendCode": "Send code",
   "code": "Code",
   "reauthHint": "To confirm, enter the code we sent to {{backup}}.",
-  "codeIncomplete": "Enter all 6 digits of the code.",
   "chooseMethod": "What do you want to add",
   "verifyTitle": "Verify your email",
   "sentHint": "We sent a code to {{value}}.",

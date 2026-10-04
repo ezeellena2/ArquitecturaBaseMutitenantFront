@@ -74,6 +74,7 @@
     "send": "Enviar código",
     "retryIn": "Reintentá en {{seconds}} s",
     "verify": "Verificar",
+    "incomplete": "Escribí los 6 números del código.",
     "attemptsLeft_one": "Te queda {{count}} intento",
     "attemptsLeft_other": "Te quedan {{count}} intentos",
     "resend": "Reenviar código",

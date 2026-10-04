@@ -46,6 +46,8 @@ export function BusinessSignupPage() {
   const [code, setCode] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [requestError, setRequestError] = useState<ApiError | null>(null);
+  // «Criterio · Botones»: «Verificar» no se apaga; si falta el código, la franja dice qué falta.
+  const [incomplete, setIncomplete] = useState(false);
   const [organizationName, setOrganizationName] = useState("");
   const [firstCompanyName, setFirstCompanyName] = useState("");
   const [slug, setSlug] = useState("");
@@ -145,7 +147,7 @@ export function BusinessSignupPage() {
   }
 
   async function confirmCode() {
-    if (code.length !== 6) return;
+    if (code.length !== 6) { setIncomplete(true); return; }
     setRequestError(null);
     try {
       await verifyCode.mutateAsync({ email, code });
@@ -159,6 +161,7 @@ export function BusinessSignupPage() {
 
   async function resendCode() {
     setRequestError(null);
+    setIncomplete(false);
     try {
       const response = await requestCode.mutateAsync(email);
       setCode("");
@@ -249,16 +252,16 @@ export function BusinessSignupPage() {
             <div className="text-center text-[13px] text-[var(--t2)]">{t("businessSignup.alreadyRegistered")} <Link to={loginPathOf("business")} className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.loginBusiness")}</Link></div>
           </section>
             : step === "code" ? <section className="flex flex-col gap-[22px]">
-              <button type="button" onClick={() => { setStep("email"); setCode(""); setRequestError(null); }}
+              <button type="button" onClick={() => { setStep("email"); setCode(""); setRequestError(null); setIncomplete(false); }}
                 className="inline-flex items-center gap-1 self-start text-sm font-semibold text-[var(--marca)] hover:underline"><ChevronLeft size={16} aria-hidden="true" />{t("businessSignup.changeEmail")}</button>
               <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.codeTitle")}</h1>
                 <p id="business-signup-code-hint" className="mt-2 text-sm text-[var(--t2)]"><Trans ns="auth" i18nKey="businessSignup.sentCode" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p></div>
-              <OtpInput length={6} value={code} onChange={(next) => { setCode(next); setRequestError(null); }}
+              <OtpInput length={6} value={code} variant="auth" onChange={(next) => { setCode(next); setRequestError(null); setIncomplete(false); }}
                 label={t("businessSignup.codeLabel")} invalid={requestError?.code === "Auth.LoginCode.Invalid"}
                 disabled={verifyCode.isPending} aria-describedby="business-signup-code-hint" />
-              <FormError message={requestErrorText} />
+              <FormError message={incomplete ? t("common:code.incomplete") : requestErrorText} />
               <div className="flex flex-col gap-2.5">
-                <Button type="button" size="lg" onClick={() => void confirmCode()} disabled={code.length !== 6 || verifyCode.isPending}>{t("businessSignup.verify")}</Button>
+                <Button type="button" size="lg" onClick={() => void confirmCode()} disabled={verifyCode.isPending}>{t("businessSignup.verify")}</Button>
                 <Button type="button" size="lg" variant="outline"
                   onClick={() => void resendCode()} disabled={resend.isRunning || retry.isRunning || requestCode.isPending}>
                   {retry.label ?? (resend.isRunning ? t("businessSignup.resendIn", { seconds: resend.seconds }) : t("businessSignup.resend"))}

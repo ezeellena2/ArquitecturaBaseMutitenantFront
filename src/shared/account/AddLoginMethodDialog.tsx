@@ -53,7 +53,7 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
     if (method && open && !started.current) { started.current = true; void send({ email: method.value ?? "" }); }
   });
   async function confirm() {
-    if (code.length !== 6) { setFailure(t("codeIncomplete")); return; }
+    if (code.length !== 6) { setFailure(t("common:code.incomplete")); return; }
     setFailure(null);
     try {
       await verify.mutateAsync(code);

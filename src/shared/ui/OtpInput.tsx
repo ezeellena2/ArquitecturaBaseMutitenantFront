@@ -1,4 +1,5 @@
 import { useRef, type ChangeEvent, type ClipboardEvent, type KeyboardEvent } from "react";
+import { cn } from "@/shared/lib/utils";
 import { Input } from "./input";
 
 interface OtpInputProps {
@@ -15,7 +16,24 @@ interface OtpInputProps {
   /// Lo que describe al código entero (a dónde se mandó, cuándo vence), para el grupo de casillas. Hace falta cuando
   /// el foco llega directo a una casilla sin pasar por ese texto, como en el diálogo del perfil.
   "aria-describedby"?: string;
+  /// `auth`: el ingreso y el registro, con las casillas a todo el ancho. Por defecto, el código de un diálogo.
+  variant?: "default" | "auth";
 }
+
+// Tableros Ingreso y Registro (y sus M-*): seis casillas a todo el ancho, de 44, radio 8 y número de 22, también en el
+// teléfono. «Criterio · Formularios» (Código) y Cuenta-Verificar: en un diálogo, casillas de 40 × 44 a la izquierda, radio 8
+// y número de 18; en la hoja del teléfono (M-Cuenta-Verificar), a todo el ancho, de 52, radio 12 y número de 22. Las
+// medidas `max-md:` van todas: si no, las del campo del teléfono (48, radio 12, letra de 16) se cuelan en el código.
+const layout = {
+  auth: {
+    group: "grid grid-cols-6 gap-2",
+    box: "h-11 w-full rounded-[8px] text-[22px] max-md:h-11 max-md:rounded-[8px] max-md:text-[22px]",
+  },
+  default: {
+    group: "flex gap-2 max-md:grid max-md:grid-cols-6",
+    box: "h-11 w-10 rounded-[8px] text-[18px] max-md:h-[52px] max-md:w-full max-md:rounded-[12px] max-md:text-[22px]",
+  },
+};
 
 /// Casilleros para un código de un solo uso: avanzan solos, aceptan pegar y vuelven con Backspace. Los usan el ingreso
 /// (como paso de `/login`) y el perfil, al comprobar un número o un correo.
@@ -28,6 +46,7 @@ export function OtpInput({
   invalid,
   autoFocus,
   "aria-describedby": describedBy,
+  variant = "default",
 }: OtpInputProps) {
   const boxes = useRef<(HTMLInputElement | null)[]>([]);
   const normalizedValue = value.replace(/\D/gu, "").slice(0, length);
@@ -81,7 +100,7 @@ export function OtpInput({
   }
 
   return (
-    <div role="group" aria-label={label} aria-describedby={describedBy} className="grid grid-cols-6 gap-2">
+    <div role="group" aria-label={label} aria-describedby={describedBy} className={layout[variant].group}>
       {digits.map((digit, index) => (
         <Input
           // El índice es la identidad real de cada casillero.
@@ -101,7 +120,7 @@ export function OtpInput({
           onChange={(event) => handleChange(index, event)}
           onKeyDown={(event) => handleKeyDown(index, event)}
           onPaste={handlePaste}
-          className="h-11 w-full rounded-[8px] border-[var(--borde2)] p-0 text-center text-[22px] font-semibold aria-invalid:bg-[var(--peligro-t)] disabled:border-[var(--borde2)] disabled:bg-[var(--s2)] disabled:text-[var(--t3)] disabled:opacity-100"
+          className={cn(layout[variant].box, "border-[var(--borde2)] p-0 text-center font-semibold max-md:px-0 aria-invalid:bg-[var(--peligro-t)] disabled:border-[var(--borde2)] disabled:bg-[var(--s2)] disabled:text-[var(--t3)] disabled:opacity-100")}
         />
       ))}
     </div>

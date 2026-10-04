@@ -24,7 +24,7 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, o
   const label = adding ? "verify" : action === "primary" ? "makePrimary" : google ? "unlink" : "remove";
   async function confirm() {
     if (!reauth.proof) { await reauth.send(); return; }
-    if (reauth.code.length !== 6) { reauth.setFailure(t("codeIncomplete")); return; }
+    if (reauth.code.length !== 6) { reauth.setFailure(t("common:code.incomplete")); return; }
     reauth.setFailure(null); setSaving(true);
     try {
       const request = { reauthTicket: await reauth.getTicket() };

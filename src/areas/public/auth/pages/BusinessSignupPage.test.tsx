@@ -105,6 +105,10 @@ describe("BusinessSignupPage", () => {
     expect(signupBody).toMatchObject({ email: "ana@example.com", acceptedTerms: true,
       culture: "es-AR", timeZoneId: "America/Argentina/Buenos_Aires" });
     const codeGroup = screen.getByRole("group", { name: "Código" });
+    // Tablero Registro-Empresa y «Criterio · Botones»: «Verificar» está activo; si falta el código, la franja dice qué falta.
+    expect(screen.getByRole("button", { name: "Verificar" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Escribí los 6 números del código.");
     fireEvent.paste(within(codeGroup).getByRole("textbox", { name: "Código 1" }), { clipboardData: { getData: () => "123456" } });
     fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
     expect(await screen.findByRole("heading", { name: "Tu organización" })).toBeVisible();

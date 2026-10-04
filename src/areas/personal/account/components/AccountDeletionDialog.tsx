@@ -25,14 +25,14 @@ export function AccountDeletionDialog({ graceDays, onClose, onComplete }: { grac
   const [confirming, setConfirming] = useState(false);
   const busy = confirming || reauth.isPending || request.isPending;
   async function confirm({ reason }: { reason: string }) {
-    if (reauth.code.length !== 6) { reauth.setFailure(t("codeIncomplete")); return; }
+    if (reauth.code.length !== 6) { reauth.setFailure(t("common:code.incomplete")); return; }
     reauth.setFailure(null); setConfirming(true);
     try { const result = await request.mutateAsync({ reason, reauthTicket: await reauth.getTicket() }); onComplete(result.scheduledForUtc); }
     catch (error) { if (!(error instanceof ApiError) || !applyApiErrorToForm(error, form.setError, { reason: "reason" })) reauth.showError(error); }
     finally { setConfirming(false); }
   }
   return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent showCloseButton={false} onCloseAutoFocus={restoreFocus}>
-    <form onSubmit={(event) => { if (!reauth.proof) { event.preventDefault(); void reauth.send(); } else { if (reauth.code.length !== 6) reauth.setFailure(t("codeIncomplete")); void form.handleSubmit(confirm)(event); } }} >
+    <form onSubmit={(event) => { if (!reauth.proof) { event.preventDefault(); void reauth.send(); } else { if (reauth.code.length !== 6) reauth.setFailure(t("common:code.incomplete")); void form.handleSubmit(confirm)(event); } }} >
       <DialogHeader><DialogTitle>{t("deletionTitle")}</DialogTitle></DialogHeader>
       <DialogBody>
       <DialogDescription>{t("deletionHint", { days: graceDays })}</DialogDescription>

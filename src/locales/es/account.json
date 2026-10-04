@@ -41,7 +41,6 @@
   "cancel": "Cancelar",
   "sendCode": "Enviar código",
   "code": "Código",
-  "codeIncomplete": "Escribí los 6 números del código.",
   "reauthHint": "Para confirmar, escribí el código que te mandamos a {{backup}}.",
   "chooseMethod": "Qué querés agregar",
   "verifyTitle": "Verificar tu correo",

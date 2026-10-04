@@ -204,7 +204,14 @@ describe("LoginPage", () => {
     expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toHaveClass("bg-[var(--lado-activo)]");
     expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).not.toHaveClass("bg-background");
-    expect(screen.getByRole("button", { name: "Verificar" })).toBeDisabled();
+    // Tablero Ingreso y «Criterio · Botones»: «Verificar» está activo con los casilleros vacíos; si falta el código, la
+    // franja dice qué falta, en vez de apagar el botón. Un dígito nuevo la saca.
+    expect(screen.getByRole("button", { name: "Verificar" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Escribí los 6 números del código.");
+    expect(verifyBody).toBeUndefined();
+    fireEvent.change(within(group).getByRole("textbox", { name: "Código 1" }), { target: { value: "1" } });
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     fireEvent.paste(within(group).getByRole("textbox", { name: "Código 1" }), { clipboardData: { getData: () => "123456" } });
     fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
 

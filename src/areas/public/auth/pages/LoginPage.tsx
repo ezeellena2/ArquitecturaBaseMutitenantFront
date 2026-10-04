@@ -57,6 +57,8 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const [step, setStep] = useState<CodeStep | null>(null);
   const [code, setCode] = useState("");
   const [error, setError] = useState<ApiError | null>(null);
+  // «Criterio · Botones»: «Verificar» no se apaga; si falta el código, la franja dice qué falta.
+  const [incomplete, setIncomplete] = useState(false);
   const [result, setResult] = useState<"noBusiness" | "inactive" | UnavailableCode | null>(null);
   const resend = useIdempotentMutation((email: string, key) => requestLoginCode(email, key), { meta: { handlesError: true } });
   const verify = useIdempotentMutation((input: { email: string; code: string; returnUrl: string }, key) => verifyLoginCode(input, key), { meta: { handlesError: true } });
@@ -114,6 +116,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     setStep(next);
     setCode("");
     setError(null);
+    setIncomplete(false);
     resendTimer.restart(60);
   }
 
@@ -123,12 +126,14 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     setStep(null);
     setCode("");
     setError(null);
+    setIncomplete(false);
     setResult(null);
     resendTimer.restart(0);
   }
 
   async function submitCode() {
-    if (!step || !returnUrl || code.length !== 6) return;
+    if (!step || !returnUrl) return;
+    if (code.length !== 6) { setIncomplete(true); return; }
     setError(null);
     try {
       const response = await verify.mutateAsync({ email: step.destination, code, returnUrl });
@@ -152,6 +157,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   async function resendCode() {
     if (!step) return;
     setError(null);
+    setIncomplete(false);
     try {
       const response = await resend.mutateAsync(step.destination);
       setCode("");
@@ -214,10 +220,10 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.checkEmail")}</h1>
         <p id="login-code-hint" className="mt-2 text-sm text-[var(--t2)]"><Trans ns="auth" i18nKey="login.sentCode" values={{ email: step.destination }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
       </div>
-      <OtpInput length={6} value={code} onChange={(next) => { setCode(next); if (wrongCode) setError(null); }} label={t("login.codeLabel")} invalid={wrongCode} disabled={verify.isPending || codeSpent || accountClosed} aria-describedby="login-code-hint" />
-      <FormError message={errorKey ? <>{t(errorKey)}{attemptsLeft !== null ? <span className="block">{t("login.attemptsLeft", { count: attemptsLeft })}</span> : null}{codeSpent && error?.code === "Auth.LoginCode.TooManyAttempts" ? <span className="block">{t("login.requestNewCode")}</span> : null}{error?.code === "Identity.Account.LockedOut" ? <span className="block">{t("login.tryLater")}</span> : null}{accountClosed ? <span className="block">{t("login.contactSupport")}</span> : null}</> : null} />
+      <OtpInput length={6} value={code} variant="auth" onChange={(next) => { setCode(next); setIncomplete(false); if (wrongCode) setError(null); }} label={t("login.codeLabel")} invalid={wrongCode} disabled={verify.isPending || codeSpent || accountClosed} aria-describedby="login-code-hint" />
+      <FormError message={incomplete ? t("common:code.incomplete") : errorKey ? <>{t(errorKey)}{attemptsLeft !== null ? <span className="block">{t("login.attemptsLeft", { count: attemptsLeft })}</span> : null}{codeSpent && error?.code === "Auth.LoginCode.TooManyAttempts" ? <span className="block">{t("login.requestNewCode")}</span> : null}{error?.code === "Identity.Account.LockedOut" ? <span className="block">{t("login.tryLater")}</span> : null}{accountClosed ? <span className="block">{t("login.contactSupport")}</span> : null}</> : null} />
       <div className="flex flex-col gap-2.5">
-        <Button type="button" size="lg" onClick={() => void submitCode()} disabled={code.length !== 6 || verify.isPending || verifyRetry.isRunning || codeSpent || accountClosed}>{verifyRetry.label ?? t("login.verify")}</Button>
+        <Button type="button" size="lg" onClick={() => void submitCode()} disabled={verify.isPending || verifyRetry.isRunning || codeSpent || accountClosed}>{verifyRetry.label ?? t("login.verify")}</Button>
         <Button type="button" size="lg" variant="outline" onClick={() => void resendCode()} disabled={resendTimer.isRunning || resendRetry.isRunning || resend.isPending || accountClosed}>
           {accountClosed ? t("login.resendCode") : resendRetry.label ?? (resendTimer.isRunning ? t("login.resendIn", { seconds: resendTimer.seconds }) : t("login.resendCode"))}
         </Button>
