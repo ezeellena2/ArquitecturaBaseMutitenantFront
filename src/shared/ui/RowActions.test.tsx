@@ -23,7 +23,7 @@ describe("RowActions", () => {
     );
 
     const trigger = screen.getByRole("button", { name: "Acciones de Ana" });
-    expect(trigger).toHaveClass("size-8");
+    expect(trigger).toHaveClass("size-8", "text-[var(--t3)]");
     expect(trigger.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
     trigger.focus();
     await userEvent.keyboard("{Enter}");

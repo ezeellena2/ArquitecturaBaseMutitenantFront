@@ -37,10 +37,10 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
     },
     {
       id: "state", header: t("users:columns.state"), type: "custom", mobile: "status", className: "w-[202px] max-md:w-[38%]",
-      cell: (user) => <span className="flex flex-col gap-0.5">
-        <span className="inline-flex items-center gap-1.5 text-[13px] text-[var(--t1)]">
-          <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${user.state === "Active" ? "bg-[var(--ok)]" : user.state === "PendingDeletion" ? "bg-[var(--alerta)]" : user.state === "Inactive" ? "bg-[var(--t3)]" : "bg-[var(--marca-tx)]"}`} />
-          {userStateLabel(user.state, t)}
+      cell: (user) => <span className="flex min-w-0 flex-col gap-0.5">
+        <span className="inline-flex max-w-full items-center gap-1.5 text-[13px] text-[var(--t1)]">
+          <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${user.state === "Active" ? "bg-[var(--punto-ok)]" : user.state === "PendingDeletion" ? "bg-[var(--punto-alerta)]" : user.state === "Inactive" ? "bg-[var(--punto-apagado)]" : user.state === "Expired" ? "bg-[var(--punto-alerta)]" : "bg-[var(--marca)]"}`} />
+          <span className="min-w-0 truncate">{userStateLabel(user.state, t)}</span>
         </span>
         {user.invitationExpiresAtUtc && (user.state === "Invited" || user.state === "Expired") ? <span className="text-xs text-[var(--t3)]">{t(user.state === "Expired" ? "users:columns.expiredPrefix" : "users:columns.expiresPrefix")} <DateText value={user.invitationExpiresAtUtc} kind="date" /></span> : null}
       </span>,

@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Eye, Pencil, ShieldCheck, Trash2 } from "lucide-react";
+import { Eye, Pencil, Plus, Shield, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
@@ -127,10 +127,10 @@ export function RolesPage() {
 
   return <>
     <Page
-      icon={ShieldCheck}
+      icon={Shield}
       title={t("roles:title")}
       summary={listSummary}
-      actions={canManage ? <Button asChild><Link to="/org/roles/new">{t("roles:create")}</Link></Button> : undefined}
+      actions={canManage ? <Button asChild><Link to="/org/roles/new"><Plus aria-hidden="true" className="size-4" />{t("roles:create")}</Link></Button> : undefined}
     >
       <div className="flex flex-col gap-3">
         <FilterBar

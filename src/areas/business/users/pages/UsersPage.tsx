@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, Pencil, Plus, Power, RotateCw, Trash2, UserRound } from "lucide-react";
+import { ChevronDown, Pencil, Plus, Power, RotateCw, Trash2, Users } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
@@ -182,7 +182,7 @@ export function UsersPage() {
 
 
   return <>
-    <Page icon={UserRound} title={t("users:title")} summary={listSummary} actions={canInvite ? <Button type="button" onClick={() => setInviteOpen(true)}><Plus aria-hidden="true" className="size-4" />{t("users:invite.open")}</Button> : undefined}>
+    <Page icon={Users} title={t("users:title")} summary={listSummary} actions={canInvite ? <Button type="button" onClick={() => setInviteOpen(true)}><Plus aria-hidden="true" className="size-4" />{t("users:invite.open")}</Button> : undefined}>
       <div className="flex flex-col gap-3">
         <FilterBar
           label={t("users:filters.label")}

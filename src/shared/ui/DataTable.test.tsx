@@ -127,7 +127,12 @@ describe("DataTable", () => {
     expect(screen.getByRole("table")).toHaveClass("text-[13px]");
     const header = screen.getByRole("columnheader", { name: "Nombre" });
     expect(header).toHaveClass("h-10", "bg-[var(--cab)]", "text-[13px]", "normal-case", "whitespace-normal", "px-1.5", "first:pl-4", "last:pr-4");
-    expect(screen.getAllByRole("row")[1]).toHaveClass("h-10", "odd:bg-[var(--fila-alterna)]");
+    // La cebra empieza con una fila blanca, como el tablero.
+    expect(screen.getAllByRole("row")[1]).toHaveClass("h-10", "even:bg-[var(--fila-alterna)]");
+    expect(screen.getAllByRole("row")[1]).not.toHaveClass("odd:bg-[var(--fila-alterna)]");
+    // Con ⋮ la fila de una línea sigue midiendo 40: la celda del ⋮ no suma relleno arriba y abajo.
+    expect(screen.getByRole("button", { name: "Acciones de Ana García" }).closest("td")).toHaveClass("py-0");
+    expect(screen.getByRole("button", { name: "Acciones de Ana García" }).closest("td")).not.toHaveClass("py-2");
     expect(screen.getAllByRole("cell")[0]).toHaveClass("px-1.5", "py-2", "first:pl-4", "last:pr-4");
     expect(screen.getByRole("columnheader", { name: "Acciones" })).toHaveClass("w-[50px]", "last:pr-3", "text-right");
   });
@@ -135,10 +140,10 @@ describe("DataTable", () => {
   it("muestra el estado con un punto y texto, sin pastilla", () => {
     render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} />);
 
-    const state = screen.getByText("Activo");
+    const state = screen.getByText("Activo").parentElement!;
     expect(state).toHaveClass("inline-flex", "items-center");
     expect(state).not.toHaveClass("rounded-full", "bg-[var(--ok-t)]");
-    expect(state?.querySelector('[data-slot="status-dot"]')).toHaveClass("size-2", "bg-[var(--ok)]");
+    expect(state?.querySelector('[data-slot="status-dot"]')).toHaveClass("size-2", "bg-[var(--punto-ok)]");
   });
 
   it("a 390 px deja visibles el principal, estado y ⋮; a 768 oculta solo prioridad baja", () => {

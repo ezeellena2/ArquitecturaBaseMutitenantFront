@@ -162,7 +162,7 @@ export function PublicPagePage() {
     update.mutate(request);
   }
 
-  const stateDot = blocked ? "bg-[var(--peligro)]" : pageData?.isPublished ? "bg-[var(--ok)]" : "bg-[var(--t3)]";
+  const stateDot = blocked ? "bg-[var(--peligro)]" : pageData?.isPublished ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-apagado)]";
   const stateText = t(blocked ? "publicPage:states.blocked" : pageData?.isPublished ? "publicPage:states.published" : "publicPage:states.draft");
 
   return <>

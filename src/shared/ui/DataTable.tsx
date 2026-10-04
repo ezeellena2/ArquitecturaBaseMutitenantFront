@@ -221,7 +221,9 @@ export function DataTable<TRow>({
               <TableCell
                 key={column.id}
                 className={cn(
-                  "overflow-hidden py-2 whitespace-nowrap",
+                  // El ⋮ (32) entra en una fila de 40 sin relleno; el texto lleva 8 arriba y abajo (52 con dos líneas).
+                  "overflow-hidden whitespace-nowrap",
+                  column.type === "actions" ? "py-0" : "py-2",
                   edgeClass(column),
                   column.className,
                   columnVisibility(column),

@@ -36,11 +36,11 @@ type UserState = OrganizationUserResponse["state"];
 
 // Tablero Usuario: punto de color y palabra, sin pastilla.
 const stateDot: Record<UserState, string> = {
-  Active: "bg-[var(--ok)]",
-  Invited: "bg-[var(--marca-tx)]",
-  Expired: "bg-[var(--alerta)]",
-  Inactive: "bg-[var(--t3)]",
-  PendingDeletion: "bg-[var(--alerta)]",
+  Active: "bg-[var(--punto-ok)]",
+  Invited: "bg-[var(--marca)]",
+  Expired: "bg-[var(--punto-alerta)]",
+  Inactive: "bg-[var(--punto-apagado)]",
+  PendingDeletion: "bg-[var(--punto-alerta)]",
 };
 
 function failureMessage(error: unknown, fallback: string): string {

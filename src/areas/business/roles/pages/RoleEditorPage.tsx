@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, ShieldCheck } from "lucide-react";
+import { ChevronRight, Shield } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router";
@@ -168,8 +168,8 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const title = mode === "create" ? t("roles:createTitle") : role.data ? displayRoleName(role.data, t) : t("roles:editorTitle");
 
   if (!canRead || mode === "create" && !canManage) return <ForbiddenPage homePath="/org" />;
-  if (mode === "edit" && role.isPending) return <Page icon={ShieldCheck} title={t("roles:editorTitle")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
-  if (mode === "edit" && role.isError) return <Page icon={ShieldCheck} title={t("roles:editorTitle")} backTo={{ to: "/org/roles", label: t("roles:backToList") }}><div className="p-4"><FormError message={role.error instanceof ApiError ? role.error.detail ?? t("common:states.error") : t("common:states.error")} /><Button type="button" onClick={() => { void role.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
+  if (mode === "edit" && role.isPending) return <Page icon={Shield} title={t("roles:editorTitle")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (mode === "edit" && role.isError) return <Page icon={Shield} title={t("roles:editorTitle")} backTo={{ to: "/org/roles", label: t("roles:backToList") }}><div className="p-4"><FormError message={role.error instanceof ApiError ? role.error.detail ?? t("common:states.error") : t("common:states.error")} /><Button type="button" onClick={() => { void role.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
 
   function changeDraft(patch: Partial<RoleDraft>) {
     if (patch.scope !== undefined && patch.scope !== draft.scope) setExpandedAreas(null);
@@ -210,7 +210,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
 
   return <>
     <Page banner={<ConcurrencyBanner error={failure} isDirty={isDirty} onSeeNew={() => { void seeLatest(); }} onContinueEditing={() => setFailure(undefined)} />}
-      icon={ShieldCheck}
+      icon={Shield}
       title={title}
       backTo={{ to: "/org/roles", label: t("roles:backToList") }}
       summary={mode === "edit" && role.data ? t("roles:scopeAndUsers", { scope: valeEnText(role.data.scope), count: role.data.userCount }) : undefined}

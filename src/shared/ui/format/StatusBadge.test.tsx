@@ -10,15 +10,16 @@ vi.mock("@/shared/format/useFormat", () => ({
 
 describe("StatusBadge", () => {
   it.each([
-    ["success", "--ok"],
-    ["warning", "--alerta"],
+    // Tablero M-Usuarios (.w-est): el punto lleva su propio tono, más claro que el texto.
+    ["success", "--punto-ok"],
+    ["warning", "--punto-alerta"],
     ["danger", "--peligro"],
-    ["neutral", "--t2"],
-    ["pending", "--marca-tx"],
+    ["neutral", "--punto-apagado"],
+    ["pending", "--marca"],
   ])("traduce el estado y usa el punto del tono %s sin badge", (tone, dot) => {
     render(<StatusBadge enum="TestStatus" value={tone} />);
     expect(getStatusTone).toHaveBeenCalledWith("TestStatus", tone);
-    const state = screen.getByText("Estado " + tone);
+    const state = screen.getByText("Estado " + tone).parentElement!;
     const statusDot = state?.querySelector('[data-slot="status-dot"]');
     expect(state).toHaveClass("inline-flex", "text-[13px]");
     expect(state).not.toHaveClass("rounded-full");

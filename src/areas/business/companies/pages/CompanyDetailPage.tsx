@@ -203,7 +203,7 @@ export function CompanyDetailPage() {
     <Page banner={<ConcurrencyBanner error={editFailure ?? mutationError} isDirty={false} onSeeNew={() => { setEditDraft(draftFromCompany(data)); setEditFailure(undefined); setMutationError(undefined); void company.refetch(); }} onContinueEditing={() => { setEditFailure(undefined); setMutationError(undefined); }} />} icon={Building2} title={data.name} backTo={{ to: "/org/empresas", label: t("companies:back") }}
       // Tablero Empresa: el estado primero, con punto y palabra; después el CUIT y la zona, formateados.
       summary={<>
-        <span className="inline-flex items-center gap-1.5 text-[var(--t1)]"><span aria-hidden="true" className={`size-2 rounded-full ${data.status === "Active" ? "bg-[var(--ok)]" : "bg-[var(--t3)]"}`} />{t(`companies:status.${data.status}`)}</span>
+        <span className="inline-flex items-center gap-1.5 text-[var(--t1)]"><span aria-hidden="true" className={`size-2 rounded-full ${data.status === "Active" ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-apagado)]"}`} />{t(`companies:status.${data.status}`)}</span>
         {data.taxId ? <><span aria-hidden="true">{" · "}</span><TaxIdText value={data.taxId} withType /></> : null}
         <span aria-hidden="true">{" · "}</span><TimeZoneText value={data.timeZoneId} />
       </>}

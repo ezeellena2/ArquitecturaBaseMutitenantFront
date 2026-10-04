@@ -17,9 +17,9 @@ export function createCompanyColumns(t: TFunction): Column<CompanyResponse>[] {
     },
     { id: "timeZoneId", header: t("companies:columns.timeZone"), type: "timeZone", value: (company) => company.timeZoneId },
     { id: "memberCount", header: t("companies:columns.members"), type: "integer", className: "w-[112px]", value: (company) => company.memberCount },
-    { id: "status", header: t("companies:columns.status"), type: "custom", mobile: "status", className: "w-[162px] max-md:w-[38%]", cell: (company) => <span className="inline-flex items-center gap-1.5 text-[13px] text-[var(--t1)]">
-      <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${company.status === "Active" ? "bg-[var(--ok)]" : "bg-[var(--t3)]"}`} />
-      {t(`companies:status.${company.status}`)}
+    { id: "status", header: t("companies:columns.status"), type: "custom", mobile: "status", className: "w-[162px] max-md:w-[38%]", cell: (company) => <span className="inline-flex max-w-full items-center gap-1.5 text-[13px] text-[var(--t1)]">
+      <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${company.status === "Active" ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-apagado)]"}`} />
+      <span className="min-w-0 truncate">{t(`companies:status.${company.status}`)}</span>
     </span> },
     { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: () => <EmptyValue /> },
   ];
@@ -33,9 +33,9 @@ export function createCompanyMemberColumns(t: TFunction): Column<import("@/share
       <span className="block truncate text-xs text-[var(--t3)]">{member.email ?? <EmptyValue />}</span>
     </div> },
     { id: "roles", header: t("companies:memberColumns.roles"), type: "text", value: (member) => member.roles.map((role) => role.name).join(", ") || null },
-    { id: "state", header: t("companies:memberColumns.state"), type: "custom", mobile: "status", className: "w-[162px] max-md:w-[38%]", cell: (member) => <span className="inline-flex items-center gap-1.5 text-[13px] text-[var(--t1)]">
-      <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${member.membershipStatus === "Active" && member.state === "Active" ? "bg-[var(--ok)]" : member.state === "PendingDeletion" ? "bg-[var(--alerta)]" : "bg-[var(--t3)]"}`} />
-      {t(member.membershipStatus === "Inactive" ? "companies:memberStates.Inactive" : `companies:memberStates.${member.state}`)}
+    { id: "state", header: t("companies:memberColumns.state"), type: "custom", mobile: "status", className: "w-[162px] max-md:w-[38%]", cell: (member) => <span className="inline-flex max-w-full items-center gap-1.5 text-[13px] text-[var(--t1)]">
+      <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${member.membershipStatus === "Active" && member.state === "Active" ? "bg-[var(--punto-ok)]" : member.state === "PendingDeletion" ? "bg-[var(--punto-alerta)]" : "bg-[var(--punto-apagado)]"}`} />
+      <span className="min-w-0 truncate">{t(member.membershipStatus === "Inactive" ? "companies:memberStates.Inactive" : `companies:memberStates.${member.state}`)}</span>
     </span> },
   ];
 }

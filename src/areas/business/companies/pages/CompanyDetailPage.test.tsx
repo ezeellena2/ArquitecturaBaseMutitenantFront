@@ -116,7 +116,7 @@ describe("CompanyDetailPage", () => {
     const subline = heading.parentElement!.querySelector("[data-slot='page-subline']")!;
     // Tablero Empresa: «● Activa · CUIT 30-71234567-8 · Buenos Aires (GMT−3)».
     await waitFor(() => expect(subline).toHaveTextContent(/^Activa · CUIT 30-71234567-8 · Buenos Aires \(GMT−3\)$/));
-    expect(subline.querySelector("[aria-hidden='true'].rounded-full")).toHaveClass("bg-[var(--ok)]");
+    expect(subline.querySelector("[aria-hidden='true'].rounded-full")).toHaveClass("bg-[var(--punto-ok)]");
     expect(subline).not.toHaveTextContent("AR-CUIT");
     expect(subline).not.toHaveTextContent("America/Argentina");
   });
