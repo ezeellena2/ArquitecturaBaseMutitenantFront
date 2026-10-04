@@ -5,6 +5,7 @@
 ## Cómo se hace
 - `renderRouteWithProviders(path, { as: "business-admin" })` y, para el sitio público, `{ host: "empresa-a.localtest.me" }`. Los usuarios de prueba están en `test/mocks/currentUsers.ts`: persona sin organizaciones, persona con organizaciones, empresa admin, empresa sin permisos y operador.
 - MSW con `onUnhandledRequest: "error"`: toda llamada tiene su handler.
+- Cada test empieza limpio: `resetBetweenTests` (`test/utils/isolation.ts`, en el setup) desmonta la pantalla, quita el bloqueo de la vista y cierra los avisos, que sonner guarda fuera de React y volvería a mostrar en el test siguiente.
 - **Por pantalla, probar solo los estados y recorridos que realmente le aplican:**
   - carga, vacío, sin coincidencias, error con reintento y sin permiso, cuando cada estado existe;
   - el recorrido de los diálogos presentes;
@@ -32,6 +33,7 @@
 
 ## Lo verifica
 - El CI (`npm test`) y `harness.test.ts` (E0), que usa `HarnessStage` para exigir solo los tests de etapas cerradas.
+- `isolation.test.tsx` (R2c): el aviso de un test no aparece en el siguiente.
 - `scripts/test-e2e-real.test.mjs` (E3): ninguna etapa desde E3a se cierra si el recorrido real está rojo.
 
 ## Detalle
