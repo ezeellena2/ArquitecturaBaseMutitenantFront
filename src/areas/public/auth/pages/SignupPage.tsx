@@ -108,10 +108,10 @@ export function SignupPage() {
   return <AuthLayout access="consumer">
     {closed ? <div className="flex flex-col items-center gap-[22px] text-center">
       <div aria-hidden="true" className="flex size-[52px] items-center justify-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><LockKeyhole size={18} /></div>
-      <div><h1 className="text-[22px] font-bold leading-tight">{t("signup.closedTitle")}</h1>
+      <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("signup.closedTitle")}</h1>
         <p className="mt-2 text-sm text-[var(--t2)]">{t("signup.closedDetail")}</p>
       </div>
-      <Link to="/login" className="inline-flex h-10 w-full items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("signup.backToLogin")}</Link>
+      <Button asChild size="lg" className="w-full"><Link to="/login">{t("signup.backToLogin")}</Link></Button>
     </div> : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("signup.title")}</h1>
       <form noValidate onSubmit={(event) => {
@@ -137,9 +137,9 @@ export function SignupPage() {
         <div>{t("login.haveBusiness")} <Link to="/registro/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("login.registerIt")}</Link></div>
       </div>
     </div> : <div className="flex flex-col gap-[22px]">
-      <button type="button" onClick={() => { setStep(null); setCode(""); setError(null); }} className="inline-flex items-center gap-1 self-start text-[13px] font-semibold text-[var(--marca)] hover:underline"><ChevronLeft size={16} aria-hidden="true" />{t("login.otherEmail")}</button>
+      <button type="button" onClick={() => { setStep(null); setCode(""); setError(null); }} className="inline-flex items-center gap-1 self-start text-sm font-semibold text-[var(--marca)] hover:underline"><ChevronLeft size={16} aria-hidden="true" />{t("login.otherEmail")}</button>
       <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.checkEmail")}</h1>
-        <p id="signup-code-hint" className="mt-2 text-[13px] text-[var(--t2)]"><Trans ns="auth" i18nKey="login.sentCode" values={{ email: step.email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
+        <p id="signup-code-hint" className="mt-2 text-sm text-[var(--t2)]"><Trans ns="auth" i18nKey="login.sentCode" values={{ email: step.email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
       </div>
       <OtpInput length={6} value={code} onChange={(next) => { setCode(next); if (error?.code === "Auth.LoginCode.Invalid") setError(null); }} label={t("login.codeLabel")} invalid={error?.code === "Auth.LoginCode.Invalid"} disabled={verify.isPending} aria-describedby="signup-code-hint" />
       <FormError message={error ? <>{t(loginCodeErrorKey(error))}{attemptsLeft !== null ? <span className="block">{t("login.attemptsLeft", { count: attemptsLeft })}</span> : null}</> : null} />

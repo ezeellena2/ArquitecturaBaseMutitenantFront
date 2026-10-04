@@ -268,11 +268,13 @@ describe("LoginPage", () => {
     expect(await screen.findByRole("heading", { name: title })).toBeVisible();
     const icon = screen.getByRole("main").querySelector("svg");
     expect(icon?.getAttribute("class")).toContain(code === "Tenancy.Access.NotMember" ? "lucide-building" : "lucide-ban");
-    // Como el tablero Ingreso: la acción principal primero, rellena; la otra, con borde.
+    // Como el tablero Ingreso: la acción principal primero, rellena; la otra, con borde. Son los botones de 44 y letra de
+    // 15 del ingreso y el registro (Button lg), no enlaces con medidas propias.
     const actions = within(screen.getByRole("main")).getAllByRole("link").filter((link) => link.textContent !== "ArquitecturaBase");
     expect(actions.map((link) => link.textContent)).toEqual(links);
-    expect(actions[0]).toHaveClass("bg-[var(--marca)]");
-    expect(actions[1]).not.toHaveClass("bg-[var(--marca)]");
+    expect(actions[0]).toHaveAttribute("data-variant", "default");
+    expect(actions[1]).toHaveAttribute("data-variant", "outline");
+    for (const action of actions) expect(action).toHaveClass("h-11", "text-[15px]");
     expect(screen.getByRole("link", { name: "Registrá tu empresa" })).toHaveAttribute("href", "/registro/empresa");
     expect(screen.getByRole("link", { name: "Ingresá como persona" })).toHaveAttribute("href", "/login");
   });

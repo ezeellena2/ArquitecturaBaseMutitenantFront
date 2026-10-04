@@ -250,9 +250,9 @@ export function BusinessSignupPage() {
           </section>
             : step === "code" ? <section className="flex flex-col gap-[22px]">
               <button type="button" onClick={() => { setStep("email"); setCode(""); setRequestError(null); }}
-                className="inline-flex items-center gap-1 self-start text-[13px] font-semibold text-[var(--marca)] hover:underline"><ChevronLeft size={16} aria-hidden="true" />{t("businessSignup.changeEmail")}</button>
+                className="inline-flex items-center gap-1 self-start text-sm font-semibold text-[var(--marca)] hover:underline"><ChevronLeft size={16} aria-hidden="true" />{t("businessSignup.changeEmail")}</button>
               <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.codeTitle")}</h1>
-                <p id="business-signup-code-hint" className="mt-2 text-[13px] text-[var(--t2)]"><Trans ns="auth" i18nKey="businessSignup.sentCode" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p></div>
+                <p id="business-signup-code-hint" className="mt-2 text-sm text-[var(--t2)]"><Trans ns="auth" i18nKey="businessSignup.sentCode" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p></div>
               <OtpInput length={6} value={code} onChange={(next) => { setCode(next); setRequestError(null); }}
                 label={t("businessSignup.codeLabel")} invalid={requestError?.code === "Auth.LoginCode.Invalid"}
                 disabled={verifyCode.isPending} aria-describedby="business-signup-code-hint" />
@@ -314,18 +314,18 @@ export function BusinessSignupPage() {
       : icon === "approval" ? "bg-[var(--alerta-t)] text-[var(--alerta)]" : "bg-[var(--s3)] text-[var(--t2)]";
     return <section className="flex flex-col items-center gap-[22px] text-center">
       <div aria-hidden="true" className={`flex size-[52px] items-center justify-center rounded-full ${tone}`}><Icon size={20} /></div>
-      <div><h1 className="text-[22px] font-bold leading-tight">{title}</h1><p className="mt-2 text-sm text-[var(--t2)]">{detail}</p></div>
+      <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{title}</h1><p className="mt-2 text-sm text-[var(--t2)]">{detail}</p></div>
       {onAction ? <Button type="button" size="lg" className="w-full" onClick={onAction}>{action}</Button>
         : <Button asChild variant="outline" size="lg" className="w-full"><Link to={href ?? "/"}>{action}</Link></Button>}
     </section>;
   }
 }
 
-// Tablero Registro-Empresa: el dominio va en una caja gris aparte, pegada al campo.
+// Tablero Registro-Empresa: el dominio va en una caja gris aparte, pegada al campo, con la letra del campo (15).
 function SlugInput({ suffix, className, ...inputProps }: React.ComponentProps<"input"> & { suffix: string }) {
   return <div className="flex items-stretch overflow-hidden rounded-[10px] border border-[var(--borde2)] bg-[var(--lado-activo)] focus-within:border-[var(--marca)] focus-within:ring-[3px] focus-within:ring-[var(--foco-halo)]">
     <Input {...inputProps} className={`min-w-0 flex-1 rounded-none border-0 shadow-none focus-visible:ring-0 ${className ?? ""}`} />
-    <span data-slug-suffix className="flex shrink-0 items-center border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[13px] text-[var(--t2)]">{suffix}</span>
+    <span data-slug-suffix className="flex shrink-0 items-center border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[15px] text-[var(--t2)]">{suffix}</span>
   </div>;
 }
 

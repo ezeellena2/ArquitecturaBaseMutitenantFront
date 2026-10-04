@@ -176,16 +176,16 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><Building2 size={20} strokeWidth={1.75} /></span>
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.noBusiness")}</h1>
       <div className="flex flex-col gap-2.5">
-        <Link to="/registro/empresa" className="inline-flex h-10 items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("login.registerBusiness")}</Link>
-        <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--borde2)] text-sm font-semibold">{t("login.enterAsPerson")}</Link>
+        <Button asChild size="lg"><Link to="/registro/empresa">{t("login.registerBusiness")}</Link></Button>
+        <Button asChild variant="outline" size="lg"><Link to="/login">{t("login.enterAsPerson")}</Link></Button>
       </div>
     </div> : result === "inactive" ? <div className="flex flex-col gap-[22px] text-center">
       <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><Ban size={20} strokeWidth={1.75} /></span>
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.inactiveBusiness", { organizationName })}</h1>
       <p className="text-sm text-[var(--t2)]">{t("login.askOwner")}</p>
       <div className="flex flex-col gap-2.5">
-        <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("login.enterAsPerson")}</Link>
-        <Link to="/registro/empresa" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--borde2)] text-sm font-semibold">{t("login.registerBusiness")}</Link>
+        <Button asChild size="lg"><Link to="/login">{t("login.enterAsPerson")}</Link></Button>
+        <Button asChild variant="outline" size="lg"><Link to="/registro/empresa">{t("login.registerBusiness")}</Link></Button>
       </div>
     </div> : unavailable ? <div className="flex flex-col gap-[22px] text-center">
       <span aria-hidden="true" className={`flex size-[52px] items-center justify-center self-center rounded-full ${unavailable.tone}`}><unavailable.Icon size={20} strokeWidth={1.75} /></span>
@@ -193,7 +193,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
         <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t(`errors:errorPage.unavailable.${unavailable.title}`, { organizationName })}</h1>
         <p className="mt-2 text-sm text-[var(--t2)]">{t(`errors:errorPage.unavailable.${unavailable.description}`)}</p>
       </div>
-      <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("login.enterAsPerson")}</Link>
+      <Button asChild size="lg"><Link to="/login">{t("login.enterAsPerson")}</Link></Button>
     </div> : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{access === "business" ? t("login.businessTitle") : t("login.personalTitle")}</h1>
       {sessionExpired ? <div role="status" className="flex items-start gap-2.5 rounded-xl bg-[var(--marca-t)] px-3.5 py-3 text-sm leading-normal text-[var(--marca-tx)]"><Clock3 aria-hidden="true" className="mt-0.5 shrink-0" size={18} strokeWidth={2} /><span>{t("login.sessionExpired")}</span></div> : null}
@@ -210,9 +210,9 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
         </>}
       </div>
     </div> : <div className="flex flex-col gap-[22px]">
-      <button type="button" onClick={backToEmail} className="inline-flex items-center gap-1 self-start text-[13px] font-semibold text-[var(--marca)] hover:underline"><ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />{t("login.otherEmail")}</button>
+      <button type="button" onClick={backToEmail} className="inline-flex items-center gap-1 self-start text-sm font-semibold text-[var(--marca)] hover:underline"><ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />{t("login.otherEmail")}</button>
       <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.checkEmail")}</h1>
-        <p id="login-code-hint" className="mt-2 text-[13px] text-[var(--t2)]"><Trans ns="auth" i18nKey="login.sentCode" values={{ email: step.destination }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
+        <p id="login-code-hint" className="mt-2 text-sm text-[var(--t2)]"><Trans ns="auth" i18nKey="login.sentCode" values={{ email: step.destination }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
       </div>
       <OtpInput length={6} value={code} onChange={(next) => { setCode(next); if (wrongCode) setError(null); }} label={t("login.codeLabel")} invalid={wrongCode} disabled={verify.isPending || codeSpent || accountClosed} aria-describedby="login-code-hint" />
       <FormError message={errorKey ? <>{t(errorKey)}{attemptsLeft !== null ? <span className="block">{t("login.attemptsLeft", { count: attemptsLeft })}</span> : null}{codeSpent && error?.code === "Auth.LoginCode.TooManyAttempts" ? <span className="block">{t("login.requestNewCode")}</span> : null}{error?.code === "Identity.Account.LockedOut" ? <span className="block">{t("login.tryLater")}</span> : null}{accountClosed ? <span className="block">{t("login.contactSupport")}</span> : null}</> : null} />
@@ -222,7 +222,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
           {accountClosed ? t("login.resendCode") : resendRetry.label ?? (resendTimer.isRunning ? t("login.resendIn", { seconds: resendTimer.seconds }) : t("login.resendCode"))}
         </Button>
       </div>
-      {accountClosed ? <button type="button" onClick={backToEmail} className="self-center text-sm font-semibold text-[var(--marca)]">{t("login.backToLogin")}</button> : null}
+      {accountClosed ? <button type="button" onClick={backToEmail} className="self-center text-[13px] font-semibold text-[var(--marca)]">{t("login.backToLogin")}</button> : null}
     </div>}
   </AuthLayout>;
 }
