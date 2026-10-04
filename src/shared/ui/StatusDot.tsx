@@ -8,24 +8,20 @@ export interface StatusDotProps extends Omit<ComponentProps<"span">, "children">
   label: ReactNode;
 }
 
+// Tablero «Criterio · Tablas»: punto de color y la palabra, sin fondo: verde activo, petróleo pendiente, ámbar
+// atención, rojo error y gris apagado.
 const tones: Record<StatusTone, string> = {
-  success: "bg-[var(--ok-t)] text-[var(--ok)] before:bg-[var(--ok)]",
-  warning: "bg-[var(--alerta-t)] text-[var(--alerta)] before:bg-[var(--alerta)]",
-  danger: "bg-[var(--peligro-t)] text-[var(--peligro)] before:bg-[var(--peligro)]",
-  neutral: "bg-[var(--s3)] text-[var(--t2)] before:bg-[var(--t2)]",
-  pending: "bg-[var(--marca-t)] text-[var(--marca-tx)] before:bg-[var(--marca-tx)]",
+  success: "bg-[var(--ok)]",
+  warning: "bg-[var(--alerta)]",
+  danger: "bg-[var(--peligro)]",
+  neutral: "bg-[var(--t3)]",
+  pending: "bg-[var(--marca-tx)]",
 };
 
 export function StatusDot({ tone, label, className, ...props }: StatusDotProps) {
   return (
-    <span
-      className={cn(
-        "inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium before:size-[5px] before:shrink-0 before:rounded-full before:content-['']",
-        tones[tone],
-        className,
-      )}
-      {...props}
-    >
+    <span className={cn("inline-flex w-fit items-center gap-1.5 text-[13px] text-[var(--t1)]", className)} {...props}>
+      <span data-slot="status-dot" aria-hidden="true" className={cn("size-2 shrink-0 rounded-full", tones[tone])} />
       {label}
     </span>
   );

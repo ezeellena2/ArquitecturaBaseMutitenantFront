@@ -6,7 +6,7 @@ import type { HomeCompanyCard, HomeOrganizationSummary } from "@/shared/api/type
 import { useFormat } from "@/shared/format/useFormat";
 import { initials } from "@/shared/lib/initials";
 import { StatusDot, type StatusTone } from "@/shared/ui/StatusDot";
-import { areaIcons, areaPaths, dotAsText, type HomeArea } from "./pendingItems";
+import { areaIcons, areaPaths, type HomeArea } from "./pendingItems";
 
 const pageTones: Record<string, StatusTone> = { Published: "success", Draft: "neutral", Blocked: "danger" };
 
@@ -34,7 +34,7 @@ export function AreaCards({ organization }: { organization: HomeOrganizationSumm
   if (organization.companies) details.push(["companies", t("cards.companies.count", { count: organization.companies.total })]);
   if (organization.publicPage) {
     const state = organization.publicPage.state;
-    details.push(["publicPage", <StatusDot key="page" tone={pageTones[state] ?? "neutral"} label={t(`cards.publicPage.${state}`)} className={dotAsText} />]);
+    details.push(["publicPage", <StatusDot key="page" tone={pageTones[state] ?? "neutral"} label={t(`cards.publicPage.${state}`)} />]);
   }
   if (organization.settings) details.push(["settings", organization.settings.domain ?? t("cards.settings.noDomain")]);
   if (organization.audit) {

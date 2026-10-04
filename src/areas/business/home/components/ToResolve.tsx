@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { StatusDot } from "@/shared/ui/StatusDot";
 import { Surface } from "@/shared/ui/Surface";
-import { dotAsText, type PendingRow } from "./pendingItems";
+import { type PendingRow } from "./pendingItems";
 
 /** «Para resolver» en la compu (tableros Inicio-Org e Inicio-Miembro): Pendiente, Área, Estado, Desde y la acción. */
 export function ToResolve({ rows }: { rows: readonly PendingRow[] }) {
@@ -18,7 +18,7 @@ export function ToResolve({ rows }: { rows: readonly PendingRow[] }) {
       </span> },
     { id: "area", header: t("toResolve.area"), type: "text", className: "w-[19%]", value: (row) => row.areaLabel },
     { id: "state", header: t("toResolve.state"), type: "custom", cell: (row) =>
-      <StatusDot tone={row.tone} label={row.state} className={dotAsText} /> },
+      <StatusDot tone={row.tone} label={row.state} /> },
     { id: "since", header: t("toResolve.since"), type: "date", className: "w-[122px]", value: (row) => row.since },
     // Columnas del tablero: 1.6fr, 0.8fr, 1fr, 110px y 96px, más los márgenes de cada celda. DataTable fija la de
     // acciones en 50 px; el ! la deja en la del tablero.

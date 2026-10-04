@@ -15,9 +15,6 @@ export const areaPaths: Record<HomeArea, string> = {
   settings: "/org/configuracion", audit: "/org/auditoria",
 };
 
-/** Como el tablero: el punto lleva el color del estado y el texto va oscuro, sin fondo. */
-export const dotAsText = "bg-transparent px-0 text-[13px] font-normal text-[var(--t1)]";
-
 export interface PendingRow {
   key: string;
   area: HomeArea;
