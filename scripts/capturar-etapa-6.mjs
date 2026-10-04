@@ -40,7 +40,7 @@ const southReader = { ...companyReader, id: "role-company-reader-south", company
 const northReader = { ...companyReader, id: "role-company-reader-north", companyId: "company-4", userCount: 0 };
 const roles = [owner, peopleRole, auditorRole, companyAdmin, companyReader, southReader, northReader];
 const company = {
-  id: "company-1", name: "Delta S.A.", taxId: { country: "AR", type: "AR-CUIT", number: "30712345678" },
+  id: "company-1", name: "Delta S.A.", taxId: { country: "AR", type: "AR-CUIT", number: "30712345671" },
   timeZoneId: "America/Argentina/Buenos_Aires", status: "Active", memberCount: 6, version: 3, createdAtUtc: "2026-10-02T12:00:00Z",
 };
 const addableCompany = {
@@ -138,7 +138,7 @@ export const roleLists = [
 export const userCompanyOptions = api("GET", "/api/companies/paged", pageOf([company, addableCompany], 100, 2), 200, { page: "1", pageSize: "100", sort: "name" });
 const companyRows = [company, {
   ...company, id: "company-3", name: "Delta Sur S.R.L.",
-  taxId: { country: "AR", type: "AR-CUIT", number: "30715554442" }, timeZoneId: "America/Argentina/Cordoba", memberCount: 4,
+  taxId: { country: "AR", type: "AR-CUIT", number: "30715554441" }, timeZoneId: "America/Argentina/Cordoba", memberCount: 4,
 }, {
   ...company, id: "company-4", name: "Delta Norte S.A.", taxId: null, memberCount: 3,
 }];

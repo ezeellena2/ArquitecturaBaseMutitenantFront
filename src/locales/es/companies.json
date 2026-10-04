@@ -39,7 +39,7 @@
     "timeZone": "Zona de negocio",
     "create": "Crear empresa",
     "save": "Guardar cambios",
-    "taxIdPlaceholder": "30-12345678-9",
+    "taxIdPlaceholder": "30-12345678-1",
     "taxIdInvalid": "Revisá el CUIT: son 11 números.",
     "organizationTimeZone": "La de la organización"
   },

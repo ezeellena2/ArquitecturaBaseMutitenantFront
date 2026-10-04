@@ -8,7 +8,7 @@ import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 
 const company = {
-  id: "company-1", name: "Delta S.A.", taxId: { country: "AR", type: "AR-CUIT", number: "30712345678" },
+  id: "company-1", name: "Delta S.A.", taxId: { country: "AR", type: "AR-CUIT", number: "30712345671" },
   timeZoneId: "America/Argentina/Buenos_Aires", status: "Active" as const, memberCount: 1,
   version: 3, createdAtUtc: "2026-09-27T12:00:00Z",
 };
@@ -46,7 +46,7 @@ describe("CompaniesPage", () => {
     expect(screen.queryByRole("columnheader", { name: "CUIT" })).not.toBeInTheDocument();
     expect(screen.getAllByRole("columnheader").map((header) => header.textContent))
       .toEqual(["Empresa", "Zona horaria", "Miembros", "Estado", "Acciones"]);
-    expect(screen.getByText("CUIT 30-71234567-8")).toBeVisible();
+    expect(screen.getByText("CUIT 30-71234567-1")).toBeVisible();
     // Tablero Empresas: «1 empresa · 1 activa» y el filtro «Estado: todas».
     expect(screen.getByText("1 empresa · 1 activa")).toBeVisible();
 
@@ -97,11 +97,12 @@ describe("CompaniesPage", () => {
     // En el teléfono, una hoja a todo el alto: el cuerpo de los diálogos ocupa lo que sobra y deja los botones abajo.
     expect(dialog).toHaveClass("min-h-[calc(100dvh-1rem)]");
     expect(within(dialog).getByRole("textbox", { name: "Nombre" }).closest("[data-slot='dialog-body']")).not.toBeNull();
-    expect(within(dialog).getByRole("textbox", { name: "CUIT" })).toHaveAttribute("placeholder", "30-12345678-9");
+    expect(within(dialog).getByRole("textbox", { name: "CUIT" })).toHaveAttribute("placeholder", "30-12345678-1");
     expect(within(dialog).getByRole("combobox", { name: "Zona de negocio" })).toHaveTextContent("La de la organización");
 
     // Solo el nombre: la zona queda la de la organización.
-    await user.click(within(dialog).getByRole("textbox", { name: "Nombre" })); await user.paste("Empresa Nueva S.A.");
+    await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
+    await user.paste("Empresa Nueva S.A.");
     await user.click(within(dialog).getByRole("button", { name: "Crear empresa" }));
     await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Empresa Nueva S.A.", taxIdType: null, taxIdNumber: null, timeZoneId: null }));
     expect(keys.at(-1)).toMatch(/^[0-9a-f-]{36}$/i);
@@ -110,11 +111,14 @@ describe("CompaniesPage", () => {
     // Con CUIT: se guarda como tipo + número.
     await user.click(screen.getByRole("button", { name: "Crear empresa" }));
     const again = await screen.findByRole("dialog", { name: "Crear empresa" });
-    await user.click(within(again).getByRole("textbox", { name: "Nombre" })); await user.paste("Delta Norte S.A.");
-    await user.click(within(again).getByRole("textbox", { name: "CUIT" })); await user.paste("30-12345678-9");
+    await user.click(within(again).getByRole("textbox", { name: "Nombre" }));
+    await user.paste("Delta Norte S.A.");
+    await user.click(within(again).getByRole("textbox", { name: "CUIT" }));
+    await user.paste("30-12345678-9");
     expect(await within(again).findByText("Revisá el CUIT: son 11 números.")).toBeVisible();
     await user.clear(within(again).getByRole("textbox", { name: "CUIT" }));
-    await user.click(within(again).getByRole("textbox", { name: "CUIT" })); await user.paste("30712345671");
+    await user.click(within(again).getByRole("textbox", { name: "CUIT" }));
+    await user.paste("30712345671");
     await user.click(within(again).getByRole("button", { name: "Crear empresa" }));
     await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Delta Norte S.A.", taxIdType: "AR-CUIT", taxIdNumber: "30712345671", timeZoneId: null }));
   }, 15_000);
@@ -131,8 +135,10 @@ describe("CompaniesPage", () => {
     renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Crear empresa" }));
     const dialog = await screen.findByRole("dialog", { name: "Crear empresa" });
-    await user.click(within(dialog).getByRole("textbox", { name: "Nombre" })); await user.paste("Delta Norte S.A.");
-    await user.click(within(dialog).getByRole("textbox", { name: "CUIT" })); await user.paste("3071234567");
+    await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
+    await user.paste("Delta Norte S.A.");
+    await user.click(within(dialog).getByRole("textbox", { name: "CUIT" }));
+    await user.paste("3071234567");
 
     const create = within(dialog).getByRole("button", { name: "Crear empresa" });
     expect(create).toBeEnabled();
@@ -154,8 +160,10 @@ describe("CompaniesPage", () => {
     renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Crear empresa" }));
     const dialog = await screen.findByRole("dialog", { name: "Crear empresa" });
-    await user.click(within(dialog).getByRole("textbox", { name: "Nombre" })); await user.paste("Delta Norte S.A.");
-    await user.click(within(dialog).getByRole("textbox", { name: "CUIT" })); await user.paste("30712345671");
+    await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
+    await user.paste("Delta Norte S.A.");
+    await user.click(within(dialog).getByRole("textbox", { name: "CUIT" }));
+    await user.paste("30712345671");
     await user.click(within(dialog).getByRole("button", { name: "Crear empresa" }));
 
     const alert = await within(dialog).findByRole("alert");

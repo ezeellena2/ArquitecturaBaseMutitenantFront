@@ -3,7 +3,7 @@ import { EmptyValue, FormatLoading } from "./EmptyValue";
 
 type TaxIdValue = { country?: string; type: string; number: string };
 
-// withType antepone el nombre traducido del tipo («CUIT 30-71234567-8»), como en la banda de Empresa.
+// withType antepone el nombre traducido del tipo («CUIT 30-71234567-1»), como en la banda de Empresa.
 export function TaxIdText({ value, withType = false, className }: { value: TaxIdValue | null | undefined; withType?: boolean; className?: string }) {
   const format = useFormat();
   if (format.isLoading) return <FormatLoading className={className} />;

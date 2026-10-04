@@ -7,9 +7,14 @@ import path from "node:path";
 const desktop = { width: 1440, height: 900 };
 const phone = { width: 390, height: 844 };
 
+// Los CUIT de los datos de prueba son los del lienzo, que pasan el dígito verificador (Delta S.A. y Delta Sur S.R.L.); los
+// manifiestos de las etapas guardan los de antes y no se reescriben (son la foto de cada etapa).
+const boardCuits = [["30712345678", "30712345671"], ["30715554442", "30715554441"]];
+const withBoardCuits = (text) => boardCuits.reduce((result, [before, now]) => result.replaceAll(before, now), text);
+
 const manifests = new Map();
 function stageCases(root, name) {
-  if (!manifests.has(name)) manifests.set(name, JSON.parse(readFileSync(path.join(root, "docs/design/capturas", name, "manifest.json"), "utf8")).cases);
+  if (!manifests.has(name)) manifests.set(name, JSON.parse(withBoardCuits(readFileSync(path.join(root, "docs/design/capturas", name, "manifest.json"), "utf8"))).cases);
   return manifests.get(name);
 }
 

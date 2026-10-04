@@ -300,7 +300,7 @@ export function BusinessSignupPage() {
                 </FormField>
                 <FormField label={t("businessSignup.taxId")} variant="auth" error={taxIdError || !taxIdValid ? t("businessSignup.taxIdInvalid") : undefined}>
                   <Input value={taxNumber} onChange={(event) => { setTaxNumber(event.target.value.replace(/\D/g, "").slice(0, 11)); setTaxIdError(false); }}
-                    inputMode="numeric" autoComplete="off" placeholder="30-12345678-9" maxLength={11} />
+                    inputMode="numeric" autoComplete="off" placeholder="30-12345678-1" maxLength={11} />
                 </FormField>
                 <FormError message={requestErrorText} />
                 <Button type="button" size="lg" className="w-full" disabled={!canCreate}
