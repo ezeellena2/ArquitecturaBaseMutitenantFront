@@ -279,6 +279,20 @@ test("no intercepta módulos Vite cuya carpeta contiene api", async () => {
   assert.equal(continued, true);
 });
 
+test("la captura falla si la app pide Inter y no la cargó", async () => {
+  const { waitForAppFont } = await import("./capturar-etapa-3a.mjs");
+  const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } : {}) });
+  try {
+    const page = await browser.newPage();
+    await page.setContent('<html><body style="font-family: \'Inter Variable\', sans-serif">Usuarios</body></html>');
+    await assert.rejects(() => waitForAppFont(page), /Inter/);
+    await page.setContent('<html><body style="font-family: sans-serif">Usuarios</body></html>');
+    await waitForAppFont(page);
+  } finally {
+    await browser.close();
+  }
+});
+
 test("Playwright fija el estado del tablero y captura app/lienzo al viewport pedido", async () => {
   const directory = mkdtempSync(path.join(os.tmpdir(), "codex-3a-playwright-"));
   const canvasRoot = path.join(directory, "lienzo");

@@ -80,6 +80,18 @@ export function validateManifest(manifestFile = defaultManifest, canvasRoot = de
   return manifest.cases;
 }
 
+/// Espera la letra de la app: si la página usa Inter y no cargó ninguna cara, la captura saldría con la del sistema.
+export async function waitForAppFont(page) {
+  const missing = await page.evaluate(async () => {
+    await document.fonts.ready;
+    const family = getComputedStyle(document.body).fontFamily;
+    if (!family.includes("Inter")) return false;
+    await document.fonts.load('13px "Inter Variable"');
+    return ![...document.fonts].some((face) => face.family.includes("Inter") && face.status === "loaded");
+  });
+  if (missing) throw new Error("La app pide Inter y no la cargó: la captura saldría con la letra del sistema.");
+}
+
 export function capturePaths(outputRoot, entry) {
   const stem = `${entry.id}-${entry.viewport.width}x${entry.viewport.height}`;
   const directory = path.join(outputRoot, entry.group);
@@ -231,7 +243,7 @@ export async function captureCase(browser, entry, { canvasUrl, appUrl, outputRoo
       [...document.querySelectorAll("button")].some((button) => button.textContent?.trim() === name && !button.disabled),
     entry.app.readyButtonEnabled);
     await app.waitForTimeout(200);
-    await app.evaluate(() => document.fonts.ready);
+    await waitForAppFont(app);
     await app.addStyleTag({ content: otpMaskStyle });
     await app.screenshot({ path: files.app });
   } finally {

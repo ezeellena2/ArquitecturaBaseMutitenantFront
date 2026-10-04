@@ -2,7 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
-import { assertCapturedPairs, capturePaths, installApiMocks, otpMaskStyle, startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
+import { assertCapturedPairs, capturePaths, installApiMocks, otpMaskStyle, startCanvasServer, validateManifest, waitForAppFont } from "./capturar-etapa-3a.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const output = path.join(root, "docs/design/capturas/etapa-3c");
@@ -137,7 +137,7 @@ async function capture(browser, canvasUrl, appUrl, entry) {
         }
       }
     }
-    await app.evaluate(() => document.fonts.ready);
+    await waitForAppFont(app);
     await app.addStyleTag({ content: otpMaskStyle });
     await app.screenshot({ path: files.app });
   } finally { await context.close(); }

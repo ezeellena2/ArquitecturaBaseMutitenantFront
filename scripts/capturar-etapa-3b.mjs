@@ -2,7 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
-import { assertCapturedPairs, capturePaths, installApiMocks, otpMaskStyle, startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
+import { assertCapturedPairs, capturePaths, installApiMocks, otpMaskStyle, startCanvasServer, validateManifest, waitForAppFont } from "./capturar-etapa-3a.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const output = path.join(root, "docs/design/capturas/etapa-3b");
@@ -133,7 +133,7 @@ async function capture(browser, canvasUrl, appUrl, entry) {
     if (entry.app.readySelector) await app.locator(entry.app.readySelector).first().waitFor();
     if (entry.app.readyText) await app.getByText(entry.app.readyText, { exact: false }).first().waitFor();
     await app.waitForTimeout(entry.app.readyText && /^(Guardamos|Agregamos|Quitamos|Desde ahora|Vinculamos|Desvinculamos|Cancelamos)/.test(entry.app.readyText) ? 800 : 200);
-    await app.evaluate(() => document.fonts.ready);
+    await waitForAppFont(app);
     await app.addStyleTag({ content: otpMaskStyle });
     await app.screenshot({ path: files.app });
   } finally { await context.close(); }

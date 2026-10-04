@@ -11,6 +11,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { publishAccessError } from "@/shared/api/accessErrorStore";
 import { currentUsers, type CurrentUserFixture } from "./mocks/currentUsers";
 import { fixtureAuth } from "./mocks/authContext";
+import "@fontsource-variable/inter";
 import "@/index.css";
 
 const params = new URLSearchParams(window.location.search);
