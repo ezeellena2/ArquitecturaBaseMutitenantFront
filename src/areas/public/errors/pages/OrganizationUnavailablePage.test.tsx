@@ -7,6 +7,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { cancelSignOut } from "@/auth/signOutStatus";
 import { configureI18n } from "@/shared/i18n";
+import { asPhone } from "@/test/utils/phone";
 import { OrganizationUnavailablePage } from "./OrganizationUnavailablePage";
 
 const switchAccess = vi.fn(() => Promise.resolve());
@@ -63,5 +64,23 @@ describe("OrganizationUnavailablePage", () => {
     await user.click(screen.getByRole("button", { name: "Salir" }));
     expect(signoutRedirect).toHaveBeenCalledOnce();
     expect(client.getQueryData(["current-user"])).toBeUndefined();
+  });
+
+  // Tablero M-Perfil-Suspendido: en el teléfono el fondo es gris y sin la marca; «Elegí otro perfil» es el título de un
+  // grupo blanco con filas de la app, y «Salir» va abajo.
+  it("en el teléfono los perfiles son un grupo de la app", async () => {
+    const restore = asPhone();
+    try {
+      const { container, user } = setup("Tenancy.Tenant.Suspended");
+      expect(container.querySelector(".brand-mark")).toBeNull();
+      expect(screen.getByRole("heading", { name: "Beta S.R.L. está suspendida" })).toHaveClass("text-[22px]");
+      const group = screen.getByRole("list", { name: "Elegí otro perfil" });
+      expect(group).toHaveClass("rounded-[14px]");
+      await user.click(screen.getByRole("button", { name: /Grupo Delta/ }));
+      expect(switchAccess).toHaveBeenCalledWith({ access: "business", tenantId: "delta" });
+      expect(screen.getByRole("button", { name: "Salir" })).toHaveClass("mt-auto");
+    } finally {
+      restore();
+    }
   });
 });

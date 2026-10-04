@@ -7,6 +7,8 @@ export interface AppChrome {
   phone: boolean;
   parent: { to: string; label: string } | null;
   subtitle: string | null;
+  /** El nombre de la pantalla de Administración en la que está («Auditoría»): lo usa el aviso de error (M-Error-Org). */
+  title?: string | null;
   hideBottomNav: (hidden: boolean) => void;
 }
 

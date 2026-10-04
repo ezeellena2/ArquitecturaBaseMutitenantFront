@@ -66,6 +66,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
     phone: isMobile,
     parent: isMobile && navigation.moreTo && !onHome && !onMore ? { to: navigation.moreTo, label: t("layout.app.backToMore") } : null,
     subtitle: administrationEntry && navigation.administration ? t(navigation.administration.labelKey) : context?.title ?? null,
+    title: administrationEntry ? t(administrationEntry.link.labelKey) : null,
     hideBottomNav,
   }), [isMobile, navigation.moreTo, navigation.administration, onHome, onMore, administrationEntry, context?.title, hideBottomNav, t]);
 

@@ -8,6 +8,8 @@ import { beginSignOut, cancelSignOut, useIsSigningOut } from "@/auth/signOutStat
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useSwitchAccess, type SwitchTarget } from "@/tenancy/useSwitchAccess";
 import { BrandMark } from "@/shared/ui/BrandMark";
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { GroupTitle, SettingsGroup, SettingsItem } from "@/shared/ui/app/SettingsGroup";
 
 export type UnavailableCode = "Tenancy.Tenant.Suspended" | "Tenancy.Tenant.PendingApproval" | "Tenancy.Tenant.Closed";
 
@@ -27,6 +29,7 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
   const queryClient = useQueryClient();
   const isSigningOut = useIsSigningOut();
   const [targetName, setTargetName] = useState("");
+  const phone = useMediaQuery("(max-width: 767px)");
 
   if (isSigningOut) return <SessionStatusPage status="closing" />;
   if (switching.isSwitching) return <SessionStatusPage status="switching" targetName={targetName} />;
@@ -54,6 +57,30 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
     } catch {
       cancelSignOut();
     }
+  }
+
+  // Tablero M-Perfil-Suspendido: en el teléfono el fondo es gris y sin la marca; arriba el aviso, después
+  // «Elegí otro perfil» como grupo de la app y «Salir» abajo.
+  if (phone) {
+    const otherProfile = t("errors:errorPage.unavailable.otherProfile");
+    const profileInitials = (text: string) => <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--s3)] text-[13px] font-bold text-[var(--t2)]">{text}</span>;
+    return <main className="flex min-h-dvh flex-col bg-[var(--s2)] text-[var(--t1)]">
+      <div className="flex flex-col items-center gap-2.5 px-8 pt-16 pb-[22px] text-center">
+        <span aria-hidden="true" className={`inline-flex size-16 items-center justify-center rounded-full ${iconTone}`}><Icon size={28} strokeWidth={1.75} /></span>
+        <h1 className="mt-1.5 text-[22px] font-bold leading-tight tracking-[-0.015em]">{title}</h1>
+        <p className="text-[15px] leading-normal text-[var(--t2)]">{description}</p>
+      </div>
+      <GroupTitle>{otherProfile}</GroupTitle>
+      <SettingsGroup label={otherProfile}>
+        {account?.hasPersonalSpace ? <SettingsItem leading={profileInitials(t("common:accessMenu.personal").slice(0, 1))} title={t("common:accessMenu.personal")}
+          detail={t("common:accessMenu.personalDetail")} onClick={() => changeProfile({ access: "consumer" }, t("common:accessMenu.personal"))} /> : null}
+        {organizations.map((organization) => <SettingsItem key={organization.id} leading={profileInitials(initials(organization.name))} title={organization.name}
+          detail={organization.roleName ?? undefined} onClick={() => changeProfile({ access: "business", tenantId: organization.id }, organization.name)} />)}
+      </SettingsGroup>
+      <button type="button" onClick={() => { void signOut(); }} className="mx-auto mt-auto mb-10 inline-flex h-11 items-center gap-2 rounded-[22px] px-5 text-[15.5px] font-semibold text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
+        <LogOut size={18} strokeWidth={1.75} aria-hidden="true" />{t("common:accessMenu.signOut")}
+      </button>
+    </main>;
   }
 
   return <main className="relative min-h-dvh bg-[var(--fondo)] px-5 py-8 text-[var(--t1)]">
