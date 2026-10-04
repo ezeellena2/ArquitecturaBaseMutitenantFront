@@ -729,36 +729,18 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           const systemDelete = await rolesPage.request.delete(systemRoleUrl.href, { headers, data: { version: systemRole.version } });
           assert.equal(systemDelete.status(), 403, "Un rol de sistema no se puede borrar.");
 
-          setStage("inicia baja de cuenta como único Dueño y comprueba el bloqueo");
+          setStage("abre Mi cuenta como único Dueño y comprueba que la baja está bloqueada");
           await openAccount(rolesPage, "Empresa E2E");
-          const deletionCodeBefore = new Set(await pickupFiles());
-          let deletionReauth = rolesPage.waitForResponse((response) =>
-            new URL(response.url()).pathname === "/api/me/reauth" && response.request().method() === "POST");
-          await rolesPage.getByRole("button", { name: "Dar de baja", exact: true }).click();
-          const deletionDialog = rolesPage.getByRole("dialog");
-          await deletionDialog.getByRole("heading", { name: "¿Dar de baja tu cuenta?" }).waitFor();
-          let reauthResponse = await deletionReauth;
-          for (let attempt = 0; reauthResponse.status() === 429 && attempt < 5; attempt++) {
-            const problem = await reauthResponse.json();
-            assert.equal(typeof problem.retryAfter, "number");
-            await delay((problem.retryAfter + 1) * 1000);
-            deletionReauth = rolesPage.waitForResponse((response) =>
-              new URL(response.url()).pathname === "/api/me/reauth" && response.request().method() === "POST");
-            await deletionDialog.locator('button[type="submit"]').click();
-            reauthResponse = await deletionReauth;
-          }
-          assert.equal(reauthResponse.status(), 202,
-            `La reautenticación debe aceptar el código después del cooldown (HTTP ${reauthResponse.status()}).`);
-          await enterCode(rolesPage, await codeFromPickup(businessEmail, deletionCodeBefore));
-          await deletionDialog.getByRole("textbox", { name: "Motivo" }).fill("Comprobación E4 del único Dueño");
-          const deletionResponsePromise = rolesPage.waitForResponse((response) =>
-            new URL(response.url()).pathname === "/api/me/deletion" && response.request().method() === "POST");
-          await deletionDialog.getByRole("button", { name: "Dar de baja", exact: true }).click();
-          const deletionResponse = await deletionResponsePromise;
-          assert.equal(deletionResponse.status(), 409, "No se puede iniciar la baja del único Dueño.");
-          assert.equal((await deletionResponse.json()).code, "Legal.AccountDeletion.LastAdmin");
-          await deletionDialog.getByText("Antes de pedir la baja, cada Organización activa debe tener otra persona con el rol Dueño.",
-            { exact: true }).waitFor();
+          // Tablero Cuenta: «Dar de baja» apagado; ⓘ abre «No podés dar de baja tu cuenta» con la organización.
+          const blockedInfo = rolesPage.getByRole("button", { name: "Por qué no podés darte de baja", exact: true });
+          await blockedInfo.waitFor();
+          assert.equal(await rolesPage.getByRole("button", { name: "Dar de baja", exact: true }).getAttribute("aria-disabled"), "true",
+            "La baja del único Dueño queda apagada.");
+          await blockedInfo.click();
+          const blockedDialog = rolesPage.getByRole("dialog");
+          await blockedDialog.getByRole("heading", { name: "No podés dar de baja tu cuenta" }).waitFor();
+          await blockedDialog.getByText("Sos la única persona con el rol Dueño en Empresa E2E", { exact: true }).waitFor();
+          await blockedDialog.getByRole("button", { name: "Entendido", exact: true }).click();
         }],
         ["6: registrar empresa por correo sin crear Personal", async (businessSignupPage, setStage) => {
           await registerBusinessByEmail(businessSignupPage, readyFile, setStage);
