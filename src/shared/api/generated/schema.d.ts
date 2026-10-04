@@ -372,6 +372,777 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/platform/accounts/paged": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Sort?: string;
+                    Search?: string;
+                    State?: components["schemas"]["PlatformAccountState"];
+                    Kind?: components["schemas"]["PlatformAccountKind"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PagedResultOfPlatformAccountResponse"];
+                        "application/json": components["schemas"]["PagedResultOfPlatformAccountResponse"];
+                        "text/json": components["schemas"]["PagedResultOfPlatformAccountResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/accounts/filter-counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Sort?: string;
+                    Search?: string;
+                    State?: components["schemas"]["PlatformAccountState"];
+                    Kind?: components["schemas"]["PlatformAccountKind"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformAccountFilterCounts"];
+                        "application/json": components["schemas"]["PlatformAccountFilterCounts"];
+                        "text/json": components["schemas"]["PlatformAccountFilterCounts"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/accounts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformAccountDetailResponse"];
+                        "application/json": components["schemas"]["PlatformAccountDetailResponse"];
+                        "text/json": components["schemas"]["PlatformAccountDetailResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/accounts/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "text/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/accounts/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "text/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/accounts/{id}/revoke-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "text/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/accounts/{id}/deletion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "text/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    After?: string;
+                    Limit?: number;
+                    Period?: string;
+                    Type?: string;
+                    TenantId?: string;
+                    AccountId?: string;
+                    Search?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CursorResultOfPlatformAuditEventResponse"];
+                        "application/json": components["schemas"]["CursorResultOfPlatformAuditEventResponse"];
+                        "text/json": components["schemas"]["CursorResultOfPlatformAuditEventResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/audit/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformAuditEventResponse"];
+                        "application/json": components["schemas"]["PlatformAuditEventResponse"];
+                        "text/json": components["schemas"]["PlatformAuditEventResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform/tenants/{id}/domains": {
         parameters: {
             query?: never;
@@ -819,6 +1590,470 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/platform/legal-documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformLegalDocumentGroupResponse"][];
+                        "application/json": components["schemas"]["PlatformLegalDocumentGroupResponse"][];
+                        "text/json": components["schemas"]["PlatformLegalDocumentGroupResponse"][];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PublishLegalDocumentHttpRequest"];
+                    "text/json": components["schemas"]["PublishLegalDocumentHttpRequest"];
+                    "application/*+json": components["schemas"]["PublishLegalDocumentHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PublishedLegalDocumentResponse"];
+                        "application/json": components["schemas"]["PublishedLegalDocumentResponse"];
+                        "text/json": components["schemas"]["PublishedLegalDocumentResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/legal-documents/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformLegalDocumentResponse"];
+                        "application/json": components["schemas"]["PlatformLegalDocumentResponse"];
+                        "text/json": components["schemas"]["PlatformLegalDocumentResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/operators/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["InvitePlatformOperatorHttpRequest"];
+                    "text/json": components["schemas"]["InvitePlatformOperatorHttpRequest"];
+                    "application/*+json": components["schemas"]["InvitePlatformOperatorHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformOperatorInvitationResponse"];
+                        "application/json": components["schemas"]["PlatformOperatorInvitationResponse"];
+                        "text/json": components["schemas"]["PlatformOperatorInvitationResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/accounts/{id}/operator": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ChangePlatformOperatorHttpRequest"];
+                    "text/json": components["schemas"]["ChangePlatformOperatorHttpRequest"];
+                    "application/*+json": components["schemas"]["ChangePlatformOperatorHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "text/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform/tenants/{id}/public-site": {
         parameters: {
             query?: never;
@@ -1012,6 +2247,354 @@ export interface paths {
                     "application/json": components["schemas"]["PlatformTenantStateHttpRequest"];
                     "text/json": components["schemas"]["PlatformTenantStateHttpRequest"];
                     "application/*+json": components["schemas"]["PlatformTenantStateHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/recoveries/paged": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Sort?: string;
+                    Search?: string;
+                    Status?: components["schemas"]["AccountRecoveryStatus"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PagedResultOfPlatformRecoveryResponse"];
+                        "application/json": components["schemas"]["PagedResultOfPlatformRecoveryResponse"];
+                        "text/json": components["schemas"]["PagedResultOfPlatformRecoveryResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/recoveries/filter-counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Sort?: string;
+                    Search?: string;
+                    Status?: components["schemas"]["AccountRecoveryStatus"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformRecoveryFilterCounts"];
+                        "application/json": components["schemas"]["PlatformRecoveryFilterCounts"];
+                        "text/json": components["schemas"]["PlatformRecoveryFilterCounts"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/recoveries/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "text/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/recoveries/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "text/json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformAccountActionHttpRequest"];
                 };
             };
             responses: {
@@ -5429,6 +7012,208 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/account-recovery/code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RequestRecoveryCodeHttpRequest"];
+                    "text/json": components["schemas"]["RequestRecoveryCodeHttpRequest"];
+                    "application/*+json": components["schemas"]["RequestRecoveryCodeHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description Accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RequestLoginCodeResponse"];
+                        "application/json": components["schemas"]["RequestLoginCodeResponse"];
+                        "text/json": components["schemas"]["RequestLoginCodeResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/account-recovery/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VerifyRecoveryCodeHttpRequest"];
+                    "text/json": components["schemas"]["VerifyRecoveryCodeHttpRequest"];
+                    "application/*+json": components["schemas"]["VerifyRecoveryCodeHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/account-recovery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SubmitAccountRecoveryHttpRequest"];
+                    "text/json": components["schemas"]["SubmitAccountRecoveryHttpRequest"];
+                    "application/*+json": components["schemas"]["SubmitAccountRecoveryHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description Accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/business-signup/code": {
         parameters: {
             query?: never;
@@ -5673,6 +7458,52 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformContactResponse"];
+                        "application/json": components["schemas"]["PlatformContactResponse"];
+                        "text/json": components["schemas"]["PlatformContactResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -7493,6 +9324,11 @@ export interface components {
             accountDeletionGraceDays: number;
             soleOwnerOrganizations: string[];
         };
+        /**
+         * @description Estado de un pedido de «Recuperar mi cuenta»: lo resuelve un operador de la plataforma.
+         * @enum {string}
+         */
+        AccountRecoveryStatus: "Pending" | "Approved" | "Rejected";
         AddCompanyMemberHttpRequest: {
             /** Format: uuid */
             memberId?: null | string;
@@ -7568,6 +9404,12 @@ export interface components {
             isActive?: null | boolean;
             /** Format: uint32 */
             version?: null | number;
+        };
+        ChangePlatformOperatorHttpRequest: {
+            /** Format: uint32 */
+            version?: null | number;
+            reason?: null | string;
+            permissions?: null | string[];
         };
         CompanyFilterCountsResponse: {
             /** Format: int32 */
@@ -7730,6 +9572,12 @@ export interface components {
             nextCursor?: null | string;
             hasMore: boolean;
         };
+        /** @description Resultado por cursor, sin conteo total sobre tablas que solo crecen. */
+        CursorResultOfPlatformAuditEventResponse: {
+            items: components["schemas"]["PlatformAuditEventResponse"][];
+            nextCursor?: null | string;
+            hasMore: boolean;
+        };
         DeleteRoleHttpRequest: {
             /** Format: uint32 */
             version?: null | number;
@@ -7834,6 +9682,10 @@ export interface components {
             roleIds?: null | string[];
             companies?: null | components["schemas"]["InviteCompanyRolesHttpRequest"][];
         };
+        InvitePlatformOperatorHttpRequest: {
+            email?: null | string;
+            permissions?: null | string[];
+        };
         /**
          * @description Identifica el documento y la versión exacta que una persona acepta. El servicio los compara con la versión
          *     vigente antes de guardar la prueba de aceptación.
@@ -7843,6 +9695,10 @@ export interface components {
             id: string;
             /** Format: int32 */
             version: number;
+        };
+        LegalDocumentContentHttpRequest: {
+            culture?: null | string;
+            text?: null | string;
         };
         /**
          * @description Distingue términos y condiciones de política de privacidad. Cada documento conserva sus propias
@@ -7862,6 +9718,8 @@ export interface components {
             culture: string;
             text: string;
         };
+        /** @enum {null|string} */
+        LoginAuditMethod: "Code" | "Google" | "WhatsAppCode" | "WhatsAppLink" | null;
         LoginChannelAvailability: {
             key: string;
             countries: string[];
@@ -8095,6 +9953,34 @@ export interface components {
             hasNext?: boolean;
         };
         /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfPlatformAccountResponse: {
+            items: components["schemas"]["PlatformAccountResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfPlatformRecoveryResponse: {
+            items: components["schemas"]["PlatformRecoveryResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
         PagedResultOfPlatformTenantResponse: {
             items: components["schemas"]["PlatformTenantResponse"][];
             /** Format: int32 */
@@ -8174,6 +10060,130 @@ export interface components {
             country?: null | string;
             number?: null | string;
         };
+        PlatformAccountActionHttpRequest: {
+            /** Format: uint32 */
+            version?: null | number;
+            reason?: null | string;
+        };
+        PlatformAccountDeletionResponse: {
+            /** Format: date-time */
+            requestedAtUtc: string;
+            /** Format: date-time */
+            scheduledForUtc: string;
+            requestedByPlatform: boolean;
+        };
+        /** @description Ficha: métodos enmascarados, membresías desde el índice global y permisos si es operador. */
+        PlatformAccountDetailResponse: {
+            /** Format: uuid */
+            id: string;
+            displayName?: null | string;
+            kind: components["schemas"]["PlatformAccountKind"];
+            state: components["schemas"]["PlatformAccountState"];
+            /** Format: date-time */
+            createdAtUtc?: null | string;
+            /** Format: date-time */
+            lastSignInAtUtc?: null | string;
+            lastSignInMethod?: null | components["schemas"]["LoginAuditMethod"];
+            hasPersonalSpace: boolean;
+            deletion?: null | components["schemas"]["PlatformAccountDeletionResponse"];
+            loginMethods: components["schemas"]["PlatformAccountLoginMethodResponse"][];
+            organizations: components["schemas"]["PlatformAccountMembershipResponse"][];
+            soleOwnerOrganizations: string[];
+            operatorPermissions?: null | string[];
+            /** Format: uint32 */
+            operatorVersion?: null | number;
+            /** Format: uint32 */
+            version: number;
+        };
+        PlatformAccountFilterCounts: {
+            /** Format: int32 */
+            total: number;
+            states: components["schemas"]["PlatformAccountStateCount"][];
+            kinds: components["schemas"]["PlatformAccountKindCount"][];
+        };
+        /** @enum {string} */
+        PlatformAccountKind: "Person" | "Operator";
+        PlatformAccountKindCount: {
+            kind: components["schemas"]["PlatformAccountKind"];
+            /** Format: int32 */
+            count: number;
+        };
+        PlatformAccountLoginMethodResponse: {
+            /** Format: uuid */
+            id: string;
+            type: components["schemas"]["LoginMethodType"];
+            maskedValue: string;
+            isPrimary: boolean;
+            /** Format: date-time */
+            verifiedAtUtc?: null | string;
+            managedByOrganizationName?: null | string;
+            canSignIn: boolean;
+        };
+        /** @description EndedAtUtc sale del último SecurityEvent de fin de membresía de esa cuenta; sin evidencia queda null. */
+        PlatformAccountMembershipResponse: {
+            /** Format: uuid */
+            tenantId: string;
+            name: string;
+            roleName?: null | string;
+            /** Format: date-time */
+            joinedAtUtc?: null | string;
+            status: components["schemas"]["MemberStatus"];
+            tenantStatus: components["schemas"]["TenantStatus"];
+            /** Format: date-time */
+            endedAtUtc?: null | string;
+        };
+        /** @description Fila del listado: el correo principal completo identifica la cuenta, como en el tablero Cuentas. */
+        PlatformAccountResponse: {
+            /** Format: uuid */
+            id: string;
+            displayName?: null | string;
+            primaryEmail?: null | components["schemas"]["Email"];
+            kind: components["schemas"]["PlatformAccountKind"];
+            state: components["schemas"]["PlatformAccountState"];
+            hasPersonalSpace: boolean;
+            /** Format: int32 */
+            organizationCount: number;
+            /** Format: date-time */
+            lastSignInAtUtc?: null | string;
+            lastSignInMethod?: null | components["schemas"]["LoginAuditMethod"];
+            /** Format: uint32 */
+            version: number;
+        };
+        /**
+         * @description Estado que ve Plataforma. NeedsRecovery se deriva: cuenta Active sin ningún método que sirva para ingresar;
+         *     los demás estados de la cuenta tienen prioridad.
+         * @enum {string}
+         */
+        PlatformAccountState: "Active" | "Suspended" | "NeedsRecovery" | "PendingDeletion" | "Deleted";
+        PlatformAccountStateCount: {
+            state: components["schemas"]["PlatformAccountState"];
+            /** Format: int32 */
+            count: number;
+        };
+        /** @description Una fila de la auditoría ya traducida: qué pasó, sobre qué, quién y con qué motivo. */
+        PlatformAuditEventResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            occurredAtUtc: string;
+            type: string;
+            action: string;
+            summary: string;
+            target: string;
+            /** Format: uuid */
+            targetTenantId?: null | string;
+            /** Format: uuid */
+            targetAccountId?: null | string;
+            actor: string;
+            actorRole: string;
+            reason?: null | string;
+            ipAddress?: null | string;
+        };
+        /** @description Los correos de contacto que muestran Ingreso y Registro, sin sesión; null mientras no se cargaron. */
+        PlatformContactResponse: {
+            salesEmail?: null | components["schemas"]["Email"];
+            supportEmail?: null | components["schemas"]["Email"];
+        };
         /** @description Habilitación administrable; cero identifica la configuración inicial sin fila persistida. */
         PlatformFeatureResponse: {
             key: string;
@@ -8183,6 +10193,45 @@ export interface components {
             expiresAtUtc?: null | string;
             /** Format: uint32 */
             version: number;
+        };
+        PlatformLegalContentResponse: {
+            culture: string;
+            text: string;
+        };
+        /** @description Un tipo de documento con su versión vigente y todas sus versiones, de la más nueva a la más vieja. */
+        PlatformLegalDocumentGroupResponse: {
+            kind: components["schemas"]["LegalDocumentKind"];
+            /** Format: int32 */
+            currentVersion?: null | number;
+            /** Format: date-time */
+            currentEffectiveAtUtc?: null | string;
+            versions: components["schemas"]["PlatformLegalVersionResponse"][];
+        };
+        /** @description Una versión para leer, con el texto de cada cultura. No se edita: para cambiarla se publica otra. */
+        PlatformLegalDocumentResponse: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["LegalDocumentKind"];
+            /** Format: int32 */
+            version: number;
+            /** Format: date-time */
+            effectiveAtUtc: string;
+            isCurrent: boolean;
+            contents: components["schemas"]["PlatformLegalContentResponse"][];
+        };
+        PlatformLegalVersionResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            version: number;
+            /** Format: date-time */
+            effectiveAtUtc: string;
+            isCurrent: boolean;
+        };
+        /** @description La cuenta del operador invitado: aparece enseguida en Cuentas. */
+        PlatformOperatorInvitationResponse: {
+            /** Format: uuid */
+            id: string;
         };
         /** @description Solo metadatos de publicación; no incluye contenido, logo ni contacto de la página. */
         PlatformPublicSiteResponse: {
@@ -8195,11 +10244,44 @@ export interface components {
             /** Format: uint32 */
             version: number;
         };
+        PlatformRecoveryFilterCounts: {
+            /** Format: int32 */
+            total: number;
+            statuses: components["schemas"]["PlatformRecoveryStatusCount"][];
+        };
+        /** @description Fila de la bandeja: los métodos van enmascarados, como en el tablero; el motivo es interno. */
+        PlatformRecoveryResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAtUtc: string;
+            /** Format: uuid */
+            accountId?: null | string;
+            accountName?: null | string;
+            previousMethodType: components["schemas"]["LoginMethodType"];
+            previousMethod: string;
+            newMethodType: components["schemas"]["LoginMethodType"];
+            newMethod: string;
+            status: components["schemas"]["AccountRecoveryStatus"];
+            /** Format: date-time */
+            decidedAtUtc?: null | string;
+            decidedBy?: null | string;
+            reason?: null | string;
+            /** Format: uint32 */
+            version: number;
+        };
+        PlatformRecoveryStatusCount: {
+            status: components["schemas"]["AccountRecoveryStatus"];
+            /** Format: int32 */
+            count: number;
+        };
         PlatformSettingsResponse: {
             consumerSignup: components["schemas"]["ConsumerSignupMode"];
             businessSignup: components["schemas"]["BusinessSignupMode"];
             /** Format: int32 */
             maxOwnedOrganizations: number;
+            salesEmail?: null | components["schemas"]["Email"];
+            supportEmail?: null | components["schemas"]["Email"];
             /** Format: uint32 */
             version: number;
         };
@@ -8282,6 +10364,19 @@ export interface components {
             /** Format: uint32 */
             version: number;
         };
+        PublishedLegalDocumentResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            version: number;
+        };
+        /** @description Una versión nueva: tipo, fecha civil de vigencia (aaaa-mm-dd) y el texto en cada cultura habilitada. */
+        PublishLegalDocumentHttpRequest: {
+            kind?: null | components["schemas"]["LegalDocumentKind"];
+            /** Format: date */
+            effectiveOn?: unknown;
+            contents?: null | components["schemas"]["LegalDocumentContentHttpRequest"][];
+        };
         /** @enum {null|string} */
         ReauthAction: "RemoveMethod" | "MakePrimary" | "DeleteAccount" | "CancelDeletion" | "AddEmail" | "LinkGoogle" | null;
         /** @description Informa a qué método de respaldo se envió el código, con el destino enmascarado y el tiempo hasta un nuevo pedido. */
@@ -8337,6 +10432,11 @@ export interface components {
             /** Format: uuid */
             targetMethodId?: null | string;
         };
+        /** @description Correo nuevo y nonce del navegador; el nonce no vuelve en ninguna respuesta. */
+        RequestRecoveryCodeHttpRequest: {
+            email?: null | string;
+            nonce?: null | string;
+        };
         /** @description Representación HTTP-independent de un rol; version conserva el xmin de PostgreSQL. */
         RoleResponse: {
             /** Format: uuid */
@@ -8372,6 +10472,13 @@ export interface components {
             acceptedTerms: boolean;
             culture?: null | string;
             timeZoneId?: null | string;
+        };
+        /** @description El correo nuevo ya verificado y el método con el que se entraba: un correo o un teléfono. */
+        SubmitAccountRecoveryHttpRequest: {
+            email?: null | string;
+            nonce?: null | string;
+            previousEmail?: null | string;
+            previousPhone?: null | components["schemas"]["PhoneInputHttpRequest"];
         };
         /** @description Expone un tipo de identificación fiscal con país, máscara y criterio de validación. */
         TaxIdTypeReferenceHttpResponse: {
@@ -8469,6 +10576,8 @@ export interface components {
             businessSignup?: null | components["schemas"]["BusinessSignupMode"];
             /** Format: int32 */
             maxOwnedOrganizations?: null | number;
+            salesEmail?: null | string;
+            supportEmail?: null | string;
             /** Format: uint32 */
             version?: null | number;
             reason?: null | string;
@@ -8524,6 +10633,12 @@ export interface components {
             targetMethodId?: null | string;
             /** Format: uuid */
             sourceMethodId?: null | string;
+            code?: null | string;
+        };
+        /** @description Código recibido en el correo nuevo, con el mismo nonce del pedido del código. */
+        VerifyRecoveryCodeHttpRequest: {
+            email?: null | string;
+            nonce?: null | string;
             code?: null | string;
         };
         /** @description Verifica el código y registra la aceptación vigente en la misma transacción. */
