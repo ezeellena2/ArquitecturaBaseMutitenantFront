@@ -79,6 +79,10 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     await user.click(screen.getByRole("button", { name: "Ver el motivo y qué podés hacer" }));
     const notice = await screen.findByRole("dialog", { name: "Página despublicada" });
     expect(notice).toHaveTextContent("Datos de contacto falsos");
+    // Como el tablero: el motivo en bordó y negrita; los números de los pasos en un círculo gris relleno.
+    expect(within(notice).getByText("Datos de contacto falsos")).toHaveClass("font-semibold");
+    expect(within(notice).getByText("Datos de contacto falsos").closest("[class*='peligro-tx']")).not.toBeNull();
+    for (const number of notice.querySelectorAll("[data-step-number]")) expect(number).toHaveClass("bg-[var(--s3)]");
     expect(notice).toHaveTextContent("Despublicada por la plataforma el 26/09/2026");
     expect(notice).toHaveTextContent("Qué podés hacer");
     expect(within(notice).getAllByRole("listitem").map((item) => item.textContent?.replace(/^\d/, ""))).toEqual(["Corregí los datos de la página", "Pedí a la plataforma que la habilite"]);
