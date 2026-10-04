@@ -10,7 +10,7 @@ import { LoginMethodsTable } from "../components/LoginMethodsTable";
 import { PersonalLoginMethodNotice } from "@/shared/ui/PersonalLoginMethodNotice";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { CircleAlert, Info, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import type { AccountLoginMethod } from "@/shared/api/types";
 import { AddLoginMethodDialog } from "../components/AddLoginMethodDialog";
@@ -24,7 +24,8 @@ import { useAuth } from "react-oidc-context";
 import { showDeletionRequested } from "@/auth/deletionRequestStatus";
 import { useFormat } from "@/shared/format/useFormat";
 import { AccountDeletionDialog } from "../components/AccountDeletionDialog";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { ImportantNotice } from "@/shared/ui/ImportantNotice";
+import { InfoButton } from "@/shared/ui/InfoButton";
 
 export function AccountPage() {
   const { t } = useTranslation();
@@ -79,8 +80,7 @@ export function AccountPage() {
       </header>
       <List label={t("account:privacy")}>
         <ListItem icon={<Trash2 aria-hidden="true" />} title={<span className="inline-flex items-center gap-1.5">{t("account:deletion")}
-          {deletionBlocked ? <button type="button" aria-label={t("account:deletionBlockedInfo")} title={t("account:deletionBlockedInfo")} onClick={() => setDeletionBlockedOpen(true)}
-            className="inline-flex size-6 shrink-0 items-center justify-center rounded-full text-[var(--peligro)] hover:bg-[var(--peligro-t)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]"><Info aria-hidden="true" className="size-4" /></button> : null}
+          {deletionBlocked ? <InfoButton label={t("account:deletionBlockedInfo")} onClick={() => setDeletionBlockedOpen(true)} /> : null}
         </span>}>
           <Button type="button" variant="danger" size="sm" className={deletionBlocked ? "opacity-50" : undefined}
             disabled={!methods.data || methods.isPending} aria-disabled={deletionBlocked || undefined}
@@ -92,26 +92,10 @@ export function AccountPage() {
   {addOpen ? <AddLoginMethodDialog open onOpenChange={setAddOpen} onComplete={refresh} /> : null}
   {verifyMethod ? <VerifyLoginMethodDialog method={verifyMethod} open onOpenChange={(open) => { if (!open) setVerifyMethod(null); }} onComplete={refresh} /> : null}
   {change ? <ChangeLoginMethodDialog {...change} onClose={() => setChange(null)} onComplete={refresh} /> : null}
-  {/* Aviso importante (Criterio-Avisos): el motivo destacado en rojo suave y «Qué podés hacer» en pasos. */}
-  <Dialog open={deletionBlockedOpen} onOpenChange={setDeletionBlockedOpen}>
-    <DialogContent className="md:max-w-[420px]" showCloseButton>
-      <DialogHeader><DialogTitle>{t("account:deletionBlockedTitle")}</DialogTitle></DialogHeader>
-      <div className="flex flex-col gap-3 px-5 py-4 text-[13px]">
-        {/* Tablero Cuenta (única Dueña): aviso en bordó y negrita; pasos con el número en un círculo gris relleno. */}
-        <div className="flex items-start gap-3 rounded-[10px] bg-[var(--peligro-t)] px-4 py-3.5 text-[var(--peligro-tx)]">
-          <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-          <strong className="text-[15px] font-semibold">{t("account:deletionBlockedReason", { organizations: soleOwnerOf })}</strong>
-        </div>
-        <span className="text-[12.5px] font-semibold text-[var(--t3)]">{t("account:whatCanYouDo")}</span>
-        <ol className="flex flex-col gap-2.5">
-          {[t("account:deletionBlockedStep1", { organizations: soleOwnerOf }), t("account:deletionBlockedStep2")].map((step, index) => <li key={step} className="flex items-center gap-2.5 text-[13.5px] text-[var(--t1)]">
-            <span aria-hidden="true" data-step-number className="flex size-[22px] shrink-0 items-center justify-center rounded-full bg-[var(--s3)] text-[12px] font-semibold text-[var(--t2)]">{index + 1}</span>{step}
-          </li>)}
-        </ol>
-      </div>
-      <DialogFooter><Button type="button" onClick={() => setDeletionBlockedOpen(false)}>{t("account:understood")}</Button></DialogFooter>
-    </DialogContent>
-  </Dialog>
+  {/* Tablero Cuenta (única Dueña): el aviso importante compartido. */}
+  <ImportantNotice open={deletionBlockedOpen} onOpenChange={setDeletionBlockedOpen} title={t("account:deletionBlockedTitle")}
+    reason={t("account:deletionBlockedReason", { organizations: soleOwnerOf })}
+    steps={[t("account:deletionBlockedStep1", { organizations: soleOwnerOf }), t("account:deletionBlockedStep2")]} />
   {deletionOpen && methods.data ? <AccountDeletionDialog graceDays={methods.data.accountDeletionGraceDays} onClose={() => setDeletionOpen(false)} onComplete={(scheduled) => { void deleted(scheduled); }} /> : null}
   </>;
 }

@@ -45,7 +45,5 @@
   "publicationTitle": "Publicación",
   "visibleAt": "Visible en {{host}}",
   "pageTitle": "Página",
-  "blockedOn": "Despublicada por la plataforma el <date/>",
-  "whatCanYouDo": "Qué podés hacer",
-  "understood": "Entendido"
+  "blockedOn": "Despublicada por la plataforma el <date/>"
 }

@@ -78,7 +78,7 @@ describe("Mi cuenta", () => {
     expect(info).toHaveTextContent("Sos la única persona con el rol Dueño en Grupo Delta");
     // Tablero: el aviso en bordó y negrita; los números de los pasos en un círculo gris relleno.
     expect(within(info).getByText("Sos la única persona con el rol Dueño en Grupo Delta")).toHaveClass("font-semibold");
-    expect(within(info).getByText("Sos la única persona con el rol Dueño en Grupo Delta").parentElement).toHaveClass("text-[var(--peligro-tx)]");
+    expect(within(info).getByText("Sos la única persona con el rol Dueño en Grupo Delta").closest("[data-slot='notice-reason']")).toHaveClass("text-[var(--peligro-tx)]");
     for (const number of info.querySelectorAll("[data-step-number]")) expect(number).toHaveClass("bg-[var(--s3)]");
     expect(info).toHaveTextContent("Qué podés hacer");
     expect(within(info).getAllByRole("listitem").map((item) => item.textContent?.replace(/^\d/, "")))

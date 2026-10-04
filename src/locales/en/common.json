@@ -17,6 +17,10 @@
     "close": "Close",
     "clearFilters": "Clear filters"
   },
+  "notice": {
+    "whatCanYouDo": "What you can do",
+    "understood": "Got it"
+  },
   "states": {
     "loading": "Loading…",
     "saving": "Saving…",

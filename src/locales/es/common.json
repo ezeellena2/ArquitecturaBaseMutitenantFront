@@ -17,6 +17,10 @@
     "close": "Cerrar",
     "clearFilters": "Limpiar filtros"
   },
+  "notice": {
+    "whatCanYouDo": "Qué podés hacer",
+    "understood": "Entendido"
+  },
   "states": {
     "loading": "Cargando…",
     "saving": "Guardando…",

@@ -40,8 +40,6 @@
   "deletionBlockedReason": "Sos la única persona con el rol Dueño en {{organizations}}",
   "deletionBlockedStep1": "Sumá otro Dueño en {{organizations}}",
   "deletionBlockedStep2": "O pedí a la plataforma que cierre la organización",
-  "whatCanYouDo": "Qué podés hacer",
-  "understood": "Entendido",
   "cancel": "Cancelar",
   "sendCode": "Enviar código",
   "code": "Código",
