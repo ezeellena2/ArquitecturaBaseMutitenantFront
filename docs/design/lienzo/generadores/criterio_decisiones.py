@@ -87,7 +87,7 @@ DECISIONES = {
         ("Mi cuenta · el ⋮ de «Cómo entrás»", "", "Solo en las filas con acciones: el principal, si es el único método personal, no lo lleva; el correo de la empresa, con «Hacer principal» y «Quitar»; el teléfono sin verificar, con «Quitar».", "Dibujada"),
         ("Mi cuenta › WhatsApp · agregar y verificar", "", "«WhatsApp» con país y número (solo los países que habilita WhatsApp); error: país que no habilita (un número de otra cuenta no da error: no se revela); el código por WhatsApp con «Reenviar», incorrecto o vencido. Sin el módulo, ni la fila ni la opción.", "Dibujada"),
         ("Mi cuenta › WhatsApp · quitar o hacer principal", "A", "⋮ con «Hacer principal» y «Quitar»; el código llega a otro método, y el WhatsApp también es ese otro método. Para cambiar el número se agrega el nuevo y se quita el viejo.", "Dibujada"),
-        ("Mi cuenta › Agregar · país", "A", "La lista de países con las filas de los desplegables (36 de alto, letra de 13, radio 6, la elegida en 500) y el buscador como campo, igual que en la app. Solo Argentina: es el único país habilitado.", "Dibujada"),
+        ("Mi cuenta › Agregar · país", "A", "La lista de países con las filas de los desplegables (36 de alto, letra de 13, radio 6, la elegida en 500) como en la app. Solo Argentina, el único país habilitado, y sin buscador: aparece con más de 10 opciones (también en el teléfono).", "Dibujada"),
     ],
     "Organización · 13 pantallas": [
         ("Usuarios", "A", "Usuario (nombre y correo), Rol en la organización, Empresa (con su rol debajo), Estado («Vence …» si es una invitación) y ⋮. Sin empresa, una sola raya.", "Dibujada"),
