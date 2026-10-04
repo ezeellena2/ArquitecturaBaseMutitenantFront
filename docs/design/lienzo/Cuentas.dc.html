@@ -567,6 +567,8 @@ textarea.in2 { height: auto; min-height: 84px; }
 .w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
   content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 </style>
+<style data-vuelta="1004-operador-invitacion">
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{plMenuClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -650,7 +652,7 @@ textarea.in2 { height: auto; min-height: 84px; }
                 <sc-if value="{{c.conAcciones}}" hint-placeholder-val="{{si}}"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="{{c.exp}}" aria-label="{{c.ariaMenu}}" onClick="{{c.alternar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></sc-if>
                 <sc-if value="{{c.menu}}" hint-placeholder-val="{{no}}">
                   <div class="menu der {{c.claseMenu}}" role="menu">
-                    <sc-if value="{{c.conSesiones}}" hint-placeholder-val="{{si}}"><button type="button" class="menu-it" role="menuitem" onClick="{{c.cerrarSesiones}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Cerrar sus sesiones</button></sc-if>
+                    <sc-if value="{{c.invitacion}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it" role="menuitem" onClick="{{c.reenviar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg> Reenviar invitación</button><div class="menu-sep" role="separator"></div><button type="button" class="menu-it pel" role="menuitem" onClick="{{c.revocar}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg> Revocar invitación</button></sc-if><sc-if value="{{c.conSesiones}}" hint-placeholder-val="{{si}}"><button type="button" class="menu-it" role="menuitem" onClick="{{c.cerrarSesiones}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Cerrar sus sesiones</button></sc-if>
                     <sc-if value="{{c.suspendida}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it" role="menuitem" onClick="{{c.reactivar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> Reactivar</button></sc-if>
                     <sc-if value="{{c.activa}}" hint-placeholder-val="{{si}}"><div class="menu-sep" role="separator"></div><button type="button" class="menu-it pel" role="menuitem" onClick="{{c.suspender}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> Suspender</button></sc-if><sc-if value="{{c.sepBaja}}" hint-placeholder-val="{{no}}"><div class="menu-sep" role="separator"></div></sc-if><sc-if value="{{c.puedeBaja}}" hint-placeholder-val="{{si}}"><button type="button" class="menu-it pel" role="menuitem" onClick="{{c.darDeBaja}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7"/><path d="m6.8 7 .8 11.1a1.5 1.5 0 0 0 1.5 1.4h5.8a1.5 1.5 0 0 0 1.5-1.4L17.2 7"/></svg> Dar de baja</button></sc-if>
                   </div>
@@ -761,6 +763,7 @@ const CUENTAS = [
   { id: 'i8', n: 'Cuenta eliminada', email: '', tel: '', tipo: 'persona', orgs: [], ultimo: '12/08/2026', metodo: 'WhatsApp', estado: 'eliminada' },
   { id: 'o1', n: 'Martín Sosa', email: 'martin.sosa@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 5, ultimo: 'hace 40 minutos', metodo: 'Código + autenticador', estado: 'activa' },
   { id: 'o2', n: 'Laura Díaz', email: 'laura.diaz@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 2, ultimo: 'hace 5 días', metodo: 'Código + autenticador', estado: 'activa' },
+  { id: 'o3', n: '', email: 'julieta.molina@arquitecturabase.ejemplo.com', tel: '', tipo: 'operador', permisos: 3, ultimo: 'Nunca', metodo: 'Vence el 04/10/2026', estado: 'invitado' },
 ];
 const PERMISOS_PLAT = [
   { v: 'platform.tenants.read', n: 'Ver organizaciones', d: 'El listado y la ficha de cada organización.' },
@@ -993,13 +996,14 @@ class Component extends DCLogic {
       busqueda: s.busqueda,
       onBuscar: (e) => this.setState({ busqueda: e.target.value }),
       ...this.filtro('Tipo', 'tipo', [{ v: null, n: 'Todas' }, { v: 'persona', n: 'Personas' }, { v: 'operador', n: 'Operadores' }], 'Tipo: todas', (v) => this.filtrar({ tipo: v }).length),
-      ...this.filtro('Estado', 'estado', [{ v: null, n: 'Todos' }, { v: 'activa', n: 'Activas' }, { v: 'suspendida', n: 'Suspendidas' }, { v: 'recuperacion', n: 'Necesitan recuperación' }, { v: 'baja', n: 'Baja pedida' }, { v: 'eliminada', n: 'Eliminadas' }], 'Estado: todos', (v) => this.filtrar({ estado: v }).length),
+      ...this.filtro('Estado', 'estado', [{ v: null, n: 'Todos' }, { v: 'activa', n: 'Activas' }, { v: 'invitado', n: 'Invitación pendiente' }, { v: 'vencida', n: 'Invitación vencida' }, { v: 'suspendida', n: 'Suspendidas' }, { v: 'recuperacion', n: 'Necesitan recuperación' }, { v: 'baja', n: 'Baja pedida' }, { v: 'eliminada', n: 'Eliminadas' }], 'Estado: todos', (v) => this.filtrar({ estado: v }).length),
       hayFiltros: s.busqueda.trim() !== '' || s.tipo !== null || s.estado !== null,
       limpiar: () => this.setState({ busqueda: '', tipo: null, estado: null, abierto: null }),
       ...pg.vals,
       sinResultados: filas.length === 0,
       filas: pg.items.map((c, i) => {
         const nombre = c.n || c.email;
+        const inv = c.estado === 'invitado' || c.estado === 'vencida';
 
         return {
           ...this.fila(c.id, nombre, i, pg.items.length),
@@ -1013,16 +1017,20 @@ class Component extends DCLogic {
           perfiles: c.tipo === 'operador' ? 'Operador' : c.estado === 'eliminada' ? '—' : c.orgs.length === 0 ? 'Personal' : 'Personal + ' + (c.orgs.length === 1 ? '1 organización' : c.orgs.length + ' organizaciones'),
           ultimo: c.ultimo,
           metodo: c.metodo,
-          pill: { activa: 'ok', suspendida: 'alerta', recuperacion: 'mal', baja: 'alerta', eliminada: 'off' }[c.estado],
-          textoEstado: { activa: 'Activa', suspendida: 'Suspendida', recuperacion: 'Necesita recuperación', baja: 'Baja pedida', eliminada: 'Eliminada' }[c.estado],
+          pill: { activa: 'ok', suspendida: 'alerta', recuperacion: 'mal', baja: 'alerta', eliminada: 'off', invitado: 'pend', vencida: 'alerta' }[c.estado],
+          textoEstado: { activa: 'Activa', suspendida: 'Suspendida', recuperacion: 'Necesita recuperación', baja: 'Baja pedida', eliminada: 'Eliminada', invitado: 'Invitación pendiente', vencida: 'Invitación vencida' }[c.estado],
           clase: c.nueva ? 'nueva' : '',
           activa: c.estado === 'activa',
           suspendida: c.estado === 'suspendida',
+          invitacion: inv,
+          // POST /api/platform/operators/{id}/invitation/resend: renueva el vencimiento, 7 días.
+          reenviar: () => { this.setState({ abierto: null }); this.poner(c.id, { estado: 'invitado', metodo: 'Vence el 04/10/2026' }); this.avisar('Reenviamos la invitación a ' + nombre + '.'); },
+          revocar: () => this.pedirConfirmacion({ titulo: '¿Revocar la invitación a ' + nombre + '?', texto: 'El enlace deja de funcionar. Podés volver a invitarla cuando quieras.', boton: 'Revocar', accion: () => { this.setState({ cuentas: this.state.cuentas.filter((x) => x.id !== c.id) }); this.avisar('Revocamos la invitación a ' + nombre + '.'); } }),
           // Con la baja pedida las sesiones ya están revocadas; una cuenta eliminada es de solo lectura.
           conAcciones: c.estado !== 'baja' && c.estado !== 'eliminada',
-          conSesiones: c.estado !== 'baja' && c.estado !== 'eliminada',
-          puedeBaja: c.estado !== 'baja' && c.estado !== 'eliminada',
-          sepBaja: c.estado !== 'activa' && c.estado !== 'baja' && c.estado !== 'eliminada',
+          conSesiones: c.estado !== 'baja' && c.estado !== 'eliminada' && !inv,
+          puedeBaja: c.estado !== 'baja' && c.estado !== 'eliminada' && !inv,
+          sepBaja: c.estado !== 'activa' && c.estado !== 'baja' && c.estado !== 'eliminada' && !inv,
           // POST /api/platform/accounts/{id}/deletion: con motivo, sin reautenticar a la persona. Mismo camino: 30 días, avisos y eliminación.
           darDeBaja: () => this.pedirConfirmacion({ titulo: '¿Dar de baja la cuenta de ' + nombre + '?', error: c.unicoDueno ? 'Es el único Dueño de ' + c.unicoDueno + '. Primero la organización tiene que sumar otro Dueño, o la plataforma tiene que cerrarla.' : '', texto: 'Se cierran sus sesiones y le avisamos por todos sus métodos de ingreso. Tiene 30 días para cancelar la baja ingresando; después se elimina la cuenta. La plataforma no puede cancelarla.', boton: 'Dar de baja', motivo: true, accion: () => { this.poner(c.id, { estado: 'baja' }); this.avisar('Dimos de baja la cuenta de ' + nombre + '. Se elimina el 27/10/2026.'); } }),
           // POST /api/platform/accounts/{id}/revoke-sessions
@@ -1054,7 +1062,7 @@ class Component extends DCLogic {
           return;
         }
 
-        this.setState({ dialogo: null, abierto: null, cuentas: [...s.cuentas, { id: 'n' + Date.now(), n: '', email: correo, tel: '', tipo: 'operador', permisos: s.permisos.length, ultimo: 'Nunca', metodo: 'Invitación enviada', estado: 'activa', nueva: true }] });
+        this.setState({ dialogo: null, abierto: null, cuentas: [...s.cuentas, { id: 'n' + Date.now(), n: '', email: correo, tel: '', tipo: 'operador', permisos: s.permisos.length, ultimo: 'Nunca', metodo: 'Vence el 04/10/2026', estado: 'invitado', nueva: true }] });
         this.avisar('Invitamos a ' + correo + ' como operador.');
       },
     };

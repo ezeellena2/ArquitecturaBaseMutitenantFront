@@ -576,6 +576,8 @@
 </style>
 <style data-vuelta="1004-recuperar-aviso">
 </style>
+<style data-vuelta="1004-operador-invitacion">
+</style>
 </helmet>
 
 <div class="msg-root">
@@ -652,7 +654,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Código para verificar un método","Enlace para entrar (bot)","Invitación a una organización","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Método de ingreso: ya es de una cuenta","Membresía terminada","Exportación de datos lista","Baja pedida","Baja por la plataforma","Baja por la plataforma: suspendida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: aviso a la cuenta","Recuperación: ya tiene una cuenta","Recuperación: aprobada","Recuperación: rechazada"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Código para verificar un método","Enlace para entrar (bot)","Invitación a una organización","Invitación como operador","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Método de ingreso: ya es de una cuenta","Membresía terminada","Exportación de datos lista","Baja pedida","Baja por la plataforma","Baja por la plataforma: suspendida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: aviso a la cuenta","Recuperación: ya tiene una cuenta","Recuperación: aprobada","Recuperación: rechazada"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
 // Mensajes que manda el sistema en los flujos de la plantilla. Salen por el outbox, con textos de Notifications.resx
 // (y los del módulo WhatsApp), en la cultura de la persona y con fechas de DisplayFormatter (es-AR, Buenos Aires).
 // Correo: la estructura de _Layout.html, LoginCode.html e Invitation.html de ArquitecturaBase.
@@ -712,6 +714,21 @@ const MENSAJES = [
     },
     // Plantilla `invitacion_organizacion`: quien invita, la organización y el vencimiento; botón con el enlace. Reemplaza a `invitacion_acceso`.
     wa: { plantilla: 'invitacion_organizacion', texto: [N('Hola. Lucía Fernández te invitó a sumarte a Grupo Delta en ArquitecturaBase. La invitación vence el 04/10/2026.')], botones: [{ t: 'Ver la invitación', url: true }] },
+  },
+  {
+    n: 'Invitación como operador',
+    // ADR 0042: «Invitar operador» deja la invitación pendiente hasta que entra, y vence a los 7 días. Solo por correo.
+    correo: {
+      asunto: 'Martín Sosa te invitó como operador de ArquitecturaBase',
+      para: 'julieta.molina@arquitecturabase.ejemplo.com',
+      titulo: 'Te invitaron como operador',
+      parrafos: [P('Hola. Martín Sosa te invitó a sumarte como operador de la plataforma ArquitecturaBase.')],
+      datos: [{ k: 'Permisos', v: 'Ver organizaciones, Ver cuentas y Recuperaciones' }, { k: 'Vence', v: '04/10/2026' }],
+      boton: 'Ingresar',
+      notas: [P('Para entrar, usá este correo antes de que venza la invitación: te vamos a mandar un código de acceso.'),
+        P('Esta cuenta es solo para operar la plataforma: no se usa como persona ni para entrar a una organización.')],
+      pie: 'Si no esperabas este correo, podés ignorarlo. Sin el código, nadie puede entrar a tu cuenta.',
+    },
   },
   {
     n: 'Chats esperando',

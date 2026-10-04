@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 9200
+ALTO = 9400
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -191,6 +191,7 @@ DECISIONES = {
         ("Configuración · Contacto", "", "Correo de ventas y correo de soporte, debajo de «Registro y altas»: son los que muestran el registro de empresa cerrado o en el límite y la cuenta suspendida.", "Dibujada"),
         ("Aviso de baja por la plataforma", "", "«La plataforma inició la baja de tu cuenta», en dos variantes: cuenta activa, con «Ingresar» para cancelarla antes de la fecha; cuenta suspendida, sin «Ingresar» y con el correo de soporte. Por WhatsApp, las plantillas baja_cuenta_plataforma y baja_cuenta_plataforma_suspendida.", "Dibujada"),
         ("Aviso «Alguien pidió recuperar tu cuenta»", "", "A los métodos de la cuenta que siguen andando, antes de que lo revise un operador; nunca a quien lo pidió (ADR 0041). Sin botón; la nota da el correo de soporte. Por WhatsApp, la plantilla recuperacion_aviso_cuenta.", "Dibujada"),
+        ("Invitar operador", "B", "La invitación queda pendiente hasta el primer ingreso y vence a los 7 días: «Invitación pendiente» o «Invitación vencida», con «Reenviar invitación» y «Revocar invitación». El correo dice quién invita, los permisos y el vencimiento; sale solo por correo.", "Dibujada"),
     ],
     "Sitio público": [
         ("Portada", "B", "Sin la etiqueta del héroe; después de «Dos lados separados», la sección «Empresas en ArquitecturaBase» con buscador, tres empresas y «Ver todas las empresas», que lleva al directorio. «Empresas», arriba, baja a esa sección.", "Dibujada"),
