@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 79** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 162 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 80** (2026-10-03) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 162 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -21,7 +21,7 @@ El título de cada tablero dice en qué estado está:
 | Perfil personal | 13 | Validado. Los 7 teléfonos están en formato app desde el 2026-10-03. Mi cuenta suma los estados de WhatsApp (Etapa 8): agregar y verificar un número, quitarlo o hacerlo principal, y sin el módulo. |
 | Organización | 34 | Escritorio y móviles aprobados el 2026-10-03, con los dos inicios: las áreas en tarjetas y «Para resolver» como tabla. Los 17 teléfonos están en formato app (el del inicio, como una billetera), con los de Sin permiso y Avisos. |
 | Organización · WhatsApp | 51 | Escritorio y teléfonos aprobados el 2026-10-03, pantalla por pantalla (Etapa 11 ampliada). Los 27 teléfonos son los primeros en formato app. El alta de Meta no se dibuja hasta que el usuario lo pida. |
-| Plataforma | 18 | Aprobada el 2026-10-03, compu y teléfonos. En la compu, Gestión, WhatsApp y Administración abren un segundo panel; en el teléfono, barra de abajo (Organizaciones, Cuentas, Recuperaciones, Chats y Más). |
+| Plataforma | 30 | Aprobada el 2026-10-03, compu y teléfonos. En la compu, Gestión, WhatsApp y Administración abren un segundo panel; en el teléfono, barra de abajo (Organizaciones, Cuentas, Recuperaciones, Chats y Más). Plataforma › WhatsApp (Etapa 11), aprobado el 2026-10-03: solo consultas, con Consultas, Número, Bot, Equipos y Plantillas, en la compu y en el teléfono; la barra de abajo lleva «Consultas». |
 | Textos y mensajes | 2 | Validado |
 | Archivo | 14 | Descartado. Son versiones anteriores; están como referencia y no se programan. |
 
@@ -97,6 +97,8 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 | `cuenta_wa_1004.py` | Mi cuenta › WhatsApp en la compu (Etapa 8): estados de agregar, verificar, quitar o hacer principal, y sin el módulo; crea Cuenta-Metodo. |
 | `cuenta_wa_telefonos_1004.py` | Mi cuenta › WhatsApp en el teléfono: rehace M-Cuenta, M-Cuenta-Agregar y M-Cuenta-Verificar con sus estados y crea M-Cuenta-Metodo. Corre después de `plat_personal_telefonos_1004.py`. |
 | `plat_vuelta_1004.py` | Plataforma en la compu con el criterio: celdas de dos líneas, auditoría sin ojo y con el detalle en grilla, la ficha de organización con pestañas, «Registro y altas» y WhatsApp en el menú. Antes corren `aplicar_criterio.py` y `criterio_marcado.py` sobre los 8 tableros; después, `plat_ajustes_1003.py`. |
+| `plat_wa_1004.py` | Plataforma › WhatsApp en la compu (Etapa 11), a partir de los tableros de WhatsApp de la organización: Consultas, Número, Bot (con su recorrido), Equipos y Plantillas. |
+| `plat_wa_telefonos_1004.py` | Plataforma › WhatsApp en el teléfono. Corre después de `plat_personal_telefonos_1004.py`. |
 | `plat_ajustes_1003.py` | Ajustes aprobados en la otra conversación: Cuentas sin Teléfono, los métodos de la ficha de cuenta como en Mi cuenta y Documentos legales como lista. Les saca «· por refinar» a los títulos. |
 | `wa_ajustes_1004.py` | En la compu: la nota interna se prende con un botón al lado de donde se escribe, e «Importar contactos» va sin casilla y con «Descargar ejemplo». |
 | `menus_con_lineas.py` | Suma a todos los tableros la línea entre las opciones de los menús desplegables. Corre al final. |

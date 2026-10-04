@@ -1,5 +1,5 @@
 """Teléfonos de Plataforma y del perfil personal en formato app (2026-10-03), con los datos de los tableros de la compu.
-Plataforma: barra de abajo con Organizaciones, Cuentas, Recuperaciones, Chats y «Más». Perfil personal: Inicio, Mensajes y «Más»."""
+Plataforma: barra de abajo con Organizaciones, Cuentas, Recuperaciones, Consultas y «Más» (desde el 2026-10-03, el WhatsApp de la plataforma solo atiende consultas). Perfil personal: Inicio, Mensajes y «Más»."""
 from app_estilo import ESTILO_X
 from app_marco import I, barra, estado, fab, hoja, pagina, svg
 
@@ -72,11 +72,11 @@ def persona(ini, l1, der, l2, l3, href="#"):
 
 def nav_plat(activo):
     it = [("organizaciones", EDIFICIO, "Organizaciones", "T-Plat-Organizaciones.dc.html"), ("cuentas", I["personas"], "Cuentas", "T-Plat-Cuentas.dc.html"),
-          ("recuperaciones", LLAVE, "Recuperaciones", "T-Plat-Recuperaciones.dc.html"), ("chats", I["chat"], "Chats", "M-WA-Chats.dc.html")]
+          ("recuperaciones", LLAVE, "Recuperaciones", "T-Plat-Recuperaciones.dc.html"), ("consultas", I["chat"], "Consultas", "M-Plat-WA-Chats.dc.html")]
     h = '<nav class="ap-nav" aria-label="Secciones">'
     for c, ic, tx, hr in it:
         on = ' class="on" aria-current="page"' if c == activo else ""
-        b = '<span class="b">1</span>' if c == "chats" else ""
+        b = '<span class="b">2</span>' if c == "consultas" else ""
         h += f'<a{on} href="{hr}"><span class="i">{ic}{b}</span>{tx}</a>'
     on = ' class="on" aria-current="page"' if activo == "mas" else ""
     return h + f'<a{on} href="T-Plat-Mas.dc.html"><span class="i"><span class="yo">M</span></span>Más</a></nav>'
@@ -222,11 +222,10 @@ p("T-Plat-AuditoriaDetalle", AUDITORIA + hoja("Suspendió la cuenta", f'<div sty
 
 p("T-Plat-Mas", estado() + barra("Más", PLAT) + '<div class="ap-cuerpo ap-gris">'
   + '<div class="ap-yo"><span class="w-av">M</span><span><b>Martín Sosa</b><span>martin.sosa@arquitecturabase.ejemplo.com</span></span></div>'
-  + '<span class="ap-gtit">WhatsApp</span><div class="ap-grupo">' + item("Contactos", der=CH, href="M-WA-Contactos.dc.html") + item("Difusiones", der=CH, href="M-WA-Difusiones.dc.html") + "</div>"
   + '<span class="ap-gtit">Administración</span><div class="ap-grupo">' + item("Auditoría", der=CH, href="T-Plat-Auditoria.dc.html")
   + item("Documentos legales", der=CH, href="T-Plat-Legales.dc.html") + item("Configuración", der=CH, href="T-Plat-Config.dc.html") + "</div>"
-  + '<span class="ap-gtit">Configuración de WhatsApp</span><div class="ap-grupo">' + item("Números", der=CH, href="M-WA-Admin.dc.html") + item("Bot", der=CH, href="M-WA-Respuestas.dc.html")
-  + item("Equipos", der=CH, href="M-WA-Equipos.dc.html") + item("Plantillas", der=CH, href="M-WA-Plantillas.dc.html") + "</div>"
+  + '<span class="ap-gtit">WhatsApp</span><div class="ap-grupo">' + item("Número", der=CH, href="M-Plat-WA-Numero.dc.html") + item("Bot", der=CH, href="M-Plat-WA-Bot.dc.html")
+  + item("Equipos", der=CH, href="M-Plat-WA-Equipos.dc.html") + item("Plantillas", der=CH, href="M-Plat-WA-Plantillas.dc.html") + "</div>"
   + f'<div class="ap-grupo" style="margin-top: 16px;">{item("Mi cuenta", der=CH, href="M-Cuenta.dc.html")}{SALIR_IT}</div>'
   + '<div style="height: 16px;"></div></div>' + nav_plat("mas"), "Más · plataforma")
 print("ok")

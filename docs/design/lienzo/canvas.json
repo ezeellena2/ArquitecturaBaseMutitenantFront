@@ -971,7 +971,7 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 8000,
+      "h": 8480,
       "page": "criterio",
       "title": "Criterio · Decisiones por pantalla",
       "w": 1440,
@@ -1483,6 +1483,114 @@
       "w": 390,
       "x": 2820,
       "y": 1280
+    },
+    "Plat-WA-Chats.dc.html": {
+      "x": 0,
+      "y": 3260,
+      "w": 1440,
+      "h": 900,
+      "title": "WhatsApp › Consultas · /plataforma/whatsapp",
+      "page": "plataforma",
+      "is_interactive": true
+    },
+    "Plat-WA-Numero.dc.html": {
+      "x": 1520,
+      "y": 3260,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Número",
+      "page": "plataforma",
+      "is_interactive": true
+    },
+    "Plat-WA-Bot.dc.html": {
+      "x": 3040,
+      "y": 3260,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Bot",
+      "page": "plataforma",
+      "is_interactive": true
+    },
+    "Plat-WA-Bot-Recorrido.dc.html": {
+      "x": 4560,
+      "y": 3260,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Bot · recorrido",
+      "page": "plataforma",
+      "is_interactive": true
+    },
+    "Plat-WA-Equipos.dc.html": {
+      "x": 6080,
+      "y": 3260,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Equipos",
+      "page": "plataforma",
+      "is_interactive": true
+    },
+    "Plat-WA-Plantillas.dc.html": {
+      "x": 7600,
+      "y": 3260,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › WhatsApp › Plantillas",
+      "page": "plataforma",
+      "is_interactive": true
+    },
+    "M-Plat-WA-Chats.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Consultas · teléfono",
+      "w": 390,
+      "x": 4700,
+      "y": 2300
+    },
+    "M-Plat-WA-Conversacion.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Consultas · conversación · teléfono",
+      "w": 390,
+      "x": 5170,
+      "y": 2300
+    },
+    "M-Plat-WA-Numero.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Número · teléfono",
+      "w": 390,
+      "x": 5640,
+      "y": 2300
+    },
+    "M-Plat-WA-Bot.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Bot · teléfono",
+      "w": 390,
+      "x": 6110,
+      "y": 2300
+    },
+    "M-Plat-WA-Equipos.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Equipos · teléfono",
+      "w": 390,
+      "x": 6580,
+      "y": 2300
+    },
+    "M-Plat-WA-Plantillas.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "plataforma",
+      "title": "Plantillas · teléfono",
+      "w": 390,
+      "x": 7050,
+      "y": 2300
     }
   },
   "createdOnFiles": {
@@ -1818,7 +1926,19 @@
     "M-Error-Org.dc.html",
     "M-Avisos.dc.html",
     "Cuenta-Metodo.dc.html",
-    "M-Cuenta-Metodo.dc.html"
+    "M-Cuenta-Metodo.dc.html",
+    "Plat-WA-Chats.dc.html",
+    "Plat-WA-Numero.dc.html",
+    "Plat-WA-Bot.dc.html",
+    "Plat-WA-Bot-Recorrido.dc.html",
+    "Plat-WA-Equipos.dc.html",
+    "Plat-WA-Plantillas.dc.html",
+    "M-Plat-WA-Chats.dc.html",
+    "M-Plat-WA-Conversacion.dc.html",
+    "M-Plat-WA-Numero.dc.html",
+    "M-Plat-WA-Bot.dc.html",
+    "M-Plat-WA-Equipos.dc.html",
+    "M-Plat-WA-Plantillas.dc.html"
   ],
   "pages": [
     {

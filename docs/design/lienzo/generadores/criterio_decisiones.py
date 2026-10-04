@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 8000
+ALTO = 8480
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -165,6 +165,14 @@ DECISIONES = {
         ("Barra de abajo de la persona", "", "Inicio, Mensajes y «Más» (perfiles, Mi cuenta y Salir).", "Dibujada"),
         ("Mi cuenta › WhatsApp", "", "Los estados de la compu en hojas; el país, en su propia hoja; el ⋮, como hoja de acciones; las confirmaciones, sin ✕.", "Dibujada"),
         ("Mi cuenta", "", "En grupos (Tus datos, Cómo entrás, Privacidad), con «Descartar cambios» y «Guardar cambios» fijos abajo; agregar, verificar y dar de baja en hojas.", "Dibujada"),
+    ],
+    "Plataforma › WhatsApp": [
+        ("Qué hace", "A", "Solo consultas, además de los códigos, invitaciones y avisos: sin Contactos ni Difusiones, porque una difusión puede bajar la calidad del número y cortar los códigos. «WhatsApp» va directo a la bandeja; Administración › WhatsApp lleva Número, Bot, Equipos y Plantillas.", "Decidido"),
+        ("Consultas", "", "La bandeja de la organización sin Clientes ni Internos; en la conversación, «Ver la cuenta» abre su ficha.", "Dibujada"),
+        ("Número", "", "En filas, no una tabla de una fila: el número con su estado y «Qué hace» (códigos y avisos, siempre; consultas, con interruptor). Sin medio de pago, el ⓘ avisa que los códigos salen solo por correo.", "Dibujada"),
+        ("Bot", "", "Sin selector de número ni «Además»; la opción «Entrar a mi cuenta» manda el enlace para entrar y es del sistema.", "Dibujada"),
+        ("Equipos · Plantillas", "", "Equipos de operadores, sin bandeja. Plantillas en pestañas: «Para consultas» y «Del sistema» (las de la Etapa 8, que no se borran).", "Dibujada"),
+        ("Teléfonos", "", "En la barra de abajo, «Chats» pasa a «Consultas»; «Más» lleva WhatsApp (Número, Bot, Equipos, Plantillas).", "Dibujada"),
     ],
     "Plataforma · compu": [
         ("Menú", "B", "Gestión, WhatsApp (Chats, Contactos, Difusiones) y Administración, con la configuración de WhatsApp dentro de Administración.", "Dibujada"),
