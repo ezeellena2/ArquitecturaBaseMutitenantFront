@@ -238,7 +238,7 @@ export function BusinessSignupPage() {
             </label>
             {termsError ? <p role="alert" className="-mt-4 text-[13px] text-[var(--peligro)]">{t("businessSignup.acceptRequired")}</p> : null}
             <GoogleButton mode="signup" access="business" acceptedTerms={acceptedTerms} onTermsRequired={() => setTermsError(true)} returnTo="/registro/empresa" />
-            <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--t3)]" /><span>{t("businessSignup.or")}</span><span className="h-px flex-1 bg-[var(--t3)]" /></div>
+            <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("businessSignup.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
             <FormField label={t("businessSignup.email")} variant="auth" error={emailError ? t("login.emailInvalid") : undefined}>
               <EmailField name="email" value={email} onChange={(value) => { setEmail(value ?? ""); setEmailError(false); }} />
             </FormField>
