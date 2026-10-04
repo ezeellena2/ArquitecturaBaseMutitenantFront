@@ -54,7 +54,10 @@ describe("PhoneField", () => {
     // El país compacto en una caja de 112 al lado del número: la bandera (una imagen, no un emoji) y «+54». Decisión del
     // usuario del 2026-10-04.
     const country = screen.getByRole("combobox", { name: "País: Argentina, +54" });
-    expect(await within(country).findByRole("img", { name: "Argentina" })).toHaveClass("h-4", "w-6");
+    // Lienzo v98: la bandera de 24×16 con esquinas de 2 y un borde gris suave, a 6 del prefijo.
+    const flag = await within(country).findByRole("img", { name: "Argentina" });
+    expect(flag).toHaveClass("h-4", "w-6", "rounded-[2px]", "shadow-[0_0_0_1px_var(--borde-bandera)]");
+    expect(flag.parentElement).toHaveClass("gap-1.5");
     expect(country).toHaveTextContent(/^\+54$/);
     expect(country.parentElement).toHaveClass("w-[112px]");
 
@@ -71,9 +74,11 @@ describe("PhoneField", () => {
     const selector = screen.getByRole("combobox", { name: "País: Argentina, +54" });
     selector.focus();
     await userEvent.setup().keyboard("{Enter}");
+    // Lienzo v98: el nombre del país y, a la derecha y en gris, su prefijo.
     expect(screen.getAllByRole("option").map((item) => item.textContent)).toEqual([
-      "Argentina (+54)", "Uruguay (+598)",
+      "Argentina +54", "Uruguay +598",
     ]);
+    expect(within(screen.getByRole("option", { name: "Argentina +54" })).getByText("+54")).toHaveClass("ml-auto", "text-[var(--t2)]");
     await userEvent.setup().keyboard("{Escape}");
 
     fireEvent.change(input, { target: { value: "+598 94 123 456" } });

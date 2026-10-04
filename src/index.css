@@ -19,6 +19,8 @@
   --s3: oklch(0.945 0.009 80);
   --borde: oklch(0.915 0.01 80);
   --borde2: oklch(0.84 0.014 80);
+  /* Lienzo v98: el borde gris suave de una bandera, para que la blanca no se pierda sobre el blanco. */
+  --borde-bandera: oklch(0.24 0.014 78 / 0.12);
   --t1: oklch(0.24 0.012 60);
   --t2: oklch(0.47 0.012 60);
   --t3: oklch(0.62 0.01 60);

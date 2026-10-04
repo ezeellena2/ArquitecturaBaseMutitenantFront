@@ -11,6 +11,8 @@ export interface SearchSelectOption {
   description?: string;
   /** A la izquierda del nombre, como la bandera de un país. */
   icon?: ReactNode;
+  /** A la derecha, en gris, como el prefijo de un país. */
+  trailing?: string;
   /** Más texto para encontrarla con el buscador: el código, el prefijo. */
   keywords?: string;
 }
@@ -181,6 +183,8 @@ export function SearchSelect({
                   <span className="truncate">{option.label}</span>
                   {option.description ? <span className="truncate text-[12px] text-[var(--t3)]">{option.description}</span> : null}
                 </span>
+                {/* El espacio separa el nombre del prefijo también para los lectores de pantalla («Argentina +54»). */}
+                {option.trailing ? <>{" "}<span className="ml-auto shrink-0 font-normal text-[var(--t2)]">{option.trailing}</span></> : null}
                 {isSelected ? <CheckIcon aria-hidden="true" className="size-4 shrink-0" /> : null}
               </li>;
             })}

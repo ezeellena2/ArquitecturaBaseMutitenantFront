@@ -32,11 +32,13 @@ export function CountrySelect({ value, onChange, placeholder, id, disabled, allo
     .filter((country) => !allowedCountries || allowedCountries.includes(country.code))
     .sort((left, right) => (left.sortOrder ?? Number.MAX_SAFE_INTEGER) - (right.sortOrder ?? Number.MAX_SAFE_INTEGER)
       || left.name.localeCompare(right.name, data?.culture));
+  // Lienzo v98: la bandera, el nombre y, a la derecha, el prefijo.
   const options: SearchSelectOption[] = countries.map((country) => ({
     value: country.code,
-    label: countryLabel(country),
+    label: country.name,
+    trailing: country.callingCode ? `+${country.callingCode}` : undefined,
     keywords: country.callingCode ? `+${country.callingCode}` : undefined,
-    icon: <CountryFlag countryCode={country.code} title={country.name} className="h-4 w-6 shrink-0" />,
+    icon: <CountryFlag countryCode={country.code} title={country.name} className="h-4 w-6 shrink-0" decorative />,
   }));
   const selected = data?.countries.find((country) => country.code === value);
   const selectedLabel = selected

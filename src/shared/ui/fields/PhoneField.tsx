@@ -55,7 +55,7 @@ export function PhoneField({ value, onChange, onValidityChange, allowedCountries
       <div className="w-[112px] shrink-0">
         <CountrySelect value={country} onChange={changeCountry} allowedCountries={countries.map((item) => item.code)}
           placeholder={t("phone.country", { country: "" })} disabled={unavailable}
-          renderValue={(selected) => <span className="inline-flex items-center gap-2">
+          renderValue={(selected) => <span className="inline-flex items-center gap-1.5">
             <CountryFlag countryCode={selected.code} title={selected.name} className="h-4 w-6 shrink-0" />
             {selected.callingCode ? `+${selected.callingCode}` : selected.code}
           </span>} />

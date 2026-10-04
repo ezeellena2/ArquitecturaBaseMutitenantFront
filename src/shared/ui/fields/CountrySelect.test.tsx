@@ -20,7 +20,8 @@ function renderSelect(allowedCountries?: readonly string[]) {
   return render(<QueryClientProvider client={client}><Harness /></QueryClientProvider>);
 }
 
-const optionNames = () => screen.getAllByRole("option").map((option) => option.querySelector("span > span")?.textContent);
+// Lienzo v98: cada fila dice el país y, a la derecha, su prefijo.
+const optionNames = () => screen.getAllByRole("option").map((option) => option.textContent);
 
 describe("CountrySelect", () => {
   beforeEach(async () => {
@@ -46,7 +47,7 @@ describe("CountrySelect", () => {
     await waitFor(() => expect(select).toBeEnabled());
     select.focus();
     await userEvent.setup().keyboard("{Enter}");
-    expect(optionNames()).toEqual(["Argentina (+54)", "Uruguay (+598)", "Estados Unidos"]);
+    expect(optionNames()).toEqual(["Argentina +54", "Uruguay +598", "Estados Unidos"]);
     expect(screen.queryByRole("option", { name: /Chile/ })).not.toBeInTheDocument();
   });
 
@@ -66,10 +67,10 @@ describe("CountrySelect", () => {
     await user.click(select);
     const search = await screen.findByRole("searchbox", { name: "Buscar país" });
     await user.type(search, "+54");
-    expect(optionNames()).toEqual(["Argentina (+54)"]);
+    expect(optionNames()).toEqual(["Argentina +54"]);
     await user.clear(search);
     await user.type(search, "uru");
-    expect(optionNames()).toEqual(["Uruguay (+598)"]);
+    expect(optionNames()).toEqual(["Uruguay +598"]);
     await user.keyboard("{Enter}");
 
     expect(screen.getByRole("status")).toHaveTextContent("UY");
@@ -107,6 +108,6 @@ describe("CountrySelect", () => {
     await waitFor(() => expect(select).toBeEnabled());
     select.focus();
     await userEvent.setup().keyboard("{Enter}");
-    expect(optionNames()).toEqual(["Uruguay (+598)"]);
+    expect(optionNames()).toEqual(["Uruguay +598"]);
   });
 });
