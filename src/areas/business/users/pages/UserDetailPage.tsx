@@ -237,7 +237,8 @@ export function UserDetailPage() {
 
   return <>
     <Page banner={edit.banner} icon={UserRound} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
-      phoneSubtitle={member.email ?? undefined} phoneBody="gray"
+      // En el teléfono, con cambios, la barra dice «Cambios sin guardar» en lugar del correo, como Configuración (M-Avisos).
+      phoneSubtitle={edit.unsaved ?? member.email ?? undefined} phoneBody="gray"
       moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [
         { label: t("users:actions.resend"), onSelect: resendInvitation, hidden: !isInvitation || !canInvite || !member.invitationId },
         { label: t("users:actions.revoke"), onSelect: () => setConfirmAction("revoke"), destructive: true, hidden: !isInvitation || !member.invitationId },

@@ -78,6 +78,9 @@ describe("UserDetailPage (tablero Usuario)", () => {
       await user.click(within(stateSheet).getByRole("radio", { name: /Deshabilitado/ }));
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
       expect(within(access).getByRole("button", { name: /Estado/ })).toHaveTextContent("Deshabilitado");
+      // Como Configuración en el teléfono (tablero M-Avisos): con cambios, la barra dice «Cambios sin guardar».
+      expect(bar).toHaveTextContent("Cambios sin guardar");
+      expect(bar).not.toHaveTextContent("lucia@example.com");
 
       await user.click(rolesRow);
       const rolesSheet = await screen.findByRole("dialog", { name: "Roles de la organización" });
