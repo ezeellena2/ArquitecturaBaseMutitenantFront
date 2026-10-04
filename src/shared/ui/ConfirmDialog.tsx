@@ -40,7 +40,7 @@ export function ConfirmDialog({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        {description ? <DialogDescription className="px-5 py-4 text-[13px] leading-relaxed text-[var(--t2)]">{description}</DialogDescription> : null}
+        {description ? <DialogDescription className="p-5 text-[13px] leading-relaxed text-[var(--t2)]">{description}</DialogDescription> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {cancelLabel ?? t("actions.cancel")}

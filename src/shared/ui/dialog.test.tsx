@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { configureI18n } from "@/shared/i18n";
-import { Dialog, DialogContent, DialogTitle } from "./dialog";
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
 
 beforeAll(async () => {
   await configureI18n([{ code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true }]);
@@ -44,5 +44,28 @@ describe("Dialog: cómo se cierra (Criterio-Dialogos)", () => {
     onOpenChange.mockClear();
     await user.click(screen.getByRole("button", { name: "Cerrar" }));
     expect(onOpenChange).toHaveBeenLastCalledWith(false);
+  });
+});
+
+// Tablero «Criterio · Dialogos»: encabezado arena de 48 con el título de 15 y sin bajada; cuerpo con 20 de margen y
+// 14 entre campos; pie de 60 con una línea arriba; atrás, la pantalla oscurecida y desenfocada.
+describe("Dialog: medidas (Criterio-Dialogos)", () => {
+  it("arma encabezado, cuerpo y pie con las medidas del tablero", () => {
+    render(
+      <Dialog open>
+        <DialogContent>
+          <DialogHeader><DialogTitle>{"Verificar tu correo"}</DialogTitle></DialogHeader>
+          <DialogBody><p>{"Te mandamos un código."}</p></DialogBody>
+          <DialogFooter><button type="button">{"Verificar"}</button></DialogFooter>
+        </DialogContent>
+      </Dialog>,
+    );
+
+    const title = screen.getByRole("heading", { name: "Verificar tu correo" });
+    expect(title).toHaveClass("text-[15px]", "font-semibold");
+    expect(title.parentElement).toHaveClass("min-h-12", "bg-[var(--cab)]", "border-b");
+    expect(screen.getByText("Te mandamos un código.").parentElement).toHaveClass("flex", "flex-col", "gap-3.5", "p-5");
+    expect(screen.getByRole("button", { name: "Verificar" }).parentElement).toHaveClass("border-t", "py-3");
+    expect(document.querySelector("[data-slot='dialog-overlay']")).toHaveClass("bg-[var(--velo)]", "backdrop-blur-[4px]");
   });
 });

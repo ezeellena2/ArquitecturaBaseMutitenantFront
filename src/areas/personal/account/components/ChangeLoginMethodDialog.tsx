@@ -6,7 +6,7 @@ import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
 import { OtpInput } from "@/shared/ui/OtpInput";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { makeLoginMethodPrimary, removeLoginMethod } from "../api/loginMethods";
 import { useAccountReauth } from "./useAccountReauth";
 
@@ -36,11 +36,14 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, o
     finally { setSaving(false); }
   }
   const busy = saving || reauth.isPending;
-  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent showCloseButton={action !== "remove"} className="account-dialog md:max-w-[420px]" onCloseAutoFocus={restoreFocus}>
-    <form className="flex flex-col gap-5" onSubmit={(event) => { event.preventDefault(); void confirm(); }}>
-      <DialogHeader><DialogTitle>{t(title)}</DialogTitle><DialogDescription>{reauth.proof ? t(adding ? "reauthHint" : action === "primary" ? "primaryHint" : "removeHint", { value: method?.value, backup: reauth.proof.destination }) : null}</DialogDescription></DialogHeader>
+  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent showCloseButton={action !== "remove"} className="md:max-w-[420px]" onCloseAutoFocus={restoreFocus}>
+    <form onSubmit={(event) => { event.preventDefault(); void confirm(); }}>
+      <DialogHeader><DialogTitle>{t(title)}</DialogTitle></DialogHeader>
+      <DialogBody>
+      <DialogDescription>{reauth.proof ? t(adding ? "reauthHint" : action === "primary" ? "primaryHint" : "removeHint", { value: method?.value, backup: reauth.proof.destination }) : null}</DialogDescription>
       {reauth.proof ? <OtpInput length={6} value={reauth.code} onChange={(value) => { reauth.setCode(value); reauth.setFailure(null); }} label={t("code")} autoFocus disabled={busy} /> : null}
       <FormError message={reauth.failure} />
+      </DialogBody>
       <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("cancel")}</Button><Button type="submit" variant={action === "remove" ? "destructive" : "default"} disabled={busy || reauth.retry.isRunning || (!reauth.proof && !reauth.failure)}>{reauth.retry.label ?? t(label)}</Button></DialogFooter>
     </form>
   </DialogContent></Dialog>;
