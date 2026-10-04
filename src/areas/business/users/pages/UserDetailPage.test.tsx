@@ -354,6 +354,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
 
     await user.click(await screen.findByRole("button", { name: "Sumar empresa" }));
     const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
+    // «Criterio · Diálogos»: dos campos, el diálogo chico de 420 px.
+    expect(dialog).toHaveClass("md:max-w-[420px]");
     await open(user, within(dialog).getByRole("combobox", { name: "Empresa" }));
     await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
     await user.click(within(dialog).getByRole("button", { name: "Sumar" }));
