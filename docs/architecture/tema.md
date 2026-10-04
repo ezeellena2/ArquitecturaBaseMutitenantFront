@@ -69,9 +69,9 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 - **Las opciones** («Criterio · Menús», `layouts/components/menuRow.ts`, igual en el menú y en el panel): miden 32, con 2 px
   entre una y otra y la línea fina adentro de ese espacio (34 de una a otra, lienzo v92). Las que no están activas van en
   `--lado-t2`; la activa, en blanco con `--marca-tx`; el grupo que se despliega, en 600 y `--t1`.
-- **La barra de arriba** lleva las migas a la izquierda, todas en `--t2`, y tu menú a la derecha («Criterio · Marco»). El ☰
-  que contrae el menú lateral va solo donde hay panel de Administración, porque con el panel abierto la flechita del borde
-  se oculta; en Personal el menú se contrae con la flechita (tableros Inicio-Personal y Cuenta).
+- **La barra de arriba** lleva las migas a la izquierda, todas en `--t2`, y tu menú a la derecha («Criterio · Marco»). Nada
+  más: sin ☰ con sesión, también en la organización (lienzo v104). El menú lateral se contrae solo con la flecha redonda de
+  28 sobre su borde («Criterio · Menús»); con el panel de Administración abierto se ve solo la flecha del panel, que lo cierra.
 - **En escritorio**, "Administración" abre un **segundo panel** al lado del menú (`AdminPanel`, 232 px, fondo `--panel`):
   - arriba lleva el título y, sobre su borde derecho, un botón redondo «‹» para cerrarlo;
   - adentro va la misma lista de siempre, con el mismo estilo del menú: el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Configuración, Página pública y Auditoría;

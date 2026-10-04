@@ -128,10 +128,6 @@
       "loadError": "We couldn't load your menu.",
       "retryLoad": "Retry loading the menu"
     },
-    "topbar": {
-      "toggle": "Navigation menu",
-      "openOrCollapse": "Open or collapse navigation"
-    },
     "breadcrumbs": {
       "label": "Breadcrumb"
     },

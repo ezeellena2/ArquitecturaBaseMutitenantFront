@@ -128,10 +128,6 @@
       "loadError": "No pudimos cargar tu menú.",
       "retryLoad": "Reintentar cargar el menú"
     },
-    "topbar": {
-      "toggle": "Menú de navegación",
-      "openOrCollapse": "Abrir o contraer navegación"
-    },
     "breadcrumbs": {
       "label": "Migas de pan"
     },

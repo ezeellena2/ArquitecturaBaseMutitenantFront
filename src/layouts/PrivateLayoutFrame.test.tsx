@@ -46,17 +46,24 @@ describe("PrivateLayoutFrame", () => {
     expect(screen.getByRole("navigation", { name: "Administración" })).toBeVisible();
   });
 
-  // Tableros Inicio-Personal y Cuenta («Criterio · Marco»: las migas y tu menú, nada más). El ☰ contrae el menú cuando
-  // el panel de Administración tapa la flechita del borde; sin panel, alcanza la flechita.
-  it("en Personal la barra no lleva ☰ y el menú se contrae con la flechita del borde", () => {
-    render(<MemoryRouter initialEntries={["/"]}><PrivateLayoutFrame navigation={personalNavigation} scope="personal"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
+  // «Criterio · Marco» y «Criterio · Menús» (lienzo v104): la barra lleva las migas y tu menú, nada más. Sin ☰, también
+  // en la organización: el menú se achica solo con la flecha redonda de 28 en su borde.
+  it.each([
+    ["Personal", "/", personalNavigation, "personal"],
+    ["la organización", "/org", businessNavigation, "business"],
+  ] as const)("en %s la barra no lleva ☰ y el menú se contrae con la flecha del borde", (_, path, navigation, scope) => {
+    render(<MemoryRouter initialEntries={[path]}><PrivateLayoutFrame navigation={navigation} scope={scope}><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
     expect(screen.queryByRole("button", { name: "Abrir o contraer navegación" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Contraer menú" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Contraer menú" })).toHaveClass("size-7", "rounded-full");
   });
 
-  it("en la organización la barra lleva ☰ para contraer el menú con el panel abierto", () => {
-    render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
-    expect(screen.getByRole("button", { name: "Abrir o contraer navegación" })).toBeVisible();
+  // Tablero Usuarios: con el panel de Administración abierto, su flecha lo cierra; la del menú no se ve, y tampoco hay ☰.
+  it("con el panel de Administración abierto no hay ☰ ni la flecha del menú, solo la del panel", () => {
+    session.permissions = ["users.read"];
+    render(<MemoryRouter initialEntries={["/org/usuarios"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Usuarios"}</h1></PrivateLayoutFrame></MemoryRouter>);
+    expect(screen.queryByRole("button", { name: "Abrir o contraer navegación" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Contraer menú" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cerrar Administración" })).toHaveClass("size-7", "rounded-full");
   });
 
   it("en Inicio arranca con el panel cerrado", () => {

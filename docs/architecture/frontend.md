@@ -208,7 +208,7 @@ Rige el [lienzo vigente](../design/lienzo/README.md): **mandan los ocho tableros
 
 **Botones** («Criterio · Botones»)
 - Cuatro tipos: **principal** (la que hace avanzar; una sola por pantalla y por diálogo, la última a la derecha), **secundario** (todas las demás), **peligro** (con borde en la pantalla; relleno solo en el diálogo que confirma) y **enlace** (una acción chica dentro de una fila o de un texto, nunca la principal).
-- Tamaños: normal de 36 px y letra de 14 (banda, diálogos y formularios); chico de 32 y letra de 13 (encabezado de una caja o tabla, y dentro de una fila); grande de 44 y letra de 15, solo en ingreso y registro, a todo el ancho; de ícono, 32 × 32, solo ⋮, ✕, ☰ y ‹, siempre con nombre.
+- Tamaños: normal de 36 px y letra de 14 (banda, diálogos y formularios); chico de 32 y letra de 13 (encabezado de una caja o tabla, y dentro de una fila); grande de 44 y letra de 15, solo en ingreso y registro, a todo el ancho; de ícono, 32 × 32, solo ⋮, ✕ y ‹ (el ☰, solo en el sitio público sin sesión), siempre con nombre.
 - El único ícono es el «+» de agregar, crear o invitar. El texto es un verbo y qué cosa («Invitar usuario», «Descartar cambios»); nunca «Aceptar», «OK», «Sí» ni «Enviar». Mientras trabaja dice qué hace («Guardando…»). Solo «Guardar cambios» se apaga, cuando no hay cambios; lo demás queda habilitado y, si falta algo, se explica.
 - **Editar algo que ya existe** lleva «Descartar cambios», que deja lo guardado sin salir; **crear algo nuevo** lleva «Cancelar», que vuelve.
 

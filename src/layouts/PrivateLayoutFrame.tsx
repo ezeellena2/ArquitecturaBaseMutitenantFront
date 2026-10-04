@@ -91,9 +91,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
       />
       <AdminPanel panel={shownNavigation.administration} open={administrationOpen} onClose={() => setToggledAdministration({ pathname, open: false })} />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        {/* El ☰ contrae el menú cuando el panel de Administración tapa la flechita del borde (tema.md). Sin panel, como en
-            Personal, alcanza la flechita y la barra lleva solo las migas y tu menú (tableros Inicio-Personal y Cuenta). */}
-        <Topbar onToggleNavigation={navigation.administration ? () => setCollapsed((value) => !value) : undefined} breadcrumbs={<Breadcrumbs navigation={navigation} />} />
+        <Topbar breadcrumbs={<Breadcrumbs navigation={navigation} />} />
         <main className="relative min-h-0 flex-1 scroll-pt-14 overflow-y-auto bg-[var(--fondo)] print:overflow-visible">{children ?? <Outlet />}</main>
       </div>
     </div>

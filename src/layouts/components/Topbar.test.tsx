@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { configureI18n } from "@/shared/i18n";
 import { Topbar } from "./Topbar";
@@ -10,25 +10,14 @@ beforeAll(async () => {
 });
 
 describe("Topbar", () => {
-  it("muestra el menú de perfiles, la marca móvil y permite abrir navegación", () => {
-    const onToggleNavigation = vi.fn();
-    render(<Topbar onToggleNavigation={onToggleNavigation} breadcrumbs={<span>{"Inicio"}</span>} />);
+  // «Criterio · Marco» (lienzo v104): la barra lleva las migas a la izquierda y tu menú a la derecha. Nada más: sin ☰.
+  it("lleva las migas y el menú de perfiles, sin ☰", () => {
+    render(<Topbar breadcrumbs={<span>{"Inicio"}</span>} />);
 
     expect(screen.getByRole("banner")).toHaveClass("h-[52px]");
     expect(screen.getByRole("banner")).not.toHaveClass("md:h-16");
-    expect(screen.getByText("ArquitecturaBase")).toHaveClass("md:hidden");
     expect(screen.getByText("Inicio")).toBeVisible();
     expect(screen.getByRole("button", { name: "Cuenta" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Abrir o contraer navegación" })).toHaveClass("size-8");
-    fireEvent.click(screen.getByRole("button", { name: "Abrir o contraer navegación" }));
-    expect(onToggleNavigation).toHaveBeenCalledOnce();
-  });
-
-  // Tablero Inicio-Personal y «Criterio · Marco»: sin panel de Administración, la barra lleva las migas y tu menú, sin ☰.
-  it("sin quien contraiga el menú no muestra el ☰", () => {
-    render(<Topbar breadcrumbs={<span>{"Inicio"}</span>} />);
-
-    expect(screen.queryByRole("button", { name: "Abrir o contraer navegación" })).not.toBeInTheDocument();
-    expect(screen.getByText("Inicio")).toBeVisible();
+    expect(screen.getAllByRole("button")).toHaveLength(1);
   });
 });
