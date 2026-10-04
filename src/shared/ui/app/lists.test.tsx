@@ -1,0 +1,77 @@
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router";
+import { beforeAll, describe, expect, it, vi } from "vitest";
+import { configureI18n } from "@/shared/i18n";
+import { renderWithProviders } from "@/test/utils/renderWithProviders";
+import { DataTable, type Column } from "../DataTable";
+import { FilterBar } from "../FilterBar";
+import { Page } from "../Page";
+import { Pagination } from "../Pagination";
+import { AppChromeProvider } from "./AppChrome";
+import { ListRow, RowAvatar } from "./ListRow";
+
+beforeAll(async () => {
+  await configureI18n([{ code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true }]);
+});
+
+const phone = { phone: true, parent: { to: "/mas", label: "Volver a Más" }, subtitle: "Administración", hideBottomNav: () => {} };
+
+interface Row { id: string; name: string; email: string }
+const rows: Row[] = [{ id: "1", name: "Tomás Acosta", email: "tomas@delta.test" }];
+const columns: Column<Row>[] = [{ id: "name", header: "Usuario", type: "text", mobile: "primary", value: (row) => row.name }];
+
+// Tableros M-Usuarios, M-Roles y M-Auditoria-Org: en el teléfono las listas son filas de borde a borde, los filtros
+// son íconos en la barra y el paginado es «Cargar más».
+describe("listas en el teléfono", () => {
+  it("la fila lleva a la ficha, con el círculo, un dato a la derecha y hasta tres líneas", () => {
+    render(<MemoryRouter><ul><ListRow to="/org/usuarios/1" leading={<RowAvatar name="Tomás Acosta" />} title="Tomás Acosta" meta="1 usuario"
+      lines={["tomas@delta.test", "Activo"]} /></ul></MemoryRouter>);
+
+    expect(screen.getByRole("link", { name: /Tomás Acosta/ })).toHaveAttribute("href", "/org/usuarios/1");
+    expect(screen.getByText("1 usuario")).toHaveClass("text-[12.5px]", "text-[var(--t3)]");
+    expect(screen.getByText("T")).toHaveClass("size-11", "rounded-full", "bg-[var(--marca)]");
+  });
+
+  it("la tabla es una lista de filas cuando la pantalla da una fila de teléfono", () => {
+    render(<MemoryRouter><AppChromeProvider value={phone}>
+      <DataTable columns={columns} rows={rows} rowKey={(row) => row.id} mobileRow={(row) => <ListRow title={row.name} lines={[row.email]} />} />
+    </AppChromeProvider></MemoryRouter>);
+
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(screen.getByRole("listitem")).toHaveTextContent("Tomás Acostatomas@delta.test");
+  });
+
+  it("los filtros son íconos en la barra y se eligen en una hoja", async () => {
+    const onChange = vi.fn();
+    const onSearchChange = vi.fn();
+    render(<MemoryRouter><AppChromeProvider value={phone}><Page title="Usuarios">
+      <FilterBar label="Filtrar usuarios" searchLabel="Buscar por nombre o correo" searchValue="" onSearchChange={onSearchChange} clearLabel="Limpiar" onClear={vi.fn()}
+        filters={[{ key: "state", label: "Estado: todos", menuLabel: "Filtrar por estado", value: "", active: false, onChange,
+          options: [{ value: "all", label: "Todos", count: 11 }, { value: "Active", label: "Activos", count: 6 }] }]} />
+    </Page></AppChromeProvider></MemoryRouter>);
+
+    const bar = screen.getByRole("heading", { level: 1, name: "Usuarios" }).closest("header")!;
+    expect(screen.queryByRole("search")).not.toBeInTheDocument();
+    await userEvent.click(within(bar).getByRole("button", { name: "Buscar por nombre o correo" }));
+    await userEvent.type(screen.getByRole("searchbox", { name: "Buscar por nombre o correo" }), "L");
+    expect(onSearchChange).toHaveBeenLastCalledWith("L");
+
+    await userEvent.click(within(bar).getByRole("button", { name: "Filtrar usuarios" }));
+    const sheet = await screen.findByRole("dialog", { name: "Filtrar usuarios" });
+    expect(within(sheet).getByText("Estado")).toBeVisible();
+    expect(within(sheet).getByRole("radio", { name: /Todos/ })).toBeChecked();
+    await userEvent.click(within(sheet).getByRole("radio", { name: /Activos/ }));
+    expect(onChange).toHaveBeenCalledWith("Active");
+  });
+
+  it("el paginado es «Cargar más», que pide la página más grande que sigue", async () => {
+    const onPageSizeChange = vi.fn();
+    renderWithProviders(<AppChromeProvider value={phone}>
+      <Pagination page={1} pageSize={10} totalCount={11} totalPages={2} hasPrevious={false} hasNext onPageChange={vi.fn()} onPageSizeChange={onPageSizeChange} />
+    </AppChromeProvider>);
+
+    await userEvent.click(screen.getByRole("button", { name: "Cargar más" }));
+    expect(onPageSizeChange).toHaveBeenCalledWith(20);
+  });
+});

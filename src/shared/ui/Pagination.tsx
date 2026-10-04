@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { PagedResult } from "@/shared/api/pagedResult";
 import { pageSizes } from "@/shared/api/pageSizes";
 import { useFormat } from "@/shared/format/useFormat";
+import { useAppChrome } from "./app/AppChrome";
 import { Button } from "./button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
 
@@ -20,6 +21,17 @@ export function Pagination({
 }: PaginationProps) {
   const { t } = useTranslation();
   const { formatInteger } = useFormat();
+  const { phone } = useAppChrome();
+  // Tablero M-Auditoria-Org (.ap-mas): en el teléfono no hay páginas; «Cargar más» pide la página más grande que
+  // sigue. Pasado el tamaño mayor, avanza de página.
+  if (phone) {
+    if (!hasNext) return null;
+    const larger = pageSizes.find((size) => size > pageSize);
+    return <div className="flex justify-center px-4 pt-3.5 pb-5">
+      <Button type="button" variant="outline" onClick={() => (larger ? onPageSizeChange(larger) : onPageChange(page + 1))}
+        className="h-11 rounded-[12px] px-[22px] text-[15px]">{t("pagination.loadMore")}</Button>
+    </div>;
+  }
   const from = totalCount === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, totalCount);
 

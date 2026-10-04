@@ -1,7 +1,8 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { DateRangeValue, MoneyValue } from "@/shared/format/useFormat";
 import { cn } from "@/shared/lib/utils";
+import { useAppChrome } from "./app/AppChrome";
 import { Button } from "./button";
 import { EmptyState } from "./EmptyState";
 import { Spinner } from "./Spinner";
@@ -73,6 +74,8 @@ interface DataTableProps<TRow> {
   emptyAction?: ReactNode;
   sort?: string;
   onSortChange?: (field: string) => void;
+  /** En el teléfono, cada fila es una fila de borde a borde (`ListRow`) en lugar de una fila de tabla (tableros M-*). */
+  mobileRow?: (row: TRow) => ReactNode;
 }
 
 /** También valida las columnas de features que todavía no existen en E1. */
@@ -172,8 +175,10 @@ export function DataTable<TRow>({
   emptyAction,
   sort,
   onSortChange,
+  mobileRow,
 }: DataTableProps<TRow>) {
   const { t } = useTranslation();
+  const { phone } = useAppChrome();
   assertOneMobilePrimary(columns);
 
   if (error) {
@@ -187,6 +192,9 @@ export function DataTable<TRow>({
   }
   if (isLoading) return <div className="flex justify-center p-10"><Spinner /></div>;
   if (rows.length === 0) return <EmptyState title={emptyTitle ?? t("states.empty")} description={emptyDescription} action={emptyAction} />;
+  if (phone && mobileRow) return <ul aria-busy={isFetching === true} className={cn("m-0 list-none p-0", isFetching ? "opacity-60" : undefined)}>
+    {rows.map((row) => <Fragment key={rowKey(row)}>{mobileRow(row)}</Fragment>)}
+  </ul>;
 
   return (
     <Table aria-busy={isFetching === true} className={cn("table-fixed text-[13px]", isFetching ? "opacity-60" : undefined)}>

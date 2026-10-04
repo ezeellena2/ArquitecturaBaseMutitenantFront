@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { ChevronDownIcon, SearchIcon } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { ChevronDownIcon, ListFilter, SearchIcon } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import {
@@ -11,6 +11,10 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import { Input } from "@/shared/ui/input";
 import { Surface } from "@/shared/ui/Surface";
+import { AppIconButton } from "./app/AppBar";
+import { AppBarTools } from "./app/AppBarTools";
+import { useAppChrome } from "./app/AppChrome";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
 
 export interface FilterOption {
   value: string;
@@ -51,6 +55,50 @@ export function FilterBar({
   className,
 }: FilterBarProps) {
   const hasFilters = searchValue.trim().length > 0 || filters.some((filter) => filter.active);
+  const { phone } = useAppChrome();
+  const [searchOpen, setSearchOpen] = useState(searchValue.trim().length > 0);
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  // Tablero M-Usuarios: en el teléfono la lupa y el filtro son íconos de la barra de arriba. La lupa abre el buscador
+  // debajo de la barra; el filtro abre una hoja con cada filtro y sus opciones, con «Todos» marcado si no hay filtro.
+  if (phone) return <>
+    <AppBarTools>
+      <AppIconButton label={searchLabel} aria-pressed={searchOpen} onClick={() => setSearchOpen((open) => !open)}><SearchIcon /></AppIconButton>
+      {filters.length > 0 ? <AppIconButton label={label} onClick={() => setSheetOpen(true)}>
+        <ListFilter />
+        {filters.some((filter) => filter.active) ? <span aria-hidden="true" className="absolute top-2 right-2 size-2 rounded-full bg-[var(--marca)]" /> : null}
+      </AppIconButton> : null}
+    </AppBarTools>
+    {searchOpen ? <div className="px-4 pt-1 pb-2">
+      <label className="flex h-[46px] items-center gap-2.5 rounded-[12px] bg-[var(--s3)] px-3.5 text-[var(--t3)]">
+        <SearchIcon aria-hidden="true" className="size-[18px] shrink-0" />
+        <input type="search" autoFocus value={searchValue} onChange={(event) => onSearchChange(event.target.value)} aria-label={searchLabel} placeholder={searchLabel}
+          className="min-w-0 flex-1 bg-transparent text-[15.5px] text-[var(--t1)] outline-none placeholder:text-[var(--t3)]" />
+      </label>
+    </div> : null}
+    <Dialog open={sheetOpen} onOpenChange={setSheetOpen}>
+      <DialogContent>
+        <DialogHeader><DialogTitle>{label}</DialogTitle></DialogHeader>
+        <div className="flex flex-col pt-1 pb-2">
+          {filters.map((filter) => {
+            const selected = filter.options.find((option) => option.value === filter.value);
+            const checked = selected ? filter.value : filter.options[0]?.value ?? "";
+            return <fieldset key={filter.key} className="m-0 border-0 p-0">
+              <legend className="px-5 pt-2.5 pb-1 text-[13px] font-semibold text-[var(--t3)]">{filter.label.split(":")[0]}</legend>
+              {filter.options.map((option) => <label key={option.value} className="flex min-h-[54px] items-center gap-3 border-t border-[var(--borde)] px-5 text-[16px] text-[var(--t1)] first-of-type:border-t-0">
+                <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                {option.count === undefined ? null : <span className="text-[13.5px] text-[var(--t3)]">{option.count}</span>}
+                <input type="radio" name={filter.key} value={option.value} checked={checked === option.value} className="size-5 accent-[var(--marca)]"
+                  onChange={() => { filter.onChange(option.value); setSheetOpen(false); }} />
+              </label>)}
+            </fieldset>;
+          })}
+        </div>
+        {hasFilters ? <DialogFooter><button type="button" onClick={() => { onClear(); setSheetOpen(false); }}
+          className="inline-flex items-center justify-center rounded-[12px] border border-[var(--borde2)] bg-[var(--lado-activo)] font-semibold text-[var(--t1)]">{clearLabel}</button></DialogFooter> : null}
+      </DialogContent>
+    </Dialog>
+  </>;
 
   return (
     <Surface

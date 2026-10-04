@@ -1,8 +1,9 @@
-import type { ComponentType, ReactNode } from "react";
+import { useState, type ComponentType, type ReactNode } from "react";
 import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
 import { AppBar, AppIconButton } from "./app/AppBar";
 import { useAppChrome } from "./app/AppChrome";
+import { AppBarToolsProvider } from "./app/AppBarTools";
 import { Fab } from "./app/Fab";
 import { FixedActions } from "./app/FixedActions";
 import {
@@ -68,6 +69,7 @@ export function Page({
   phoneBody = "padded",
 }: PageProps): ReactNode {
   const chrome = useAppChrome();
+  const [tools, setTools] = useState<HTMLDivElement | null>(null);
   const visibleMoreActions = moreActions?.items.filter((action) => !action.hidden) ?? [];
   const regularActions = visibleMoreActions.filter((action) => !action.destructive);
   const destructiveActions = visibleMoreActions.filter((action) => action.destructive);
@@ -91,12 +93,15 @@ export function Page({
     const back = backTo ?? chrome.parent ?? undefined;
     return <div className={cn("flex min-h-full flex-col", phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--lado-activo)]")}>
       <AppBar title={title} back={back} subtitle={phoneSubtitle ?? status ?? chrome.subtitle ?? undefined}
-        actions={visibleMoreActions.length > 0 && moreActions ? <DropdownMenu>
-          <DropdownMenuTrigger asChild><AppIconButton label={moreActions.label}><MoreVerticalIcon /></AppIconButton></DropdownMenuTrigger>
-          <DropdownMenuContent align="end">{moreMenuItems}</DropdownMenuContent>
-        </DropdownMenu> : undefined} />
+        actions={<>
+          <div ref={setTools} className="flex items-center" />
+          {visibleMoreActions.length > 0 && moreActions ? <DropdownMenu>
+            <DropdownMenuTrigger asChild><AppIconButton label={moreActions.label}><MoreVerticalIcon /></AppIconButton></DropdownMenuTrigger>
+            <DropdownMenuContent align="end">{moreMenuItems}</DropdownMenuContent>
+          </DropdownMenu> : null}
+        </>} />
       {tabs ? <div data-slot="page-tabs" className="border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4">{tabs}</div> : null}
-      <div className={phoneBodyClasses[phoneBody]}>{banner}{children}</div>
+      <AppBarToolsProvider value={tools}><div className={phoneBodyClasses[phoneBody]}>{banner}{children}</div></AppBarToolsProvider>
       {fab ? <Fab label={fab.label} onClick={fab.onClick} to={fab.to} /> : actions ? <FixedActions>{actions}</FixedActions> : null}
     </div>;
   }
