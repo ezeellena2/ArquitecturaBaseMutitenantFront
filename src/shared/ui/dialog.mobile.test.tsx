@@ -61,6 +61,20 @@ describe("Dialog mobile layout", () => {
     );
 
     expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("max-md:hidden", "md:flex");
+    // Sin ✕ en el teléfono, el encabezado no le guarda lugar: mide lo del título, con 20 a la derecha (.hc de M-Cuenta-Baja).
+    const header = document.querySelector('[data-slot="dialog-header"]');
+    expect(header).not.toHaveClass("min-h-[52px]");
+    expect(header).toHaveClass("pr-5", "md:min-h-12");
+  });
+
+  // M-Configuracion-Quitar y M-Avisos: la hoja de una confirmación, sin ✕, con el encabezado del alto del título.
+  it("keeps the short header in a confirmation sheet without ✕", () => {
+    render(<ConfirmDialog open onOpenChange={() => {}} title="¿Quitar delta.ejemplo.com?" confirmLabel="Quitar" destructive onConfirm={() => {}} />);
+
+    expect(screen.queryByRole("button", { name: "Cerrar" })).not.toBeInTheDocument();
+    const header = document.querySelector('[data-slot="dialog-header"]');
+    expect(header).not.toHaveClass("min-h-[52px]");
+    expect(header).toHaveClass("py-1", "pr-5");
   });
 
   // Una hoja a todo el alto (Empresa y Empresas): arriba la manija y el título, el cuerpo ocupa lo que sobra y los botones

@@ -47,6 +47,9 @@ function DialogOverlay({
   )
 }
 
+// Si la hoja del teléfono lleva ✕: el encabezado le guarda lugar y se centra con él.
+const PhoneCloseContext = React.createContext(false)
+
 function DialogContent({
   className,
   children,
@@ -86,7 +89,7 @@ function DialogContent({
       >
         {/* Tablero M-Usuarios-Invitar (.ap-hoja): en el teléfono la hoja sube desde abajo con su manija. */}
         <span data-slot="dialog-handle" aria-hidden="true" className="mx-auto mt-2 mb-1 h-[5px] w-9 rounded-full bg-[var(--borde2)] md:hidden" />
-        {children}
+        <PhoneCloseContext.Provider value={showCloseButton === true}>{children}</PhoneCloseContext.Provider>
         {/* Hojas del teléfono (.ap-hoja .hc .ap-ib): el ✕ de 44, con su cruz de 22, va centrado con el título: debajo de
             la manija (17) y de los 4 de arriba del encabezado, a 6 del borde. */}
         {showCloseButton ? (
@@ -106,12 +109,18 @@ function DialogContent({
   )
 }
 
-// En el teléfono (.ap-hoja .hc), el encabezado mide 52, con 4 arriba y abajo: el título queda centrado con el ✕.
+// En el teléfono (.ap-hoja .hc), con el ✕ el encabezado mide 52, con 4 arriba y abajo, y el título queda centrado con
+// él; sin ✕ (la hoja de una confirmación, M-Configuracion-Quitar), mide lo del título, con 20 a la derecha.
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
+  const phoneClose = React.useContext(PhoneCloseContext)
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex min-h-[52px] flex-col justify-center gap-1 px-5 py-1 pr-14 text-left max-md:bg-transparent md:min-h-12 md:border-b md:border-[var(--borde)] md:bg-[var(--cab)] md:py-2 md:pr-5", className)}
+      className={cn(
+        "flex flex-col justify-center gap-1 px-5 py-1 text-left max-md:bg-transparent md:min-h-12 md:border-b md:border-[var(--borde)] md:bg-[var(--cab)] md:py-2 md:pr-5",
+        phoneClose ? "min-h-[52px] pr-14" : "pr-5",
+        className
+      )}
       {...props}
     />
   )
