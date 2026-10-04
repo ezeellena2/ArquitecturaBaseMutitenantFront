@@ -7820,6 +7820,7 @@ export interface components {
             inviterRoles?: null | string[];
             companies?: null | string[];
             roles?: null | string[];
+            currentAccountName?: null | string;
         };
         /** @enum {string} */
         InvitationPreviewState: "NoAccount" | "SignInRequired" | "Ready" | "WrongSession" | "Expired" | "Invalid" | "OrganizationSuspended" | "Accepted";

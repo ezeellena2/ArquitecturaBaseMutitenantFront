@@ -213,7 +213,9 @@ function InvitationFlow() {
             </div>
             <div className="flex flex-col gap-2.5">
               <Button type="button" size="lg" onClick={() => void signOutAndContinue()}>{t("join.signOutAndContinue", { email })}</Button>
-              <Button type="button" size="lg" variant="outlineSurface" onClick={returnToOwnAccess}>{t("join.continueAs", { name: typeof auth.user?.profile.name === "string" ? auth.user.profile.name : invitation.currentAccountEmail ?? t("accountFallback") })}</Button>
+              {/* Tablero Invitacion (sesión ajena): «Seguir como Lucía», con el nombre de pila de la cuenta abierta. */}
+              <Button type="button" size="lg" variant="outlineSurface" onClick={returnToOwnAccess}>{t("join.continueAs", { name: invitation.currentAccountName?.trim().split(/\s+/)[0]
+                || (typeof auth.user?.profile.name === "string" ? auth.user.profile.name : invitation.currentAccountEmail ?? t("accountFallback")) })}</Button>
             </div>
           </> : invitation.state === "SignInRequired" ? <>
             <Button type="button" size="lg" onClick={() => {

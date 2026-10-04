@@ -80,7 +80,6 @@ function show(options: { entry?: string; signedInAs?: "business" | "consumer" } 
       access: options.signedInAs,
       tenant_id: options.signedInAs === "business" ? "own-organization" : undefined,
       email: "lucia@example.test",
-      name: "Lucía",
     },
   } as unknown as User : undefined;
   const auth = {
@@ -252,7 +251,8 @@ describe("InvitationPage", () => {
   });
 
   it("permite salir y seguir con la cuenta invitada o volver al acceso actual sin aceptar", async () => {
-    previewResponse = { ...basePreview, state: "WrongSession", currentAccountEmail: "lucia@example.test" };
+    // Tablero Invitacion (sesión ajena): «Seguir como Lucía», con el nombre que trae la vista previa.
+    previewResponse = { ...basePreview, state: "WrongSession", currentAccountEmail: "lucia@example.test", currentAccountName: "Lucía Fernández" };
     const { container, router } = show({ signedInAs: "business" });
     expect(await screen.findByText("Entraste como lucia@example.test y la invitación es para invitada@example.test.")).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: "Salir y seguir como invitada@example.test" }));
