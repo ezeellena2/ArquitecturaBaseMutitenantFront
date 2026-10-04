@@ -18,6 +18,7 @@ vi.mock("sonner", async (importOriginal) => {
         data-toast-gap={toastOptions?.style?.gap}
         data-toast-radius={toastOptions?.style?.borderRadius}
         data-toast-font-size={toastOptions?.style?.fontSize}
+        data-toast-shadow={toastOptions?.style?.boxShadow}
         style={style}
       />
     ),
@@ -27,21 +28,26 @@ vi.mock("sonner", async (importOriginal) => {
 afterEach(() => vi.restoreAllMocks());
 
 describe("Toaster · Criterio v65", () => {
-  it("puts colored toasts at the bottom right using system tokens", () => {
+  // Tablero Avisos («Guardado», .p-aviso) y «Criterio · Avisos» (.toast3): en la compu, abajo a la derecha, blanco con
+  // borde y sombra, el texto oscuro y solo el ícono de color (index.css).
+  it("puts white toasts with a shadow at the bottom right using system tokens", () => {
     renderWithProviders(<Toaster />);
     const toaster = document.querySelector<HTMLElement>("[data-testid='sonner-root']");
 
     expect(toaster).toHaveAttribute("data-x-position", "right");
     expect(toaster).toHaveAttribute("data-y-position", "bottom");
-    expect(toaster).toHaveAttribute("data-rich-colors", "true");
+    expect(toaster).toHaveAttribute("data-rich-colors", "false");
+    expect(toaster).toHaveAttribute("data-toast-shadow", "var(--sombra-aviso)");
     expect(toaster).toHaveAttribute("data-toast-padding", "12px 14px");
     expect(toaster).toHaveAttribute("data-toast-gap", "10px");
     expect(toaster).toHaveAttribute("data-toast-radius", "10px");
     expect(toaster).toHaveAttribute("data-toast-font-size", "13px");
     expect((toaster as HTMLElement).style.getPropertyValue("--width")).toBe("340px");
     expect((toaster as HTMLElement).style.getPropertyValue("--border-radius")).toBe("10px");
-    expect((toaster as HTMLElement).style.getPropertyValue("--success-bg")).toBe("var(--ok-t)");
-    expect((toaster as HTMLElement).style.getPropertyValue("--error-bg")).toBe("var(--peligro-t)");
+    expect((toaster as HTMLElement).style.getPropertyValue("--normal-bg")).toBe("var(--lado-activo)");
+    expect((toaster as HTMLElement).style.getPropertyValue("--normal-border")).toBe("var(--borde)");
+    expect((toaster as HTMLElement).style.getPropertyValue("--normal-text")).toBe("var(--t1)");
+    expect((toaster as HTMLElement).style.getPropertyValue("--success-bg")).toBe("");
   });
 
   // Tablero M-Avisos: en el teléfono el aviso pasajero es una franja oscura abajo, a lo ancho, con el ícono de color.

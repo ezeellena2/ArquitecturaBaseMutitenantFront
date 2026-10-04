@@ -56,6 +56,10 @@
   --franja-mal: oklch(0.75 0.15 25);
   --franja-accion: oklch(0.82 0.08 195);
   --sombra-franja: 0 8px 24px oklch(0.2 0.01 60 / 0.3);
+  /* Tablero Avisos (.p-aviso) y «Criterio · Avisos» (.toast3, .ic-ok): la tarjeta blanca de los avisos pasajeros de la
+     compu, su sombra y el ícono de lo que salió bien. */
+  --sombra-aviso: 0 12px 32px oklch(0.24 0.014 78 / 0.16);
+  --aviso-ok: oklch(0.55 0.13 155);
   --punto-ok: oklch(0.6 0.13 155);
   --punto-alerta: oklch(0.72 0.15 70);
   --punto-apagado: oklch(0.75 0.01 78);
@@ -176,4 +180,17 @@ body {
   [data-sonner-toast][data-styled="true"] [data-close-button] svg { width: 18px; height: 18px; }
   [data-sonner-toast][data-styled="true"] [data-button] { height: auto; padding: 0; background: transparent; color: var(--franja-accion); font-size: 14.5px; font-weight: 600; }
   [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 24px; height: 24px; transform: none; border: 0; background: transparent; color: oklch(1 0 0 / 0.7); }
+}
+/* En la compu (tablero Avisos, .p-aviso): sobre la tarjeta blanca solo el ícono lleva color; el error suma el borde rojo
+   suave y la ✕ a la derecha; «Reintentar» y «Copiar código» van en texto petróleo. */
+@media (min-width: 768px) {
+  [data-sonner-toast][data-type="success"] [data-icon] { color: var(--aviso-ok); }
+  [data-sonner-toast][data-type="error"] [data-icon] { color: var(--peligro); }
+  [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--alerta); }
+  [data-sonner-toast][data-type="info"] [data-icon] { color: var(--marca-tx); }
+  [data-sonner-toast][data-type="error"] { border-color: var(--peligro-borde); }
+  [data-sonner-toast] [data-icon] { width: 18px; height: 18px; margin: 0; }
+  [data-sonner-toast][data-styled="true"] [data-title] { font-weight: 400; }
+  [data-sonner-toast][data-styled="true"] [data-button] { height: auto; padding: 0; background: transparent; color: var(--marca-tx); font-size: 13px; font-weight: 600; }
+  [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 24px; height: 24px; transform: none; border: 0; background: transparent; color: var(--t3); }
 }

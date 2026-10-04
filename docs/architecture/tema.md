@@ -39,6 +39,7 @@ Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena
 | `--peligro-tx` / `--peligro-borde` | `oklch(0.45 0.17 25)` / `oklch(0.57 0.2 25 / 0.4)` | texto rojo de los avisos sobre fondo tenue (la franja de error, el cartel de problema, la banda «Sin conexión» del teléfono y el motivo del aviso importante) y borde del botón de peligro |
 | `--punto-ok` / `--punto-alerta` / `--punto-apagado` | `oklch(0.6 0.13 155)` / `oklch(0.72 0.15 70)` / `oklch(0.75 0.01 78)` | punto de estado: activo, atención y apagado |
 | `--franja` / `--franja-ok` / `--franja-mal` / `--franja-accion` | `oklch(0.27 0.012 60)` / `oklch(0.78 0.14 155)` / `oklch(0.75 0.15 25)` / `oklch(0.82 0.08 195)` | franja oscura de los avisos pasajeros del teléfono: fondo, ícono de lo que salió bien, ícono de lo que falló y acción («Copiar código») |
+| `--aviso-ok` | `oklch(0.55 0.13 155)` | ícono de lo que salió bien en el aviso pasajero de la compu (tarjeta blanca, abajo a la derecha) |
 | `--foco` | `var(--marca)` | anillo de foco |
 | `--foco-halo` | `oklch(0.51 0.099 195 / 0.15)` | halo de 3 px alrededor del foco |
 
@@ -61,6 +62,7 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 - **Marca:** un cuadrado con degradado de `--marca` a `--marca-2`, sombra `0 2px 6px -1px var(--marca-sombra)` y un cuadrado blanco abierto del lado derecho, rotado −45° como en el lienzo. Lleva el nombre del producto al lado. Lo mismo en el menú lateral y en las pantallas públicas.
 - Los rótulos de grupo del menú van sin mayúsculas ("Administración", no "ADMINISTRACIÓN").
 - **Teléfono:** el «+» flotante lleva `--sombra-fab` (`0 6px 16px oklch(0.3 0.06 195 / 0.3), 0 2px 4px oklch(0.3 0.06 195 / 0.2)`); la hoja que sube desde abajo, `--sombra-hoja` (`0 -8px 24px oklch(0.2 0.014 78 / 0.12)`), y la franja de los avisos, `--sombra-franja` (`0 8px 24px oklch(0.2 0.01 60 / 0.3)`). Los grupos son blancos sobre `--s2`, con radio de 14 px y un borde de 1 px en `--borde`.
+- **Avisos pasajeros en la compu** (tablero Avisos): abajo a la derecha, una tarjeta blanca de 340 con borde, radio de 10 y `--sombra-aviso` (`0 12px 32px oklch(0.24 0.014 78 / 0.16)`); solo el ícono lleva color (`--aviso-ok`, `--peligro`).
 
 ## Menú lateral y panel de Administración
 - **Arriba:** Inicio y los módulos del producto. **Abajo de todo:** "Administración".

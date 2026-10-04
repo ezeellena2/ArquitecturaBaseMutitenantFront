@@ -5,7 +5,6 @@ import {
   CircleCheckIcon,
   InfoIcon,
   Loader2Icon,
-  OctagonXIcon,
   TriangleAlertIcon,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -46,41 +45,32 @@ const Toaster = ({ toastOptions, ...props }: ToasterProps) => {
     />
   )
 
+  // Tablero Avisos («Guardado», .p-aviso) y «Criterio · Avisos» (.toast3): en la compu, abajo a la derecha, una tarjeta
+  // blanca de 340 con borde y sombra y el texto oscuro; solo el ícono lleva el color (index.css).
   return (
     <Sonner
       theme="light"
       position="bottom-right"
-      richColors
+      offset={20}
+      richColors={false}
       containerAriaLabel={t("notifications.label")}
-      toastOptions={{ duration: 4000, closeButton: false, closeButtonAriaLabel: t("notifications.close"), style: { padding: "12px 14px", gap: "10px", borderRadius: "10px", fontSize: "13px" }, ...toastOptions }}
+      toastOptions={{ duration: 4000, closeButton: false, closeButtonAriaLabel: t("notifications.close"), style: { padding: "12px 14px", gap: "10px", borderRadius: "10px", fontSize: "13px", boxShadow: "var(--sombra-aviso)" }, ...toastOptions }}
       className="toaster group"
       icons={{
-        success: <CircleCheckIcon className="size-4" />,
-        info: <InfoIcon className="size-4" />,
-        warning: <TriangleAlertIcon className="size-4" />,
-        error: <OctagonXIcon className="size-4" />,
-        loading: <Loader2Icon className="size-4 animate-spin" />,
+        success: <CircleCheckIcon className="size-[18px]" />,
+        info: <InfoIcon className="size-[18px]" />,
+        warning: <TriangleAlertIcon className="size-[18px]" />,
+        error: <CircleAlertIcon className="size-[18px]" />,
+        loading: <Loader2Icon className="size-[18px] animate-spin" />,
       }}
       style={
         {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
+          "--normal-bg": "var(--lado-activo)",
+          "--normal-text": "var(--t1)",
+          "--normal-border": "var(--borde)",
           "--width": "340px",
           "--border-radius": "10px",
           fontFamily: "var(--font-sans)",
-          "--success-bg": "var(--ok-t)",
-          "--success-border": "var(--ok)",
-          "--success-text": "var(--ok)",
-          "--error-bg": "var(--peligro-t)",
-          "--error-border": "var(--peligro)",
-          "--error-text": "var(--peligro)",
-          "--warning-bg": "var(--alerta-t)",
-          "--warning-border": "var(--alerta)",
-          "--warning-text": "var(--alerta)",
-          "--info-bg": "var(--marca-t)",
-          "--info-border": "var(--marca)",
-          "--info-text": "var(--marca-tx)",
         } as React.CSSProperties
       }
       {...props}
