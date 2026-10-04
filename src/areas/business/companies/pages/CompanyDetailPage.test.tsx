@@ -228,17 +228,18 @@ describe("CompanyDetailPage", () => {
     expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
   }, 10_000);
 
-  // Tablero Empresa (v97): «Tiene que quedar al menos…» en la franja con su ícono, no en dos lugares.
+  // Tablero Empresa (v97): «Tiene que quedar al menos un administrador en la empresa.» en la franja con su ícono, no en
+  // dos lugares. Es el texto que manda el back (95d853f): la app no tiene uno propio.
   it("la regla del último administrador va en una sola franja, arriba de los botones", async () => {
     const user = userEvent.setup();
     rolesApi(() => HttpResponse.json({ status: 409, code: "Companies.Membership.LastCompanyAdmin", title: "Conflicto",
-      detail: "No podés quitar al último administrador de la empresa." }, { status: 409 }));
+      detail: "Tiene que quedar al menos un administrador en la empresa." }, { status: 409 }));
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     const dialog = await openRolesDialog(user);
     await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
 
     const alert = await within(dialog).findByRole("alert");
-    expect(alert).toHaveTextContent("Tiene que quedar al menos una persona administradora activa en la empresa.");
+    expect(alert).toHaveTextContent("Tiene que quedar al menos un administrador en la empresa.");
     expect(alert.querySelector("svg")).not.toBeNull();
     expectAboveButtons(dialog, alert, "Roles en la empresa");
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);

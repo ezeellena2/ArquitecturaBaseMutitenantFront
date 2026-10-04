@@ -140,8 +140,7 @@
   "editMemberRoles": {
     "title": "Roles de {{name}}",
     "roles": "Roles en la empresa",
-    "save": "Guardar cambios",
-    "lastAdmin": "Tiene que quedar al menos una persona administradora activa en la empresa."
+    "save": "Guardar cambios"
   },
   "summaryTotal_one": "{{count}} empresa",
   "summaryTotal_other": "{{count}} empresas",

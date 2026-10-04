@@ -140,8 +140,7 @@
   "editMemberRoles": {
     "title": "Roles for {{name}}",
     "roles": "Company roles",
-    "save": "Save changes",
-    "lastAdmin": "The company must keep at least one active administrator."
+    "save": "Save changes"
   },
   "summaryTotal_one": "{{count}} company",
   "summaryTotal_other": "{{count}} companies",

@@ -304,8 +304,7 @@ export function CompanyDetailPage() {
             <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleDraft} onChange={(next) => { setRoleDraft(next); setMutationError(undefined); }} placeholder={t("companies:addMember.chooseRoles")} />
           </FormField>
           {/* Tablero Empresa (v97): el error, una sola vez, en la franja con su ícono arriba de los botones. */}
-          <FormError message={mutationError instanceof ApiError && mutationError.code === "Companies.Membership.LastCompanyAdmin"
-            ? t("companies:editMemberRoles.lastAdmin") : actionErrorMessage(mutationError, t)} />
+          <FormError message={actionErrorMessage(mutationError, t)} />
         </div>
         <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
           <Button type="button" variant="outline" onClick={closeRoles}>{t("common:actions.cancel")}</Button>
