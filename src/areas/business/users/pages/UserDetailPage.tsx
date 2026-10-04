@@ -27,14 +27,13 @@ import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { DateText } from "@/shared/ui/format/DateText";
 import { toast } from "sonner";
-import { toastError } from "@/shared/ui/sonner";
 import { ChoiceSheet, CheckRow, RadioRow } from "../components/AccessSheets";
 import { RolesField } from "../components/RolesField";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { List, ListItem } from "@/shared/ui/List";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { fetchAssignableRoles, fetchCompanyOptions, fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userCompaniesQueryKey, userQueryKey, userRolesQueryKey, usersQueryRoot } from "../api/users";
-import { userErrorMessage } from "../errors";
+import { userErrorMessage, type UserAction } from "../errors";
 import { activeOrganization, homeOf } from "@/tenancy/access";
 
 type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
@@ -86,7 +85,8 @@ export function UserDetailPage() {
   useBreadcrumbLeaf(user.data ? user.data.displayName || user.data.email || undefined : undefined);
   const [draft, setDraft] = useState<AccessDraft | null>(null);
   const [companyDialog, setCompanyDialog] = useState<CompanyDialogDraft | null>(null);
-  const [failure, setFailure] = useState<unknown>();
+  // Lo que el back rechazó en la ficha, al guardar el acceso o al quitar de la organización: va en su franja (tablero Usuario).
+  const [failure, setFailure] = useState<{ error: unknown; action: UserAction }>();
   const [dialogFailure, setDialogFailure] = useState<unknown>();
   // Un 409 de concurrencia en el diálogo deja la ficha vieja: al cerrarlo se vuelve a leer si no hay cambios sin guardar.
   // Va aparte del error del diálogo, que se borra al cambiar algo en él.
@@ -101,10 +101,10 @@ export function UserDetailPage() {
   // Tableros Usuario y Avisos: el 409 en su cartel, «Cambios sin guardar» en la banda, el error de guardado en la franja
   // y «¿Salir sin guardar?» antes de irse con cambios.
   const edit = useEditPage({
-    isDirty, error: failure,
+    isDirty, error: failure?.error,
     onSeeNew: () => { void user.refetch().then(() => { setDraft(null); setFailure(undefined); }); },
     onContinueEditing: () => setFailure(undefined),
-    errorMessage: (error) => userErrorMessage(error, t, { self, action: "save" }),
+    errorMessage: (error) => userErrorMessage(error, t, { self, action: failure?.action ?? "save" }),
   });
   const roles = useQueries({ queries: (["Organization", "Company"] as const).map((scope) => ({
     queryKey: userRolesQueryKey(scope), queryFn: () => fetchAssignableRoles(scope), enabled: canManage && user.data !== undefined,
@@ -119,7 +119,7 @@ export function UserDetailPage() {
     mutationFn: ({ request }: { request: UpdateOrganizationUserRequest; message: string; keepDraft?: boolean; origin: SaveOrigin }) => updateUser(memberId, request),
     onSuccess: async (_result, { message, keepDraft }) => { setFailure(undefined); setDialogFailure(undefined); if (!keepDraft) setDraft(null); setCompanyDialog(null); toast.success(sentence(message)); await refresh(); },
     onError: (error, { origin }) => {
-      if (origin !== "dialog") { setFailure(error); return; }
+      if (origin !== "dialog") { setFailure({ error, action: "save" }); return; }
       if (error instanceof ApiError && error.code === "General.ConcurrencyConflict") staleAfterDialog.current = true;
       setDialogFailure(error);
     },
@@ -128,7 +128,7 @@ export function UserDetailPage() {
     mutationFn: (_message: string) => removeUser(memberId, user.data?.version ?? 0),
     // Ya no hay nada que perder: la salida al listado no pregunta.
     onSuccess: async (_result, message) => { toast.success(sentence(message)); await client.invalidateQueries({ queryKey: usersQueryRoot }); edit.allowNextNavigation(); void navigate("/org/usuarios"); },
-    onError: (error) => { const message = userErrorMessage(error, t, { self, action: "remove" }); if (message) toastError(message); },
+    onError: (error) => setFailure({ error, action: "remove" }),
   });
   const revoke = useMutation({
     mutationFn: (invitationId: string) => revokeUserInvitation(invitationId),
@@ -239,7 +239,7 @@ export function UserDetailPage() {
       : t("users:detail.confirm.removeDescription", { organization: organizationName });
   const confirmations = {
     disable: { title: t("users:detail.confirm.disableTitle", { name: displayName }), description: t("users:detail.confirm.disableDescription", { organization: organizationName }), label: t("users:detail.confirm.disableConfirm"), run: () => { void saveAccess(); } },
-    remove: { title: t("users:detail.confirm.removeTitle", { name: displayName, organization: organizationName }), description: removeDescription, label: t("users:detail.confirm.removeConfirm"), run: () => remove.mutate(t("users:detail.messages.removed", { name: displayName, organization: organizationName })) },
+    remove: { title: t("users:detail.confirm.removeTitle", { name: displayName, organization: organizationName }), description: removeDescription, label: t("users:detail.confirm.removeConfirm"), run: () => { setFailure(undefined); remove.mutate(t("users:detail.messages.removed", { name: displayName, organization: organizationName })); } },
     revoke: { title: t("users:detail.confirm.revokeTitle", { email: member.email ?? "" }), description: t("users:detail.confirm.revokeDescription"), label: t("users:detail.confirm.revokeConfirm"), run: () => { if (member.invitationId) revoke.mutate(member.invitationId); } },
   };
   const confirmation = confirmAction ? confirmations[confirmAction] : null;

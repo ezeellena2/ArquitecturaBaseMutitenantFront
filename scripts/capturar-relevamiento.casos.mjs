@@ -280,19 +280,28 @@ function dialogCases(root) {
 // Alineación R2a (avisos y errores): estados que la app ya tiene y ningún generador capturaba.
 function alignmentCases(root) {
   // La ficha de Lucía, que es quien mira (F7, «usuario-error-al-guardar»): quitarse de la organización siendo la última
-  // Dueña falla, y el aviso rojo de abajo lo dice con su ✕ («Falló una acción directa»). El arnés no tiene los avisos
-  // globales de red y 5xx (usa un QueryClient sin sus cachés): este aviso lo da la pantalla.
+  // Dueña falla, y la franja de la ficha lo dice, como el tablero Usuario («Lucía (vos)»), no el aviso de abajo (R2c).
   const luciaApp = (width) => stageCases(root, "consolidacion/f7").find((entry) => entry.pair === "usuario-error-al-guardar" && entry.viewport.width === width).app;
-  const leaving = (app) => ({ ...app, readySelector: "[data-sonner-toast]", readyText: "antes de salir de la organización",
+  const leaving = (app) => ({ ...app, readySelector: 'main [role="alert"]', readyText: "antes de salir de la organización",
     responses: [...app.responses.filter((item) => item.method !== "PUT"), api("DELETE", "/api/users/member-lucia",
       { code: "Tenancy.Member.LastTenantAdmin", title: "Conflicto", detail: "Tiene que quedar al menos un Dueño activo." }, 409)],
     actions: [appClick("button", "Más acciones"), appClick("menuitem", "Quitar de la organización"), appClick("button", "Quitar")] });
+  // Un error del servidor al guardar la Configuración: el aviso rojo de abajo, con «Copiar código» y ✕ (Avisos, «Error del
+  // servidor»). Lo da el MutationCache: el arnés usa el QueryClient de la app.
+  const settingsApp = (width) => stageCases(root, "consolidacion/f7").find((entry) => entry.pair === "configuracion-otra-persona-cambio" && entry.viewport.width === width).app;
+  const serverError = (app) => ({ ...app, readySelector: "[data-sonner-toast]", readyText: "Algo salió mal",
+    responses: [api("PUT", "/api/organization/settings", { status: 500, title: "Error", traceId: "00-r2c-01" }, 500),
+      ...app.responses.filter((item) => item.method !== "PUT")] });
   const userFails = { path: "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fusuarios%2Fmember-1", captureMode: "harness", userFixture: "visual-owner",
     readySelector: '[role="alert"]', readyText: "No pudimos abrir esta pantalla",
     responses: [api("GET", "/api/users/member-1", { status: 500, title: "Error", traceId: "00-r2a-02" }, 500)] };
   return [
-    ...custom({ id: "aviso-error-accion", group: "avisos", state: "Aviso rojo de una acción directa que falló (la última Dueña se quita de la organización): abajo, con ✕",
+    ...custom({ id: "aviso-error-servidor", group: "avisos", state: "Aviso rojo de un error del servidor al guardar la Configuración: abajo, con «Copiar código» y ✕",
       desktop: { board: "Avisos", props: { caso: "Error del servidor" } }, phone: { board: "M-Avisos", props: { caso: "Error del servidor" } },
+      app: serverError(settingsApp(1440)), phoneApp: serverError(settingsApp(390)) }),
+    ...custom({ id: "usuario-quitar-ultima-duena", group: "usuarios", state: "Ficha de Usuario: la última Dueña se quita de la organización y la franja le dice qué hacer",
+      desktop: { board: "Usuario", props: { usuario: "Lucía (vos)" }, boardActions: [click('button[aria-label="Más acciones"]'), click("text=Quitar de la organización")] },
+      phone: { board: "M-Usuario", state: "Ficha de Usuario en el teléfono: el error de «Quitar de la organización» en la franja (el tablero no dibuja el error)" },
       app: leaving(luciaApp(1440)), phoneApp: leaving(luciaApp(390)) }),
     ...custom({ id: "usuario-no-carga", group: "errores", state: "Ficha de Usuario que no carga: la «Pantalla de error» con «Reintentar»",
       desktop: { board: "Criterio-Avisos", section: "Cómo se ve cada uno", state: "Ficha de Usuario que no carga: la «Pantalla de error» (Criterio · Avisos › Pantalla de error)" },

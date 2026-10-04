@@ -348,8 +348,9 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(screen.queryByText("Tiene que quedar al menos un Dueño activo.")).not.toBeInTheDocument();
   }, 10_000);
 
-  // Tablero Usuario: si la última Dueña se quita de la organización, el aviso le dice que antes le dé el rol a otra persona.
-  it("si la última Dueña sale de la organización, el aviso le dice que se lo dé a otra persona antes", async () => {
+  // Tablero Usuario («Lucía (vos)»): si la última Dueña se quita de la organización, la franja de la ficha (no el aviso de
+  // abajo) le dice que antes le dé el rol a otra persona.
+  it("si la última Dueña sale de la organización, la franja le dice que se lo dé a otra persona antes", async () => {
     const user = userEvent.setup();
     api({ ...member, userId: "ana" });
     server.use(http.delete("/api/users/member-1", () => HttpResponse.json(
@@ -362,7 +363,9 @@ describe("UserDetailPage (tablero Usuario)", () => {
     const dialog = await screen.findByRole("dialog", { name: "¿Quitar a Lucía Fernández de Empresa A?" });
     await user.click(within(dialog).getByRole("button", { name: "Quitar" }));
 
-    expect(await screen.findByText("Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de salir de la organización.")).toBeVisible();
+    const leaving = "Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de salir de la organización.";
+    expect(await within(screen.getByRole("main")).findByRole("alert")).toHaveTextContent(leaving);
+    expect(within(screen.getByRole("region", { name: /^Notificaciones/ })).queryByText(leaving)).not.toBeInTheDocument();
     expect(screen.queryByText("Tiene que quedar al menos un Dueño activo.")).not.toBeInTheDocument();
   }, 10_000);
 
