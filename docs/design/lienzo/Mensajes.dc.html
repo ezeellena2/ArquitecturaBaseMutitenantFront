@@ -570,6 +570,8 @@
 </style>
 <style data-vuelta="1004-sin-revelar">
 </style>
+<style data-vuelta="1004-sin-revelar-cuenta">
+</style>
 </helmet>
 
 <div class="msg-root">
@@ -646,7 +648,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Código para verificar un método","Enlace para entrar (bot)","Invitación a una organización","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Membresía terminada","Exportación de datos lista","Baja pedida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: ya tiene una cuenta","Recuperación: aprobada","Recuperación: rechazada"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Código para verificar un método","Enlace para entrar (bot)","Invitación a una organización","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Método de ingreso: ya es de una cuenta","Membresía terminada","Exportación de datos lista","Baja pedida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: ya tiene una cuenta","Recuperación: aprobada","Recuperación: rechazada"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
 // Mensajes que manda el sistema en los flujos de la plantilla. Salen por el outbox, con textos de Notifications.resx
 // (y los del módulo WhatsApp), en la cultura de la persona y con fechas de DisplayFormatter (es-AR, Buenos Aires).
 // Correo: la estructura de _Layout.html, LoginCode.html e Invitation.html de ArquitecturaBase.
@@ -756,6 +758,21 @@ const MENSAJES = [
       notas: [P(SI_NO_FUISTE)],
     },
     wa: { plantilla: 'aviso_metodo_ingreso', texto: [N('Cambiaron los métodos de ingreso de tu cuenta de ArquitecturaBase: elegiste como principal l***@gmail.com el 27/09/2026 a las 14:35. ' + SI_NO_FUISTE)] },
+  },
+  {
+    n: 'Método de ingreso: ya es de una cuenta',
+    // ADR 0041: si alguien quiere sumar a su cuenta un correo o un número que ya es de otra, le llega esto al dueño y no hay código.
+    // La pantalla de quien lo quiso sumar sigue igual: no revela que ese correo o número tiene cuenta.
+    correo: {
+      asunto: 'Ya tenés una cuenta con este correo',
+      para: 'ana.gomez@gmail.com',
+      titulo: 'Ya tenés una cuenta con este correo',
+      parrafos: [P('Alguien quiso agregar este correo para entrar a otra cuenta de ArquitecturaBase. Este correo ya es de una cuenta, así que no lo agregamos y no mandamos ningún código.'),
+        P('Si fuiste vos, entrá con este correo: ya tenés una cuenta.')],
+      notas: [P('Si no fuiste vos, ignorá este mensaje.')],
+    },
+    // Plantilla `metodo_ingreso_en_uso`: sin variables.
+    wa: { plantilla: 'metodo_ingreso_en_uso', texto: [N('Alguien quiso agregar este número para entrar a otra cuenta de ArquitecturaBase, pero este número ya es de una cuenta. Si fuiste vos, entrá con este número: ya tenés una cuenta. Si no fuiste vos, ignorá este mensaje.')] },
   },
   {
     n: 'Membresía terminada',

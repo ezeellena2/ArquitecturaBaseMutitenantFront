@@ -1,7 +1,8 @@
 """Mi cuenta › WhatsApp (Etapa 8, ADR 0033), sobre los tableros aprobados de Mi cuenta. Copia los estados de WhatsApp de
 Ingreso y los textos reales del front (common.phone, common.code, auth.login):
 - Cuenta-Agregar: «WhatsApp» con el campo de país y número (solo los países que habilita WhatsApp; hoy, Argentina) y sus
-  errores: país que WhatsApp no habilita (solo para un número nuevo) y número que ya usa otra cuenta.
+  error del país que WhatsApp no habilita (solo para un número nuevo). Un correo o número de otra cuenta no da error: la pantalla
+  sigue igual y a su dueño le llega un aviso en lugar del código (ADR 0041, 2026-10-03).
 - Cuenta-Verificar: el código por WhatsApp, con «Reenviar», y sus errores: incorrecto y vencido.
 - Cuenta y Cuenta-Agregar: sin el módulo de WhatsApp, la fila del teléfono y la opción no aparecen.
 Cada tablero lleva `data-vuelta="1004-<tablero>"`; si ya la tiene, no se toca."""
@@ -112,12 +113,11 @@ def agregar():
         dialogo(titulo, SEG_WA + telefono(), ENVIAR),
         dialogo(titulo, SEG_WA + telefono(paises=True), ENVIAR),
         dialogo(titulo, SEG_WA + telefono("+1 415 555-0134", "Todavía no mandamos códigos a números de ese país."), ENVIAR),
-        dialogo(titulo, SEG_WA + telefono("11 4444-1234", "Este número ya está asociado a una cuenta."), ENVIAR),
         sin_modulo,
     ]) + b.t[fin:]
     sin_whatsapp(b)
     tweak(b, "estado", ["Correo", "WhatsApp", "WhatsApp: elegir el país", "WhatsApp: país que WhatsApp no habilita",
-                        "WhatsApp: número de otra cuenta", "Sin el módulo de WhatsApp"],
+                        "Sin el módulo de WhatsApp"],
           "      conModulo: e !== 'Sin el módulo de WhatsApp',\n      sinModulo: e === 'Sin el módulo de WhatsApp',\n")
     b.guardar()
 

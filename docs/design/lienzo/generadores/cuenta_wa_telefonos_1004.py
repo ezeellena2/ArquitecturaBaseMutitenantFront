@@ -1,7 +1,7 @@
 """Mi cuenta › WhatsApp en el teléfono (Etapa 8), en formato app, con los estados aprobados en la compu el 2026-10-03:
 - M-Cuenta: con o sin el módulo de WhatsApp;
 - M-Cuenta-Agregar: «WhatsApp» con país y número, la hoja para elegir el país y los errores (país que WhatsApp no habilita,
-  número de otra cuenta); sin el módulo, solo el correo;
+  sin el de número de otra cuenta: no se revela, ADR 0041); sin el módulo, solo el correo;
 - M-Cuenta-Verificar: el código por WhatsApp, con «Reenviar», y los errores (incorrecto y vencido);
 - M-Cuenta-Metodo (nuevo): el ⋮ del WhatsApp como hoja de acciones y las confirmaciones con el código a otro método.
 Rehace esos teléfonos encima de los de plat_personal_telefonos_1004.py: corre después de él y antes de las reglas finales."""
@@ -92,12 +92,11 @@ AGREGAR = "Agregar correo o teléfono"
 
 armar("M-Cuenta", "Mi cuenta · teléfono", "whatsapp", ["Con el módulo de WhatsApp", "Sin el módulo de WhatsApp"], [CUENTA, SIN])
 armar("M-Cuenta-Agregar", "Mi cuenta · agregar correo o teléfono · teléfono", "estado",
-      ["Correo", "WhatsApp", "WhatsApp: elegir el país", "WhatsApp: país que WhatsApp no habilita", "WhatsApp: número de otra cuenta", "Sin el módulo de WhatsApp"], [
+      ["Correo", "WhatsApp", "WhatsApp: elegir el país", "WhatsApp: país que WhatsApp no habilita", "Sin el módulo de WhatsApp"], [
           CUENTA + hoja(AGREGAR, SEG_CORREO + campo("Correo", "lucia.trabajo@gmail.com", req=False), ENVIAR),
           CUENTA + hoja(AGREGAR, SEG_WA + tel(), ENVIAR),
           CUENTA + hoja("País", f'<div class="ap-bus">{LUPA} Buscar país</div><div class="ap-pais" role="option" aria-selected="true">Argentina<span class="c">+54</span>{TILDE}</div>'),
           CUENTA + hoja(AGREGAR, SEG_WA + tel("+1 415 555-0134", "Todavía no mandamos códigos a números de ese país."), ENVIAR),
-          CUENTA + hoja(AGREGAR, SEG_WA + tel("11 4444-1234", "Este número ya está asociado a una cuenta."), ENVIAR),
           SIN + hoja("Agregar correo", campo("Correo", "lucia.trabajo@gmail.com", req=False), ENVIAR),
       ])
 
