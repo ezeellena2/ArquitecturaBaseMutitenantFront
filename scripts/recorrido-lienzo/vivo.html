@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Vista en vivo</title>
+<style>
+  :root { --fondo: #e7e2d8; --banda: #17393a; --banda-tx: #f6f3ec; --tenue: #b7cbc8; --marca: #0f7a72; --texto: #2a2622; }
+  * { box-sizing: border-box; }
+  body { margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: var(--fondo);
+    font-family: "Segoe UI", system-ui, sans-serif; color: var(--texto); }
+  header { display: flex; gap: 24px; align-items: center; padding: 12px 22px; background: var(--banda); color: var(--banda-tx); }
+  .info { flex: 1; min-width: 0; }
+  .ruta { font-size: 14px; color: var(--tenue); }
+  h1 { margin: 2px 0 4px; font-size: 24px; }
+  .vivo { font-size: 15px; color: var(--tenue); }
+  .vivo b { color: #9fe3c9; }
+  .controles { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  select, button { font: inherit; font-size: 16px; border-radius: 10px; border: 1px solid #b9b2a6; padding: 9px 14px; background: #fff;
+    color: var(--texto); cursor: pointer; }
+  select#pantalla { max-width: 420px; }
+  .tamanio { display: flex; }
+  .tamanio button { border-radius: 0; }
+  .tamanio button:first-child { border-radius: 10px 0 0 10px; }
+  .tamanio button:last-child { border-radius: 0 10px 10px 0; }
+  .tamanio button[aria-pressed="true"] { background: var(--marca); border-color: var(--marca); color: #fff; font-weight: 600; }
+  button:disabled { opacity: .4; cursor: default; }
+  main { flex: 1; min-height: 0; display: flex; gap: 16px; padding: 14px; justify-content: center; align-items: flex-start; }
+  figure { margin: 0; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  figcaption { font-size: 15px; font-weight: 600; }
+  .caja { position: relative; overflow: hidden; background: #fff; border-radius: 6px; box-shadow: 0 8px 28px rgba(0,0,0,.16); }
+  .caja iframe { border: 0; display: block; background: #fff; }
+</style>
+</head>
+<body>
+<header>
+  <div class="info">
+    <div class="ruta" id="ruta"></div>
+    <h1 id="titulo"></h1>
+    <div class="vivo">La app se actualiza <b>sola</b> cada vez que cambia el código. El tablero es el dibujo validado.</div>
+  </div>
+  <div class="controles">
+    <select id="pantalla" aria-label="Pantalla"></select>
+    <div class="tamanio" role="group" aria-label="Tamaño">
+      <button type="button" data-device="Compu">Compu</button>
+      <button type="button" data-device="Teléfono">Teléfono</button>
+    </div>
+    <select id="ver" aria-label="Qué ver">
+      <option value="ambos">Tablero y app</option>
+      <option value="app">Solo la app</option>
+      <option value="tablero">Solo el tablero</option>
+    </select>
+    <button type="button" id="recargar">Recargar</button>
+  </div>
+</header>
+<main id="escenario"></main>
+<script type="module">
+  const { cases, viteUrl } = await (await fetch("/vivo/casos.json")).json();
+  const $ = (id) => document.getElementById(id);
+  const stage = $("escenario");
+
+  // Cada pantalla junta su versión de compu y la de teléfono.
+  const screens = new Map();
+  for (const item of cases) {
+    const key = `${item.etapa}/${item.pair}`;
+    if (!screens.has(key)) screens.set(key, { key, etapa: item.etapa, pair: item.pair, versions: {} });
+    screens.get(key).versions[item.device] = item;
+  }
+  const groups = new Map();
+  for (const screen of screens.values()) {
+    if (!groups.has(screen.etapa)) {
+      const group = document.createElement("optgroup");
+      group.label = screen.etapa;
+      groups.set(screen.etapa, group);
+      $("pantalla").append(group);
+    }
+    groups.get(screen.etapa).append(new Option(screen.pair, screen.key));
+  }
+
+  const requested = cases.find((item) => item.id === new URLSearchParams(location.search).get("caso")) ?? cases[0];
+  let current = { key: `${requested.etapa}/${requested.pair}`, device: requested.device };
+  let view = "ambos";
+
+  function findByName(doc, role, name) {
+    const native = { button: "button", link: "a", checkbox: "input[type=checkbox]", textbox: "input,textarea" }[role];
+    const candidates = doc.querySelectorAll(`[role="${role}"]${native ? `,${native}` : ""}`);
+    return [...candidates].find((node) => (node.getAttribute("aria-label") ?? node.textContent ?? "").trim() === name);
+  }
+
+  // Las acciones del tablero (abrir un menú, un diálogo), como las aplican las capturas.
+  async function boardActions(doc, actions) {
+    for (const action of actions) {
+      const target = action.selector?.startsWith("text=")
+        ? [...doc.querySelectorAll("body *")].reverse().find((node) => node.textContent.trim() === action.selector.slice(5))
+        : action.selector ? doc.querySelector(action.selector) : findByName(doc, action.role, action.name);
+      target?.click();
+      await new Promise((resolve) => setTimeout(resolve, 350));
+    }
+  }
+
+  async function prepareBoard(frame, item) {
+    const win = frame.contentWindow;
+    const start = Date.now();
+    while (!(typeof win.__dcSetProps === "function" && win.__dcRootName?.())) {
+      if (Date.now() - start > 15000) return;
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    win.__dcSetProps(win.__dcRootName(), item.props);
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    await boardActions(frame.contentDocument, item.boardActions);
+  }
+
+  function pane(title, size, src, onLoad) {
+    const figure = document.createElement("figure");
+    const caption = document.createElement("figcaption");
+    caption.textContent = title;
+    const box = document.createElement("div");
+    box.className = "caja";
+    const frame = document.createElement("iframe");
+    frame.title = title.startsWith("Tablero") ? "Tablero" : "App";
+    frame.width = String(size.width);
+    frame.height = String(size.height);
+    frame.addEventListener("load", () => onLoad(frame));
+    frame.src = src;
+    box.append(frame);
+    figure.append(caption, box);
+    figure.dataset.width = String(size.width);
+    figure.dataset.height = String(size.height);
+    return figure;
+  }
+
+  function fit() {
+    const figures = [...stage.querySelectorAll("figure")];
+    const width = (stage.clientWidth - 28 - 16 * (figures.length - 1)) / Math.max(figures.length, 1);
+    const height = stage.clientHeight - 28 - 28;
+    for (const figure of figures) {
+      const w = Number(figure.dataset.width);
+      const h = Number(figure.dataset.height);
+      const scale = Math.min(1, width / w, height / h);
+      const box = figure.querySelector(".caja");
+      box.style.width = `${w * scale}px`;
+      box.style.height = `${h * scale}px`;
+      box.scrollTo(0, 0);
+      // Con zoom y no con transform: la app viene de Vite (otro origen) y Chrome no dibuja bien un iframe ajeno escalado.
+      box.querySelector("iframe").style.zoom = String(scale);
+    }
+  }
+
+  async function show() {
+    const screen = screens.get(current.key);
+    const item = screen.versions[current.device] ?? Object.values(screen.versions)[0];
+    current.device = item.device;
+    $("pantalla").value = current.key;
+    for (const button of document.querySelectorAll("[data-device]")) {
+      button.setAttribute("aria-pressed", String(button.dataset.device === item.device));
+      button.disabled = !screen.versions[button.dataset.device];
+    }
+    $("titulo").textContent = screen.pair;
+    $("ruta").textContent = `${screen.etapa} · Tablero ${item.board} · ${item.device} (${item.viewport.width}×${item.viewport.height})`;
+    history.replaceState(null, "", `?caso=${encodeURIComponent(item.id)}`);
+    await window.__vivoPreparar(item.id);
+    stage.replaceChildren();
+    if (view !== "app") stage.append(pane(`Tablero ${item.board}`, item.boardViewport, `/${encodeURIComponent(item.board)}.dc.html`,
+      (frame) => { void prepareBoard(frame, item); }));
+    // Playwright no calcula bien dónde tocar dentro de un iframe con zoom: las acciones se hacen a tamaño real y después
+    // la app vuelve a achicarse.
+    if (view !== "tablero") stage.append(pane("App", item.viewport, new URL(item.app.path, viteUrl).href, async (frame) => {
+      if (!item.app.actions.length) return;
+      frame.style.zoom = "1";
+      await window.__vivoAcciones(item.id);
+      fit();
+    }));
+    fit();
+  }
+
+  $("pantalla").addEventListener("change", (event) => { current = { ...current, key: event.target.value }; void show(); });
+  for (const button of document.querySelectorAll("[data-device]"))
+    button.addEventListener("click", () => { current = { ...current, device: button.dataset.device }; void show(); });
+  $("ver").addEventListener("change", (event) => { view = event.target.value; void show(); });
+  $("recargar").addEventListener("click", () => void show());
+  window.addEventListener("resize", fit);
+  void show();
+</script>
+</body>
+</html>
