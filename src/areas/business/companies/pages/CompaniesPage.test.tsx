@@ -112,6 +112,31 @@ describe("CompaniesPage", () => {
     await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Delta Norte S.A.", taxIdType: "AR-CUIT", taxIdNumber: "30712345671", timeZoneId: null }));
   }, 15_000);
 
+  // «Criterio · Diálogos» y «Criterio · Formularios»: el error general del diálogo va en la franja arriba de los botones,
+  // no arriba de los campos.
+  it("un error al crear va en la franja del diálogo, arriba de los botones", async () => {
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/filter-counts", () => HttpResponse.json({ all: 0, active: 0, inactive: 0 })),
+      http.post("/api/companies", () => HttpResponse.json({ status: 409, code: "Tenancy.Company.TaxIdAlreadyUsed", title: "Conflicto",
+        detail: "Ya hay una empresa con esa identificación fiscal." }, { status: 409 })),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Crear empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Crear empresa" });
+    await user.type(within(dialog).getByRole("textbox", { name: "Nombre" }), "Delta Norte S.A.");
+    await user.type(within(dialog).getByRole("textbox", { name: "CUIT" }), "30712345671");
+    await user.click(within(dialog).getByRole("button", { name: "Crear empresa" }));
+
+    const alert = await within(dialog).findByRole("alert");
+    expect(alert).toHaveTextContent("Ya hay una empresa con esa identificación fiscal.");
+    const following = (from: Node, to: Node) => Boolean(from.compareDocumentPosition(to) & Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(following(within(dialog).getByRole("combobox", { name: "Zona de negocio" }), alert)).toBe(true);
+    expect(following(alert, within(dialog).getByRole("button", { name: "Cancelar" }))).toBe(true);
+    expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
+  }, 10_000);
+
   it("inactiva una empresa con su versión y confirmación", async () => {
     let requestBody: unknown;
     server.use(

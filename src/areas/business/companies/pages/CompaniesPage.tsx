@@ -179,8 +179,9 @@ export function CompaniesPage() {
         <DialogHeader><DialogTitle>{t(editingCompany ? "companies:editTitle" : "companies:createTitle")}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="flex min-h-0 flex-col">
           <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
-            <FormError message={actionErrorMessage(failure, t)} />
             <CompanyFields draft={draft} onChange={(next) => { setDraft(next); setFailure(undefined); }} taxIdValid={taxIdValid} />
+            {/* «Criterio · Diálogos»: el error general, en la franja arriba de los botones. */}
+            <FormError message={actionErrorMessage(failure, t)} />
           </div>
           <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
             <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{t("common:actions.cancel")}</Button>
