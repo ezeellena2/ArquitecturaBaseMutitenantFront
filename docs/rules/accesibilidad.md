@@ -10,7 +10,7 @@
   ```
   (`vitest-axe/extend-expect` ya está en `test/setup.ts`).
 - **Piezas de `shared/ui` que ya lo resuelven:**
-  - `FormField` (rótulo, `aria-describedby`, `aria-invalid`);
+  - `FormField` (rótulo, `aria-describedby`, `aria-invalid`, `aria-required`), también con un `Select` adentro: la raíz lo recibe y lo pasa a su botón;
   - `IconButton` y `RowActions` (nombre obligatorio: `aria-label` con el dato de la fila, "Acciones de Tomás Acosta");
   - `Dialog` (foco atrapado y devuelto con `useRestoreFocusOnClose`);
   - `DataTable` (encabezados, `aria-sort`, `aria-busy`);
@@ -35,6 +35,7 @@
 
 ## Lo verifica
 - `vitest-axe` (E0) en cada test de pantalla (`toHaveNoViolations`).
+- `FormField.test.tsx` (R2c): con un `Select` adentro, el desplegable se rotula, es obligatorio y lleva su error.
 - Antes de cerrar una etapa: una pasada de axe en el navegador real, a 1440 y a 390, que cubre el contraste y no se puede hacer en jsdom.
 
 ## Detalle

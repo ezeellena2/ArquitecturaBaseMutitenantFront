@@ -3,10 +3,28 @@ import { cn } from "cn"
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { Select as SelectPrimitive } from "radix-ui"
 
+/// Lo que FormField le pasa a su control (rótulo, obligatorio, error): el Select de Radix no es un elemento, así que lo
+/// recibe la raíz y lo lleva su botón, que es lo que lee el lector de pantalla.
+type SelectFieldProps = Pick<React.ComponentProps<"button">, "id" | "aria-invalid" | "aria-describedby" | "aria-required">
+
+const SelectFieldContext = React.createContext<SelectFieldProps>({})
+
 function Select({
+  id,
+  "aria-invalid": ariaInvalid,
+  "aria-describedby": ariaDescribedBy,
+  "aria-required": ariaRequired,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />
+}: React.ComponentProps<typeof SelectPrimitive.Root> & SelectFieldProps) {
+  const field = React.useMemo<SelectFieldProps>(
+    () => ({ id, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy, "aria-required": ariaRequired }),
+    [id, ariaInvalid, ariaDescribedBy, ariaRequired]
+  )
+  return (
+    <SelectFieldContext.Provider value={field}>
+      <SelectPrimitive.Root data-slot="select" {...props} />
+    </SelectFieldContext.Provider>
+  )
 }
 
 function SelectGroup({
@@ -30,9 +48,11 @@ function SelectTrigger({
   size?: "sm" | "default"
 }) {
   const heightClass = size === "sm" ? "h-8" : "h-9";
+  const field = React.useContext(SelectFieldContext)
 
   return (
     <SelectPrimitive.Trigger
+      {...field}
       data-slot="select-trigger"
       data-size={size}
       className={cn(
