@@ -51,6 +51,28 @@ function subline(name: string) {
   return screen.getByRole("heading", { level: 1, name }).parentElement!.querySelector("[data-slot='page-subline']")!;
 }
 
+// La ficha de Lucía con un 409 de concurrencia al guardar sus empresas. Cuenta las lecturas de la ficha.
+function conflictOnCompanies() {
+  const reads = { user: 0 };
+  api(member);
+  server.use(
+    http.get("/api/users/member-1", () => { reads.user += 1; return HttpResponse.json(member); }),
+    http.put("/api/users/member-1", () => HttpResponse.json({ status: 409, code: "General.ConcurrencyConflict", title: "Conflicto",
+      detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar." }, { status: 409 })),
+  );
+  return reads;
+}
+
+async function addCompanyWithConflict(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(await screen.findByRole("button", { name: "Sumar empresa" }));
+  const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
+  await open(user, within(dialog).getByRole("combobox", { name: "Empresa" }));
+  await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
+  await user.click(within(dialog).getByRole("button", { name: "Sumar" }));
+  await within(dialog).findByRole("alert");
+  return dialog;
+}
+
 beforeEach(async () => {
   await configureI18n(referenceDataFixture().cultures);
   await changeCulture("es-AR");
@@ -285,6 +307,39 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await user.click(screen.getByRole("link", { name: "Empresas" }));
     expect(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).toBeVisible();
     expect(router.state.location.pathname).toBe("/org/usuarios/member-1");
+  }, 10_000);
+
+  // Después de un 409 en un diálogo, la ficha quedó vieja: al cerrarlo se vuelve a leer, salvo que haya cambios sin guardar
+  // (esos se conservan y el próximo «Guardar cambios» muestra el cartel del 409 con «Ver lo nuevo»).
+  it("después de un 409 en el diálogo, al cerrarlo sin cambios la ficha se vuelve a leer", async () => {
+    const user = userEvent.setup();
+    const reads = conflictOnCompanies();
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+
+    const dialog = await addCompanyWithConflict(user);
+    const before = reads.user;
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Sumar empresa" })).not.toBeInTheDocument());
+    await waitFor(() => expect(reads.user).toBeGreaterThan(before));
+  }, 10_000);
+
+  it("después de un 409 en el diálogo, con cambios sin guardar, cerrarlo no relee la ficha y conserva lo elegido", async () => {
+    const user = userEvent.setup();
+    const reads = conflictOnCompanies();
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
+    await user.keyboard("{Escape}");
+
+    const dialog = await addCompanyWithConflict(user);
+    const before = reads.user;
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(within(document.body).queryByRole("dialog", { name: "Sumar empresa" })).not.toBeInTheDocument());
+    expect(dialog).not.toBeInTheDocument();
+    expect(subline("Lucía Fernández")).toHaveTextContent(/Cambios sin guardar/);
+    expect(reads.user).toBe(before);
   }, 10_000);
 
   // «Criterio · Diálogos»: el error general de un diálogo va arriba de sus botones; el 409 también, una sola vez y sin el

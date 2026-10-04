@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
 import { Building2, Settings2, Trash2, UserRound } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -8,6 +8,7 @@ import { usePermissions } from "@/auth/usePermissions";
 import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import type { OrganizationUserResponse, RoleResponse, UpdateOrganizationUserRequest } from "@/shared/api/types";
+import { ApiError } from "@/shared/api/ApiError";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
@@ -83,6 +84,9 @@ export function UserDetailPage() {
   const [companyDialog, setCompanyDialog] = useState<CompanyDialogDraft | null>(null);
   const [failure, setFailure] = useState<unknown>();
   const [dialogFailure, setDialogFailure] = useState<unknown>();
+  // Un 409 de concurrencia en el diálogo deja la ficha vieja: al cerrarlo se vuelve a leer si no hay cambios sin guardar.
+  // Va aparte del error del diálogo, que se borra al cambiar algo en él.
+  const staleAfterDialog = useRef(false);
   const [confirmAction, setConfirmAction] = useState<"disable" | "remove" | "revoke" | null>(null);
   // Antes de las salidas tempranas: la pregunta de salida y el cartel del 409 siguen el borrador del acceso.
   const loaded = user.data;
@@ -107,7 +111,11 @@ export function UserDetailPage() {
   const save = useMutation({
     mutationFn: ({ request }: { request: UpdateOrganizationUserRequest; message: string; keepDraft?: boolean; origin: SaveOrigin }) => updateUser(memberId, request),
     onSuccess: async (_result, { message, keepDraft }) => { setFailure(undefined); setDialogFailure(undefined); if (!keepDraft) setDraft(null); setCompanyDialog(null); toast.success(sentence(message)); await refresh(); },
-    onError: (error, { origin }) => { if (origin === "dialog") setDialogFailure(error); else setFailure(error); },
+    onError: (error, { origin }) => {
+      if (origin !== "dialog") { setFailure(error); return; }
+      if (error instanceof ApiError && error.code === "General.ConcurrencyConflict") staleAfterDialog.current = true;
+      setDialogFailure(error);
+    },
   });
   const remove = useMutation({
     mutationFn: (_message: string) => removeUser(memberId, user.data?.version ?? 0),
@@ -187,10 +195,14 @@ export function UserDetailPage() {
     setDialogFailure(undefined);
   }
 
-  // ✕, Escape y «Cancelar» cierran igual: el error del diálogo se va con él.
+  // La X, Escape y «Cancelar» cierran igual: el error del diálogo se va con él. Después de un 409, la ficha se vuelve a
+  // leer; con cambios sin guardar no, para conservarlos: el próximo «Guardar cambios» muestra el cartel del 409.
   function closeCompanyDialog() {
     setCompanyDialog(null);
     setDialogFailure(undefined);
+    if (!staleAfterDialog.current) return;
+    staleAfterDialog.current = false;
+    if (!isDirty) { setDraft(null); void refresh(); }
   }
 
   function changeCompanyDialog(next: CompanyDialogDraft) {
