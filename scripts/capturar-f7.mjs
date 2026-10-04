@@ -1,16 +1,23 @@
-// Capturas de F7 (consolidación del front): los estados de los tableros que tocan la edición con
-// «Cambios sin guardar», «¿Salir sin guardar?», el 409 y el error de guardado. Mismo mecanismo que
-// capturar-etapa-6.mjs (el lienzo servido en local y Playwright), pero sin la app: el usuario ve el
-// tablero antes de que se programe. Uso: node scripts/capturar-f7.mjs [--id <caso>] [--browser-path <chrome>]
-import { mkdirSync } from "node:fs";
+// Capturas de F7 (consolidación del front): la edición con «Cambios sin guardar», «¿Salir sin guardar?», el 409 y el
+// error de guardado. Mismo mecanismo que capturar-etapa-6.mjs (el lienzo servido en local, el arnés visual de la app y
+// Playwright con el Chrome del sistema), con dos usos:
+// - antes de programar, solo los tableros: node scripts/capturar-f7.mjs --tableros [--id <caso>]
+// - mientras se programa, tablero y app lado a lado: node scripts/capturar-f7.mjs --app-url http://127.0.0.1:5187 [--pair <par>]
+// `--verify` comprueba los pares. Siempre reescribe manifest.json, con la forma de los de las etapas (la vista en vivo
+// de scripts/recorrido-lienzo lo lee).
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
-import { otpMaskStyle, startCanvasServer } from "./capturar-etapa-3a.mjs";
+import {
+  assertCapturedPairs, capturePaths, installApiMocks, otpMaskStyle, runAppActions, startCanvasServer, validateManifest, waitForAppFont,
+} from "./capturar-etapa-3a.mjs";
+import { api, organizationUserRows, publicPageResponses, roleLists, settingsResponses, userCompanyOptions, userDetailResponses } from "./capturar-etapa-6.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const canvas = path.join(root, "docs/design/lienzo");
 export const output = path.join(root, "docs/design/capturas/consolidacion/f7");
+export const manifestFile = path.join(output, "manifest.json");
 
 const desktop = { width: 1440, height: 900 };
 const phone = { width: 390, height: 844 };
@@ -88,12 +95,15 @@ export function boardFile(entry) {
   return path.join(output, "tableros", `${entry.id}-${size}.png`);
 }
 
+// Las de la vista en vivo (un clic por selector CSS, `text=` o rol y nombre) más escribir en un campo.
 async function runBoardActions(page, actions = []) {
   for (const action of actions) {
     if (action.type === "fill") {
       const field = page.getByRole("textbox", { name: action.name });
       await field.fill(action.value);
       await field.blur();
+    } else if (action.type === "click" && action.selector?.startsWith("text=")) {
+      await page.getByText(action.selector.slice(5), { exact: true }).last().click();
     } else if (action.type === "click") {
       await page.locator(action.selector).first().click();
     } else if (action.type === "toggle") {
@@ -106,8 +116,7 @@ async function runBoardActions(page, actions = []) {
   }
 }
 
-export async function captureBoard(browser, canvasUrl, entry) {
-  const file = boardFile(entry);
+export async function captureBoard(browser, canvasUrl, entry, file = boardFile(entry)) {
   mkdirSync(path.dirname(file), { recursive: true });
   const context = await browser.newContext({ viewport: entry.viewport, deviceScaleFactor: 1, locale: "es-AR" });
   try {
@@ -117,7 +126,7 @@ export async function captureBoard(browser, canvasUrl, entry) {
     await page.evaluate((props) => window.__dcSetProps(window.__dcRootName(), props), entry.props ?? {});
     await page.locator("[data-sc-name]").first().waitFor();
     await page.waitForTimeout(200);
-    await runBoardActions(page, entry.actions);
+    await runBoardActions(page, entry.actions ?? entry.boardActions);
     await page.addStyleTag({ content: '@font-face { font-family: Inter; src: url("/_fonts/inter-latin-wght-normal.woff2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }' });
     await page.evaluate(() => document.fonts.load("700 54px Inter"));
     await page.evaluate(() => document.fonts.ready);
@@ -134,24 +143,180 @@ export async function captureBoard(browser, canvasUrl, entry) {
   return file;
 }
 
+// --- Tablero y app lado a lado (fase 2 en adelante) ---
+
+const harness = (fixture, route) => `/src/test/visualApp.html?as=${fixture}&route=${encodeURIComponent(route)}`;
+// Lo que responde el back hoy (Errors.resx): el texto de cada error sale de ahí, no se inventa.
+const problem = (method, apiPath, code, detail) => api(method, apiPath, { code, title: "Conflicto", detail }, 409);
+const concurrency = (method, apiPath) => problem(method, apiPath, "General.ConcurrencyConflict",
+  "Otra persona cambió esto. Revisá la versión más reciente antes de guardar.");
+const lucia = organizationUserRows.find((row) => row.memberId === "member-lucia");
+const appFill = (name, value) => ({ type: "fill", role: "textbox", name, value });
+const appClick = (role, name) => ({ type: "click", role, name });
+const appPress = (role, name, key) => ({ type: "press", role, name, key });
+// Tablero Avisos: con la zona cambiada a Córdoba, como el formulario de fondo de «Salir sin guardar» y del 409.
+const cordoba = [appClick("combobox", "Zona horaria predeterminada"), appClick("option", "Córdoba")];
+const saveChanges = appClick("button", "Guardar cambios");
+const leaveDialog = { readySelector: '[role="dialog"]', readyText: "¿Salir sin guardar?" };
+
+/// Un estado a 1440 y a 390: cada tamaño con su tablero (o el más cercano, si ese estado no está dibujado) y la app con
+/// sus datos y sus pasos. Mismos campos que los manifiestos de las etapas, más `state`, que dice qué se ve.
+function pair({ id, state, desktop: desk, phone: mobile, route, fixture = "visual-owner", responses, actions = [], phoneActions = actions, ready = {} }) {
+  return [["escritorio", desktop, desk, actions], ["movil", phone, mobile, phoneActions]].map(([suffix, viewport, board, appActions]) => ({
+    id: `${id}-${suffix}`, pair: id, group: "fase-2", state: board.state ?? state, board: board.board, props: board.props ?? {},
+    boardActions: board.actions ?? [], viewport,
+    app: {
+      path: harness(fixture, route), captureMode: "harness", userFixture: fixture, responses, actions: appActions,
+      readySelector: ready.readySelector ?? "main", ...(ready.readyText ? { readyText: ready.readyText } : {}),
+    },
+  }));
+}
+
+function buildCases() {
+  const settings = settingsResponses("Verified");
+  const settingsConflict = [concurrency("PUT", "/api/organization/settings"), ...settings];
+  const publicPage = publicPageResponses("Publicada");
+  const publicPageConflict = [problem("PUT", "/api/organization/public-page", "PublicSite.PublicPage.VersionConflict",
+    "La página cambió desde que la abriste. Actualizala antes de guardar."), ...publicPage];
+  const tomas = userDetailResponses();
+  const tomasConflict = [concurrency("PUT", "/api/users/member-1"), ...tomas];
+  const luciaLastOwner = [api("GET", "/api/users/member-lucia", lucia), ...roleLists, userCompanyOptions,
+    problem("PUT", "/api/users/member-lucia", "Tenancy.Member.LastTenantAdmin", "Tiene que quedar al menos un Dueño activo.")];
+  const avisosLeave = { board: "Avisos", props: { caso: "Salir sin guardar" } };
+  const mAvisosLeave = { board: "M-Avisos", props: { caso: "Salir sin guardar" } };
+  const orgRoleOnDesk = (name) => [appClick("button", "Roles de la organización"), appClick("menuitemcheckbox", name), appPress("menuitemcheckbox", name, "Escape")];
+  const orgRoleOnPhone = (name) => [appClick("button", "Roles de la organización"), appClick("checkbox", name), appPress("checkbox", name, "Escape")];
+  const addCompany = [appClick("button", "Sumar empresa"), appClick("combobox", "Empresa"), appClick("option", "Beta S.R.L."), appClick("button", "Sumar")];
+
+  return [
+    ...pair({ id: "configuracion-cambios-sin-guardar", route: "/org/configuracion", responses: settings,
+      state: "Configuración con el nombre cambiado: «Cambios sin guardar», solo, en la banda.",
+      desktop: { board: "Configuracion", props: { dominio: "Verificado" }, actions: [fill("Nombre de la organización", "Grupo Delta Sur")] },
+      phone: { board: "M-Configuracion", state: "Configuración en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)." },
+      actions: [appFill("Nombre de la organización", "Grupo Delta Sur")] }),
+    ...pair({ id: "configuracion-salir-sin-guardar", route: "/org/configuracion", responses: settings,
+      state: "Configuración con cambios: salir pregunta «¿Salir sin guardar?» (B11).", desktop: avisosLeave, phone: mAvisosLeave,
+      actions: [...cordoba, appClick("link", "Empresas")], phoneActions: [...cordoba, appClick("link", "Volver a Más")], ready: leaveDialog }),
+    ...pair({ id: "configuracion-otra-persona-cambio", route: "/org/configuracion", responses: settingsConflict,
+      state: "Configuración: el 409, solo en su cartel, y «Cambios sin guardar» en la banda.",
+      desktop: { board: "Avisos", props: { caso: "Alguien cambió esto" } }, phone: { board: "M-Avisos", props: { caso: "Alguien cambió esto" } },
+      actions: [...cordoba, saveChanges], ready: { readyText: "Otra persona cambió esto mientras lo editabas." } }),
+    ...pair({ id: "pagina-publica-cambios-sin-guardar", route: "/org/pagina", responses: publicPage,
+      state: "Página pública con el nombre cambiado: «Publicada · Cambios sin guardar».",
+      desktop: { board: "Pagina-Org", props: { estado: "Publicada" }, actions: [fill("Nombre de la página", "Grupo Delta Sur")] },
+      phone: { board: "M-Pagina-Org", state: "Página pública en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)." },
+      actions: [appFill("Nombre de la página", "Grupo Delta Sur")] }),
+    ...pair({ id: "pagina-publica-error-al-guardar", route: "/org/pagina", responses: publicPageConflict,
+      state: "Página pública: el error de guardado en la franja del formulario, no en un aviso (el tablero no dibuja la franja).",
+      desktop: { board: "Pagina-Org", props: { estado: "Publicada" }, actions: [fill("Nombre de la página", "Grupo Delta Sur")] },
+      phone: { board: "M-Pagina-Org" },
+      actions: [appFill("Nombre de la página", "Grupo Delta Sur"), saveChanges], ready: { readyText: "La página cambió desde que la abriste." } }),
+    ...pair({ id: "pagina-publica-salir-sin-guardar", route: "/org/pagina", responses: publicPage,
+      state: "Página pública con cambios: salir pregunta «¿Salir sin guardar?» (tablero Avisos).", desktop: avisosLeave, phone: mAvisosLeave,
+      actions: [appFill("Nombre de la página", "Grupo Delta Sur"), appClick("link", "Empresas")],
+      phoneActions: [appFill("Nombre de la página", "Grupo Delta Sur"), appClick("link", "Volver a Más")], ready: leaveDialog }),
+    ...pair({ id: "usuario-salir-sin-guardar", route: "/org/usuarios/member-1", responses: tomas,
+      state: "Ficha de Usuario con cambios: salir pregunta «¿Salir sin guardar?» (tablero Avisos).", desktop: avisosLeave, phone: mAvisosLeave,
+      actions: [...orgRoleOnDesk("Auditor"), appClick("link", "Empresas")],
+      phoneActions: [...orgRoleOnPhone("Auditor"), appClick("link", "Volver a Usuarios")], ready: leaveDialog }),
+    ...pair({ id: "usuario-error-al-guardar", route: "/org/usuarios/member-lucia", responses: luciaLastOwner,
+      state: "Ficha de Usuario: una regla rechaza el guardado y el error va en la franja debajo de la banda.",
+      desktop: { board: "Usuario", props: { usuario: "Lucía (vos)" },
+        actions: [openOrgRoles, click("text=Dueño"), click("button.o-capa"), click(".w-bnd .ac button.cb-pri")] },
+      phone: { board: "M-Usuario", state: "Ficha de Usuario en el teléfono: la franja con el margen de las tarjetas (el tablero no dibuja el error)." },
+      actions: [...orgRoleOnDesk("Dueño"), saveChanges], phoneActions: [...orgRoleOnPhone("Dueño"), saveChanges],
+      ready: { readyText: "Tiene que quedar al menos un Dueño activo." } }),
+    ...pair({ id: "usuario-dialogo-error", route: "/org/usuarios/member-1", responses: tomasConflict,
+      state: "Ficha de Usuario: el 409 de «Sumar empresa» en la franja del diálogo, arriba de los botones (el tablero no dibuja el error).",
+      desktop: { board: "Usuario", props: { usuario: "Tomás (activo)" }, actions: [click("button.cb-sec.ch")] },
+      phone: { board: "M-Usuario-Empresa" },
+      actions: addCompany, ready: { readySelector: '[role="dialog"] [role="alert"]' } }),
+  ];
+}
+
+export function writeManifest() {
+  mkdirSync(output, { recursive: true });
+  const cases = buildCases();
+  writeFileSync(manifestFile, `${JSON.stringify({ version: 1, cases }, null, 2)}\n`);
+  return validateManifest(manifestFile, canvas);
+}
+
+async function captureApp(browser, appUrl, entry, file) {
+  const context = await browser.newContext({ viewport: entry.viewport, deviceScaleFactor: 1, locale: "es-AR" });
+  try {
+    await installApiMocks(context, entry.app.responses, entry.app.userFixture);
+    const app = await context.newPage();
+    await app.goto(new URL(entry.app.path, appUrl).href, { waitUntil: "domcontentloaded" });
+    await runAppActions(app, entry.app.actions);
+    await app.locator(entry.app.readySelector ?? "main").first().waitFor();
+    if (entry.app.readyText) await app.getByText(entry.app.readyText).first().waitFor();
+    await app.waitForTimeout(300);
+    await waitForAppFont(app);
+    await app.addStyleTag({ content: otpMaskStyle });
+    await app.screenshot({ path: file });
+  } finally {
+    await context.close();
+  }
+}
+
+// Una sola imagen para mirar: el tablero a la izquierda y la app a la derecha, con su rótulo.
+async function composeSideBySide(browser, entry, files) {
+  const image = (file) => `data:image/png;base64,${readFileSync(file).toString("base64")}`;
+  const figure = (label, file) => `<figure><figcaption>${label}</figcaption><img src="${image(file)}"></figure>`;
+  const page = await browser.newPage({ viewport: { width: entry.viewport.width * 2 + 72, height: entry.viewport.height + 80 }, deviceScaleFactor: 1 });
+  try {
+    await page.setContent(`<!doctype html><html><body style="margin:0;background:#ece6dc">
+      <style>main{display:flex;gap:24px;padding:16px 24px 24px}figure{margin:0}figcaption{font:600 14px/1.6 system-ui,sans-serif;color:#3b352d;margin-bottom:6px}
+      img{display:block;box-shadow:0 0 0 1px #d8d0c4}</style>
+      <main>${figure(`Tablero · ${entry.board}`, files.board)}${figure("App", files.app)}</main></body></html>`);
+    await page.waitForFunction(() => [...document.images].every((img) => img.complete));
+    const file = files.app.replace(/-app\.png$/, "-lado-a-lado.png");
+    await page.screenshot({ path: file, fullPage: true });
+    return file;
+  } finally {
+    await page.close();
+  }
+}
+
 function option(args, name) {
   const index = args.indexOf(name);
   return index < 0 ? null : args[index + 1] ?? null;
 }
 
+const relative = (file) => path.relative(root, file).replaceAll("\\", "/");
+
 async function main(args) {
+  const cases = writeManifest();
+  if (args.includes("--verify")) {
+    assertCapturedPairs(cases, output);
+    console.log(`${cases.length} capturas de tablero y app de F7 verificadas.`);
+    return;
+  }
+  const appUrl = option(args, "--app-url");
+  const boardsOnly = args.includes("--tableros");
+  if (!boardsOnly && !appUrl) throw new Error("Indicá --tableros (solo el lienzo) o --app-url del servidor Vite (lado a lado).");
   const id = option(args, "--id");
-  const selected = boardCases.filter((entry) => !id || entry.id === id);
-  if (selected.length === 0) throw new Error("No hay capturas para ese filtro.");
+  const pairId = option(args, "--pair");
   const executablePath = option(args, "--browser-path") ?? process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
   // Sin una ruta, el Chrome del sistema: el Chromium de Playwright no siempre está descargado.
   const browser = await chromium.launch({ headless: true, ...(executablePath ? { executablePath } : { channel: "chrome" }) });
   const server = await startCanvasServer(canvas);
   try {
-    for (const entry of selected) {
-      const file = await captureBoard(browser, server.url, entry);
-      console.log(`${path.relative(root, file).replaceAll("\\", "/")}: ${entry.state}`);
+    if (boardsOnly) {
+      const selected = boardCases.filter((entry) => !id || entry.id === id);
+      if (selected.length === 0) throw new Error("No hay tableros para ese filtro.");
+      for (const entry of selected) console.log(`${relative(await captureBoard(browser, server.url, entry))}: ${entry.state}`);
+      return;
     }
+    const selected = cases.filter((entry) => (!pairId || entry.pair === pairId) && (!id || entry.id === id));
+    if (selected.length === 0) throw new Error("No hay pares para ese filtro.");
+    for (const entry of selected) {
+      const files = capturePaths(output, entry);
+      await captureBoard(browser, server.url, entry, files.board);
+      await captureApp(browser, appUrl, entry, files.app);
+      console.log(`${relative(await composeSideBySide(browser, entry, files))}: ${entry.state}`);
+    }
+    assertCapturedPairs(selected, output);
   } finally {
     await server.close();
     await browser.close();

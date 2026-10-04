@@ -9,7 +9,8 @@ export const output = path.join(root, "docs/design/capturas/etapa-6");
 export const canvas = path.join(root, "docs/design/lienzo");
 export const manifestFile = path.join(output, "manifest.json");
 
-const api = (method, path, body, status = 200, query) => ({ method, path, body, status, ...(query ? { query } : {}) });
+// Los datos del tablero también los usan las capturas de la consolidación (capturar-f7.mjs).
+export const api = (method, path, body, status = 200, query) => ({ method, path, body, status, ...(query ? { query } : {}) });
 const pageOf = (items, pageSize = 10, totalCount = items.length) => ({
   items, page: 1, pageSize, totalCount, totalPages: Math.ceil(totalCount / pageSize), hasPrevious: false, hasNext: totalCount > pageSize,
 });
@@ -53,7 +54,7 @@ const member = {
   createdAtUtc: "2026-10-02T12:00:00Z",
 };
 const inCompany = (companyId, companyName, role) => ({ companyId, companyName, status: "Active", roles: [role] });
-const organizationUserRows = [
+export const organizationUserRows = [
   ["member-lucia", "Lucía Fernández", "lucia.fernandez", "Active", [owner], [inCompany("company-1", "Delta S.A.", companyAdmin)]],
   ["member-1", "Tomás Acosta", "tomas.acosta", "Active", [], [inCompany("company-1", "Delta S.A.", companyReader)]],
   ["member-julieta", "Julieta Sosa", "julieta.sosa", "Active", [auditorRole], []],
@@ -129,12 +130,12 @@ const permissionGroups = [
   permissionGroup("publicpage", "Página pública", ["publicpage.manage"]),
 ];
 
-const roleLists = [
+export const roleLists = [
   api("GET", "/api/roles/paged", pageOf([companyAdmin, companyReader, southReader, northReader], 10, 4), 200, { scope: "Company" }),
   api("GET", "/api/roles/paged", pageOf([owner, peopleRole, auditorRole], 10, 3), 200, { scope: "Organization" }),
   api("GET", "/api/roles/paged", pageOf(roles, 10, roles.length)),
 ];
-const userCompanyOptions = api("GET", "/api/companies/paged", pageOf([company, addableCompany], 100, 2), 200, { page: "1", pageSize: "100", sort: "name" });
+export const userCompanyOptions = api("GET", "/api/companies/paged", pageOf([company, addableCompany], 100, 2), 200, { page: "1", pageSize: "100", sort: "name" });
 const companyRows = [company, {
   ...company, id: "company-3", name: "Delta Sur S.R.L.",
   taxId: { country: "AR", type: "AR-CUIT", number: "30715554442" }, timeZoneId: "America/Argentina/Cordoba", memberCount: 4,
@@ -162,7 +163,7 @@ function usersResponses() {
   ];
 }
 
-function userDetailResponses() {
+export function userDetailResponses() {
   return [
     api("GET", "/api/users/member-1", member),
     ...roleLists,
@@ -170,7 +171,7 @@ function userDetailResponses() {
   ];
 }
 
-function settingsResponses(domainState = "Verified") {
+export function settingsResponses(domainState = "Verified") {
   const domain = {
     // Como el back: el registro TXT se carga en el dominio con el prefijo ab-verificacion=.
     id: "domain-1", domain: "delta.ejemplo.com", status: domainState,
@@ -187,7 +188,7 @@ function settingsResponses(domainState = "Verified") {
   ];
 }
 
-function publicPageResponses(state = "Published") {
+export function publicPageResponses(state = "Published") {
   const blocked = state === "Despublicada por la plataforma";
   const published = state === "Publicada";
   return [api("GET", "/api/organization/public-page", {
