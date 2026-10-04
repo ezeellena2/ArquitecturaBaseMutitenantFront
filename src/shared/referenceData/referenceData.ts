@@ -95,6 +95,11 @@ export function enabledOptions<T extends { isEnabled: boolean }>(rows: readonly 
   return rows.filter((row) => row.isEnabled);
 }
 
+/** Tablero Configuración: la moneda con su código, «Peso argentino (ARS)», en el desplegable y como texto. */
+export function currencyLabel(currency: Pick<CurrencyReference, "name" | "code">): string {
+  return `${currency.name} (${currency.code})`;
+}
+
 export async function fetchReferenceData(
   culture: string | null,
   etag: string | null,

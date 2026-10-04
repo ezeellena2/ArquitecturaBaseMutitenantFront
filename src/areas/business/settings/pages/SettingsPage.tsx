@@ -21,6 +21,10 @@ import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { List, ListItem } from "@/shared/ui/List";
+import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
+import { CultureText } from "@/shared/ui/format/CultureText";
+import { CurrencyText } from "@/shared/ui/format/CurrencyText";
+import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
 import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import {
@@ -112,13 +116,23 @@ export function SettingsPage() {
         {showGeneralError ? <FormError message={showGeneralError} /> : null}
         {failure && !(failure instanceof ApiError && failure.code === "General.ConcurrencyConflict") ? <FormError message={saveError?.detail ?? t("common:states.error")} /> : null}
         <Surface className="overflow-hidden">
-          <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2>{t("settings:dataTitle")}</h2></header>
+          <section aria-labelledby="settings-data-title">
+          <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2 id="settings-data-title">{t("settings:dataTitle")}</h2></header>
           {settings.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft ? <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5">
-            <FormField label={t("settings:fields.name")} required><Input value={draft.name} disabled={!canManage} maxLength={120} onChange={(event) => setDraftState({ ...draft, name: event.target.value })} /></FormField>
-            <FormField label={t("settings:fields.culture")}><CultureSelect value={draft.defaultCulture} onChange={(defaultCulture) => setDraftState({ ...draft, defaultCulture })} placeholder={t("settings:chooseCulture")} disabled={!canManage} /></FormField>
-            <FormField label={t("settings:fields.timeZone")}><TimeZoneSelect value={draft.defaultTimeZoneId} onChange={(defaultTimeZoneId) => setDraftState({ ...draft, defaultTimeZoneId })} placeholder={t("settings:chooseTimeZone")} disabled={!canManage} /></FormField>
-            <FormField label={t("settings:fields.currency")}><CurrencySelect value={draft.defaultCurrency} onChange={(defaultCurrency) => setDraftState({ ...draft, defaultCurrency })} placeholder={t("settings:chooseCurrency")} disabled={!canManage} /></FormField>
+            {/* Tablero «Criterio · Formularios»: sin permiso para cambiar, los datos se leen como texto, sin campos grises. */}
+            {canManage ? <>
+              <FormField label={t("settings:fields.name")} required><Input value={draft.name} maxLength={120} onChange={(event) => setDraftState({ ...draft, name: event.target.value })} /></FormField>
+              <FormField label={t("settings:fields.culture")}><CultureSelect value={draft.defaultCulture} onChange={(defaultCulture) => setDraftState({ ...draft, defaultCulture })} placeholder={t("settings:chooseCulture")} /></FormField>
+              <FormField label={t("settings:fields.timeZone")}><TimeZoneSelect value={draft.defaultTimeZoneId} onChange={(defaultTimeZoneId) => setDraftState({ ...draft, defaultTimeZoneId })} placeholder={t("settings:chooseTimeZone")} /></FormField>
+              <FormField label={t("settings:fields.currency")}><CurrencySelect value={draft.defaultCurrency} onChange={(defaultCurrency) => setDraftState({ ...draft, defaultCurrency })} placeholder={t("settings:chooseCurrency")} /></FormField>
+            </> : <>
+              <ReadOnlyField label={t("settings:fields.name")}>{draft.name}</ReadOnlyField>
+              <ReadOnlyField label={t("settings:fields.culture")}><CultureText value={draft.defaultCulture} /></ReadOnlyField>
+              <ReadOnlyField label={t("settings:fields.timeZone")}><TimeZoneText value={draft.defaultTimeZoneId} /></ReadOnlyField>
+              <ReadOnlyField label={t("settings:fields.currency")}><CurrencyText value={draft.defaultCurrency} /></ReadOnlyField>
+            </>}
           </div> : null}
+          </section>
         </Surface>
 
         <Surface className="overflow-hidden">

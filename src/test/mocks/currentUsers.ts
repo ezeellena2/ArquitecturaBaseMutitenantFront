@@ -47,6 +47,12 @@ export const businessE6Admin: MeResponse = {
   permissions: ["users.read", "users.invite", "users.manage", "roles.read", "roles.manage", "companies.read", "companies.manage", "company.members.read", "company.members.manage", "settings.read", "settings.manage", "publicpage.manage", "audit.read"],
 };
 
+/** Solo ve Configuración: los datos se leen como texto, sin campos grises. */
+export const businessSettingsReader: MeResponse = {
+  ...businessUser,
+  permissions: ["settings.read"],
+};
+
 export const platformOperator: MeResponse = {
   ...consumerWithoutOrganizations,
   access: "platform",
@@ -118,6 +124,7 @@ export const currentUsers = {
   "consumer-with-organizations": consumerWithOrganizations,
   "business-admin": businessUser,
   "business-e6-admin": businessE6Admin,
+  "business-settings-reader": businessSettingsReader,
   "business-role-manager": businessRoleManager,
   "business-no-permissions": businessWithoutPermissions,
   "platform-operator": platformOperator,

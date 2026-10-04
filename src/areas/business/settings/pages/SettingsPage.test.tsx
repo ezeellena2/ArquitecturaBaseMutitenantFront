@@ -23,6 +23,26 @@ beforeEach(async () => {
 });
 
 describe("SettingsPage", () => {
+  // Tablero «Criterio · Formularios»: lo que no se edita se muestra como texto, nunca como un campo gris.
+  it("sin permiso para cambiar, muestra los datos como texto y sin botones", async () => {
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+    );
+
+    renderRouteWithProviders("/org/configuracion", { as: "business-settings-reader" });
+    const data = await screen.findByRole("region", { name: "Datos de la organización" });
+
+    await waitFor(() => expect(within(data).getByText("Peso argentino (ARS)")).toBeVisible());
+    expect(within(data).getByText("Grupo Delta")).toBeVisible();
+    expect(within(data).getByText("Español (Argentina)")).toBeVisible();
+    expect(within(data).getByText("Buenos Aires (GMT−3)")).toBeVisible();
+    expect(within(data).queryByRole("textbox")).not.toBeInTheDocument();
+    expect(within(data).queryByRole("combobox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Guardar cambios" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Agregar dominio" })).not.toBeInTheDocument();
+  });
+
   it("guarda con versión y quita un dominio con el texto del tablero", async () => {
     let updateBody: unknown;
     let removeUrl: URL | undefined;

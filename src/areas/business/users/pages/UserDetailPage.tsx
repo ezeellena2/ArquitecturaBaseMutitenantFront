@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import { RolesField } from "../components/RolesField";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { List, ListItem } from "@/shared/ui/List";
+import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { fetchAssignableRoles, fetchCompanyOptions, fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userCompaniesQueryKey, userQueryKey, userRolesQueryKey, usersQueryRoot } from "../api/users";
 
 type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
@@ -71,13 +72,6 @@ function AccessBox({ title, children }: { title: string; children: ReactNode }) 
       {children}
     </section>
   </Surface>;
-}
-
-function ReadOnlyField({ label, children }: { label: string; children: ReactNode }) {
-  return <div className="flex flex-col gap-1.5 lg:gap-2">
-    <span className="text-[12px] font-semibold text-[var(--t2)] lg:text-[13px]">{label}</span>
-    <p className="min-h-9 content-center text-[13px] text-[var(--t1)]">{children}</p>
-  </div>;
 }
 
 export function UserDetailPage() {

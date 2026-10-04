@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { enabledOptions, type CurrencyReference } from "@/shared/referenceData/referenceData";
+import { currencyLabel, enabledOptions } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { SearchSelect } from "../SearchSelect";
 
@@ -11,11 +11,6 @@ interface CurrencySelectProps {
   disabled?: boolean;
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
-}
-
-// Tablero Configuración: la moneda lleva su código, «Peso argentino (ARS)».
-function currencyLabel(currency: CurrencyReference): string {
-  return `${currency.name} (${currency.code})`;
 }
 
 /** Selector de códigos monetarios: todos los datos visibles llegan del catálogo. */
