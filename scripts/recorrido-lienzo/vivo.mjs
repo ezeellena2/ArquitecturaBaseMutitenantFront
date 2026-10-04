@@ -1,8 +1,8 @@
 // Vista en vivo de una pantalla mientras se programa: en una ventana de Chrome, su tablero validado al lado de la app con
 // datos de prueba. La app sale del servidor de Vite, así que cada cambio del código se ve solo, sin tocar nada.
 //
-// Uso: node scripts/recorrido-lienzo/vivo.mjs [<etapa>/<caso>]
-//        por ejemplo etapa-6/usuarios-lista-escritorio; la pantalla también se elige en la ventana.
+// Uso: node scripts/recorrido-lienzo/vivo.mjs [<etapa o tanda>/<caso>]
+//        por ejemplo etapa-6/usuarios-lista-escritorio o consolidacion/f7/<caso>; también se elige en la ventana.
 //      node scripts/recorrido-lienzo/vivo.mjs --tablero <Tablero> --ruta </ruta> [--como visual-owner] [--telefono]
 //        para una pantalla que todavía no tiene caso en un manifiesto de capturas.
 // Usa Vite en http://localhost:5199 (--vite <url>); si no está prendido, lo prende y lo apaga al cerrar la ventana.

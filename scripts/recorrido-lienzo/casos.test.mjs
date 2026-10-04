@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
@@ -21,6 +22,18 @@ test("las pantallas salen de los manifiestos de capturas, con su tablero vigente
   // La 3b todavía compara contra la copia v35 y los correos no son pantallas de la app.
   assert.ok(!cases.some((item) => item.etapa === "etapa-3b"));
   assert.ok(!cases.some((item) => item.app.path.includes("/correos/")));
+});
+
+test("también lee las tandas de la consolidación, cada una con su manifiesto", () => {
+  const dir = mkdtempSync(path.join(os.tmpdir(), "capturas-"));
+  mkdirSync(path.join(dir, "consolidacion", "f9"), { recursive: true });
+  writeFileSync(path.join(dir, "consolidacion", "f9", "manifest.json"), JSON.stringify({ version: 1, cases: [{
+    id: "usuarios-escritorio", pair: "usuarios", board: "Usuarios", viewport: { width: 1440, height: 900 }, props: {},
+    app: { path: "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fusuarios", userFixture: "visual-owner", responses: [] },
+  }] }));
+  const [item] = loadCases(dir, lienzo);
+  assert.equal(item.id, "consolidacion/f9/usuarios-escritorio");
+  assert.equal(item.etapa, "consolidacion/f9");
 });
 
 test("una pantalla nueva, sin caso todavía, se abre con su tablero y la ruta", () => {

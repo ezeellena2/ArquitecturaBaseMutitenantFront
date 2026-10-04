@@ -5,13 +5,23 @@ import path from "node:path";
 // de los tableros vigentes.
 const outdated = new Set(["etapa-3b"]);
 
+/// Los manifiestos de capturas: uno por etapa (`etapa-6`) y uno por tanda de la consolidación (`consolidacion/f7`).
+function manifests(capturesDir) {
+  const found = [];
+  for (const name of readdirSync(capturesDir).sort()) {
+    if (name.startsWith("etapa-") && !outdated.has(name)) found.push([name, path.join(capturesDir, name, "manifest.json")]);
+    if (name === "consolidacion")
+      for (const batch of readdirSync(path.join(capturesDir, name)).sort())
+        found.push([`${name}/${batch}`, path.join(capturesDir, name, batch, "manifest.json")]);
+  }
+  return found.filter(([, file]) => existsSync(file));
+}
+
 /// Las pantallas para ver en vivo: cada caso de los manifiestos de capturas, con su tablero vigente, su estado, el tamaño
 /// y los datos de prueba de la app. Los correos quedan afuera: no son pantallas de la app.
 export function loadCases(capturesDir, lienzoDir) {
   const cases = [];
-  for (const etapa of readdirSync(capturesDir).filter((name) => name.startsWith("etapa-") && !outdated.has(name)).sort()) {
-    const file = path.join(capturesDir, etapa, "manifest.json");
-    if (!existsSync(file)) continue;
+  for (const [etapa, file] of manifests(capturesDir)) {
     for (const entry of JSON.parse(readFileSync(file, "utf8")).cases) {
       if (entry.email || !entry.app?.path || entry.app.path.includes("/correos/")) continue;
       if (!existsSync(path.join(lienzoDir, `${entry.board}.dc.html`))) continue;
