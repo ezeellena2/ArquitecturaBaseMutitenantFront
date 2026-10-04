@@ -559,6 +559,19 @@ textarea.in2 { height: auto; min-height: 84px; }
 .w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
   content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 </style>
+<style data-vuelta="1004-panel-admin">
+.adm-cab { padding: 0 14px; }
+.adm-panel .ab-sidebar__nav { padding: 10px 8px; }
+.adm-panel .ab-sidebar__list, .adm-panel .ab-sidebar__children { display: flex; flex-direction: column; gap: 2px; }
+.adm-panel .ab-sidebar__list > li, .adm-panel .ab-sidebar__children > li { position: relative; margin: 0; border-top: 0 !important; padding-top: 0 !important; }
+.adm-panel .ab-sidebar__list > li + li::before, .adm-panel .ab-sidebar__children > li + li::before { content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
+.adm-panel .ab-sidebar__link, .adm-panel .ab-sidebar__branch { display: flex; align-items: center; gap: 10px; width: 100%; height: 32px; box-sizing: border-box; padding: 0 10px !important; font-size: 13px; font-weight: 400 !important; text-decoration: none; }
+.adm-panel .ab-sidebar__link--active { font-weight: 600 !important; }
+.adm-panel .ab-sidebar__list > li > .ab-sidebar__branch { font-weight: 600 !important; color: var(--t1) !important; }
+.adm-panel .ab-sidebar__chevron { margin-left: auto; width: 14px; height: 14px; color: var(--t3); flex-shrink: 0; }
+.adm-panel .ab-cerrado .ab-sidebar__chevron { transform: rotate(-90deg); }
+.adm-panel .ab-sidebar__children { margin: 2px 0 0 18px !important; padding-left: 10px !important; border-left: 1px solid oklch(0.82 0.03 75) !important; }
+</style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -596,16 +609,12 @@ textarea.in2 { height: auto; min-height: 84px; }
     <nav class="ab-sidebar__nav" aria-label="Administración">
       <ul class="ab-sidebar__list">
           <li>
-            <button type="button" class="ab-sidebar__branch" aria-expanded="true" aria-controls="menu-usuarios"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"/><circle cx="10" cy="8" r="3.5"/><path d="M20 20v-1.5a3.5 3.5 0 0 0-2.6-3.4"/><path d="M15.5 4.7a3.5 3.5 0 0 1 0 6.6"/></svg><span class="ab-sidebar__branch-label">Gestión de usuarios</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__chevron"><path d="m6 9 6 6 6-6"></path></svg></button>
-            <ul class="ab-sidebar__children" id="menu-usuarios">
-              <li><a class="ab-sidebar__link" href="Usuarios.dc.html"><span class="ab-sidebar__link-label">Usuarios</span></a></li>
-              <li><a class="ab-sidebar__link" href="Roles.dc.html"><span class="ab-sidebar__link-label">Roles y permisos</span></a></li>
-            </ul>
+            <a class="ab-sidebar__branch ab-cerrado" href="Usuarios.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"/><circle cx="10" cy="8" r="3.5"/><path d="M20 20v-1.5a3.5 3.5 0 0 0-2.6-3.4"/><path d="M15.5 4.7a3.5 3.5 0 0 1 0 6.6"/></svg><span class="ab-sidebar__branch-label">Gestión de usuarios</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__chevron"><path d="m6 9 6 6 6-6"></path></svg></a>
           </li>
           <li><a class="ab-sidebar__link ab-sidebar__link--active" href="Empresas.dc.html" aria-current="page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16"/><path d="M15 9h4a1 1 0 0 1 1 1v11"/><path d="M3 21h18"/><path d="M8 8h3"/><path d="M8 12h3"/><path d="M8 16h3"/></svg><span class="ab-sidebar__link-label">Empresas</span></a></li>
           <li><a class="ab-sidebar__link" href="Configuracion.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10"/><circle cx="16" cy="6" r="2"/><path d="M4 12h4"/><path d="M12 12h8"/><circle cx="10" cy="12" r="2"/><path d="M4 18h12"/><circle cx="18" cy="18" r="2"/></svg><span class="ab-sidebar__link-label">Configuración</span></a></li>
           <li><a class="ab-sidebar__link" href="Pagina-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.4 2.6 3.5 5.5 3.5 8.5s-1.1 5.9-3.5 8.5c-2.4-2.6-3.5-5.5-3.5-8.5s1.1-5.9 3.5-8.5Z"/></svg><span class="ab-sidebar__link-label">Página pública</span></a></li>
-          <li><a class="ab-sidebar__link" href="WA-Admin.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"/></svg><span class="ab-sidebar__link-label">WhatsApp</span></a></li><li><a class="ab-sidebar__link" href="Auditoria-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"/><path d="M15 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/><path d="M9 12h6"/><path d="M9 16h4"/></svg><span class="ab-sidebar__link-label">Auditoría</span></a></li>
+          <li><a class="ab-sidebar__branch ab-cerrado" href="WA-Admin.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"/></svg><span class="ab-sidebar__branch-label">WhatsApp</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__chevron"><path d="m6 9 6 6 6-6"></path></svg></a></li><li><a class="ab-sidebar__link" href="Auditoria-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"/><path d="M15 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/><path d="M9 12h6"/><path d="M9 16h4"/></svg><span class="ab-sidebar__link-label">Auditoría</span></a></li>
         </ul>
     </nav>
   </aside>

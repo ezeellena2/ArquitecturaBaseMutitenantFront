@@ -208,7 +208,7 @@ BODY = f"""<div class="crit">
         <ul class="reglas2" style="position: absolute; left: 40px; top: 28px; width: 420px;">
           <li><strong>Es igual en los tres perfiles</strong> (personal, organización y plataforma). Cambian los enlaces.</li>
           <li><strong>Arriba, Inicio y los módulos de uso diario,</strong> como «WhatsApp». Abajo de todo, con una línea, «Administración», que es configuración. Los dos abren un segundo panel al lado, y solo uno a la vez.</li>
-          <li><strong>Un grupo con hijos</strong> se despliega en el lugar, como «Gestión de usuarios».</li>
+          <li><strong>Un grupo con hijos</strong> se despliega en el lugar, como «Gestión de usuarios». Arranca abierto solo si estás en una de sus pantallas; si no, cerrado y con la flechita a la derecha.</li>
           <li><strong>El activo va en blanco</strong> con letra petróleo.</li>
           <li><strong>Contraído</strong> muestra solo los íconos; el nombre aparece al pasar el mouse.</li>
           <li><strong>Una línea fina entre cada opción,</strong> como la que separa «Administración», en el menú y en el panel.</li>

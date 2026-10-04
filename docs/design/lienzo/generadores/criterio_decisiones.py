@@ -56,6 +56,7 @@ REGLAS = [
     ("Una celda puede llevar una segunda línea gris que aclara la primera.", "Tablas y listas", "02/10/2026"),
     ("Filas de 40; si alguna fila de la tabla tiene segunda línea, todas son de 52, para que la tabla quede pareja.", "Tablas y listas", "04/10/2026"),
     ("En las listas del teléfono, una fecha del año en curso va sin el año («27/09» o «27/09 10:42»); de otro año, completa. En la compu, siempre con el año.", "Tablas y listas", "04/10/2026"),
+    ("En el panel de Administración, un grupo arranca abierto solo si estás en una de sus pantallas; los demás, cerrados.", "Menús y desplegables", "04/10/2026"),
     ("Una lista se lee; cambiar una fila o sumar otra abre un diálogo chico.", "Tablas y listas", "02/10/2026"),
     ("Los permisos de un rol van en grupos que se abren y se cierran.", "Tablas y listas", "02/10/2026"),
     ("Lo que solo crece, como la auditoría, se pide de a tandas con «Cargar más», sin total y sin cantidades en los filtros.", "Tablas y listas", "04/10/2026"),
@@ -105,6 +106,7 @@ DECISIONES = {
         ("Avisos del sistema", "A", "Sin conexión: solo el cartel de arriba. Error del servidor: el código, detrás de «Copiar código». Módulo apagado: sin la línea que explica. De fondo, Configuración en dos columnas.", "Dibujada"),
         ("Ficha de empresa · diálogos", "", "«Roles de …» (un campo) y «Agregar miembro» (dos) en el ancho chico, 420; «Editar empresa» (tres) queda en 560.", "Dibujada"),
         ("Sumar empresa", "A", "«Empresa» es obligatoria y lleva asterisco; «Roles en la empresa» aparece al elegirla y es opcional, como en la app. En el teléfono, los roles sin asterisco.", "Dibujada"),
+        ("Panel de Administración", "A", "Abre solo el grupo de la pantalla en la que estás: «Gestión de usuarios» en Usuarios y Roles; WhatsApp en sus pantallas. Las seis pantallas con la pieza vieja (Usuarios, Roles, Empresas, Empresa, Auditoría e Inicio) pasan a la del criterio: filas de 32 y WhatsApp como grupo.", "Dibujada"),
     ],
     "WhatsApp · cómo funciona": [
         ("Números", "", "La plataforma tiene el suyo (códigos, avisos, bot de ingreso y soporte). Cada organización conecta uno o más, y cada uno atiende a toda la organización o a una empresa. La persona B2C no tiene: escribe y recibe.", "Decidido"),
@@ -217,7 +219,6 @@ DECISIONES = {
         ("Página pública · teléfono", "", "La misma tarjeta de la compu, con sus tres estados; sin ☰, porque es la página de la organización.", "Dibujada"),
     ],
     "Lo que sigue": [
-        ("Gestión de usuarios · panel", "", "Abierto o cerrado según la pantalla: Configuración y Página pública lo muestran cerrado; Empresas, Empresa y Auditoría, abierto.", "Falta decidir"),
         ("CUIT de ejemplo", "", "30-71234567-8 no pasa el dígito verificador: hay que cambiarlo en los tableros.", "Falta dibujar"),
         ("Estados que faltan", "", "Invitación (cargando, enviando y error), Inicio personal sin el aviso, Inicio de un miembro en el teléfono y los de Mi cuenta sin relevar.", "Falta dibujar"),
     ],

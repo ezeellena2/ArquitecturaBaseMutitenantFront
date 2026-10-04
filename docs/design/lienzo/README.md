@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 101** (2026-10-04) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 186 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 102** (2026-10-04) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 186 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -120,6 +120,7 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 | `sumar_empresa_1004.py` | «Sumar empresa»: «Empresa» con asterisco y «Roles en la empresa» solo después de elegirla, opcional (Usuario); sin asterisco en los roles de M-Usuario-Empresa. |
 | `paises_lista_1004.py` | Mi cuenta › Agregar (compu): la lista de países con las filas de Criterio · Formularios y el buscador como campo, como `SearchSelect`. Corre después de `cuenta_wa_1004.py` y `banderas_1004.py`. |
 | `paises_sin_buscador_1004.py` | Cuenta-Agregar y M-Cuenta-Agregar sin «Buscar país» mientras haya un solo país: el buscador va con más de 10 opciones. Corre después de `paises_lista_1004.py`. |
+| `panel_admin_1004.py` | Panel de Administración con la pieza del criterio en Usuarios, Roles, Empresas, Empresa, Auditoria-Org e Inicio-Org: abre solo el grupo de la pantalla en la que estás, filas de 32 y WhatsApp como grupo. |
 | `config_plat_correos_1004.py` | Configuración de la plataforma con la sección «Contacto»: correo de ventas y de soporte. El teléfono lo arma `telefonos_1004/app_plat_personal.py`. |
 | `plat_menu_wa_1004.py` | Menú de Plataforma en la compu con WhatsApp solo para consultas: «WhatsApp» va directo a Consultas y Administración › WhatsApp lleva a los tableros Plat-WA-*. Corre después de `plat_vuelta_1004.py` y `plat_ajustes_1003.py`. |
 | `plat_wa_1004.py` | Plataforma › WhatsApp en la compu (Etapa 11), a partir de los tableros de WhatsApp de la organización: Consultas, Número, Bot (con su recorrido), Equipos y Plantillas. |
