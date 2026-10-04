@@ -15,7 +15,8 @@ export function useCurrentUser() {
     queryFn: fetchCurrentUser,
     enabled: auth?.isAuthenticated === true,
     staleTime: 5 * 60_000,
-    // La sesión entera depende de /api/me: su 403 reemplaza la pantalla, como el de la consulta principal.
-    meta: { blocksView: true },
+    // La sesión entera depende de /api/me: su 403 reemplaza la pantalla, como el de la consulta principal. Cualquier
+    // otro error lo muestra LegalAcceptanceGate con «Reintentar», sin el aviso de abajo que lo repita.
+    meta: { silent: true, blocksView: true },
   });
 }

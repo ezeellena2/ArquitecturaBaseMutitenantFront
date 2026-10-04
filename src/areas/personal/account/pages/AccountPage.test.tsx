@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { delay, HttpResponse, http } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
+import { toast } from "sonner";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { consumerWithoutOrganizations } from "@/test/mocks/currentUsers";
 import { server } from "@/test/mocks/server";
@@ -177,6 +178,28 @@ describe("Mi cuenta", () => {
     expect(await screen.findByRole("heading", { name: "My account" })).toBeVisible();
     expect(router.state.location.pathname).toBe("/cuenta");
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  // «Criterio · Avisos»: la relectura después de guardar es una consulta de la pantalla; si falla, la franja lo dice una
+  // sola vez (también sin conexión) y no sale el aviso de abajo.
+  it("si falla la relectura después de guardar, la franja lo dice una sola vez", async () => {
+    const user = userEvent.setup();
+    const errorToast = vi.spyOn(toast, "error");
+    server.use(http.put("/api/me", () => {
+      server.use(http.get("/api/me", () => HttpResponse.error()));
+      return new HttpResponse(null, { status: 204 });
+    }));
+    renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+    const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
+    await user.clear(name);
+    await user.type(name, "Nombre nuevo");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("No pudimos conectarnos. Revisá tu conexión.");
+    expect(screen.getAllByText("No pudimos conectarnos. Revisá tu conexión.")).toHaveLength(1);
+    expect(errorToast).not.toHaveBeenCalled();
+    errorToast.mockRestore();
   });
 
   it("conserva el draft cuando otro guardado devuelve 409 y permite descartarlo", async () => {

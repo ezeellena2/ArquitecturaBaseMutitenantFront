@@ -8,12 +8,14 @@ import { UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { currentUserQueryKey, fetchCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { MeResponse } from "@/shared/api/types";
 import { changeCulture } from "@/shared/i18n";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Page } from "@/shared/ui/Page";
 import { Section } from "@/shared/ui/Section";
+import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -31,18 +33,21 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   const { t } = useTranslation("account");
   const queryClient = useQueryClient();
   const [failure, setFailure] = useState<unknown>();
+  const [reloadFailure, setReloadFailure] = useState<unknown>();
   const form = useForm<Draft>({ resolver: zodResolver(schema), defaultValues: draft(account) });
   const { isDirty, isSubmitting } = form.formState;
 
-  // La relectura va por TanStack Query: si falla, la avisa el manejo global, como cualquier consulta.
+  // La relectura va por TanStack Query y, como /api/me, en silencio: si falla, lo dice la franja (también sin conexión,
+  // con apiErrorMessage, porque es una consulta y el MutationCache no la avisó), una sola vez.
   async function reload() {
     try {
-      const fresh = await queryClient.fetchQuery({ queryKey: currentUserQueryKey, queryFn: fetchCurrentUser, staleTime: 0, meta: { blocksView: true } });
+      const fresh = await queryClient.fetchQuery({ queryKey: currentUserQueryKey, queryFn: fetchCurrentUser, staleTime: 0, meta: { silent: true, blocksView: true } });
       form.reset(draft(fresh));
       setFailure(undefined);
+      setReloadFailure(undefined);
       await changeCulture(fresh.culture);
       return true;
-    } catch (error) { setFailure(error); return false; }
+    } catch (error) { setReloadFailure(error); return false; }
   }
   // El 409 en su cartel, «Cambios sin guardar» en la banda, el error en la franja y «¿Salir sin guardar?».
   const edit = useEditPage({ isDirty, error: failure, onSeeNew: () => { void reload(); }, onContinueEditing: () => setFailure(undefined) });
@@ -54,20 +59,22 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   });
   async function save(values: Draft) {
     setFailure(undefined);
+    setReloadFailure(undefined);
     try {
       await update.mutateAsync(values);
     } catch (error) {
       if (!(error instanceof ApiError) || !applyApiErrorToForm(error, form.setError, { DisplayName: "displayName", displayName: "displayName", Culture: "culture", culture: "culture", TimeZoneId: "timeZoneId", timeZoneId: "timeZoneId" })) setFailure(error);
     }
   }
-  function discard() { form.reset(); setFailure(undefined); }
+  function discard() { form.reset(); setFailure(undefined); setReloadFailure(undefined); }
+  const formError = edit.formError ?? (reloadFailure ? <FormError message={apiErrorMessage(reloadFailure, t)} /> : null);
   const actions = <>
     <Button type="button" variant="outline" onClick={discard} disabled={isSubmitting}>{t("discard")}</Button>
     <Button type="submit" form="account-profile" disabled={!isDirty || isSubmitting}>{t("save")}</Button>
   </>;
   return <>
     <Page title={t("title")} icon={UserRound} status={edit.unsaved} actions={actions} phoneBody="gray" banner={edit.banner}>
-      {edit.formError ? <div className="mb-3">{edit.formError}</div> : null}
+      {formError ? <div className="mb-3">{formError}</div> : null}
       <form id="account-profile" aria-label={t("title")} onSubmit={form.handleSubmit(save)}>
         <Section title={t("data")}>
           {/* Tablero Cuenta: nombre, idioma y zona en tres columnas iguales, al ancho de la tarjeta. */}
