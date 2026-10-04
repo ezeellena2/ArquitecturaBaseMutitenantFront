@@ -35,7 +35,6 @@
   "privacy": "Privacidad",
   "deletion": "Dar de baja mi cuenta",
   "requestDeletion": "Dar de baja",
-  "deletionGrace": "Tenés {{days}} días para arrepentirte.",
   "deletionBlockedInfo": "Por qué no podés darte de baja",
   "deletionBlockedTitle": "No podés dar de baja tu cuenta",
   "deletionBlockedReason": "Sos la única persona con el rol Dueño en {{organizations}}",

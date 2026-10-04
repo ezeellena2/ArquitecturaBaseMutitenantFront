@@ -20,6 +20,7 @@ import { Page } from "@/shared/ui/Page";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
+import { List, ListItem } from "@/shared/ui/List";
 import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import {
@@ -127,17 +128,13 @@ export function SettingsPage() {
           </header>
           {domains.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
             : activeDomains.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)]">{t("settings:domains.empty")}</p>
-              : <div className="divide-y divide-[var(--borde)]">{activeDomains.map((domain) => <div key={domain.id} className="flex items-center gap-3 px-4 py-2.5 md:px-5">
-                <Globe aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)]" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] text-[var(--t1)]">{domain.domain}</p>
-                  <p className="truncate text-[12px] text-[var(--t2)] lg:text-[13px]">{t(`settings:domains.status.${domain.status}`)}</p>
-                </div>
+              : <List label={t("settings:domains.title")}>{activeDomains.map((domain) => <ListItem key={domain.id} icon={<Globe aria-hidden="true" />} title={domain.domain}
+                detail={t(`settings:domains.status.${domain.status}`)}>
                 {domain.status === "Pending" && canManage && domain.txtRecordValue ? <Button type="button" variant="outline" size="sm" onClick={() => openVerify(domain)}>{t("settings:domains.verify")}</Button> : null}
                 {canManage ? <RowActions label={t("settings:domains.actions", { domain: domain.domain })} actions={[
                   { label: t("settings:domains.remove"), accessibleName: t("settings:domains.remove"), icon: Trash2, destructive: true, onSelect: () => setDomainToRemove(domain) },
                 ]} /> : null}
-              </div>)}</div>}
+              </ListItem>)}</List>}
         </Surface>
       </div>
     </Page>

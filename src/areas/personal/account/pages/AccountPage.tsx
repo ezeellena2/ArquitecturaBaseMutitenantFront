@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
+import { List, ListItem } from "@/shared/ui/List";
 import { AccountProfileForm } from "../components/AccountProfileForm";
 import { useQuery } from "@tanstack/react-query";
 import { accountMethodsQueryKey, fetchLoginMethods } from "../api/loginMethods";
@@ -76,19 +77,16 @@ export function AccountPage() {
       <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]">
         <h2 id="account-privacy-title">{t("account:privacy")}</h2>
       </header>
-      <div className="flex min-h-14 items-center gap-3 border-b border-[var(--borde)] px-4 py-2">
-        <Trash2 size={16} className="shrink-0 text-[var(--t2)]" aria-hidden="true" />
-        <span className="flex min-w-0 flex-1 flex-col">
-          <span className="inline-flex items-center gap-1.5 font-medium">{t("account:deletion")}
-            {deletionBlocked ? <button type="button" aria-label={t("account:deletionBlockedInfo")} title={t("account:deletionBlockedInfo")} onClick={() => setDeletionBlockedOpen(true)}
-              className="inline-flex size-6 shrink-0 items-center justify-center rounded-full text-[var(--peligro)] hover:bg-[var(--peligro-t)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]"><Info aria-hidden="true" className="size-4" /></button> : null}
-          </span>
-          {methods.data && !deletionBlocked ? <span className="text-[13px] text-[var(--t3)]">{t("account:deletionGrace", { days: methods.data.accountDeletionGraceDays })}</span> : null}
-        </span>
-        <Button type="button" variant="danger" size="sm" className={deletionBlocked ? "opacity-50" : undefined}
-          disabled={!methods.data || methods.isPending} aria-disabled={deletionBlocked || undefined}
-          onClick={() => { if (deletionBlocked) setDeletionBlockedOpen(true); else setDeletionOpen(true); }}>{t("account:requestDeletion")}</Button>
-      </div>
+      <List label={t("account:privacy")}>
+        <ListItem icon={<Trash2 aria-hidden="true" />} title={<span className="inline-flex items-center gap-1.5">{t("account:deletion")}
+          {deletionBlocked ? <button type="button" aria-label={t("account:deletionBlockedInfo")} title={t("account:deletionBlockedInfo")} onClick={() => setDeletionBlockedOpen(true)}
+            className="inline-flex size-6 shrink-0 items-center justify-center rounded-full text-[var(--peligro)] hover:bg-[var(--peligro-t)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]"><Info aria-hidden="true" className="size-4" /></button> : null}
+        </span>}>
+          <Button type="button" variant="danger" size="sm" className={deletionBlocked ? "opacity-50" : undefined}
+            disabled={!methods.data || methods.isPending} aria-disabled={deletionBlocked || undefined}
+            onClick={() => { if (deletionBlocked) setDeletionBlockedOpen(true); else setDeletionOpen(true); }}>{t("account:requestDeletion")}</Button>
+        </ListItem>
+      </List>
     </section>
   </AccountProfileForm>
   {addOpen ? <AddLoginMethodDialog open onOpenChange={setAddOpen} onComplete={refresh} /> : null}

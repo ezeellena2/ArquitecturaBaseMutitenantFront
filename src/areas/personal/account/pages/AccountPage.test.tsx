@@ -54,6 +54,9 @@ describe("Mi cuenta", () => {
     const deletionAction = within(privacy).getByRole("button", { name: "Dar de baja" });
     // Criterio · Botones: peligro con borde en la pantalla; relleno solo en el diálogo que confirma.
     expect(deletionAction).toHaveAttribute("data-variant", "danger");
+    // Tablero Cuenta: «Dar de baja mi cuenta» es una fila de la lista, sin texto que explique el plazo.
+    expect(within(privacy).getByRole("listitem")).toHaveTextContent(/^Dar de baja mi cuenta/);
+    await waitFor(() => expect(within(privacy).queryByText(/días para arrepentirte/)).not.toBeInTheDocument());
     expect(screen.getByRole("button", { name: "Descartar cambios" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
     expect(within(signIn).getByRole("button", { name: "Agregar correo o teléfono" })).toBeVisible();

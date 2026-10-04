@@ -35,7 +35,6 @@
   "privacy": "Privacy",
   "deletion": "Delete my account",
   "requestDeletion": "Delete account",
-  "deletionGrace": "You have {{days}} days to change your mind.",
   "deletionBlockedInfo": "Why you cannot delete your account",
   "deletionBlockedTitle": "You cannot delete your account",
   "deletionBlockedReason": "You are the only person with the Owner role in {{organizations}}",

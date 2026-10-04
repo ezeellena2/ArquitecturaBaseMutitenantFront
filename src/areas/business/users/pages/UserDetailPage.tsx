@@ -25,6 +25,7 @@ import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { RolesField } from "../components/RolesField";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
+import { List, ListItem } from "@/shared/ui/List";
 import { fetchAssignableRoles, fetchCompanyOptions, fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userCompaniesQueryKey, userQueryKey, userRolesQueryKey, usersQueryRoot } from "../api/users";
 
 type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
@@ -260,25 +261,21 @@ export function UserDetailPage() {
               {editable ? <Button type="button" size="sm" variant="outline" disabled={!companies.data || activeCompanies.every((company) => assignedCompanyIds.has(company.id)) || save.isPending}
                 onClick={() => { setCompanyDialog({ mode: "add", companyId: "", roleIds: [] }); setFailure(undefined); }}><Plus aria-hidden="true" className="size-4" />{t("users:detail.addCompany")}</Button> : null}
             </header>
-            {member.companies.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)] md:px-5">{t("users:detail.noCompanies")}</p> : <ul>
+            {member.companies.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)] md:px-5">{t("users:detail.noCompanies")}</p> : <List label={t("users:detail.companyAccess")}>
               {member.companies.map((company) => {
                 const preserved = preservedCompanyIds.has(company.companyId);
                 const assignment = { companyId: company.companyId, roleIds: company.roles.map((role) => role.id) };
                 const roleNames = company.roles.map((role) => role.name).join(", ") || t("users:detail.companyNoRoles");
-                return <li key={company.companyId} className="flex items-center gap-3 border-b border-[var(--borde)] px-4 py-2.5 last:border-b-0 md:px-5">
-                  <Building2 aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)]" />
-                  <span className="flex min-w-0 flex-1 flex-col">
-                    <b className="truncate text-[13px] font-semibold text-[var(--t1)]">{company.companyName}</b>
-                    <span className="truncate text-[13px] text-[var(--t2)]">{preserved ? <>{roleNames}<Separator />{t("users:detail.companyInactive")}</> : roleNames}</span>
-                  </span>
+                return <ListItem key={company.companyId} icon={<Building2 aria-hidden="true" />} title={company.companyName}
+                  detail={preserved ? <>{roleNames}<Separator />{t("users:detail.companyInactive")}</> : roleNames}>
                   {editable && !preserved ? <RowActions label={t("users:detail.companyActions", { name: company.companyName })} actions={[
                     { label: t("users:detail.changeCompanyRoles"), accessibleName: t("users:detail.changeCompanyRoles"), icon: Settings2, onSelect: () => { setCompanyDialog({ mode: "roles", ...assignment }); setFailure(undefined); } },
                     { label: t("users:detail.removeCompanyAction"), accessibleName: t("users:detail.removeCompanyAction"), icon: Trash2, destructive: true,
                       onSelect: () => { void saveCompanies(changeableAssignments.filter((item) => item.companyId !== company.companyId), t("users:detail.messages.companyRemoved", { name: displayName, company: company.companyName })); } },
                   ]} /> : null}
-                </li>;
+                </ListItem>;
               })}
-            </ul>}
+            </List>}
           </section>
         </Surface>
       </div>
