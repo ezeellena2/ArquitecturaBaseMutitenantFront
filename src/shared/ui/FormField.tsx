@@ -22,7 +22,7 @@ export function FormField({ label, htmlFor, hint, error, required, aside, varian
   const messageId = `${controlId}-message`;
   const message = error ?? hint;
 
-  const labelElement = <Label htmlFor={controlId} className={variant === "auth" ? "text-[12px] font-semibold text-[var(--t2)]" : "text-[12px] font-semibold text-[var(--t2)] lg:text-[13px]"}>
+  const labelElement = <Label htmlFor={controlId} className={cn("gap-1!", variant === "auth" ? "text-[12px] font-semibold text-[var(--t2)]" : "text-[12px] font-semibold text-[var(--t2)] lg:text-[13px]")}>
     {label}
     {/* Tablero «Criterio · Formularios»: el asterisco de obligatorio va en rojo. */}
     {required ? <span aria-hidden="true" className="text-[var(--peligro)]">{" *"}</span> : null}

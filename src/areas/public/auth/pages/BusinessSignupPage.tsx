@@ -219,7 +219,7 @@ export function BusinessSignupPage() {
       : t("businessSignup.serverError")
     : null;
 
-  return <AuthLayout access="business">
+  return <AuthLayout access="business" panelIntro={t("businessSignup.panelIntro")}>
     {step === "closed" ? <StatusPanel icon="lock" title={t("businessSignup.closedTitle")}
       detail={t("businessSignup.closedDetail")} action={t("businessSignup.backHome")} href="/" />
       : step === "success" ? <StatusPanel icon="success"

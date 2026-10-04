@@ -56,6 +56,8 @@ describe("FormField", () => {
     render(<FormField label="Nombre" required><Input /></FormField>);
 
     expect(screen.getByText("*")).toHaveClass("text-[var(--peligro)]");
+    // Pegado al rótulo, como en el tablero: no con la separación de 8 que el rótulo usa para una casilla.
+    expect(screen.getByText("*").parentElement).toHaveClass("gap-1!");
   });
 
   // Tablero Usuario: «Todos» va a la derecha del rótulo, en la misma línea.

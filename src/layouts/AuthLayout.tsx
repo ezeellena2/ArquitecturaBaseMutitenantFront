@@ -11,9 +11,11 @@ type AuthLayoutProps = {
   children: ReactNode;
   brandPanel?: "content" | "blank";
   brandPanelContent?: ReactNode;
+  /** El párrafo del panel, si la pantalla dice otro (Registro-Empresa: «Quedás como Dueño…»). */
+  panelIntro?: string;
 };
 
-export function AuthLayout({ access, children, brandPanel = "content", brandPanelContent }: AuthLayoutProps) {
+export function AuthLayout({ access, children, brandPanel = "content", brandPanelContent, panelIntro }: AuthLayoutProps) {
   const { t } = useTranslation("auth");
   const { data: referenceData } = useReferenceData();
   const cultures = referenceData?.cultures.filter((culture) => culture.isEnabled) ?? [];
@@ -58,9 +60,10 @@ export function AuthLayout({ access, children, brandPanel = "content", brandPane
     </div>
     <aside data-testid="auth-brand-panel" aria-hidden="true" className="auth-brand-panel relative hidden flex-col justify-center gap-5 overflow-hidden px-14 text-[var(--lado-activo)] md:flex">
       {brandPanelContent ?? (brandPanel === "content" ? <>
-      <span className="self-start rounded-full bg-[var(--lado-activo)]/15 px-3 py-1.5 text-[13px] font-semibold">{t(`panel.${panelKey}.kicker`)}</span>
+      {/* Tablero Registro-Empresa: el rótulo de arriba es texto plano, sin pastilla. */}
+      <span className="self-start text-[13px] font-semibold">{t(`panel.${panelKey}.kicker`)}</span>
       <h2 className="max-w-[520px] text-[32px] leading-[1.15] font-bold tracking-[-0.025em]">{t(`panel.${panelKey}.heading`)}</h2>
-      <p className="max-w-[500px] text-[15px] leading-[1.6] text-[var(--lado-activo)]/85">{t("panel.intro")}</p>
+      <p className="max-w-[500px] text-[15px] leading-[1.6] text-[var(--lado-activo)]/85">{panelIntro ?? t("panel.intro")}</p>
       <ul className="mt-2 flex max-w-[500px] flex-col gap-[18px] text-sm font-normal text-[var(--lado-activo)]/90">
         {(["first", "second", "third"] as const).map((point, index) => {
           return <li key={point} className="flex items-center gap-3">

@@ -49,6 +49,20 @@ describe("AuthLayout", () => {
       .toBe("M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16");
   });
 
+  // Tablero Registro-Empresa: el rótulo de arriba es texto plano, sin pastilla, y el registro de empresa cambia el
+  // párrafo por «Quedás como Dueño…».
+  it("el rótulo va como texto plano y el párrafo se puede cambiar", () => {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(<QueryClientProvider client={client}><MemoryRouter><AuthLayout access="business" panelIntro="Quedás como Dueño: sumás las empresas.">
+      <h1>{"Tu organización"}</h1></AuthLayout></MemoryRouter></QueryClientProvider>);
+
+    const kicker = screen.getByText("Para empresas");
+    expect(kicker).toHaveClass("text-[13px]", "font-semibold");
+    expect(kicker).not.toHaveClass("rounded-full", "px-3");
+    expect(screen.getByText("Quedás como Dueño: sumás las empresas.")).toBeInTheDocument();
+    expect(screen.queryByText(/Con la misma cuenta/)).not.toBeInTheDocument();
+  });
+
   it("usa el candado simple del tablero para el acceso personal", () => {
     show("consumer");
     const lock = screen.getByTestId("auth-brand-panel").querySelector("li:nth-child(3) svg");
