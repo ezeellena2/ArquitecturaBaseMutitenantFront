@@ -571,6 +571,10 @@
 .lp-todas { display: flex; justify-content: center; margin-top: 28px; }
 .lp-todas a { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--marca-tx); text-decoration: none; font-size: 15px; }
 </style>
+<style data-vuelta="1004-portada-sin-empresas">
+.lp-vacio { padding: 48px 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.lp-vacio strong { font-size: 16px; font-weight: 600; color: var(--t1); }
+</style>
 </helmet>
 
 <div class="lp">
@@ -616,8 +620,8 @@
   <section class="lp-sec" id="empresas"><div class="lp-in">
     <h2>Empresas en ArquitecturaBase</h2>
     <div class="lp-dir-bar"><span class="bus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 3.5 3.5"/></svg> Buscar una empresa</span></div>
-    <div class="lp-emp"><a href="Pagina-Publica.dc.html"><span class="cab"><span class="lg">GD</span><b>Grupo Delta</b></span><p>Grupo Delta y sus empresas, en un solo lugar.</p><span class="dir">delta.plataforma.com</span></a><a href="Pagina-Publica.dc.html"><span class="cab"><span class="lg">OS</span><b>Omega S.A.</b></span><p>Omega S.A., en un solo lugar.</p><span class="dir">omega.plataforma.com</span></a><a href="Pagina-Publica.dc.html"><span class="cab"><span class="lg">SI</span><b>Sigma S.R.L.</b></span><p>Sigma S.R.L., en un solo lugar.</p><span class="dir">sigma.plataforma.com</span></a></div>
-    <div class="lp-todas"><a href="Directorio.dc.html">Ver todas las empresas <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a></div>
+    <sc-if value="{{conEmpresas}}" hint-placeholder-val="{{si}}"><div class="lp-emp"><a href="Pagina-Publica.dc.html"><span class="cab"><span class="lg">GD</span><b>Grupo Delta</b></span><p>Grupo Delta y sus empresas, en un solo lugar.</p><span class="dir">delta.plataforma.com</span></a><a href="Pagina-Publica.dc.html"><span class="cab"><span class="lg">OS</span><b>Omega S.A.</b></span><p>Omega S.A., en un solo lugar.</p><span class="dir">omega.plataforma.com</span></a><a href="Pagina-Publica.dc.html"><span class="cab"><span class="lg">SI</span><b>Sigma S.R.L.</b></span><p>Sigma S.R.L., en un solo lugar.</p><span class="dir">sigma.plataforma.com</span></a></div>
+    <div class="lp-todas"><a href="Directorio.dc.html">Ver todas las empresas <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a></div></sc-if><sc-if value="{{sinEmpresas}}" hint-placeholder-val="{{no}}"><div class="lp-vacio"><strong>Todavía no hay empresas publicadas</strong></div></sc-if>
   </div></section>
   <section class="lp-sec" id="empezar"><div class="lp-in">
     <h2>Tu empresa, en tres pasos</h2>
@@ -634,7 +638,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2050}}'>
+<script type="text/x-dc" data-dc-script data-props='{"empresas":{"editor":"enum","options":["Con empresas","Sin empresas"],"default":"Con empresas","section":"Estado"},"$preview":{"width":1440,"height":2050}}'>
 
 
 class Component extends DCLogic {
@@ -816,9 +820,12 @@ class Component extends DCLogic {
   renderVals() {
     const s = this.state;
 
+    const sin = this.props.empresas === 'Sin empresas';
+
     return {
       ...this.comunes(),
-
+      conEmpresas: !sin,
+      sinEmpresas: sin,
     };
   }
 }

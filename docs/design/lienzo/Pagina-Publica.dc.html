@@ -663,7 +663,7 @@
 </x-dc>
 
 <script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Publicada, sin sesión","Publicada, con sesión","No disponible"],"default":"Publicada, sin sesión","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
-// GET /api/public/site (el host dice de qué organización es): nombre, logo, descripción y contacto. 404 si está suspendida o despublicada.
+// GET /api/public-site (el host dice de qué organización es): nombre, logo, descripción y contacto. 404 si está suspendida o despublicada.
 class Component extends DCLogic {
   constructor(props) {
     super(props);
