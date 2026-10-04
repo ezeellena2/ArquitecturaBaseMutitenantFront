@@ -187,6 +187,9 @@ describe("UsersPage", () => {
     const { container } = renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Invitar usuario" }));
     const dialog = await screen.findByRole("dialog", { name: "Invitar usuario" });
+    // Tablero M-Usuarios-Invitar: en el teléfono es una hoja de alto justo, no a todo el alto, con el cuerpo de los diálogos.
+    expect(dialog).not.toHaveClass("min-h-[calc(100dvh-1rem)]");
+    expect(within(dialog).getByRole("textbox", { name: "Correo" }).closest("[data-slot='dialog-body']")).not.toBeNull();
     expect(dialog).not.toHaveTextContent("Enviamos un enlace");
     expect(within(dialog).queryByRole("button", { name: /Sumar empresa/ })).not.toBeInTheDocument();
     expect(within(dialog).getByRole("button", { name: "Roles en la empresa" })).toBeDisabled();

@@ -13,7 +13,7 @@ import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
@@ -209,17 +209,18 @@ export function UsersPage() {
       </div>
     </Page>
 
+    {/* Tablero M-Usuarios-Invitar: en el teléfono, una hoja de alto justo, abajo, con el cuerpo de los diálogos. */}
     <Dialog open={inviteOpen} onOpenChange={(open) => { setInviteOpen(open); if (!open) setInviteError(undefined); }}>
-      <DialogContent mobileFullHeight>
+      <DialogContent>
         <DialogHeader><DialogTitle>{t("users:invite.title")}</DialogTitle></DialogHeader>
         <form onSubmit={submitInvite} className="flex min-h-0 flex-col">
-          <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
+          <DialogBody>
             {inviteError ? <FormError message={inviteError} /> : null}
             <FormField label={t("users:invite.email")} required><Input autoComplete="email" type="email" required maxLength={254} placeholder={t("users:invite.emailPlaceholder")} value={email} onChange={(event) => setEmail(event.target.value)} /></FormField>
             <FormField label={t("users:invite.organizationRoles")}>
               <MultiSelect options={organizationRoles.map((role: RoleResponse) => ({ value: role.id, label: role.name }))} value={organizationRoleIds} onChange={setOrganizationRoleIds} placeholder={t("users:invite.noRoles")} />
             </FormField>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-3.5 md:grid-cols-2">
               <FormField label={t("users:invite.company")}>
                 <Select value={inviteCompanyId || noCompany} onValueChange={(value) => { setInviteCompanyId(value === noCompany ? "" : value); setInviteCompanyRoleIds([]); }}>
                   <SelectTrigger className="w-full" aria-label={t("users:invite.company")}><SelectValue /></SelectTrigger>
@@ -235,8 +236,8 @@ export function UsersPage() {
                   : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[8px] border border-[var(--borde2)] bg-[var(--s2)] px-3 text-left text-[13px] text-[var(--t3)] max-md:h-12 max-md:rounded-[12px] max-md:text-[16px]">{t("users:invite.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" /></button>}
               </FormField>
             </div>
-          </div>
-          <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
+          </DialogBody>
+          <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setInviteOpen(false)}>{t("common:actions.cancel")}</Button>
             <Button type="submit" disabled={invite.isPending}>{invite.isPending ? t("common:states.saving") : t("users:invite.send")}</Button>
           </DialogFooter>

@@ -71,7 +71,9 @@ function DialogContent({
         className={cn(
           "fixed bottom-0 left-0 z-50 grid max-h-[calc(100dvh-1rem)] w-full gap-0 overflow-y-auto rounded-t-[20px] border-0 bg-[var(--lado-activo)] p-0 text-[15px] shadow-[var(--sombra-hoja)] outline-none md:border md:border-[var(--borde)] md:text-[13px] md:shadow-lg data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[12px] md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0",
           size === "sm" ? "md:max-w-[420px]" : "md:max-w-[560px]",
-          mobileFullHeight && "min-h-[calc(100dvh-1rem)] grid-rows-[auto_1fr_auto] md:min-h-0 md:grid-rows-none",
+          // A todo el alto, las filas son la manija, el encabezado, el cuerpo (que ocupa lo que sobra) y los botones: el
+          // título queda arriba y los botones, abajo de todo.
+          mobileFullHeight && "min-h-[calc(100dvh-1rem)] grid-rows-[auto_auto_1fr_auto] md:min-h-0 md:grid-rows-none",
           className
         )}
         {...props}
@@ -84,12 +86,14 @@ function DialogContent({
         {/* Tablero M-Usuarios-Invitar (.ap-hoja): en el teléfono la hoja sube desde abajo con su manija. */}
         <span data-slot="dialog-handle" aria-hidden="true" className="mx-auto mt-2 mb-1 h-[5px] w-9 rounded-full bg-[var(--borde2)] md:hidden" />
         {children}
+        {/* Hojas del teléfono (.ap-hoja .hc .ap-ib): el ✕ de 44, con su cruz de 22, va centrado con el título: debajo de
+            la manija (17) y de los 4 de arriba del encabezado, a 6 del borde. */}
         {showCloseButton ? (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="absolute top-[18px] right-1.5 flex size-11 items-center justify-center rounded-full text-[var(--t1)] md:top-2 md:right-2 md:size-8 md:rounded-[8px] md:text-[var(--t2)] transition-colors hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+            className="absolute top-[21px] right-1.5 flex size-11 items-center justify-center rounded-full text-[var(--t1)] md:top-2 md:right-2 md:size-8 md:rounded-[8px] md:text-[var(--t2)] transition-colors hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0"
           >
-            <XIcon />
+            <XIcon className="size-[22px] md:size-4" />
             <span className="sr-only">{t("actions.close")}</span>
           </DialogPrimitive.Close>
         ) : null}
@@ -98,23 +102,25 @@ function DialogContent({
   )
 }
 
+// En el teléfono (.ap-hoja .hc), el encabezado mide 52, con 4 arriba y abajo: el título queda centrado con el ✕.
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col justify-center gap-1 px-5 pt-1 pr-14 text-left max-md:bg-transparent md:min-h-12 md:border-b md:border-[var(--borde)] md:bg-[var(--cab)] md:py-2 md:pr-5", className)}
+      className={cn("flex min-h-[52px] flex-col justify-center gap-1 px-5 py-1 pr-14 text-left max-md:bg-transparent md:min-h-12 md:border-b md:border-[var(--borde)] md:bg-[var(--cab)] md:py-2 md:pr-5", className)}
       {...props}
     />
   )
 }
 
 // Tablero «Criterio · Dialogos»: el cuerpo lleva 20 de margen y 14 entre campos. Lo que el título necesita aclarar
-// (a quién le mandamos el código, qué se pierde) va acá adentro, nunca como bajada del encabezado.
+// (a quién le mandamos el código, qué se pierde) va acá adentro, nunca como bajada del encabezado. En una hoja a todo el
+// alto ocupa lo que sobra, también adentro de un <form>, y deja los botones abajo de todo.
 function DialogBody({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-body"
-      className={cn("flex flex-col gap-3.5 px-5 pt-2 pb-4 md:p-5", className)}
+      className={cn("flex flex-1 flex-col gap-3.5 px-5 pt-2 pb-4 md:p-5", className)}
       {...props}
     />
   )

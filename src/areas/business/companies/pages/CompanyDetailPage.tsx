@@ -14,7 +14,7 @@ import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
@@ -277,7 +277,7 @@ export function CompanyDetailPage() {
       <DialogContent mobileFullHeight size="sm" aria-describedby={undefined}>
         <DialogHeader><DialogTitle>{t("companies:addMember.title")}</DialogTitle></DialogHeader>
         <form onSubmit={submitAdd} className="flex min-h-0 flex-col">
-          <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
+          <DialogBody>
             <FormField label={t("companies:addMember.user")} required>
               <Select value={selectedMemberId} onValueChange={(value) => setSelectedMemberId(value)} disabled={candidateQuery.isPending || existingMemberIds.isPending || candidates.length === 0}>
                 <SelectTrigger className="w-full" aria-label={t("companies:addMember.user")}><SelectValue placeholder={candidateQuery.isPending || existingMemberIds.isPending ? t("common:states.loading") : t("companies:addMember.chooseUser")} /></SelectTrigger>
@@ -291,8 +291,8 @@ export function CompanyDetailPage() {
             {candidateQuery.isError ? <FormError message={apiErrorMessage(candidateQuery.error, t)} /> : null}
             {existingMemberIds.isError ? <FormError message={apiErrorMessage(existingMemberIds.error, t)} /> : null}
             <FormError message={actionErrorMessage(mutationError, t)} />
-          </div>
-          <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
+          </DialogBody>
+          <DialogFooter>
             <Button type="button" variant="outline" onClick={closeAdd}>{t("common:actions.cancel")}</Button>
             <Button type="submit" disabled={!selectedMemberId || addMember.isPending}>{addMember.isPending ? t("common:states.saving") : t("companies:actions.addMember")}</Button>
           </DialogFooter>
@@ -303,14 +303,14 @@ export function CompanyDetailPage() {
     <Dialog open={roleTarget !== null} onOpenChange={(open) => { if (!open) closeRoles(); }}>
       <DialogContent mobileFullHeight size="sm" aria-describedby={undefined}>
         <DialogHeader><DialogTitle>{roleTarget ? t("companies:editMemberRoles.title", { name: roleTarget.displayName }) : t("companies:editMemberRoles.title", { name: "" })}</DialogTitle></DialogHeader>
-        <div className="flex flex-col gap-4 px-5 py-4">
+        <DialogBody>
           <FormField label={t("companies:editMemberRoles.roles")}>
             <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleDraft} onChange={(next) => { setRoleDraft(next); setMutationError(undefined); }} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* Tablero Empresa (v97): el error, una sola vez, en la franja con su ícono arriba de los botones. */}
           <FormError message={actionErrorMessage(mutationError, t)} />
-        </div>
-        <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
+        </DialogBody>
+        <DialogFooter>
           <Button type="button" variant="outline" onClick={closeRoles}>{t("common:actions.cancel")}</Button>
           <Button type="button" disabled={!roleTarget || changeMemberRoles.isPending} onClick={() => roleTarget && changeMemberRoles.mutate(roleTarget)}>{changeMemberRoles.isPending ? t("common:states.saving") : t("companies:editMemberRoles.save")}</Button>
         </DialogFooter>
@@ -331,11 +331,11 @@ export function CompanyDetailPage() {
       <DialogContent mobileFullHeight>
         <DialogHeader><DialogTitle>{t("companies:editTitle")}</DialogTitle></DialogHeader>
         <form onSubmit={submitEdit} className="flex min-h-0 flex-col">
-          <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
+          <DialogBody>
             <CompanyFields draft={editDraft} onChange={setEditDraft} taxIdValid={taxIdValid} />
             <FormError message={actionErrorMessage(editFailure, t)} />
-          </div>
-          <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
+          </DialogBody>
+          <DialogFooter>
             <Button type="button" variant="outline" onClick={closeEdit}>{t("common:actions.cancel")}</Button>
             <Button type="submit" disabled={saveCompany.isPending || !taxIdValid}>{saveCompany.isPending ? t("common:states.saving") : t("companies:form.save")}</Button>
           </DialogFooter>

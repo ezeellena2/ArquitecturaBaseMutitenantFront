@@ -12,7 +12,7 @@ import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { Page } from "@/shared/ui/Page";
@@ -178,12 +178,12 @@ export function CompaniesPage() {
       <DialogContent mobileFullHeight>
         <DialogHeader><DialogTitle>{t(editingCompany ? "companies:editTitle" : "companies:createTitle")}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="flex min-h-0 flex-col">
-          <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
+          <DialogBody>
             <CompanyFields draft={draft} onChange={(next) => { setDraft(next); setFailure(undefined); }} taxIdValid={taxIdValid} />
             {/* «Criterio · Diálogos»: el error general, en la franja arriba de los botones. */}
             <FormError message={actionErrorMessage(failure, t)} />
-          </div>
-          <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">
+          </DialogBody>
+          <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{t("common:actions.cancel")}</Button>
             <Button type="submit" disabled={create.isPending || update.isPending || !taxIdValid}>{create.isPending || update.isPending ? t("common:states.saving") : t(editingCompany ? "companies:form.save" : "companies:form.create")}</Button>
           </DialogFooter>

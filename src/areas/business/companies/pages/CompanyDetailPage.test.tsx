@@ -130,6 +130,35 @@ describe("CompanyDetailPage", () => {
     expect(await screen.findByRole("dialog", { name: "Editar empresa" })).toHaveClass("md:max-w-[560px]");
   }, 15_000);
 
+  // En el teléfono, las tres son hojas a todo el alto: el cuerpo de los diálogos ocupa lo que sobra y deja los botones
+  // abajo, con el título arriba.
+  it("los diálogos de la ficha usan el cuerpo de los diálogos, también en la hoja a todo el alto", async () => {
+    const user = userEvent.setup();
+    rolesApi(() => new HttpResponse(null, { status: 204 }));
+    server.use(http.get("/api/users/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+
+    expect(await screen.findByText("Lucía Fernández")).toBeVisible();
+    (await screen.findByRole("button", { name: "Acciones para Lucía Fernández" })).focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
+    const roles = await screen.findByRole("dialog", { name: "Roles de Lucía Fernández" });
+    expect(roles).toHaveClass("min-h-[calc(100dvh-1rem)]");
+    expect(within(roles).getByRole("button", { name: "Roles en la empresa" }).closest("[data-slot='dialog-body']")).not.toBeNull();
+    await user.click(within(roles).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Agregar miembro" }));
+    const add = await screen.findByRole("dialog", { name: "Agregar miembro" });
+    expect(within(add).getByRole("combobox", { name: "Usuario" }).closest("[data-slot='dialog-body']")).not.toBeNull();
+    await user.click(within(add).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Editar empresa" }));
+    const edit = await screen.findByRole("dialog", { name: "Editar empresa" });
+    expect(within(edit).getByRole("textbox", { name: "Nombre" }).closest("[data-slot='dialog-body']")).not.toBeNull();
+  }, 15_000);
+
   // B3: la tabla de miembros tiene las cuatro columnas del tablero Empresa, en su orden; las acciones, sin rótulo visible.
   it("los miembros van con Miembro, Roles en la empresa, Estado y Acciones, como el tablero", async () => {
     detailApi([member]);

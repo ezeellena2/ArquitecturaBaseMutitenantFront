@@ -47,7 +47,7 @@ export function CompanyFields({ draft, onChange, taxIdValid }: {
 }) {
   const { t } = useTranslation("companies");
   return <>
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid gap-3.5 md:grid-cols-2">
       <FormField label={t("form.name")} required>
         <Input required maxLength={120} autoComplete="organization" value={draft.name} onChange={(event) => onChange({ ...draft, name: event.target.value })} />
       </FormField>
@@ -56,7 +56,7 @@ export function CompanyFields({ draft, onChange, taxIdValid }: {
           onChange={(event) => onChange({ ...draft, taxNumber: event.target.value.replace(/\D/g, "").slice(0, 11) })} />
       </FormField>
     </div>
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid gap-3.5 md:grid-cols-2">
       <FormField label={t("form.timeZone")}>
         <TimeZoneSelect value={draft.timeZoneId} onChange={(timeZoneId) => onChange({ ...draft, timeZoneId })} placeholder={t("form.organizationTimeZone")} />
       </FormField>

@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, it } from "vitest";
 import { configureI18n } from "@/shared/i18n";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
 
 beforeAll(async () => {
   await configureI18n([{ code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true }]);
@@ -33,15 +33,38 @@ describe("Dialog mobile layout", () => {
     expect(screen.getByRole("button", { name: "Guardar" }).parentElement).toHaveClass("max-md:[&_button]:h-12", "max-md:[&_button]:flex-1", "max-md:border-0");
   });
 
-  it("gives form dialogs nearly the full phone height and confirmations a narrower desktop width", () => {
-    const { unmount } = render(
+  // Hojas del teléfono (.ap-hoja .hc): debajo de la manija (8 + 5 + 4), el encabezado mide 52 con 4 arriba y abajo, y el ✕
+  // de 44, con su cruz de 22, queda centrado con el título, a 6 del borde.
+  it("centers the phone sheet ✕ with the title, as the M-* sheets", () => {
+    render(
       <Dialog open>
-        <DialogContent mobileFullHeight>
-          <DialogTitle>{"Editar"}</DialogTitle>
+        <DialogContent>
+          <DialogHeader><DialogTitle>{"Sumar empresa"}</DialogTitle></DialogHeader>
         </DialogContent>
       </Dialog>,
     );
-    expect(screen.getByRole("dialog", { name: "Editar" })).toHaveClass("min-h-[calc(100dvh-1rem)]");
+
+    expect(document.querySelector('[data-slot="dialog-header"]')).toHaveClass("min-h-[52px]", "py-1", "md:min-h-12", "md:py-2");
+    const close = screen.getByRole("button", { name: "Cerrar" });
+    expect(close).toHaveClass("top-[21px]", "right-1.5", "size-11", "md:top-2", "md:right-2");
+    expect(close.querySelector("svg")).toHaveClass("size-[22px]", "md:size-4");
+  });
+
+  // Una hoja a todo el alto (Empresa y Empresas): arriba la manija y el título, el cuerpo ocupa lo que sobra y los botones
+  // van abajo de todo. El título no queda flotando en el medio.
+  it("gives form dialogs nearly the full phone height with the title on top and confirmations a narrower desktop width", () => {
+    const { unmount } = render(
+      <Dialog open>
+        <DialogContent mobileFullHeight>
+          <DialogHeader><DialogTitle>{"Editar"}</DialogTitle></DialogHeader>
+          <DialogBody><p>{"Nombre"}</p></DialogBody>
+          <DialogFooter><button type="button">{"Guardar"}</button></DialogFooter>
+        </DialogContent>
+      </Dialog>,
+    );
+    expect(screen.getByRole("dialog", { name: "Editar" })).toHaveClass("min-h-[calc(100dvh-1rem)]", "grid-rows-[auto_auto_1fr_auto]");
+    // Si el cuerpo y los botones van adentro de un <form>, el cuerpo crece igual y empuja los botones abajo.
+    expect(screen.getByText("Nombre").parentElement).toHaveClass("flex-1");
     unmount();
 
     render(<ConfirmDialog open onOpenChange={() => {}} title="Eliminar" confirmLabel="Eliminar" onConfirm={() => {}} />);
