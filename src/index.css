@@ -43,7 +43,7 @@
   --foco-halo: oklch(0.51 0.099 195 / 0.15);
 
   --radius-card: 16px;
-  --radius-control: 10px;
+  --radius-control: 8px;
   --shadow-card: 0 1px 2px oklch(0.24 0.012 60 / 0.05), 0 8px 24px -12px oklch(0.24 0.012 60 / 0.14);
   --radius: var(--radius-control);
 

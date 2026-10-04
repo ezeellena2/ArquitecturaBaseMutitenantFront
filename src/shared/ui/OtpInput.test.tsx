@@ -9,7 +9,8 @@ describe("OtpInput", () => {
     const { container } = render(<OtpInput length={6} value="" onChange={vi.fn()} label="Código" />);
     expect(screen.getByRole("group", { name: "Código" })).toHaveClass("grid-cols-6");
     expect(screen.getAllByRole("textbox")).toHaveLength(6);
-    expect(screen.getByRole("textbox", { name: "Código 1" })).toHaveClass("h-[52px]", "w-full");
+    // Tableros Ingreso y «Criterio · Formularios»: casillas de 44 con radio 8, borde de campo y número de 22.
+    expect(screen.getByRole("textbox", { name: "Código 1" })).toHaveClass("h-11", "w-full", "rounded-[8px]", "border-[var(--borde2)]", "text-[22px]");
     expect(screen.getByRole("textbox", { name: "Código 1" })).toHaveAttribute("autocomplete", "one-time-code");
     expect(await axe(container, { rules: { region: { enabled: false } } })).toHaveNoViolations();
   });

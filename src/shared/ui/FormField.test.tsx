@@ -46,9 +46,26 @@ describe("FormField", () => {
 
     const input = screen.getByLabelText("Nombre *");
     expect(input).toHaveAttribute("aria-required", "true");
-    expect(input).toHaveClass("h-9", "text-[13.5px]");
+    expect(input).toHaveClass("h-9", "text-[13px]", "rounded-[8px]");
     expect(input).not.toHaveClass("lg:h-11", "lg:text-[15px]");
     expect(screen.getByText("Nombre")).toHaveClass("text-[12px]", "lg:text-[13px]", "font-semibold", "text-[var(--t2)]");
+  });
+
+  // Tablero «Criterio · Formularios»: si el dato es obligatorio, el rótulo lleva un asterisco rojo.
+  it("pone el asterisco de obligatorio en rojo", () => {
+    render(<FormField label="Nombre" required><Input /></FormField>);
+
+    expect(screen.getByText("*")).toHaveClass("text-[var(--peligro)]");
+  });
+
+  // Tablero Usuario: «Todos» va a la derecha del rótulo, en la misma línea.
+  it("deja un lugar a la derecha del rótulo", () => {
+    render(<FormField label="Roles de la organización" aside={<button type="button">{"Todos"}</button>}><Input /></FormField>);
+
+    const label = screen.getByText("Roles de la organización");
+    expect(label.parentElement).toHaveClass("flex", "justify-between");
+    expect(label.parentElement).toContainElement(screen.getByRole("button", { name: "Todos" }));
+    expect(screen.getByLabelText("Roles de la organización")).toBeInTheDocument();
   });
 
   it("usa la etiqueta compacta y gris del lienzo en ingreso y registro", () => {

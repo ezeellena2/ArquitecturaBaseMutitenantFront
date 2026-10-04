@@ -26,6 +26,8 @@ describe("MultiSelect", () => {
     renderWithProviders(<Harness />);
 
     expect(screen.getByRole("button", { name: "Roles" })).toHaveTextContent("Sin roles");
+    // Tablero Usuario: el vacío, como «Ninguno», en el gris de campo vacío.
+    expect(screen.getByRole("button", { name: "Roles" })).toHaveClass("text-[var(--t3)]");
   });
 
   it("shows the picked options separated by commas", () => {

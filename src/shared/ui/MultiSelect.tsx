@@ -50,9 +50,10 @@ export function MultiSelect({
         aria-invalid={ariaInvalid}
         aria-describedby={ariaDescribedBy}
         className={cn(
-          "flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 text-left text-[13px] shadow-xs outline-none",
-          "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-          picked.length > 0 ? "text-[var(--t1)]" : "text-[var(--t2)]",
+          "flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[8px] border border-[var(--borde2)] bg-[var(--lado-activo)] px-3 text-left text-[13px] outline-none",
+          "focus-visible:border-[var(--marca)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)]",
+          // Tablero Usuario: lo vacío, como «Ninguno», en el gris de campo vacío.
+          picked.length > 0 ? "text-[var(--t1)]" : "text-[var(--t3)]",
         )}
       >
         <span className="truncate">

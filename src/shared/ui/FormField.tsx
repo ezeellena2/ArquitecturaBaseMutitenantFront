@@ -9,23 +9,28 @@ interface FormFieldProps {
   hint?: string;
   error?: string;
   required?: boolean;
+  /// A la derecha del rótulo, en la misma línea: la casilla «Todos» de un desplegable de varios.
+  aside?: ReactNode;
   variant?: "default" | "auth";
   children: ReactElement<{ id?: string; className?: string; "aria-invalid"?: boolean; "aria-describedby"?: string; "aria-required"?: boolean }>;
 }
 
 /// Etiqueta, control y mensaje de error, atados entre sí para lectores de pantalla (sección 7.4).
-export function FormField({ label, htmlFor, hint, error, required, variant = "default", children }: FormFieldProps): ReactNode {
+export function FormField({ label, htmlFor, hint, error, required, aside, variant = "default", children }: FormFieldProps): ReactNode {
   const generatedId = useId();
   const controlId = htmlFor ?? children.props.id ?? generatedId;
   const messageId = `${controlId}-message`;
   const message = error ?? hint;
 
+  const labelElement = <Label htmlFor={controlId} className={variant === "auth" ? "text-[12px] font-semibold text-[var(--t2)]" : "text-[12px] font-semibold text-[var(--t2)] lg:text-[13px]"}>
+    {label}
+    {/* Tablero «Criterio · Formularios»: el asterisco de obligatorio va en rojo. */}
+    {required ? <span aria-hidden="true" className="text-[var(--peligro)]">{" *"}</span> : null}
+  </Label>;
+
   return (
     <div className="flex flex-col gap-1.5 lg:gap-2">
-      <Label htmlFor={controlId} className={variant === "auth" ? "text-[12px] font-semibold text-[var(--t2)]" : "text-[12px] font-semibold text-[var(--t2)] lg:text-[13px]"}>
-        {label}
-        {required ? <span aria-hidden="true">{" *"}</span> : null}
-      </Label>
+      {aside ? <div className="flex items-center justify-between gap-3">{labelElement}{aside}</div> : labelElement}
       {cloneElement(children, {
         id: controlId,
         className: variant === "auth" ? cn(children.props.className, "h-11 rounded-[10px] px-3.5 text-[15px]") : children.props.className,
