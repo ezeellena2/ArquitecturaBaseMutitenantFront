@@ -19,7 +19,7 @@ export const businessNavigation: NavigationConfig = {
       icon: Users,
       links: [
         { labelKey: "navigation.users", icon: Users, to: "/org/usuarios", permission: "users.read" },
-        { labelKey: "navigation.roles", icon: Key, to: "/org/roles", permission: "roles.read" },
+        { labelKey: "navigation.roles", phoneLabelKey: "navigation.rolesShort", icon: Key, to: "/org/roles", permission: "roles.read" },
       ],
     }],
   },

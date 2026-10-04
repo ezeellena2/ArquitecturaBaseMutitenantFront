@@ -54,7 +54,7 @@ export function MorePage() {
     {administration.length > 0 ? <>
       <GroupTitle>{t("navigation.administration")}</GroupTitle>
       <SettingsGroup label={t("navigation.administration")}>
-        {administration.map((entry) => <SettingsItem key={entry.labelKey} title={t(entry.labelKey)} to={entry.to!} />)}
+        {administration.map((entry) => <SettingsItem key={entry.labelKey} title={t(entry.phoneLabelKey ?? entry.labelKey)} to={entry.to!} />)}
       </SettingsGroup>
     </> : null}
 

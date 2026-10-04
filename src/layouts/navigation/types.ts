@@ -2,6 +2,8 @@ import type { LucideIcon } from "lucide-react";
 
 export interface NavigationLink {
   labelKey: string;
+  /** En «Más» del teléfono, si el tablero la nombra más corto (M-WA-Menu: «Roles»). */
+  phoneLabelKey?: string;
   icon: LucideIcon;
   to: string | null;
   permission?: string;

@@ -19,6 +19,8 @@ describe("Más en el teléfono", () => {
     expect(within(profiles).getByText("Empresa A")).toBeInTheDocument();
     const administration = screen.getByRole("list", { name: "Administración" });
     expect(within(administration).getByRole("link", { name: "Usuarios" })).toHaveAttribute("href", "/org/usuarios");
+    // M-WA-Menu: en «Más», «Roles» a secas; la pantalla que abre sigue titulada «Roles y permisos».
+    expect(within(administration).getByRole("link", { name: "Roles" })).toHaveAttribute("href", "/org/roles");
     expect(within(administration).getByRole("link", { name: "Auditoría" })).toHaveAttribute("href", "/org/auditoria");
     expect(screen.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("href", "/cuenta");
     expect(screen.getByRole("button", { name: "Salir" })).toBeVisible();
