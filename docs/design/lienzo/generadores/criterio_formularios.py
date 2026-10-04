@@ -4,7 +4,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 2650
+ALTO = 3000
 ARCHIVO = "Criterio-Formularios.dc.html"
 TITULO = "Criterio · Formularios y campos"
 
@@ -50,6 +50,15 @@ CSS = """  <style data-criterio="formularios">
 .tel { display: flex; gap: 8px; }
 .sw { width: 36px; height: 20px; border-radius: 999px; background: var(--marca); position: relative; flex-shrink: 0; }
 .sw::after { content: ""; position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; }
+.tel-franja { margin-top: 18px; display: flex; align-items: flex-end; gap: 20px; }
+.tf-hoja { width: 360px; box-sizing: border-box; background: #fff; border: 1px solid var(--borde); border-radius: 20px 20px 0 0; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
+.tf-hoja > b { font-size: 18px; }
+.tf-hoja .ctl { height: 48px; font-size: 16px; border-radius: 12px; }
+.aviso-mal.tel { align-items: flex-start; font-size: 14.5px; line-height: 1.4; padding: 12px 14px; border-radius: 12px; }
+.aviso-mal.tel svg { margin-top: 1px; flex-shrink: 0; }
+.tf-bt { display: flex; gap: 10px; }
+.tf-bt .cb { flex: 1; height: 48px; border-radius: 12px; font-size: 15px; }
+.tf-pie { font-size: 13px; color: var(--t3); padding-bottom: 6px; }
 .aviso-mal { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: var(--peligro-t); color: oklch(0.45 0.17 25); font-size: 13px; }
 .dos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
 .caja2 { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
@@ -161,7 +170,9 @@ BODY = f"""<div class="crit">
     <ul class="reglas2" style="margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 40px;">
       <li><strong>Error de un campo:</strong> borde rojo y el mensaje debajo, en el mismo lugar, sin mover lo demás.</li>
       <li><strong>Error general:</strong> una franja roja clara arriba de los botones. Nunca un aviso que se va solo.</li>
+      <li><strong>En el teléfono,</strong> la franja usa la letra de los avisos del teléfono: 14,5 con interlineado 1,4. En la compu, 13.</li>
     </ul>
+    <div class="tel-franja"><div class="tf-hoja"><b>Sumar empresa</b><div class="cmp"><span class="rot">Empresa <span class="req">*</span></span><div class="ctl">Delta Sur S.R.L.</div></div><div class="aviso-mal tel" role="alert">{ALERTA} No pudimos sumar la empresa. Revisá tu conexión y probá de nuevo.</div><div class="tf-bt"><button type="button" class="cb cb-sec">Cancelar</button><button type="button" class="cb cb-pri">Sumar</button></div></div><span class="tf-pie">En el teléfono: la franja con la letra de los avisos del teléfono.</span></div>
   </section>
 
   <section>

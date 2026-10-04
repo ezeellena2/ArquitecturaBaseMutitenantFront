@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 10200
+ALTO = 10300
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -51,6 +51,7 @@ REGLAS = [
     ("El selector de país de un teléfono lleva la bandera, como imagen y no emoji, en la lista y en el control cerrado: «[bandera] +54».", "Formularios y campos", "04/10/2026"),
     ("Sin textos que explican: el estado se dice una vez arriba y un ⓘ abre el aviso importante.", "Avisos y errores · Diálogos", "02/10/2026"),
     ("En el teléfono, lo pasajero va abajo en una franja oscura y lo que sigue, debajo de la barra de arriba.", "Avisos y errores", "03/10/2026"),
+    ("En el teléfono, la franja de error de un formulario usa la letra de los avisos del teléfono: 14,5 con interlineado 1,4. En la compu, 13.", "Formularios y campos", "04/10/2026"),
     ("Nada revela si un correo o un teléfono tiene cuenta, en «Recuperar mi cuenta» ni en Mi cuenta: la pantalla sigue igual y a ese correo le llega un aviso en lugar del código. Excepción: «Invitar operador», porque quien tiene permiso de cuentas ya las ve.", "Avisos y errores", "03/10/2026"),
     ("Una celda puede llevar una segunda línea gris que aclara la primera.", "Tablas y listas", "02/10/2026"),
     ("Filas de 40; si alguna fila de la tabla tiene segunda línea, todas son de 52, para que la tabla quede pareja.", "Tablas y listas", "04/10/2026"),
@@ -86,6 +87,7 @@ DECISIONES = {
         ("Mi cuenta · el ⋮ de «Cómo entrás»", "", "Solo en las filas con acciones: el principal, si es el único método personal, no lo lleva; el correo de la empresa, con «Hacer principal» y «Quitar»; el teléfono sin verificar, con «Quitar».", "Dibujada"),
         ("Mi cuenta › WhatsApp · agregar y verificar", "", "«WhatsApp» con país y número (solo los países que habilita WhatsApp); error: país que no habilita (un número de otra cuenta no da error: no se revela); el código por WhatsApp con «Reenviar», incorrecto o vencido. Sin el módulo, ni la fila ni la opción.", "Dibujada"),
         ("Mi cuenta › WhatsApp · quitar o hacer principal", "A", "⋮ con «Hacer principal» y «Quitar»; el código llega a otro método, y el WhatsApp también es ese otro método. Para cambiar el número se agrega el nuevo y se quita el viejo.", "Dibujada"),
+        ("Mi cuenta › Agregar · país", "A", "La lista de países con las filas de los desplegables (36 de alto, letra de 13, radio 6, la elegida en 500) y el buscador como campo, igual que en la app. Solo Argentina: es el único país habilitado.", "Dibujada"),
     ],
     "Organización · 13 pantallas": [
         ("Usuarios", "A", "Usuario (nombre y correo), Rol en la organización, Empresa (con su rol debajo), Estado («Vence …» si es una invitación) y ⋮. Sin empresa, una sola raya.", "Dibujada"),
@@ -101,6 +103,8 @@ DECISIONES = {
         ("Inicio de un miembro", "A", "«Tus empresas» en las mismas tarjetas (su rol y cuántos miembros); si administra su empresa, abajo su «Para resolver».", "Dibujada"),
         ("Sin permiso o no encontrada", "A", "Solo el título («No tenés permiso para ver esta página» o «No encontramos esta página») y «Ir al inicio», sin la línea que explica.", "Dibujada"),
         ("Avisos del sistema", "A", "Sin conexión: solo el cartel de arriba. Error del servidor: el código, detrás de «Copiar código». Módulo apagado: sin la línea que explica. De fondo, Configuración en dos columnas.", "Dibujada"),
+        ("Ficha de empresa · diálogos", "", "«Roles de …» (un campo) y «Agregar miembro» (dos) en el ancho chico, 420; «Editar empresa» (tres) queda en 560.", "Dibujada"),
+        ("Sumar empresa", "A", "«Empresa» es obligatoria y lleva asterisco; «Roles en la empresa» aparece al elegirla y es opcional, como en la app. En el teléfono, los roles sin asterisco.", "Dibujada"),
     ],
     "WhatsApp · cómo funciona": [
         ("Números", "", "La plataforma tiene el suyo (códigos, avisos, bot de ingreso y soporte). Cada organización conecta uno o más, y cada uno atiende a toda la organización o a una empresa. La persona B2C no tiene: escribe y recibe.", "Decidido"),
@@ -170,6 +174,8 @@ DECISIONES = {
         ("Organización no disponible", "", "Ícono del color del estado, título y su línea; «Elegí otro perfil» en un grupo de filas y «Salir» abajo.", "Dibujada"),
         ("Sin permiso o no encontrada", "", "Dentro de la app, con ‹ y la barra de abajo de la persona; al centro, el mensaje e «Ir al inicio».", "Dibujada"),
         ("Avisos del sistema", "", "Lo pasajero, abajo en una franja oscura; lo que sigue, debajo de la barra de arriba; «¿Salir sin guardar?», en una hoja sin ✕; «Reintentá en 0:39», en el botón fijo.", "Dibujada"),
+        ("No se pudo abrir", "", "La pieza común «No pudimos abrir esta pantalla» con «Reintentar», dentro de la app: tercer estado de la pantalla de error.", "Dibujada"),
+        ("Franja de error", "A", "En la hoja del formulario, con la letra de 14,5 de los avisos del teléfono y el ícono arriba si ocupa dos líneas.", "Dibujada"),
     ],
     "Plataforma y perfil personal · teléfonos (como app)": [
         ("Barra de abajo de Plataforma", "", "Organizaciones, Cuentas, Recuperaciones, Consultas y «Más» (Administración; WhatsApp con Número, Bot, Equipos y Plantillas; Mi cuenta y Salir).", "Dibujada"),
@@ -211,8 +217,9 @@ DECISIONES = {
         ("Página pública · teléfono", "", "La misma tarjeta de la compu, con sus tres estados; sin ☰, porque es la página de la organización.", "Dibujada"),
     ],
     "Lo que sigue": [
-        ("Pantalla de error · teléfono", "", "La pieza común «No pudimos abrir esta pantalla» con «Reintentar», en el teléfono.", "Falta dibujar"),
-        ("Franja de error · teléfono", "", "¿Con la letra de 14,5 de los avisos del teléfono?", "Falta decidir"),
+        ("Gestión de usuarios · panel", "", "Abierto o cerrado según la pantalla: Configuración y Página pública lo muestran cerrado; Empresas, Empresa y Auditoría, abierto.", "Falta decidir"),
+        ("CUIT de ejemplo", "", "30-71234567-8 no pasa el dígito verificador: hay que cambiarlo en los tableros.", "Falta dibujar"),
+        ("Estados que faltan", "", "Invitación (cargando, enviando y error), Inicio personal sin el aviso, Inicio de un miembro en el teléfono y los de Mi cuenta sin relevar.", "Falta dibujar"),
     ],
 }
 
