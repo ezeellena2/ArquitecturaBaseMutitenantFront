@@ -48,7 +48,7 @@ describe("Dialog: cómo se cierra (Criterio-Dialogos)", () => {
 });
 
 // Tablero «Criterio · Dialogos»: encabezado arena de 48 con el título de 15 y sin bajada; cuerpo con 20 de margen y
-// 14 entre campos; pie de 60 con una línea arriba; atrás, la pantalla oscurecida y desenfocada.
+// 14 entre campos; pie de 60 con una línea arriba; atrás, la pantalla solo oscurecida.
 describe("Dialog: medidas (Criterio-Dialogos)", () => {
   it("arma encabezado, cuerpo y pie con las medidas del tablero", () => {
     render(
@@ -66,6 +66,9 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
     expect(title.parentElement).toHaveClass("md:min-h-12", "md:bg-[var(--cab)]", "md:border-b");
     expect(screen.getByText("Te mandamos un código.").parentElement).toHaveClass("flex", "flex-col", "gap-3.5", "md:p-5");
     expect(screen.getByRole("button", { name: "Verificar" }).parentElement).toHaveClass("md:border-t", "md:py-3");
-    expect(document.querySelector("[data-slot='dialog-overlay']")).toHaveClass("bg-[var(--velo)]", "backdrop-blur-[4px]");
+    // «Criterio · Diálogos» (v97): atrás, la pantalla oscurecida, sin difuminar.
+    const overlay = document.querySelector("[data-slot='dialog-overlay']");
+    expect(overlay).toHaveClass("bg-[var(--velo)]");
+    expect(overlay?.className).not.toMatch(/backdrop-blur/);
   });
 });
