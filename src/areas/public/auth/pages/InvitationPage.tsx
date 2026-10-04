@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Check, Clock, TriangleAlert } from "lucide-react";
+import { Check, Clock } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useAuth } from "react-oidc-context";
@@ -11,6 +11,7 @@ import type { AcceptInvitationRequest, AcceptInvitationResponse } from "@/shared
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { Avatar } from "@/shared/ui/Avatar";
+import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
 import { DateText } from "@/shared/ui/format/DateText";
 import { FormError } from "@/shared/ui/FormError";
@@ -155,10 +156,7 @@ function InvitationFlow() {
             <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("accepted.title", { organization: organizationName })}</h1>
             <p className="mt-1.5 break-all text-sm text-[var(--t2)]"><Trans ns="invitations" i18nKey="accepted.email" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
           </div>
-          {needsPersonalMethod ? <div role="status" className="flex items-start gap-2.5 rounded-[10px] bg-[var(--alerta-t)] px-3 py-2.5 text-[13px] leading-normal text-[var(--alerta-tx)]">
-            <TriangleAlert aria-hidden="true" className="mt-0.5 shrink-0" size={18} strokeWidth={2} />
-            <span>{t("accepted.personalMethodNotice")}</span>
-          </div> : null}
+          {needsPersonalMethod ? <Banner tone="warning">{t("accepted.personalMethodNotice")}</Banner> : null}
           <div className="flex flex-col gap-2.5">
             {needsPersonalMethod ? <>
               <Button type="button" size="lg" onClick={() => void enterAsBusiness(accountPagePaths.account)}>{t("accepted.addNow")}</Button>
@@ -196,10 +194,7 @@ function InvitationFlow() {
             <dd className="font-medium text-[var(--t1)]"><time dateTime={invitation.expiresAtUtc ?? undefined}>{days > 0 ? t("join.expiresIn", { count: days }) : t("join.expiresToday")}</time></dd>
           </dl>
           {invitation.state === "WrongSession" ? <>
-            <div role="alert" className="flex items-start gap-2.5 rounded-[10px] bg-[var(--alerta-t)] px-3 py-2.5 text-[13px] leading-normal text-[var(--alerta)]">
-              <TriangleAlert aria-hidden="true" className="mt-0.5 shrink-0" size={16} strokeWidth={1.75} />
-              <span>{t("wrongSession", { currentEmail: invitation.currentAccountEmail ?? t("accountFallback"), email })}</span>
-            </div>
+            <FormError tone="warning" message={t("wrongSession", { currentEmail: invitation.currentAccountEmail ?? t("accountFallback"), email })} />
             <div className="flex flex-col gap-2.5">
               <Button type="button" size="lg" onClick={() => void signOutAndContinue()}>{t("join.signOutAndContinue", { email })}</Button>
               {/* Tablero Invitacion (sesión ajena): «Seguir como Lucía», con el nombre de pila de la cuenta abierta. */}

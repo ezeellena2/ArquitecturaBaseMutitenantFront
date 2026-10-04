@@ -138,6 +138,8 @@ describe("InvitationPage", () => {
 
       expect(await screen.findByRole("heading", { name: "Te sumaste a Grupo Delta" })).toBeVisible();
       expect(screen.getByRole("status")).toHaveTextContent("Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.");
+      // El cartel de atención de «Criterio · Avisos» (Banner), no un aviso hecho a mano.
+      expect(screen.getByRole("status")).toHaveClass("min-h-11", "text-[var(--alerta-tx)]");
       expect(acceptRequests).toHaveLength(1);
       expect(acceptRequests[0].url).toMatch(/\/api\/invitations\/accept$/);
       expect(acceptRequests[0].body).toEqual({ token: invitationToken, acceptedTerms: true });
@@ -256,6 +258,8 @@ describe("InvitationPage", () => {
     previewResponse = { ...basePreview, state: "WrongSession", currentAccountEmail: "lucia@example.test", currentAccountName: "Lucía Fernández" };
     show({ signedInAs: "business" });
     expect(await screen.findByText("Entraste como lucia@example.test y la invitación es para invitada@example.test.")).toBeVisible();
+    // Tablero Invitacion (.msj.alerta): la franja ámbar de siempre (FormError), no un aviso hecho a mano.
+    expect(screen.getByRole("alert")).toHaveClass("rounded-[8px]", "bg-[var(--alerta-t)]", "text-[var(--alerta-tx)]");
     fireEvent.click(screen.getByRole("button", { name: "Salir y seguir como invitada@example.test" }));
     await waitFor(() => expect(signoutRedirect).toHaveBeenCalledOnce());
     const options = signoutRedirect.mock.calls[0][0] as { post_logout_redirect_uri: string; extraQueryParams: { preserveInvitation: string } };

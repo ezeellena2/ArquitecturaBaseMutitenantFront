@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from "react";
-import { CircleAlertIcon, InfoIcon, TriangleAlertIcon } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { AlertCircleIcon, AlertTriangleIcon, InfoIcon } from "./icons";
 
 type Tone = "info" | "warning" | "danger";
 
@@ -16,46 +16,33 @@ interface BannerProps {
   children: ReactNode;
 }
 
-const tones: Record<Tone, { icon: ComponentType<{ className?: string }>; box: string; iconClass: string }> = {
-  info: {
-    icon: InfoIcon,
-    box: "bg-[var(--marca-t)]",
-    iconClass: "text-[var(--marca-tx)]",
-  },
-  warning: {
-    icon: TriangleAlertIcon,
-    box: "bg-[var(--alerta-t)]",
-    iconClass: "text-[var(--alerta)]",
-  },
-  danger: {
-    icon: CircleAlertIcon,
-    box: "bg-[var(--peligro-t)]",
-    iconClass: "text-[var(--peligro)]",
-  },
+// «Criterio · Avisos»: cartel de información (petróleo), de atención (ámbar) y de problema (rojo). El ícono y el texto
+// van en el color del aviso.
+const tones: Record<Tone, { icon: ComponentType<{ className?: string }>; box: string }> = {
+  info: { icon: InfoIcon, box: "bg-[var(--marca-t)] text-[var(--marca-tx)]" },
+  warning: { icon: AlertTriangleIcon, box: "bg-[var(--alerta-t)] text-[var(--alerta-tx)]" },
+  danger: { icon: AlertCircleIcon, box: "bg-[var(--peligro-t)] text-[var(--peligro-tx)]" },
 };
 
-/// Un aviso con su ícono, en el cuerpo de la pantalla o de un diálogo: el "banner persistente" del fundamento visual
-/// y el error que no es de un campo. Lo usan el inicio (falta el correo), los diálogos del perfil (el número o el
-/// correo ya son de otra cuenta) y la edición de un usuario (el número es su único medio de ingreso).
+/// Un aviso con su ícono, en el cuerpo de la pantalla o de un diálogo: el cartel de «Criterio · Avisos». Lo usan el
+/// inicio y Mi cuenta (falta un correo propio), la invitación aceptada (el mismo aviso) y la ficha de Usuario (pidió la
+/// baja de su cuenta).
 export function Banner({ tone = "info", action, children }: BannerProps) {
-  const { icon: Icon, box, iconClass } = tones[tone];
+  const { icon: Icon, box } = tones[tone];
 
   return (
     <div
       role={tone === "danger" ? "alert" : "status"}
       className={cn(
-        // Tablero «Criterio · Avisos»: el cartel va sin borde; el color de fondo dice qué tipo de aviso es.
-        "flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[10px] px-3.5 py-2.5",
+        // «Criterio · Avisos» (.cartel) y tableros Inicio-Personal y Usuario (.w-cartel): sin borde, 44 de alto como
+        // mínimo (el de un botón chico con su margen), padding 6/8/6/14, radio 10 y letra de 13.
+        "flex min-h-11 items-center gap-2.5 rounded-[10px] py-1.5 pr-2 pl-3.5 text-[13px] leading-normal",
         box,
       )}
     >
-      {/* El ícono va con el primer renglón del texto, no con el centro del bloque: un texto de dos renglones no lo
-          deja flotando entre los dos. */}
-      <div className="flex min-w-0 flex-1 items-start gap-2.5">
-        <Icon aria-hidden="true" className={cn("mt-0.5 size-[18px] shrink-0", iconClass)} />
-        <p className="min-w-0 text-[13px] leading-normal text-[var(--t1)]">{children}</p>
-      </div>
-      {action ? <div className="ml-auto shrink-0">{action}</div> : null}
+      <Icon className="size-[18px] shrink-0" />
+      <p className="min-w-0 flex-1">{children}</p>
+      {action ? <div className="shrink-0">{action}</div> : null}
     </div>
   );
 }
