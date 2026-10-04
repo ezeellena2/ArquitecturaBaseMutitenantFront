@@ -115,6 +115,28 @@ describe("CompaniesPage", () => {
     await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Delta Norte S.A.", taxIdType: "AR-CUIT", taxIdNumber: "30712345671", timeZoneId: null }));
   }, 15_000);
 
+  // «Criterio · Botones»: «Crear empresa» no se apaga con el CUIT mal; no manda nada y el campo dice qué corregir.
+  it("con el CUIT mal, «Crear empresa» sigue activo, no manda nada y el campo dice qué corregir", async () => {
+    let posts = 0;
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/filter-counts", () => HttpResponse.json({ all: 0, active: 0, inactive: 0 })),
+      http.post("/api/companies", () => { posts += 1; return HttpResponse.json("company-created", { status: 201 }); }),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Crear empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Crear empresa" });
+    await user.type(within(dialog).getByRole("textbox", { name: "Nombre" }), "Delta Norte S.A.");
+    await user.type(within(dialog).getByRole("textbox", { name: "CUIT" }), "3071234567");
+
+    const create = within(dialog).getByRole("button", { name: "Crear empresa" });
+    expect(create).toBeEnabled();
+    await user.click(create);
+    expect(within(dialog).getByRole("textbox", { name: "CUIT" })).toHaveAccessibleDescription("Revisá el CUIT: son 11 números.");
+    expect(posts).toBe(0);
+  });
+
   // «Criterio · Diálogos» y «Criterio · Formularios»: el error general del diálogo va en la franja arriba de los botones,
   // no arriba de los campos.
   it("un error al crear va en la franja del diálogo, arriba de los botones", async () => {

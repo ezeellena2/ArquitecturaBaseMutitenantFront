@@ -189,6 +189,25 @@ describe("CompanyDetailPage", () => {
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
   });
 
+  // «Criterio · Botones»: «Guardar cambios» de «Editar empresa» no se apaga con el CUIT mal; no manda nada y el campo dice
+  // qué corregir.
+  it("con el CUIT mal, «Guardar cambios» de «Editar empresa» sigue activo y no manda nada", async () => {
+    let puts = 0;
+    detailApi([member]);
+    server.use(http.put("/api/companies/company-1", () => { puts += 1; return new HttpResponse(null, { status: 204 }); }));
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Editar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar empresa" });
+    await user.type(within(dialog).getByRole("textbox", { name: "CUIT" }), "307");
+
+    const save = within(dialog).getByRole("button", { name: "Guardar cambios" });
+    expect(save).toBeEnabled();
+    await user.click(save);
+    expect(within(dialog).getByRole("textbox", { name: "CUIT" })).toHaveAccessibleDescription("Revisá el CUIT: son 11 números.");
+    expect(puts).toBe(0);
+  });
+
   // errores.md: un 404 en una ficha (también un id de otra organización) es «No encontramos esta página», como Error-Org.
   it("si la empresa no existe, dice que no encontramos la página y lleva al inicio", async () => {
     detailApi([member]);

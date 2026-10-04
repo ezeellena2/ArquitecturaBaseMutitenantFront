@@ -185,7 +185,8 @@ export function CompaniesPage() {
           </DialogBody>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{t("common:actions.cancel")}</Button>
-            <Button type="submit" disabled={create.isPending || update.isPending || !taxIdValid}>{create.isPending || update.isPending ? t("common:states.saving") : t(editingCompany ? "companies:form.save" : "companies:form.create")}</Button>
+            {/* «Criterio · Botones»: no se apaga con el CUIT mal; el campo ya dice qué corregir y no se manda nada. */}
+            <Button type="submit" disabled={create.isPending || update.isPending}>{create.isPending || update.isPending ? t("common:states.saving") : t(editingCompany ? "companies:form.save" : "companies:form.create")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
