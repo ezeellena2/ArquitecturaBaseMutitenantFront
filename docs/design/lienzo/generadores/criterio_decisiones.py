@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 9100
+ALTO = 9200
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -57,6 +57,7 @@ REGLAS = [
     ("Lo que solo crece, como la auditoría, se pide de a tandas con «Cargar más» y sin total.", "Tablas y listas", "02/10/2026"),
     ("Dos vistas del mismo contenido pueden ir en pestañas (Bot: Configuración y Recorrido).", "Marco y pantallas", "03/10/2026"),
     ("Una ficha lleva una pestaña por cada grupo de datos, aunque tenga una sola fila (organización, cuenta, empresa).", "Marco y pantallas", "04/10/2026"),
+    ("Editar algo que ya existe lleva «Descartar cambios», que deja lo guardado sin salir; crear algo nuevo lleva «Cancelar», que vuelve.", "Botones", "04/10/2026"),
     ("Los módulos de uso diario (WhatsApp) van arriba, debajo de Inicio, y abren su propio panel; Administración, abajo con una línea.", "Menús y desplegables", "03/10/2026"),
     ("Antes de algo que se paga (difusión, plantilla), se muestra el costo estimado.", "Diálogos", "03/10/2026"),
     ("Una línea fina entre cada opción de un menú desplegable; antes de las de peligro, una franja.", "Menús y desplegables", "03/10/2026"),
@@ -150,7 +151,7 @@ DECISIONES = {
         ("Usuarios · Roles · Empresas", "", "Listas de borde a borde con ⋮ en cada fila y «+» para invitar, crear rol o crear empresa. En Usuarios, «Cargar teléfonos» va en el ⋮ de arriba.", "Dibujada"),
         ("Ficha de empresa", "", "Pestañas «Miembros | Roles»; cada miembro con su rol y estado, ⋮ y «+» para agregar.", "Dibujada"),
         ("Editar usuario", "", "Grupos «Acceso a la organización» (Estado, Roles) y «Empresas» con «Sumar empresa»; abajo, fijos, «Descartar cambios» y «Guardar cambios».", "Dibujada"),
-        ("Editar un rol", "", "Nombre, Vale en y Descripción; los permisos se abren por área, con casillas; abajo, fijos, «Cancelar» y «Guardar cambios».", "Dibujada"),
+        ("Editar un rol", "", "Nombre, Vale en y Descripción; los permisos se abren por área, con casillas; abajo, fijos, «Descartar cambios» y «Guardar cambios» (al crear un rol, «Cancelar» y «Crear rol»).", "Dibujada"),
         ("Configuración · Página pública", "", "Campos a lo ancho y grupos (Dominio de correo; Publicación, Página y Contacto); abajo, fijos, «Descartar cambios» y «Guardar cambios».", "Dibujada"),
         ("Diálogos", "", "Invitar usuario, Sumar empresa, Agregar y Verificar dominio como hojas; Quitar dominio, confirmación sin ✕ y con el botón rojo.", "Dibujada"),
         ("Auditoría", "", "Qué pasó con la fecha, y dónde y quién debajo; «Cargar más» al final.", "Dibujada"),
