@@ -4,7 +4,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 2670
+ALTO = 2720
 ARCHIVO = "Criterio-Tablas.dc.html"
 TITULO = "Criterio · Tablas y listas"
 
@@ -141,6 +141,7 @@ BODY = f"""<div class="crit">
         <li><strong>Las acciones van en ⋮:</strong> las comunes arriba; las de peligro abajo, en rojo y separadas.</li>
         <li><strong>Más de 10 filas, paginado:</strong> al pie, adentro de la misma caja. De entrada, 10 por página. Lo que solo crece (auditoría, eventos) usa «Cargar más», sin total.</li>
         <li><strong>A ancho completo.</strong> Si no entra, se saca una columna; no se achica la letra.</li>
+        <li><strong>«Para resolver»</strong> (en los inicios) muestra solo estados que ya existen, que quien mira puede resolver y que tienen una acción. Se calcula, no se guarda, y se va solo cuando se resuelve (ADR 0040).</li>
       </ul>
     </div>
   </section>

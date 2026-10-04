@@ -88,7 +88,7 @@ DECISIONES = {
         ("Editar un rol", "A", "Una fila por permiso, solo con el nombre. Cada área se abre y se cierra; al entrar, abiertas las que tienen algo marcado.", "Dibujada"),
         ("Empresas", "A", "Empresa (con el CUIT debajo, o «Sin CUIT»), Zona horaria, Miembros, Estado y ⋮.", "Dibujada"),
         ("Ficha de empresa", "A", "Quedan las pestañas Miembros y Roles. Miembros: Miembro (nombre y correo), Roles en la empresa, Estado y ⋮. Sin roles, una raya.", "Dibujada"),
-        ("Configuración", "A", "Datos en dos columnas y la caja «Dominio de correo». Sin dominio: «Sin dominio» y «+ Agregar dominio». Pendiente: «Pendiente · Falta cargar un registro en el DNS del dominio», con «Verificar» y ⋮. «Quitar» aclara que los correos ya administrados siguen igual.", "Dibujada"),
+        ("Configuración", "A", "Datos en dos columnas y la caja «Dominio de correo». Sin dominio: «Sin dominio» y «+ Agregar dominio». Pendiente: el dominio con «Pendiente» y «Verificar», sin el texto del DNS, que va en el paso de verificar. Verificado: «Verificado · N correos administrados por Grupo Delta». «Quitar» aclara que los correos ya administrados siguen igual.", "Dibujada"),
         ("Página pública", "A", "Dos columnas; el logo es la primera fila de «Página». Arriba solo el estado («● Publicada»); la dirección, en «Publicación» y en su campo. «Nombre de la página». Borrador: interruptor «Visible en delta.plataforma.com». Despublicada: el estado arriba, en rojo; un ⓘ y el interruptor trabado.", "Dibujada"),
         ("Auditoría", "A", "Fecha y hora, Qué pasó (con el nombre: «Cambió los roles de Tomás Acosta»), Dónde y Quién. Tocar «Qué pasó» abre el detalle; sin el ojo. Arriba, sin cantidad. «Cargar más» al pie. El backend tiene que sumar el nombre y la empresa.", "Dibujada"),
         ("Inicio de la organización", "A", "Arriba, las áreas en tarjetas con un dato real (11 usuarios, ● Publicada…); abajo, «Para resolver» como tabla: Pendiente, Área, Estado, Desde y el enlace que lo resuelve. Sin pendientes, «Nada para resolver».", "Dibujada"),
@@ -128,7 +128,7 @@ DECISIONES = {
         ("Permisos", "A", "Área WhatsApp con 4: Atender clientes, Atender internos, Mandar difusiones y Administrar WhatsApp.", "Dibujada"),
         ("Correo «Chats esperando»", "A", "Solo el resumen y «Ver los chats», sin copiar mensajes ni teléfonos.", "Dibujada"),
         ("Menú de la organización", "", "«WhatsApp» arriba, debajo de Inicio, con el contador de Chats; abre un segundo panel (Chats, Contactos, Difusiones) como Administración, y solo uno de los dos abre a la vez. «Administración» queda abajo, con la línea, por ser configuración. En el teléfono, la barra de abajo y «Más».", "Dibujada"),
-        ("Menú de Plataforma", "B", "«WhatsApp» para atender y la configuración dentro de «Configuración».", "Dibujada"),
+        ("Menú de Plataforma", "B", "«WhatsApp» va directo a la bandeja Consultas; la configuración, en Administración › WhatsApp (Número, Bot, Equipos y Plantillas).", "Dibujada"),
     ],
     "WhatsApp · teléfonos (como app)": [
         ("Marco", "A", "Barra de abajo: Inicio, Chats (con los sin leer), Contactos, Difusiones y «Más». Título grande en la barra de arriba, con la organización debajo.", "Dibujada"),
@@ -165,7 +165,7 @@ DECISIONES = {
         ("Avisos del sistema", "", "Lo pasajero, abajo en una franja oscura; lo que sigue, debajo de la barra de arriba; «¿Salir sin guardar?», en una hoja sin ✕; «Reintentá en 0:39», en el botón fijo.", "Dibujada"),
     ],
     "Plataforma y perfil personal · teléfonos (como app)": [
-        ("Barra de abajo de Plataforma", "", "Organizaciones, Cuentas, Recuperaciones, Chats y «Más» (WhatsApp, Administración, Configuración de WhatsApp, Mi cuenta y Salir).", "Dibujada"),
+        ("Barra de abajo de Plataforma", "", "Organizaciones, Cuentas, Recuperaciones, Consultas y «Más» (Administración; WhatsApp con Número, Bot, Equipos y Plantillas; Mi cuenta y Salir).", "Dibujada"),
         ("Organizaciones · Cuentas · Recuperaciones", "", "Listas de borde a borde con ⋮ y estado de color; «+» para crear organización e invitar operador.", "Dibujada"),
         ("Fichas de organización y de cuenta", "", "Muchas pestañas: se deslizan de costado.", "Dibujada"),
         ("Auditoría de la plataforma", "", "El detalle de un evento sube como hoja, con «Cerrar».", "Dibujada"),

@@ -177,6 +177,7 @@ BODY = f"""<div class="crit">
       <li><strong>Al terminar, se cierra</strong> y un aviso abajo a la derecha confirma lo que pasó.</li>
       <li><strong>Si lo que se manda se paga</strong> (una plantilla, una difusión), antes del botón se ve el costo estimado.</li>
       <li><strong>Un error de un campo</strong> va debajo de ese campo; un error general, arriba de los botones.</li>
+      <li><strong>El detalle de solo lectura</strong> va en una grilla con borde y líneas: el rótulo a la izquierda, sobre arena clara, y el valor a la derecha. Nunca rótulos y valores sueltos sobre blanco.</li>
       <li><strong>En el teléfono</strong> sube desde abajo, a todo el ancho, y los botones ocupan todo el ancho.</li>
     </ul>
   </section>

@@ -126,6 +126,7 @@ BODY = f"""<div class="crit">
     <ul class="reglas2" style="margin-top: 14px;">
       <li><strong>1 · Cartel:</strong> arriba del contenido, a todo el ancho. Cuenta algo que sigue pasando y, si hay algo para hacer, lleva un botón chico.</li>
       <li><strong>2 · Aviso:</strong> abajo a la derecha, encima de todo. Si hay varios, se apilan; como mucho, tres.</li>
+      <li><strong>En el teléfono,</strong> el aviso va abajo, en una franja oscura encima de la barra de abajo; el cartel, debajo de la barra de arriba.</li>
     </ul>
   </section>
 
@@ -168,6 +169,7 @@ BODY = f"""<div class="crit">
         <li><strong>Donde está la acción, solo un ⓘ.</strong> Lo que no se puede usar queda apagado y abre lo mismo que el ⓘ.</li>
         <li><strong>El ⓘ abre el aviso importante</strong>, con el motivo y qué podés hacer. Ver «Diálogos».</li>
         <li><strong>Ningún párrafo que explique</strong> en la pantalla: lo que hay que saber va en ese aviso.</li>
+        <li><strong>Nada revela si un correo o un teléfono tiene cuenta</strong> (ADR 0041): la pantalla sigue igual y a ese correo o número le llega un aviso en lugar del código. Excepción: «Invitar operador», porque quien tiene ese permiso ya ve las cuentas.</li>
       </ul>
     </div>
   </section>
