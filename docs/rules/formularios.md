@@ -45,7 +45,7 @@
 
 ## Lo verifica
 - Tests de pantalla: el recorrido del diálogo y un error del servidor ubicado en su campo. `RoleEditorPage.test.tsx` (E5): al editar, «Descartar cambios» vuelve a lo guardado sin salir; al crear, «Cancelar».
-- `useEditPage.test.tsx` (F7): el 409 solo en el cartel, otro error solo en la franja, los genéricos en ningún lado y «¿Salir sin guardar?» con cambios. `SettingsPage.test.tsx` (B11): con cambios, un enlace del menú pregunta antes de salir.
+- `useEditPage.test.tsx` (E7): el 409 solo en el cartel, otro error solo en la franja, los genéricos en ningún lado y «¿Salir sin guardar?» con cambios. `SettingsPage.test.tsx` (E7): con cambios, un enlace del menú pregunta antes de salir.
 - `parsers.test.ts` (E1).
 - `referenceData.test.ts` (E1) y tests de los selectores (E1): opciones del catálogo, carga y `{ type: "AR-CUIT", number }` sin separadores.
 - Tests de `shared/ui/fields`: borrado del valor anterior ante texto inválido, aviso tras blur y recuperación de validez al corregir.
