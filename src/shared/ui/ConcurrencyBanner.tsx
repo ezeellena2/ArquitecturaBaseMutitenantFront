@@ -47,9 +47,9 @@ export function ConcurrencyBanner({ error, isDirty, onSeeNew, onContinueEditing 
       {phone ? null : <div role="alert" className="flex flex-wrap items-center gap-x-2.5 gap-y-2 rounded-[10px] bg-[var(--alerta-t)] px-3.5 py-2.5 text-[13px] text-[var(--alerta)]">
         <TriangleAlertIcon aria-hidden="true" className="size-[18px] shrink-0" />
         <strong className="font-semibold">{t("concurrency.banner")}</strong>
-        <div className="ml-auto flex gap-2">
+        <div className="ml-auto flex items-center gap-2">
+          <Button type="button" variant="link" size="sm" className="mr-2" onClick={onContinueEditing}>{t("concurrency.continueEditing")}</Button>
           <Button type="button" variant="outline" size="sm" onClick={seeNew}>{t("concurrency.seeNew")}</Button>
-          <Button type="button" variant="outline" size="sm" onClick={onContinueEditing}>{t("concurrency.continueEditing")}</Button>
         </div>
       </div>}
       <ConfirmDialog

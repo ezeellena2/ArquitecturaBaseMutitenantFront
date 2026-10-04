@@ -52,7 +52,11 @@ describe("FilterBar", () => {
     const trigger = screen.getByRole("button", { name: "Vale en: todos" });
     trigger.focus();
     await userEvent.keyboard("{Enter}");
-    expect(await screen.findByRole("menuitemradio", { name: "Todos" })).toHaveAttribute("aria-checked", "true");
+    const all = await screen.findByRole("menuitemradio", { name: "Todos" });
+    expect(all).toHaveAttribute("aria-checked", "true");
+    // Tablero Usuarios (filtro abierto): la opción elegida va en petróleo claro, sin el punto de radio.
+    expect(all).toHaveClass("data-[state=checked]:bg-[var(--marca-t)]", "data-[state=checked]:text-[var(--marca-tx)]");
+    expect(all.querySelector("svg")).toBeNull();
     expect(screen.getByRole("menuitemradio", { name: "Toda la organización" })).toHaveAttribute("aria-checked", "false");
   });
 

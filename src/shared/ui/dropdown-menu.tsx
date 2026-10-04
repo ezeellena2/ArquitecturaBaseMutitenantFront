@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
+import { CheckIcon, ChevronRightIcon } from "lucide-react"
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
 
 function DropdownMenu({
@@ -129,16 +129,12 @@ function DropdownMenuRadioItem({
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       className={cn(
-        "relative flex min-h-9 cursor-default items-center gap-2 border-t border-[var(--borde)] py-1.5 pr-3.5 pl-8 text-[13px] outline-hidden select-none first:border-t-0 focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[15px]",
+        // Tablero Usuarios (filtro abierto): la opción elegida va en petróleo claro, sin punto de radio.
+        "relative flex min-h-9 cursor-default items-center gap-2 rounded-[6px] border-t border-[var(--borde)] py-1.5 pr-3.5 pl-3 text-[13px] outline-hidden select-none first:border-t-0 focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[state=checked]:bg-[var(--marca-t)] data-[state=checked]:text-[var(--marca-tx)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[15px]",
         className
       )}
       {...props}
     >
-      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
-        <DropdownMenuPrimitive.ItemIndicator>
-          <CircleIcon className="size-2 fill-current" />
-        </DropdownMenuPrimitive.ItemIndicator>
-      </span>
       {children}
     </DropdownMenuPrimitive.RadioItem>
   )

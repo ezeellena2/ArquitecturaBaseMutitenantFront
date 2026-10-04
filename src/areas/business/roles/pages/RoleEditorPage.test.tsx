@@ -143,7 +143,7 @@ describe("RoleEditorPage", () => {
     await user.type(name, "Nombre del borrador");
     await user.click(screen.getAllByRole("button", { name: "Guardar cambios" })[0]);
 
-    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas")).toBeVisible();
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
     expect(name).toHaveValue("Nombre del borrador");
     expect(updateBody).toMatchObject({ name: "Nombre del borrador", version: 4 });
 

@@ -24,14 +24,14 @@ describe("ConcurrencyBanner", () => {
         <ConcurrencyBanner error={new ApiError(409, { code: "Request.InProgress" })} isDirty onSeeNew={vi.fn()} onContinueEditing={vi.fn()} />
       </I18nextProvider>,
     );
-    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas")).not.toBeInTheDocument();
+    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
 
     rerender(
       <I18nextProvider i18n={i18n}>
         <ConcurrencyBanner error={conflict} isDirty onSeeNew={vi.fn()} onContinueEditing={vi.fn()} />
       </I18nextProvider>,
     );
-    expect(screen.getByRole("alert")).toHaveTextContent("Otra persona cambió esto mientras lo editabas");
+    expect(screen.getByRole("alert")).toHaveTextContent("Otra persona cambió esto mientras lo editabas.");
     // Tablero «Criterio · Avisos»: un cartel de atención, ámbar, redondeado y sin borde, arriba del contenido.
     expect(screen.getByRole("alert")).toHaveClass("rounded-[10px]", "bg-[var(--alerta-t)]");
     expect(screen.getByRole("alert")).not.toHaveClass("border-b");
@@ -99,5 +99,19 @@ describe("ConcurrencyBanner", () => {
     expect(second).toHaveTextContent("Ver lo nuevo");
     await userEvent.click(first!);
     expect(onContinueEditing).toHaveBeenCalledOnce();
+  });
+
+  // Tablero Avisos («Alguien cambió esto»): el aviso termina en punto; «Seguir editando» es un enlace y «Ver lo nuevo»,
+  // el botón chico que va último.
+  it("en la compu, «Seguir editando» es un enlace antes de «Ver lo nuevo»", () => {
+    render(<I18nextProvider i18n={i18n}><ConcurrencyBanner error={conflict} isDirty={false} onSeeNew={vi.fn()} onContinueEditing={vi.fn()} /></I18nextProvider>);
+
+    const banner = screen.getByRole("alert");
+    expect(banner).toHaveTextContent("Otra persona cambió esto mientras lo editabas.");
+    const [first, second] = within(banner).getAllByRole("button");
+    expect(first).toHaveTextContent("Seguir editando");
+    expect(first).toHaveAttribute("data-variant", "link");
+    expect(second).toHaveTextContent("Ver lo nuevo");
+    expect(second).toHaveAttribute("data-variant", "outline");
   });
 });

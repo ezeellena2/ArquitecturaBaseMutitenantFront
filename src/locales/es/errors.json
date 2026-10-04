@@ -33,7 +33,7 @@
   "retryIn": "Reintentá en {{time}}",
   "concurrency": {
     "title": "Alguien cambió esto",
-    "banner": "Otra persona cambió esto mientras lo editabas",
+    "banner": "Otra persona cambió esto mientras lo editabas.",
     "seeNew": "Ver lo nuevo",
     "continueEditing": "Seguir editando"
   },

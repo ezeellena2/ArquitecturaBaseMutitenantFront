@@ -128,10 +128,10 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     await user.type(name, "Grupo Delta Norte");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 
-    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas")).toBeVisible();
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
     expect(name).toHaveValue("Grupo Delta Norte");
     await user.click(screen.getByRole("button", { name: "Seguir editando" }));
-    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas")).not.toBeInTheDocument();
+    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
   });
 
   it("el logo va en «Página», el contacto en «Contacto», y guarda con la versión actual", async () => {
