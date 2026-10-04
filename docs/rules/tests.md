@@ -5,6 +5,7 @@
 ## Cómo se hace
 - `renderRouteWithProviders(path, { as: "business-admin" })` y, para el sitio público, `{ host: "empresa-a.localtest.me" }`. Los usuarios de prueba están en `test/mocks/currentUsers.ts`: persona sin organizaciones, persona con organizaciones, empresa admin, empresa sin permisos y operador.
 - MSW con `onUnhandledRequest: "error"`: toda llamada tiene su handler.
+- **Cada test entra en 5 s, también con la máquina cargada:** una prueba lenta primero se aliviana: la pantalla que la ruta carga con `lazyPage` se importa en un `beforeAll`, un texto largo se pega (`user.paste`) en vez de tipearse letra por letra y un recorrido largo se parte en dos; para salir de una pantalla con cambios se usa un enlace a una pantalla ya cargada («Inicio»). Si igual no entra, el límite se sube en ese test con un comentario que dice por qué.
 - Cada test empieza limpio: `resetBetweenTests` (`test/utils/isolation.ts`, en el setup) desmonta la pantalla, quita el bloqueo de la vista y cierra los avisos, que sonner guarda fuera de React y volvería a mostrar en el test siguiente.
 - **Por pantalla, probar solo los estados y recorridos que realmente le aplican:**
   - carga, vacío, sin coincidencias, error con reintento y sin permiso, cuando cada estado existe;

@@ -1,7 +1,7 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -17,6 +17,10 @@ const verified = {
   createdAtUtc: "2026-10-01T12:00:00Z", verifiedAtUtc: "2026-10-01T12:05:00Z", version: 4,
 };
 const pending = { ...verified, status: "Pending", txtRecordName: "delta.example.test", txtRecordValue: "ab-verificacion=7f3c9a2e", verifiedAtUtc: null };
+
+// La ruta carga la pantalla con lazyPage: se importa antes de las pruebas para que la primera no pague, dentro de su
+// límite, la carga del módulo, que con la máquina cargada la pasaba de 5 s.
+beforeAll(async () => { await import("./SettingsPage"); });
 
 beforeEach(async () => {
   await configureI18n(referenceDataFixture().cultures);
@@ -85,14 +89,12 @@ describe("SettingsPage", () => {
     expect(await screen.findByRole("textbox", { name: "Nombre de la organización" })).toHaveValue("Grupo Delta");
   });
 
-  it("guarda con versión y quita un dominio con el texto del tablero", async () => {
+  it("guarda con la versión y la ficha pasa axe", async () => {
     let updateBody: unknown;
-    let removeUrl: URL | undefined;
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
       http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
       http.put("/api/organization/settings", async ({ request }) => { updateBody = await request.json(); return new HttpResponse(null, { status: 204 }); }),
-      http.delete("/api/organization/settings/domains/:domainId", ({ request }) => { removeUrl = new URL(request.url); return new HttpResponse(null, { status: 204 }); }),
     );
 
     const { container } = renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
@@ -106,12 +108,23 @@ describe("SettingsPage", () => {
 
     const user = userEvent.setup();
     await user.clear(name);
-    await user.type(name, "Grupo Delta Sur");
+    await user.paste("Grupo Delta Sur");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(updateBody).toEqual({ ...settings, name: "Grupo Delta Sur" }));
     expect(await screen.findByText("Guardamos la configuración.")).toBeVisible();
+  });
 
-    screen.getByRole("button", { name: "Acciones de delta.example.test" }).focus();
+  it("quita un dominio con su versión y el texto del tablero", async () => {
+    let removeUrl: URL | undefined;
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.delete("/api/organization/settings/domains/:domainId", ({ request }) => { removeUrl = new URL(request.url); return new HttpResponse(null, { status: 204 }); }),
+    );
+    renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+
+    const user = userEvent.setup();
+    (await screen.findByRole("button", { name: "Acciones de delta.example.test" })).focus();
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("menuitem", { name: "Quitar" }));
     // Tablero Configuracion-Quitar (la cantidad de correos administrados llega cuando la API la exponga).
@@ -143,7 +156,8 @@ describe("SettingsPage", () => {
     const add = await screen.findByRole("dialog", { name: "Agregar dominio" });
     // «Criterio · Diálogos»: el cuerpo común de los diálogos, con su margen y la distancia entre campos.
     expect(within(add).getByRole("textbox", { name: "Dominio" }).closest("[data-slot='dialog-body']")).not.toBeNull();
-    await user.type(within(add).getByRole("textbox", { name: "Dominio" }), "delta.example.test");
+    await user.click(within(add).getByRole("textbox", { name: "Dominio" }));
+    await user.paste("delta.example.test");
     await user.click(within(add).getByRole("button", { name: "Siguiente" }));
     await waitFor(() => expect(registered).toEqual({ domain: "delta.example.test" }));
 
@@ -216,7 +230,7 @@ describe("SettingsPage", () => {
 
     const name = await screen.findByRole("textbox", { name: "Nombre de la organización" });
     await user.clear(name);
-    await user.type(name, "Grupo Delta Sur");
+    await user.paste("Grupo Delta Sur");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 
     expect(await screen.findAllByText("Guardamos la configuración.")).not.toHaveLength(0);
@@ -235,8 +249,10 @@ describe("SettingsPage", () => {
 
     const name = await screen.findByRole("textbox", { name: "Nombre de la organización" });
     await user.clear(name);
-    await user.type(name, "Grupo Delta Sur");
-    await user.click(screen.getByRole("link", { name: "Empresas" }));
+    await user.paste("Grupo Delta Sur");
+    // «Inicio», del menú: la pantalla de destino ya está cargada (las de las demás secciones se cargan al entrar).
+    const home = within(screen.getByRole("navigation", { name: "General" })).getByRole("link", { name: "Inicio" });
+    await user.click(home);
     const dialog = await screen.findByRole("dialog", { name: "¿Salir sin guardar?" });
     expect(dialog).toHaveTextContent("Se pierde lo que cambiaste acá.");
     expect(router.state.location.pathname).toBe("/org/configuracion");
@@ -245,9 +261,9 @@ describe("SettingsPage", () => {
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "¿Salir sin guardar?" })).not.toBeInTheDocument());
     expect(screen.getByRole("textbox", { name: "Nombre de la organización" })).toHaveValue("Grupo Delta Sur");
 
-    await user.click(screen.getByRole("link", { name: "Empresas" }));
+    await user.click(home);
     await user.click(within(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).getByRole("button", { name: "Salir sin guardar" }));
-    await waitFor(() => expect(router.state.location.pathname).toBe("/org/empresas"));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/org"));
   });
 
   // Tablero Configuracion: con cambios, la segunda línea de la banda dice solo «Cambios sin guardar».
@@ -263,7 +279,7 @@ describe("SettingsPage", () => {
     const subline = () => screen.getByRole("heading", { level: 1, name: "Configuración" }).parentElement!.querySelector("[data-slot='page-subline']");
     expect(subline()).toBeNull();
     await user.clear(name);
-    await user.type(name, "Grupo Delta Sur");
+    await user.paste("Grupo Delta Sur");
     expect(subline()).toHaveTextContent(/^Cambios sin guardar$/);
     await user.click(screen.getByRole("button", { name: "Descartar cambios" }));
     expect(subline()).toBeNull();

@@ -1,7 +1,7 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
@@ -21,6 +21,10 @@ const companyAdmin = {
   companyId: null, isSystemRole: true, userCount: 1, permissions: ["company.members.read", "company.members.manage"],
   version: 1, createdAtUtc: "2026-09-27T12:00:00Z",
 };
+
+// La ruta carga la pantalla con lazyPage: se importa antes de las pruebas para que la primera no pague, dentro de su
+// límite, la carga del módulo, que con la máquina cargada la pasaba de 5 s.
+beforeAll(async () => { await import("./CompanyDetailPage"); });
 
 beforeEach(async () => {
   await configureI18n(referenceDataFixture().cultures);
@@ -199,7 +203,8 @@ describe("CompanyDetailPage", () => {
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Editar empresa" }));
     const dialog = await screen.findByRole("dialog", { name: "Editar empresa" });
-    await user.type(within(dialog).getByRole("textbox", { name: "CUIT" }), "307");
+    await user.click(within(dialog).getByRole("textbox", { name: "CUIT" }));
+    await user.paste("307");
 
     const save = within(dialog).getByRole("button", { name: "Guardar cambios" });
     expect(save).toBeEnabled();
@@ -406,7 +411,7 @@ describe("CompanyDetailPage", () => {
     await user.click(await screen.findByRole("option", { name: /Tomás Acosta/ }));
     expect(within(dialog).queryByText("Elegí un usuario.")).not.toBeInTheDocument();
     expect(member).not.toHaveAttribute("aria-invalid");
-  }, 10_000);
+  });
 
   it("agrega una persona existente con encabezado idempotente", async () => {
     let requestBody: unknown;

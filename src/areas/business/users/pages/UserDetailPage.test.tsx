@@ -1,7 +1,7 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -73,6 +73,10 @@ async function addCompanyWithConflict(user: ReturnType<typeof userEvent.setup>) 
   return dialog;
 }
 
+// La ruta carga la pantalla con lazyPage: se importa antes de las pruebas para que la primera no pague, dentro de su
+// límite, la carga del módulo, que con la máquina cargada la pasaba de 5 s.
+beforeAll(async () => { await import("./UserDetailPage"); });
+
 beforeEach(async () => {
   await configureI18n(referenceDataFixture().cultures);
   await changeCulture("es-AR");
@@ -117,7 +121,9 @@ describe("UserDetailPage (tablero Usuario)", () => {
     } finally {
       restore();
     }
-  });
+  // Límite de 10 s: es la primera prueba del archivo y recorre las dos hojas del teléfono; con la máquina cargada pasaba
+  // los 5 s.
+  }, 10_000);
 
   it("muestra el estado en la banda, el ⋮ y «Guardar cambios» apagado sin cambios", async () => {
     api(member);
@@ -136,7 +142,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(within(access).getByRole("checkbox", { name: "Todos" })).not.toBeChecked();
     expect(within(access).queryByText("lucia@example.com")).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
-  });
+  // Límite de 10 s: revisa con axe la ficha entera, que con la máquina cargada pasaba los 5 s.
+  }, 10_000);
 
   it("las migas siguen el camino hasta la persona", async () => {
     api(member);
