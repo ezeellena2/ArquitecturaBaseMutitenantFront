@@ -1,4 +1,3 @@
-import { QueryClient } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createMemoryRouter, RouterProvider } from "react-router";
@@ -8,6 +7,7 @@ import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { DeletionRequestedPage } from "@/areas/personal/account/components/DeletionRequestedPage";
 import { LoginPage } from "@/areas/public/auth/pages/LoginPage";
 import { ApiError } from "@/shared/api/ApiError";
+import { createQueryClient } from "@/shared/api/queryClient";
 import { publishAccessError } from "@/shared/api/accessErrorStore";
 import { currentUsers, type CurrentUserFixture } from "./mocks/currentUsers";
 import { fixtureAuth } from "./mocks/authContext";
@@ -48,7 +48,8 @@ if (session && !sessionPage) throw new Error("Estado visual de sesión inválido
 const router = sessionPage
   ? createMemoryRouter([{ path: "*", element: sessionPage }], { initialEntries: [session === "cancelled" ? route : "/"] })
   : createMemoryRouter(routes, { initialEntries: [route] });
-const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+// El cliente de la app, con sus avisos globales (red, 5xx y 429) y sus opciones: la captura muestra lo que ve la persona.
+const client = createQueryClient();
 const root = document.getElementById("root");
 if (!root) throw new Error("Falta raíz visual");
 createRoot(root).render(<StrictMode><AppProviders client={client} authContext={fixtureAuth(as)}><RouterProvider router={router} /></AppProviders></StrictMode>);
