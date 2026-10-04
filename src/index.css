@@ -30,6 +30,8 @@
   --lado-hover: oklch(0.895 0.022 75);
   /* Lienzo (tema C2, --lado-t2): el texto de las opciones del menú lateral y del panel, un gris más firme sobre el arena. */
   --lado-t2: oklch(0.42 0.018 60);
+  /* Lienzo v102 (.w-hijos): la línea a la izquierda de las opciones de un grupo abierto del menú. */
+  --lado-guia: oklch(0.82 0.03 75);
   --lado-activo: #fff;
   --panel: oklch(0.905 0.022 75);
   --fila-alterna: oklch(0.968 0.012 78);
