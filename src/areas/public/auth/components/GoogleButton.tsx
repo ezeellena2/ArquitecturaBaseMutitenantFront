@@ -38,7 +38,7 @@ export function GoogleButton(props: GoogleButtonProps) {
   const label = props.mode === "signup"
     ? t(props.access === "business" ? "businessSignup.google" : "signup.google")
     : t("login.google");
-  const className = "w-full border-[var(--t3)] text-[var(--t1)]";
+  const className = "w-full border-[var(--borde2)] text-[var(--t1)]";
   if (props.mode === "signup") {
     const culture = effectiveCulture() ?? navigator.language;
     const timeZoneId = browserTimeZone();

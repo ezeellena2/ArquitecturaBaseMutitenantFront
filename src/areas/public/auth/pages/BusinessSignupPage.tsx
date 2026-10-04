@@ -258,7 +258,7 @@ export function BusinessSignupPage() {
               <FormError message={requestErrorText} />
               <div className="flex flex-col gap-2.5">
                 <Button type="button" size="lg" onClick={() => void confirmCode()} disabled={code.length !== 6 || verifyCode.isPending}>{t("businessSignup.verify")}</Button>
-                <Button type="button" size="lg" variant="outline" className="border-[var(--t3)]"
+                <Button type="button" size="lg" variant="outline"
                   onClick={() => void resendCode()} disabled={resend.isRunning || retry.isRunning || requestCode.isPending}>
                   {retry.label ?? (resend.isRunning ? t("businessSignup.resendIn", { seconds: resend.seconds }) : t("businessSignup.resend"))}
                 </Button>

@@ -176,7 +176,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <h1 className="text-2xl font-bold leading-tight">{t("login.noBusiness")}</h1>
       <div className="flex flex-col gap-2.5">
         <Link to="/registro/empresa" className="inline-flex h-10 items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("login.registerBusiness")}</Link>
-        <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--t3)] text-sm font-semibold">{t("login.enterAsPerson")}</Link>
+        <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--borde2)] text-sm font-semibold">{t("login.enterAsPerson")}</Link>
       </div>
     </div> : result === "inactive" ? <div className="flex flex-col gap-[22px] text-center">
       <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><Ban size={20} strokeWidth={1.75} /></span>
@@ -184,7 +184,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <p className="text-sm text-[var(--t2)]">{t("login.askOwner")}</p>
       <div className="flex flex-col gap-2.5">
         <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-[10px] bg-[var(--marca)] text-sm font-semibold text-[var(--lado-activo)]">{t("login.enterAsPerson")}</Link>
-        <Link to="/registro/empresa" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--t3)] text-sm font-semibold">{t("login.registerBusiness")}</Link>
+        <Link to="/registro/empresa" className="inline-flex h-10 items-center justify-center rounded-[10px] border border-[var(--borde2)] text-sm font-semibold">{t("login.registerBusiness")}</Link>
       </div>
     </div> : unavailable ? <div className="flex flex-col gap-[22px] text-center">
       <span aria-hidden="true" className={`flex size-[52px] items-center justify-center self-center rounded-full ${unavailable.tone}`}><unavailable.Icon size={20} strokeWidth={1.75} /></span>
@@ -217,7 +217,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <FormError message={errorKey ? <>{t(errorKey)}{attemptsLeft !== null ? <span className="block">{t("login.attemptsLeft", { count: attemptsLeft })}</span> : null}{codeSpent && error?.code === "Auth.LoginCode.TooManyAttempts" ? <span className="block">{t("login.requestNewCode")}</span> : null}{error?.code === "Identity.Account.LockedOut" ? <span className="block">{t("login.tryLater")}</span> : null}{accountClosed ? <span className="block">{t("login.contactSupport")}</span> : null}</> : null} />
       <div className="flex flex-col gap-2.5">
         <Button type="button" size="lg" onClick={() => void submitCode()} disabled={code.length !== 6 || verify.isPending || verifyRetry.isRunning || codeSpent || accountClosed}>{verifyRetry.label ?? t("login.verify")}</Button>
-        <Button type="button" size="lg" variant="outline" className="border-[var(--t3)]" onClick={() => void resendCode()} disabled={resendTimer.isRunning || resendRetry.isRunning || resend.isPending || accountClosed}>
+        <Button type="button" size="lg" variant="outline" onClick={() => void resendCode()} disabled={resendTimer.isRunning || resendRetry.isRunning || resend.isPending || accountClosed}>
           {accountClosed ? t("login.resendCode") : resendRetry.label ?? (resendTimer.isRunning ? t("login.resendIn", { seconds: resendTimer.seconds }) : t("login.resendCode"))}
         </Button>
       </div>
