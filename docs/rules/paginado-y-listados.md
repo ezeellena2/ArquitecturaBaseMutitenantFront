@@ -38,10 +38,10 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 
 ## Lo verifica
 - `usePagination.test.tsx` (E0/E1): conserva el estado en la URL y vuelve a la página 1, canoniza página/tamaño inválidos con `replace`, alterna el orden descendente predeterminado y omite `pageSize=10` en la URL.
-- `usePagedQuery.test.tsx`: la URL llega a la consulta, la búsqueda con debounce, la corrección de una página fuera de rango (solo con `items` vacíos y `totalCount > 0`) y las props de `Pagination`; `RolesPage.test.tsx`: al inactivar el único rol de la última página, vuelve a la anterior.
+- `usePagedQuery.test.tsx` (E7): la URL llega a la consulta, la búsqueda con debounce, la corrección de una página fuera de rango (solo con `items` vacíos y `totalCount > 0`) y las props de `Pagination`; `RolesPage.test.tsx` (E7): al inactivar el único rol de la última página, vuelve a la anterior.
 - `pageSizes.test.ts` (E2): exige concordancia exacta con `PagedRequest.properties.pageSize.enum` del OpenAPI; el repo hermano es obligatorio en local y solo ese chequeo se omite con aviso en CI aislado.
 - Tests de pantalla: sin coincidencias y cambio de página; en el teléfono, la lista y su «+».
-- `src/shared/ui/app/lists.test.tsx`: en el teléfono, filas de lista, filtros en una hoja y «Cargar más».
+- `src/shared/ui/app/lists.test.tsx` (E5): en el teléfono, filas de lista, filtros en una hoja y «Cargar más».
 
 ## Detalle
 [frontend.md §4, "Paginado, orden y búsqueda"](../architecture/frontend.md#paginado-orden-y-búsqueda) · back: `docs/rules/paginado-y-busqueda.md`

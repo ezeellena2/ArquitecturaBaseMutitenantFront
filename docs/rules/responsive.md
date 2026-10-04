@@ -43,9 +43,9 @@
 - `src/areas/business/users/pages/UsersPage.tsx` y `users/columns.tsx` (`userPhoneRow`) · `src/shared/ui/Page.tsx` · los tableros M-* del [lienzo vigente](../design/lienzo/README.md).
 
 ## Lo verifica
-- `src/shared/ui/app/lists.test.tsx`: la tabla es una lista de filas en el teléfono, los filtros son íconos con su hoja y el paginado es «Cargar más».
-- `src/shared/ui/app/app.test.tsx`: la barra, la barra de abajo, el «+», los botones fijos y los grupos.
-- `columns-mobile.test.ts`: toda definición de columnas tiene exactamente una `primary`.
+- `src/shared/ui/app/lists.test.tsx` (E5): la tabla es una lista de filas en el teléfono, los filtros son íconos con su hoja y el paginado es «Cargar más».
+- `src/shared/ui/app/app.test.tsx` (E5): la barra, la barra de abajo, el «+», los botones fijos y los grupos.
+- `columns-mobile.test.ts` (E1): toda definición de columnas tiene exactamente una `primary`.
 - Los tests «en el teléfono …» de cada pantalla (con `asPhone()`), el recorrido del teléfono del E2E real y las capturas a 390 y 1440 contra el tablero antes de cerrar la etapa.
 
 ## Detalle

@@ -35,8 +35,8 @@
 ## Lo verifica
 - Tests de pantalla: cada `code` que traduce la feature tiene un test (tests.md).
 - `formErrors.test.ts` (E1), `queryClient.test.ts` (E1; el 403 de la consulta principal, de una secundaria y de los términos nuevos).
-- `CompanyDetailPage.test.tsx`: el 403 de los roles (secundaria) no reemplaza la ficha; el de la ficha, sí.
-- `errorMessage.test.ts`: el texto de cada error y que la pantalla no repita lo que avisó el `MutationCache`; `queryClient.test.ts`: los avisos de las mutaciones y `meta.handlesError`; `RoleEditorPage.test.tsx`: sin conexión al guardar, un solo aviso con «Reintentar», que vuelve a guardar.
+- `CompanyDetailPage.test.tsx` (E7): el 403 de los roles (secundaria) no reemplaza la ficha; el de la ficha, sí.
+- `errorMessage.test.ts` (E7): el texto de cada error y que la pantalla no repita lo que avisó el `MutationCache`; `queryClient.test.ts` (E7): los avisos de las mutaciones y `meta.handlesError`; `RoleEditorPage.test.tsx` (E7): sin conexión al guardar, un solo aviso con «Reintentar», que vuelve a guardar.
 
 ## Detalle
 [frontend.md §4, "Errores"](../architecture/frontend.md#errores)

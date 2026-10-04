@@ -44,7 +44,7 @@
 - `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4) · `src/areas/business/users/pages/UsersPage.tsx` (E6: diálogo Invitar integrado en el listado)
 
 ## Lo verifica
-- Tests de pantalla: el recorrido del diálogo y un error del servidor ubicado en su campo. `RoleEditorPage.test.tsx`: al editar, «Descartar cambios» vuelve a lo guardado sin salir; al crear, «Cancelar».
+- Tests de pantalla: el recorrido del diálogo y un error del servidor ubicado en su campo. `RoleEditorPage.test.tsx` (E5): al editar, «Descartar cambios» vuelve a lo guardado sin salir; al crear, «Cancelar».
 - `parsers.test.ts` (E1).
 - `referenceData.test.ts` (E1) y tests de los selectores (E1): opciones del catálogo, carga y `{ type: "AR-CUIT", number }` sin separadores.
 - Tests de `shared/ui/fields`: borrado del valor anterior ante texto inválido, aviso tras blur y recuperación de validez al corregir.

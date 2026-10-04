@@ -40,7 +40,7 @@
 - `routes.test.tsx` (E3) y `navigation.test.tsx` (E4): el mismo permiso en los dos lugares desde E4; el mismo módulo desde E5.
 - `AccessRoute.test.tsx` (E3), `useSwitchAccess.test.tsx` (E3) y `AccessMenu.test.tsx` (E3): limpia la caché al cambiar; una persona sin organizaciones no ve «Ir a mi empresa» y en B2C nunca aparece «Registrá tu empresa».
 - `routes-by-host.test.ts` (E7): un subdominio no monta rutas de `/org`.
-- `access.test.ts`: el inicio, la puerta, la ruta y los estados de cada acceso; `access-paths.test.ts`: ningún literal `"/org"` ni `"/login/empresa"` fuera de `tenancy/access.ts`; `useSignOut.test.tsx`.
+- `access.test.ts` (E7): el inicio, la puerta, la ruta y los estados de cada acceso; `access-paths.test.ts` (E7): ningún literal `"/org"` ni `"/login/empresa"` fuera de `tenancy/access.ts`; `useSignOut.test.tsx` (E7).
 
 ## Detalle
 [frontend.md §3](../architecture/frontend.md#3-rutas) · back: `docs/architecture/multitenancy.md` y `docs/rules/modulos-habilitados.md`
