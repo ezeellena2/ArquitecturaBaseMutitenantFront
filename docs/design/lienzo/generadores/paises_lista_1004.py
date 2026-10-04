@@ -15,7 +15,7 @@ CSS = f"""<style {MARCA}>
 .o-paises .bus svg {{ position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--t3); }}
 .o-paises .bus span {{ display: flex; align-items: center; height: 32px; box-sizing: border-box; padding: 0 12px 0 32px; border: 1px solid var(--borde2); border-radius: 8px; background: var(--s2); color: var(--t3); font-size: 13px; }}
 .o-paises .ops {{ padding: 4px; }}
-.o-paises .op {{ min-height: 36px; padding: 4px 10px; border-radius: 6px; font-size: 13px; color: var(--t1); background: transparent; font-weight: 400; }}
+.o-paises .op {{ min-height: 36px; box-sizing: border-box; padding: 4px 10px; border-radius: 6px; font-size: 13px; color: var(--t1); background: transparent; font-weight: 400; }}
 .o-paises .op[aria-selected="true"] {{ background: var(--marca-t); color: var(--marca-tx); font-weight: 500; }}
 .o-paises .op svg:last-child:not(.bandera) {{ flex-shrink: 0; }}
 </style>"""
