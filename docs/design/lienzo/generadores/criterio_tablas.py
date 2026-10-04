@@ -137,6 +137,7 @@ BODY = f"""<div class="crit">
         <li><strong>Encabezado con color:</strong> 40 px, fondo arena, sin mayúsculas.</li>
         <li><strong>Filas de 40 px</strong>; si alguna tiene segunda línea, todas las de la tabla son de 52. Letra de hoy (13), alternadas. Al pasar el mouse, petróleo claro.</li>
         <li><strong>Un tema por columna.</strong> Debajo, en gris, lo que lo aclara: el correo, el rol en la empresa, cuándo vence. Sin dato, una sola raya.</li>
+        <li><strong>Un dato personal tapado</strong> muestra lo mínimo: el teléfono, «•••• 4521»; el correo, «lu•••@gmail.com».</li>
         <li><strong>El estado es un punto de color y la palabra</strong>, sin fondo. Números y montos, a la derecha.</li>
         <li><strong>Las acciones van en ⋮:</strong> las comunes arriba; las de peligro abajo, en rojo y separadas.</li>
         <li><strong>Más de 10 filas, paginado:</strong> al pie, adentro de la misma caja. De entrada, 10 por página. Lo que solo crece (auditoría, eventos) usa «Cargar más», sin total.</li>

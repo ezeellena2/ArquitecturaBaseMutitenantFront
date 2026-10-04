@@ -5,7 +5,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 10300
+ALTO = 11200
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
@@ -57,6 +57,9 @@ REGLAS = [
     ("Filas de 40; si alguna fila de la tabla tiene segunda línea, todas son de 52, para que la tabla quede pareja.", "Tablas y listas", "04/10/2026"),
     ("En las listas del teléfono, una fecha del año en curso va sin el año («27/09» o «27/09 10:42»); de otro año, completa. En la compu, siempre con el año.", "Tablas y listas", "04/10/2026"),
     ("En el panel de Administración, un grupo arranca abierto solo si estás en una de sus pantallas; los demás, cerrados.", "Menús y desplegables", "04/10/2026"),
+    ("El círculo con la inicial de una persona lleva el degradé de la marca, en la compu y en el teléfono.", "Marco y pantallas", "04/10/2026"),
+    ("Sin ☰ en las pantallas con sesión: el menú lateral se achica con la flecha redonda de su borde.", "Menús y desplegables", "04/10/2026"),
+    ("Un dato personal tapado muestra lo mínimo: el teléfono, «•••• 4521»; el correo, «lu•••@gmail.com».", "Tablas y listas", "04/10/2026"),
     ("Una lista se lee; cambiar una fila o sumar otra abre un diálogo chico.", "Tablas y listas", "02/10/2026"),
     ("Los permisos de un rol van en grupos que se abren y se cierran.", "Tablas y listas", "02/10/2026"),
     ("Lo que solo crece, como la auditoría, se pide de a tandas con «Cargar más», sin total y sin cantidades en los filtros.", "Tablas y listas", "04/10/2026"),
@@ -218,8 +221,20 @@ DECISIONES = {
         ("Directorio · teléfono", "", "El ☰ de la portada con «Empresas» marcado; buscador a lo ancho y tarjetas en una columna. Dirección: /empresas.", "Dibujada"),
         ("Página pública · teléfono", "", "La misma tarjeta de la compu, con sus tres estados; sin ☰, porque es la página de la organización.", "Dibujada"),
     ],
+    "Alineación con la app · 04/10": [
+        ("Marco", "", "Las 8 pantallas de Organización y las 8 de Plataforma con el marco viejo pasan al del criterio: perfil en 14/700, opciones de 32 en 400, pie con el avatar de 32 y migas en 13. Plataforma › Administración: WhatsApp como grupo.", "Dibujada"),
+        ("Avatar y ☰", "A", "El círculo con la inicial, con el degradé en todos lados; sin ☰ arriba.", "Dibujada"),
+        ("Buscador de las listas", "", "36 de alto y 360 de ancho en las nueve listas que lo tenían de 32.", "Dibujada"),
+        ("Rótulos de los campos", "", "12,5 con interlineado 1,5 en los 24 tableros de la compu.", "Dibujada"),
+        ("Registro · Dirección de la página", "", "44 de alto y radio 10, como los demás campos de ingreso y registro.", "Dibujada"),
+        ("Mensajes de ingreso y registro", "", "Triángulo en los de atención y círculo en los de error. En la compu, radio 8 e ícono 16; en el teléfono, la franja de 14,5.", "Dibujada"),
+        ("Invitación aceptada", "", "«Agregá un correo personal…» como cartel de atención, ámbar y con el triángulo.", "Dibujada"),
+        ("Datos tapados", "A", "Teléfono «•••• 4521» y correo «lu•••@…» en Plataforma, Cuenta, Enlace y Mensajes. En Auditoría, el correo de la invitación también va tapado.", "Dibujada"),
+        ("Diálogos", "", "Cuerpo con 20 de margen y 14 entre campos.", "Dibujada"),
+        ("Sumar empresa", "", "«Sumar» nunca se apaga: sin empresa, el campo dice «Elegí una empresa.». En el teléfono, «Todos» en los roles.", "Dibujada"),
+        ("CUIT de ejemplo", "", "Los tres pasan el dígito verificador: 30-71234567-1, 30-71555444-1 y 30-12345678-1.", "Dibujada"),
+    ],
     "Lo que sigue": [
-        ("CUIT de ejemplo", "", "30-71234567-8 no pasa el dígito verificador: hay que cambiarlo en los tableros.", "Falta dibujar"),
         ("Estados que faltan", "", "Invitación (cargando, enviando y error), Inicio personal sin el aviso, Inicio de un miembro en el teléfono y los de Mi cuenta sin relevar.", "Falta dibujar"),
     ],
 }

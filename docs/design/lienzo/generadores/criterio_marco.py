@@ -4,7 +4,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 3440
+ALTO = 3500
 ARCHIVO = "Criterio-Marco.dc.html"
 TITULO = "Criterio · Marco y pantallas"
 
@@ -214,7 +214,7 @@ BODY = f"""<div class="crit">
     </div>
     <ul class="reglas2 dos" style="margin-top: 14px;">
       <li><strong>1 · Menú lateral:</strong> arena, igual en los tres perfiles. Ver «Menús y desplegables».</li>
-      <li><strong>2 · Barra de arriba:</strong> arena. Las migas a la izquierda y tu menú a la derecha. Nada más.</li>
+      <li><strong>2 · Barra de arriba:</strong> arena. Las migas a la izquierda y tu menú a la derecha, con tu inicial en un círculo con el degradé de la marca, igual que en el pie del menú y en el teléfono. Nada más: sin ☰.</li>
       <li><strong>3 · Banda de la página:</strong> blanca. Ícono, título, resumen y las acciones de la página.</li>
       <li><strong>4 · Contenido:</strong> a todo el ancho, con 24 px de margen. Cada cosa en su caja: filtros por un lado, tabla por otro.</li>
     </ul>

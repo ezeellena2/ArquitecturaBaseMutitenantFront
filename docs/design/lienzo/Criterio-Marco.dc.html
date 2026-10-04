@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 1440px; min-height: 3440px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 1440px; min-height: 3500px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -859,6 +859,14 @@
 .w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
   content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 </style>
+<style data-vuelta="1004-avatar-degrade">
+.w-av:not(.g), .ap-nav .yo, .av { background: linear-gradient(135deg, var(--marca) 0%, var(--marca-2) 100%); }
+</style>
+<style data-vuelta="1004-rotulos">
+.w-cmp .rt, .o-ets .rt, .cmp .rt { line-height: 18.75px; }
+</style>
+<style data-vuelta="1004-cuit-valido">
+</style>
 </helmet>
 
 <div class="crit">
@@ -893,7 +901,7 @@
     </div>
     <ul class="reglas2 dos" style="margin-top: 14px;">
       <li><strong>1 · Menú lateral:</strong> arena, igual en los tres perfiles. Ver «Menús y desplegables».</li>
-      <li><strong>2 · Barra de arriba:</strong> arena. Las migas a la izquierda y tu menú a la derecha. Nada más.</li>
+      <li><strong>2 · Barra de arriba:</strong> arena. Las migas a la izquierda y tu menú a la derecha, con tu inicial en un círculo con el degradé de la marca, igual que en el pie del menú y en el teléfono. Nada más: sin ☰.</li>
       <li><strong>3 · Banda de la página:</strong> blanca. Ícono, título, resumen y las acciones de la página.</li>
       <li><strong>4 · Contenido:</strong> a todo el ancho, con 24 px de margen. Cada cosa en su caja: filtros por un lado, tabla por otro.</li>
     </ul>
@@ -905,7 +913,7 @@
       <span class="rotc">Un listado</span>
       <div class="marco1"><div class="bnd"><div class="iz"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M15.5 5.2a3.2 3.2 0 0 1 0 5.6"/><path d="M17.5 13.5A5.5 5.5 0 0 1 20.5 19"/></svg></span><div><h3>Usuarios</h3><p class="res">11 usuarios · 7 activos · 3 invitaciones</p></div></div><div class="ac"><button type="button" class="cb cb-pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Invitar usuario</button></div></div></div>
       <span class="rotc">La ficha de algo</span>
-      <div class="marco1"><div class="bnd"><div class="iz"><span class="vol"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></span><div><h3>Delta S.A.</h3><p class="res"><span class="ok">Activa</span> · CUIT 30-71234567-8 · Buenos Aires (GMT−3)</p></div></div><div class="ac"><button type="button" class="ib" aria-label="Más acciones" style="border-color: var(--borde);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button><button type="button" class="cb cb-sec">Editar empresa</button><button type="button" class="cb cb-pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Agregar miembro</button></div></div></div>
+      <div class="marco1"><div class="bnd"><div class="iz"><span class="vol"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></span><div><h3>Delta S.A.</h3><p class="res"><span class="ok">Activa</span> · CUIT 30-71234567-1 · Buenos Aires (GMT−3)</p></div></div><div class="ac"><button type="button" class="ib" aria-label="Más acciones" style="border-color: var(--borde);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button><button type="button" class="cb cb-sec">Editar empresa</button><button type="button" class="cb cb-pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Agregar miembro</button></div></div></div>
       <span class="rotc">Una edición</span>
       <div class="marco1"><div class="bnd"><div class="iz"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span><div><h3>Mi cuenta</h3><p class="res"><span class="suc">Cambios sin guardar</span></p></div></div><div class="ac"><button type="button" class="cb cb-sec">Descartar cambios</button><button type="button" class="cb cb-pri">Guardar cambios</button></div></div></div>
     </div>
@@ -938,7 +946,7 @@
   <section>
     <h2>Pestañas</h2>
     <div class="marco1">
-      <div class="bnd"><div class="iz"><span class="vol"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></span><div><h3>Delta S.A.</h3><p class="res"><span class="ok">Activa</span> · CUIT 30-71234567-8 · Buenos Aires (GMT−3)</p></div></div><div class="ac"><button type="button" class="ib" aria-label="Más acciones" style="border-color: var(--borde);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button><button type="button" class="cb cb-sec">Editar empresa</button><button type="button" class="cb cb-pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Agregar miembro</button></div></div>
+      <div class="bnd"><div class="iz"><span class="vol"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></span><div><h3>Delta S.A.</h3><p class="res"><span class="ok">Activa</span> · CUIT 30-71234567-1 · Buenos Aires (GMT−3)</p></div></div><div class="ac"><button type="button" class="ib" aria-label="Más acciones" style="border-color: var(--borde);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button><button type="button" class="cb cb-sec">Editar empresa</button><button type="button" class="cb cb-pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Agregar miembro</button></div></div>
       <div class="tabs2"><span class="on">Miembros <span class="n">6</span></span><span>Roles <span class="n">3</span></span></div>
     </div>
     <ul class="reglas2 dos" style="margin-top: 14px;">
@@ -985,7 +993,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3440}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3500}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

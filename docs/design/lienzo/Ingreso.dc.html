@@ -607,6 +607,13 @@ textarea.in2 { height: auto; min-height: 84px; }
 </style>
 <style data-vuelta="1004-banderas">
 </style>
+<style data-vuelta="1004-avisos">
+.msj .ic-aten { display: none; }
+.msj.alerta .ic-mal { display: none; }
+.msj.alerta .ic-aten { display: inline-block; }
+.msj { border-radius: 8px; }
+.msj svg { width: 16px; height: 16px; margin-top: 2px; }
+</style>
 </helmet>
 
 <div class="auth">
@@ -643,7 +650,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             </div>
           </sc-if>
         <sc-if value="{{hayMsj}}" hint-placeholder-val="{{no}}">
-          <div class="msj {{msjTipo}}" role="alert"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.57 0.2 25)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><span>{{msjTexto}}<sc-if value="{{msjSub}}" hint-placeholder-val="{{no}}"><span class="sub2">{{msjSub}}</span></sc-if></span></div>
+          <div class="msj {{msjTipo}}" role="alert"><svg class="ic-mal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><svg class="ic-aten" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span>{{msjTexto}}<sc-if value="{{msjSub}}" hint-placeholder-val="{{no}}"><span class="sub2">{{msjSub}}</span></sc-if></span></div>
         </sc-if>
 
           <button type="button" class="b b-pri lg" onClick="{{enviar}}" disabled="{{noEnviable}}">{{textoEnviar}}</button>
@@ -668,7 +675,7 @@ textarea.in2 { height: auto; min-height: 84px; }
           <div><h1>{{tituloCodigo}}</h1><p class="sub">Te mandamos un código a <strong>{{destinoCodigo}}</strong>. Vence en 10 minutos.</p></div>
           <div class="otp {{cod.clase}}" role="group" aria-label="Código"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 1" autocomplete="one-time-code" value="{{cod.d0}}" onChange="{{cod.on0}}" onKeyDown="{{cod.tecla0}}" onPaste="{{cod.pegar}}" disabled="{{codigoBloqueado}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 2" autocomplete="off" value="{{cod.d1}}" onChange="{{cod.on1}}" onKeyDown="{{cod.tecla1}}" onPaste="{{cod.pegar}}" disabled="{{codigoBloqueado}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 3" autocomplete="off" value="{{cod.d2}}" onChange="{{cod.on2}}" onKeyDown="{{cod.tecla2}}" onPaste="{{cod.pegar}}" disabled="{{codigoBloqueado}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 4" autocomplete="off" value="{{cod.d3}}" onChange="{{cod.on3}}" onKeyDown="{{cod.tecla3}}" onPaste="{{cod.pegar}}" disabled="{{codigoBloqueado}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 5" autocomplete="off" value="{{cod.d4}}" onChange="{{cod.on4}}" onKeyDown="{{cod.tecla4}}" onPaste="{{cod.pegar}}" disabled="{{codigoBloqueado}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 6" autocomplete="off" value="{{cod.d5}}" onChange="{{cod.on5}}" onKeyDown="{{cod.tecla5}}" onPaste="{{cod.pegar}}" disabled="{{codigoBloqueado}}"></div>
         <sc-if value="{{hayMsj}}" hint-placeholder-val="{{no}}">
-          <div class="msj {{msjTipo}}" role="alert"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.57 0.2 25)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><span>{{msjTexto}}<sc-if value="{{msjSub}}" hint-placeholder-val="{{no}}"><span class="sub2">{{msjSub}}</span></sc-if></span></div>
+          <div class="msj {{msjTipo}}" role="alert"><svg class="ic-mal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><svg class="ic-aten" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span>{{msjTexto}}<sc-if value="{{msjSub}}" hint-placeholder-val="{{no}}"><span class="sub2">{{msjSub}}</span></sc-if></span></div>
         </sc-if>
 
           <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -723,7 +730,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             </div>
           </sc-if>
         <sc-if value="{{hayMsj}}" hint-placeholder-val="{{no}}">
-          <div class="msj {{msjTipo}}" role="alert"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.57 0.2 25)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><span>{{msjTexto}}<sc-if value="{{msjSub}}" hint-placeholder-val="{{no}}"><span class="sub2">{{msjSub}}</span></sc-if></span></div>
+          <div class="msj {{msjTipo}}" role="alert"><svg class="ic-mal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><svg class="ic-aten" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span>{{msjTexto}}<sc-if value="{{msjSub}}" hint-placeholder-val="{{no}}"><span class="sub2">{{msjSub}}</span></sc-if></span></div>
         </sc-if>
 
           <sc-if value="{{totpEsLink}}" hint-placeholder-val="{{no}}"><a class="b b-pri lg" href="Organizaciones.dc.html">Verificar</a></sc-if>
@@ -744,7 +751,7 @@ textarea.in2 { height: auto; min-height: 84px; }
           </div>
           <div class="campo2"><span class="et"><span><strong style="color: var(--t1);">2.</strong> Escribí el código que muestra la app</span></span><div class="otp {{alt.clase}}" role="group" aria-label="Código"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 1" autocomplete="one-time-code" value="{{alt.d0}}" onChange="{{alt.on0}}" onKeyDown="{{alt.tecla0}}" onPaste="{{alt.pegar}}" disabled="{{no}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 2" autocomplete="off" value="{{alt.d1}}" onChange="{{alt.on1}}" onKeyDown="{{alt.tecla1}}" onPaste="{{alt.pegar}}" disabled="{{no}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 3" autocomplete="off" value="{{alt.d2}}" onChange="{{alt.on2}}" onKeyDown="{{alt.tecla2}}" onPaste="{{alt.pegar}}" disabled="{{no}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 4" autocomplete="off" value="{{alt.d3}}" onChange="{{alt.on3}}" onKeyDown="{{alt.tecla3}}" onPaste="{{alt.pegar}}" disabled="{{no}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 5" autocomplete="off" value="{{alt.d4}}" onChange="{{alt.on4}}" onKeyDown="{{alt.tecla4}}" onPaste="{{alt.pegar}}" disabled="{{no}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 6" autocomplete="off" value="{{alt.d5}}" onChange="{{alt.on5}}" onKeyDown="{{alt.tecla5}}" onPaste="{{alt.pegar}}" disabled="{{no}}"></div></div>
         <sc-if value="{{hayMsj}}" hint-placeholder-val="{{no}}">
-          <div class="msj {{msjTipo}}" role="alert"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.57 0.2 25)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><span>{{msjTexto}}<sc-if value="{{msjSub}}" hint-placeholder-val="{{no}}"><span class="sub2">{{msjSub}}</span></sc-if></span></div>
+          <div class="msj {{msjTipo}}" role="alert"><svg class="ic-mal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><svg class="ic-aten" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span>{{msjTexto}}<sc-if value="{{msjSub}}" hint-placeholder-val="{{no}}"><span class="sub2">{{msjSub}}</span></sc-if></span></div>
         </sc-if>
 
           <button type="button" class="b b-pri lg" onClick="{{activar}}">Activar</button>
@@ -792,7 +799,7 @@ textarea.in2 { height: auto; min-height: 84px; }
   </aside>  <sc-if value="{{aviso}}" hint-placeholder-val="{{no}}">
     <div class="toast2" role="status">
       <sc-if value="{{avisoOk}}" hint-placeholder-val="{{si}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.13 155)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></svg></sc-if>
-      <sc-if value="{{avisoError}}" hint-placeholder-val="{{no}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.57 0.2 25)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg></sc-if>
+      <sc-if value="{{avisoError}}" hint-placeholder-val="{{no}}"><svg class="ic-mal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><svg class="ic-aten" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></sc-if>
       <span>{{aviso}}</span>
     </div>
   </sc-if>

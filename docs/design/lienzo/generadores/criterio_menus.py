@@ -259,7 +259,7 @@ BODY = f"""<div class="crit">
       {fila_medida("Separador", "1 px", "Una línea gris entre grupos de opciones.")}
       {fila_medida("Caja del menú", "Esquinas de 10 px", "Fondo blanco, borde fino y sombra suave.")}
       {fila_medida("Menú lateral", "232 px · contraído 64 px", "Arena. Opciones de 32 px con ícono de 18.")}
-      {fila_medida("Botón para contraer el menú", "28 px, redondo", "Blanco, con borde arena, sobre el borde del menú lateral.")}
+      {fila_medida("Botón para contraer el menú", "28 px, redondo", "Blanco, con borde arena, sobre el borde del menú lateral. Es la única forma de achicarlo: sin ☰ arriba.")}
       {fila_medida("Panel de Administración", "232 px", "Un tono más oscuro que el menú lateral, al lado.")}
     </div>
   </section>

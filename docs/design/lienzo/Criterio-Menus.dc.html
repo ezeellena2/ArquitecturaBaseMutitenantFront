@@ -642,6 +642,9 @@
 .est { display: inline-flex; align-items: center; gap: 8px; color: var(--t1); font-size: 13px; margin-right: 8px; }
 .est::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.6 0.13 155); }
   </style>
+<style data-vuelta="1004-avatar-degrade">
+.av { background: linear-gradient(135deg, var(--marca) 0%, var(--marca-2) 100%); }
+</style>
 </helmet>
 
 <div class="crit">
@@ -767,7 +770,7 @@
       <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Separador</strong><span>1 px</span><span>Una línea gris entre grupos de opciones.</span></div>
       <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Caja del menú</strong><span>Esquinas de 10 px</span><span>Fondo blanco, borde fino y sombra suave.</span></div>
       <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Menú lateral</strong><span>232 px · contraído 64 px</span><span>Arena. Opciones de 32 px con ícono de 18.</span></div>
-      <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Botón para contraer el menú</strong><span>28 px, redondo</span><span>Blanco, con borde arena, sobre el borde del menú lateral.</span></div>
+      <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Botón para contraer el menú</strong><span>28 px, redondo</span><span>Blanco, con borde arena, sobre el borde del menú lateral. Es la única forma de achicarlo: sin ☰ arriba.</span></div>
       <div class="fil" style="grid-template-columns: 240px 170px minmax(0, 1fr); min-height: 40px; padding-top: 0; padding-bottom: 0; font-size: 13px;"><strong>Panel de Administración</strong><span>232 px</span><span>Un tono más oscuro que el menú lateral, al lado.</span></div>
     </div>
   </section>
