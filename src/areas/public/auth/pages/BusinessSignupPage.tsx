@@ -73,13 +73,13 @@ export function BusinessSignupPage() {
     acceptedTerms: true,
     culture: effectiveCulture() ?? navigator.language,
     timeZoneId: browserTimeZone(),
-  }, key));
+  }, key), { meta: { handlesError: true } });
   const verifyCode = useIdempotentMutation((input: { email: string; code: string }, key) => verifyBusinessSignupCode({
     ...input,
     acceptedTerms: true,
     culture: effectiveCulture() ?? navigator.language,
     timeZoneId: browserTimeZone(),
-  }, key));
+  }, key), { meta: { handlesError: true } });
   const antiforgery = useQuery({ queryKey: googleSignupAntiforgeryQueryKey,
     queryFn: getGoogleSignupAntiforgery, enabled: step === "details", meta: { silent: true } });
   const slugQuery = useQuery({ queryKey: ["business-signup", "slug", slugToCheck],
@@ -93,7 +93,7 @@ export function BusinessSignupPage() {
     firstCompanyName: input.firstCompanyName,
     taxId: input.taxNumber ? { type: cuitType?.code ?? "", number: input.taxNumber } : null,
     acceptedTerms: true,
-  }, key, antiforgery.data?.requestToken ?? ""));
+  }, key, antiforgery.data?.requestToken ?? ""), { meta: { handlesError: true } });
 
   useEffect(() => {
     if (auth.isAuthenticated && step === "email") {

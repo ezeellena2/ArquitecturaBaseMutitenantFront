@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ApiError } from "@/shared/api/ApiError";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
@@ -33,15 +34,15 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
   const [reauthTicket, setReauthTicket] = useState<string | null>(null);
   const form = useForm<{ email: string }>({ resolver: zodResolver(schema), defaultValues: { email: method?.value ?? "" } });
   const retry = useRetryAfterCountdown();
-  const request = useIdempotentMutation((email: string, key) => method ? sendLoginMethodCode(method.id, key) : addLoginEmail({ email, reauthTicket }, key));
-  const verify = useIdempotentMutation((value: string, key) => verifyLoginMethod(methodId!, { code: value }, key));
+  const request = useIdempotentMutation((email: string, key) => method ? sendLoginMethodCode(method.id, key) : addLoginEmail({ email, reauthTicket }, key), { meta: { handlesError: true } });
+  const verify = useIdempotentMutation((value: string, key) => verifyLoginMethod(methodId!, { code: value }, key), { meta: { handlesError: true } });
   const busy = request.isPending || verify.isPending;
   const started = useRef(false);
 
   function showError(error: unknown) {
     retry.startFromError(error);
     if (error instanceof ApiError && !methodId && applyApiErrorToForm(error, form.setError, { email: "email" })) return;
-    setFailure(error instanceof ApiError ? error.detail ?? errors(error.isNetworkError ? "network" : "server") : errors("server"));
+    setFailure(apiErrorMessage(error, errors));
   }
   async function send({ email }: { email: string }) {
     setFailure(null);

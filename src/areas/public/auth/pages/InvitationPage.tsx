@@ -4,7 +4,7 @@ import { Check, Clock, TriangleAlert } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useAuth } from "react-oidc-context";
-import { ApiError } from "@/shared/api/ApiError";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { invitationAntiforgeryQueryKey, invitationPaths, invitationPreviewQueryKey,
   getInvitationAntiforgery, previewInvitation, acceptInvitation } from "@/shared/api/invitationContract";
 import type { AcceptInvitationRequest, AcceptInvitationResponse } from "@/shared/api/types";
@@ -24,14 +24,6 @@ function initials(value: string | null | undefined, fallback: string): string {
 // «Vence: En 6 días» del tablero, redondeado; el último medio día dice «Hoy».
 function daysUntil(value: string): number {
   return Math.max(0, Math.round((Date.parse(value) - Date.now()) / 86_400_000));
-}
-
-function displayError(error: unknown, fallback: (key: string) => string): string {
-  if (error instanceof ApiError) {
-    if (error.isNetworkError) return fallback("network");
-    return error.detail ?? fallback("server");
-  }
-  return fallback("server");
 }
 
 export function InvitationPage() {
@@ -78,7 +70,7 @@ function InvitationFlow() {
     meta: { silent: true },
   });
   const accept = useIdempotentMutation((request: AcceptInvitationRequest, key) =>
-    acceptInvitation(request, key, antiforgery.data!.requestToken));
+    acceptInvitation(request, key, antiforgery.data!.requestToken), { meta: { handlesError: true } });
 
   const invitation = preview.data;
   const acceptedView = accepted !== null || invitation?.state === "Accepted";
@@ -100,7 +92,7 @@ function InvitationFlow() {
       // Sin cuenta, la leyenda «Al aceptar … aceptás los Términos» hace de consentimiento.
       setAccepted(await accept.mutateAsync({ token, acceptedTerms: invitation.state === "NoAccount" }));
     } catch (error) {
-      setActionError(displayError(error, tErrors));
+      setActionError(apiErrorMessage(error, tErrors));
     }
   }
 
@@ -156,7 +148,7 @@ function InvitationFlow() {
     {loading ? <div role="status" aria-busy="true" aria-label={t("loading")} className="flex min-h-36 items-center justify-center text-sm text-[var(--t2)]">{t("loading")}</div>
       : error ? <div className="flex flex-col gap-5">
         <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("pageTitle")}</h1>
-        <FormError message={displayError(error, tErrors)} />
+        <FormError message={apiErrorMessage(error, tErrors)} />
         <Button type="button" variant="outline" size="lg" onClick={retry}>{t("retry")}</Button>
       </div>
         : invitation ? entering && !actionError ? <div role="status" aria-busy="true" className="flex min-h-36 items-center justify-center text-sm text-[var(--t2)]">{t("accepted.entering", { organization: organizationName })}</div>

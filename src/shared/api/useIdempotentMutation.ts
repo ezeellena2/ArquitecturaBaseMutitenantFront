@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, type MutationMeta } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { ApiError } from "./ApiError";
 
@@ -22,8 +22,11 @@ function waitForRetry(seconds: number, signal: AbortSignal): Promise<void> {
 // El callback usa la clave con httpClient, por ejemplo:
 // (body, key) => api.post(path, body, { headers: { "Idempotency-Key": key } }).
 // La clave pertenece al formulario montado: red y 5xx la conservan; 4xx definitivos la renuevan.
+// `meta` va al manejo global de errores; por ejemplo, `{ handlesError: true }` si la pantalla muestra también red,
+// 5xx y 429 en su lugar.
 export function useIdempotentMutation<TData, TVariables>(
   fn: (variables: TVariables, idempotencyKey: string) => Promise<TData>,
+  options?: { meta?: MutationMeta },
 ) {
   const keyRef = useRef<string | null>(null);
   const lifetimeRef = useRef<AbortController | null>(null);
@@ -37,6 +40,7 @@ export function useIdempotentMutation<TData, TVariables>(
 
   return useMutation<TData, ApiError, TVariables>({
     retry: false,
+    meta: options?.meta,
     mutationFn: async (variables) => {
       // Capturamos la clave por envío: otro pedido que termine mientras esperamos no la cambia.
       const key = keyRef.current!;

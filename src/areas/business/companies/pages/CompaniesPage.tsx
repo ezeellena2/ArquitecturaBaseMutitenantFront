@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
-import { ApiError } from "@/shared/api/ApiError";
+import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { CompanyResponse } from "@/shared/api/types";
 import type { CreateCompanyRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -21,7 +21,6 @@ import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
-import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import {
@@ -42,10 +41,6 @@ const statusValues = [undefined, "Active", "Inactive"] as const;
 
 // «Delta S.A.» + «. Quedaste…» no repite el punto final del nombre.
 const sentence = (text: string) => text.replace("..", ".");
-
-function errorMessage(error: unknown, fallback: string): string {
-  return error instanceof ApiError ? error.detail ?? fallback : fallback;
-}
 
 export function CompaniesPage() {
   const { t } = useTranslation(["companies", "common"]);
@@ -110,7 +105,7 @@ export function CompaniesPage() {
       toast.success(sentence(t(company.status === "Active" ? "companies:messages.deactivated" : "companies:messages.activated", { name: company.name })));
       await invalidate();
     },
-    onError: (error) => toastError(errorMessage(error, t("common:states.error"))),
+    onError: (error) => toastActionError(error, t),
   });
 
   if (!canRead) return <ForbiddenPage homePath="/org" />;
@@ -135,7 +130,7 @@ export function CompaniesPage() {
     setFailure(undefined);
     const request: CreateCompanyRequest = companyPayload(draft, cuitType?.code);
     if (editingCompany) update.mutate(editingCompany);
-    else void create.mutateAsync(request).then(() => finishSave(true)).catch((error: unknown) => setFailure(error));
+    else create.mutate(request, { onSuccess: () => finishSave(true), onError: setFailure });
   }
 
   const rowActions = (company: CompanyResponse) => <RowActions label={t("companies:rowActions", { name: company.name })} actions={[
@@ -173,7 +168,7 @@ export function CompaniesPage() {
           clearLabel={t("common:actions.clear")}
           onClear={filters.clear}
         />
-        {counts.isError ? <FormError message={errorMessage(counts.error, t("common:states.error"))} /> : null}
+        {counts.isError ? <FormError message={apiErrorMessage(counts.error, t)} /> : null}
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable
             columns={columns}
@@ -182,7 +177,7 @@ export function CompaniesPage() {
             rowKey={(company) => company.id}
             isLoading={companies.isPending}
             isFetching={companies.isFetching}
-            error={companies.error ? errorMessage(companies.error, t("common:states.error")) : undefined}
+            error={companies.error ? apiErrorMessage(companies.error, t) : undefined}
             onRetry={() => { void companies.refetch(); void counts.refetch(); }}
             emptyTitle={status || pagination.search ? t("companies:empty.filtered") : t("companies:empty.all")}
             emptyAction={status || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("companies:empty.clear")}</Button> : undefined}
@@ -198,7 +193,7 @@ export function CompaniesPage() {
         <DialogHeader><DialogTitle>{t(editingCompany ? "companies:editTitle" : "companies:createTitle")}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="flex min-h-0 flex-col">
           <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
-            {failure ? <FormError message={failure instanceof Error && !(failure instanceof ApiError) ? failure.message : errorMessage(failure, t("common:states.error"))} /> : null}
+            <FormError message={actionErrorMessage(failure, t)} />
             <CompanyFields draft={draft} onChange={(next) => { setDraft(next); setFailure(undefined); }} taxIdValid={taxIdValid} />
           </div>
           <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">

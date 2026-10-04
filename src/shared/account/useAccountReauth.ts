@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ApiError } from "@/shared/api/ApiError";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import type { RequestReauthRequest, ReauthCodeResponse } from "@/shared/api/types";
@@ -15,11 +15,11 @@ export function useAccountReauth(context: RequestReauthRequest) {
   const ticket = useRef<string | null>(null);
   const started = useRef(false);
   const retry = useRetryAfterCountdown();
-  const request = useIdempotentMutation((_: void, key) => requestReauth(context, key));
-  const verify = useIdempotentMutation((value: string, key) => verifyReauth({ ...context, sourceMethodId: proof!.sourceMethodId, code: value }, key));
+  const request = useIdempotentMutation((_: void, key) => requestReauth(context, key), { meta: { handlesError: true } });
+  const verify = useIdempotentMutation((value: string, key) => verifyReauth({ ...context, sourceMethodId: proof!.sourceMethodId, code: value }, key), { meta: { handlesError: true } });
   function showError(error: unknown) {
     retry.startFromError(error);
-    setFailure(error instanceof ApiError ? error.detail ?? t(error.isNetworkError ? "network" : "server") : t("server"));
+    setFailure(apiErrorMessage(error, t));
   }
   async function send() {
     setFailure(null);

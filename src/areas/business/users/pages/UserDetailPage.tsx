@@ -5,6 +5,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
+import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import type { OrganizationUserResponse, RoleResponse, UpdateOrganizationUserRequest } from "@/shared/api/types";
 import { Banner } from "@/shared/ui/Banner";
@@ -23,7 +24,6 @@ import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { DateText } from "@/shared/ui/format/DateText";
-import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { ChoiceSheet, CheckRow, RadioRow } from "../components/AccessSheets";
 import { RolesField } from "../components/RolesField";
@@ -45,10 +45,6 @@ const stateDot: Record<UserState, string> = {
   Inactive: "bg-[var(--punto-apagado)]",
   PendingDeletion: "bg-[var(--punto-alerta)]",
 };
-
-function failureMessage(error: unknown, fallback: string): string {
-  return error instanceof ApiError ? error.detail ?? fallback : fallback;
-}
 
 function organizationRoleIds(user: OrganizationUserResponse): string[] {
   return user.roles.filter((role) => role.scope === "Organization").map((role) => role.id);
@@ -102,18 +98,18 @@ export function UserDetailPage() {
   const remove = useMutation({
     mutationFn: (_message: string) => removeUser(memberId, user.data?.version ?? 0),
     onSuccess: async (_result, message) => { toast.success(sentence(message)); await client.invalidateQueries({ queryKey: usersQueryRoot }); void navigate("/org/usuarios"); },
-    onError: (error) => toastError(failureMessage(error, t("common:states.error"))),
+    onError: (error) => toastActionError(error, t),
   });
   const revoke = useMutation({
     mutationFn: (invitationId: string) => revokeUserInvitation(invitationId),
     onSuccess: async () => { toast.success(sentence(t("users:detail.messages.revoked", { email: user.data?.email ?? "" }))); await refresh(); },
-    onError: (error) => toastError(failureMessage(error, t("common:states.error"))),
+    onError: (error) => toastActionError(error, t),
   });
   const resend = useIdempotentMutation((invitationId: string, key) => resendUserInvitation(invitationId, key));
 
   if (!canRead) return <ForbiddenPage homePath="/org" />;
   if (user.isPending) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.loading")}><p role="status">{t("common:states.loading")}</p></Page>;
-  if (user.error) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.title")}><FormError message={failureMessage(user.error, t("common:states.error"))} /></Page>;
+  if (user.error) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.title")}><FormError message={apiErrorMessage(user.error, t)} /></Page>;
   if (!user.data) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.title")}><EmptyState title={t("users:empty.missing")} /></Page>;
 
   const member = user.data;
@@ -175,10 +171,13 @@ export function UserDetailPage() {
 
   function resendInvitation() {
     if (!member.invitationId) return;
-    void resend.mutateAsync(member.invitationId).then(async () => {
-      toast.success(sentence(t("users:detail.messages.resent", { email: member.email ?? "" })));
-      await client.invalidateQueries({ queryKey: userQueryKey(memberId) });
-    }).catch((error: unknown) => toastError(failureMessage(error, t("common:states.error"))));
+    resend.mutate(member.invitationId, {
+      onSuccess: async () => {
+        toast.success(sentence(t("users:detail.messages.resent", { email: member.email ?? "" })));
+        await client.invalidateQueries({ queryKey: userQueryKey(memberId) });
+      },
+      onError: (error) => toastActionError(error, t),
+    });
   }
 
   const removeDescription = pendingDeletion
@@ -225,7 +224,7 @@ export function UserDetailPage() {
           </Button>
         </> : undefined}>
       <div className="flex flex-col gap-4 max-md:gap-0">
-        {failure && !(failure instanceof ApiError && failure.code === "General.ConcurrencyConflict") ? <FormError message={failureMessage(failure, t("common:states.error"))} /> : null}
+        {saveError?.code === "General.ConcurrencyConflict" ? null : <FormError message={actionErrorMessage(failure, t)} />}
         {pendingDeletion ? <Banner tone="warning"><Trans ns="users" i18nKey="detail.deletionScheduled" components={{ date: <DateText value={member.deletionScheduledForUtc} kind="date" /> }} /></Banner> : null}
 
         <Section title={t("users:detail.accessTitle")}>

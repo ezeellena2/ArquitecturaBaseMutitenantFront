@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
+import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { PublicPageResponse, TenantSlugAvailability, UpdatePublicPageRequest } from "@/shared/api/types";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { Button } from "@/shared/ui/button";
@@ -108,13 +109,13 @@ export function PublicPagePage() {
     mutationFn: updatePublicPage,
     onSuccess: async () => { setDraftState(null); toast.success(t("publicPage:saved")); await client.invalidateQueries({ queryKey: publicPageQueryKey }); },
     // El conflicto de concurrencia va en su cartel, debajo de la banda; los demás errores, en un aviso.
-    onError: (error) => { if (!isConcurrencyConflict(error)) toastError(error instanceof ApiError ? error.detail ?? t("common:states.error") : t("common:states.error")); },
+    onError: (error) => { if (!isConcurrencyConflict(error)) toastActionError(error, t); },
   });
   // Tablero Pagina-Org: el interruptor de «Publicación» se aplica al momento, sin esperar a «Guardar cambios».
   const publication = useMutation({
     mutationFn: (published: boolean) => setPublicPagePublished(published, { version: page.data!.version }),
     onSuccess: async (_result, published) => { toast.success(t(published ? "publicPage:published" : "publicPage:unpublished")); await client.invalidateQueries({ queryKey: publicPageQueryKey }); },
-    onError: (error) => toastError(error instanceof ApiError ? error.detail ?? t("common:states.error") : t("common:states.error")),
+    onError: (error) => toastActionError(error, t),
   });
 
   if (!canManage) return <ForbiddenPage homePath="/org" />;
@@ -177,7 +178,7 @@ export function PublicPagePage() {
       </>}
     >
       <div className="flex flex-col gap-4 max-md:gap-0">
-        {page.error ? <FormError message={page.error instanceof ApiError ? page.error.detail ?? t("common:states.error") : t("common:states.error")} /> : null}
+        {page.error ? <FormError message={apiErrorMessage(page.error, t)} /> : null}
         {page.isPending ? <p role="status" className="text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft && pageData ? <>
           <Section title={t("publicPage:publicationTitle")}>
             <div className="flex items-center gap-3 px-4 py-3 md:px-5 max-md:min-h-14 max-md:py-2 max-md:pr-3.5">

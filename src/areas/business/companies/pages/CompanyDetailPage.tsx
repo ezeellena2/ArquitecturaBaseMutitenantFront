@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
+import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { AddCompanyMemberRequest, CompanyMemberResponse, RoleResponse, UpdateCompanyRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
@@ -29,7 +30,6 @@ import { RowActions } from "@/shared/ui/RowActions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Surface } from "@/shared/ui/Surface";
 import { TabCount, Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import {
@@ -60,10 +60,6 @@ import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, use
 type CompanyTab = "members" | "roles";
 // Orden del filtro «Estado» del tablero Empresa.
 const states = [undefined, "Active", "Inactive", "PendingDeletion"] as const;
-
-function failureMessage(error: unknown, fallback: string): string {
-  return error instanceof ApiError ? error.detail ?? fallback : fallback;
-}
 
 export function CompanyDetailPage() {
   const { t } = useTranslation(["companies", "common"]);
@@ -130,12 +126,12 @@ export function CompanyDetailPage() {
   const changeMemberState = useMutation({
     mutationFn: (member: CompanyMemberResponse) => changeCompanyMemberStatus(id, member.memberId, { status: member.membershipStatus === "Active" ? "Inactive" : "Active", version: member.version }),
     onSuccess: async (_result, member) => { setStatusTarget(null); toast.success(t(member.membershipStatus === "Active" ? "companies:messages.memberRemoved" : "companies:messages.memberRestored", { name: member.displayName })); await invalidate(); },
-    onError: (error) => toastError(failureMessage(error, t("common:states.error"))),
+    onError: (error) => toastActionError(error, t),
   });
   const changeCompanyState = useMutation({
     mutationFn: () => changeCompanyStatus(id, { status: company.data?.status === "Active" ? "Inactive" : "Active", version: company.data?.version }),
     onSuccess: async () => { setCompanyStatusConfirm(false); toast.success(sentence(t(company.data?.status === "Active" ? "companies:messages.deactivated" : "companies:messages.activated", { name: company.data?.name ?? "" }))); await invalidate(); },
-    onError: (error) => toastError(failureMessage(error, t("common:states.error"))),
+    onError: (error) => toastActionError(error, t),
   });
   const saveCompany = useMutation({
     mutationFn: () => {
@@ -148,7 +144,7 @@ export function CompanyDetailPage() {
 
   if (!canRead) return <ForbiddenPage homePath="/org" />;
   if (company.isPending) return <Page icon={Building2} title={t("companies:detail.loading")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
-  if (company.isError || !company.data) return <Page icon={Building2} title={t("companies:detail.title")} backTo={{ to: "/org/empresas", label: t("companies:back") }}><div className="p-4"><FormError message={failureMessage(company.error, t("common:states.error"))} /><Button type="button" variant="outline" onClick={() => { void company.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
+  if (company.isError || !company.data) return <Page icon={Building2} title={t("companies:detail.title")} backTo={{ to: "/org/empresas", label: t("companies:back") }}><div className="p-4"><FormError message={apiErrorMessage(company.error, t)} /><Button type="button" variant="outline" onClick={() => { void company.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
   const data = company.data;
 
   function openEdit() {
@@ -228,7 +224,7 @@ export function CompanyDetailPage() {
       </TabsList>}>
         <TabsContent value="members" className="flex flex-col gap-3">
           {!canReadMembers ? <FormError message={t("companies:detail.membersForbidden")} /> : <>
-            {counts.isError ? <FormError message={failureMessage(counts.error, t("common:states.error"))} /> : null}
+            {counts.isError ? <FormError message={apiErrorMessage(counts.error, t)} /> : null}
             <FilterBar phoneTools="none" label={t("companies:detail.filters.label")} searchLabel={t("companies:detail.filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
               filters={[
                 { key: "roleId", label: t("companies:detail.filters.role"), menuLabel: t("companies:detail.filters.roleMenu"), value: filters.values.roleId ?? "", active: filters.values.roleId !== undefined, onChange: (value) => filters.setFilter("roleId", value === "all" ? undefined : value), options: [{ value: "all", label: t("companies:detail.filters.allRoles") }, { value: "none", label: t("companies:detail.filters.withoutRoles") }, ...selectableRoles.map((role) => ({ value: role.id, label: role.name }))] },
@@ -237,7 +233,7 @@ export function CompanyDetailPage() {
               clearLabel={t("common:actions.clear")} onClear={filters.clear} />
             <Surface className="overflow-hidden" phoneFlush>
               <DataTable columns={memberColumns} mobileRow={(member) => companyMemberPhoneRow(member, t, memberActions(member))} rows={members.data?.items ?? []} rowKey={(member) => member.memberId} isLoading={members.isPending} isFetching={members.isFetching}
-                error={members.error ? failureMessage(members.error, t("common:states.error")) : undefined} onRetry={() => { void members.refetch(); void counts.refetch(); }}
+                error={members.error ? apiErrorMessage(members.error, t) : undefined} onRetry={() => { void members.refetch(); void counts.refetch(); }}
                 emptyTitle={state || roleId || withoutRoles || pagination.search ? t("companies:detail.empty.filtered") : t("companies:detail.empty.all")} emptyAction={state || roleId || withoutRoles || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined}
                 sort={pagination.sort} onSortChange={pagination.toggleSort} />
               {members.data ? <Pagination page={members.data.page} pageSize={members.data.pageSize} totalCount={members.data.totalCount} totalPages={members.data.totalPages} hasPrevious={members.data.hasPrevious} hasNext={members.data.hasNext} onPageChange={pagination.setPage} onPageSizeChange={pagination.setPageSize} /> : null}
@@ -247,7 +243,7 @@ export function CompanyDetailPage() {
         {canReadRoles ? <TabsContent value="roles">
           <Surface className="overflow-hidden" phoneFlush>
             <DataTable columns={roleColumns} mobileRow={(role) => <ListRow key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={role.name}
-              meta={t("roles:phone.users", { count: role.userCount })} lines={[t("roles:phone.permissions", { count: role.permissions.length })]} trailing={roleActions(role)} />} rows={ownRoles.slice((rolePage - 1) * rolePageSize, rolePage * rolePageSize)} rowKey={(role) => role.id} isLoading={roles.isPending} isFetching={roles.isFetching} error={roles.error ? failureMessage(roles.error, t("common:states.error")) : undefined} onRetry={() => { void roles.refetch(); }} emptyTitle={t("companies:detail.rolesEmpty")} />
+              meta={t("roles:phone.users", { count: role.userCount })} lines={[t("roles:phone.permissions", { count: role.permissions.length })]} trailing={roleActions(role)} />} rows={ownRoles.slice((rolePage - 1) * rolePageSize, rolePage * rolePageSize)} rowKey={(role) => role.id} isLoading={roles.isPending} isFetching={roles.isFetching} error={roles.error ? apiErrorMessage(roles.error, t) : undefined} onRetry={() => { void roles.refetch(); }} emptyTitle={t("companies:detail.rolesEmpty")} />
             {roles.data ? <Pagination page={rolePage} pageSize={rolePageSize} totalCount={ownRoles.length} totalPages={Math.max(1, Math.ceil(ownRoles.length / rolePageSize))}
               hasPrevious={rolePage > 1} hasNext={rolePage * rolePageSize < ownRoles.length} onPageChange={setRolePage}
               onPageSizeChange={(size) => { setRolePageSize(size); setRolePage(1); }} /> : null}
@@ -261,9 +257,9 @@ export function CompanyDetailPage() {
         <DialogHeader><DialogTitle>{t("companies:addMember.title")}</DialogTitle><DialogDescription>{data.name}</DialogDescription></DialogHeader>
         <form onSubmit={submitAdd} className="flex min-h-0 flex-col">
           <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
-            {mutationError ? <FormError message={failureMessage(mutationError, t("common:states.error"))} /> : null}
-            {candidateQuery.isError ? <FormError message={failureMessage(candidateQuery.error, t("common:states.error"))} /> : null}
-            {existingMemberIds.isError ? <FormError message={failureMessage(existingMemberIds.error, t("common:states.error"))} /> : null}
+            <FormError message={actionErrorMessage(mutationError, t)} />
+            {candidateQuery.isError ? <FormError message={apiErrorMessage(candidateQuery.error, t)} /> : null}
+            {existingMemberIds.isError ? <FormError message={apiErrorMessage(existingMemberIds.error, t)} /> : null}
             <FormField label={t("companies:addMember.user")} required>
               <Select value={selectedMemberId} onValueChange={(value) => setSelectedMemberId(value)} disabled={candidateQuery.isPending || existingMemberIds.isPending || candidates.length === 0}>
                 <SelectTrigger className="w-full" aria-label={t("companies:addMember.user")}><SelectValue placeholder={candidateQuery.isPending || existingMemberIds.isPending ? t("common:states.loading") : t("companies:addMember.chooseUser")} /></SelectTrigger>
@@ -286,7 +282,7 @@ export function CompanyDetailPage() {
       <DialogContent mobileFullHeight>
         <DialogHeader><DialogTitle>{roleTarget ? t("companies:editMemberRoles.title", { name: roleTarget.displayName }) : t("companies:editMemberRoles.title", { name: "" })}</DialogTitle><DialogDescription>{data.name}</DialogDescription></DialogHeader>
         <div className="flex flex-col gap-4 px-5 py-4">
-          {mutationError ? <FormError message={failureMessage(mutationError, t("common:states.error"))} /> : null}
+          <FormError message={actionErrorMessage(mutationError, t)} />
           <FormField label={t("companies:editMemberRoles.roles")}>
             <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleDraft} onChange={setRoleDraft} placeholder={t("companies:addMember.chooseRoles")} />
           </FormField>
@@ -314,7 +310,7 @@ export function CompanyDetailPage() {
         <DialogHeader><DialogTitle>{t("companies:editTitle")}</DialogTitle></DialogHeader>
         <form onSubmit={submitEdit} className="flex min-h-0 flex-col">
           <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
-            {editFailure ? <FormError message={failureMessage(editFailure, t("common:states.error"))} /> : null}
+            <FormError message={actionErrorMessage(editFailure, t)} />
             <CompanyFields draft={editDraft} onChange={setEditDraft} taxIdValid={taxIdValid} />
           </div>
           <DialogFooter className="border-t border-[var(--borde)] px-5 py-4">

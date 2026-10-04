@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
+import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import type { OrganizationDomainResponse, OrganizationSettingsResponse, UpdateOrganizationSettingsRequest } from "@/shared/api/types";
 import { Button } from "@/shared/ui/button";
@@ -76,12 +77,12 @@ export function SettingsPage() {
   const verifyDomain = useMutation({
     mutationFn: (domain: OrganizationDomainResponse) => verifyOrganizationDomain(domain.id),
     onSuccess: async (_result, domain) => { closeVerify(); toast.success(t("settings:domains.verified", { domain: domain.domain })); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
-    onError: (error) => setVerifyFailure(error instanceof ApiError ? error.detail ?? t("common:states.error") : t("common:states.error")),
+    onError: (error) => setVerifyFailure(actionErrorMessage(error, t)),
   });
   const removeDomain = useMutation({
     mutationFn: (domain: OrganizationDomainResponse) => removeOrganizationDomain(domain.id, domain.version),
     onSuccess: async (_result, domain) => { setDomainToRemove(null); toast.success(t("settings:domains.removed", { domain: domain.domain })); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
-    onError: (error) => toastError(error instanceof ApiError ? error.detail ?? t("common:states.error") : t("common:states.error")),
+    onError: (error) => toastActionError(error, t),
   });
 
   if (!canRead) return <ForbiddenPage homePath="/org" />;
@@ -106,7 +107,8 @@ export function SettingsPage() {
   const isDirty = Boolean(settings.data && draft && JSON.stringify(draft) !== JSON.stringify(settingsDraft(settings.data)));
   const error = settings.error ?? domains.error;
   const saveError = failure instanceof ApiError ? failure : undefined;
-  const showGeneralError = error ? error instanceof ApiError ? error.detail ?? t("common:states.error") : t("common:states.error") : undefined;
+  const showGeneralError = error ? apiErrorMessage(error, t) : undefined;
+  const addDomainError = actionErrorMessage(addDomain.error, t);
   const activeDomains = (domains.data ?? []).filter((domain) => domain.status !== "Removed");
 
   return <>
@@ -120,7 +122,7 @@ export function SettingsPage() {
     >
       <div className="flex flex-col gap-4 max-md:gap-3.5">
         {showGeneralError ? <FormError message={showGeneralError} /> : null}
-        {failure && !(failure instanceof ApiError && failure.code === "General.ConcurrencyConflict") ? <FormError message={saveError?.detail ?? t("common:states.error")} /> : null}
+        {saveError?.code === "General.ConcurrencyConflict" ? null : <FormError message={actionErrorMessage(failure, t)} />}
         {/* Tablero M-Configuracion: en el teléfono los datos van sueltos sobre blanco, sin título a la vista. */}
         <Section title={t("settings:dataTitle")} phone="untitled">
           {settings.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft ? <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5 max-md:gap-3.5 max-md:p-0">
@@ -161,7 +163,7 @@ export function SettingsPage() {
       <DialogContent className="md:max-w-[420px]">
         <DialogHeader><DialogTitle>{t("settings:domains.addTitle")}</DialogTitle></DialogHeader>
         <div className="px-5 py-4"><FormField label={t("settings:domains.domain")} required><Input autoComplete="off" value={domainDraft} onChange={(event) => setDomainDraft(event.target.value)} /></FormField>
-          {addDomain.error ? <p role="alert" className="mt-2 text-[13px] text-[var(--peligro)]">{addDomain.error.detail ?? t("common:states.error")}</p> : null}</div>
+          {addDomainError ? <p role="alert" className="mt-2 text-[13px] text-[var(--peligro)]">{addDomainError}</p> : null}</div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => setDomainDialogOpen(false)}>{t("common:actions.cancel")}</Button>
           <Button type="button" disabled={!domainDraft.trim() || addDomain.isPending} onClick={() => addDomain.mutate({ domain: domainDraft.trim() }, { onSuccess: async (domain) => { setDomainDraft(""); setDomainDialogOpen(false); openVerify(domain); await client.invalidateQueries({ queryKey: organizationDomainsKey }); } })}>{t("settings:domains.next")}</Button>

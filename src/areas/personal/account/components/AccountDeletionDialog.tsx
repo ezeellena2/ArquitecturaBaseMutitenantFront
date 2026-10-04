@@ -21,7 +21,7 @@ export function AccountDeletionDialog({ graceDays, onClose, onComplete }: { grac
   const reauth = useAccountReauth({ action: "DeleteAccount" });
   const restoreFocus = useRestoreFocusOnClose();
   const form = useForm<{ reason: string }>({ resolver: zodResolver(z.object({ reason: z.string().trim().min(1, t("reasonRequired")) })), defaultValues: { reason: "" } });
-  const request = useIdempotentMutation((value: { reason: string; reauthTicket: string }, key) => requestAccountDeletion(value, key));
+  const request = useIdempotentMutation((value: { reason: string; reauthTicket: string }, key) => requestAccountDeletion(value, key), { meta: { handlesError: true } });
   const [confirming, setConfirming] = useState(false);
   const busy = confirming || reauth.isPending || request.isPending;
   async function confirm({ reason }: { reason: string }) {

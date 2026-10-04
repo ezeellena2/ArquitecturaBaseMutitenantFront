@@ -6,6 +6,7 @@ import { Link, useSearchParams } from "react-router";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { takeExpiredSessionNotice } from "@/auth/sessionExpiredNotice";
 import { ApiError } from "@/shared/api/ApiError";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useCountdown } from "@/shared/hooks/useCountdown";
@@ -57,8 +58,8 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const [code, setCode] = useState("");
   const [error, setError] = useState<ApiError | null>(null);
   const [result, setResult] = useState<"noBusiness" | "inactive" | UnavailableCode | null>(null);
-  const resend = useIdempotentMutation((email: string, key) => requestLoginCode(email, key));
-  const verify = useIdempotentMutation((input: { email: string; code: string; returnUrl: string }, key) => verifyLoginCode(input, key));
+  const resend = useIdempotentMutation((email: string, key) => requestLoginCode(email, key), { meta: { handlesError: true } });
+  const verify = useIdempotentMutation((input: { email: string; code: string; returnUrl: string }, key) => verifyLoginCode(input, key), { meta: { handlesError: true } });
   const resendTimer = useCountdown(0);
   const verifyRetry = useRetryAfterCountdown();
   const resendRetry = useRetryAfterCountdown();
@@ -67,7 +68,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const [googleProofExpired, setGoogleProofExpired] = useState(false);
   const googleProofRequested = useRef(false);
   const googlePending = googleError === accountErrorCodes.pendingDeletion && !googleProofExpired;
-  const cancel = useIdempotentMutation((ticket: string, key) => cancelAccountDeletion(ticket, key));
+  const cancel = useIdempotentMutation((ticket: string, key) => cancelAccountDeletion(ticket, key), { meta: { handlesError: true } });
 
   useEffect(() => {
     if (!googlePending || googleProofRequested.current) return;
@@ -102,7 +103,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       toast.success(t("deletion.cancelled"));
       completeLogin(response.returnUrl);
     } catch (caught) {
-      const message = caught instanceof ApiError ? caught.detail ?? t(caught.isNetworkError ? "errors:network" : "errors:server") : t("errors:server");
+      const message = apiErrorMessage(caught, t);
       if (caught instanceof ApiError && caught.status >= 400 && caught.status < 500) {
         setPending(null); setGoogleProofExpired(true); setGoogleError(null); forgetLoginRedirectError(); backToEmail(); toastError(message);
       } else setCancelFailure(message);

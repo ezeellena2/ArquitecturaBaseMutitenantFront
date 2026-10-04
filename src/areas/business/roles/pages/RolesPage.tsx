@@ -7,7 +7,7 @@ import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useFilters } from "@/shared/hooks/useFilters";
 import { usePagination } from "@/shared/hooks/usePagination";
-import { ApiError } from "@/shared/api/ApiError";
+import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { Column } from "@/shared/ui/DataTable";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
@@ -88,7 +88,7 @@ export function RolesPage() {
       toast.success(t("roles:removed", { name: role.name }));
       await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
     },
-    onError: (error) => toastError(error instanceof ApiError ? error.detail ?? t("common:states.error") : t("common:states.error")),
+    onError: (error) => toastActionError(error, t),
   });
 
   if (!canRead) return <ForbiddenPage homePath="/org" />;
@@ -160,7 +160,7 @@ export function RolesPage() {
             rowKey={(role) => role.id}
             isLoading={roles.isPending}
             isFetching={roles.isFetching}
-            error={roles.error ? roles.error instanceof ApiError ? roles.error.detail ?? t("common:states.error") : t("common:states.error") : undefined}
+            error={roles.error ? apiErrorMessage(roles.error, t) : undefined}
             onRetry={() => { void roles.refetch(); }}
             emptyTitle={vale || pagination.search ? t("roles:emptyFiltered") : t("roles:empty")}
             emptyAction={vale || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined}

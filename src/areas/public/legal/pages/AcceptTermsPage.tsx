@@ -7,6 +7,7 @@ import { currentUserQueryKey, useCurrentUser } from "@/auth/useCurrentUser";
 import { beginSignOut, cancelSignOut } from "@/auth/signOutStatus";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { ApiError } from "@/shared/api/ApiError";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { clearAccessError } from "@/shared/api/accessErrorStore";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import type { AcceptLegalRequest } from "@/shared/api/types";
@@ -25,7 +26,7 @@ export function AcceptTermsPage() {
   const [accepted, setAccepted] = useState(false);
   const [acceptRequired, setAcceptRequired] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
-  const request = useIdempotentMutation((value: AcceptLegalRequest, key) => acceptLegalDocuments(value, key));
+  const request = useIdempotentMutation((value: AcceptLegalRequest, key) => acceptLegalDocuments(value, key), { meta: { handlesError: true } });
   const fallback = data?.access === "business" ? "/org" : data?.access === "platform" ? "/plataforma" : "/";
   const candidate: unknown = location.state?.returnTo;
   const returnTo = typeof candidate === "string" && candidate.startsWith("/") && !candidate.startsWith("//") && !candidate.includes("\\") && !candidate.startsWith("/aceptar-terminos") ? candidate : fallback;
@@ -40,7 +41,7 @@ export function AcceptTermsPage() {
       await queryClient.invalidateQueries({ queryKey: currentUserQueryKey });
       navigate(returnTo, { replace: true });
     } catch (error) {
-      setFailure(error instanceof ApiError ? error.detail ?? errors(error.isNetworkError ? "network" : "server") : errors("server"));
+      setFailure(apiErrorMessage(error, errors));
       if (error instanceof ApiError && error.code === "Legal.Document.VersionChanged") { setAccepted(false); await refetch(); }
     }
   }

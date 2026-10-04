@@ -6,9 +6,9 @@ import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UserRound } from "lucide-react";
 import { toast } from "sonner";
-import { currentUserQueryKey } from "@/auth/useCurrentUser";
-import { api } from "@/shared/api/httpClient";
+import { currentUserQueryKey, fetchCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
+import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { MeResponse } from "@/shared/api/types";
 import { changeCulture } from "@/shared/i18n";
@@ -39,24 +39,27 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   const form = useForm<Draft>({ resolver: zodResolver(schema), defaultValues: draft(account) });
   const { isDirty, isSubmitting } = form.formState;
   const guard = useUnsavedChangesGuard(isDirty);
-  // Por TanStack Query, como toda escritura: así los términos nuevos (403) abren la aceptación también desde acá.
-  const update = useMutation({ mutationFn: updateMe });
 
+  // La relectura va por TanStack Query: si falla, la avisa el manejo global, como cualquier consulta.
   async function reload() {
     try {
-      const fresh = await api.get<MeResponse>("/api/me");
-      queryClient.setQueryData(currentUserQueryKey, fresh);
+      const fresh = await queryClient.fetchQuery({ queryKey: currentUserQueryKey, queryFn: fetchCurrentUser, staleTime: 0, meta: { blocksView: true } });
       form.reset(draft(fresh));
       setFailure(undefined);
       await changeCulture(fresh.culture);
       return true;
     } catch (error) { setFailure(error); return false; }
   }
+  // Por TanStack Query, como toda escritura: los términos nuevos (403) abren la aceptación también desde acá, y la
+  // relectura va en onSuccess para que «Reintentar» (sin conexión) termine igual que un guardado al primer intento.
+  const update = useMutation({
+    mutationFn: (values: Draft) => updateMe({ ...values, displayName: values.displayName.trim() || null }),
+    onSuccess: async () => { if (await reload()) toast.success(t("saved")); },
+  });
   async function save(values: Draft) {
     setFailure(undefined);
     try {
-      await update.mutateAsync({ ...values, displayName: values.displayName.trim() || null });
-      if (await reload()) toast.success(t("saved"));
+      await update.mutateAsync(values);
     } catch (error) {
       if (!(error instanceof ApiError) || !applyApiErrorToForm(error, form.setError, { DisplayName: "displayName", displayName: "displayName", Culture: "culture", culture: "culture", TimeZoneId: "timeZoneId", timeZoneId: "timeZoneId" })) setFailure(error);
     }
@@ -70,7 +73,7 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   return <>
     <Page title={t("title")} icon={UserRound} status={dirty} actions={actions} phoneBody="gray"
       banner={<ConcurrencyBanner error={failure} isDirty={isDirty} onSeeNew={() => { void reload(); }} onContinueEditing={() => setFailure(undefined)} />}>
-      {failure && (!(failure instanceof ApiError) || failure.code !== "General.ConcurrencyConflict") ? <FormError className="mb-3" message={failure instanceof Error ? failure.message : errors("server")} /> : null}
+      {failure instanceof ApiError && failure.code === "General.ConcurrencyConflict" ? null : <FormError className="mb-3" message={actionErrorMessage(failure, errors)} />}
       <form id="account-profile" aria-label={t("title")} onSubmit={form.handleSubmit(save)}>
         <Section title={t("data")}>
           {/* Tablero Cuenta: nombre, idioma y zona en tres columnas iguales, al ancho de la tarjeta. */}

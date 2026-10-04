@@ -32,7 +32,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart }: EmailC
     resolver: zodResolver(schema),
     defaultValues: { email: "" },
   });
-  const request = useIdempotentMutation((email: string, key) => requestLoginCode(email, key));
+  const request = useIdempotentMutation((email: string, key) => requestLoginCode(email, key), { meta: { handlesError: true } });
   const retry = useRetryAfterCountdown();
 
   async function submit({ email }: FormValues) {

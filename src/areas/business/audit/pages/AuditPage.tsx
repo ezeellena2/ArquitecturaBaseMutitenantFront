@@ -6,7 +6,7 @@ import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useFilters } from "@/shared/hooks/useFilters";
 import { usePagination } from "@/shared/hooks/usePagination";
-import { ApiError } from "@/shared/api/ApiError";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
 import type { Column } from "@/shared/ui/DataTable";
 import { DataTable } from "@/shared/ui/DataTable";
 import { Button } from "@/shared/ui/button";
@@ -121,7 +121,7 @@ export function AuditPage() {
             rowKey={(row) => row.id}
             isLoading={audit.isPending}
             isFetching={audit.isFetching}
-            error={audit.error ? audit.error instanceof ApiError ? audit.error.detail ?? t("common:states.error") : t("common:states.error") : undefined}
+            error={audit.error ? apiErrorMessage(audit.error, t) : undefined}
             onRetry={() => { void audit.refetch(); }}
             emptyTitle={filtered ? t("audit:emptyFiltered") : t("audit:empty")}
             emptyAction={filtered ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined}

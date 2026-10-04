@@ -1,6 +1,6 @@
 # Errores
 
-**Regla:** se decide por **`error.code`**, nunca por el texto. El `detail` ya viene traducido por el backend. Lo global (red, 5xx) lo maneja `queryClient`, y cada feature traduce solo los códigos que merecen un texto o un campo propio.
+**Regla:** se decide por **`error.code`**, nunca por el texto. El `detail` ya viene traducido por el backend. Lo global (red, 5xx y 429) lo maneja `queryClient`, en consultas y mutaciones, y cada feature traduce solo los códigos que merecen un texto o un campo propio. Todo texto de error sale de `shared/api/errorMessage.ts`.
 
 ## Cómo se hace
 - `errors.ts` de la feature:
@@ -12,8 +12,10 @@
     }
   }
   ```
-- **Formularios:** `applyApiErrorToForm(error, setError, fieldMap)`. Lo que no encaja en un campo va en `<FormError>` sobre la botonera.
-- **ConfirmDialog o acción de fila:** toast con el mensaje.
+- **El texto de un error** sale de `apiErrorMessage(error, t)`: sin conexión, «No pudimos conectarnos. Revisá tu conexión.»; un 5xx, «Algo salió mal. Probá de nuevo en un rato.»; lo demás, el `detail` del back (también el de un 429). Se usa donde la pantalla muestra el error de una consulta (la tabla con «Reintentar», la ficha que no cargó) y en los flujos que declaran `meta: { handlesError: true }`.
+- **Mutaciones:** el `MutationCache` avisa red (con «Reintentar», que repite la misma mutación con la misma clave), 5xx (con «Copiar código») y 429, salvo las que declaran `meta: { handlesError: true }` (el ingreso y los registros, que muestran todo en su franja y la cuenta regresiva en el botón; `useIdempotentMutation(fn, { meta })`). La pantalla muestra solo lo de negocio, con `actionErrorMessage(error, t)`, que devuelve `null` si el error ya lo avisó el `MutationCache`: el mismo error nunca va en dos lugares. Lo que sigue a un guardado va en `onSuccess` (de la mutación o de `mutate(variables, { onSuccess })`), nunca después de un `await mutateAsync`: así «Reintentar» termina igual.
+- **Formularios:** `applyApiErrorToForm(error, setError, fieldMap)`. Lo que no encaja en un campo va en `<FormError message={actionErrorMessage(error, t)} />` sobre la botonera.
+- **ConfirmDialog o acción de fila:** `onError: (error) => toastActionError(error, t)`, un aviso abajo, en rojo y sin irse solo.
 - **Pantalla:** un 403 de la **consulta principal** renderiza `ForbiddenPage`; un 404 en una ficha, `NotFoundPage` (también un id de otra organización o de otro acceso); `Tenancy.Tenant.Suspended`, `Tenancy.Tenant.PendingApproval` y `Tenancy.Tenant.Closed` renderizan `OrganizationUnavailablePage` con su estado (Suspendida, Espera aprobación o Cerrada), y `Tenancy.Access.Wrong` lleva al inicio del acceso correcto.
 - **Qué consulta bloquea la vista:** la principal de la pantalla (el listado, la ficha, la configuración) lo declara con `meta: { blocksView: true }`, y `QueryCache.onError` publica su 403 para el `AppShell`. El 403 de una consulta secundaria (las opciones de un filtro, un conteo, los roles de una pestaña) queda en su lugar y la pantalla sigue a la vista. `httpClient` solo transporta: nunca decide qué pantalla se ve. `Legal.AcceptanceRequired` sigue su camino: bloquea desde cualquier consulta o mutación y lo resuelve `LegalAcceptanceGate`.
 - Query que maneja su error en pantalla: `meta: { silent: true }`.
@@ -28,12 +30,13 @@
 - Reintentar solo un 429 o un 409 `General.ConcurrencyConflict`. (El 409 `Request.InProgress` de un alta idempotente espera y reintenta: lo hace `useIdempotentMutation`.)
 
 ## Copiá de
-- `src/areas/business/users/pages/UserDetailPage.tsx` (E6: conflicto de versión y error de guardado) · `src/shared/api/formErrors.ts` (E1)
+- `src/areas/business/users/pages/UserDetailPage.tsx` (E6: conflicto de versión y error de guardado) · `src/areas/business/users/pages/UsersPage.tsx` (alta con `mutate(variables, { onSuccess, onError })` y acciones de fila con `toastActionError`) · `src/shared/api/formErrors.ts` (E1) · `src/shared/api/errorMessage.ts`
 
 ## Lo verifica
 - Tests de pantalla: cada `code` que traduce la feature tiene un test (tests.md).
 - `formErrors.test.ts` (E1), `queryClient.test.ts` (E1; el 403 de la consulta principal, de una secundaria y de los términos nuevos).
 - `CompanyDetailPage.test.tsx`: el 403 de los roles (secundaria) no reemplaza la ficha; el de la ficha, sí.
+- `errorMessage.test.ts`: el texto de cada error y que la pantalla no repita lo que avisó el `MutationCache`; `queryClient.test.ts`: los avisos de las mutaciones y `meta.handlesError`; `RoleEditorPage.test.tsx`: sin conexión al guardar, un solo aviso con «Reintentar», que vuelve a guardar.
 
 ## Detalle
 [frontend.md §4, "Errores"](../architecture/frontend.md#errores)

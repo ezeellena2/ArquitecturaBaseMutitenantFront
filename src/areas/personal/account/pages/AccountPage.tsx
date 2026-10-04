@@ -5,6 +5,7 @@ import { FormError } from "@/shared/ui/FormError";
 import { List, ListItem } from "@/shared/ui/List";
 import { AccountProfileForm } from "../components/AccountProfileForm";
 import { useQuery } from "@tanstack/react-query";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { accountMethodsQueryKey, fetchLoginMethods } from "@/shared/account/api/loginMethods";
 import { LoginMethodsTable } from "../components/LoginMethodsTable";
 import { PersonalLoginMethodNotice } from "@/shared/account/PersonalLoginMethodNotice";
@@ -30,7 +31,8 @@ import { InfoButton } from "@/shared/ui/InfoButton";
 export function AccountPage() {
   const { t } = useTranslation();
   const { data, isPending, error, refetch } = useCurrentUser();
-  const methods = useQuery({ queryKey: accountMethodsQueryKey, queryFn: fetchLoginMethods });
+  // Los métodos muestran su error en la caja, con «Reintentar»: sin aviso abajo que lo repita.
+  const methods = useQuery({ queryKey: accountMethodsQueryKey, queryFn: fetchLoginMethods, meta: { silent: true } });
   const queryClient = useQueryClient();
   const [addOpen, setAddOpen] = useState(false);
   const [verifyMethod, setVerifyMethod] = useState<AccountLoginMethod | null>(null);
@@ -61,13 +63,13 @@ export function AccountPage() {
     const clean = new URLSearchParams(params); clean.delete("google"); clean.delete("error"); setParams(clean, { replace: true });
   });
   if (isPending) return <p role="status" className="p-4 text-[13px] lg:px-6 lg:py-5">{t("states.loading")}</p>;
-  if (!data) return <div className="flex flex-col gap-3.5 p-4 text-[13px] lg:px-6 lg:py-5"><FormError message={error instanceof Error ? error.message : t("states.error")} /><Button onClick={() => { void refetch(); }}>{t("actions.retry")}</Button></div>;
+  if (!data) return <div className="flex flex-col gap-3.5 p-4 text-[13px] lg:px-6 lg:py-5"><FormError message={apiErrorMessage(error, t)} /><Button onClick={() => { void refetch(); }}>{t("actions.retry")}</Button></div>;
   return <><AccountProfileForm key={data.id} account={data}>
     {/* Tablero M-Cuenta: en el teléfono, «Agregar correo o teléfono» en texto a la derecha del título. */}
     <Section title={t("account:methods")} action={{ label: t("account:add"), onClick: () => setAddOpen(true) }}>
       {methods.data?.needsPersonalLoginMethod ? <div className="border-b border-[var(--borde)] p-3"><PersonalLoginMethodNotice onAdd={() => setAddOpen(true)} /></div> : null}
       {methods.isPending ? <p className="p-4 text-[13px] text-[var(--t2)]" role="status">{t("states.loading")}</p> : null}
-      {methods.error ? <div className="p-4"><FormError message={methods.error.message} /><Button type="button" onClick={() => { void methods.refetch(); }}>{t("actions.retry")}</Button></div> : null}
+      {methods.error ? <div className="p-4"><FormError message={apiErrorMessage(methods.error, t)} /><Button type="button" onClick={() => { void methods.refetch(); }}>{t("actions.retry")}</Button></div> : null}
       {methods.data ? <LoginMethodsTable methods={methods.data.methods} canLinkGoogle={methods.data.canLinkGoogle} onAction={(action, method) => { if (action === "verify") setVerifyMethod(method); else setChange({ action, method }); }} /> : null}
     </Section>
     <Section title={t("account:privacy")}>

@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
 import { createElement, type ReactNode } from "react";
@@ -181,6 +181,24 @@ describe("useIdempotentMutation", () => {
     expect(keys).toHaveLength(2);
     expect(keys[0]).toMatch(/^[0-9a-f-]{36}$/i);
     expect(keys[1]).toBe(keys[0]);
+    client.clear();
+  });
+
+  // F2: un alta que muestra su error en pantalla (el ingreso) se lo dice al manejo global con meta.handlesError.
+  it("lleva la meta de la pantalla a la mutación", async () => {
+    const seen: unknown[] = [];
+    const client = new QueryClient({
+      mutationCache: new MutationCache({ onError: (_error, _variables, _context, mutation) => { seen.push(mutation.meta); } }),
+      defaultOptions: { mutations: { retry: false } },
+    });
+    function Wrapper({ children }: { children: ReactNode }) {
+      return createElement(QueryClientProvider, { client }, children);
+    }
+    const { result } = renderHook(() => useIdempotentMutation(async () => { throw ApiError.network(); }, { meta: { handlesError: true } }), { wrapper: Wrapper });
+
+    await act(async () => { await result.current.mutateAsync(undefined).catch(() => undefined); });
+
+    expect(seen).toEqual([{ handlesError: true }]);
     client.clear();
   });
 });

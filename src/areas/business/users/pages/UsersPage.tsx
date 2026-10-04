@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
 import { useNavigate } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
-import { ApiError } from "@/shared/api/ApiError";
+import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import type { InviteOrganizationUserRequest, OrganizationUserFilterCountsResponse, OrganizationUserResponse, OrganizationUserState, RoleResponse } from "@/shared/api/types";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
@@ -26,7 +26,6 @@ import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Surface } from "@/shared/ui/Surface";
-import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { changeUserStatus, fetchAssignableRoles, fetchCompanyOptions, fetchUserCounts, fetchUsers, inviteUser, removeUser, resendUserInvitation, revokeUserInvitation, userCompaniesQueryKey, userCountsQueryKey, userRolesQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
 import { createUserColumns, userPhoneRow } from "../columns";
@@ -48,10 +47,6 @@ function countFor(counts: OrganizationUserFilterCountsResponse | undefined, stat
 
 // «Ninguna» en el desplegable de Empresa del tablero Usuarios (Invitar).
 const noCompany = "none";
-
-function failureMessage(error: unknown, fallback: string): string {
-  return error instanceof ApiError ? error.detail ?? fallback : fallback;
-}
 
 export function UsersPage() {
   const { t } = useTranslation(["users", "common"]);
@@ -123,17 +118,17 @@ export function UsersPage() {
   const revoke = useMutation({
     mutationFn: (user: OrganizationUserResponse) => revokeUserInvitation(user.invitationId!),
     onSuccess: async (_result, user) => { toast.success(t("users:messages.revoked", { email: user.email ?? "" })); setTarget(null); setConfirmAction(null); await invalidate(); },
-    onError: (error) => toastError(failureMessage(error, t("common:states.error"))),
+    onError: (error) => toastActionError(error, t),
   });
   const changeStatus = useMutation({
     mutationFn: (user: OrganizationUserResponse & { isActive: boolean }) => changeUserStatus(user.memberId, { isActive: user.isActive, version: user.version }),
     onSuccess: async (_result, user) => { toast.success(t(user.isActive ? "users:messages.enabled" : "users:messages.disabled", { name: user.displayName || user.email || "" })); setTarget(null); setConfirmAction(null); await invalidate(); },
-    onError: (error) => toastError(failureMessage(error, t("common:states.error"))),
+    onError: (error) => toastActionError(error, t),
   });
   const remove = useMutation({
     mutationFn: (user: OrganizationUserResponse) => removeUser(user.memberId, user.version),
     onSuccess: async (_result, user) => { toast.success(t("users:messages.removed", { name: user.displayName || user.email || "", organization: organizationName })); setTarget(null); setConfirmAction(null); await invalidate(); },
-    onError: (error) => toastError(failureMessage(error, t("common:states.error"))),
+    onError: (error) => toastActionError(error, t),
   });
 
   if (!canRead) return <ForbiddenPage homePath="/org" />;
@@ -142,7 +137,7 @@ export function UsersPage() {
       label={t("users:rowActions", { name: member.displayName || member.email || "" })}
       actions={[
         { label: t("users:actions.view"), accessibleName: t("users:actions.view"), icon: Pencil, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); } },
-        { label: t("users:actions.resend"), accessibleName: t("users:actions.resend"), icon: RotateCw, onSelect: () => { if (member.invitationId) void resend.mutateAsync(member.invitationId).then(async () => { toast.success(t("users:messages.resent", { email: member.email ?? "" })); await invalidate(); }).catch((error: unknown) => toastError(failureMessage(error, t("common:states.error")))); }, hidden: !canInvite || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
+        { label: t("users:actions.resend"), accessibleName: t("users:actions.resend"), icon: RotateCw, onSelect: () => { if (member.invitationId) resend.mutate(member.invitationId, { onSuccess: async () => { toast.success(t("users:messages.resent", { email: member.email ?? "" })); await invalidate(); }, onError: (error) => toastActionError(error, t) }); }, hidden: !canInvite || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
         { label: t("users:actions.enable"), accessibleName: t("users:actions.enable"), icon: Power, onSelect: () => changeStatus.mutate({ ...member, isActive: true }), hidden: !canManage || member.state !== "Inactive" },
         { label: t("users:actions.disable"), accessibleName: t("users:actions.disable"), icon: Power, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("disable"); }, hidden: !canManage || member.state !== "Active" },
         { label: t("users:actions.revoke"), accessibleName: t("users:actions.revoke"), icon: Trash2, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("revoke"); }, hidden: !canManage || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
@@ -159,7 +154,8 @@ export function UsersPage() {
   // Sin filtro el botón dice «Estado: todos» o «Empresa: todas» y el menú ofrece «Todos» o «Todas», como el tablero.
   const currentState = state ?? "";
 
-  async function submitInvite(event: FormEvent<HTMLFormElement>) {
+  // Los pasos que siguen al envío van en sus callbacks: «Reintentar» (sin conexión) los vuelve a correr.
+  function submitInvite(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setInviteError(undefined);
     const payload: InviteOrganizationUserRequest = {
@@ -167,18 +163,18 @@ export function UsersPage() {
       roleIds: organizationRoleIds,
       companies: inviteCompanyId ? [{ companyId: inviteCompanyId, roleIds: inviteCompanyRoleIds }] : [],
     };
-    try {
-      const issued = await invite.mutateAsync(payload);
-      toast.success(t("users:messages.invited", { email: payload.email, date: format.formatDate(issued.expiresAtUtc) }));
-      setInviteOpen(false);
-      setEmail("");
-      setOrganizationRoleIds([]);
-      setInviteCompanyId("");
-      setInviteCompanyRoleIds([]);
-      await invalidate();
-    } catch (error) {
-      setInviteError(failureMessage(error, t("common:states.error")));
-    }
+    invite.mutate(payload, {
+      onSuccess: async (issued) => {
+        toast.success(t("users:messages.invited", { email: payload.email, date: format.formatDate(issued.expiresAtUtc) }));
+        setInviteOpen(false);
+        setEmail("");
+        setOrganizationRoleIds([]);
+        setInviteCompanyId("");
+        setInviteCompanyRoleIds([]);
+        await invalidate();
+      },
+      onError: (error) => setInviteError(actionErrorMessage(error, t) ?? undefined),
+    });
   }
 
 
@@ -209,7 +205,7 @@ export function UsersPage() {
             rowKey={(member) => member.memberId}
             isLoading={users.isPending}
             isFetching={users.isFetching}
-            error={users.error ? failureMessage(users.error, t("common:states.error")) : undefined}
+            error={users.error ? apiErrorMessage(users.error, t) : undefined}
             onRetry={() => { void users.refetch(); void counts.refetch(); }}
             emptyTitle={state || companyFilter || pagination.search ? t("users:empty.filtered") : t("users:empty.all")}
             emptyAction={state || companyFilter || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("users:empty.clear")}</Button> : undefined}
@@ -224,7 +220,7 @@ export function UsersPage() {
     <Dialog open={inviteOpen} onOpenChange={(open) => { setInviteOpen(open); if (!open) setInviteError(undefined); }}>
       <DialogContent mobileFullHeight>
         <DialogHeader><DialogTitle>{t("users:invite.title")}</DialogTitle></DialogHeader>
-        <form onSubmit={(event) => { void submitInvite(event); }} className="flex min-h-0 flex-col">
+        <form onSubmit={submitInvite} className="flex min-h-0 flex-col">
           <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
             {inviteError ? <FormError message={inviteError} /> : null}
             <FormField label={t("users:invite.email")} required><Input autoComplete="email" type="email" required maxLength={254} placeholder={t("users:invite.emailPlaceholder")} value={email} onChange={(event) => setEmail(event.target.value)} /></FormField>

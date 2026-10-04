@@ -8,6 +8,7 @@ import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { ApiError } from "@/shared/api/ApiError";
+import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
 import type { CompanyResponse, CreateRoleRequest, PermissionGroupResponse, RoleResponse, RoleScope, UpdateRoleRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { Button } from "@/shared/ui/button";
@@ -185,7 +186,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
 
   if (!canRead || mode === "create" && !canManage) return <ForbiddenPage homePath="/org" />;
   if (mode === "edit" && role.isPending) return <Page icon={Shield} title={t("roles:editorTitle")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
-  if (mode === "edit" && role.isError) return <Page icon={Shield} title={t("roles:editorTitle")} backTo={{ to: "/org/roles", label: t("roles:backToList") }}><div className="p-4"><FormError message={role.error instanceof ApiError ? role.error.detail ?? t("common:states.error") : t("common:states.error")} /><Button type="button" onClick={() => { void role.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
+  if (mode === "edit" && role.isError) return <Page icon={Shield} title={t("roles:editorTitle")} backTo={{ to: "/org/roles", label: t("roles:backToList") }}><div className="p-4"><FormError message={apiErrorMessage(role.error, t)} /><Button type="button" onClick={() => { void role.refetch(); }}>{t("common:actions.retry")}</Button></div></Page>;
 
   function changeDraft(patch: Partial<RoleDraft>) {
     if (patch.scope !== undefined && patch.scope !== draft.scope) setExpandedAreas(null);
@@ -252,9 +253,8 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
       </> : undefined}
     >
       <div className="flex flex-col gap-3.5">
-        {failure && !(failure instanceof ApiError && failure.code === "General.ConcurrencyConflict")
-          ? <FormError message={failure instanceof ApiError ? failure.detail ?? t("common:states.error") : t("common:states.error")} /> : null}
-        {permissions.isError ? <FormError message={permissions.error instanceof ApiError ? permissions.error.detail ?? t("common:states.error") : t("common:states.error")} /> : null}
+        {failure instanceof ApiError && failure.code === "General.ConcurrencyConflict" ? null : <FormError message={actionErrorMessage(failure, t)} />}
+        {permissions.isError ? <FormError message={apiErrorMessage(permissions.error, t)} /> : null}
         {/* Tablero M-Rol: en el teléfono los datos van sueltos sobre blanco, sin título a la vista. */}
         <Section title={t("roles:dataTitle")} phone="untitled">
           <div className="flex flex-col gap-3.5 p-4 lg:gap-3.5 lg:p-5 max-md:p-0">

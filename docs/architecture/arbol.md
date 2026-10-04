@@ -333,7 +333,9 @@ src/
 │   │   ├── ApiError.ts                              code, detail, traceId, errors, retryAfterSeconds
 │   │   ├── problemDetails.ts
 │   │   ├── accessErrorStore.ts                      el 403 que bloquea la vista (consulta principal o términos nuevos), para AppShell
-│   │   ├── queryClient.ts                           createQueryClient: manejo global de errores; el 403 de meta.blocksView bloquea la vista
+│   │   ├── errorMessage.ts                          apiErrorMessage, actionErrorMessage y toastActionError: el texto de cada error, sin repetir lo que avisa el MutationCache
+│   │   ├── errorMessage.test.ts
+│   │   ├── queryClient.ts                           createQueryClient: avisos de red, 5xx y 429 en consultas y mutaciones (salvo meta.silent y meta.handlesError); el 403 de meta.blocksView bloquea la vista
 │   │   ├── queryClient.test.ts
 │   │   ├── formErrors.ts                            applyApiErrorToForm
 │   │   ├── formErrors.test.ts

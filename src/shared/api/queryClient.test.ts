@@ -148,3 +148,54 @@ describe("bloqueo de la vista por un 403", () => {
     expect(getAccessError()).toBeNull();
   });
 });
+
+// F2: las mutaciones avisan red, 5xx y 429 en un solo lugar, salvo las que lo muestran en su pantalla.
+describe("avisos de las mutaciones", () => {
+  function observe<T>(mutationFn: () => Promise<T>, meta?: { handlesError?: boolean }) {
+    return new MutationObserver(createQueryClient(), { mutationFn, meta });
+  }
+
+  it("sin conexión: «No pudimos conectarnos» con «Reintentar», que vuelve a enviar lo mismo", async () => {
+    const toastError = vi.spyOn(toast, "error");
+    const sent = vi.fn().mockRejectedValueOnce(ApiError.network()).mockResolvedValueOnce("ok");
+    const observer = observe(sent);
+    await observer.mutate().catch(() => undefined);
+
+    expect(toastError).toHaveBeenCalledWith("No pudimos conectarnos. Revisá tu conexión.", expect.objectContaining({
+      action: expect.objectContaining({ label: "Reintentar" }),
+      duration: Number.POSITIVE_INFINITY,
+      closeButton: true,
+    }));
+    const options = toastError.mock.calls[0]?.[1] as unknown as { action: { onClick: () => void } };
+    options.action.onClick();
+    await vi.waitFor(() => expect(observer.getCurrentResult().status).toBe("success"));
+    expect(sent).toHaveBeenCalledTimes(2);
+  });
+
+  it("un 5xx ofrece copiar el código de seguimiento sin mostrarlo", async () => {
+    const toastError = vi.spyOn(toast, "error");
+    await observe(() => Promise.reject(new ApiError(500, { code: "General.Unexpected", detail: "Detalle interno", traceId: "trace-mutation" })))
+      .mutate().catch(() => undefined);
+
+    expect(toastError).toHaveBeenCalledWith("Algo salió mal. Probá de nuevo en un rato.", expect.objectContaining({
+      action: expect.objectContaining({ label: "Copiar código" }),
+    }));
+  });
+
+  it("un 429 avisa sin reintentar solo", async () => {
+    const toastError = vi.spyOn(toast, "error");
+    const sent = vi.fn().mockRejectedValue(new ApiError(429, { code: "Http.TooManyRequests", retryAfter: 30 }));
+    await observe(sent).mutate().catch(() => undefined);
+
+    expect(sent).toHaveBeenCalledTimes(1);
+    expect(toastError).toHaveBeenCalledWith("Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos.", expect.anything());
+  });
+
+  it("deja los errores de negocio a su pantalla y respeta meta.handlesError", async () => {
+    const toastError = vi.spyOn(toast, "error");
+    await observe(() => Promise.reject(new ApiError(409, { code: "Roles.Role.AlreadyExists", detail: "Ya existe." }))).mutate().catch(() => undefined);
+    await observe(() => Promise.reject(ApiError.network()), { handlesError: true }).mutate().catch(() => undefined);
+
+    expect(toastError).not.toHaveBeenCalled();
+  });
+});

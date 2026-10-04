@@ -191,6 +191,35 @@ describe("RoleEditorPage", () => {
     expect(reads).toBe(2);
   }, 10_000);
 
+  // B12 (Criterio · Avisos): si se corta la red al guardar, un solo aviso dice qué pasó y «Reintentar» vuelve a
+  // guardar lo mismo; la franja del formulario no repite el error.
+  it("si se corta la red al guardar, avisa «No pudimos conectarnos» con «Reintentar»", async () => {
+    const user = userEvent.setup();
+    const bodies: unknown[] = [];
+    server.use(
+      http.get("/api/roles/role-custom", () => HttpResponse.json(role)),
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.put("/api/roles/role-custom", async ({ request }) => {
+        bodies.push(await request.json());
+        return bodies.length === 1 ? HttpResponse.error() : new HttpResponse(null, { status: 204 });
+      }),
+    );
+    renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
+    await user.clear(name);
+    await user.type(name, "Solo consulta");
+    await user.click(screen.getAllByRole("button", { name: "Guardar cambios" })[0]);
+
+    expect(await screen.findByText("No pudimos conectarnos. Revisá tu conexión.")).toBeVisible();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+
+    expect(await screen.findByText("Guardamos el rol Solo consulta.")).toBeVisible();
+    expect(bodies).toHaveLength(2);
+    expect(bodies[1]).toEqual(bodies[0]);
+  }, 10_000);
+
   it("muestra los roles de sistema en solo lectura", async () => {
     const user = userEvent.setup();
     server.use(
