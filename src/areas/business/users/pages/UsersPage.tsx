@@ -215,7 +215,6 @@ export function UsersPage() {
         <DialogHeader><DialogTitle>{t("users:invite.title")}</DialogTitle></DialogHeader>
         <form onSubmit={submitInvite} className="flex min-h-0 flex-col">
           <DialogBody>
-            {inviteError ? <FormError message={inviteError} /> : null}
             <FormField label={t("users:invite.email")} required><Input autoComplete="email" type="email" required maxLength={254} placeholder={t("users:invite.emailPlaceholder")} value={email} onChange={(event) => setEmail(event.target.value)} /></FormField>
             <FormField label={t("users:invite.organizationRoles")}>
               <MultiSelect options={organizationRoles.map((role: RoleResponse) => ({ value: role.id, label: role.name }))} value={organizationRoleIds} onChange={setOrganizationRoleIds} placeholder={t("users:invite.noRoles")} />
@@ -236,6 +235,8 @@ export function UsersPage() {
                   : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[8px] border border-[var(--borde2)] bg-[var(--s2)] px-3 text-left text-[13px] text-[var(--t3)] max-md:h-12 max-md:rounded-[12px] max-md:text-[16px]">{t("users:invite.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" /></button>}
               </FormField>
             </div>
+            {/* «Criterio · Diálogos»: el error general, en la franja arriba de los botones. */}
+            {inviteError ? <FormError message={inviteError} /> : null}
           </DialogBody>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setInviteOpen(false)}>{t("common:actions.cancel")}</Button>

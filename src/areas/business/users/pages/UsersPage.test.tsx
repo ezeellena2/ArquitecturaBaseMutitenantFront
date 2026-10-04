@@ -220,6 +220,31 @@ describe("UsersPage", () => {
     await waitFor(() => expect(bodies.at(-1)).toEqual({ email: "otra@example.com", roleIds: ["role-owner"], companies: [{ companyId: "company-1", roleIds: ["role-company-admin"] }] }));
   }, 20_000);
 
+  // «Criterio · Diálogos» y «Criterio · Formularios»: el error general del diálogo va en la franja arriba de los botones,
+  // no arriba de los campos.
+  it("un error al invitar va en la franja del diálogo, arriba de los botones", async () => {
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 1, pendingDeletion: 0, invited: 0, expired: 0, inactive: 0 })),
+      http.get("/api/roles/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.post("/api/users/invitations", () => HttpResponse.json({ status: 409, code: "Users.Invitation.UserInactive", title: "Conflicto",
+        detail: "Esa persona tiene el acceso deshabilitado. Habilitala en vez de invitarla." }, { status: 409 })),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Invitar usuario" }));
+    const dialog = await screen.findByRole("dialog", { name: "Invitar usuario" });
+    await user.type(within(dialog).getByRole("textbox", { name: "Correo" }), "marcos@example.com");
+    await user.click(within(dialog).getByRole("button", { name: "Invitar" }));
+
+    const alert = await within(dialog).findByRole("alert");
+    expect(alert).toHaveTextContent("Esa persona tiene el acceso deshabilitado. Habilitala en vez de invitarla.");
+    const following = (from: Node, to: Node) => Boolean(from.compareDocumentPosition(to) & Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(following(within(dialog).getByRole("combobox", { name: "Empresa" }), alert)).toBe(true);
+    expect(following(alert, within(dialog).getByRole("button", { name: "Cancelar" }))).toBe(true);
+  }, 10_000);
+
   it("pagina una organización con 50 usuarios sin cargar más de una página", async () => {
     const items = Array.from({ length: 10 }, (_item, index) => ({
       ...member,
