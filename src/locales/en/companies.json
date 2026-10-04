@@ -135,7 +135,7 @@
     "chooseUser": "Choose a person in the organization",
     "withoutEmail": "No email",
     "roles": "Company roles",
-    "chooseRoles": "Choose one or more roles"
+    "noRoles": "No roles"
   },
   "editMemberRoles": {
     "title": "Roles for {{name}}",

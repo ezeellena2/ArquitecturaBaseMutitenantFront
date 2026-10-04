@@ -99,6 +99,37 @@ describe("CompanyDetailPage", () => {
     expect(within(roles).getByRole("combobox", { name: /por página/ })).toBeVisible();
   }, 15_000);
 
+  // Tablero Empresa (v100) y «Criterio · Diálogos»: «Roles de …» y «Agregar miembro» van en el diálogo chico, sin bajada
+  // debajo del título, y el campo de roles vacío dice «Sin roles»; «Editar empresa», en el normal.
+  it("los diálogos de la ficha con el ancho, el encabezado y el campo vacío del tablero", async () => {
+    const user = userEvent.setup();
+    rolesApi(() => new HttpResponse(null, { status: 204 }));
+    server.use(http.get("/api/users/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+
+    expect(await screen.findByText("Lucía Fernández")).toBeVisible();
+    (await screen.findByRole("button", { name: "Acciones para Lucía Fernández" })).focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
+    const roles = await screen.findByRole("dialog", { name: "Roles de Lucía Fernández" });
+    expect(roles).toHaveClass("md:max-w-[420px]");
+    expect(within(roles).queryByText("Delta S.A.")).not.toBeInTheDocument();
+    expect(within(roles).getByRole("button", { name: "Roles en la empresa" })).toHaveTextContent("Sin roles");
+    await user.click(within(roles).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Agregar miembro" }));
+    const add = await screen.findByRole("dialog", { name: "Agregar miembro" });
+    expect(add).toHaveClass("md:max-w-[420px]");
+    expect(within(add).queryByText("Delta S.A.")).not.toBeInTheDocument();
+    expect(within(add).getByRole("button", { name: "Roles en la empresa" })).toHaveTextContent("Sin roles");
+    await user.click(within(add).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Editar empresa" }));
+    expect(await screen.findByRole("dialog", { name: "Editar empresa" })).toHaveClass("md:max-w-[560px]");
+  }, 15_000);
+
   // B3: la tabla de miembros tiene las cuatro columnas del tablero Empresa, en su orden; las acciones, sin rótulo visible.
   it("los miembros van con Miembro, Roles en la empresa, Estado y Acciones, como el tablero", async () => {
     detailApi([member]);

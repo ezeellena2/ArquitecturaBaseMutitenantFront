@@ -14,7 +14,7 @@ import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
@@ -271,9 +271,11 @@ export function CompanyDetailPage() {
     </Page>
     </Tabs>
 
+    {/* Tablero Empresa (v100): «Agregar miembro» y «Roles de …» van en el diálogo chico. «Criterio · Diálogos»: sin bajada
+        debajo del título; la empresa ya se ve atrás. */}
     <Dialog open={addOpen} onOpenChange={(open) => { if (!open) closeAdd(); }}>
-      <DialogContent mobileFullHeight>
-        <DialogHeader><DialogTitle>{t("companies:addMember.title")}</DialogTitle><DialogDescription>{data.name}</DialogDescription></DialogHeader>
+      <DialogContent mobileFullHeight size="sm" aria-describedby={undefined}>
+        <DialogHeader><DialogTitle>{t("companies:addMember.title")}</DialogTitle></DialogHeader>
         <form onSubmit={submitAdd} className="flex min-h-0 flex-col">
           <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
             <FormField label={t("companies:addMember.user")} required>
@@ -283,7 +285,7 @@ export function CompanyDetailPage() {
               </Select>
             </FormField>
             <FormField label={t("companies:addMember.roles")}>
-              <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleIds} onChange={setRoleIds} placeholder={t("companies:addMember.chooseRoles")} />
+              <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleIds} onChange={setRoleIds} placeholder={t("companies:addMember.noRoles")} />
             </FormField>
             {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
             {candidateQuery.isError ? <FormError message={apiErrorMessage(candidateQuery.error, t)} /> : null}
@@ -299,11 +301,11 @@ export function CompanyDetailPage() {
     </Dialog>
 
     <Dialog open={roleTarget !== null} onOpenChange={(open) => { if (!open) closeRoles(); }}>
-      <DialogContent mobileFullHeight>
-        <DialogHeader><DialogTitle>{roleTarget ? t("companies:editMemberRoles.title", { name: roleTarget.displayName }) : t("companies:editMemberRoles.title", { name: "" })}</DialogTitle><DialogDescription>{data.name}</DialogDescription></DialogHeader>
+      <DialogContent mobileFullHeight size="sm" aria-describedby={undefined}>
+        <DialogHeader><DialogTitle>{roleTarget ? t("companies:editMemberRoles.title", { name: roleTarget.displayName }) : t("companies:editMemberRoles.title", { name: "" })}</DialogTitle></DialogHeader>
         <div className="flex flex-col gap-4 px-5 py-4">
           <FormField label={t("companies:editMemberRoles.roles")}>
-            <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleDraft} onChange={(next) => { setRoleDraft(next); setMutationError(undefined); }} placeholder={t("companies:addMember.chooseRoles")} />
+            <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleDraft} onChange={(next) => { setRoleDraft(next); setMutationError(undefined); }} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* Tablero Empresa (v97): el error, una sola vez, en la franja con su ícono arriba de los botones. */}
           <FormError message={actionErrorMessage(mutationError, t)} />
