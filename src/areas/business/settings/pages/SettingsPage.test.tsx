@@ -155,4 +155,23 @@ describe("SettingsPage", () => {
     const verify = await screen.findByRole("dialog", { name: "Verificar delta.example.test" });
     expect(within(verify).getByText("ab-verificacion=7f3c9a2e")).toBeVisible();
   });
+  // Tablero Avisos («Guardado»): después de guardar, el formulario queda limpio, aunque la ficha que se vuelve a leer
+  // todavía no traiga lo guardado (como en el arnés de capturas).
+  it("después de guardar queda limpio con lo guardado", async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.put("/api/organization/settings", () => new HttpResponse(null, { status: 204 })),
+    );
+    renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+
+    const name = await screen.findByRole("textbox", { name: "Nombre de la organización" });
+    await user.clear(name);
+    await user.type(name, "Grupo Delta Sur");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findAllByText("Guardamos la configuración.")).not.toHaveLength(0);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled());
+  });
 });

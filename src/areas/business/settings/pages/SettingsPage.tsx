@@ -58,8 +58,15 @@ export function SettingsPage() {
   const [copied, setCopied] = useState(false);
   const save = useMutation({
     mutationFn: (request: UpdateOrganizationSettingsRequest) => updateOrganizationSettings(request),
-    onSuccess: async () => {
+    // Después de guardar, la ficha queda limpia con lo guardado: se escribe en la caché y se suelta el borrador; la
+    // relectura trae la versión nueva.
+    onSuccess: async (_result, request) => {
       setFailure(undefined);
+      client.setQueryData<OrganizationSettingsResponse>(organizationSettingsKey, (current) => current ? {
+        ...current, name: request.name ?? current.name, defaultCulture: request.defaultCulture ?? current.defaultCulture,
+        defaultTimeZoneId: request.defaultTimeZoneId ?? current.defaultTimeZoneId, defaultCurrency: request.defaultCurrency ?? current.defaultCurrency,
+      } : current);
+      setDraftState(null);
       toast.success(t("settings:saved"));
       await client.invalidateQueries({ queryKey: organizationSettingsKey });
     },
