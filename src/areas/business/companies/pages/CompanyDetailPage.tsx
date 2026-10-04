@@ -28,7 +28,7 @@ import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Surface } from "@/shared/ui/Surface";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import { TabCount, Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
@@ -199,6 +199,7 @@ export function CompanyDetailPage() {
   ];
 
   return <>
+    <Tabs value={tab} onValueChange={(value) => setTab(value as CompanyTab)} className="contents!">
     <Page banner={<ConcurrencyBanner error={editFailure ?? mutationError} isDirty={false} onSeeNew={() => { setEditDraft(draftFromCompany(data)); setEditFailure(undefined); setMutationError(undefined); void company.refetch(); }} onContinueEditing={() => { setEditFailure(undefined); setMutationError(undefined); }} />} icon={Building2} title={data.name} backTo={{ to: "/org/empresas", label: t("companies:back") }}
       // Tablero Empresa: el estado primero, con punto y palabra; después el CUIT y la zona, formateados.
       summary={<>
@@ -211,12 +212,12 @@ export function CompanyDetailPage() {
         {canAdd && tab === "members" ? <Button type="button" onClick={() => { setMutationError(undefined); setAddOpen(true); }}><Plus aria-hidden="true" className="size-4" />{t("companies:actions.addMember")}</Button> : null}
         {canManageRoles && tab === "roles" ? <Button asChild><Link to={`/org/roles/new?scope=SpecificCompany&companyId=${encodeURIComponent(id)}`}><Plus aria-hidden="true" className="size-4" />{t("companies:detail.createRole")}</Link></Button> : null}
       </>}
-      moreActions={canManageCompany ? { label: t("companies:actions.more"), items: [{ label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), onSelect: () => { if (data.status === "Active") setCompanyStatusConfirm(true); else changeCompanyState.mutate(); }, destructive: data.status === "Active" }] } : undefined}>
-      <Tabs value={tab} onValueChange={(value) => setTab(value as CompanyTab)} className="flex flex-col gap-4">
-        <TabsList variant="line" aria-label={t("companies:detail.tabsLabel")} className="w-full justify-start border-b border-[var(--borde)] rounded-none">
-          <TabsTrigger value="members">{t("companies:detail.members")} <span className="text-xs text-[var(--t2)]">{members.data?.totalCount ?? data.memberCount}</span></TabsTrigger>
-          {canReadRoles ? <TabsTrigger value="roles">{t("companies:detail.roles")} <span className="text-xs text-[var(--t2)]">{ownRoles.length}</span></TabsTrigger> : null}
-        </TabsList>
+      moreActions={canManageCompany ? { label: t("companies:actions.more"), items: [{ label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), onSelect: () => { if (data.status === "Active") setCompanyStatusConfirm(true); else changeCompanyState.mutate(); }, destructive: data.status === "Active" }] } : undefined}
+      // Tablero «Criterio · Marco»: las pestañas van en su banda, debajo de la de la página, con la cantidad en gris.
+      tabs={<TabsList aria-label={t("companies:detail.tabsLabel")}>
+        <TabsTrigger value="members">{t("companies:detail.members")}<TabCount>{members.data?.totalCount ?? data.memberCount}</TabCount></TabsTrigger>
+        {canReadRoles ? <TabsTrigger value="roles">{t("companies:detail.roles")}<TabCount>{ownRoles.length}</TabCount></TabsTrigger> : null}
+      </TabsList>}>
         <TabsContent value="members" className="flex flex-col gap-3">
           {!canReadMembers ? <FormError message={t("companies:detail.membersForbidden")} /> : <>
             {counts.isError ? <FormError message={failureMessage(counts.error, t("common:states.error"))} /> : null}
@@ -243,8 +244,8 @@ export function CompanyDetailPage() {
               onPageSizeChange={(size) => { setRolePageSize(size); setRolePage(1); }} /> : null}
           </Surface>
         </TabsContent> : null}
-      </Tabs>
     </Page>
+    </Tabs>
 
     <Dialog open={addOpen} onOpenChange={(open) => { setAddOpen(open); if (!open) setMutationError(undefined); }}>
       <DialogContent mobileFullHeight>

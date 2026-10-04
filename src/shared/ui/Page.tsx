@@ -26,6 +26,8 @@ interface PageProps {
   moreActions?: { label: string; items: readonly PageOverflowAction[] };
   /** Un cartel de algo que sigue pasando (tablero «Criterio · Avisos»): debajo de la banda, arriba del contenido. */
   banner?: ReactNode;
+  /** Las pestañas (tablero «Criterio · Marco»): en su banda blanca, debajo de la de la página. */
+  tabs?: ReactNode;
   children: ReactNode;
   bodyClassName?: string;
 }
@@ -41,6 +43,7 @@ export function Page({
   actions,
   moreActions,
   banner,
+  tabs,
   children,
   bodyClassName = "flex flex-col gap-3.5 p-4 text-[13px] lg:px-6 lg:py-5",
 }: PageProps): ReactNode {
@@ -112,6 +115,7 @@ export function Page({
           </div>
         ) : null}
       </header>
+      {tabs ? <div data-slot="page-tabs" className="border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4 md:px-6">{tabs}</div> : null}
       <div className={bodyClassName}>{banner}{children}</div>
     </>
   );
