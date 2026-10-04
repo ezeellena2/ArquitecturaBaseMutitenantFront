@@ -28,7 +28,7 @@ export function ToResolve({ rows }: { rows: readonly PendingRow[] }) {
     <section aria-labelledby={titleId}>
       <div className="flex items-center gap-2 px-4 py-3.5">
         <h2 id={titleId} className="text-[15px] font-semibold text-[var(--t1)]">{t("toResolve.title")}</h2>
-        <span className="rounded-full bg-[var(--s3)] px-2 py-px text-xs font-semibold text-[var(--t2)]">{rows.length}</span>
+        <span className="text-[13px] font-semibold text-[var(--t3)]">{rows.length}</span>
       </div>
       {rows.length === 0
         ? <div className="border-t border-[var(--borde)] px-4 py-5 text-center"><strong className="text-[14px] font-semibold text-[var(--t1)]">{t("toResolve.empty")}</strong></div>

@@ -51,7 +51,7 @@ afterEach(() => {
 describe("BusinessHomePage", () => {
   it("tablero Inicio-Org: cada área con su dato real y «Para resolver» con el enlace que lo resuelve", async () => {
     serveHome({ organization, companies: [], pending });
-    const { container } = renderRouteWithProviders("/org", { as: "visual-business" });
+    const { container } = renderRouteWithProviders("/org", { as: "visual-owner" });
 
     expect(await screen.findByRole("heading", { level: 1, name: "Inicio" })).toBeVisible();
     const areas = await screen.findByRole("navigation", { name: "Áreas de la organización" });
@@ -88,7 +88,7 @@ describe("BusinessHomePage", () => {
 
   it("sin pendientes dice «Nada para resolver»", async () => {
     serveHome({ organization, companies: [], pending: [] });
-    renderRouteWithProviders("/org", { as: "visual-business" });
+    renderRouteWithProviders("/org", { as: "visual-owner" });
 
     const toResolve = await screen.findByRole("region", { name: "Para resolver" });
     expect(within(toResolve).getByText("Nada para resolver")).toBeVisible();
@@ -113,7 +113,7 @@ describe("BusinessHomePage", () => {
   it("tablero M-Inicio-Org: en el teléfono, saludo, atajos con sus pendientes y filas con botón", async () => {
     phone(true);
     serveHome({ organization, companies: [], pending });
-    const { container } = renderRouteWithProviders("/org", { as: "visual-business" });
+    const { container } = renderRouteWithProviders("/org", { as: "visual-owner" });
 
     expect(await screen.findByText("Hola, Lucía")).toBeVisible();
     expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" })).toBeVisible();

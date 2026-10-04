@@ -72,6 +72,12 @@ export const visualBusiness: MeResponse = {
   activeTenantId: "grupo-delta",
 };
 
+/** Lucía como Dueña de Grupo Delta: con «Administración», como en los tableros de Organización. */
+export const visualOwner: MeResponse = {
+  ...visualBusiness,
+  permissions: businessE6Admin.permissions,
+};
+
 export const visualRoleManager: MeResponse = {
   ...visualBusiness,
   permissions: ["roles.read", "roles.manage"],
@@ -117,6 +123,7 @@ export const currentUsers = {
   "platform-operator": platformOperator,
   "visual-personal": visualPersonal,
   "visual-business": visualBusiness,
+  "visual-owner": visualOwner,
   "visual-role-manager": visualRoleManager,
   "visual-error-org": visualErrorOrganization,
   "visual-unavailable-suspended": visualUnavailableSuspended,
