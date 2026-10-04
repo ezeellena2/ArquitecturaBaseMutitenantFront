@@ -39,6 +39,9 @@
   --peligro-tx: oklch(0.42 0.16 25);
   --peligro-borde: oklch(0.57 0.2 25 / 0.4);
   --brillo: oklch(1 0 0 / 0.15);
+  /* Teléfono (tableros M-*): sombra del «+» flotante y de la hoja que sube desde abajo. */
+  --sombra-fab: 0 6px 16px oklch(0.3 0.06 195 / 0.3), 0 2px 4px oklch(0.3 0.06 195 / 0.2);
+  --sombra-hoja: 0 -8px 24px oklch(0.2 0.014 78 / 0.12);
   --foco: var(--marca);
   --foco-halo: oklch(0.51 0.099 195 / 0.15);
 
