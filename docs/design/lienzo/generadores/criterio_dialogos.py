@@ -156,7 +156,7 @@ BODY = f"""<div class="crit">
       {fila_medida("Encabezado", "48 px", "Fondo arena, como los encabezados de tabla. Título de 15 en semibold y ✕ a la derecha. Sin bajada.")}
       {fila_medida("Cuerpo", "20 px de margen", "Campos de 36 px, con 14 px entre uno y otro. El rótulo arriba de cada campo.")}
       {fila_medida("Pie", "60 px", "Línea arriba. A la derecha, Cancelar y la acción principal, última.")}
-      {fila_medida("Esquinas y fondo", "12 px", "Sombra suave. Atrás, la pantalla oscurecida.")}
+      {fila_medida("Esquinas y fondo", "12 px", "Sombra suave. Atrás, la pantalla oscurecida, sin difuminar.")}
     </div>
   </section>
 

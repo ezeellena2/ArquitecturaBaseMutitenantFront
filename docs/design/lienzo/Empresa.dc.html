@@ -221,7 +221,7 @@
     .cambios .antes { color: var(--t3); text-decoration: line-through; }
 
     /* Diálogos */
-    .velo { position: absolute; inset: 0; z-index: 40; background: oklch(0.2 0.014 78 / 0.42); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; }
+    .velo { position: absolute; inset: 0; z-index: 40; background: oklch(0.2 0.014 78 / 0.42); display: flex; align-items: center; justify-content: center; }
     .dlg { width: 640px; max-width: calc(100% - 32px); background: #fff; border-radius: 18px; box-shadow: 0 24px 48px oklch(0.2 0.014 78 / 0.22); display: flex; flex-direction: column; font-size: 14px; line-height: 1.5; color: var(--t1); }
     .dlg.chico { width: 460px; }
     .dlg-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 20px 24px; border-bottom: 1px solid var(--borde); }
@@ -566,6 +566,10 @@ textarea.in2 { height: auto; min-height: 84px; }
 .tab2[aria-selected="true"] { color: var(--marca-tx); font-weight: 600; background: none !important; box-shadow: inset 0 -2px 0 var(--marca); }
 .tab2 .cnt, .tab2[aria-selected="true"] .cnt { padding: 0 !important; border-radius: 0; background: none !important; color: var(--t3); font-size: 14px; font-weight: 400; }
 </style>
+<style data-vuelta="1004-empresa-dialogo">
+.aviso-mal { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: var(--peligro-t); color: oklch(0.45 0.17 25); font-size: 13px; }
+.aviso-mal svg { flex-shrink: 0; }
+</style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -893,7 +897,7 @@ textarea.in2 { height: auto; min-height: 84px; }
                 </div>
               </sc-if>
             </div>
-          <sc-if value="{{errRoles}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errRoles}}</span></sc-if>
+          <sc-if value="{{errRoles}}" hint-placeholder-val="{{no}}"><div class="aviso-mal" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg> {{errRoles}}</div></sc-if>
         </div>
         <div class="dlg-f">
           <button type="button" class="b b-sec" onClick="{{cerrarDialogo}}">Cancelar</button>

@@ -61,6 +61,7 @@ REGLAS = [
     ("Editar algo que ya existe lleva «Descartar cambios», que deja lo guardado sin salir; crear algo nuevo lleva «Cancelar», que vuelve.", "Botones", "04/10/2026"),
     ("Los módulos de uso diario (WhatsApp) van arriba, debajo de Inicio, y abren su propio panel; Administración, abajo con una línea.", "Menús y desplegables", "03/10/2026"),
     ("Antes de algo que se paga (difusión, plantilla), se muestra el costo estimado.", "Diálogos", "03/10/2026"),
+    ("Atrás de un diálogo, la pantalla solo oscurecida, sin difuminar. Un error general del diálogo, en franja roja clara arriba de los botones.", "Diálogos", "04/10/2026"),
     ("Una línea fina entre cada opción de un menú desplegable; antes de las de peligro, una franja.", "Menús y desplegables", "03/10/2026"),
     ("En el teléfono, una app: barra de abajo con «Más», título en la barra, listas de borde a borde y hojas con manija.", "Marco y pantallas", "03/10/2026"),
     ("El sitio público en el teléfono es web, no app (se abre desde un enlace y no tiene sesión): una columna y ☰ arriba.", "Marco y pantallas", "03/10/2026"),
