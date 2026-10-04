@@ -40,7 +40,7 @@ export function ConfirmDialog({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        {description ? <DialogDescription className="p-5 text-[13px] leading-relaxed text-[var(--t2)]">{description}</DialogDescription> : null}
+        {description ? <DialogDescription className="p-5 text-[13px] leading-relaxed text-[var(--t2)] max-md:px-5 max-md:pt-2 max-md:pb-4 max-md:text-[15px] max-md:leading-normal max-md:text-[var(--t1)]">{description}</DialogDescription> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {cancelLabel ?? t("actions.cancel")}

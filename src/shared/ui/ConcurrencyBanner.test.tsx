@@ -5,6 +5,7 @@ import { I18nextProvider } from "react-i18next";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/shared/api/ApiError";
 import i18n, { configureI18n } from "@/shared/i18n";
+import { AppChromeProvider } from "./app/AppChrome";
 import { ConcurrencyBanner } from "./ConcurrencyBanner";
 
 beforeAll(async () => {
@@ -81,5 +82,22 @@ describe("ConcurrencyBanner", () => {
     await userEvent.click(screen.getByRole("button", { name: "Ver lo nuevo" }));
     await userEvent.click(screen.getByRole("button", { name: "Salir sin guardar" }));
     expect(onSeeNew).toHaveBeenCalledOnce();
+  });
+
+  // Tablero M-Avisos («Alguien cambió esto»): en el teléfono es una banda ámbar con «Seguir editando» y «Ver lo nuevo»
+  // en texto, debajo del aviso.
+  it("en el teléfono es una banda con las dos salidas en texto", async () => {
+    const onContinueEditing = vi.fn();
+    render(<I18nextProvider i18n={i18n}><AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+      <ConcurrencyBanner error={conflict} isDirty={false} onSeeNew={vi.fn()} onContinueEditing={onContinueEditing} />
+    </AppChromeProvider></I18nextProvider>);
+
+    const banner = screen.getByRole("alert");
+    expect(banner).toHaveClass("bg-[var(--alerta-t)]", "text-[var(--alerta-tx)]", "text-[14.5px]");
+    const [first, second] = within(banner).getAllByRole("button");
+    expect(first).toHaveTextContent("Seguir editando");
+    expect(second).toHaveTextContent("Ver lo nuevo");
+    await userEvent.click(first!);
+    expect(onContinueEditing).toHaveBeenCalledOnce();
   });
 });

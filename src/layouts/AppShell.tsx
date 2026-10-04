@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AuthContext } from "react-oidc-context";
 import { Outlet, useLocation } from "react-router";
 import { ForbiddenPage } from "@/areas/public/errors/pages/ForbiddenPage";
@@ -7,6 +7,7 @@ import { clearAccessError, useAccessError } from "@/shared/api/accessErrorStore"
 import { AppErrorBoundary } from "./AppErrorBoundary";
 import { NewVersionBanner } from "./components/NewVersionBanner";
 import { OfflineBanner } from "./components/OfflineBanner";
+import { AppNoticesProvider } from "@/shared/ui/app/AppNotices";
 import { BusinessLayout } from "./BusinessLayout";
 import { useDeletionRequestedDate } from "@/auth/deletionRequestStatus";
 import { DeletionRequestedPage } from "@/areas/personal/account/components/DeletionRequestedPage";
@@ -25,6 +26,12 @@ export function AppShell({ children, onReload = () => window.location.reload() }
   const previousPathname = useRef(pathname);
   const [offline, setOffline] = useState(() => !navigator.onLine);
   const [newVersion, setNewVersion] = useState(false);
+  // Tablero M-Avisos: en el teléfono, la barra de la pantalla reclama los avisos y los pone debajo de ella.
+  const [hosts, setHosts] = useState(0);
+  const claim = useCallback(() => {
+    setHosts((count) => count + 1);
+    return () => setHosts((count) => count - 1);
+  }, []);
 
   useEffect(() => {
     if (previousPathname.current !== pathname) {
@@ -51,6 +58,14 @@ export function AppShell({ children, onReload = () => window.location.reload() }
     };
   }, []);
 
+  const notices = useMemo(() => ({
+    notices: offline || newVersion ? <>
+      {offline ? <OfflineBanner /> : null}
+      {newVersion ? <NewVersionBanner onUpdate={onReload} /> : null}
+    </> : null,
+    claim,
+  }), [offline, newVersion, onReload, claim]);
+
   const unavailableCodes: UnavailableCode[] = [
     "Tenancy.Tenant.Suspended", "Tenancy.Tenant.PendingApproval", "Tenancy.Tenant.Closed",
   ];
@@ -67,12 +82,11 @@ export function AppShell({ children, onReload = () => window.location.reload() }
       : children ?? <Outlet />;
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="sticky top-0 z-50">
-        {offline ? <OfflineBanner /> : null}
-        {newVersion ? <NewVersionBanner onUpdate={onReload} /> : null}
+    <AppNoticesProvider value={notices}>
+      <div className="flex min-h-screen flex-col">
+        {hosts === 0 ? <div className="sticky top-0 z-50">{notices.notices}</div> : null}
+        <div className="min-h-0 flex-1"><AppErrorBoundary onReload={onReload}>{content}</AppErrorBoundary></div>
       </div>
-      <div className="min-h-0 flex-1"><AppErrorBoundary onReload={onReload}>{content}</AppErrorBoundary></div>
-    </div>
+    </AppNoticesProvider>
   );
 }

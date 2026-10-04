@@ -166,4 +166,12 @@ describe("ConfirmDialog", () => {
 
     expect(screen.getByRole("button", { name: "Guardar" })).toHaveAttribute("data-variant", "default");
   });
+
+  // Tablero M-Avisos («Salir sin guardar»): en el teléfono el texto de la hoja va de 15, oscuro.
+  it("en el teléfono el texto va de 15", () => {
+    renderWithProviders(<ConfirmDialog open onOpenChange={vi.fn()} title="¿Salir sin guardar?" description="Se pierde lo que cambiaste acá."
+      confirmLabel="Salir sin guardar" destructive onConfirm={vi.fn()} />);
+
+    expect(screen.getByText("Se pierde lo que cambiaste acá.")).toHaveClass("max-md:text-[15px]", "max-md:text-[var(--t1)]");
+  });
 });

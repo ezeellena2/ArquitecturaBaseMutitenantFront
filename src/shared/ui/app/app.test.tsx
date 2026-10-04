@@ -5,6 +5,7 @@ import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import { AppBar, AppIconButton } from "./AppBar";
 import { AppChromeProvider } from "./AppChrome";
+import { AppNoticesProvider } from "./AppNotices";
 import { BottomNav } from "./BottomNav";
 import { Fab } from "./Fab";
 import { FixedActions } from "./FixedActions";
@@ -78,5 +79,19 @@ describe("marco de app del teléfono", () => {
     expect(screen.getByText("Empresas", { selector: "span" })).toHaveClass("text-[13.5px]", "font-semibold");
     expect(screen.getByRole("list", { name: "Empresas" })).toHaveClass("rounded-[14px]", "bg-[var(--lado-activo)]");
     expect(screen.getByRole("link", { name: /Delta S.A./ })).toHaveClass("min-h-14");
+  });
+
+  // Tablero M-Avisos: lo que sigue pasando (sin conexión, versión nueva) va debajo de la barra de la pantalla.
+  it("la barra aloja debajo los avisos que siguen pasando", () => {
+    const release = vi.fn();
+    const claim = vi.fn(() => release);
+    const { unmount } = render(<MemoryRouter><AppNoticesProvider value={{ notices: <p>{"Sin conexión"}</p>, claim }}>
+      <AppBar title="Configuración" />
+    </AppNoticesProvider></MemoryRouter>);
+
+    expect(screen.getByRole("heading", { level: 1 }).closest("header")!.nextElementSibling).toHaveTextContent("Sin conexión");
+    expect(claim).toHaveBeenCalledOnce();
+    unmount();
+    expect(release).toHaveBeenCalledOnce();
   });
 });

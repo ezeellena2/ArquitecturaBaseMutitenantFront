@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { I18nextProvider } from "react-i18next";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import i18n, { changeCulture, configureI18n } from "@/shared/i18n";
+import { AppChromeProvider } from "@/shared/ui/app/AppChrome";
 import { NewVersionBanner } from "./NewVersionBanner";
 
 beforeAll(async () => {
@@ -32,5 +33,13 @@ describe("NewVersionBanner", () => {
     } finally {
       await changeCulture("es-AR");
     }
+  });
+
+  // Tablero M-Avisos («Versión nueva»): en el teléfono es una banda petróleo clara con «Actualizar» blanco a la derecha.
+  it("en el teléfono es una banda con «Actualizar» blanco", () => {
+    render(<I18nextProvider i18n={i18n}><AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}><NewVersionBanner onUpdate={vi.fn()} /></AppChromeProvider></I18nextProvider>);
+
+    expect(screen.getByRole("status", { name: /Hay una versión nueva/ })).toHaveClass("text-[14.5px]", "justify-start");
+    expect(screen.getByRole("button", { name: "Actualizar" })).toHaveClass("rounded-full", "bg-[var(--lado-activo)]");
   });
 });

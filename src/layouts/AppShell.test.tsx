@@ -14,6 +14,7 @@ import { publishAccessError, clearAccessError, getAccessError } from "@/shared/a
 import i18n, { configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
 import { visualBusiness } from "@/test/mocks/currentUsers";
+import { AppBar } from "@/shared/ui/app/AppBar";
 import { AppShell } from "./AppShell";
 
 beforeAll(async () => {
@@ -35,6 +36,17 @@ function renderShell(onReload = vi.fn()) {
 }
 
 describe("AppShell", () => {
+  // Tablero M-Avisos: si la pantalla tiene la barra de la app, la franja va debajo de ella y no arriba de todo.
+  it("con la barra de la app, la franja sin conexión va debajo de la barra", () => {
+    render(<I18nextProvider i18n={i18n}><MemoryRouter><AppShell onReload={vi.fn()}><AppBar title="Configuración" /></AppShell></MemoryRouter></I18nextProvider>);
+
+    act(() => window.dispatchEvent(new Event("offline")));
+    const banners = screen.getAllByRole("status", { name: "Sin conexión" });
+    expect(banners).toHaveLength(1);
+    expect(screen.getByRole("heading", { level: 1, name: "Configuración" }).closest("header")!.nextElementSibling).toContainElement(banners[0]!);
+    act(() => window.dispatchEvent(new Event("online")));
+  });
+
   it("muestra la franja al perder conexión y la quita sola al volver", () => {
     renderShell();
     expect(screen.getByText("Contenido")).toBeInTheDocument();

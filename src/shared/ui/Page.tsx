@@ -111,7 +111,8 @@ export function Page({
           </DropdownMenu> : null}
         </>} />
       {tabs ? <div data-slot="page-tabs" className="border-b border-[var(--borde)] bg-[var(--lado-activo)]">{tabs}</div> : null}
-      <AppBarToolsProvider value={tools}><div className={phoneBodyClasses[phoneBody]}>{banner}{children}</div></AppBarToolsProvider>
+      {banner}
+      <AppBarToolsProvider value={tools}><div className={phoneBodyClasses[phoneBody]}>{children}</div></AppBarToolsProvider>
       {fab ? <Fab label={fab.label} onClick={fab.onClick} to={fab.to} /> : actions ? <FixedActions>{actions}</FixedActions> : null}
     </div>;
   }

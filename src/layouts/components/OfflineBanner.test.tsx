@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { I18nextProvider } from "react-i18next";
 import { beforeAll, describe, expect, it } from "vitest";
 import i18n, { configureI18n } from "@/shared/i18n";
+import { AppChromeProvider } from "@/shared/ui/app/AppChrome";
 import { OfflineBanner } from "./OfflineBanner";
 
 beforeAll(async () => {
@@ -16,5 +17,12 @@ describe("OfflineBanner", () => {
     render(<I18nextProvider i18n={i18n}><OfflineBanner /></I18nextProvider>);
 
     expect(screen.getByRole("status", { name: "Sin conexión" })).toHaveClass("bg-[var(--t1)]");
+  });
+
+  // Tablero M-Avisos («Sin conexión»): en el teléfono es una banda roja clara debajo de la barra.
+  it("en el teléfono es una banda roja clara", () => {
+    render(<I18nextProvider i18n={i18n}><AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}><OfflineBanner /></AppChromeProvider></I18nextProvider>);
+
+    expect(screen.getByRole("status", { name: "Sin conexión" })).toHaveClass("bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]", "text-[14.5px]");
   });
 });

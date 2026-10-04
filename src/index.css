@@ -42,6 +42,13 @@
   /* El punto de un estado tiene su propio tono, más claro que el texto (tableros Usuarios y M-Usuarios, .w-est). */
   /* Tablero M-Inicio-Personal (.ap-sug): el texto de la tarjeta de sugerencia, petróleo oscuro sobre --marca-t. */
   --sugerencia-tx: oklch(0.3 0.05 195);
+  /* Tablero M-Avisos: el texto de la banda ámbar, la franja oscura de los avisos pasajeros y sus colores. */
+  --alerta-tx: oklch(0.4 0.1 70);
+  --franja: oklch(0.27 0.012 60);
+  --franja-ok: oklch(0.78 0.14 155);
+  --franja-mal: oklch(0.75 0.15 25);
+  --franja-accion: oklch(0.82 0.08 195);
+  --sombra-franja: 0 8px 24px oklch(0.2 0.01 60 / 0.3);
   --punto-ok: oklch(0.6 0.13 155);
   --punto-alerta: oklch(0.72 0.15 70);
   --punto-apagado: oklch(0.75 0.01 78);
@@ -153,4 +160,13 @@ body {
 /* En el teléfono, los avisos suben por encima de la acción fija de abajo (tablero M-Avisos). */
 @media (max-width: 767px) {
   body:has([data-slot="fixed-actions"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 84px; }
+  /* Con la barra de abajo, la franja va por encima de ella. */
+  body:has([data-slot="bottom-nav"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 84px; }
+  [data-sonner-toast][data-type="success"] [data-icon] { color: var(--franja-ok); }
+  [data-sonner-toast][data-type="error"] [data-icon], [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--franja-mal); }
+  [data-sonner-toast] [data-icon] { width: 20px; height: 20px; }
+  [data-sonner-toast][data-styled="true"] [data-title] { font-weight: 400; }
+  [data-sonner-toast][data-styled="true"] [data-close-button] svg { width: 18px; height: 18px; }
+  [data-sonner-toast][data-styled="true"] [data-button] { height: auto; padding: 0; background: transparent; color: var(--franja-accion); font-size: 14.5px; font-weight: 600; }
+  [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 24px; height: 24px; transform: none; border: 0; background: transparent; color: oklch(1 0 0 / 0.7); }
 }
