@@ -171,6 +171,20 @@ export function userDetailResponses() {
   ];
 }
 
+// La ficha de Empresa (Delta S.A.) y el listado de Empresas, como sus tableros; también los usa capturar-f7.mjs.
+export function companyDetailResponses() {
+  return [
+    api("GET", "/api/companies/company-1", company),
+    api("GET", "/api/companies/company-1/members/paged", pageOf(companyMembers), 200, { page: "1", pageSize: "10" }),
+    api("GET", "/api/companies/company-1/members/filter-counts", { all: 6, active: 4, pendingDeletion: 1, inactive: 1, invited: 0 }),
+    ...commonAdminResponses(),
+  ];
+}
+
+export function companiesListResponses() {
+  return [companiesPage, api("GET", "/api/companies/filter-counts", { all: 3, active: 3, inactive: 0 })];
+}
+
 export function settingsResponses(domainState = "Verified") {
   const domain = {
     // Como el back: el registro TXT se carga en el dominio con el prefijo ab-verificacion=.
@@ -254,9 +268,7 @@ function buildCases() {
   both({ pair: "rol-editar", mobileProps: {}, board: "Rol", mobileBoard: "M-Rol", path: "/org/roles/role-people", props: { modo: "Editar el rol Recursos humanos" },
     responses: [api("GET", "/api/roles/role-people", peopleRole), api("GET", "/api/permissions", permissionGroups), companyOptions] });
 
-  both({ pair: "empresas-lista", board: "Empresas", mobileBoard: "M-Empresas", path: "/org/empresas", responses: [
-    companiesPage, api("GET", "/api/companies/filter-counts", { all: 3, active: 3, inactive: 0 }),
-  ] });
+  both({ pair: "empresas-lista", board: "Empresas", mobileBoard: "M-Empresas", path: "/org/empresas", responses: companiesListResponses() });
   both({ pair: "empresas-crear", board: "Empresas", mobileBoard: "M-Empresas", path: "/org/empresas", responses: [
     companiesPage, api("GET", "/api/companies/filter-counts", { all: 3, active: 3, inactive: 0 }),
     api("POST", "/api/companies", "company-new", 201),
@@ -264,12 +276,7 @@ function buildCases() {
   ], boardActions: [{ type: "click", selector: "button.b-pri" }], mobileBoardActions: [],
   actions: [{ type: "click", role: "button", name: "Crear empresa" }], readySelector: '[role="dialog"]' });
 
-  const companyResponses = [
-    api("GET", "/api/companies/company-1", company),
-    api("GET", "/api/companies/company-1/members/paged", pageOf(companyMembers), 200, { page: "1", pageSize: "10" }),
-    api("GET", "/api/companies/company-1/members/filter-counts", { all: 6, active: 4, pendingDeletion: 1, inactive: 1, invited: 0 }),
-    ...commonAdminResponses(),
-  ];
+  const companyResponses = companyDetailResponses();
   both({ pair: "empresa-miembros", mobileProps: {}, board: "Empresa", mobileBoard: "M-Empresa", path: "/org/empresas/company-1", responses: companyResponses, props: { pestana: "Miembros" } });
   both({ pair: "empresa-roles", mobileProps: {}, board: "Empresa", mobileBoard: "M-Empresa", path: "/org/empresas/company-1", responses: companyResponses, props: { pestana: "Roles" },
     actions: [{ type: "click", role: "tab", name: "Roles" }] });

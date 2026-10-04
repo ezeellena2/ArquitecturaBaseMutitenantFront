@@ -12,7 +12,10 @@ import { chromium } from "playwright";
 import {
   assertCapturedPairs, capturePaths, installApiMocks, otpMaskStyle, runAppActions, startCanvasServer, validateManifest, waitForAppFont,
 } from "./capturar-etapa-3a.mjs";
-import { api, organizationUserRows, publicPageResponses, roleLists, settingsResponses, userCompanyOptions, userDetailResponses } from "./capturar-etapa-6.mjs";
+import {
+  api, companiesListResponses, companyDetailResponses, organizationUserRows, publicPageResponses, roleLists, settingsResponses, userCompanyOptions,
+  userDetailResponses,
+} from "./capturar-etapa-6.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const canvas = path.join(root, "docs/design/lienzo");
@@ -25,6 +28,12 @@ const fill = (name, value) => ({ type: "fill", name, value });
 const click = (selector) => ({ type: "click", selector });
 const toggle = (selector, text) => ({ type: "toggle", selector, text });
 const openOrgRoles = click('button[aria-label="Roles de la organización"]');
+// Tablero Empresa: le sacás «Administrador» a Lucía, la única administradora, y guardás.
+const empresaRolesErrorOnBoard = [
+  click('button[aria-label="Acciones de Lucía Fernández"]'), click('[role="menu"] button[role="menuitem"]'),
+  click('button[aria-labelledby="et-RolesM"]'), toggle("label.op2", "Administrador"), click(".velo button.capa"),
+  click(".dlg-f button.b-pri"),
+];
 
 // Cada caso es un estado de un tablero. `section` captura solo esa sección de un tablero «Criterio».
 export const boardCases = [
@@ -50,11 +59,7 @@ export const boardCases = [
     actions: [click("button.cb-sec.ch")],
     state: "Ficha de Usuario: el diálogo «Sumar empresa», que guarda al momento (sin estado de error dibujado)." },
   { id: "empresa-roles-error", viewport: desktop, board: "Empresa", props: { pestana: "Miembros" },
-    actions: [
-      click('button[aria-label="Acciones de Lucía Fernández"]'), click('[role="menu"] button[role="menuitem"]'),
-      click('button[aria-labelledby="et-RolesM"]'), toggle("label.op2", "Administrador"), click(".velo button.capa"),
-      click(".dlg-f button.b-pri"),
-    ],
+    actions: empresaRolesErrorOnBoard,
     state: "Ficha de Empresa: el diálogo «Roles de Lucía Fernández» con el error arriba de los botones." },
 
   { id: "configuracion-salir-sin-guardar", viewport: phone, board: "M-Avisos", props: { caso: "Salir sin guardar" },
@@ -160,11 +165,12 @@ const saveChanges = appClick("button", "Guardar cambios");
 const leaveDialog = { readySelector: '[role="dialog"]', readyText: "¿Salir sin guardar?" };
 
 /// Un estado a 1440 y a 390: cada tamaño con su tablero (o el más cercano, si ese estado no está dibujado) y la app con
-/// sus datos y sus pasos. Mismos campos que los manifiestos de las etapas, más `state`, que dice qué se ve.
-function pair({ id, state, desktop: desk, phone: mobile, route, fixture = "visual-owner", responses, actions = [], phoneActions = actions, ready = {} }) {
+/// sus datos y sus pasos. Mismos campos que los manifiestos de las etapas, más `state`, que dice qué se ve, y `section`,
+/// para comparar con una sección de un tablero «Criterio».
+function pair({ id, state, group = "fase-2", desktop: desk, phone: mobile, route, fixture = "visual-owner", responses, actions = [], phoneActions = actions, ready = {} }) {
   return [["escritorio", desktop, desk, actions], ["movil", phone, mobile, phoneActions]].map(([suffix, viewport, board, appActions]) => ({
-    id: `${id}-${suffix}`, pair: id, group: "fase-2", state: board.state ?? state, board: board.board, props: board.props ?? {},
-    boardActions: board.actions ?? [], viewport,
+    id: `${id}-${suffix}`, pair: id, group, state: board.state ?? state, board: board.board, props: board.props ?? {},
+    boardActions: board.actions ?? [], ...(board.section ? { section: board.section } : {}), viewport,
     app: {
       path: harness(fixture, route), captureMode: "harness", userFixture: fixture, responses, actions: appActions,
       readySelector: ready.readySelector ?? "main", ...(ready.readyText ? { readyText: ready.readyText } : {}),
@@ -231,6 +237,50 @@ function buildCases() {
       desktop: { board: "Usuario", props: { usuario: "Tomás (activo)" }, actions: [click("button.cb-sec.ch")] },
       phone: { board: "M-Usuario-Empresa" },
       actions: addCompany, ready: { readySelector: '[role="dialog"] [role="alert"]' } }),
+    ...phase3Cases(),
+  ];
+}
+
+// Fase 3: los avisos que salían dos veces y los diálogos.
+function phase3Cases() {
+  const company = companyDetailResponses();
+  const companies = companiesListResponses();
+  const lastCompanyAdmin = problem("PUT", "/api/companies/company-1/members/member-lucia/roles", "Companies.Membership.LastCompanyAdmin",
+    "No podés quitar al último administrador de la empresa.");
+  const taxIdUsed = problem("POST", "/api/companies", "Tenancy.Company.TaxIdAlreadyUsed", "Ya hay una empresa con esa identificación fiscal.");
+  const rolesError = [appClick("button", "Acciones para Lucía Fernández"), appClick("menuitem", "Cambiar roles"),
+    appClick("button", "Roles en la empresa"), appClick("menuitemcheckbox", "Administrador"), appPress("menuitemcheckbox", "Administrador", "Escape"),
+    appClick("button", "Guardar cambios")];
+  const createCompany = appClick("button", "Crear empresa");
+  const dialogAlert = { readySelector: '[role="dialog"] [role="alert"]' };
+  return [
+    ...pair({ id: "empresa-roles-error", group: "fase-3", route: "/org/empresas/company-1", responses: [lastCompanyAdmin, ...company],
+      state: "Ficha de Empresa: el error del último administrador, una sola vez, en la franja del diálogo arriba de los botones.",
+      desktop: { board: "Empresa", props: { pestana: "Miembros" }, actions: empresaRolesErrorOnBoard },
+      phone: { board: "M-Empresa", state: "Ficha de Empresa en el teléfono: la hoja de roles con su franja (el tablero no dibuja la hoja ni el error)." },
+      actions: rolesError, ready: dialogAlert }),
+    ...pair({ id: "empresas-dialogo-error", group: "fase-3", route: "/org/empresas", responses: [taxIdUsed, ...companies],
+      state: "Empresas: «Crear empresa» con un error del servidor, en la franja arriba de los botones (el tablero no dibuja ese error).",
+      desktop: { board: "Empresas", actions: [click("button.b-pri")] },
+      phone: { board: "M-Empresas", state: "Empresas en el teléfono: la hoja de crear con su franja (el tablero no dibuja la hoja ni el error)." },
+      actions: [createCompany, appFill("Nombre", "Delta Oeste S.A."), appFill("CUIT", "30712345671"), createCompany], ready: dialogAlert }),
+    ...pair({ id: "usuario-sumar-empresa", group: "fase-3", route: "/org/usuarios/member-1", responses: userDetailResponses(),
+      state: "Ficha de Usuario: «Sumar empresa», el diálogo chico de 420 px.",
+      desktop: { board: "Usuario", props: { usuario: "Tomás (activo)" }, actions: [click("button.cb-sec.ch")] },
+      phone: { board: "M-Usuario-Empresa", state: "Ficha de Usuario en el teléfono: la hoja «Sumar empresa»." },
+      actions: [appClick("button", "Sumar empresa")], ready: { readySelector: '[role="dialog"]' } }),
+    ...pair({ id: "dialogo-fondo", group: "fase-3", route: "/org/empresas", responses: companies,
+      state: "Un diálogo abierto: atrás, la pantalla solo oscurecida, sin difuminar (lienzo v97).",
+      desktop: { board: "Empresas", actions: [click("button.b-pri")] },
+      phone: { board: "M-Empresas", state: "Empresas en el teléfono: la hoja de crear sobre la lista oscurecida (el tablero no dibuja la hoja)." },
+      actions: [createCompany], ready: { readySelector: '[role="dialog"]' } }),
+    ...pair({ id: "sesion-error-api-me", group: "fase-3", route: "/org",
+      responses: [api("GET", "/api/me", { status: 500, title: "Error", traceId: "00-f7-fase3-01" }, 500)],
+      state: "Si falla /api/me: un solo aviso, en la pantalla, con «Reintentar».",
+      desktop: { board: "Criterio-Avisos", section: "Cómo se ve cada uno",
+        state: "Si falla /api/me: un solo aviso, en la pantalla, con «Reintentar» (Criterio · Avisos › Pantalla de error)." },
+      phone: { board: "M-Error-Org", state: "Si falla /api/me, en el teléfono: la pantalla de error dibujada más cercana es M-Error-Org (403)." },
+      ready: { readySelector: '[role="alert"]', readyText: "Algo salió mal. Probá de nuevo en un rato." } }),
   ];
 }
 
