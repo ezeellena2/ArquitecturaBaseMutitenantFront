@@ -1,6 +1,6 @@
 # Lienzo del sistema visual
 
-Copia de la **versión 104** (2026-10-04) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 186 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
+Copia de la **versión 106** (2026-10-04) del lienzo «Sistema visual · Multitenant», que vive en claude.ai como artefacto de tipo Design: <https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK> (privado, de la cuenta del dueño). Tiene 186 tableros `.dc.html`, `canvas.json` (páginas, posiciones y notas), el motor `support.js`, los recursos de `ds/` y los scripts que los generan, en `generadores/`.
 
 Esta carpeta es la fuente de cada pantalla y de sus estados: **un tablero validado manda sobre cualquier descripción textual** de la arquitectura, las fichas o el plan. Antes de programar una pantalla, buscá su tablero y copiá sus estados, contenido y disposición. Una pantalla nueva se dibuja primero y se programa después de que el usuario la elige.
 
@@ -130,6 +130,12 @@ Son scripts de Python 3, sin dependencias. Escriben los tableros y `canvas.json`
 | `enmascarado_1004.py` | Datos tapados como `PersonalDataMask`: teléfono «•••• 4521», correo «lu•••@…» y el correo de la invitación tapado en Auditoría. |
 | `cuit_valido_1004.py` | Los CUIT de ejemplo con el dígito verificador correcto. |
 | `dialogos_r2b_1004.py` | Cuerpo de los diálogos con 20 de margen y 14 entre campos; «Sumar» de «Sumar empresa» nunca apagado; «Todos» en M-Usuario-Empresa. |
+| `estados_util.py` | Ayudas para sumar estados clonando uno que ya existe (`clonar`, `con_estados_pantalla`, `hoja`, `campo`) y el CSS común del teléfono. La usan los `estados_*_1004.py`. |
+| `estados_invitacion_1004.py` | Invitación y M-Invitacion: cargando, aceptando y error al aceptar. |
+| `estados_inicios_1004.py` | Inicio personal sin el aviso, M-Inicio-Org «Nada para resolver» y el tablero nuevo M-Inicio-Miembro (con su lugar en `canvas.json`). |
+| `estados_cuenta_1004.py` | Mi cuenta: correo inválido, código incorrecto, vincular y desvincular Google, la baja con errores, la sesión cerrada por la baja (Sesion y M-Sesion), los avisos de cada acción y «Cambios sin guardar» en el teléfono. |
+| `estados_rol_tel_1004.py` | M-Rol: crear un rol, Recursos humanos y el rol Dueño. |
+| `estados_org_1004.py` | Organización: 409 de «Sumar empresa», crear empresa con el CUIT repetido, las hojas del teléfono (roles de una empresa, crear y editar empresa, roles de un miembro), la pestaña Roles, Configuración y Página pública en el teléfono y el error al guardar la página. |
 | `config_plat_correos_1004.py` | Configuración de la plataforma con la sección «Contacto»: correo de ventas y de soporte. El teléfono lo arma `telefonos_1004/app_plat_personal.py`. |
 | `plat_menu_wa_1004.py` | Menú de Plataforma en la compu con WhatsApp solo para consultas: «WhatsApp» va directo a Consultas y Administración › WhatsApp lleva a los tableros Plat-WA-*. Corre después de `plat_vuelta_1004.py` y `plat_ajustes_1003.py`. |
 | `plat_wa_1004.py` | Plataforma › WhatsApp en la compu (Etapa 11), a partir de los tableros de WhatsApp de la organización: Consultas, Número, Bot (con su recorrido), Equipos y Plantillas. |

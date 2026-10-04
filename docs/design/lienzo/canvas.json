@@ -971,12 +971,12 @@
       "is_interactive": true
     },
     "Criterio-Decisiones.dc.html": {
-      "h": 11200,
-      "page": "criterio",
-      "title": "Criterio · Decisiones por pantalla",
-      "w": 1440,
       "x": 10640,
-      "y": 260
+      "y": 260,
+      "w": 2960,
+      "h": 6300,
+      "title": "Criterio · Decisiones por pantalla",
+      "page": "criterio"
     },
     "WA-Chats-SinTomar.dc.html": {
       "h": 900,
@@ -1644,6 +1644,15 @@
       "h": 844,
       "title": "Número · conectar · teléfono",
       "page": "plataforma",
+      "is_interactive": true
+    },
+    "M-Inicio-Miembro.dc.html": {
+      "x": 5640,
+      "y": 3320,
+      "w": 390,
+      "h": 844,
+      "title": "Inicio de alguien con roles en una empresa · teléfono",
+      "page": "org",
       "is_interactive": true
     }
   },

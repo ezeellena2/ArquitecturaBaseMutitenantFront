@@ -606,18 +606,20 @@ textarea.in2 { height: auto; min-height: 84px; }
 .w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
   content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 </style>
+<style data-vuelta="1004-estados-cuenta">
+</style>
 </helmet>
 
 <div class="sesion" role="status">
   <span class="marca-arriba"><span class="brand" aria-hidden="true"></span>ArquitecturaBase</span>
   <sc-if value="{{cargando}}" hint-placeholder-val="{{si}}"><span class="girar" aria-hidden="true"></span></sc-if>
-  <sc-if value="{{error}}" hint-placeholder-val="{{no}}"><span class="circulo mal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg></span></sc-if>
+  <sc-if value="{{baja}}" hint-placeholder-val="{{no}}"><span class="circulo gris"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l4-4-4-4"/><path d="M14 12H4"/></svg></span></sc-if><sc-if value="{{error}}" hint-placeholder-val="{{no}}"><span class="circulo mal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg></span></sc-if>
   <div style="text-align: center;"><h1>{{titulo}}</h1><p>{{texto}}</p></div>
-  <sc-if value="{{error}}" hint-placeholder-val="{{no}}"><a class="b b-pri lg" href="Ingreso.dc.html" style="width: 280px;">Volver a ingresar</a></sc-if>
+  <sc-if value="{{error}}" hint-placeholder-val="{{no}}"><a class="b b-pri lg" href="Ingreso.dc.html" style="width: 280px;">Volver a ingresar</a></sc-if><sc-if value="{{baja}}" hint-placeholder-val="{{no}}"><a class="b b-sec lg" href="Landing.dc.html" style="width: 280px;">Ir al inicio</a></sc-if>
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Iniciando sesión","Cambiando de lado: a Grupo Delta","Cambiando de lado: a Personal","Cerrando sesión","No pudimos iniciar tu sesión"],"default":"Iniciando sesión","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Iniciando sesión","Cambiando de lado: a Grupo Delta","Cambiando de lado: a Personal","Cerrando sesión","No pudimos iniciar tu sesión","Cerramos tu sesión por la baja"],"default":"Iniciando sesión","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 const ESTADOS = {
   'Iniciando sesión': ['Iniciando sesión…', 'Esto puede tardar unos segundos.'],
   // signinSilent con tenant=<id> (o sin tenant, al lado Personal); después se limpia la caché del front para no mezclar datos de los dos lados.
@@ -625,6 +627,8 @@ const ESTADOS = {
   'Cambiando de lado: a Personal': ['Cambiando a Personal…', ''],
   'Cerrando sesión': ['Cerrando sesión…', ''],
   'No pudimos iniciar tu sesión': ['No pudimos iniciar tu sesión', 'Volvé a ingresar. Si vuelve a pasar, probá en otra ventana.'],
+  // Después de pedir la baja (account.json, closedSession y deletionDate).
+  'Cerramos tu sesión por la baja': ['Cerramos tu sesión', 'Tu cuenta se elimina el 27/10/2026.'],
 };
 
 class Component extends DCLogic {
@@ -809,7 +813,8 @@ class Component extends DCLogic {
 
     return {
       ...this.comunes(),
-      cargando: est !== 'No pudimos iniciar tu sesión',
+      cargando: est !== 'No pudimos iniciar tu sesión' && est !== 'Cerramos tu sesión por la baja',
+      baja: est === 'Cerramos tu sesión por la baja',
       error: est === 'No pudimos iniciar tu sesión',
       titulo: ESTADOS[est][0],
       texto: ESTADOS[est][1],

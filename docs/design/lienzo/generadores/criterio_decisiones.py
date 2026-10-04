@@ -1,17 +1,20 @@
 """Tablero «Criterio · Decisiones por pantalla»: lo que el usuario eligió en cada pantalla y las reglas que dejó.
-Cada decisión nueva suma una fila en DECISIONES; si deja una regla, va también a REGLAS y al tablero de esa pieza."""
+Cada decisión nueva suma una fila en DECISIONES; si deja una regla, va también a REGLAS y al tablero de esa pieza.
+Va en dos columnas (2960 de ancho): el lienzo recorta un tablero a 8000 de alto y en una columna ya no entraba."""
 import json
 import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 11200
+ALTO = 6300
+ANCHO = 2960
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
 
 botones = (PROJ / "Criterio-Botones.dc.html").read_text(encoding="utf-8")
 head = botones.split("</helmet>", 1)[0].replace("<title>Criterio · Botones</title>", f"<title>{TITULO}</title>")
 head = re.sub(r"(\.crit \{[^}]*min-height: )\d+px", lambda m: m.group(1) + f"{ALTO}px", head)
+head = re.sub(r"(\.crit \{ width: )1440px", lambda m: m.group(1) + f"{ANCHO}px", head)
 
 CSS = """  <style data-criterio="decisiones">
 .dec { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; font-size: 13.5px; }
@@ -31,6 +34,8 @@ CSS = """  <style data-criterio="decisiones">
 .est.alerta::before { background: oklch(0.72 0.15 70); }
 .est.off { color: var(--t2); }
 .est.off::before { background: oklch(0.75 0.01 78); }
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; align-items: start; }
+.cols > div { display: flex; flex-direction: column; gap: 36px; }
   </style>"""
 
 COLS_R = "minmax(0, 1fr) 300px 120px"
@@ -234,8 +239,18 @@ DECISIONES = {
         ("Sumar empresa", "", "«Sumar» nunca se apaga: sin empresa, el campo dice «Elegí una empresa.». En el teléfono, «Todos» en los roles.", "Dibujada"),
         ("CUIT de ejemplo", "", "Los tres pasan el dígito verificador: 30-71234567-1, 30-71555444-1 y 30-12345678-1.", "Dibujada"),
     ],
+    "Estados que faltaban · 04/10": [
+        ("Invitación", "", "Cargando («Cargando invitación…»), aceptando (el botón con la ruedita) y error al aceptar (la franja roja debajo del texto legal), en la compu y en el teléfono.", "Dibujada"),
+        ("Inicios", "", "Inicio personal sin el aviso (solo el título, como la app). En el teléfono, el de la organización con «Nada para resolver» y uno nuevo para alguien con roles en una sola empresa: la billetera con «Tus empresas» y, si administra, su «Para resolver».", "Dibujada"),
+        ("Mi cuenta", "", "Correo inválido, código incorrecto, vincular y desvincular Google, la baja sin motivo o con código incorrecto, la sesión cerrada por la baja y los avisos de cada acción con la lista como queda. En el teléfono, además, «Cambios sin guardar». No se dibuja «ese correo ya lo usa otra cuenta» (ADR 0041).", "Dibujada"),
+        ("Roles · teléfono", "", "Crear un rol, un rol de toda la organización y el rol Dueño, solo para leer.", "Dibujada"),
+        ("Usuario", "", "En el teléfono, la hoja de roles de una empresa y la franja de error al guardar. «Sumar empresa» con el 409 («Otra persona cambió esto…»), en la compu y en el teléfono.", "Dibujada"),
+        ("Empresas y Empresa", "", "«Crear empresa» con el CUIT repetido, en la compu y en el teléfono. En el teléfono, la hoja de crear y la de editar, la pestaña Roles y la hoja de roles de un miembro con su error. Las hojas suben desde abajo, no a pantalla completa.", "Dibujada"),
+        ("Configuración · teléfono", "", "Dominio pendiente, con «Verificar», y «Cambios sin guardar».", "Dibujada"),
+        ("Página pública", "", "En el teléfono, borrador, despublicada por la plataforma (con su hoja), «Cambios sin guardar» y error al guardar. En la compu, el error al guardar arriba del contenido.", "Dibujada"),
+    ],
     "Lo que sigue": [
-        ("Estados que faltan", "", "Invitación (cargando, enviando y error), Inicio personal sin el aviso, Inicio de un miembro en el teléfono y los de Mi cuenta sin relevar.", "Falta dibujar"),
+        ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
     ],
 }
 
@@ -252,23 +267,39 @@ def fila_decision(pantalla, opcion, que, estado):
 
 
 reglas_html = "\n      ".join(fila_regla(*r) for r in REGLAS)
-paginas_html = "\n\n".join(
-    f"""  <section>
+def seccion(pagina, filas):
+    return f"""  <section>
     <h2>{pagina}</h2>
     <div class="dec">
       <div class="c" style="grid-template-columns: {COLS_D};"><span>Pantalla</span><span>Qué se eligió</span><span>En el lienzo</span></div>
       {"".join(fila_decision(*d) for d in filas)}
     </div>
   </section>"""
-    for pagina, filas in DECISIONES.items()
-)
+
+
+# Reparto en dos columnas sin cambiar el orden: la primera lleva las reglas y las secciones hasta la mitad del alto estimado
+# (cada fila pesa según el largo de su texto, porque las largas ocupan dos o tres renglones).
+def peso_filas(filas, i_texto):
+    return 3 + sum(1 + len(f[i_texto]) // 120 for f in filas)
+
+
+total = peso_filas(REGLAS, 0) + sum(peso_filas(f, 2) for f in DECISIONES.values())
+col1, col2, acumulado = [], [], peso_filas(REGLAS, 0)
+for pagina, filas in DECISIONES.items():
+    p = peso_filas(filas, 2)
+    if not col2 and acumulado + p / 2 <= total / 2:
+        col1.append(seccion(pagina, filas))
+        acumulado += p
+    else:
+        col2.append(seccion(pagina, filas))
 
 BODY = f"""<div class="crit">
   <div>
     <h1>Decisiones por pantalla</h1>
     <p class="sub">Lo que elegiste en cada pantalla. Si una decisión deja una regla para todas, la regla va también a su tablero.</p>
   </div>
-
+  <div class="cols">
+  <div>
   <section>
     <h2>Reglas que salieron de estas decisiones</h2>
     <div class="dec">
@@ -277,10 +308,15 @@ BODY = f"""<div class="crit">
     </div>
   </section>
 
-{paginas_html}
+{chr(10).join(col1)}
+  </div>
+  <div>
+{chr(10).join(col2)}
+  </div>
+  </div>
 </div>"""
 
-SCRIPT = f"""<script type="text/x-dc" data-dc-script data-props='{{"$preview":{{"width":1440,"height":{ALTO}}}}}'>
+SCRIPT = f"""<script type="text/x-dc" data-dc-script data-props='{{"$preview":{{"width":{ANCHO},"height":{ALTO}}}}}'>
 class Component extends DCLogic {{
   renderVals() {{
     return {{ si: true, no: false }};
@@ -293,7 +329,7 @@ html = "\n".join([head, CSS, "</helmet>", "", BODY, "</x-dc>", "", SCRIPT, "</bo
 
 ruta = PROJ / "canvas.json"
 c = json.loads(ruta.read_text(encoding="utf-8"))
-c["boards"][ARCHIVO] = {"x": 10640, "y": 260, "w": 1440, "h": ALTO, "title": TITULO, "page": "criterio"}
+c["boards"][ARCHIVO] = {"x": 10640, "y": 260, "w": ANCHO, "h": ALTO, "title": TITULO, "page": "criterio"}
 if ARCHIVO not in c["order"]:
     c["order"].append(ARCHIVO)
 c["notes"]["t-criterio"]["maxW"] = 8000

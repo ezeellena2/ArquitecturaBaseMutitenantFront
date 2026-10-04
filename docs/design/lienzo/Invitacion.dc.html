@@ -612,6 +612,11 @@ textarea.in2 { height: auto; min-height: 84px; }
 .msj { border-radius: 8px; }
 .msj svg { width: 16px; height: 16px; margin-top: 2px; }
 </style>
+<style data-vuelta="1004-estados-invitacion">
+.cargando-inv { margin: 0; padding: 48px 0; text-align: center; font-size: 13px; color: var(--t2); }
+.girar2 { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2px solid oklch(1 0 0 / 0.4); border-top-color: #fff; display: inline-block; }
+button.b.lg:disabled { cursor: default; }
+</style>
 </helmet>
 
 <div class="auth">
@@ -619,7 +624,7 @@ textarea.in2 { height: auto; min-height: 84px; }
     <a class="auth-top" href="Landing.dc.html"><span class="brand" aria-hidden="true"></span>ArquitecturaBase</a>
     <main class="auth-centro">
       <div class="auth-caja">
-      <sc-if value="{{valida}}" hint-placeholder-val="{{si}}">
+      <sc-if value="{{cargando}}" hint-placeholder-val="{{no}}"><p class="cargando-inv" role="status">Cargando invitación…</p></sc-if><sc-if value="{{valida}}" hint-placeholder-val="{{si}}">
         <div style="display: flex; flex-direction: column; gap: 20px;">
           <span class="org-av" aria-hidden="true">GD</span>
           <div><h1>Te sumás a Grupo Delta</h1><p class="sub">La invitación es para <strong>{{correo}}</strong>.</p></div>
@@ -637,8 +642,8 @@ textarea.in2 { height: auto; min-height: 84px; }
             </div>
           </sc-if>
           <sc-if value="{{aceptaDirecto}}" hint-placeholder-val="{{si}}">
-            <a class="b b-pri lg" href="Inicio-Org.dc.html">Aceptar invitación</a>
-            <p class="nota">{{notaAceptar}}</p>
+            <sc-if value="{{noEnviando}}" hint-placeholder-val="{{si}}"><a class="b b-pri lg" href="Inicio-Org.dc.html">Aceptar invitación</a></sc-if><sc-if value="{{enviando}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-pri lg" disabled="{{si}}" style="opacity: 0.85;"><span class="girar2" aria-hidden="true"></span> Aceptando…</button></sc-if>
+            <p class="nota">{{notaAceptar}}</p><sc-if value="{{errAceptar}}" hint-placeholder-val="{{no}}"><div class="msj mal" role="alert"><svg class="ic-mal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><svg class="ic-aten" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span>{{errAceptar}}</span></div></sc-if>
           </sc-if>
           <sc-if value="{{debeIngresar}}" hint-placeholder-val="{{no}}">
             <a class="b b-pri lg" href="Ingreso.dc.html">Ingresá para aceptar</a>
@@ -691,11 +696,15 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Sin cuenta","Con cuenta y sin sesión","Con la sesión de la misma persona","Con la sesión de otra persona","Vencida","Ya no sirve","Organización suspendida","Aceptada: solo con el correo de la empresa"],"default":"Sin cuenta","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Sin cuenta","Sin cuenta: cargando","Sin cuenta: aceptando","Sin cuenta: error al aceptar","Con cuenta y sin sesión","Con la sesión de la misma persona","Con la sesión de otra persona","Vencida","Ya no sirve","Organización suspendida","Aceptada: solo con el correo de la empresa"],"default":"Sin cuenta","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 // POST /api/invitations/preview no la gasta; POST /api/invitations/accept la acepta. Si la persona no tenía cuenta,
 // la aceptación crea su identidad (sin espacio personal: nace la primera vez que entra como persona) y entra directo a la organización.
 const ESTADOS = {
   'Sin cuenta': { correo: 'valentina.ruiz@gmail.com', empresa: 'Delta Norte S.A.', roles: 'Solo lectura', modo: 'directo', nota: 'Al aceptar creamos tu cuenta con este correo y aceptás los Términos y la Política de privacidad.' },
+  // Lo que muestra la app mientras trae la invitación, mientras la acepta y si falla al aceptar.
+  'Sin cuenta: cargando': { cargando: true },
+  'Sin cuenta: aceptando': { correo: 'valentina.ruiz@gmail.com', empresa: 'Delta Norte S.A.', roles: 'Solo lectura', modo: 'directo', nota: 'Al aceptar creamos tu cuenta con este correo y aceptás los Términos y la Política de privacidad.', enviando: true },
+  'Sin cuenta: error al aceptar': { correo: 'valentina.ruiz@gmail.com', empresa: 'Delta Norte S.A.', roles: 'Solo lectura', modo: 'directo', nota: 'Al aceptar creamos tu cuenta con este correo y aceptás los Términos y la Política de privacidad.', error: 'Algo salió mal. Probá de nuevo en un rato.' },
   'Con cuenta y sin sesión': { correo: 'sofia.herrera@delta.ejemplo.com', empresa: 'Delta S.A.', roles: 'Solo lectura', modo: 'ingresar' },
   'Con la sesión de la misma persona': { correo: 'sofia.herrera@delta.ejemplo.com', empresa: 'Delta S.A.', roles: 'Solo lectura', modo: 'directo', nota: 'Grupo Delta se suma a tus perfiles.' },
   'Con la sesión de otra persona': { correo: 'sofia.herrera@delta.ejemplo.com', empresa: 'Delta S.A.', roles: 'Solo lectura', modo: 'otra' },
@@ -888,7 +897,11 @@ class Component extends DCLogic {
 
     return {
       ...this.comunes(),
-      valida: !e.invalida && !e.aceptada,
+      valida: !e.invalida && !e.aceptada && !e.cargando,
+      cargando: !!e.cargando,
+      enviando: !!e.enviando,
+      noEnviando: !e.enviando,
+      errAceptar: e.error || '',
       aceptada: !!e.aceptada,
       invalida: !!e.invalida,
       correo: e.correo || '',
