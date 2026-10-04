@@ -99,6 +99,8 @@ export function CompanyDetailPage() {
   const [rolePageSize, setRolePageSize] = useState(10);
   const [addOpen, setAddOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState("");
+  // Tocó «Agregar miembro» sin elegir a nadie: el campo queda en rojo hasta que elige (tablero Empresa).
+  const [missingMember, setMissingMember] = useState(false);
   const [roleIds, setRoleIds] = useState<string[]>([]);
   const [roleTarget, setRoleTarget] = useState<CompanyMemberResponse | null>(null);
   const [roleDraft, setRoleDraft] = useState<string[]>([]);
@@ -173,7 +175,7 @@ export function CompanyDetailPage() {
     staleAfterDialog.current = false;
     void invalidate();
   }
-  function closeAdd() { setAddOpen(false); setMutationError(undefined); afterDialog(); }
+  function closeAdd() { setAddOpen(false); setMutationError(undefined); setMissingMember(false); afterDialog(); }
   function closeRoles() { setRoleTarget(null); setMutationError(undefined); afterDialog(); }
   function closeEdit() { setEditOpen(false); setEditFailure(undefined); afterDialog(); }
 
@@ -185,7 +187,8 @@ export function CompanyDetailPage() {
 
   function submitAdd(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!selectedMemberId) return;
+    // «Criterio · Botones»: «Agregar miembro» no se apaga; sin usuario, el campo dice qué falta.
+    if (!selectedMemberId) { setMissingMember(true); return; }
     addMember.mutate({ memberId: selectedMemberId, roleIds }, {
       onSuccess: async () => { setAddOpen(false); setSelectedMemberId(""); setRoleIds([]); toast.success(t("companies:messages.memberAdded", { name: candidates.find((member) => member.memberId === selectedMemberId)?.displayName ?? "" })); await invalidate(); },
       onError: failDialog(setMutationError),
@@ -283,8 +286,8 @@ export function CompanyDetailPage() {
         <DialogHeader><DialogTitle>{t("companies:addMember.title")}</DialogTitle></DialogHeader>
         <form onSubmit={submitAdd} className="flex min-h-0 flex-col">
           <DialogBody>
-            <FormField label={t("companies:addMember.user")} required>
-              <Select value={selectedMemberId} onValueChange={(value) => setSelectedMemberId(value)} disabled={candidateQuery.isPending || existingMemberIds.isPending || candidates.length === 0}>
+            <FormField label={t("companies:addMember.user")} required error={missingMember ? t("companies:addMember.userRequired") : undefined}>
+              <Select value={selectedMemberId} onValueChange={(value) => { setSelectedMemberId(value); setMissingMember(false); }} disabled={candidateQuery.isPending || existingMemberIds.isPending || candidates.length === 0}>
                 <SelectTrigger className="w-full" aria-label={t("companies:addMember.user")}><SelectValue placeholder={candidateQuery.isPending || existingMemberIds.isPending ? t("common:states.loading") : t("companies:addMember.chooseUser")} /></SelectTrigger>
                 <SelectContent>{candidates.map((member) => <SelectItem key={member.memberId} value={member.memberId}>{member.displayName}{" · "}{member.email ?? t("companies:addMember.withoutEmail")}</SelectItem>)}</SelectContent>
               </Select>
@@ -299,7 +302,7 @@ export function CompanyDetailPage() {
           </DialogBody>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={closeAdd}>{t("common:actions.cancel")}</Button>
-            <Button type="submit" disabled={!selectedMemberId || addMember.isPending}>{addMember.isPending ? t("common:states.saving") : t("companies:actions.addMember")}</Button>
+            <Button type="submit" disabled={addMember.isPending}>{addMember.isPending ? t("common:states.saving") : t("companies:actions.addMember")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

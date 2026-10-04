@@ -132,7 +132,8 @@
   "addMember": {
     "title": "Add member",
     "user": "User",
-    "chooseUser": "Choose a person in the organization",
+    "chooseUser": "Choose a user in the organization",
+    "userRequired": "Choose a user.",
     "withoutEmail": "No email",
     "roles": "Company roles",
     "noRoles": "No roles"

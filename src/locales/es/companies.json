@@ -132,7 +132,8 @@
   "addMember": {
     "title": "Agregar miembro",
     "user": "Usuario",
-    "chooseUser": "Elegí una persona de la organización",
+    "chooseUser": "Elegí un usuario de la organización",
+    "userRequired": "Elegí un usuario.",
     "withoutEmail": "Sin correo",
     "roles": "Roles en la empresa",
     "noRoles": "Sin roles"

@@ -352,6 +352,43 @@ describe("CompanyDetailPage", () => {
     expect(screen.queryAllByRole("alert", { hidden: true })).toHaveLength(0);
   }, 10_000);
 
+  // «Criterio · Botones» y tablero Empresa (v104): «Agregar miembro» nunca se apaga; sin usuario, el campo queda en rojo
+  // con «Elegí un usuario.» y se limpia al elegir uno. Vacío, el campo dice «Elegí un usuario de la organización».
+  it("«Agregar miembro» sin usuario marca el campo con «Elegí un usuario.» y se limpia al elegir uno", async () => {
+    let posts = 0;
+    server.use(
+      http.get("/api/companies/company-1", () => HttpResponse.json(company)),
+      http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: 0, active: 0, pendingDeletion: 0, inactive: 0, invited: 0 })),
+      http.get("/api/roles/paged", () => HttpResponse.json({ items: [companyAdmin], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [{
+        memberId: "member-2", userId: "user-2", displayName: "Tomás Acosta", email: "tomas@example.com", state: "Active",
+        hasManagedEmail: false, roles: [], companies: [], invitationId: null, invitationIssuedAtUtc: null, invitationExpiresAtUtc: null,
+        version: 1, createdAtUtc: "2026-09-27T12:00:00Z",
+      }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.post("/api/companies/company-1/members", () => { posts += 1; return new HttpResponse(null, { status: 204 }); }),
+    );
+
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Agregar miembro" }));
+    const dialog = await screen.findByRole("dialog", { name: "Agregar miembro" });
+    const member = within(dialog).getByRole("combobox", { name: "Usuario" });
+    await waitFor(() => expect(member).toHaveTextContent("Elegí un usuario de la organización"));
+    const add = within(dialog).getByRole("button", { name: "Agregar miembro" });
+    expect(add).toBeEnabled();
+    await user.click(add);
+
+    expect(member).toHaveAttribute("aria-invalid", "true");
+    expect(member).toHaveAccessibleDescription("Elegí un usuario.");
+    expect(posts).toBe(0);
+
+    await user.click(member);
+    await user.click(await screen.findByRole("option", { name: /Tomás Acosta/ }));
+    expect(within(dialog).queryByText("Elegí un usuario.")).not.toBeInTheDocument();
+    expect(member).not.toHaveAttribute("aria-invalid");
+  }, 10_000);
+
   it("agrega una persona existente con encabezado idempotente", async () => {
     let requestBody: unknown;
     let idempotencyKey: string | null = null;
