@@ -30,6 +30,7 @@
     "searchCurrency": "Buscar moneda",
     "searchTimeZone": "Buscar zona horaria",
     "searchCulture": "Buscar cultura",
+    "noMatches": "Ninguna opción coincide.",
     "invalidDate": "Ingresá una fecha válida.",
     "invalidDateTime": "Ingresá una fecha y hora válidas.",
     "invalidTime": "Ingresá una hora válida.",

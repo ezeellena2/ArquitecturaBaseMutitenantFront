@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { http, HttpResponse } from "msw";
@@ -17,6 +18,8 @@ function renderSelect() {
   return render(<AppProviders><Harness /></AppProviders>);
 }
 
+const zone = (id: string, city: string, countryCodes: string[] = []) => ({ id, city, countryCodes, isEnabled: true, sortOrder: null });
+
 describe("TimeZoneSelect", () => {
   beforeEach(() => {
     queryClient.clear();
@@ -24,13 +27,14 @@ describe("TimeZoneSelect", () => {
   });
 
   it("ordena por SortOrder, offset actual y ciudad, con signo menos tipográfico", async () => {
+    const user = userEvent.setup();
     const fixture = referenceDataFixture();
     server.use(http.get("/api/reference-data", () => HttpResponse.json({
       ...fixture,
       timeZones: [
-        { id: "UTC", city: "UTC", countryCodes: [], isEnabled: true, sortOrder: null },
-        { id: "Etc/GMT+4", city: "Oeste", countryCodes: ["US", "CA"], isEnabled: true, sortOrder: null },
-        { id: "Etc/GMT-1", city: "Este", countryCodes: ["FR"], isEnabled: false, sortOrder: 0 },
+        zone("UTC", "UTC"),
+        zone("Etc/GMT+4", "Oeste", ["US", "CA"]),
+        { ...zone("Etc/GMT-1", "Este", ["FR"]), isEnabled: false, sortOrder: 0 },
         fixture.timeZones[0],
       ],
     })));
@@ -38,23 +42,35 @@ describe("TimeZoneSelect", () => {
 
     const select = await screen.findByRole("combobox", { name: "Zona horaria" });
     await waitFor(() => expect(select).toBeEnabled());
-    expect(Array.from((select as HTMLSelectElement).options, (option) => option.text)).toEqual([
-      "Elegí una zona", "Buenos Aires (GMT−3)", "Oeste (GMT−4)", "UTC (GMT+0)",
+    await user.click(select);
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
+      "Buenos Aires (GMT−3)", "Oeste (GMT−4)", "UTC (GMT+0)",
     ]);
     expect(screen.queryByRole("option", { name: /Este/ })).not.toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "Oeste (GMT−4)" })).toHaveAttribute("data-country-codes", "US,CA");
   });
 
-  it("busca ciudad e ID IANA y emite el ID sin guardar el offset", async () => {
-    server.use(http.get("/api/reference-data", () => HttpResponse.json(referenceDataFixture())));
+  it("con más de 10 zonas busca por ciudad, ID IANA o país y emite el ID sin el offset", async () => {
+    const user = userEvent.setup();
+    const fixture = referenceDataFixture();
+    const others = Array.from({ length: 10 }, (_, index) => zone(`Etc/GMT+${index + 1}`, `Ciudad ${index + 1}`));
+    server.use(http.get("/api/reference-data", () => HttpResponse.json({
+      ...fixture,
+      timeZones: [...fixture.timeZones, zone("America/Montevideo", "Montevideo", ["UY"]), ...others],
+    })));
     renderSelect();
 
     const select = await screen.findByRole("combobox", { name: "Zona horaria" });
     await waitFor(() => expect(select).toBeEnabled());
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "argentina/buenos" } });
-    expect(screen.getByRole("option", { name: "Buenos Aires (GMT−3)" })).toBeInTheDocument();
-    fireEvent.change(select, { target: { value: "America/Argentina/Buenos_Aires" } });
-    expect(screen.getByTestId("selected-zone")).toHaveTextContent("America/Argentina/Buenos_Aires");
+    await user.click(select);
+    const search = await screen.findByRole("searchbox", { name: "Buscar zona horaria" });
+    await user.type(search, "argentina/buenos");
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Buenos Aires (GMT−3)"]);
+    await user.clear(search);
+    await user.type(search, "uy");
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Montevideo (GMT−3)"]);
+    await user.keyboard("{Enter}");
+    expect(screen.getByTestId("selected-zone")).toHaveTextContent("America/Montevideo");
+    expect(select).toHaveTextContent("Montevideo (GMT−3)");
   });
 
   it("mantiene visible el estado de carga hasta que llega el catálogo", async () => {
@@ -71,24 +87,5 @@ describe("TimeZoneSelect", () => {
     await waitFor(() => expect(release).toBeDefined());
     release?.();
     await waitFor(() => expect(select).toBeEnabled());
-  });
-
-  it("conserva la zona elegida al buscar otra y nombra el buscador", async () => {
-    const fixture = referenceDataFixture();
-    server.use(http.get("/api/reference-data", () => HttpResponse.json({
-      ...fixture,
-      timeZones: [...fixture.timeZones, {
-        id: "UTC", city: "UTC", countryCodes: [], isEnabled: true, sortOrder: null,
-      }],
-    })));
-    renderSelect();
-
-    const select = await screen.findByRole("combobox", { name: "Zona horaria" });
-    await waitFor(() => expect(select).toBeEnabled());
-    fireEvent.change(select, { target: { value: "America/Argentina/Buenos_Aires" } });
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "utc" } });
-
-    expect((select as HTMLSelectElement).selectedOptions[0]).toHaveTextContent("Buenos Aires (GMT−3)");
-    expect(screen.getByRole("searchbox", { name: "Buscar zona horaria" })).toBeInTheDocument();
   });
 });

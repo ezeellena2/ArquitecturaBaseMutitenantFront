@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { http, HttpResponse } from "msw";
@@ -24,7 +25,8 @@ describe("CurrencySelect", () => {
     await configureI18n(referenceDataFixture().cultures);
   });
 
-  it("muestra solo monedas habilitadas, traducidas y ordenadas por SortOrder y nombre", async () => {
+  it("muestra solo monedas habilitadas, con su código y ordenadas por SortOrder y nombre", async () => {
+    const user = userEvent.setup();
     const fixture = referenceDataFixture();
     const peso = fixture.currencies[0];
     server.use(http.get("/api/reference-data", () => HttpResponse.json({
@@ -40,27 +42,36 @@ describe("CurrencySelect", () => {
 
     const select = await screen.findByRole("combobox", { name: "Moneda" });
     await waitFor(() => expect(select).toBeEnabled());
-    expect(Array.from((select as HTMLSelectElement).options, (option) => option.text)).toEqual([
-      "Elegí una moneda", "Peso argentino", "Euro", "Dólar",
+    await user.click(select);
+    // Tablero Configuración: «Peso argentino (ARS)».
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
+      "Peso argentino (ARS)", "Euro (EUR)", "Dólar (USD)",
     ]);
-    expect(screen.queryByRole("option", { name: "Peso chileno" })).not.toBeInTheDocument();
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "dolar" } });
-    expect(screen.getByRole("option", { name: "Dólar" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "Peso argentino" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("option", { name: "Dólar (USD)" }));
+    expect(screen.getByRole("status")).toHaveTextContent("USD");
+    expect(select).toHaveTextContent("Dólar (USD)");
   });
 
-  it("busca por nombre traducido o código y emite el código elegido", async () => {
-    const fixture = referenceDataFixture("en-US");
-    server.use(http.get("/api/reference-data", () => HttpResponse.json(fixture)));
+  it("con más de 10 monedas busca por nombre o código sin tildes", async () => {
+    const user = userEvent.setup();
+    const fixture = referenceDataFixture();
+    const peso = fixture.currencies[0];
+    const others = ["BRL", "CLP", "COP", "EUR", "GBP", "JPY", "MXN", "PEN", "PYG", "UYU"]
+      .map((code, index) => ({ ...peso, code, name: `Moneda ${index + 1}`, sortOrder: null }));
+    server.use(http.get("/api/reference-data", () => HttpResponse.json({
+      ...fixture,
+      currencies: [peso, { ...peso, code: "USD", name: "Dólar", sortOrder: null }, ...others],
+    })));
     renderSelect();
 
     const select = await screen.findByRole("combobox", { name: "Moneda" });
     await waitFor(() => expect(select).toBeEnabled());
-    expect(screen.getByRole("option", { name: "Argentine Peso" })).toBeInTheDocument();
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "ars" } });
-    expect(screen.getByRole("option", { name: "Argentine Peso" })).toBeInTheDocument();
-    fireEvent.change(select, { target: { value: "ARS" } });
-    expect(screen.getByRole("status")).toHaveTextContent("ARS");
+    await user.click(select);
+    await user.type(await screen.findByRole("searchbox", { name: "Buscar moneda" }), "dolar");
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Dólar (USD)"]);
+    await user.clear(screen.getByRole("searchbox", { name: "Buscar moneda" }));
+    await user.type(screen.getByRole("searchbox", { name: "Buscar moneda" }), "ars");
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Peso argentino (ARS)"]);
   });
 
   it("deja visible el estado de carga hasta recibir el catálogo", async () => {
@@ -76,23 +87,5 @@ describe("CurrencySelect", () => {
     await waitFor(() => expect(release).toBeDefined());
     release?.();
     await waitFor(() => expect(screen.getByRole("combobox", { name: "Moneda" })).toBeEnabled());
-  });
-
-  it("conserva la moneda elegida al filtrar otra y nombra el buscador", async () => {
-    const fixture = referenceDataFixture();
-    const peso = fixture.currencies[0];
-    server.use(http.get("/api/reference-data", () => HttpResponse.json({
-      ...fixture,
-      currencies: [peso, { ...peso, code: "EUR", name: "Euro" }],
-    })));
-    renderSelect();
-
-    const select = await screen.findByRole("combobox", { name: "Moneda" });
-    await waitFor(() => expect(select).toBeEnabled());
-    fireEvent.change(select, { target: { value: "ARS" } });
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "eur" } });
-
-    expect((select as HTMLSelectElement).selectedOptions[0]).toHaveTextContent("Peso argentino");
-    expect(screen.getByRole("searchbox", { name: "Buscar moneda" })).toBeInTheDocument();
   });
 });

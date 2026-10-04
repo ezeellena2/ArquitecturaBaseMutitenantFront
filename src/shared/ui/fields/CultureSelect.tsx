@@ -1,10 +1,8 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { culturePreview } from "@/shared/format/culturePreview";
 import { enabledOptions } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
-import { Input } from "../input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../select";
+import { SearchSelect } from "../SearchSelect";
 
 interface CultureSelectProps {
   value: string;
@@ -12,52 +10,23 @@ interface CultureSelectProps {
   placeholder: string;
   id?: string;
   disabled?: boolean;
-  variant?: "searchable" | "compact";
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
 }
 
-function searchable(text: string): string {
-  return text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
-}
-
-/** Los nombres y culturas disponibles vienen de Cultures, ya traducidos por la API. */
-export function CultureSelect({ value, onChange, placeholder, id, disabled, variant = "searchable", "aria-invalid": invalid,
+/** Los nombres y culturas disponibles vienen de Cultures, ya traducidos por la API. Cada opción muestra debajo
+ *  cómo se ven una fecha y un número (tablero «Criterio · Formularios»). */
+export function CultureSelect({ value, onChange, placeholder, id, disabled, "aria-invalid": invalid,
   "aria-describedby": describedBy }: CultureSelectProps) {
   const { t } = useTranslation();
   const { data, isPending, isError } = useReferenceData();
-  const [search, setSearch] = useState("");
-  const query = searchable(search.trim());
   const options = enabledOptions(data?.cultures ?? [])
-    .filter((row) => query === "" || searchable(`${row.name} ${row.code}`).includes(query))
     .sort((left, right) => (left.sortOrder ?? Number.MAX_SAFE_INTEGER) - (right.sortOrder ?? Number.MAX_SAFE_INTEGER)
-      || left.name.localeCompare(right.name, data?.culture));
-  const selected = data?.cultures.find((row) => row.code === value);
-  const unavailable = disabled || !data;
+      || left.name.localeCompare(right.name, data?.culture))
+    .map((row) => ({ value: row.code, label: row.name, description: culturePreview(data!, row.code), keywords: row.code }));
 
-  if (variant === "compact") return <Select value={value} onValueChange={onChange} disabled={unavailable}>
-    <SelectTrigger id={id} className="w-full" aria-busy={isPending} aria-invalid={invalid} aria-describedby={describedBy}>
-      <SelectValue placeholder={placeholder} />
-    </SelectTrigger>
-    <SelectContent position="popper" align="start" style={{ minWidth: 206, width: 206 }}>
-      {selected && !options.some((row) => row.code === value) ? <SelectItem value={selected.code} disabled>{selected.name}</SelectItem> : null}
-      {options.map((row) => <SelectItem key={row.code} value={row.code} className="text-[13px]" description={culturePreview(data!, row.code)}>{row.name}</SelectItem>)}
-    </SelectContent>
-  </Select>;
-
-  return (
-    <div className="flex flex-col gap-2">
-      <Input type="search" value={search} onChange={(event) => setSearch(event.target.value)}
-        aria-label={t("fields.searchCulture")} placeholder={t("fields.searchCulture")} disabled={unavailable} />
-      <select id={id} value={value} onChange={(event) => onChange(event.target.value)}
-        disabled={unavailable} aria-busy={isPending} aria-invalid={invalid} aria-describedby={describedBy}
-        className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-[13px] text-[var(--t1)] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50"
-      >
-        <option value="">{isPending ? t("states.loading") : isError ? t("states.error") : placeholder}</option>
-        {selected && !options.some((row) => row.code === value)
-          ? <option value={selected.code} hidden>{selected.name}</option> : null}
-        {options.map((row) => <option key={row.code} value={row.code}>{row.name}</option>)}
-      </select>
-    </div>
-  );
+  return <SearchSelect id={id} options={options} value={value} onChange={onChange}
+    placeholder={isPending ? t("states.loading") : isError ? t("states.error") : placeholder}
+    searchLabel={t("fields.searchCulture")} selectedLabel={data?.cultures.find((row) => row.code === value)?.name}
+    disabled={disabled || !data} busy={isPending} aria-invalid={invalid} aria-describedby={describedBy} />;
 }

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -19,6 +19,8 @@ function renderSelect(allowedCountries?: readonly string[]) {
   }
   return render(<QueryClientProvider client={client}><Harness /></QueryClientProvider>);
 }
+
+const optionNames = () => screen.getAllByRole("option").map((option) => option.querySelector("span > span")?.textContent);
 
 describe("CountrySelect", () => {
   beforeEach(async () => {
@@ -44,27 +46,36 @@ describe("CountrySelect", () => {
     await waitFor(() => expect(select).toBeEnabled());
     select.focus();
     await userEvent.setup().keyboard("{Enter}");
-    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
-      "Argentina (+54)", "Uruguay (+598)", "Estados Unidos",
-    ]);
+    expect(optionNames()).toEqual(["Argentina (+54)", "Uruguay (+598)", "Estados Unidos"]);
     expect(screen.queryByRole("option", { name: /Chile/ })).not.toBeInTheDocument();
   });
 
-  it("busca por nombre o prefijo, emite el código y muestra bandera y nombre accesible", async () => {
-    server.use(http.get("/api/reference-data", () => HttpResponse.json(referenceDataFixture())));
+  it("con más de 10 países busca por nombre o prefijo, emite el código y nombra el control", async () => {
+    const user = userEvent.setup();
+    const fixture = referenceDataFixture();
+    const argentina = fixture.countries[0];
+    const others = Array.from({ length: 10 }, (_, index) => ({ ...argentina, code: `X${index}`, name: `País ${index + 1}`, callingCode: `${700 + index}`, sortOrder: null }));
+    server.use(http.get("/api/reference-data", () => HttpResponse.json({
+      ...fixture,
+      countries: [argentina, { ...argentina, code: "UY", name: "Uruguay", callingCode: "598", sortOrder: null }, ...others],
+    })));
     renderSelect();
 
     const select = await screen.findByRole("combobox", { name: "País" });
     await waitFor(() => expect(select).toBeEnabled());
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "+54" } });
-    select.focus();
-    await userEvent.setup().keyboard("{Enter}");
-    expect(screen.getByRole("option", { name: /Argentina.*54/ })).toBeInTheDocument();
-    await waitFor(() => expect(document.querySelector("svg[role='img']")).toBeInTheDocument());
-    await userEvent.setup().keyboard("{ArrowDown}{Enter}");
-    expect(screen.getByRole("status")).toHaveTextContent("AR");
-    expect(screen.getByRole("combobox", { name: "País: Argentina, +54" })).toBeInTheDocument();
-    expect(document.querySelector("svg[role='img']")).not.toBeInTheDocument();
+    await user.click(select);
+    const search = await screen.findByRole("searchbox", { name: "Buscar país" });
+    await user.type(search, "+54");
+    expect(optionNames()).toEqual(["Argentina (+54)"]);
+    await user.clear(search);
+    await user.type(search, "uru");
+    expect(optionNames()).toEqual(["Uruguay (+598)"]);
+    await user.keyboard("{Enter}");
+
+    expect(screen.getByRole("status")).toHaveTextContent("UY");
+    expect(select).toHaveTextContent("Uruguay (+598)");
+    expect(screen.getByRole("combobox", { name: "País: Uruguay, +598" })).toBeInTheDocument();
+    expect(within(select).queryByRole("img")).not.toBeInTheDocument();
   });
 
   it("muestra carga cuando aún no llegaron los países", async () => {
@@ -96,27 +107,6 @@ describe("CountrySelect", () => {
     await waitFor(() => expect(select).toBeEnabled());
     select.focus();
     await userEvent.setup().keyboard("{Enter}");
-    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Uruguay (+598)"]);
-  });
-
-  it("conserva el país elegido al buscar otro y da nombre propio al buscador", async () => {
-    const fixture = referenceDataFixture();
-    const argentina = fixture.countries[0];
-    server.use(http.get("/api/reference-data", () => HttpResponse.json({
-      ...fixture,
-      countries: [argentina, { ...argentina, code: "UY", name: "Uruguay", callingCode: "598" }],
-    })));
-    renderSelect();
-
-    const select = await screen.findByRole("combobox", { name: "País" });
-    await waitFor(() => expect(select).toBeEnabled());
-    select.focus();
-    await userEvent.setup().keyboard("{Enter}{Home}{Enter}");
-    expect(screen.getByRole("status")).toHaveTextContent("AR");
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "uru" } });
-
-    expect(select).toHaveTextContent("Argentina (+54)");
-    expect(screen.getByRole("combobox", { name: "País: Argentina, +54" })).toBeInTheDocument();
-    expect(screen.getByRole("searchbox", { name: "Buscar país" })).toBeInTheDocument();
+    expect(optionNames()).toEqual(["Uruguay (+598)"]);
   });
 });

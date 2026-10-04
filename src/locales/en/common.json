@@ -30,6 +30,7 @@
     "searchCurrency": "Search currency",
     "searchTimeZone": "Search time zone",
     "searchCulture": "Search culture",
+    "noMatches": "No option matches.",
     "invalidDate": "Enter a valid date.",
     "invalidDateTime": "Enter a valid date and time.",
     "invalidTime": "Enter a valid time.",

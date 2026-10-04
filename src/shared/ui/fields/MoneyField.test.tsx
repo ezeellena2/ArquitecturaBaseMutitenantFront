@@ -43,7 +43,7 @@ describe("NumberField y MoneyField", () => {
       onValidityChange={onValidityChange} /></FormField></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Monto" });
     await waitFor(() => expect(input).toBeEnabled());
-    expect(screen.getByRole("combobox", { name: "Moneda" })).toHaveValue("ARS");
+    expect(screen.getByRole("combobox", { name: "Moneda" })).toHaveTextContent("(ARS)");
     fireEvent.change(input, { target: { value: "1.234,50" } });
     expect(onChange).toHaveBeenLastCalledWith({ amount: 1234.5, currency: "ARS" });
     fireEvent.change(input, { target: { value: "1.234,567" } });
@@ -75,7 +75,7 @@ describe("NumberField y MoneyField", () => {
     render(<AppProviders><FormField label="Monto"><MoneyField value={null} onChange={onChange} /></FormField></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Monto" });
     await waitFor(() => expect(input).toBeEnabled());
-    expect(screen.getByRole("combobox", { name: "Moneda" })).toHaveValue("CLP");
+    expect(screen.getByRole("combobox", { name: "Moneda" })).toHaveTextContent("(CLP)");
     fireEvent.change(input, { target: { value: "1.234" } });
     expect(onChange).toHaveBeenLastCalledWith({ amount: 1234, currency: "CLP" });
     fireEvent.change(input, { target: { value: "1.234,5" } });

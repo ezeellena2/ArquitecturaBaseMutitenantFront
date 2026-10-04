@@ -78,8 +78,8 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
           {/* Tablero Cuenta: nombre, idioma y zona en tres columnas iguales, al ancho de la tarjeta. */}
           <div className="grid grid-cols-1 items-start gap-4 px-4 py-4 lg:grid-cols-3 lg:px-5 lg:py-4">
             <div className="min-w-0"><FormField label={t("name")} error={form.formState.errors.displayName?.message}><Input {...form.register("displayName")} autoComplete="name" /></FormField></div>
-            <div className="min-w-0"><Controller control={form.control} name="culture" render={({ field }) => <FormField label={t("culture")} error={form.formState.errors.culture?.message}><CultureSelect value={field.value} onChange={field.onChange} variant="compact" placeholder={t("culture")} /></FormField>} /></div>
-            <div className="min-w-0"><Controller control={form.control} name="timeZoneId" render={({ field }) => <FormField label={t("timeZone")} error={form.formState.errors.timeZoneId?.message}><TimeZoneSelect value={field.value} onChange={field.onChange} variant="compact" placeholder={t("timeZone")} /></FormField>} /></div>
+            <div className="min-w-0"><Controller control={form.control} name="culture" render={({ field }) => <FormField label={t("culture")} error={form.formState.errors.culture?.message}><CultureSelect value={field.value} onChange={field.onChange} placeholder={t("culture")} /></FormField>} /></div>
+            <div className="min-w-0"><Controller control={form.control} name="timeZoneId" render={({ field }) => <FormField label={t("timeZone")} error={form.formState.errors.timeZoneId?.message}><TimeZoneSelect value={field.value} onChange={field.onChange} placeholder={t("timeZone")} /></FormField>} /></div>
           </div>
         </section>
       </form>

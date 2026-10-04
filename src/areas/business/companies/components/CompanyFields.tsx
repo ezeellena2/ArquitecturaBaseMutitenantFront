@@ -58,7 +58,7 @@ export function CompanyFields({ draft, onChange, taxIdValid }: {
     </div>
     <div className="grid gap-4 md:grid-cols-2">
       <FormField label={t("form.timeZone")}>
-        <TimeZoneSelect variant="compact" value={draft.timeZoneId} onChange={(timeZoneId) => onChange({ ...draft, timeZoneId })} placeholder={t("form.organizationTimeZone")} />
+        <TimeZoneSelect value={draft.timeZoneId} onChange={(timeZoneId) => onChange({ ...draft, timeZoneId })} placeholder={t("form.organizationTimeZone")} />
       </FormField>
     </div>
   </>;

@@ -51,7 +51,10 @@ describe("PhoneField", () => {
     expect(input).toHaveAttribute("type", "tel");
     expect(input).toHaveAttribute("autocomplete", "tel-national");
     expect(input).toHaveAccessibleDescription("Para avisos de la cuenta");
-    expect(screen.getByRole("combobox", { name: "País: Argentina, +54" })).toBeInTheDocument();
+    // Tablero Página pública: el país compacto, «AR +54», en una caja de 112 al lado del número.
+    const country = screen.getByRole("combobox", { name: "País: Argentina, +54" });
+    expect(country.textContent).toBe("AR +54");
+    expect(country.parentElement).toHaveClass("w-[112px]");
 
     fireEvent.change(input, { target: { value: "1123456789" } });
     expect(input).toHaveValue("11 2345-6789");

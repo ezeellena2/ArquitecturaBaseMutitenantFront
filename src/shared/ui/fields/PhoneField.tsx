@@ -49,9 +49,11 @@ export function PhoneField({ value, onChange, onValidityChange, allowedCountries
 
   return (
     <div className="flex gap-2">
-      <div className="min-w-36 shrink-0">
+      {/* Tablero Página pública: el país compacto, «AR +54», en una caja de 112; la lista muestra el nombre entero. */}
+      <div className="w-[112px] shrink-0">
         <CountrySelect value={country} onChange={changeCountry} allowedCountries={countries.map((item) => item.code)}
-          placeholder={t("phone.country", { country: "" })} disabled={unavailable} />
+          placeholder={t("phone.country", { country: "" })} disabled={unavailable}
+          renderValue={(selected) => selected.callingCode ? `${selected.code} +${selected.callingCode}` : selected.code} />
       </div>
       <Input id={id} name={name} type="tel" autoComplete="tel-national" inputMode="tel"
         value={value?.number ?? ""} onChange={(event) => changeNumber(event.target.value)}

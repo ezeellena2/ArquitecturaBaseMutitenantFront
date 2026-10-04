@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -10,35 +10,40 @@ import { server } from "@/test/mocks/server";
 import { FormField } from "../FormField";
 import { CultureSelect } from "./CultureSelect";
 
-function renderSelect(variant: "searchable" | "compact" = "searchable") {
+function renderSelect(initial = "") {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   function Harness() {
-    const [value, setValue] = useState("");
-    return <><FormField label="Cultura"><CultureSelect value={value} onChange={setValue} placeholder="Elegí una cultura" variant={variant} /></FormField><output>{value}</output></>;
+    const [value, setValue] = useState(initial);
+    return <><FormField label="Idioma y región"><CultureSelect value={value} onChange={setValue} placeholder="Elegí un idioma" /></FormField><output>{value}</output></>;
   }
   return render(<QueryClientProvider client={client}><Harness /></QueryClientProvider>);
 }
 
 describe("CultureSelect", () => {
-  it("ilustra fecha y número de cada cultura en el selector de cuenta", async () => {
-    const user = userEvent.setup();
-    renderSelect("compact");
-    const select = await screen.findByRole("combobox", { name: "Cultura" });
-    await waitFor(() => expect(select).toBeEnabled());
-    await user.click(select);
-    expect(await screen.findByText("27/09/2026 14:35 · 1.234,50")).toBeVisible();
-    expect(screen.getByText("09/27/2026 2:35 PM · 1,234.50")).toBeVisible();
-    await user.click(screen.getByRole("option", { name: /Inglés \(Estados Unidos\)/ }));
-    expect(screen.getByRole("status")).toHaveTextContent("en-US");
-    expect(select).toHaveTextContent("Inglés (Estados Unidos)");
-    expect(select).not.toHaveTextContent("1,234.50");
-  });
   beforeEach(async () => {
     localStorage.clear();
     await configureI18n(referenceDataFixture().cultures);
   });
 
+  it("un solo desplegable que ilustra fecha y número de cada idioma y región", async () => {
+    const user = userEvent.setup();
+    renderSelect();
+    const select = await screen.findByRole("combobox", { name: "Idioma y región" });
+    await waitFor(() => expect(select).toBeEnabled());
+    // Tablero «Criterio · Formularios»: un solo control por dato; con dos opciones, sin buscador.
+    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+    await user.click(select);
+    expect(await screen.findByText("27/09/2026 14:35 · 1.234,50")).toBeVisible();
+    expect(screen.getByText("09/27/2026 2:35 PM · 1,234.50")).toBeVisible();
+    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("option", { name: /Inglés \(Estados Unidos\)/ }));
+    expect(screen.getByRole("status")).toHaveTextContent("en-US");
+    expect(select).toHaveTextContent("Inglés (Estados Unidos)");
+    expect(select).not.toHaveTextContent("1,234.50");
+  });
+
   it("muestra nombres traducidos desde Cultures y omite culturas deshabilitadas", async () => {
+    const user = userEvent.setup();
     const fixture = referenceDataFixture("en-US");
     const culture = fixture.cultures[0];
     server.use(http.get("/api/reference-data", () => HttpResponse.json({
@@ -47,37 +52,26 @@ describe("CultureSelect", () => {
     })));
     renderSelect();
 
-    const select = await screen.findByRole("combobox", { name: "Cultura" });
+    const select = await screen.findByRole("combobox", { name: "Idioma y región" });
     await waitFor(() => expect(select).toBeEnabled());
-    expect(Array.from((select as HTMLSelectElement).options, (option) => option.text)).toEqual([
-      "Elegí una cultura", "Spanish (Argentina)", "English (United States)",
-    ]);
-    expect(screen.queryByRole("option", { name: "Portuguese (Brazil)" })).not.toBeInTheDocument();
+    expect(select).toHaveTextContent("Elegí un idioma");
+    await user.click(select);
+    expect(screen.getAllByRole("option")).toHaveLength(2);
+    expect(screen.getByRole("option", { name: /^Spanish \(Argentina\)/ })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /^English \(United States\)/ })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: /Portuguese/ })).not.toBeInTheDocument();
   });
 
-  it("filtra por nombre o código y devuelve el código de la opción", async () => {
-    server.use(http.get("/api/reference-data", () => HttpResponse.json(referenceDataFixture())));
-    renderSelect();
+  it("muestra el nombre de una cultura elegida aunque ya no esté habilitada", async () => {
+    const fixture = referenceDataFixture();
+    const culture = fixture.cultures[0];
+    server.use(http.get("/api/reference-data", () => HttpResponse.json({
+      ...fixture,
+      cultures: [...fixture.cultures, { ...culture, code: "pt-BR", name: "Portugués (Brasil)", isEnabled: false }],
+    })));
+    renderSelect("pt-BR");
 
-    const select = await screen.findByRole("combobox", { name: "Cultura" });
-    await waitFor(() => expect(select).toBeEnabled());
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "en-us" } });
-    expect(screen.getByRole("option", { name: "Inglés (Estados Unidos)" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "Español (Argentina)" })).not.toBeInTheDocument();
-    fireEvent.change(select, { target: { value: "en-US" } });
-    expect(screen.getByRole("status")).toHaveTextContent("en-US");
-  });
-
-  it("conserva la cultura elegida al filtrar otra y nombra el buscador", async () => {
-    server.use(http.get("/api/reference-data", () => HttpResponse.json(referenceDataFixture())));
-    renderSelect();
-
-    const select = await screen.findByRole("combobox", { name: "Cultura" });
-    await waitFor(() => expect(select).toBeEnabled());
-    fireEvent.change(select, { target: { value: "es-AR" } });
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "en-us" } });
-
-    expect((select as HTMLSelectElement).selectedOptions[0]).toHaveTextContent("Español (Argentina)");
-    expect(screen.getByRole("searchbox", { name: "Buscar cultura" })).toBeInTheDocument();
+    const select = await screen.findByRole("combobox", { name: "Idioma y región" });
+    await waitFor(() => expect(select).toHaveTextContent("Portugués (Brasil)"));
   });
 });
