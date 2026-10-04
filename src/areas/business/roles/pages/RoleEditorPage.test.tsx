@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -266,8 +266,7 @@ describe("RoleEditorPage", () => {
 
     expect(await screen.findByRole("heading", { name: "No pudimos abrir esta pantalla" })).toBeVisible();
     fail = false;
-    // El aviso de red de otra prueba puede seguir abajo con su propio «Reintentar»: el de la pantalla va en el cuerpo.
-    await user.click(within(screen.getByRole("main")).getByRole("button", { name: "Reintentar" }));
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
     expect(await screen.findByRole("textbox", { name: "Nombre" })).toHaveValue("Solo lectura");
   });
 
