@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Globe, Plus, SlidersHorizontal, Trash2 } from "lucide-react";
+import { Globe, SlidersHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -18,7 +18,7 @@ import { TimeZoneSelect } from "@/shared/ui/fields/TimeZoneSelect";
 import { Input } from "@/shared/ui/input";
 import { Page } from "@/shared/ui/Page";
 import { RowActions } from "@/shared/ui/RowActions";
-import { Surface } from "@/shared/ui/Surface";
+import { Section } from "@/shared/ui/Section";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { List, ListItem } from "@/shared/ui/List";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
@@ -111,13 +111,12 @@ export function SettingsPage() {
         <Button type="button" disabled={!isDirty || save.isPending} onClick={() => save.mutate({ ...draft, version: settings.data!.version })}>{t("settings:save")}</Button>
       </> : undefined}
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 max-md:gap-3.5">
         {showGeneralError ? <FormError message={showGeneralError} /> : null}
         {failure && !(failure instanceof ApiError && failure.code === "General.ConcurrencyConflict") ? <FormError message={saveError?.detail ?? t("common:states.error")} /> : null}
-        <Surface className="overflow-hidden">
-          <section aria-labelledby="settings-data-title">
-          <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2 id="settings-data-title">{t("settings:dataTitle")}</h2></header>
-          {settings.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft ? <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5">
+        {/* Tablero M-Configuracion: en el teléfono los datos van sueltos sobre blanco, sin título a la vista. */}
+        <Section title={t("settings:dataTitle")} phone="untitled">
+          {settings.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft ? <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5 max-md:gap-3.5 max-md:p-0">
             {/* Tablero «Criterio · Formularios»: sin permiso para cambiar, los datos se leen como texto, sin campos grises. */}
             {canManage ? <>
               <FormField label={t("settings:fields.name")} required><Input value={draft.name} maxLength={120} onChange={(event) => setDraftState({ ...draft, name: event.target.value })} /></FormField>
@@ -131,24 +130,23 @@ export function SettingsPage() {
               <ReadOnlyField label={t("settings:fields.currency")}><CurrencyText value={draft.defaultCurrency} /></ReadOnlyField>
             </>}
           </div> : null}
-          </section>
-        </Surface>
+        </Section>
 
-        <Surface className="overflow-hidden">
-          <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]">
-            <h2>{t("settings:domains.title")}</h2>
-            {canManage ? <Button type="button" variant="outline" size="sm" onClick={() => setDomainDialogOpen(true)}><Plus aria-hidden="true" className="size-4" />{t("settings:domains.add")}</Button> : null}
-          </header>
+        <Section title={t("settings:domains.title")} phone="inset" action={canManage ? { label: t("settings:domains.add"), onClick: () => setDomainDialogOpen(true) } : undefined}>
           {domains.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
             : activeDomains.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)]">{t("settings:domains.empty")}</p>
               : <List label={t("settings:domains.title")}>{activeDomains.map((domain) => <ListItem key={domain.id} icon={<Globe aria-hidden="true" />} title={domain.domain}
-                detail={t(`settings:domains.status.${domain.status}`)}>
+                detail={<span className="inline-flex items-center gap-1.5">
+                  {/* Tablero M-Configuracion: en el teléfono el estado lleva su punto. */}
+                  <span aria-hidden="true" className={`hidden size-[7px] shrink-0 rounded-full max-md:inline-block ${domain.status === "Verified" ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-alerta)]"}`} />
+                  {t(`settings:domains.status.${domain.status}`)}
+                </span>}>
                 {domain.status === "Pending" && canManage && domain.txtRecordValue ? <Button type="button" variant="outline" size="sm" onClick={() => openVerify(domain)}>{t("settings:domains.verify")}</Button> : null}
                 {canManage ? <RowActions label={t("settings:domains.actions", { domain: domain.domain })} actions={[
                   { label: t("settings:domains.remove"), accessibleName: t("settings:domains.remove"), icon: Trash2, destructive: true, onSelect: () => setDomainToRemove(domain) },
                 ]} /> : null}
               </ListItem>)}</List>}
-        </Surface>
+        </Section>
       </div>
     </Page>
 

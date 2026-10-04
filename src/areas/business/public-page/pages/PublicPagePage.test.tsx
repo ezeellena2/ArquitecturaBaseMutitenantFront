@@ -7,6 +7,7 @@ import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { asPhone } from "@/test/utils/phone";
 
 const page = {
   slug: "grupo-delta", name: "Grupo Delta", description: "Servicios del grupo", logoDataUri: null,
@@ -32,6 +33,29 @@ beforeEach(async () => {
 });
 
 describe("PublicPagePage (tablero Pagina-Org)", () => {
+  // Tablero M-Pagina-Org: en el teléfono, grupos con el título gris y tarjetas blancas sobre gris; «Ver página» en
+  // texto en la barra, el estado debajo del título y «Descartar cambios» y «Guardar cambios» fijos abajo.
+  it("en el teléfono son grupos sobre gris, con «Ver página» en la barra", async () => {
+    const restore = asPhone();
+    try {
+      api(page);
+      renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+
+      await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" });
+      const bar = screen.getByRole("heading", { level: 1, name: "Página pública" }).closest("header")!;
+      expect(bar).toHaveTextContent("Publicada");
+      expect(within(bar).getByRole("link", { name: "Ver página" })).toHaveClass("text-[15.5px]", "text-[var(--marca-tx)]");
+      expect(screen.getByRole("heading", { level: 2, name: "Publicación" })).toHaveClass("text-[13.5px]");
+      expect(screen.getByRole("switch")).toHaveClass("max-md:data-[size=default]:w-[50px]");
+      const fixed = screen.getByRole("button", { name: "Guardar cambios" }).parentElement!;
+      expect(fixed).toHaveAttribute("data-slot", "fixed-actions");
+      expect(within(fixed).getByRole("button", { name: "Descartar cambios" })).toBeVisible();
+      expect(within(fixed).queryByRole("link", { name: "Ver página" })).not.toBeInTheDocument();
+    } finally {
+      restore();
+    }
+  });
+
   it("publicada: el interruptor de «Publicación» está prendido y apagarlo pide confirmación", async () => {
     const user = userEvent.setup();
     const calls: string[] = [];

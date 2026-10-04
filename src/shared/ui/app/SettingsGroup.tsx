@@ -32,7 +32,7 @@ export function SettingsItem({ title, detail, leading, to, onClick, trailing, to
 }) {
   const content = <>
     {leading}
-    <span className="flex min-w-0 flex-1 flex-col gap-px">
+    <span className="flex min-w-0 flex-1 flex-col gap-px leading-tight">
       <span className={cn("truncate text-[15.5px] font-medium", tone === "danger" && "text-[var(--peligro)]")}>{title}</span>
       {detail ? <span className="truncate text-[13px] text-[var(--t3)]">{detail}</span> : null}
     </span>

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
-import { Building2, Plus, Settings2, Trash2, UserRound } from "lucide-react";
-import { useId, useState, type ReactNode } from "react";
+import { Building2, Settings2, Trash2, UserRound } from "lucide-react";
+import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -18,11 +18,14 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Page } from "@/shared/ui/Page";
-import { Surface } from "@/shared/ui/Surface";
+import { Section } from "@/shared/ui/Section";
+import { useAppChrome } from "@/shared/ui/app/AppChrome";
+import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { DateText } from "@/shared/ui/format/DateText";
 import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
+import { ChoiceSheet, CheckRow, RadioRow } from "../components/AccessSheets";
 import { RolesField } from "../components/RolesField";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { List, ListItem } from "@/shared/ui/List";
@@ -64,16 +67,6 @@ function Separator() {
   return <span aria-hidden="true">{" · "}</span>;
 }
 
-function AccessBox({ title, children }: { title: string; children: ReactNode }) {
-  const id = useId();
-  return <Surface className="overflow-hidden">
-    <section aria-labelledby={id}>
-      <header className="flex min-h-10 items-center border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2 id={id}>{title}</h2></header>
-      {children}
-    </section>
-  </Surface>;
-}
-
 export function UserDetailPage() {
   const { t } = useTranslation(["users", "common"]);
   const { memberId = "" } = useParams();
@@ -84,7 +77,8 @@ export function UserDetailPage() {
   const organizationName = currentUser?.organizations.find((organization) => organization.id === currentUser.activeTenantId)?.name ?? "";
   const client = useQueryClient();
   const navigate = useNavigate();
-  const companiesTitleId = useId();
+  const { phone } = useAppChrome();
+  const [sheet, setSheet] = useState<"state" | "roles" | null>(null);
   const user = useQuery({ queryKey: userQueryKey(memberId), queryFn: () => fetchUser(memberId), enabled: canRead && Boolean(memberId), meta: { silent: true } });
   useBreadcrumbLeaf(user.data ? user.data.displayName || user.data.email || undefined : undefined);
   const [draft, setDraft] = useState<AccessDraft | null>(null);
@@ -198,6 +192,10 @@ export function UserDetailPage() {
     revoke: { title: t("users:detail.confirm.revokeTitle", { email: member.email ?? "" }), description: t("users:detail.confirm.revokeDescription"), label: t("users:detail.confirm.revokeConfirm"), run: () => { if (member.invitationId) revoke.mutate(member.invitationId); } },
   };
   const confirmation = confirmAction ? confirmations[confirmAction] : null;
+  const stateLabel = <span className="inline-flex items-center gap-1.5"><span aria-hidden="true" className={`size-[7px] shrink-0 rounded-full ${stateDot[shownState]}`} />{t(`users:states.${shownState}`)}</span>;
+  const roleNames = current.roleIds.map((id) => orgRoles.find((role) => role.id === id)?.name ?? member.roles.find((role) => role.id === id)?.name)
+    .filter(Boolean).join(", ");
+  const orgRoleValues = orgRoles.map((role) => role.id);
 
   const detail = isInvitation
     ? <Trans ns="users" i18nKey={member.state === "Expired" ? "detail.expiredOn" : "detail.expiresOn"} components={{ date: <DateText value={member.invitationExpiresAtUtc} kind="date" /> }} />
@@ -211,6 +209,7 @@ export function UserDetailPage() {
 
   return <>
     <Page banner={<ConcurrencyBanner error={saveError} isDirty={isDirty || companyDialog !== null} onSeeNew={() => { void user.refetch().then(() => { setDraft(null); setCompanyDialog(null); setFailure(undefined); }); }} onContinueEditing={() => setFailure(undefined)} />} icon={UserRound} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
+      phoneSubtitle={member.email ?? undefined} phoneBody="gray"
       moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [
         { label: t("users:actions.resend"), onSelect: resendInvitation, hidden: !isInvitation || !canInvite || !member.invitationId },
         { label: t("users:actions.revoke"), onSelect: () => setConfirmAction("revoke"), destructive: true, hidden: !isInvitation || !member.invitationId },
@@ -225,12 +224,16 @@ export function UserDetailPage() {
             {save.isPending ? t("common:states.saving") : t("users:detail.save")}
           </Button>
         </> : undefined}>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 max-md:gap-0">
         {failure && !(failure instanceof ApiError && failure.code === "General.ConcurrencyConflict") ? <FormError message={failureMessage(failure, t("common:states.error"))} /> : null}
         {pendingDeletion ? <Banner tone="warning"><Trans ns="users" i18nKey="detail.deletionScheduled" components={{ date: <DateText value={member.deletionScheduledForUtc} kind="date" /> }} /></Banner> : null}
 
-        <AccessBox title={t("users:detail.accessTitle")}>
-          <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5">
+        <Section title={t("users:detail.accessTitle")}>
+          {/* Tablero M-Usuario: en el teléfono, filas con › que abren una hoja para elegir. */}
+          {phone ? <ul className="m-0 list-none p-0">
+            <SettingsItem title={t("users:detail.status")} detail={stateLabel} onClick={editable && isMember ? () => setSheet("state") : undefined} />
+            <SettingsItem title={t("users:detail.organizationRoles")} detail={roleNames || t("users:detail.noRoles")} onClick={editable ? () => setSheet("roles") : undefined} />
+          </ul> : <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5">
             {editable && isMember ? <FormField label={t("users:detail.status")}>
               <Select value={current.isActive ? "Active" : "Inactive"} onValueChange={(value) => changeDraft({ isActive: value === "Active" })}>
                 <SelectTrigger className="w-full" aria-label={t("users:detail.status")}><SelectValue /></SelectTrigger>
@@ -244,16 +247,12 @@ export function UserDetailPage() {
               options={orgRoles.map((role) => ({ value: role.id, label: role.name }))} value={current.roleIds}
               onChange={(roleIds) => changeDraft({ roleIds })} placeholder={t("users:detail.noRoles")} />
               : <ReadOnlyField label={t("users:detail.organizationRoles")}>{member.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || t("users:detail.noRoles")}</ReadOnlyField>}
-          </div>
-        </AccessBox>
+          </div>}
+        </Section>
 
-        <Surface className="overflow-hidden">
-          <section aria-labelledby={companiesTitleId}>
-            <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]">
-              <h2 id={companiesTitleId}>{t("users:detail.companyAccess")}</h2>
-              {editable ? <Button type="button" size="sm" variant="outline" disabled={!companies.data || activeCompanies.every((company) => assignedCompanyIds.has(company.id)) || save.isPending}
-                onClick={() => { setCompanyDialog({ mode: "add", companyId: "", roleIds: [] }); setFailure(undefined); }}><Plus aria-hidden="true" className="size-4" />{t("users:detail.addCompany")}</Button> : null}
-            </header>
+        <Section title={t("users:detail.companyAccess")} action={editable ? { label: t("users:detail.addCompany"),
+          disabled: !companies.data || activeCompanies.every((company) => assignedCompanyIds.has(company.id)) || save.isPending,
+          onClick: () => { setCompanyDialog({ mode: "add", companyId: "", roleIds: [] }); setFailure(undefined); } } : undefined}>
             {member.companies.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)] md:px-5">{t("users:detail.noCompanies")}</p> : <List label={t("users:detail.companyAccess")}>
               {member.companies.map((company) => {
                 const preserved = preservedCompanyIds.has(company.companyId);
@@ -269,10 +268,20 @@ export function UserDetailPage() {
                 </ListItem>;
               })}
             </List>}
-          </section>
-        </Surface>
+        </Section>
       </div>
     </Page>
+    <ChoiceSheet open={sheet === "state"} onOpenChange={(open) => { if (!open) setSheet(null); }} title={t("users:detail.status")}>
+      {(["Active", "Inactive"] as const).map((value) => <RadioRow key={value} name="user-state" label={t(`users:states.${value}`)}
+        description={t(value === "Active" ? "users:detail.statusActiveDescription" : "users:detail.statusInactiveDescription")}
+        checked={current.isActive === (value === "Active")} onChoose={() => { changeDraft({ isActive: value === "Active" }); setSheet(null); }} />)}
+    </ChoiceSheet>
+    <ChoiceSheet open={sheet === "roles"} onOpenChange={(open) => { if (!open) setSheet(null); }} title={t("users:detail.organizationRoles")}>
+      <CheckRow label={t("users:detail.allRoles")} checked={orgRoleValues.length > 0 && orgRoleValues.every((id) => current.roleIds.includes(id))}
+        onCheckedChange={(checked) => changeDraft({ roleIds: checked ? [...new Set([...current.roleIds, ...orgRoleValues])] : current.roleIds.filter((id) => !orgRoleValues.includes(id)) })} />
+      {orgRoles.map((role) => <CheckRow key={role.id} label={role.name} checked={current.roleIds.includes(role.id)}
+        onCheckedChange={(checked) => changeDraft({ roleIds: checked ? [...current.roleIds, role.id] : current.roleIds.filter((id) => id !== role.id) })} />)}
+    </ChoiceSheet>
     <Dialog open={companyDialog !== null} onOpenChange={(open) => { if (!open && !save.isPending) setCompanyDialog(null); }}>
       <DialogContent className="md:max-w-[480px]">
         <DialogHeader><DialogTitle>{companyDialog?.mode === "add" ? t("users:detail.addCompanyTitle") : t("users:detail.changeCompanyRolesTitle", { name: companyName(companyDialog?.companyId ?? "") })}</DialogTitle></DialogHeader>

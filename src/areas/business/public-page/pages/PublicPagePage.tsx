@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Globe } from "lucide-react";
-import { useId, useState, type ReactNode } from "react";
+import { useId, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
@@ -18,7 +18,7 @@ import { Input } from "@/shared/ui/input";
 import { phoneDraftFromE164 } from "@/shared/phone/phoneInput";
 import { PhoneField, type PhoneDraft } from "@/shared/ui/fields/PhoneField";
 import { Page } from "@/shared/ui/Page";
-import { Surface } from "@/shared/ui/Surface";
+import { Section } from "@/shared/ui/Section";
 import { Switch } from "@/shared/ui/switch";
 import { Textarea } from "@/shared/ui/textarea";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
@@ -82,16 +82,6 @@ function isConcurrencyConflict(error: unknown): boolean {
 function slugStateText(state: TenantSlugAvailability | undefined, t: (key: string) => string): string | undefined {
   if (!state) return undefined;
   return t(`publicPage:slug.${state}`);
-}
-
-function Box({ title, action, children }: { title: string; action?: ReactNode; children: ReactNode }) {
-  const id = useId();
-  return <Surface className="overflow-hidden">
-    <section aria-labelledby={id}>
-      <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]"><h2 id={id}>{title}</h2>{action}</header>
-      {children}
-    </section>
-  </Surface>;
 }
 
 export function PublicPagePage() {
@@ -164,73 +154,78 @@ export function PublicPagePage() {
 
   const stateDot = blocked ? "bg-[var(--peligro)]" : pageData?.isPublished ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-apagado)]";
   const stateText = t(blocked ? "publicPage:states.blocked" : pageData?.isPublished ? "publicPage:states.published" : "publicPage:states.draft");
+  const state = pageData ? <span className={`inline-flex items-center gap-1.5 ${blocked ? "text-[var(--peligro)]" : "text-[var(--t1)] max-md:text-[var(--t3)]"}`}>
+    <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${stateDot}`} />{stateText}
+  </span> : undefined;
+  // Tablero M-Pagina-Org: los campos van adentro de la tarjeta blanca, uno debajo del otro.
+  const fieldsClass = "grid gap-4 p-4 md:grid-cols-2 md:p-5 max-md:gap-3.5 max-md:px-4 max-md:py-3.5";
 
   return <>
     <Page
       icon={Globe}
       title={t("publicPage:title")}
       banner={<ConcurrencyBanner error={update.error} isDirty={isDirty} onSeeNew={() => { setDraftState(null); update.reset(); void page.refetch(); }} onContinueEditing={() => update.reset()} />}
-      summary={pageData ? <span className={`inline-flex items-center gap-1.5 ${blocked ? "text-[var(--peligro)]" : "text-[var(--t1)]"}`}>
-        <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${stateDot}`} />{stateText}
-      </span> : undefined}
+      summary={state}
+      phoneSubtitle={state}
+      phoneBody="gray"
+      barAction={pageData?.isPublished && pageData.slug
+        ? { label: t("publicPage:view"), href: publicUrl(pageData.slug) }
+        : { label: t("publicPage:preview"), onClick: () => setPreviewOpen(true) }}
       actions={<>
-        {pageData?.isPublished && pageData.slug
-          ? <Button type="button" variant="outline" asChild><a href={publicUrl(pageData.slug)} target="_blank" rel="noreferrer">{t("publicPage:view")}</a></Button>
-          : <Button type="button" variant="outline" onClick={() => setPreviewOpen(true)}>{t("publicPage:preview")}</Button>}
         <Button type="button" variant="outline" onClick={() => setDraftState(null)}>{t("publicPage:discard")}</Button>
         <Button type="button" disabled={!canSave || update.isPending} onClick={saveChanges}>{update.isPending ? t("common:states.saving") : t("publicPage:save")}</Button>
       </>}
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 max-md:gap-0">
         {page.error ? <FormError message={page.error instanceof ApiError ? page.error.detail ?? t("common:states.error") : t("common:states.error")} /> : null}
         {page.isPending ? <p role="status" className="text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft && pageData ? <>
-          <Box title={t("publicPage:publicationTitle")}>
-            <div className="flex items-center gap-3 px-4 py-3 md:px-5">
-              <Globe aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)]" />
-              <span id={visibleId} className="min-w-0 truncate text-[13px] text-[var(--t1)]">{t("publicPage:visibleAt", { host: `${savedSlug}${PUBLIC_DOMAIN}` })}</span>
+          <Section title={t("publicPage:publicationTitle")}>
+            <div className="flex items-center gap-3 px-4 py-3 md:px-5 max-md:min-h-14 max-md:py-2 max-md:pr-3.5">
+              <Globe aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)] max-md:hidden" />
+              <span id={visibleId} className="min-w-0 truncate text-[13px] text-[var(--t1)] max-md:text-[15.5px] max-md:font-medium">{t("publicPage:visibleAt", { host: `${savedSlug}${PUBLIC_DOMAIN}` })}</span>
               {blocked ? <InfoButton label={t("publicPage:blockedInfo")} onClick={() => setBlockedInfoOpen(true)} /> : null}
               <Switch className="ml-auto" aria-labelledby={visibleId} checked={pageData.isPublished} disabled={blocked || !savedSlug || publication.isPending}
                 onCheckedChange={(checked) => { if (checked) publication.mutate(true); else setUnpublishOpen(true); }} />
             </div>
-          </Box>
+          </Section>
 
-          <Box title={t("publicPage:pageTitle")}>
-            <div className="flex items-center gap-3 border-b border-[var(--borde)] px-4 py-2.5 md:px-5">
-              {draft.logoDataUri ? <img src={draft.logoDataUri} alt={t("publicPage:logoAlt")} className="size-9 rounded-[9px] object-contain" />
-                : <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-[9px] bg-[var(--marca-t)] text-[12px] font-semibold text-[var(--marca-tx)]">{initials(draft.name)}</span>}
-              <span className="text-[13px] text-[var(--t1)]">{t("publicPage:logoTitle")}</span>
-              <span className="ml-auto flex items-center gap-2">
-                {draft.logoDataUri ? <Button type="button" variant="outline" size="sm" onClick={() => setDraftState({ ...draft, logoDataUri: null, uploadedLogoBase64: null, logoContentType: null, removeLogo: true })}>{t("publicPage:removeLogo")}</Button> : null}
-                <label className="inline-flex h-7 cursor-pointer items-center rounded-[7px] border border-[var(--borde2)] bg-[var(--lado-activo)] px-2.5 text-[12.5px] font-medium text-[var(--t1)] hover:bg-[var(--s2)] lg:h-8 lg:rounded-[8px] lg:px-3 lg:text-[13px]">
+          <Section title={t("publicPage:pageTitle")}>
+            <div className="flex items-center gap-3 border-b border-[var(--borde)] px-4 py-2.5 md:px-5 max-md:gap-3.5 max-md:border-0 max-md:px-4 max-md:pt-3.5 max-md:pb-0">
+              {draft.logoDataUri ? <img src={draft.logoDataUri} alt={t("publicPage:logoAlt")} className="size-9 rounded-[9px] object-contain max-md:size-14 max-md:rounded-[14px]" />
+                : <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-[9px] bg-[var(--marca-t)] text-[12px] font-semibold text-[var(--marca-tx)] max-md:size-14 max-md:rounded-[14px] max-md:bg-[var(--marca)] max-md:text-[18px] max-md:font-bold max-md:text-[var(--lado-activo)]">{initials(draft.name)}</span>}
+              <span className="text-[13px] text-[var(--t1)] max-md:sr-only">{t("publicPage:logoTitle")}</span>
+              <span className="ml-auto flex items-center gap-2 max-md:ml-0">
+                {draft.logoDataUri ? <Button type="button" variant="outline" size="sm" className="max-md:h-10 max-md:rounded-[10px] max-md:px-3.5 max-md:text-[14px]" onClick={() => setDraftState({ ...draft, logoDataUri: null, uploadedLogoBase64: null, logoContentType: null, removeLogo: true })}>{t("publicPage:removeLogo")}</Button> : null}
+                <label className="inline-flex h-7 cursor-pointer items-center rounded-[7px] border border-[var(--borde2)] bg-[var(--lado-activo)] px-2.5 text-[12.5px] font-medium text-[var(--t1)] hover:bg-[var(--s2)] lg:h-8 lg:rounded-[8px] lg:px-3 lg:text-[13px] max-md:h-10 max-md:rounded-[10px] max-md:px-3.5 max-md:text-[14px] max-md:font-semibold">
                   {t("publicPage:uploadLogo")}
                   <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => { void chooseLogo(event.target.files?.[0]); }} />
                 </label>
               </span>
             </div>
-            <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5">
+            <div className={fieldsClass}>
               <div className="flex flex-col gap-1.5">
                 {/* El sufijo va sobre el borde derecho del campo: FormField ata el rótulo a su único hijo, el Input. */}
                 <div className="relative">
                   <FormField label={t("publicPage:fields.slug")} required>
-                    <Input value={draft.slug} maxLength={63} autoComplete="off" className="pr-[124px]" onChange={(event) => setDraftState({ ...draft, slug: event.target.value.toLowerCase() })} />
+                    <Input value={draft.slug} maxLength={63} autoComplete="off" className="pr-[124px] max-md:pr-[140px]" onChange={(event) => setDraftState({ ...draft, slug: event.target.value.toLowerCase() })} />
                   </FormField>
-                  <span aria-hidden="true" className="absolute bottom-px right-px flex h-[32px] items-center rounded-r-[7px] border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[13px] text-[var(--t2)] lg:h-[34px]">{PUBLIC_DOMAIN}</span>
+                  <span aria-hidden="true" className="absolute bottom-px right-px flex h-[32px] items-center rounded-r-[7px] border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[13px] text-[var(--t2)] lg:h-[34px] max-md:h-[46px] max-md:rounded-r-[11px] max-md:border-[var(--borde2)] max-md:bg-[var(--s3)] max-md:text-[15px]">{PUBLIC_DOMAIN}</span>
                 </div>
                 {slugChanged && slugState ? <p className={`text-[13px] ${slugState === "Available" ? "text-[var(--ok)]" : "text-[var(--peligro)]"}`}>{slugStateText(slugState, t)}</p> : null}
               </div>
               <FormField label={t("publicPage:fields.name")} required><Input value={draft.name} maxLength={120} onChange={(event) => setDraftState({ ...draft, name: event.target.value })} /></FormField>
-              <div className="md:col-span-2"><FormField label={t("publicPage:fields.description")}><Textarea value={draft.description} maxLength={1000} className="min-h-[88px] resize-y" onChange={(event) => setDraftState({ ...draft, description: event.target.value })} /></FormField></div>
+              <div className="md:col-span-2"><FormField label={t("publicPage:fields.description")}><Textarea value={draft.description} maxLength={1000} className="min-h-[88px] resize-y max-md:min-h-[104px]" onChange={(event) => setDraftState({ ...draft, description: event.target.value })} /></FormField></div>
             </div>
-          </Box>
+          </Section>
 
-          <Box title={t("publicPage:contactTitle")}>
-            <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5">
+          <Section title={t("publicPage:contactTitle")}>
+            <div className={fieldsClass}>
               <FormField label={t("publicPage:fields.email")}><Input type="email" value={draft.contactEmail} maxLength={254} onChange={(event) => setDraftState({ ...draft, contactEmail: event.target.value })} /></FormField>
               <FormField label={t("publicPage:fields.phone")}><PhoneField value={draft.contactPhone} onChange={(contactPhone) => setDraftState({ ...draft, contactPhone })} /></FormField>
               <FormField label={t("publicPage:fields.address")}><Input value={draft.address} maxLength={500} onChange={(event) => setDraftState({ ...draft, address: event.target.value })} /></FormField>
               <FormField label={t("publicPage:fields.website")}><Input type="url" value={draft.website} maxLength={2048} onChange={(event) => setDraftState({ ...draft, website: event.target.value })} /></FormField>
             </div>
-          </Box>
+          </Section>
         </> : null}
       </div>
     </Page>

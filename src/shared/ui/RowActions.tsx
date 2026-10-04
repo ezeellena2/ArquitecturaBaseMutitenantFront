@@ -33,7 +33,7 @@ export function RowActions({ label, actions }: { label: string; actions: readonl
           type="button"
           aria-label={label}
           title={label}
-          className="inline-flex size-8 items-center justify-center rounded-[8px] border border-transparent bg-transparent text-[var(--t3)] hover:border-[var(--borde)] hover:bg-[var(--lado-activo)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
+          className="inline-flex size-8 items-center justify-center rounded-[8px] max-md:size-11 max-md:rounded-full max-md:text-[var(--t2)] border border-transparent bg-transparent text-[var(--t3)] hover:border-[var(--borde)] hover:bg-[var(--lado-activo)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
         >
           <MoreVerticalIcon className="size-[18px]" />
         </button>

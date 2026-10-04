@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { Mail } from "lucide-react";
 import { describe, expect, it } from "vitest";
+import { Button } from "./button";
 import { List, ListItem } from "./List";
 
 // Tablero «Criterio · Tablas», Lista: lo corto dentro de una pantalla, sin encabezado de columnas. Filas de 44, o
@@ -21,5 +22,20 @@ describe("List · Criterio · Tablas", () => {
     expect(screen.getByText("Principal")).toHaveClass("text-[12px]", "text-[var(--t3)]");
     expect(first.querySelector("svg")?.parentElement).toHaveClass("text-[var(--t3)]");
     expect(screen.getByRole("button", { name: "Verificar" })).toBeVisible();
+  });
+
+  // Tableros M-Configuracion y M-Cuenta (.ap-it): en el teléfono la fila mide 56, sin ícono, con el nombre de 15,5 y
+  // lo que aclara de 13; la acción de la fila es texto petróleo y el ⋮ es redondo de 44.
+  it("en el teléfono es la fila de la app, con la acción en texto", () => {
+    render(<List label="Cómo entrás">
+      <ListItem icon={<Mail />} title="011 15-5555-4521" detail="Sin verificar"><Button type="button" variant="outline" size="sm">{"Verificar"}</Button></ListItem>
+    </List>);
+
+    const row = screen.getByRole("listitem");
+    expect(row).toHaveClass("max-md:min-h-14", "max-md:pr-3.5", "max-md:border-0");
+    expect(row.querySelector("svg")?.parentElement).toHaveClass("max-md:hidden");
+    expect(screen.getByText("011 15-5555-4521")).toHaveClass("max-md:text-[15.5px]", "max-md:font-medium");
+    expect(screen.getByText("Sin verificar")).toHaveClass("max-md:text-[13px]");
+    expect(screen.getByRole("button", { name: "Verificar" }).parentElement).toHaveClass("max-md:[&>[data-variant=outline]]:text-[var(--marca-tx)]");
   });
 });

@@ -14,8 +14,8 @@ import { StatusDot } from "@/shared/ui/StatusDot";
 export function companyPhoneRow(company: CompanyResponse, t: TFunction, trailing: ReactNode): ReactNode {
   return <ListRow key={company.id} to={`/org/empresas/${encodeURIComponent(company.id)}`} title={company.name}
     meta={t("companies:phone.members", { count: company.memberCount })}
-    lines={[company.taxId ? <TaxIdText value={company.taxId} withType /> : t("companies:withoutTaxId"),
-      <span className="inline-flex max-w-full items-center gap-1"><StatusDot tone={company.status === "Active" ? "success" : "neutral"} label={t(`companies:status.${company.status}`)} className="text-[13px] text-[var(--t2)]" />
+    lines={[company.taxId ? <TaxIdText key="taxId" value={company.taxId} withType /> : t("companies:withoutTaxId"),
+      <span key="state" className="inline-flex max-w-full items-center gap-1"><StatusDot tone={company.status === "Active" ? "success" : "neutral"} label={t(`companies:status.${company.status}`)} className="text-[13px] text-[var(--t2)]" />
         <span className="truncate">{" · "}<TimeZoneText value={company.timeZoneId} /></span></span>]}
     trailing={trailing} />;
 }
@@ -26,7 +26,7 @@ export function companyMemberPhoneRow(member: import("@/shared/api/types").Compa
   const active = member.membershipStatus === "Active" && member.state === "Active";
   const label = t(member.membershipStatus === "Inactive" ? "companies:memberStates.Inactive" : `companies:memberStates.${member.state}`);
   return <ListRow key={member.memberId} leading={<RowAvatar name={member.displayName} />} title={member.displayName}
-    lines={[member.email ?? "", <span className="inline-flex max-w-full items-center gap-1">{roles ? <span className="truncate">{roles}{" · "}</span> : null}
+    lines={[member.email ?? "", <span key="state" className="inline-flex max-w-full items-center gap-1">{roles ? <span className="truncate">{roles}{" · "}</span> : null}
       <StatusDot tone={active ? "success" : member.state === "PendingDeletion" ? "warning" : "neutral"} label={label} className="text-[13px] text-[var(--t2)]" /></span>]}
     trailing={trailing} />;
 }

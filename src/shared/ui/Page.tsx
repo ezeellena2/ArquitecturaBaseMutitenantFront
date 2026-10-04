@@ -6,6 +6,7 @@ import { useAppChrome } from "./app/AppChrome";
 import { AppBarToolsProvider } from "./app/AppBarTools";
 import { Fab } from "./app/Fab";
 import { FixedActions } from "./app/FixedActions";
+import { Button } from "./button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +30,8 @@ interface PageProps {
   backTo?: { to: string; label: string };
   status?: ReactNode;
   actions?: ReactNode;
+  /** Ir a algo que vive afuera («Ver página»): en la compu, la primera de las acciones; en el teléfono, texto en la barra. */
+  barAction?: { label: string; href?: string; onClick?: () => void };
   moreActions?: { label: string; items: readonly PageOverflowAction[] };
   /** Un cartel de algo que sigue pasando (tablero «Criterio · Avisos»): debajo de la banda, arriba del contenido. */
   banner?: ReactNode;
@@ -50,6 +53,9 @@ const phoneBodyClasses = {
   gray: "flex flex-1 flex-col pb-6 text-[15px]",
 } as const;
 
+// Tableros M-* (.ap-txt): una acción en texto petróleo a la derecha de la barra.
+const barTextClass = "inline-flex h-10 shrink-0 items-center px-2.5 text-[15.5px] font-semibold text-[var(--marca-tx)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]";
+
 /// Banda de ancho completo y cuerpo con su propio margen. Las acciones adicionales se pasan ya
 /// traducidas y van en el menú ⋮; la principal queda a la derecha.
 export function Page({
@@ -59,6 +65,7 @@ export function Page({
   backTo,
   status,
   actions,
+  barAction,
   moreActions,
   banner,
   tabs,
@@ -95,6 +102,9 @@ export function Page({
       <AppBar title={title} back={back} subtitle={phoneSubtitle ?? status ?? chrome.subtitle ?? undefined}
         actions={<>
           <div ref={setTools} className="flex items-center" />
+          {barAction ? barAction.href
+            ? <a href={barAction.href} target="_blank" rel="noreferrer" className={barTextClass}>{barAction.label}</a>
+            : <button type="button" onClick={barAction.onClick} className={barTextClass}>{barAction.label}</button> : null}
           {visibleMoreActions.length > 0 && moreActions ? <DropdownMenu>
             <DropdownMenuTrigger asChild><AppIconButton label={moreActions.label}><MoreVerticalIcon /></AppIconButton></DropdownMenuTrigger>
             <DropdownMenuContent align="end">{moreMenuItems}</DropdownMenuContent>
@@ -137,7 +147,7 @@ export function Page({
             )}
           </div>
         </div>
-        {visibleMoreActions.length > 0 || actions ? (
+        {visibleMoreActions.length > 0 || actions || barAction ? (
           <div className="flex shrink-0 items-center gap-2">
             {visibleMoreActions.length > 0 && moreActions ? (
               <DropdownMenu>
@@ -154,6 +164,9 @@ export function Page({
                 <DropdownMenuContent align="end">{moreMenuItems}</DropdownMenuContent>
               </DropdownMenu>
             ) : null}
+            {barAction ? barAction.href
+              ? <Button type="button" variant="outline" asChild><a href={barAction.href} target="_blank" rel="noreferrer">{barAction.label}</a></Button>
+              : <Button type="button" variant="outline" onClick={barAction.onClick}>{barAction.label}</Button> : null}
             {actions ? <span className="flex shrink-0 items-center gap-2">{actions}</span> : null}
           </div>
         ) : null}

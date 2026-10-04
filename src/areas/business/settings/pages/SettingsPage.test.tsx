@@ -7,6 +7,7 @@ import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { asPhone } from "@/test/utils/phone";
 
 const settings = {
   name: "Grupo Delta", defaultCulture: "es-AR", defaultTimeZoneId: "America/Argentina/Buenos_Aires", defaultCurrency: "ARS", version: 12,
@@ -23,6 +24,28 @@ beforeEach(async () => {
 });
 
 describe("SettingsPage", () => {
+  // Tablero M-Configuracion: en el teléfono los datos son campos sueltos sobre blanco, sin título; el dominio va en una
+  // tarjeta con «Agregar dominio» en texto, y «Descartar cambios» y «Guardar cambios» fijos abajo.
+  it("en el teléfono son campos sueltos y el dominio en una tarjeta", async () => {
+    const restore = asPhone();
+    try {
+      server.use(
+        http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+        http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      );
+      renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+
+      await screen.findByRole("textbox", { name: "Nombre de la organización" });
+      expect(screen.getByRole("heading", { name: "Datos de la organización" })).toHaveClass("sr-only");
+      const domains = screen.getByRole("region", { name: "Dominio de correo" });
+      expect(within(domains).getByRole("button", { name: "Agregar dominio" })).toHaveClass("text-[var(--marca-tx)]");
+      expect((await within(domains).findByText("delta.example.test")).closest("ul")!.parentElement).toHaveClass("rounded-[14px]");
+      expect(screen.getByRole("button", { name: "Guardar cambios" }).parentElement).toHaveAttribute("data-slot", "fixed-actions");
+    } finally {
+      restore();
+    }
+  });
+
   // Tablero «Criterio · Formularios»: lo que no se edita se muestra como texto, nunca como un campo gris.
   it("sin permiso para cambiar, muestra los datos como texto y sin botones", async () => {
     server.use(

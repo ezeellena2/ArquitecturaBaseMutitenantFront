@@ -7,6 +7,7 @@ import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { asPhone } from "@/test/utils/phone";
 
 const ownerRole = { id: "role-owner", name: "Dueño", isSystemRole: true, scope: "Organization" as const, companyId: null };
 const member = {
@@ -56,6 +57,43 @@ beforeEach(async () => {
 });
 
 describe("UserDetailPage (tablero Usuario)", () => {
+  // Tablero M-Usuario: en el teléfono el correo va debajo del nombre; el estado y los roles son filas con › que abren
+  // una hoja para elegir, y las empresas, una tarjeta con «Sumar empresa» en texto.
+  it("en el teléfono el estado y los roles se eligen en una hoja", async () => {
+    const restore = asPhone();
+    try {
+      const user = userEvent.setup();
+      api({ ...member, roles: [] });
+      renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+
+      const bar = (await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" })).closest("header")!;
+      expect(bar).toHaveTextContent("lucia@example.com");
+      const access = screen.getByRole("region", { name: "Acceso a la organización" });
+      const rolesRow = await within(access).findByRole("button", { name: /Roles de la organización/ });
+      expect(rolesRow).toHaveTextContent("Ninguno");
+
+      await user.click(within(access).getByRole("button", { name: /Estado/ }));
+      const stateSheet = await screen.findByRole("dialog", { name: "Estado" });
+      expect(within(stateSheet).getByRole("radio", { name: /Activo/ })).toBeChecked();
+      await user.click(within(stateSheet).getByRole("radio", { name: /Deshabilitado/ }));
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+      expect(within(access).getByRole("button", { name: /Estado/ })).toHaveTextContent("Deshabilitado");
+
+      await user.click(rolesRow);
+      const rolesSheet = await screen.findByRole("dialog", { name: "Roles de la organización" });
+      await user.click(within(rolesSheet).getByRole("checkbox", { name: "Soporte" }));
+      await user.click(within(rolesSheet).getByRole("button", { name: "Cerrar" }));
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+      expect(rolesRow).toHaveTextContent("Soporte");
+
+      const companies = screen.getByRole("region", { name: "Empresas" });
+      expect(within(companies).getByRole("button", { name: "Sumar empresa" })).toHaveClass("text-[var(--marca-tx)]");
+      expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
+    } finally {
+      restore();
+    }
+  });
+
   it("muestra el estado en la banda, el ⋮ y «Guardar cambios» apagado sin cambios", async () => {
     api(member);
     const { container } = renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
