@@ -40,5 +40,8 @@ describe("métodos de cuenta", () => {
     expect(within(row).getByRole("button", { name: "Vincular Google" })).toBeVisible();
     // Tablero Cuenta: «Vincular» es un botón con borde, no un enlace.
     expect(within(row).getByRole("button", { name: "Vincular Google" })).toHaveAttribute("data-variant", "outline");
+    // Es el botón chico de siempre (32 y letra de 13), no uno propio de 28.
+    expect(within(row).getByRole("button", { name: "Vincular Google" })).toHaveClass("h-8", "text-[13px]");
+    expect(within(row).getByRole("button", { name: "Vincular Google" })).not.toHaveClass("h-7", "text-[12.5px]");
   });
 });

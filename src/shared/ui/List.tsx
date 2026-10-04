@@ -17,7 +17,8 @@ interface ListItemProps extends Omit<ComponentProps<"li">, "title"> {
   children?: ReactNode;
 }
 
-// Filas de 44, o de 56 con segunda línea; 16 a la izquierda y 8 a la derecha, para que el ⋮ quede cerca del borde.
+// Filas de 44, o de 56 con segunda línea; 16 a la izquierda y 8 a la derecha, para que el ⋮ quede cerca del borde. Lo que
+// nombra la fila va en 500 (tableros Cuenta, Configuración, Usuario y Página pública).
 // En el teléfono (tableros M-Configuracion y M-Cuenta, .ap-it), la fila de la app: 56, sin ícono, la línea fina desde
 // el texto y la acción de la fila en texto petróleo (roja si es de peligro).
 export function ListItem({ icon, title, detail, children, className, ...props }: ListItemProps) {
@@ -26,7 +27,7 @@ export function ListItem({ icon, title, detail, children, className, ...props }:
     detail ? "min-h-14" : "min-h-11", className)} {...props}>
     {icon ? <span className="inline-flex shrink-0 text-[var(--t3)] max-md:hidden [&_svg:not([class*='size-'])]:size-4">{icon}</span> : null}
     <span className="flex min-w-0 flex-1 flex-col leading-[1.35] max-md:gap-px max-md:leading-tight">
-      <span className="truncate text-[var(--t1)] max-md:text-[15.5px] max-md:font-medium">{title}</span>
+      <span className="truncate font-medium text-[var(--t1)] max-md:text-[15.5px]">{title}</span>
       {detail ? <span className="truncate text-[12px] text-[var(--t3)] max-md:text-[13px]">{detail}</span> : null}
     </span>
     {children ? <span className="flex shrink-0 items-center justify-end gap-1 max-md:[&>[data-variant=outline]]:border-0 max-md:[&>[data-variant=outline]]:bg-transparent max-md:[&>[data-variant=outline]]:px-1.5 max-md:[&>[data-variant=outline]]:text-[15px] max-md:[&>[data-variant=outline]]:text-[var(--marca-tx)] max-md:[&>[data-variant=danger]]:border-0 max-md:[&>[data-variant=danger]]:bg-transparent max-md:[&>[data-variant=danger]]:px-1.5 max-md:[&>[data-variant=danger]]:text-[15px] max-md:[&>[data-variant=danger]]:text-[var(--peligro)]">{children}</span> : null}

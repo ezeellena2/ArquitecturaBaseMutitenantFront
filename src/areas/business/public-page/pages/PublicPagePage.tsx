@@ -6,7 +6,7 @@ import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { PublicPageResponse, TenantSlugAvailability, UpdatePublicPageRequest } from "@/shared/api/types";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useEditPage } from "@/shared/hooks/useEditPage";
-import { Button } from "@/shared/ui/button";
+import { Button, buttonVariants } from "@/shared/ui/button";
 import { ImportantNotice } from "@/shared/ui/ImportantNotice";
 import { InfoButton } from "@/shared/ui/InfoButton";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
@@ -22,6 +22,7 @@ import { Switch } from "@/shared/ui/switch";
 import { Textarea } from "@/shared/ui/textarea";
 import { DateText } from "@/shared/ui/format/DateText";
 import { initials } from "@/shared/lib/initials";
+import { cn } from "@/shared/lib/utils";
 import { toastError } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { checkOrganizationSlug, fetchPublicPage, publicPageQueryKey, setPublicPagePublished, slugAvailabilityQueryKey, updatePublicPage } from "../api/publicPage";
@@ -181,7 +182,7 @@ export function PublicPagePage() {
           <Section title={t("publicPage:publicationTitle")}>
             <div className="flex items-center gap-3 px-4 py-3 md:px-5 max-md:min-h-14 max-md:py-2 max-md:pr-3.5">
               <Globe aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)] max-md:hidden" />
-              <span id={visibleId} className="min-w-0 truncate text-[13px] text-[var(--t1)] max-md:text-[15.5px] max-md:font-medium">{t("publicPage:visibleAt", { host: `${savedSlug}${PUBLIC_DOMAIN}` })}</span>
+              <span id={visibleId} className="min-w-0 truncate text-[13px] font-medium text-[var(--t1)] max-md:text-[15.5px]">{t("publicPage:visibleAt", { host: `${savedSlug}${PUBLIC_DOMAIN}` })}</span>
               {blocked ? <InfoButton label={t("publicPage:blockedInfo")} onClick={() => setBlockedInfoOpen(true)} /> : null}
               <Switch className="ml-auto" aria-labelledby={visibleId} checked={pageData.isPublished} disabled={blocked || !savedSlug || publication.isPending}
                 onCheckedChange={(checked) => { if (checked) publication.mutate(true); else setUnpublishOpen(true); }} />
@@ -191,11 +192,12 @@ export function PublicPagePage() {
           <Section title={t("publicPage:pageTitle")}>
             <div className="flex items-center gap-3 border-b border-[var(--borde)] px-4 py-2.5 md:px-5 max-md:gap-3.5 max-md:border-0 max-md:px-4 max-md:pt-3.5 max-md:pb-0">
               {draft.logoDataUri ? <img src={draft.logoDataUri} alt={t("publicPage:logoAlt")} className="size-9 rounded-[9px] object-contain max-md:size-14 max-md:rounded-[14px]" />
-                : <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-[9px] bg-[var(--marca-t)] text-[12px] font-semibold text-[var(--marca-tx)] max-md:size-14 max-md:rounded-[14px] max-md:bg-[var(--marca)] max-md:text-[18px] max-md:font-bold max-md:text-[var(--lado-activo)]">{initials(draft.name)}</span>}
-              <span className="text-[13px] text-[var(--t1)] max-md:sr-only">{t("publicPage:logoTitle")}</span>
+                : <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-[9px] bg-[var(--marca-t)] text-[11.5px] font-bold text-[var(--marca-tx)] max-md:size-14 max-md:rounded-[14px] max-md:bg-[var(--marca)] max-md:text-[18px] max-md:font-bold max-md:text-[var(--lado-activo)]">{initials(draft.name)}</span>}
+              <span className="text-[13px] font-medium text-[var(--t1)] max-md:sr-only">{t("publicPage:logoTitle")}</span>
               <span className="ml-auto flex items-center gap-2 max-md:ml-0">
                 {draft.logoDataUri ? <Button type="button" variant="outline" size="sm" className="max-md:h-10 max-md:rounded-[10px] max-md:px-3.5 max-md:text-[14px]" onClick={() => setDraftState({ ...draft, logoDataUri: null, uploadedLogoBase64: null, logoContentType: null, removeLogo: true })}>{t("publicPage:removeLogo")}</Button> : null}
-                <label className="inline-flex h-7 cursor-pointer items-center rounded-[7px] border border-[var(--borde2)] bg-[var(--lado-activo)] px-2.5 text-[12.5px] font-medium text-[var(--t1)] hover:bg-[var(--s2)] lg:h-8 lg:rounded-[8px] lg:px-3 lg:text-[13px] max-md:h-10 max-md:rounded-[10px] max-md:px-3.5 max-md:text-[14px] max-md:font-semibold">
+                {/* Tablero Pagina-Org: «Subir imagen» es el botón chico con borde, como «Quitar logo». */}
+                <label className={cn(buttonVariants({ variant: "outline", size: "sm" }), "cursor-pointer max-md:h-10 max-md:rounded-[10px] max-md:px-3.5 max-md:text-[14px]")}>
                   {t("publicPage:uploadLogo")}
                   <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => { void chooseLogo(event.target.files?.[0]); }} />
                 </label>

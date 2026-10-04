@@ -11,6 +11,6 @@ export function AccountGoogleButton({ compact = false }: { compact?: boolean }) 
     const result = await linkGoogle({ reauthTicket });
     window.location.assign(result.redirectUrl);
   }
-  return <><Button type="button" aria-label={compact ? t("linkGoogle") : undefined} variant="outline" size={compact ? "sm" : "default"} className={compact ? "h-7 px-2.5 text-[12.5px]" : undefined} onClick={() => setOpen(true)} disabled={open}>{t(compact ? "linkGoogleShort" : "linkGoogle")}</Button>
+  return <><Button type="button" aria-label={compact ? t("linkGoogle") : undefined} variant="outline" size={compact ? "sm" : "default"} onClick={() => setOpen(true)} disabled={open}>{t(compact ? "linkGoogleShort" : "linkGoogle")}</Button>
     {open ? <ChangeLoginMethodDialog action="linkGoogle" onClose={() => setOpen(false)} onAuthorized={link} /> : null}</>;
 }

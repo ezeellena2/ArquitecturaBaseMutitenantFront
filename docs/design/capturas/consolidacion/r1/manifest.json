@@ -1354,6 +1354,238 @@
       }
     },
     {
+      "id": "cuenta-cambios-sin-guardar-escritorio",
+      "pair": "cuenta-cambios-sin-guardar",
+      "group": "cuenta",
+      "state": "Mi cuenta con el nombre cambiado: «Cambios sin guardar»",
+      "board": "Cuenta",
+      "props": {},
+      "boardActions": [
+        {
+          "type": "fill",
+          "name": "Nombre y apellido",
+          "value": "Lucía Fernández Pérez"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "3",
+                  "type": "Phone",
+                  "value": "011 15-5555-4521",
+                  "isPrimary": false,
+                  "isVerified": false,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          }
+        ],
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Nombre y apellido",
+            "value": "Lucía Fernández Pérez"
+          }
+        ],
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "cuenta-cambios-sin-guardar-movil",
+      "pair": "cuenta-cambios-sin-guardar",
+      "group": "cuenta",
+      "state": "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)",
+      "board": "M-Cuenta",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "3",
+                  "type": "Phone",
+                  "value": "011 15-5555-4521",
+                  "isPrimary": false,
+                  "isVerified": false,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          }
+        ],
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Nombre y apellido",
+            "value": "Lucía Fernández Pérez"
+          }
+        ],
+        "readySelector": "main"
+      }
+    },
+    {
       "id": "rol-crear-escritorio",
       "pair": "rol-crear",
       "group": "roles",
@@ -13837,6 +14069,164 @@
       }
     },
     {
+      "id": "configuracion-pendiente-escritorio",
+      "pair": "configuracion-pendiente",
+      "group": "configuracion",
+      "state": "Configuración: dominio pendiente de verificar",
+      "board": "Configuracion",
+      "props": {
+        "dominio": "Pendiente"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fconfiguracion",
+        "captureMode": "harness",
+        "userFixture": "visual-owner",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/organization/settings",
+            "body": {
+              "name": "Grupo Delta",
+              "defaultCulture": "es-AR",
+              "defaultTimeZoneId": "America/Argentina/Buenos_Aires",
+              "defaultCurrency": "ARS",
+              "version": 12
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/settings/domains",
+            "body": [
+              {
+                "id": "domain-1",
+                "domain": "delta.ejemplo.com",
+                "status": "Pending",
+                "txtRecordName": "delta.ejemplo.com",
+                "txtRecordValue": "ab-verificacion=7f3c9a2e41b8d605",
+                "createdAtUtc": "2026-10-02T12:00:00Z",
+                "verifiedAtUtc": null,
+                "version": 4
+              }
+            ],
+            "status": 200
+          },
+          {
+            "method": "PUT",
+            "path": "/api/organization/settings",
+            "body": null,
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/organization/settings/domains",
+            "body": {
+              "id": "domain-1",
+              "domain": "delta.ejemplo.com",
+              "status": "Pending",
+              "txtRecordName": "delta.ejemplo.com",
+              "txtRecordValue": "ab-verificacion=7f3c9a2e41b8d605",
+              "createdAtUtc": "2026-10-02T12:00:00Z",
+              "verifiedAtUtc": null,
+              "version": 4
+            },
+            "status": 201
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/organization/settings/domains/domain-1",
+            "body": null,
+            "status": 204
+          }
+        ],
+        "actions": [],
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "configuracion-pendiente-movil",
+      "pair": "configuracion-pendiente",
+      "group": "configuracion",
+      "state": "Configuración en el teléfono: dominio pendiente (el tablero dibuja solo el verificado)",
+      "board": "M-Configuracion",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fconfiguracion",
+        "captureMode": "harness",
+        "userFixture": "visual-owner",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/organization/settings",
+            "body": {
+              "name": "Grupo Delta",
+              "defaultCulture": "es-AR",
+              "defaultTimeZoneId": "America/Argentina/Buenos_Aires",
+              "defaultCurrency": "ARS",
+              "version": 12
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/organization/settings/domains",
+            "body": [
+              {
+                "id": "domain-1",
+                "domain": "delta.ejemplo.com",
+                "status": "Pending",
+                "txtRecordName": "delta.ejemplo.com",
+                "txtRecordValue": "ab-verificacion=7f3c9a2e41b8d605",
+                "createdAtUtc": "2026-10-02T12:00:00Z",
+                "verifiedAtUtc": null,
+                "version": 4
+              }
+            ],
+            "status": 200
+          },
+          {
+            "method": "PUT",
+            "path": "/api/organization/settings",
+            "body": null,
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/organization/settings/domains",
+            "body": {
+              "id": "domain-1",
+              "domain": "delta.ejemplo.com",
+              "status": "Pending",
+              "txtRecordName": "delta.ejemplo.com",
+              "txtRecordValue": "ab-verificacion=7f3c9a2e41b8d605",
+              "createdAtUtc": "2026-10-02T12:00:00Z",
+              "verifiedAtUtc": null,
+              "version": 4
+            },
+            "status": 201
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/organization/settings/domains/domain-1",
+            "body": null,
+            "status": 204
+          }
+        ],
+        "actions": [],
+        "readySelector": "main"
+      }
+    },
+    {
       "id": "configuracion-agregar-dominio-escritorio",
       "pair": "configuracion-agregar-dominio",
       "group": "configuracion",
@@ -14055,6 +14445,90 @@
               "address": "Av. Corrientes 1234, piso 5, Buenos Aires",
               "website": "https://delta.ejemplo.com",
               "isPublished": true,
+              "publishBlockedAtUtc": null,
+              "publishBlockedReason": null,
+              "version": 5
+            },
+            "status": 200
+          }
+        ],
+        "actions": [],
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "pagina-publica-borrador-escritorio",
+      "pair": "pagina-publica-borrador",
+      "group": "pagina-publica",
+      "state": "Página pública: borrador",
+      "board": "Pagina-Org",
+      "props": {
+        "estado": "Borrador"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fpagina",
+        "captureMode": "harness",
+        "userFixture": "visual-owner",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/organization/public-page",
+            "body": {
+              "slug": "delta",
+              "name": "Grupo Delta",
+              "description": "Grupo Delta y sus empresas, en un solo lugar.",
+              "logoDataUri": null,
+              "contactEmail": "contacto@delta.ejemplo.com",
+              "contactPhone": "+541143215678",
+              "address": "Av. Corrientes 1234, piso 5, Buenos Aires",
+              "website": "https://delta.ejemplo.com",
+              "isPublished": false,
+              "publishBlockedAtUtc": null,
+              "publishBlockedReason": null,
+              "version": 5
+            },
+            "status": 200
+          }
+        ],
+        "actions": [],
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "pagina-publica-borrador-movil",
+      "pair": "pagina-publica-borrador",
+      "group": "pagina-publica",
+      "state": "Página pública en el teléfono: borrador (el tablero dibuja un solo estado)",
+      "board": "M-Pagina-Org",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fpagina",
+        "captureMode": "harness",
+        "userFixture": "visual-owner",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/organization/public-page",
+            "body": {
+              "slug": "delta",
+              "name": "Grupo Delta",
+              "description": "Grupo Delta y sus empresas, en un solo lugar.",
+              "logoDataUri": null,
+              "contactEmail": "contacto@delta.ejemplo.com",
+              "contactPhone": "+541143215678",
+              "address": "Av. Corrientes 1234, piso 5, Buenos Aires",
+              "website": "https://delta.ejemplo.com",
+              "isPublished": false,
               "publishBlockedAtUtc": null,
               "publishBlockedReason": null,
               "version": 5
