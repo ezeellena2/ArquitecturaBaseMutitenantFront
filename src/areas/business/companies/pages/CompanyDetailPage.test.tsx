@@ -139,9 +139,9 @@ describe("CompanyDetailPage", () => {
     expect(await screen.findByRole("dialog", { name: "Editar empresa" })).toHaveClass("md:max-w-[560px]");
   });
 
-  // En el teléfono, las tres son hojas a todo el alto: el cuerpo de los diálogos ocupa lo que sobra y deja los botones
-  // abajo, con el título arriba.
-  it("los diálogos de la ficha usan el cuerpo de los diálogos, también en la hoja a todo el alto", async () => {
+  // Tablero M-Empresa (v106): en el teléfono, «Roles de …», «Agregar miembro» y «Editar empresa» son hojas que suben
+  // desde abajo con su alto, no a pantalla completa, con el cuerpo común de los diálogos.
+  it("los diálogos de la ficha usan el cuerpo de los diálogos y en el teléfono suben desde abajo con su alto", async () => {
     const user = userEvent.setup();
     rolesApi(() => new HttpResponse(null, { status: 204 }));
     server.use(http.get("/api/users/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
@@ -152,19 +152,22 @@ describe("CompanyDetailPage", () => {
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
     const roles = await screen.findByRole("dialog", { name: "Roles de Lucía Fernández" });
-    expect(roles).toHaveClass("min-h-[calc(100dvh-1rem)]");
+    expect(roles).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(roles).not.toHaveClass("min-h-[calc(100dvh-1rem)]");
     expect(within(roles).getByRole("button", { name: "Roles en la empresa" }).closest("[data-slot='dialog-body']")).not.toBeNull();
     await user.click(within(roles).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
 
     await user.click(screen.getByRole("button", { name: "Agregar miembro" }));
     const add = await screen.findByRole("dialog", { name: "Agregar miembro" });
+    expect(add).not.toHaveClass("min-h-[calc(100dvh-1rem)]");
     expect(within(add).getByRole("combobox", { name: "Usuario" }).closest("[data-slot='dialog-body']")).not.toBeNull();
     await user.click(within(add).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
 
     await user.click(screen.getByRole("button", { name: "Editar empresa" }));
     const edit = await screen.findByRole("dialog", { name: "Editar empresa" });
+    expect(edit).not.toHaveClass("min-h-[calc(100dvh-1rem)]");
     expect(within(edit).getByRole("textbox", { name: "Nombre" }).closest("[data-slot='dialog-body']")).not.toBeNull();
   });
 

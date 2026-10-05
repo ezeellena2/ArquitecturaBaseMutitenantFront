@@ -54,14 +54,12 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
-  mobileFullHeight = false,
   size = "default",
   onInteractOutside,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   /** `"desktop"`: la ✕ solo en la compu, para un diálogo que en el teléfono es la hoja de una confirmación (Cuenta-Baja). */
   showCloseButton?: boolean | "desktop"
-  mobileFullHeight?: boolean
   /** «Criterio · Diálogos», Los dos anchos: el chico de 420 (uno o dos campos, y confirmaciones) o el normal de 560. */
   size?: "sm" | "default"
 }) {
@@ -75,9 +73,8 @@ function DialogContent({
         className={cn(
           "fixed bottom-0 left-0 z-50 grid max-h-[calc(100dvh-1rem)] w-full gap-0 overflow-y-auto rounded-t-[20px] border-0 bg-[var(--lado-activo)] p-0 text-[15px] shadow-[var(--sombra-hoja)] outline-none md:border md:border-[var(--borde)] md:text-[13px] md:shadow-lg data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[12px] md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0",
           size === "sm" ? "md:max-w-[420px]" : "md:max-w-[560px]",
-          // A todo el alto, las filas son la manija, el encabezado, el cuerpo (que ocupa lo que sobra) y los botones: el
-          // título queda arriba y los botones, abajo de todo.
-          mobileFullHeight && "min-h-[calc(100dvh-1rem)] grid-rows-[auto_auto_1fr_auto] md:min-h-0 md:grid-rows-none",
+          // Lienzo v106 («Criterio · Decisiones»): en el teléfono toda hoja sube desde abajo con el alto de lo que lleva;
+          // ninguna ocupa la pantalla completa.
           className
         )}
         {...props}
@@ -127,13 +124,12 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 // Tablero «Criterio · Dialogos»: el cuerpo lleva 20 de margen y 14 entre campos. Lo que el título necesita aclarar
-// (a quién le mandamos el código, qué se pierde) va acá adentro, nunca como bajada del encabezado. En una hoja a todo el
-// alto ocupa lo que sobra, también adentro de un <form>, y deja los botones abajo de todo.
+// (a quién le mandamos el código, qué se pierde) va acá adentro, nunca como bajada del encabezado.
 function DialogBody({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-body"
-      className={cn("flex flex-1 flex-col gap-3.5 px-5 pt-2 pb-4 md:p-5", className)}
+      className={cn("flex flex-col gap-3.5 px-5 pt-2 pb-4 md:p-5", className)}
       {...props}
     />
   )

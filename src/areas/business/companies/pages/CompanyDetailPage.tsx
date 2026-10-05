@@ -282,7 +282,7 @@ export function CompanyDetailPage() {
     {/* Tablero Empresa (v100): «Agregar miembro» y «Roles de …» van en el diálogo chico. «Criterio · Diálogos»: sin bajada
         debajo del título; la empresa ya se ve atrás. */}
     <Dialog open={addOpen} onOpenChange={(open) => { if (!open) closeAdd(); }}>
-      <DialogContent mobileFullHeight size="sm" aria-describedby={undefined}>
+      <DialogContent size="sm" aria-describedby={undefined}>
         <DialogHeader><DialogTitle>{t("companies:addMember.title")}</DialogTitle></DialogHeader>
         <form onSubmit={submitAdd} className="flex min-h-0 flex-col">
           <DialogBody>
@@ -309,7 +309,7 @@ export function CompanyDetailPage() {
     </Dialog>
 
     <Dialog open={roleTarget !== null} onOpenChange={(open) => { if (!open) closeRoles(); }}>
-      <DialogContent mobileFullHeight size="sm" aria-describedby={undefined}>
+      <DialogContent size="sm" aria-describedby={undefined}>
         <DialogHeader><DialogTitle>{roleTarget ? t("companies:editMemberRoles.title", { name: roleTarget.displayName }) : t("companies:editMemberRoles.title", { name: "" })}</DialogTitle></DialogHeader>
         <DialogBody>
           <FormField label={t("companies:editMemberRoles.roles")}>
@@ -336,7 +336,7 @@ export function CompanyDetailPage() {
       confirmLabel={t("companies:confirm.deactivateConfirm")} destructive onConfirm={() => changeCompanyState.mutate()} />
 
     <Dialog open={editOpen} onOpenChange={(open) => { if (!open) closeEdit(); }}>
-      <DialogContent mobileFullHeight>
+      <DialogContent>
         <DialogHeader><DialogTitle>{t("companies:editTitle")}</DialogTitle></DialogHeader>
         <form onSubmit={submitEdit} className="flex min-h-0 flex-col">
           <DialogBody>

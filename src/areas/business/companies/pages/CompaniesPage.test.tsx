@@ -99,8 +99,9 @@ describe("CompaniesPage", () => {
     await user.click(await screen.findByRole("button", { name: "Crear empresa" }));
     const dialog = await screen.findByRole("dialog", { name: "Crear empresa" });
     expect(dialog).not.toHaveTextContent("Completá los datos");
-    // En el teléfono, una hoja a todo el alto: el cuerpo de los diálogos ocupa lo que sobra y deja los botones abajo.
-    expect(dialog).toHaveClass("min-h-[calc(100dvh-1rem)]");
+    // Tablero M-Empresas (v106): en el teléfono, una hoja que sube desde abajo con su alto, no a pantalla completa.
+    expect(dialog).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(dialog).not.toHaveClass("min-h-[calc(100dvh-1rem)]");
     expect(within(dialog).getByRole("textbox", { name: "Nombre" }).closest("[data-slot='dialog-body']")).not.toBeNull();
     expect(within(dialog).getByRole("textbox", { name: "CUIT" })).toHaveAttribute("placeholder", "30-12345678-1");
     expect(within(dialog).getByRole("combobox", { name: "Zona de negocio" })).toHaveTextContent("La de la organización");

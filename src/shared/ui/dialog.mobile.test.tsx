@@ -77,21 +77,21 @@ describe("Dialog mobile layout", () => {
     expect(header).toHaveClass("py-1", "pr-5");
   });
 
-  // Una hoja a todo el alto (Empresa y Empresas): arriba la manija y el título, el cuerpo ocupa lo que sobra y los botones
-  // van abajo de todo. El título no queda flotando en el medio.
-  it("gives form dialogs nearly the full phone height with the title on top and confirmations a narrower desktop width", () => {
+  // Lienzo v106 (M-Empresas y M-Empresa, «Criterio · Decisiones»): toda hoja del teléfono sube desde abajo con el alto de
+  // lo que lleva; ninguna ocupa la pantalla completa. La de un formulario, también.
+  it("gives form sheets their own height on phones and confirmations a narrower desktop width", () => {
     const { unmount } = render(
       <Dialog open>
-        <DialogContent mobileFullHeight>
+        <DialogContent>
           <DialogHeader><DialogTitle>{"Editar"}</DialogTitle></DialogHeader>
           <DialogBody><p>{"Nombre"}</p></DialogBody>
           <DialogFooter><button type="button">{"Guardar"}</button></DialogFooter>
         </DialogContent>
       </Dialog>,
     );
-    expect(screen.getByRole("dialog", { name: "Editar" })).toHaveClass("min-h-[calc(100dvh-1rem)]", "grid-rows-[auto_auto_1fr_auto]");
-    // Si el cuerpo y los botones van adentro de un <form>, el cuerpo crece igual y empuja los botones abajo.
-    expect(screen.getByText("Nombre").parentElement).toHaveClass("flex-1");
+    const sheet = screen.getByRole("dialog", { name: "Editar" });
+    expect(sheet).toHaveClass("bottom-0", "max-h-[calc(100dvh-1rem)]");
+    expect(sheet.className).not.toMatch(/min-h-\[calc|grid-rows-\[auto_auto_1fr_auto\]/);
     unmount();
 
     render(<ConfirmDialog open onOpenChange={() => {}} title="Eliminar" confirmLabel="Eliminar" onConfirm={() => {}} />);

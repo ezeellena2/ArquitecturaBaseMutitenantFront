@@ -175,7 +175,7 @@ export function CompaniesPage() {
       </div>
     </Page>
     <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setFailure(undefined); }}>
-      <DialogContent mobileFullHeight>
+      <DialogContent>
         <DialogHeader><DialogTitle>{t(editingCompany ? "companies:editTitle" : "companies:createTitle")}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="flex min-h-0 flex-col">
           <DialogBody>
