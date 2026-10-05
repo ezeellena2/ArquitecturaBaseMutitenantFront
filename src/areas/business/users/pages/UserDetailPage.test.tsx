@@ -98,22 +98,39 @@ describe("UserDetailPage (tablero Usuario)", () => {
       const rolesRow = await within(access).findByRole("button", { name: /Roles de la organización/ });
       expect(rolesRow).toHaveTextContent("Ninguno");
 
+      // Tablero M-Usuario (v99, «Elegir el estado»): cada estado en una fila, sin descripción; el elegido va en petróleo
+      // y con tilde, sin el círculo de la opción, y elegir otro cierra la hoja.
       await user.click(within(access).getByRole("button", { name: /Estado/ }));
       const stateSheet = await screen.findByRole("dialog", { name: "Estado" });
-      expect(within(stateSheet).getByRole("radio", { name: /Activo/ })).toBeChecked();
-      await user.click(within(stateSheet).getByRole("radio", { name: /Deshabilitado/ }));
+      const active = within(stateSheet).getByRole("radio", { name: "Activo" });
+      expect(active).toBeChecked();
+      expect(active).toHaveClass("sr-only");
+      expect(active.closest("label")).toHaveClass("min-h-[52px]", "text-[16px]", "font-medium", "text-[var(--marca-tx)]");
+      expect(active.closest("label")!.querySelector("[data-slot='tilde']")).not.toBeNull();
+      expect(within(stateSheet).getByRole("radio", { name: "Deshabilitado" }).closest("label")!.querySelector("[data-slot='tilde']")).toBeNull();
+      expect(stateSheet).not.toHaveTextContent("Entra a la organización");
+      await user.click(within(stateSheet).getByRole("radio", { name: "Deshabilitado" }));
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
       expect(within(access).getByRole("button", { name: /Estado/ })).toHaveTextContent("Deshabilitado");
       // Como Configuración en el teléfono (tablero M-Avisos): con cambios, la barra dice «Cambios sin guardar».
       expect(bar).toHaveTextContent("Cambios sin guardar");
       expect(bar).not.toHaveTextContent("lucia@example.com");
 
+      // Tablero M-Usuario (v99, «Elegir los roles»): la casilla a la izquierda de cada rol, sin «Todos», y «Listo» cierra
+      // la hoja. Lo elegido queda en la ficha hasta guardar.
       await user.click(rolesRow);
       const rolesSheet = await screen.findByRole("dialog", { name: "Roles de la organización" });
-      await user.click(within(rolesSheet).getByRole("checkbox", { name: "Soporte" }));
-      await user.click(within(rolesSheet).getByRole("button", { name: "Cerrar" }));
+      expect(within(rolesSheet).queryByRole("checkbox", { name: "Todos" })).not.toBeInTheDocument();
+      const support = within(rolesSheet).getByRole("checkbox", { name: "Soporte" });
+      expect(support).toHaveClass("size-[22px]", "rounded-[6px]");
+      expect(support.compareDocumentPosition(within(rolesSheet).getByText("Soporte")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      await user.click(support);
+      expect(support).toBeChecked();
+      expect(support.closest("label")).toHaveClass("text-[var(--marca-tx)]");
+      await user.click(within(rolesSheet).getByRole("button", { name: "Listo" }));
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
       expect(rolesRow).toHaveTextContent("Soporte");
+      expect(bar).toHaveTextContent("Cambios sin guardar");
 
       const companies = screen.getByRole("region", { name: "Empresas" });
       expect(within(companies).getByRole("button", { name: "Sumar empresa" })).toHaveClass("text-[var(--marca-tx)]");

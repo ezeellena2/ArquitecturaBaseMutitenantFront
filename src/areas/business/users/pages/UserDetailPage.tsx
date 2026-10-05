@@ -249,7 +249,6 @@ export function UserDetailPage() {
   const stateLabel = <span className="inline-flex items-center gap-1.5"><span aria-hidden="true" className={`size-[7px] shrink-0 rounded-full ${stateDot[shownState]}`} />{t(`users:states.${shownState}`)}</span>;
   const roleNames = current.roleIds.map((id) => orgRoles.find((role) => role.id === id)?.name ?? member.roles.find((role) => role.id === id)?.name)
     .filter(Boolean).join(", ");
-  const orgRoleValues = orgRoles.map((role) => role.id);
 
   const detail = isInvitation
     ? <Trans ns="users" i18nKey={member.state === "Expired" ? "detail.expiredOn" : "detail.expiresOn"} components={{ date: <DateText value={member.invitationExpiresAtUtc} kind="date" /> }} />
@@ -327,14 +326,14 @@ export function UserDetailPage() {
         </Section>
       </div>
     </Page>
+    {/* Tablero M-Usuario (v99): el estado, con tilde y sin descripción, se elige y la hoja se cierra; los roles se marcan
+        con casillas, sin «Todos», y «Listo» cierra la hoja. Lo elegido queda como «Cambios sin guardar» hasta guardar. */}
     <ChoiceSheet open={sheet === "state"} onOpenChange={(open) => { if (!open) setSheet(null); }} title={t("users:detail.status")}>
       {(["Active", "Inactive"] as const).map((value) => <RadioRow key={value} name="user-state" label={t(`users:states.${value}`)}
-        description={t(value === "Active" ? "users:detail.statusActiveDescription" : "users:detail.statusInactiveDescription")}
         checked={current.isActive === (value === "Active")} onChoose={() => { changeDraft({ isActive: value === "Active" }); setSheet(null); }} />)}
     </ChoiceSheet>
-    <ChoiceSheet open={sheet === "roles"} onOpenChange={(open) => { if (!open) setSheet(null); }} title={t("users:detail.organizationRoles")}>
-      <CheckRow label={t("users:detail.allRoles")} checked={orgRoleValues.length > 0 && orgRoleValues.every((id) => current.roleIds.includes(id))}
-        onCheckedChange={(checked) => changeDraft({ roleIds: checked ? [...new Set([...current.roleIds, ...orgRoleValues])] : current.roleIds.filter((id) => !orgRoleValues.includes(id)) })} />
+    <ChoiceSheet open={sheet === "roles"} onOpenChange={(open) => { if (!open) setSheet(null); }} title={t("users:detail.organizationRoles")}
+      done={{ label: t("common:actions.done"), onClick: () => setSheet(null) }}>
       {orgRoles.map((role) => <CheckRow key={role.id} label={role.name} checked={current.roleIds.includes(role.id)}
         onCheckedChange={(checked) => changeDraft({ roleIds: checked ? [...current.roleIds, role.id] : current.roleIds.filter((id) => id !== role.id) })} />)}
     </ChoiceSheet>

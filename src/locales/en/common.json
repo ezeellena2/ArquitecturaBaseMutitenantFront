@@ -15,7 +15,8 @@
     "clear": "Clear",
     "retry": "Retry",
     "close": "Close",
-    "clearFilters": "Clear filters"
+    "clearFilters": "Clear filters",
+    "done": "Done"
   },
   "notice": {
     "whatCanYouDo": "What you can do",
