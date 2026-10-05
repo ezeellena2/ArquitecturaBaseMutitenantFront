@@ -144,13 +144,14 @@ const stage6 = [
   ["usuarios-lista", "usuarios", "Usuarios: la lista", {}],
   ["usuarios-invitar", "usuarios", "Usuarios: el diálogo para invitar", {}],
   ["usuario-activo", "usuarios", "Usuario: la ficha de una persona activa", {}],
-  ["usuario-roles-empresa", "usuarios", "Usuario: cambiar los roles en una empresa", { state: "Usuario en el teléfono: cambiar los roles en una empresa (el tablero no dibuja esa hoja)" }],
+  // Desde v106, el lienzo dibuja las hojas del teléfono de Usuario y de Empresa (R3b).
+  ["usuario-roles-empresa", "usuarios", "Usuario: cambiar los roles en una empresa", { props: { estado: "Roles en una empresa" } }],
   ["roles-lista", "roles", "Roles y permisos: la lista", {}],
   ["empresas-lista", "empresas", "Empresas: la lista", {}],
-  ["empresas-crear", "empresas", "Empresas: crear una empresa", { state: "Empresas en el teléfono: crear una empresa (el tablero no dibuja esa hoja)" }],
+  ["empresas-crear", "empresas", "Empresas: crear una empresa", { props: { estado: "Crear empresa" } }],
   ["empresa-miembros", "empresas", "Empresa: la ficha, pestaña Miembros", {}],
   ["empresa-roles", "empresas", "Empresa: la ficha, pestaña Roles", { state: "Empresa en el teléfono: pestaña Roles (el tablero dibuja una sola pestaña)" }],
-  ["empresa-editar", "empresas", "Empresa: editar los datos", { state: "Empresa en el teléfono: editar los datos (el tablero no dibuja esa hoja)" }],
+  ["empresa-editar", "empresas", "Empresa: editar los datos", { props: { estado: "Editar empresa" } }],
   ["configuracion-verificada", "configuracion", "Configuración: dominio verificado", {}],
   ["configuracion-pendiente", "configuracion", "Configuración: dominio pendiente de verificar",
     { board: "M-Configuracion", props: {}, state: "Configuración en el teléfono: dominio pendiente (el tablero dibuja solo el verificado)" }],
@@ -167,6 +168,7 @@ const stage6 = [
 ];
 
 // Consolidación F7: los estados con cambios sin guardar, el 409 y los errores de guardado (ya tienen sus tableros vigentes).
+// El tercer dato cambia el tablero del teléfono: desde v106 el lienzo dibuja esos estados en su `M-*` (R3b).
 const stageF7 = [
   ["configuracion-cambios-sin-guardar", "configuracion"],
   ["configuracion-salir-sin-guardar", "configuracion"],
@@ -175,11 +177,11 @@ const stageF7 = [
   ["pagina-publica-error-al-guardar", "pagina-publica"],
   ["pagina-publica-salir-sin-guardar", "pagina-publica"],
   ["usuario-salir-sin-guardar", "usuarios"],
-  ["usuario-error-al-guardar", "usuarios"],
-  ["usuario-dialogo-error", "usuarios"],
+  ["usuario-error-al-guardar", "usuarios", { props: { estado: "Error al guardar" }, state: "Ficha de Usuario en el teléfono: el error al guardar, con el texto del back, en la banda debajo de la barra (M-Usuario, v106)" }],
+  ["usuario-dialogo-error", "usuarios", { props: { estado: "Otra persona cambió esto" }, state: "Ficha de Usuario en el teléfono: el 409 de «Sumar empresa» en la franja de la hoja, arriba de los botones" }],
   ["usuario-sumar-empresa", "usuarios"],
-  ["empresa-roles-error", "empresas"],
-  ["empresas-dialogo-error", "empresas"],
+  ["empresa-roles-error", "empresas", { props: { estado: "Roles de un miembro: error" }, state: "Ficha de Empresa en el teléfono: la hoja de roles, desde abajo, con su franja" }],
+  ["empresas-dialogo-error", "empresas", { props: { estado: "Crear empresa: ya hay una con ese CUIT" }, state: "Empresas en el teléfono: la hoja de crear, desde abajo, con su franja" }],
   ["sesion-error-api-me", "errores"],
 ];
 
@@ -194,6 +196,17 @@ function custom({ id, group, state, desktop: onDesktop, phone: onPhone, app, pho
 const api = (method, apiPath, body, status = 200, query) => ({ method, path: apiPath, body, status, ...(query ? { query } : {}) });
 const appClick = (role, name, extra = {}) => ({ type: "click", role, name, ...extra });
 const dialog = { readySelector: '[role="dialog"]' };
+
+// Las descripciones de los roles del lienzo (tablero Usuario): las de Dueño y Administrador las da el back (roles de
+// sistema); las demás son las que la organización escribió al crear el rol.
+const roleDescriptions = new Map([
+  ["Dueño", "Tiene todos los permisos de la organización."], ["Recursos humanos", "Invita, edita y deshabilita usuarios."],
+  ["Auditor", "Ve los usuarios y la auditoría. No cambia nada."], ["Administrador", "Administra la empresa: sus miembros y sus roles."],
+  ["Solo lectura", "Ve los miembros de la empresa. No cambia nada."],
+]);
+const withRoleDescriptions = (app) => ({ ...app, responses: app.responses.map((item) => item.path === "/api/roles/paged"
+  ? { ...item, body: { ...item.body, items: item.body.items.map((role) => ({ ...role, description: roleDescriptions.get(role.name) ?? role.description })) } }
+  : item) });
 
 // Registro de empresa: los seis estados del tablero que la app ya tiene (el de «Tu organización» es de la etapa 6).
 const signupEmail = "mariana.lopez@gmail.com";
@@ -235,12 +248,13 @@ function extraCases(root) {
   const withoutPending = (app) => ({ ...app, responses: app.responses.map((item) => item.path === "/api/home" ? { ...item, body: { ...item.body, pending: [] } } : item) });
   const openStatus = { boardActions: [click('button.ct[aria-label="Estado"]')] };
   const openRoles = { boardActions: [click('button.ct[aria-label="Roles de la organización"]')] };
+  const usuarioActivo = (width) => stageCases(root, "etapa-6").find((entry) => entry.pair === "usuario-activo" && entry.viewport.width === width).app;
   return [
     ...pairCases(root, { stage: "etapa-3a", pair: "inicio-org", id: "inicio-org-sin-pendientes", group: "inicios", state: "Inicio de la organización: nada para resolver",
       desktop: { props: { pendientes: "Nada para resolver" } }, app: withoutPending(homeOf(1440)), phoneApp: withoutPending(homeOf(390)) }),
     ...custom({ id: "inicio-miembro", group: "inicios", state: "Inicio de una persona con roles solo en una empresa («Tus empresas»)",
       desktop: { board: "Inicio-Miembro", props: { rol: "Solo lectura" } },
-      phone: { board: "M-Inicio-Org", props: {}, state: "Inicio de una persona con roles solo en una empresa, en el teléfono (el lienzo no lo dibuja: se muestra M-Inicio-Org)" },
+      phone: { board: "M-Inicio-Miembro", props: { rol: "Solo lectura" }, state: "Inicio de una persona con roles solo en una empresa, en el teléfono: la billetera con «Tus empresas» (v106)" },
       app: { path: "/src/test/visualApp.html?as=visual-error-org&route=%2Forg", captureMode: "harness", userFixture: "visual-error-org", readyText: "Tus empresas",
         responses: [api("GET", "/api/home", { organization: null, companies: [{ companyId: "33333333-3333-4333-8333-333333333333", name: "Delta Norte S.A.", roles: ["Solo lectura"], memberCount: 3 }], pending: [] })] } }),
     ...pairCases(root, { stage: "etapa-6", pair: "configuracion-pendiente", id: "configuracion-verificar-dominio", group: "configuracion", state: "Configuración: verificar el dominio (el registro TXT)",
@@ -251,7 +265,8 @@ function extraCases(root) {
       app: { actions: [appClick("combobox", "Estado")], readySelector: '[role="listbox"]' }, phoneApp: { actions: [appClick("button", "Estado")], ...dialog } }),
     ...pairCases(root, { stage: "etapa-6", pair: "usuario-activo", id: "usuario-elegir-roles", group: "usuarios", state: "Usuario: elegir los roles de la organización",
       desktop: { ...openRoles }, phone: { props: { estado: "Elegir los roles" } },
-      app: { actions: [appClick("button", "Roles de la organización")], readySelector: '[role="menu"]' }, phoneApp: { actions: [appClick("button", "Roles de la organización")], ...dialog } }),
+      app: withRoleDescriptions({ ...usuarioActivo(1440), actions: [appClick("button", "Roles de la organización")], readySelector: '[role="menu"]' }),
+      phoneApp: withRoleDescriptions({ ...usuarioActivo(390), actions: [appClick("button", "Roles de la organización")], ...dialog }) }),
     ...alignmentCases(root),
     ...dialogCases(root),
     ...errorsAndButtonsCases(root),
@@ -348,7 +363,8 @@ function dialogCases(root) {
       desktop: { boardActions: pickCompanyBoard }, app: pickCompanyApp, phoneApp: pickCompanyApp }),
     ...pairCases(root, { stage: "consolidacion/f7", pair: "empresa-roles-error", id: "empresa-roles-dialogo", group: "empresas",
       state: "Empresa: «Roles de …», el diálogo chico sin bajada",
-      desktop: { boardActions: openRolesBoard }, phone: { state: "Empresa en el teléfono: la hoja «Roles de …» (el tablero no dibuja esa hoja)" },
+      desktop: { boardActions: openRolesBoard },
+      phone: { props: { estado: "Roles de un miembro: error" }, state: "Empresa en el teléfono: la hoja «Roles de …», desde abajo (v106 la dibuja con el error del back)" },
       app: openRolesApp, phoneApp: openRolesApp }),
     ...pairCases(root, { stage: "etapa-6", pair: "empresa-miembros", id: "empresa-agregar-miembro", group: "empresas",
       state: "Empresa: «Agregar miembro», el diálogo chico sin bajada",
@@ -395,6 +411,27 @@ function alignmentCases(root) {
   ];
 }
 
+// R3b · Fichas y hojas: los estados de v106 que ningún caso tenía. El inicio de quien administra su empresa (la billetera
+// con su «Para resolver») y «Crear empresa» sin nombre, que el tablero Empresas marca al tocar el botón.
+function r3bCases(root) {
+  const home = (roles, pending) => ({ path: "/src/test/visualApp.html?as=visual-error-org&route=%2Forg", captureMode: "harness", userFixture: "visual-error-org",
+    readyText: "Tus empresas", responses: [api("GET", "/api/home", { organization: null,
+      companies: [{ companyId: "33333333-3333-4333-8333-333333333333", name: "Delta Norte S.A.", roles, memberCount: 3 }], pending })] });
+  const expired = { area: "users", kind: "invitationExpired", subject: "martin.paz@delta.ejemplo.com", urgent: false,
+    sinceUtc: "2026-09-25T15:00:00Z", dueAtUtc: null, targetId: "member-martin" };
+  const withoutName = { actions: [appClick("button", "Crear empresa"), appClick("button", "Crear empresa")], readySelector: '[role="dialog"] [role="alert"]' };
+  return [
+    ...custom({ id: "inicio-miembro-administra", group: "inicios", state: "Inicio de una persona que administra su empresa: «Tus empresas» y su «Para resolver»",
+      desktop: { board: "Inicio-Miembro", props: { rol: "Administra su empresa" } }, phone: { board: "M-Inicio-Miembro", props: { rol: "Administra su empresa" } },
+      app: home(["Administrador"], [expired]) }),
+    ...pairCases(root, { stage: "etapa-6", pair: "empresas-crear", id: "empresas-crear-sin-nombre", group: "empresas",
+      state: "«Crear empresa» sin nombre: el campo dice «Escribí el nombre de la empresa.», sin el aviso del navegador",
+      desktop: { boardActions: [click("button.b-pri"), click(".dlg-f button.b-pri")] },
+      phone: { props: { estado: "Crear empresa" }, state: "«Crear empresa» sin nombre, en el teléfono: la hoja desde abajo (el tablero no dibuja el error)" },
+      app: withoutName, phoneApp: withoutName }),
+  ];
+}
+
 export function catalog(root) {
   const rename ={ board: "Cuenta", boardActions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
@@ -409,8 +446,9 @@ export function catalog(root) {
       desktop: rename, phone: renamePhone, app: renameApp, phoneApp: renameApp }),
     ...stage4Roles.flatMap(([pair, group, state]) => pairCases(root, { stage: "etapa-4", pair, group, state })),
     ...stage6.flatMap(([pair, group, state, onPhone]) => pairCases(root, { stage: "etapa-6", pair, group, state, phone: onPhone })),
-    ...stageF7.flatMap(([pair, group]) => pairCases(root, { stage: "consolidacion/f7", pair, group })),
+    ...stageF7.flatMap(([pair, group, onPhone]) => pairCases(root, { stage: "consolidacion/f7", pair, group, phone: onPhone })),
     ...signupCases(root),
     ...extraCases(root),
+    ...r3bCases(root),
   ];
 }
