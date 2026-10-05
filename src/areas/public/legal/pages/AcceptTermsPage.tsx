@@ -57,7 +57,7 @@ export function AcceptTermsPage() {
       <label className="flex items-start gap-2.5 text-[14px] leading-normal"><input type="checkbox" checked={accepted} onChange={(event) => { setAccepted(event.target.checked); setAcceptRequired(false); }} className="mt-0.5 size-[18px] shrink-0 accent-[var(--marca)]" /><span><Trans ns="legal" i18nKey="accept.agreement" components={{ terms: <Link to="/terminos" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" />, privacy: <Link to="/privacidad" target="_blank" rel="noopener" className="font-semibold text-[var(--marca-tx)] hover:underline" /> }} /></span></label>
       {acceptRequired ? <p role="alert" className="-mt-4 text-[13px] text-[var(--peligro)]">{t("accept.acceptRequired")}</p> : null}
       <FormError message={failure} />
-      <div className="flex flex-col gap-2.5"><Button type="submit" size="lg" disabled={request.isPending || isPending}>{t("accept.continue")}</Button><Button type="button" size="lg" variant="outline" onClick={() => { void leave(); }}>{t("accept.signOut")}</Button></div>
+      <div className="flex flex-col gap-2.5"><Button type="submit" size="lg" disabled={isPending} pending={request.isPending} pendingLabel={t("accept.accepting")}>{t("accept.continue")}</Button><Button type="button" size="lg" variant="outline" onClick={() => { void leave(); }}>{t("accept.signOut")}</Button></div>
     </form>
   </AuthLayout>;
 }

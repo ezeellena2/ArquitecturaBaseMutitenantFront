@@ -208,11 +208,9 @@ function InvitationFlow() {
             }}>{t("join.signIn")}</Button>
             <p className={note}>{t("join.signInDescription", { email })}</p>
           </> : <>
-            {/* «Criterio · Botones», Guardando (tablero Invitacion, «Sin cuenta: aceptando»): dice qué hace, con el aro blanco
-                de 14, y no se puede volver a tocar. */}
-            <Button type="button" size="lg" disabled={accept.isPending} className="disabled:opacity-85" onClick={() => void acceptInvitationNow()}>
-              {accept.isPending ? <><span aria-hidden="true" className="size-3.5 animate-spin rounded-full border-2 border-[var(--lado-activo)]/40 border-t-[var(--lado-activo)] motion-reduce:animate-none" />{t("join.accepting")}</>
-                : t("join.accept")}
+            {/* «Criterio · Botones», Guardando (tablero Invitacion, «Sin cuenta: aceptando»): «Aceptando…» con el aro del botón. */}
+            <Button type="button" size="lg" pending={accept.isPending} pendingLabel={t("join.accepting")} onClick={() => void acceptInvitationNow()}>
+              {t("join.accept")}
             </Button>
             <p className={note}>{invitation.state === "NoAccount" ? t("join.termsNotice")
               : t("join.joinsProfiles", { organization: organizationName })}</p>

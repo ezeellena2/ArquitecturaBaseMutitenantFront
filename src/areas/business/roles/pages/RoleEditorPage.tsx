@@ -253,7 +253,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
         {mode === "edit"
           ? <Button type="button" variant="outline" onClick={discard}>{t("roles:discard")}</Button>
           : <Button type="button" variant="outline" onClick={leave}>{t("roles:cancel")}</Button>}
-        <Button type="button" disabled={saving || mode === "edit" && !isDirty} onClick={save}>{saving ? t("roles:saving") : mode === "create" ? t("roles:create") : t("roles:save")}</Button>
+        <Button type="button" disabled={mode === "edit" && !isDirty} pending={saving} onClick={save}>{mode === "create" ? t("roles:create") : t("roles:save")}</Button>
       </> : undefined}
     >
       <div className="flex flex-col gap-3.5">

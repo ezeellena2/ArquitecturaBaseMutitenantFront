@@ -2,6 +2,7 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 import { Slot } from "radix-ui"
+import { useTranslation } from "react-i18next"
 
 // Tablero «Criterio · Botones»: cuatro tipos y tres tamaños, iguales en todas las pantallas. El de ícono (⋮, ✕, ☰)
 // mide 32 × 32 y siempre lleva nombre para el lector de pantalla.
@@ -46,21 +47,52 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  pending = false,
+  pendingLabel,
+  disabled,
+  children,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
+    /** «Criterio · Botones», Guardando: mientras espera la respuesta de lo que guarda o manda. No se puede tocar. */
+    pending?: boolean
+    /** Lo que dice mientras tanto: «Guardando…» si no se pasa; «Invitando…», «Enviando…» o el del tablero, si no. */
+    pendingLabel?: React.ReactNode
   }) {
   const Comp = asChild ? Slot.Root : "button"
+  const working = pending && !asChild
 
   return (
     <Comp
       data-slot="button"
       data-variant={variant}
       data-size={size}
-      className={cn(buttonVariants({ variant, size, className }))}
+      data-pending={working || undefined}
+      // Guardando va con opacidad de 0,85, no con la de un botón apagado (0,5).
+      className={cn(buttonVariants({ variant, size, className }), working && "disabled:opacity-85")}
+      disabled={working || disabled}
       {...props}
-    />
+    >
+      {working ? <PendingContent label={pendingLabel}>{children}</PendingContent> : children}
+    </Comp>
+  )
+}
+
+/// El botón mientras guarda: el aro de 14 (de 2 de trazo, en el color del texto: blanco en el principal) y lo que está
+/// haciendo. Lo que decía queda debajo, invisible, y le guarda el ancho: si «Guardando…» es más corto, el botón no se
+/// achica; si es más largo, crece lo justo.
+function PendingContent({ label, children }: { label: React.ReactNode | undefined; children: React.ReactNode }) {
+  const { t } = useTranslation()
+
+  return (
+    <span className="grid place-items-center">
+      <span aria-hidden="true" className="invisible col-start-1 row-start-1 inline-flex items-center gap-1.5">{children}</span>
+      <span className="col-start-1 row-start-1 inline-flex items-center gap-1.5">
+        <span data-slot="button-ring" aria-hidden="true" className="size-3.5 shrink-0 animate-spin rounded-full border-2 border-current/40 border-t-current motion-reduce:animate-none" />
+        {label ?? t("states.saving")}
+      </span>
+    </span>
   )
 }
 

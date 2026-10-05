@@ -38,6 +38,7 @@
     "txtLabel": "Registro TXT a cargar en el DNS de {{domain}}",
     "copy": "Copiar",
     "copied": "Copiado",
-    "check": "Comprobar"
+    "check": "Comprobar",
+    "checking": "Comprobando…"
   }
 }

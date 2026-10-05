@@ -125,7 +125,7 @@ export function SignupPage() {
           <EmailField name={field.name} ref={field.ref} value={field.value} onChange={field.onChange} onBlur={field.onBlur} />
         </FormField>} />
         <FormError message={error ? t(loginCodeErrorKey(error)) : null} />
-        <Button type="submit" size="lg" className="w-full" disabled={request.isPending || retry.isRunning}>{retry.label ?? t("signup.create")}</Button>
+        <Button type="submit" size="lg" className="w-full" disabled={retry.isRunning} pending={request.isPending} pendingLabel={t("common:code.sending")}>{retry.label ?? t("signup.create")}</Button>
       </form>
       {/* Tablero Registro: los dos enlaces a 22 entre sí, como el resto de la columna (en Ingreso van a 8). */}
       <div className="flex flex-col gap-[22px] text-center text-[13px] text-[var(--t2)]">
@@ -136,7 +136,7 @@ export function SignupPage() {
       onCodeChange={(next) => { setCode(next); if (error?.code === "Auth.LoginCode.Invalid") setError(null); }}
       onVerify={() => void verifyCode()} onResend={() => void resendCode()}
       invalid={error?.code === "Auth.LoginCode.Invalid"} locked={verify.isPending} message={error ? loginCodeMessage(error, t) : null}
-      verifyLabel={t("signup.verify")} verifyDisabled={verify.isPending}
-      resendSeconds={resend.seconds} resendRetryLabel={retry.label} resendDisabled={request.isPending} />}
+      verifyLabel={t("signup.verify")} verifyPending={verify.isPending}
+      resendSeconds={resend.seconds} resendRetryLabel={retry.label} resendPending={request.isPending} />}
   </AuthLayout>;
 }

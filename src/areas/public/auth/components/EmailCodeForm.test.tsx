@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { HttpResponse, http } from "msw";
+import { HttpResponse, delay, http } from "msw";
 import { I18nextProvider } from "react-i18next";
 import type { ReactNode } from "react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
@@ -53,6 +53,19 @@ describe("EmailCodeForm", () => {
     expect(submitted).toEqual({ email: "ana@example.com" });
     expect(key).toMatch(/[\w-]+/);
     expect(onCodeRequested).toHaveBeenCalledWith(expect.objectContaining({ kind: "code", destination: "ana@example.com" }));
+  });
+
+  // «Criterio · Botones», Guardando, con el texto de «Criterio · Diálogos» para mandar un código.
+  it("mientras manda el código dice «Enviando…» con el aro y no se puede volver a tocar", async () => {
+    server.use(http.post("/api/auth/login-code", async () => { await delay("infinite"); return HttpResponse.json({ resendAfterSeconds: 60 }); }));
+    renderForm();
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: "ana@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+
+    const sending = await screen.findByRole("button", { name: "Enviando…" });
+    expect(sending).toBeDisabled();
+    expect(sending.querySelector("[data-slot='button-ring']")).not.toBeNull();
   });
 
   it("sitúa el error del servidor en el campo y 429 muestra cuenta regresiva sin reenvío automático", async () => {

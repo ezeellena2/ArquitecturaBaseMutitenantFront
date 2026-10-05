@@ -251,14 +251,14 @@ export function BusinessSignupPage() {
               <EmailField name="email" value={email} onChange={(value) => { setEmail(value ?? ""); setEmailError(false); }} />
             </FormField>
             <FormError message={requestErrorText} />
-            <Button type="button" size="lg" className="w-full" disabled={requestCode.isPending || retry.isRunning}
+            <Button type="button" size="lg" className="w-full" disabled={retry.isRunning} pending={requestCode.isPending} pendingLabel={t("common:code.sending")}
               onClick={() => { if (acceptedTerms) void sendCode(); else setTermsError(true); }}>{retry.label ?? t("businessSignup.continue")}</Button>
             <div className="text-center text-[13px] text-[var(--t2)]">{t("businessSignup.alreadyRegistered")} <AuthLink to={loginPathOf("business")}>{t("businessSignup.loginBusiness")}</AuthLink></div>
           </section>
             : step === "code" ? <AuthCodeStep destination={email} code={code} onBack={() => { setStep("email"); setCode(""); setRequestError(null); }}
               onCodeChange={(next) => { setCode(next); setRequestError(null); }} onVerify={() => void confirmCode()} onResend={() => void resendCode()}
               invalid={requestError?.code === "Auth.LoginCode.Invalid"} locked={verifyCode.isPending} message={codeMessage}
-              verifyDisabled={verifyCode.isPending} resendSeconds={resend.seconds} resendRetryLabel={retry.label} resendDisabled={requestCode.isPending} />
+              verifyPending={verifyCode.isPending} resendSeconds={resend.seconds} resendRetryLabel={retry.label} resendPending={requestCode.isPending} />
               : <section className="flex flex-col gap-[22px]">
                 <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.organizationTitle")}</h1>
                   <p className="mt-1.5 text-sm leading-normal text-[var(--t2)]">{t("businessSignup.ownerNote")}</p></div>
@@ -291,8 +291,8 @@ export function BusinessSignupPage() {
                     inputMode="numeric" autoComplete="off" placeholder="30-12345678-1" maxLength={11} />
                 </FormField>
                 <FormError message={requestErrorText} />
-                <Button type="button" size="lg" className="w-full" disabled={!canCreate}
-                  onClick={() => void submitOrganization()}>{createMutation.isPending ? t("businessSignup.creating") : t("businessSignup.create")}</Button>
+                <Button type="button" size="lg" className="w-full" disabled={!canCreate} pending={createMutation.isPending} pendingLabel={t("businessSignup.creating")}
+                  onClick={() => void submitOrganization()}>{t("businessSignup.create")}</Button>
               </section>}
   </AuthLayout>;
 

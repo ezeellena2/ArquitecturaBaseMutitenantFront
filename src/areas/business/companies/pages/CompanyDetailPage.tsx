@@ -305,7 +305,7 @@ export function CompanyDetailPage() {
           </DialogBody>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={closeAdd}>{t("common:actions.cancel")}</Button>
-            <Button type="submit" disabled={addMember.isPending}>{addMember.isPending ? t("common:states.saving") : t("companies:actions.addMember")}</Button>
+            <Button type="submit" pending={addMember.isPending} pendingLabel={t("companies:actions.addingMember")}>{t("companies:actions.addMember")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -323,7 +323,7 @@ export function CompanyDetailPage() {
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={closeRoles}>{t("common:actions.cancel")}</Button>
-          <Button type="button" disabled={!roleTarget || changeMemberRoles.isPending} onClick={() => roleTarget && changeMemberRoles.mutate(roleTarget)}>{changeMemberRoles.isPending ? t("common:states.saving") : t("companies:editMemberRoles.save")}</Button>
+          <Button type="button" disabled={!roleTarget} pending={changeMemberRoles.isPending} onClick={() => roleTarget && changeMemberRoles.mutate(roleTarget)}>{t("companies:editMemberRoles.save")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -349,7 +349,7 @@ export function CompanyDetailPage() {
           <DialogFooter>
             <Button type="button" variant="outline" onClick={closeEdit}>{t("common:actions.cancel")}</Button>
             {/* «Criterio · Botones»: no se apaga con el CUIT mal; el campo ya dice qué corregir y no se manda nada. */}
-            <Button type="submit" disabled={saveCompany.isPending}>{saveCompany.isPending ? t("common:states.saving") : t("companies:form.save")}</Button>
+            <Button type="submit" pending={saveCompany.isPending}>{t("companies:form.save")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

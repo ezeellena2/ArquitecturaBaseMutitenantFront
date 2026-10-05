@@ -73,8 +73,10 @@
   "code": {
     "label": "Código",
     "send": "Enviar código",
+    "sending": "Enviando…",
     "retryIn": "Reintentá en {{seconds}} s",
     "verify": "Verificar",
+    "verifying": "Verificando…",
     "incomplete": "Escribí los 6 números del código.",
     "attemptsLeft_one": "Te queda {{count}} intento",
     "attemptsLeft_other": "Te quedan {{count}} intentos",

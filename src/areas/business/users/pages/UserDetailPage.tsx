@@ -273,9 +273,9 @@ export function UserDetailPage() {
         ? <Button type="button" variant="danger" onClick={() => setConfirmAction("remove")}>{t("users:actions.remove")}</Button>
         : <>
           <Button type="button" variant="outline" onClick={() => { setDraft(null); setFailure(undefined); }}>{t("users:detail.discard")}</Button>
-          <Button type="button" disabled={!isDirty || save.isPending || !roles[0].data || !roles[1].data || !companies.data}
+          <Button type="button" disabled={!isDirty || !roles[0].data || !roles[1].data || !companies.data} pending={save.isPending}
             onClick={() => { if (saved.isActive && !current.isActive) setConfirmAction("disable"); else void saveAccess(); }}>
-            {save.isPending ? t("common:states.saving") : t("users:detail.save")}
+            {t("users:detail.save")}
           </Button>
         </> : undefined}>
       <div className="flex flex-col gap-4 max-md:gap-0">
@@ -358,7 +358,7 @@ export function UserDetailPage() {
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" disabled={save.isPending} onClick={closeCompanyDialog}>{t("common:actions.cancel")}</Button>
-          <Button type="button" disabled={save.isPending} onClick={() => { void saveCompanyDialog(); }}>{save.isPending ? t("common:states.saving") : companyDialog?.mode === "add" ? t("users:detail.addCompanyConfirm") : t("users:detail.saveCompanyRoles")}</Button>
+          <Button type="button" pending={save.isPending} onClick={() => { void saveCompanyDialog(); }}>{companyDialog?.mode === "add" ? t("users:detail.addCompanyConfirm") : t("users:detail.saveCompanyRoles")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

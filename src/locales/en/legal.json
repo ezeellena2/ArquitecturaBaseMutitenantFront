@@ -10,6 +10,7 @@
     "bothChanged": "The <terms>Terms and conditions</terms> changed (version {{termsVersion}}) and the <privacy>Privacy policy</privacy> changed (version {{privacyVersion}}).",
     "agreement": "I read and accept the <terms>Terms</terms> and the <privacy>Privacy policy</privacy>",
     "continue": "Accept and continue",
+    "accepting": "Accepting…",
     "acceptRequired": "Accept the Terms and Privacy Policy.",
     "signOut": "Sign out",
     "title": "We updated the terms"

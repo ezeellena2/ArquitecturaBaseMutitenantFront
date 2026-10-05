@@ -70,7 +70,7 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   const formError = edit.formError ?? (reloadFailure ? <FormError message={apiErrorMessage(reloadFailure, t)} /> : null);
   const actions = <>
     <Button type="button" variant="outline" onClick={discard} disabled={isSubmitting}>{t("discard")}</Button>
-    <Button type="submit" form="account-profile" disabled={!isDirty || isSubmitting}>{t("save")}</Button>
+    <Button type="submit" form="account-profile" disabled={!isDirty} pending={isSubmitting}>{t("save")}</Button>
   </>;
   return <>
     <Page title={t("title")} icon={UserRound} status={edit.unsaved} actions={actions} phoneBody="gray" banner={edit.banner}>

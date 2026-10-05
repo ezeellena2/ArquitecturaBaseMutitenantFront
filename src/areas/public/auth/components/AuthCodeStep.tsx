@@ -26,11 +26,15 @@ export interface AuthCodeStepProps {
   /** «Verificar», salvo en el registro de personas («Verificar y crear la cuenta») o mientras corre la espera del servidor. */
   verifyLabel?: string;
   verifyDisabled?: boolean;
+  /** Mientras se verifica: «Verificando…» con el aro («Criterio · Botones», Guardando). */
+  verifyPending?: boolean;
   /** Los segundos que faltan para poder pedir otro código. */
   resendSeconds: number;
   /** La espera que pidió el servidor (429), en lugar del texto del botón. */
   resendRetryLabel?: string | null;
   resendDisabled?: boolean;
+  /** Mientras se manda otro código: «Enviando…» con el aro. */
+  resendPending?: boolean;
   /** Debajo de los botones: «Volver a ingresar» con la cuenta suspendida. */
   footer?: ReactNode;
 }
@@ -39,7 +43,7 @@ export interface AuthCodeStepProps {
 /// la misma pantalla, sin ruta propia. «Verificar» no se apaga por un código incompleto («Criterio · Botones»): la franja
 /// dice qué falta y un dígito nuevo la saca.
 export function AuthCodeStep({ destination, code, onCodeChange, onBack, onVerify, onResend, invalid = false, locked = false, message,
-  verifyLabel, verifyDisabled = false, resendSeconds, resendRetryLabel, resendDisabled = false, footer }: AuthCodeStepProps) {
+  verifyLabel, verifyDisabled = false, verifyPending = false, resendSeconds, resendRetryLabel, resendDisabled = false, resendPending = false, footer }: AuthCodeStepProps) {
   const { t } = useTranslation("auth");
   const hintId = useId();
   const [incomplete, setIncomplete] = useState(false);
@@ -65,8 +69,9 @@ export function AuthCodeStep({ destination, code, onCodeChange, onBack, onVerify
       onChange={(next) => { setIncomplete(false); onCodeChange(next); }} />
     <AuthMessage message={incomplete ? { text: t("common:code.incomplete") } : message} />
     <div className="flex flex-col gap-2.5">
-      <Button type="button" size="lg" onClick={verify} disabled={verifyDisabled}>{verifyLabel ?? t("login.verify")}</Button>
-      <Button type="button" size="lg" variant="outline" onClick={() => { setIncomplete(false); onResend(); }} disabled={waiting || resendDisabled}>
+      <Button type="button" size="lg" onClick={verify} disabled={verifyDisabled} pending={verifyPending} pendingLabel={t("common:code.verifying")}>{verifyLabel ?? t("login.verify")}</Button>
+      <Button type="button" size="lg" variant="outline" onClick={() => { setIncomplete(false); onResend(); }} disabled={waiting || resendDisabled}
+        pending={resendPending} pendingLabel={t("common:code.sending")}>
         {resendRetryLabel ?? (resendSeconds > 0 ? t("login.resendIn", { seconds: resendSeconds }) : t("login.resendCode"))}
       </Button>
     </div>

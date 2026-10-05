@@ -38,6 +38,7 @@
     "txtLabel": "TXT record to add to the DNS of {{domain}}",
     "copy": "Copy",
     "copied": "Copied",
-    "check": "Check"
+    "check": "Check",
+    "checking": "Checking…"
   }
 }

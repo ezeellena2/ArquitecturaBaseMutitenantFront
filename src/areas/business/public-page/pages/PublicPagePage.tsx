@@ -174,7 +174,7 @@ export function PublicPagePage() {
         : { label: t("publicPage:preview"), onClick: () => setPreviewOpen(true) }}
       actions={<>
         <Button type="button" variant="outline" onClick={() => { setDraftState(null); update.reset(); }}>{t("publicPage:discard")}</Button>
-        <Button type="button" disabled={!canSave || update.isPending} onClick={saveChanges}>{update.isPending ? t("common:states.saving") : t("publicPage:save")}</Button>
+        <Button type="button" disabled={!canSave} pending={update.isPending} onClick={saveChanges}>{t("publicPage:save")}</Button>
       </>}
     >
       <div className="flex flex-col gap-4 max-md:gap-0">

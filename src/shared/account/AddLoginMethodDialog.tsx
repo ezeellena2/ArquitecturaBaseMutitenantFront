@@ -75,7 +75,7 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
         </>}
         <FormError message={failure} />
         </DialogBody>
-        <DialogFooter><Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("cancel")}</Button><Button type="submit" disabled={busy || retry.isRunning}>{retry.label ?? t(methodId ? "verify" : "sendCode")}</Button></DialogFooter>
+        <DialogFooter><Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("cancel")}</Button><Button type="submit" disabled={retry.isRunning} pending={busy} pendingLabel={t(methodId ? "common:code.verifying" : "common:code.sending")}>{retry.label ?? t(methodId ? "verify" : "sendCode")}</Button></DialogFooter>
       </form>
     </DialogContent>
   </Dialog>;

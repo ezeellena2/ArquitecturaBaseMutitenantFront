@@ -86,4 +86,16 @@ describe("AuthCodeStep", () => {
     expect(screen.getByRole("button", { name: "Reenviar código" })).toBeDisabled();
     expect(screen.getByText("Volver a ingresar")).toBeVisible();
   });
+
+  // «Criterio · Botones», Guardando: mientras espera la respuesta, el botón dice qué hace, con el aro, y no se puede tocar.
+  it("mientras verifica dice «Verificando…» y mientras manda otro código, «Enviando…», con el aro", () => {
+    render(<Harness verifyPending resendPending />);
+
+    for (const name of ["Verificando…", "Enviando…"]) {
+      const button = screen.getByRole("button", { name });
+      expect(button).toBeDisabled();
+      expect(button).toHaveAttribute("data-pending", "true");
+      expect(button.querySelector("[data-slot='button-ring']")).not.toBeNull();
+    }
+  });
 });

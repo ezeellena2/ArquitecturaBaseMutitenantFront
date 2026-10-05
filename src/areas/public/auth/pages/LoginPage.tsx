@@ -202,9 +202,9 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       onVerify={() => void submitCode()} onResend={() => void resendCode()}
       invalid={wrongCode} locked={verify.isPending || codeSpent || accountClosed}
       message={error ? loginCodeMessage(error, t) : null}
-      verifyLabel={verifyRetry.label ?? undefined} verifyDisabled={verify.isPending || verifyRetry.isRunning || codeSpent || accountClosed}
+      verifyLabel={verifyRetry.label ?? undefined} verifyDisabled={verifyRetry.isRunning || codeSpent || accountClosed} verifyPending={verify.isPending}
       resendSeconds={accountClosed ? 0 : resendTimer.seconds} resendRetryLabel={accountClosed ? null : resendRetry.label}
-      resendDisabled={resend.isPending || accountClosed}
+      resendDisabled={accountClosed} resendPending={resend.isPending}
       footer={accountClosed ? <div className="text-center"><Button type="button" variant="link" className="text-[13px]" onClick={backToEmail}>{t("login.backToLogin")}</Button></div> : null} />}
   </AuthLayout>;
 }

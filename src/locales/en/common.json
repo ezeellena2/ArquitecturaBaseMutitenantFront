@@ -73,8 +73,10 @@
   "code": {
     "label": "Code",
     "send": "Send code",
+    "sending": "Sending…",
     "retryIn": "Retry in {{seconds}} s",
     "verify": "Verify",
+    "verifying": "Verifying…",
     "incomplete": "Enter all 6 digits of the code.",
     "attemptsLeft_one": "{{count}} attempt left",
     "attemptsLeft_other": "{{count}} attempts left",

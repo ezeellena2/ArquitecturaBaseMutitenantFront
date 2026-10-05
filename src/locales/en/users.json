@@ -58,6 +58,7 @@
     "companyRoles": "Roles in the company",
     "company": "Company",
     "send": "Invite",
+    "sending": "Inviting…",
     "noRoles": "None",
     "noCompany": "None",
     "chooseCompanyFirst": "Choose a company first",

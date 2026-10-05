@@ -240,7 +240,7 @@ export function UsersPage() {
           </DialogBody>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setInviteOpen(false)}>{t("common:actions.cancel")}</Button>
-            <Button type="submit" disabled={invite.isPending}>{invite.isPending ? t("common:states.saving") : t("users:invite.send")}</Button>
+            <Button type="submit" pending={invite.isPending} pendingLabel={t("users:invite.sending")}>{t("users:invite.send")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

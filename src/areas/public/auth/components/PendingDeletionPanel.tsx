@@ -13,7 +13,7 @@ export function PendingDeletionPanel({ pending, onCancel, busy, failure }: { pen
   return <AuthStatus icon={ClockIcon} tone="warning" title={t("deletion.title")}
     detail={<Trans ns="auth" i18nKey="deletion.date" components={{ date: <DateInTimeZoneText value={pending.scheduledForUtc} timeZone={pending.timeZoneId} /> }} />}
     actions={<>
-      <Button type="button" size="lg" onClick={onCancel} disabled={busy}>{t("deletion.cancelAndEnter")}</Button>
+      <Button type="button" size="lg" onClick={onCancel} pending={busy} pendingLabel={t("deletion.cancelAndEnter")}>{t("deletion.cancelAndEnter")}</Button>
       <Button type="button" variant="outline" size="lg" onClick={() => { void navigate("/"); }} disabled={busy}>{t("deletion.leave")}</Button>
     </>}>
     <FormError message={failure} />

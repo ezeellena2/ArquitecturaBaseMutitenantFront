@@ -141,7 +141,7 @@ export function SettingsPage() {
       phoneSubtitle={edit.unsaved}
       actions={canManage && draft && settings.data ? <>
         <Button type="button" variant="outline" onClick={() => { setDraftState(settingsDraft(settings.data!)); setFailure(undefined); }}>{t("settings:discard")}</Button>
-        <Button type="button" disabled={!isDirty || save.isPending} onClick={() => save.mutate({ ...draft, version: settings.data!.version })}>{t("settings:save")}</Button>
+        <Button type="button" disabled={!isDirty} pending={save.isPending} onClick={() => save.mutate({ ...draft, version: settings.data!.version })}>{t("settings:save")}</Button>
       </> : undefined}
     >
       <div className="flex flex-col gap-4 max-md:gap-3.5">
@@ -195,7 +195,7 @@ export function SettingsPage() {
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => { setDomainDialogOpen(false); setMissingDomain(false); }}>{t("common:actions.cancel")}</Button>
-          <Button type="button" disabled={addDomain.isPending} onClick={submitDomain}>{t("settings:domains.next")}</Button>
+          <Button type="button" pending={addDomain.isPending} onClick={submitDomain}>{t("settings:domains.next")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -224,7 +224,7 @@ export function SettingsPage() {
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" disabled={verifyDomain.isPending} onClick={closeVerify}>{t("common:actions.cancel")}</Button>
-          <Button type="button" disabled={verifyDomain.isPending} onClick={() => { if (domainToVerify) { setVerifyFailure(null); verifyDomain.mutate(domainToVerify); } }}>{t("settings:domains.check")}</Button>
+          <Button type="button" pending={verifyDomain.isPending} pendingLabel={t("settings:domains.checking")} onClick={() => { if (domainToVerify) { setVerifyFailure(null); verifyDomain.mutate(domainToVerify); } }}>{t("settings:domains.check")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
