@@ -211,6 +211,20 @@ describe("arnés de reglas", () => {
     expect(withoutAxe, "tests de pantalla sin axe").toEqual([]);
   });
 
+  // Revisión de la alineación al lienzo, Paquete 6: las capturas se comparan siempre con el lienzo vigente
+  // (docs/design/lienzo), con sus props y sus pasos. Ningún generador apunta a una copia vieja (lienzo-v35) ni le
+  // reescribe el código al tablero para inyectarle un estado.
+  it("las capturas se comparan con el lienzo vigente, sin copias ni estados inyectados", () => {
+    const scripts = readdirSync(path.join(root, "scripts"))
+      .filter((name) => /^capturar-.+\.mjs$/.test(name) && !name.endsWith(".test.mjs"));
+    expect(scripts.length).toBeGreaterThan(0);
+    const offenders = scripts.filter((name) => {
+      const source = readFileSync(path.join(root, "scripts", name), "utf8");
+      return /lienzo-v\d+/.test(source) || source.includes("__dcUpdate(");
+    });
+    expect(offenders, "generadores de capturas que no usan el lienzo vigente").toEqual([]);
+  });
+
   it("exige los Copiá de y tests de etapas cerradas", () => {
     const sourceFiles = allFiles(src);
     for (const file of ficheFiles) {
