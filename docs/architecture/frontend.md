@@ -243,7 +243,7 @@ Rige el [lienzo vigente](../design/lienzo/README.md): **mandan los ocho tableros
 - Todo menú se abre con un clic y se cierra al elegir, con Escape o con un clic afuera; uno a la vez; se recorre con las flechas. Más de 8 opciones es una pantalla o un desplegable con buscador.
 
 **Diálogos** («Criterio · Diálogos»)
-- Dos anchos: chico de 420 px (uno o dos campos, y confirmaciones) y normal de 560 (hasta seis campos en dos columnas). Encabezado de 48 px sobre arena, con el título de 15 en semibold y el ✕, sin bajada; cuerpo con 20 px de margen; pie de 60 px con línea arriba y, a la derecha, «Cancelar» y la principal, última.
+- Dos anchos: chico de 420 px (uno o dos campos, y confirmaciones) y normal de 560 (hasta seis campos en dos columnas). La única excepción es la vista previa de la Página pública, de 640 (`size="preview"`): lleva la tarjeta de la página pública tal cual, sobre su fondo (lienzo v107). Encabezado de 48 px sobre arena, con el título de 15 en semibold y el ✕, sin bajada; cuerpo con 20 px de margen; pie de 60 px con línea arriba y, a la derecha, «Cancelar» y la principal, última.
 - La **confirmación** de algo que no se deshace va sin ✕: el título es la pregunta, con el nombre de lo que se toca; el texto dice qué se pierde; el botón repite la acción en rojo relleno.
 - El **aviso importante** (`ImportantNotice`) se abre desde un ⓘ o desde el botón apagado: el título dice qué pasa, el motivo va en una caja roja suave y debajo «Qué podés hacer» en pasos numerados, con un solo botón, «Entendido».
 - El detalle de solo lectura va en una grilla con líneas: el rótulo a la izquierda, sobre arena clara, y el valor a la derecha.

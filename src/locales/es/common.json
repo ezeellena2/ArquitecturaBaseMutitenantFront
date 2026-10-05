@@ -100,6 +100,13 @@
     "perPage": "{{size}} por página",
     "loadMore": "Cargar más"
   },
+  "publicPageCard": {
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "email": "Correo",
+    "website": "Sitio web",
+    "signIn": "Ingresá para continuar"
+  },
   "notifications": {
     "label": "Notificaciones",
     "close": "Cerrar aviso"

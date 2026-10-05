@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CountryReference } from "@/shared/referenceData/referenceData";
-import { formatPhoneDraft, phoneDraftFromE164 } from "./phoneInput";
+import { formatPhoneDraft, phoneDraftFromE164, phoneE164FromDraft } from "./phoneInput";
 
 const countries = [
   { code: "AR", callingCode: "54", isEnabled: true },
@@ -35,5 +35,20 @@ describe("phoneDraftFromE164", () => {
     expect(phoneDraftFromE164(null)).toBeNull();
     expect(phoneDraftFromE164("")).toBeNull();
     expect(phoneDraftFromE164("12")).toEqual({ country: "", number: "12" });
+  });
+});
+
+describe("phoneE164FromDraft", () => {
+  // La vista previa de la Página pública muestra con PhoneText el teléfono que se está cargando: le hace falta el E.164.
+  it("arma el E.164 de un número válido para mostrarlo", () => {
+    expect(phoneE164FromDraft({ country: "AR", number: "011 4321-5678" })).toBe("+541143215678");
+    expect(phoneE164FromDraft({ country: "AR", number: "+598 94 123 456" })).toBe("+59894123456");
+  });
+
+  it("sin número, o con uno que no es válido, no hay nada que mostrar", () => {
+    expect(phoneE164FromDraft(null)).toBeNull();
+    expect(phoneE164FromDraft({ country: "AR", number: "  " })).toBeNull();
+    expect(phoneE164FromDraft({ country: "AR", number: "123" })).toBeNull();
+    expect(phoneE164FromDraft({ country: "", number: "4321-5678" })).toBeNull();
   });
 });

@@ -36,3 +36,12 @@ export function phoneDraftFromE164(value: string | null | undefined): { country:
   const parsed = parsePhoneNumberFromString(value);
   return parsed?.country ? { country: parsed.country, number: parsed.formatNational() } : { country: "", number: value };
 }
+
+/** Para mostrar con `PhoneText` un teléfono que todavía se está cargando (la vista previa de la Página pública): su E.164
+ *  si el número es válido; si no, `null`. Al backend se le sigue mandando país y número nacional. */
+export function phoneE164FromDraft(draft: { country: string; number: string } | null | undefined): string | null {
+  const number = draft?.number.trim();
+  if (!number) return null;
+  const parsed = parsePhoneNumberFromString(number, (draft?.country || undefined) as CountryCode | undefined);
+  return parsed?.isValid() ? parsed.number : null;
+}

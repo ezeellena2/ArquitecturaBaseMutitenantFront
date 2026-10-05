@@ -173,7 +173,7 @@ src/
 │   │           └── OrganizationUnavailablePage.tsx  [E3] 403 Tenancy.Tenant.Suspended, PendingApproval o Closed: Suspendida, Espera aprobación o Cerrada (tablero Perfil-Suspendido); «Elegí otro perfil»
 │   │
 │   ├── storefront/                                  [E7] SUBDOMINIO de una organización: su página pública
-│   │   ├── pages/PublicPage.tsx                     nombre, logo, descripción, contacto (+ lo que publiquen los módulos)
+│   │   ├── pages/PublicPage.tsx                     nombre, logo, descripción, contacto (+ lo que publiquen los módulos): shared/ui/PublicPageCard con `links` y `signInHref`
 │   │   └── <módulo público del producto>/           lo que una persona ve y pide; interactuar pide el acceso B2C
 │   │
 │   ├── personal/                                    ACCESO B2C (espacio personal)
@@ -257,7 +257,8 @@ src/
 │   │   │   └── pages/AuditPage.tsx
 │   │   ├── public-page/                             [E6] /org/pagina: mi página pública (datos, cambio de slug, publicar)
 │   │   │   ├── api/publicPage.ts                    /api/public-site
-│   │   │   └── pages/PublicPageEditorPage.tsx       bloqueada por la plataforma: «Despublicada por la plataforma», con el motivo; publicar responde PublicSite.PublicPage.PublishBlocked
+│   │   │   └── pages/PublicPagePage.tsx             bloqueada por la plataforma: «Despublicada por la plataforma», con el motivo; publicar responde PublicSite.PublicPage.PublishBlocked;
+│   │   │                                            sin publicar, «Vista previa»: shared/ui/PublicPageCard en el diálogo de 640, con lo que está escrito
 │   │   └── <módulo B2B del producto>/               misma forma que roles/
 │   │
 │   └── platform/                                    ÁREA PLATAFORMA [E5]
@@ -433,7 +434,7 @@ src/
 │       ├── badge.tsx                                [E0] primitiva shadcn (minúscula, `npx shadcn@4.21.0 add`)
 │       ├── button.tsx
 │       ├── checkbox.tsx
-│       ├── dialog.tsx
+│       ├── dialog.tsx                               420 o 560 («Criterio · Diálogos»); la única excepción, la vista previa de la Página pública, de 640 (`size="preview"`)
 │       ├── dropdown-menu.tsx
 │       ├── input.tsx
 │       ├── label.tsx
@@ -466,6 +467,9 @@ src/
 │       ├── Page.tsx                                 [E1] banda blanca: ícono o backTo, título de 18 px, segunda línea, pestañas, cartel y acciones (las que sobran, en ⋮); en el teléfono, la pantalla de la app: título en la barra, «+» flotante y botones fijos abajo
 │       ├── Pagination.tsx                           [E1] "1–10 de 1.234" · "Página 1 de 124" · selector 10/20/50/100; en el teléfono, «Cargar más»
 │       ├── LoadMore.tsx                             [E1] paginado por cursor
+│       ├── PublicPageCard.tsx                       la tarjeta de la página pública de una organización (Pagina-Publica y M-Pagina-Publica): logo o iniciales, nombre,
+│       │                                            descripción, los datos cargados con su ícono e «Ingresá para continuar»; la usan la vista previa de Página pública
+│       │                                            (sin enlaces) y la página del subdominio [E7] (`links`, `signInHref`); `publicPageBackdropClass`, su fondo
 │       ├── RadioGroupField.tsx                     [E1] de la base, adaptado a los tokens
 │       ├── RowActions.tsx                           [E1] menú ⋮ por fila; las destructivas al final, en rojo
 │       ├── Section.tsx                              una caja por tema con el título en el encabezado arena; en el teléfono, grupo blanco sobre gris, tarjeta con margen o campos sueltos

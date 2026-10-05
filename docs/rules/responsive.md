@@ -11,7 +11,7 @@
 | `FilterBar` | buscador y filtros en su tarjeta | igual | la lupa y el filtro son íconos de la barra; el filtro abre una hoja con las opciones y su conteo |
 | `DataTable` | todas las columnas | sin las `priority: "low"` | la fila de lista de la pantalla (`mobileRow`, con `ListRow`): de borde a borde, hasta tres líneas, el ⋮ solo si hay acciones; el paginado es «Cargar más» |
 | `Section` | caja con el título en el encabezado arena | igual | el título gris arriba y una tarjeta blanca (`card`), la tarjeta dentro de una página con margen (`inset`) o los campos sueltos (`untitled`) |
-| `Dialog` | centrado, 560 px (420 para confirmar) | centrado | hoja desde abajo, con manija y botones de 48 a lo ancho; la confirmación, sin ✕ |
+| `Dialog` | centrado, 560 px (420 para confirmar; 640 la vista previa de la Página pública) | centrado | hoja desde abajo, con manija y botones de 48 a lo ancho; la confirmación, sin ✕ |
 | Pantalla de edición | al editar, «Descartar cambios» y «Guardar cambios» en la banda; al crear, «Cancelar» y la acción | igual | los mismos botones, fijos abajo (`FixedActions`) |
 | Avisos | abajo a la derecha; los carteles debajo de la banda | igual | lo pasajero, en una franja oscura abajo; lo que sigue, en una banda debajo de la barra |
 | Pantallas públicas | dos mitades (formulario + panel de la marca) | igual | una columna, sin el panel; el sitio público, web con ☰ (la página de una organización, sin ☰) |

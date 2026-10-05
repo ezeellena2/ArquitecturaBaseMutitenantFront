@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "pagina-publica-vista-previa-tarjeta-escritorio",
+      "pair": "pagina-publica-vista-previa-tarjeta",
+      "group": "pagina-publica",
+      "state": "Página pública: la vista previa, con la tarjeta de la página pública en el diálogo de 640",
+      "board": "Pagina-Org",
+      "props": {
+        "estado": "Borrador: vista previa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fpagina",
+        "captureMode": "harness",
+        "userFixture": "visual-owner",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/organization/public-page",
+            "body": {
+              "slug": "delta",
+              "name": "Grupo Delta",
+              "description": "Grupo Delta y sus empresas, en un solo lugar.",
+              "logoDataUri": null,
+              "contactEmail": "contacto@delta.ejemplo.com",
+              "contactPhone": "+541143215678",
+              "address": "Av. Corrientes 1234, piso 5, Buenos Aires",
+              "website": "https://delta.ejemplo.com",
+              "isPublished": false,
+              "publishBlockedAtUtc": null,
+              "publishBlockedReason": null,
+              "version": 5
+            },
+            "status": 200
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Vista previa"
+          }
+        ],
+        "readySelector": "[role=\"dialog\"]"
+      }
+    },
+    {
+      "id": "pagina-publica-vista-previa-tarjeta-movil",
+      "pair": "pagina-publica-vista-previa-tarjeta",
+      "group": "pagina-publica",
+      "state": "Página pública en el teléfono: la vista previa, en la hoja desde abajo",
+      "board": "M-Pagina-Org",
+      "props": {
+        "estado": "Borrador: vista previa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fpagina",
+        "captureMode": "harness",
+        "userFixture": "visual-owner",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/organization/public-page",
+            "body": {
+              "slug": "delta",
+              "name": "Grupo Delta",
+              "description": "Grupo Delta y sus empresas, en un solo lugar.",
+              "logoDataUri": null,
+              "contactEmail": "contacto@delta.ejemplo.com",
+              "contactPhone": "+541143215678",
+              "address": "Av. Corrientes 1234, piso 5, Buenos Aires",
+              "website": "https://delta.ejemplo.com",
+              "isPublished": false,
+              "publishBlockedAtUtc": null,
+              "publishBlockedReason": null,
+              "version": 5
+            },
+            "status": 200
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Vista previa"
+          }
+        ],
+        "readySelector": "[role=\"dialog\"]"
+      }
+    }
+  ]
+}

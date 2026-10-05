@@ -60,8 +60,10 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   /** `"desktop"`: la ✕ solo en la compu, para un diálogo que en el teléfono es la hoja de una confirmación (Cuenta-Baja). */
   showCloseButton?: boolean | "desktop"
-  /** «Criterio · Diálogos», Los dos anchos: el chico de 420 (uno o dos campos, y confirmaciones) o el normal de 560. */
-  size?: "sm" | "default"
+  /** «Criterio · Diálogos», Los dos anchos: el chico de 420 (uno o dos campos, y confirmaciones) o el normal de 560.
+   *  La única excepción es `preview`, de 640: la vista previa de la Página pública, con la tarjeta de la página pública
+   *  tal cual sobre su fondo (tablero Pagina-Org, «Borrador: vista previa», v107). */
+  size?: "sm" | "default" | "preview"
 }) {
   const { t } = useTranslation()
 
@@ -72,7 +74,7 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           "fixed bottom-0 left-0 z-50 grid max-h-[calc(100dvh-1rem)] w-full gap-0 overflow-y-auto rounded-t-[20px] border-0 bg-[var(--lado-activo)] p-0 text-[15px] shadow-[var(--sombra-hoja)] outline-none md:border md:border-[var(--borde)] md:text-[13px] md:shadow-lg data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[12px] md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0",
-          size === "sm" ? "md:max-w-[420px]" : "md:max-w-[560px]",
+          size === "sm" ? "md:max-w-[420px]" : size === "preview" ? "md:max-w-[640px]" : "md:max-w-[560px]",
           // Lienzo v106 («Criterio · Decisiones»): en el teléfono toda hoja sube desde abajo con el alto de lo que lleva;
           // ninguna ocupa la pantalla completa.
           className

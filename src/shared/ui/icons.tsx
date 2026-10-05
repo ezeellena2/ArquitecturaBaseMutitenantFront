@@ -283,6 +283,36 @@ export function SmartphoneIcon(props: IconProps) {
   );
 }
 
+/// Un lugar: la dirección, en la tarjeta de la página pública (tableros Pagina-Publica y M-Pagina-Publica).
+export function MapPinIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z" />
+      <circle cx="12" cy="10" r="2.3" />
+    </Icon>
+  );
+}
+
+/// Un tubo de teléfono: el teléfono de contacto, en la tarjeta de la página pública.
+export function PhoneIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M6.5 4h3l1.5 4-2 1.5a11 11 0 0 0 5.5 5.5l1.5-2 4 1.5v3a2 2 0 0 1-2 2A15.5 15.5 0 0 1 4.5 6a2 2 0 0 1 2-2Z" />
+    </Icon>
+  );
+}
+
+/// El mundo: el sitio web, en la tarjeta de la página pública.
+export function GlobeIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M3.5 12h17" />
+      <path d="M12 3.5c2.4 2.6 3.5 5.5 3.5 8.5s-1.1 5.9-3.5 8.5c-2.4-2.6-3.5-5.5-3.5-8.5s1.1-5.9 3.5-8.5Z" />
+    </Icon>
+  );
+}
+
 /// Algo comprobado: la insignia "Verificado".
 export function CheckIcon(props: IconProps) {
   return (

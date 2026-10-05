@@ -454,6 +454,19 @@ function r3eCases(root) {
   ];
 }
 
+// R3f · Vista previa de la Página pública y flecha del menú (lienzo v107): la vista previa, que el lienzo dibuja desde v107
+// («Borrador: vista previa» de Pagina-Org y M-Pagina-Org). La flecha se ve en casos que ya están: en el menú, en
+// «inicio-personal» (Personal), y en el panel de Administración, en «pagina-publica-borrador» (la organización).
+function r3fCases(root) {
+  const preview = { actions: [appClick("button", "Vista previa")], ...dialog };
+  const board = { props: { estado: "Borrador: vista previa" } };
+  return pairCases(root, { stage: "etapa-6", pair: "pagina-publica-borrador", id: "pagina-publica-vista-previa-tarjeta", group: "pagina-publica",
+    state: "Página pública: la vista previa, con la tarjeta de la página pública en el diálogo de 640",
+    desktop: { board: "Pagina-Org", ...board },
+    phone: { board: "M-Pagina-Org", ...board, state: "Página pública en el teléfono: la vista previa, en la hoja desde abajo" },
+    app: preview, phoneApp: preview });
+}
+
 export function catalog(root) {
   const rename ={ board: "Cuenta", boardActions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
@@ -473,5 +486,6 @@ export function catalog(root) {
     ...extraCases(root),
     ...r3bCases(root),
     ...r3eCases(root),
+    ...r3fCases(root),
   ];
 }

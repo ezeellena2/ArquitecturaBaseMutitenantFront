@@ -11,7 +11,7 @@ import { asPhone } from "@/test/utils/phone";
 
 const page = {
   slug: "grupo-delta", name: "Grupo Delta", description: "Servicios del grupo", logoDataUri: null,
-  contactEmail: "contacto@example.test", contactPhone: null, address: null, website: null,
+  contactEmail: "contacto@example.test", contactPhone: null as string | null, address: null as string | null, website: null as string | null,
   isPublished: true, publishBlockedAtUtc: null as string | null, publishBlockedReason: null as string | null, version: 8,
 };
 
@@ -103,16 +103,66 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(visible).not.toBeChecked();
     expect(subline()).toHaveTextContent(/^Borrador$/);
     expect(screen.getByRole("button", { name: "Vista previa" })).toBeVisible();
-    // «Criterio · Diálogos»: la vista previa con uno de los dos anchos de la pieza, el normal de 560.
-    await user.click(screen.getByRole("button", { name: "Vista previa" }));
-    const preview = await screen.findByRole("dialog", { name: "Vista previa" });
-    expect(preview).toHaveClass("md:max-w-[560px]");
-    expect(preview).not.toHaveClass("md:max-w-[600px]");
-    await user.click(within(preview).getAllByRole("button", { name: "Cerrar" }).at(-1)!);
-    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     await user.click(visible);
     await waitFor(() => expect(calls).toEqual(["publish {\"version\":8}"]));
     expect(await screen.findByText("Publicamos tu página.")).toBeVisible();
+  });
+
+  // Tablero Pagina-Org («Borrador: vista previa», v107): «Vista previa» abre el diálogo de 640 con la tarjeta de la
+  // página pública sobre su fondo. La tarjeta lleva solo lo que la organización cargó (acá, sin sitio web), lo que está
+  // escrito aunque no esté guardado, e «Ingresá para continuar» sin acción. «Cerrar», el principal, la cierra.
+  it("borrador: «Vista previa» muestra la tarjeta con los datos cargados y «Cerrar» la cierra", async () => {
+    const user = userEvent.setup();
+    api({ ...page, isPublished: false, contactPhone: "+541143215678", address: "Av. Corrientes 1234, piso 5, Buenos Aires" });
+    renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+
+    const description = await screen.findByRole("textbox", { name: "Descripción" });
+    await user.clear(description);
+    await user.type(description, "Grupo Delta y sus empresas, en un solo lugar.");
+    await user.click(screen.getByRole("button", { name: "Vista previa" }));
+    const preview = await screen.findByRole("dialog", { name: "Vista previa" });
+    expect(preview).toHaveClass("md:max-w-[640px]");
+    expect(await within(preview).findByText("011 4321-5678")).toBeVisible();
+    expect(within(preview).getByRole("heading", { level: 1, name: "Grupo Delta" })).toBeVisible();
+    expect(within(preview).getByText("Grupo Delta y sus empresas, en un solo lugar.")).toBeVisible();
+    expect(within(preview).getAllByRole("listitem").map((row) => row.textContent)).toEqual([
+      "DirecciónAv. Corrientes 1234, piso 5, Buenos Aires", "Teléfono011 4321-5678", "Correocontacto@example.test",
+    ]);
+    expect(within(preview).getByText("Ingresá para continuar")).toBeVisible();
+    expect(within(preview).queryByRole("link")).not.toBeInTheDocument();
+    expect(await axe(preview)).toHaveNoViolations();
+
+    const close = within(preview.querySelector<HTMLElement>("[data-slot='dialog-footer']")!).getByRole("button", { name: "Cerrar" });
+    expect(close).not.toHaveClass("border-[var(--borde2)]");
+    await user.click(close);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
+  // Tablero M-Pagina-Org («Borrador: vista previa», v107): en el teléfono, «Vista previa» va en la barra y abre la hoja
+  // desde abajo, con la tarjeta de M-Pagina-Publica y «Cerrar» a lo ancho.
+  it("en el teléfono, «Vista previa» abre la hoja desde abajo con la tarjeta y «Cerrar»", async () => {
+    const restore = asPhone();
+    try {
+      const user = userEvent.setup();
+      api({ ...page, isPublished: false });
+      renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+
+      await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" });
+      const bar = screen.getByRole("heading", { level: 1, name: "Página pública" }).closest("header")!;
+      await user.click(within(bar).getByRole("button", { name: "Vista previa" }));
+      const sheet = await screen.findByRole("dialog", { name: "Vista previa" });
+      expect(sheet).toHaveClass("bottom-0", "rounded-t-[20px]");
+      expect(within(sheet).getByRole("heading", { level: 1, name: "Grupo Delta" })).toHaveClass("max-md:text-[26px]");
+      expect(within(sheet).getAllByRole("listitem").map((row) => row.textContent)).toEqual(["Correocontacto@example.test"]);
+      const footer = sheet.querySelector<HTMLElement>("[data-slot='dialog-footer']")!;
+      expect(footer).toHaveClass("max-md:[&_button]:flex-1");
+      const close = within(footer).getByRole("button", { name: "Cerrar" });
+      expect(await axe(sheet)).toHaveNoViolations();
+      await user.click(close);
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    } finally {
+      restore();
+    }
   });
 
   it("despublicada por la plataforma: interruptor trabado y la ⓘ abre el aviso con motivo, fecha y pasos", async () => {

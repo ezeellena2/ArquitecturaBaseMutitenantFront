@@ -15,9 +15,10 @@ import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Input } from "@/shared/ui/input";
-import { phoneDraftFromE164 } from "@/shared/phone/phoneInput";
+import { phoneDraftFromE164, phoneE164FromDraft } from "@/shared/phone/phoneInput";
 import { PhoneField, type PhoneDraft } from "@/shared/ui/fields/PhoneField";
 import { Page } from "@/shared/ui/Page";
+import { PublicPageCard, publicPageBackdropClass } from "@/shared/ui/PublicPageCard";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { Switch } from "@/shared/ui/switch";
 import { Textarea } from "@/shared/ui/textarea";
@@ -235,18 +236,13 @@ export function PublicPagePage() {
     </Page>
 
     <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-      {/* «Criterio · Diálogos»: el diálogo normal, de 560 (el tablero no dibuja la vista previa). */}
-      <DialogContent>
+      {/* Tableros Pagina-Org y M-Pagina-Org («Borrador: vista previa», v107): el diálogo de 640 (la excepción de «Criterio ·
+          Diálogos») con la tarjeta de la página pública tal cual, sobre su fondo, y «Cerrar»; en el teléfono, la hoja
+          desde abajo. Muestra lo que está escrito, aunque todavía no esté guardado. */}
+      <DialogContent size="preview">
         <DialogHeader><DialogTitle>{t("publicPage:preview")}</DialogTitle><DialogDescription className="sr-only">{t("publicPage:previewDescription")}</DialogDescription></DialogHeader>
-        {draft ? <div className="flex flex-col gap-4 px-5 py-4">
-          <div className="flex items-center gap-3">{draft.logoDataUri ? <img src={draft.logoDataUri} alt={t("publicPage:logoAlt")} className="size-12 rounded-lg object-contain" /> : null}<h2 className="text-lg font-bold text-[var(--t1)]">{draft.name}</h2></div>
-          {draft.description ? <p className="whitespace-pre-wrap text-[13px] text-[var(--t2)]">{draft.description}</p> : null}
-          <dl className="grid gap-2 text-[13px] sm:grid-cols-2">
-            {draft.contactEmail ? <div><dt className="font-semibold">{t("publicPage:fields.email")}</dt><dd>{draft.contactEmail}</dd></div> : null}
-            {draft.contactPhone?.number ? <div><dt className="font-semibold">{t("publicPage:fields.phone")}</dt><dd>{draft.contactPhone.number}</dd></div> : null}
-            {draft.address ? <div><dt className="font-semibold">{t("publicPage:fields.address")}</dt><dd>{draft.address}</dd></div> : null}
-            {draft.website ? <div><dt className="font-semibold">{t("publicPage:fields.website")}</dt><dd>{draft.website}</dd></div> : null}
-          </dl>
+        {draft ? <div className={cn(publicPageBackdropClass, "flex justify-center px-10 py-6 max-md:mt-2 max-md:mb-4 max-md:p-4")}>
+          <PublicPageCard page={{ ...draft, contactPhone: phoneE164FromDraft(draft.contactPhone) }} />
         </div> : null}
         <DialogFooter><Button type="button" onClick={() => setPreviewOpen(false)}>{t("common:actions.close")}</Button></DialogFooter>
       </DialogContent>

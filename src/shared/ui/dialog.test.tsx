@@ -109,4 +109,17 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
     expect(normal).toHaveClass("md:max-w-[560px]");
     expect(normal).not.toHaveClass("md:max-w-[420px]");
   });
+
+  // La única excepción a los dos anchos (tablero Pagina-Org, «Borrador: vista previa», v107): la vista previa de la
+  // Página pública mide 640, para que la tarjeta de la página pública entre tal cual, con su fondo alrededor.
+  it("la vista previa declara su ancho de 640", () => {
+    render(
+      <Dialog open>
+        <DialogContent size="preview" aria-describedby={undefined}><DialogHeader><DialogTitle>{"Vista previa"}</DialogTitle></DialogHeader></DialogContent>
+      </Dialog>,
+    );
+    const preview = screen.getByRole("dialog", { name: "Vista previa" });
+    expect(preview).toHaveClass("md:max-w-[640px]");
+    expect(preview).not.toHaveClass("md:max-w-[560px]");
+  });
 });
