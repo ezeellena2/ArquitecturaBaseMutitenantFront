@@ -12,7 +12,7 @@
 - **Piezas de `shared/ui` que ya lo resuelven:**
   - `FormField` (rótulo, `aria-describedby`, `aria-invalid`, `aria-required`), también con un `Select` adentro: la raíz lo recibe y lo pasa a su botón;
   - `IconButton` y `RowActions` (nombre obligatorio: `aria-label` con el dato de la fila, "Acciones de Tomás Acosta");
-  - `Dialog` (foco atrapado y devuelto con `useRestoreFocusOnClose`);
+  - `Dialog` (foco atrapado y devuelto con `useRestoreFocusOnClose`; si lo abre una opción de un ⋮, que se va con el menú, `RowActions` y `Page` le pasan a la opción su botón y el diálogo lo recibe como `returnFocusTo`, también `ConfirmDialog`);
   - `DataTable` (encabezados, `aria-sort`, `aria-busy`);
   - `DateText` (`<time>`);
   - `EmptyValue` ("Sin dato");
@@ -36,6 +36,7 @@
 ## Lo verifica
 - `vitest-axe` (E0) en cada test de pantalla (`toHaveNoViolations`); `harness.test.ts` (E7) falla si un `pages/*Page.test.tsx` no corre axe.
 - `FormField.test.tsx` (E7): con un `Select` adentro, el desplegable se rotula, es obligatorio y lleva su error.
+- `CompanyDetailPage.test.tsx` y `CompaniesPage.test.tsx` (E7): cada diálogo le devuelve el foco a lo que lo abrió, al botón o al ⋮ de la fila.
 - Antes de cerrar una etapa: una pasada de axe en el navegador real, a 1440 y a 390, que cubre el contraste y no se puede hacer en jsdom.
 
 ## Detalle
