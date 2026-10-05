@@ -152,6 +152,8 @@ describe("LoginPage", () => {
     show("consumer", `${loginUrl}&error=Auth.Google.AccountNotFound`);
     expect(await screen.findByText("No pudimos completar el ingreso con Google.")).toBeVisible();
     expect(screen.getByText("Probá de nuevo o entrá con tu correo.")).toBeVisible();
+    // Tablero Ingreso: la franja de error con su segunda línea más clara.
+    expect(screen.getByText("Probá de nuevo o entrá con tu correo.")).toHaveClass("block", "opacity-85");
     expect(screen.getByRole("textbox", { name: "Correo electrónico" })).toBeVisible();
   });
 
@@ -159,6 +161,8 @@ describe("LoginPage", () => {
     sessionStorage.setItem("arquitecturabasemt.sessionExpired", "1");
     show("consumer", loginUrl);
     expect(screen.getByRole("status")).toHaveTextContent("Tu sesión venció. Ingresá de nuevo.");
+    // «Criterio · Avisos»: el cartel de información (Banner), en petróleo.
+    expect(screen.getByRole("status")).toHaveClass("min-h-11", "rounded-[10px]", "bg-[var(--marca-t)]", "text-[var(--marca-tx)]");
     expect(sessionStorage.getItem("arquitecturabasemt.sessionExpired")).toBeNull();
   });
 

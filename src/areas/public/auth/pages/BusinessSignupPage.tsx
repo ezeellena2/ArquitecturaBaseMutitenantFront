@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
-import { Check, CircleAlert, Clock3, LockKeyhole } from "lucide-react";
+import { Check, Clock3, LockKeyhole } from "lucide-react";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { ApiError } from "@/shared/api/ApiError";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -28,6 +28,7 @@ import {
 } from "../api/businessSignup";
 import { AuthStatus } from "../components/AuthStatus";
 import { AuthCodeStep } from "../components/AuthCodeStep";
+import { AuthMessage } from "../components/AuthMessage";
 import { GoogleButton } from "../components/GoogleButton";
 import { loginCodeErrorKey, loginCodeMessage } from "../errors";
 import { homeOf, loginPathOf } from "@/tenancy/access";
@@ -258,11 +259,8 @@ export function BusinessSignupPage() {
               : <section className="flex flex-col gap-[22px]">
                 <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.organizationTitle")}</h1>
                   <p className="mt-1.5 text-sm leading-normal text-[var(--t2)]">{t("businessSignup.ownerNote")}</p></div>
-                {limitReached ? <div role="alert" className="flex items-start gap-2.5 rounded-[10px] bg-[var(--peligro-t)] px-3 py-2.5 text-[13px] leading-normal text-[var(--peligro)]">
-                  <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-                  <span><span className="block">{limitCount === null ? t("businessSignup.limitTitleNoCount") : t("businessSignup.limitTitle", { count: limitCount })}</span>
-                    <span className="block">{t("businessSignup.limitDetail")}</span></span>
-                </div> : null}
+                <AuthMessage message={limitReached ? { text: limitCount === null ? t("businessSignup.limitTitleNoCount") : t("businessSignup.limitTitle", { count: limitCount }),
+                  details: [t("businessSignup.limitDetail")] } : null} />
                 <FormField label={t("businessSignup.organizationName")} variant="auth" required error={organizationError ? t("businessSignup.organizationRequired") : undefined}>
                   <Input value={organizationName} onChange={(event) => { setOrganizationName(event.target.value); setOrganizationError(false); setLimitReached(false); }}
                     autoComplete="organization" maxLength={120} />

@@ -10,6 +10,7 @@ import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useCountdown } from "@/shared/hooks/useCountdown";
+import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
 import { requestLoginCode, verifyLoginCode } from "../api/loginCode";
 import { AuthStatus, type AuthStatusProps } from "../components/AuthStatus";
@@ -181,10 +182,11 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
             actions={<Button asChild size="lg"><Link to="/login">{t("login.enterAsPerson")}</Link></Button>} />
             : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{access === "business" ? t("login.businessTitle") : t("login.personalTitle")}</h1>
-      {sessionExpired ? <div role="status" className="flex items-start gap-2.5 rounded-xl bg-[var(--marca-t)] px-3.5 py-3 text-sm leading-normal text-[var(--marca-tx)]"><Clock3 aria-hidden="true" className="mt-0.5 shrink-0" size={18} strokeWidth={2} /><span>{t("login.sessionExpired")}</span></div> : null}
+      {/* «Criterio · Avisos»: algo que pasó y que conviene saber, en el cartel de información. */}
+      {sessionExpired ? <Banner tone="info">{t("login.sessionExpired")}</Banner> : null}
       <GoogleButton mode="login" access={access} returnUrl={returnUrl!} />
       <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
-      <EmailCodeForm onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? <><span>{t("login.googleError")}</span><span className="block">{t("login.googleErrorHelp")}</span></> : undefined} />
+      <EmailCodeForm onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? { text: t("login.googleError"), details: [t("login.googleErrorHelp")] } : undefined} />
       <div className="flex flex-col gap-2 text-center text-[13px] text-[var(--t2)]">
         {access === "consumer" ? <>
           <div>{t("login.noAccount")} <Link to="/registro" className="font-semibold text-[var(--marca)] hover:underline">{t("login.createOne")}</Link></div>

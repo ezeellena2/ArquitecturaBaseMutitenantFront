@@ -194,7 +194,10 @@ describe("BusinessSignupPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Crear organización" }));
     const limit = await screen.findByRole("alert");
     expect(limit).toHaveTextContent("Llegaste al límite de 3 organizaciones propias.");
-    expect(limit.className).toContain("text-[var(--peligro)]");
+    // Lienzo v104: la franja común de error (FormError), con el círculo en el color del texto y la segunda línea más clara.
+    expect(limit).toHaveClass("bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]", "rounded-[8px]");
+    expect(limit.querySelector("svg")).toHaveClass("size-4");
+    expect(within(limit).getByText("Si necesitás más, escribinos para ampliar el límite.")).toHaveClass("opacity-85");
   });
 
   it("muestra el rechazo del slug y no permite crear la organización", async () => {
