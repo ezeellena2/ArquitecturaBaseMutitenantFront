@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { FilterBar } from "./FilterBar";
@@ -65,6 +65,32 @@ describe("FilterBar", () => {
     expect(all).toHaveClass("data-[state=checked]:bg-[var(--marca-t)]", "data-[state=checked]:text-[var(--marca-tx)]");
     expect(all.querySelector("svg")).toBeNull();
     expect(screen.getByRole("menuitemradio", { name: "Toda la organización" })).toHaveAttribute("aria-checked", "false");
+  });
+
+  // Tablero Usuarios (filtro abierto, lienzo v107): el menú del filtro no lleva líneas entre opciones (esas son del ⋮,
+  // «Criterio · Menús»); tiene 4 de relleno y cada opción, de 34 con radio 8, se resalta adentro en gris claro; la elegida
+  // va en petróleo claro con 500 y el conteo, en 12 gris a 16 del texto.
+  it("el menú del filtro va sin líneas entre opciones y con el resaltado del tablero", async () => {
+    render(
+      <FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={vi.fn()}
+        filters={[{
+          key: "state", label: "Estado: todos", menuLabel: "Filtrar por estado", value: "", active: false, onChange: vi.fn(),
+          options: [{ value: "all", label: "Todos", count: 3 }, { value: "Active", label: "Activos", count: 2 }],
+        }]} />,
+    );
+
+    screen.getByRole("button", { name: "Estado: todos" }).focus();
+    await userEvent.keyboard("{Enter}");
+    const menu = await screen.findByRole("menu");
+    expect(menu).toHaveClass("p-1", "min-w-[200px]");
+    for (const name of [/^Todos/, /^Activos/]) {
+      const option = screen.getByRole("menuitemradio", { name });
+      expect(option).not.toHaveClass("border-t");
+      expect(option).toHaveClass("min-h-[34px]", "rounded-[8px]", "px-2.5", "py-1.5", "gap-2", "focus:bg-[var(--s2)]");
+    }
+    const all = screen.getByRole("menuitemradio", { name: /^Todos/ });
+    expect(all).toHaveClass("data-[state=checked]:bg-[var(--marca-t)]", "data-[state=checked]:font-medium");
+    expect(within(all).getByText("3")).toHaveClass("ml-auto", "pl-4", "text-xs", "text-[var(--t3)]", "tabular-nums");
   });
 
   it("keeps clear hidden until a search or a filter is active", async () => {

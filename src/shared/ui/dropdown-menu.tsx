@@ -132,8 +132,9 @@ function DropdownMenuRadioItem({
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       className={cn(
-        // Tablero Usuarios (filtro abierto): la opción elegida va en petróleo claro, sin punto de radio.
-        "relative flex min-h-9 cursor-default items-center gap-2 rounded-[6px] border-t border-[var(--borde)] py-1.5 pr-3.5 pl-3 text-[13px] outline-hidden select-none first:border-t-0 focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[state=checked]:bg-[var(--marca-t)] data-[state=checked]:text-[var(--marca-tx)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[15px]",
+        // Tablero Usuarios (filtro abierto, .menu-it): 34 de alto, 6/10 de relleno y radio 8, sin líneas entre opciones
+        // (las líneas son del ⋮); se resalta adentro en gris claro y la elegida va en petróleo claro con 500, sin punto.
+        "relative flex min-h-[34px] cursor-default items-center gap-2 rounded-[8px] px-2.5 py-1.5 text-[13px] outline-hidden select-none focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[state=checked]:bg-[var(--marca-t)] data-[state=checked]:font-medium data-[state=checked]:text-[var(--marca-tx)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[15px]",
         className
       )}
       {...props}

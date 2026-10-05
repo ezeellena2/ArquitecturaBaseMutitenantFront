@@ -153,13 +153,14 @@ export function FilterBar({
                 <ChevronDownIcon aria-hidden="true" className="size-3.5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" aria-label={filter.menuLabel}>
+            {/* Tablero Usuarios (filtro abierto, .menu): 4 de relleno alrededor de las opciones y 200 de ancho mínimo. */}
+            <DropdownMenuContent align="start" aria-label={filter.menuLabel} className="min-w-[200px] p-1">
               <DropdownMenuRadioGroup value={checked} onValueChange={filter.onChange}>
                 {filter.options.map((option) => (
                   <DropdownMenuRadioItem key={option.value} value={option.value}>
                     {option.label}
                     {option.count === undefined ? null : (
-                      <span className="ml-auto text-xs text-[var(--t2)]">
+                      <span className="ml-auto pl-4 text-xs text-[var(--t3)] tabular-nums">
                         {option.count}
                       </span>
                     )}
