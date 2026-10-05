@@ -15,6 +15,9 @@ describe("Section", () => {
 
     const region = screen.getByRole("region", { name: "Dominio de correo" });
     expect(screen.getByRole("heading", { name: "Dominio de correo" }).parentElement).toHaveClass("min-h-10", "bg-[var(--cab)]");
+    // «Criterio · Tablas», caja de lista (.lista .cab) y tableros Cuenta, Usuario y Configuración (.w-cab): 16 a la izquierda y
+    // 4 a la derecha, así el botón queda a 4 del borde de la caja.
+    expect(screen.getByRole("heading", { name: "Dominio de correo" }).parentElement).toHaveClass("pl-4", "pr-1");
     // El «+» de los botones de los tableros (.b svg): 14 px con trazo 2.25.
     const plus = screen.getByRole("button", { name: "Agregar dominio" }).querySelector("svg");
     expect(plus).toHaveClass("size-3.5");
@@ -55,6 +58,8 @@ describe("Section", () => {
     render(<Section title="Permisos" meta="1 de 2 elegidos"><p>{"Miembros"}</p></Section>);
 
     expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[12px]", "font-normal", "text-[var(--t3)]");
+    // Tablero Rol (.w-cab > span): sin botón, lo que cuenta la caja queda a 16 del borde (4 del encabezado y 12 suyos).
+    expect(screen.getByText("1 de 2 elegidos")).toHaveClass("pr-3");
   });
 
   // «Criterio · Formularios», «Adentro de la caja»: 16 arriba y 20 a los costados y abajo. Quien la usa pone el orden y la

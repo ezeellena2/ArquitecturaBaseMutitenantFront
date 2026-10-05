@@ -50,9 +50,11 @@ export function Section({ title, action, meta, phone = "card", children }: Secti
 
   return <Surface className="overflow-hidden">
     <section aria-labelledby={id}>
-      <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]">
+      {/* «Criterio · Tablas» (.lista .cab) y tableros Cuenta, Usuario y Configuración (.w-cab): 16 a la izquierda y 4 a la
+          derecha, con el botón chico a 4 del borde; lo que cuenta la caja, a 16 (4 y 12 suyos). */}
+      <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde)] bg-[var(--cab)] pr-1 pl-4 text-[13px] font-semibold text-[var(--t1)]">
         <h2 id={id}>{title}</h2>
-        {meta ? <span className="text-[12px] font-normal text-[var(--t3)]">{meta}</span> : null}
+        {meta ? <span className="pr-3 text-[12px] font-normal text-[var(--t3)]">{meta}</span> : null}
         {action ? <Button type="button" variant="outline" size="sm" onClick={action.onClick} disabled={action.disabled}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{action.label}</Button> : null}
       </header>
       {body}
