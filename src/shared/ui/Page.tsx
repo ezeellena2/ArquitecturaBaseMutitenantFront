@@ -167,7 +167,7 @@ export function Page({
             ? <a href={barAction.href} target="_blank" rel="noreferrer" className={barTextClass}>{barAction.label}</a>
             : <button type="button" onClick={barAction.onClick} className={barTextClass}>{barAction.label}</button> : null}
           {visibleMoreActions.length > 0 && moreActions ? <DropdownMenu>
-            <DropdownMenuTrigger asChild><AppIconButton ref={moreTrigger} label={moreActions.label}><MoreVerticalIcon /></AppIconButton></DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild><AppIconButton ref={moreTrigger} label={moreActions.label}><MoreVerticalIcon className="size-5" /></AppIconButton></DropdownMenuTrigger>
             <DropdownMenuContent align="end">{moreMenuItems}</DropdownMenuContent>
           </DropdownMenu> : null}
         </>} />

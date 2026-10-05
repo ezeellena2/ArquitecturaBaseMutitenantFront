@@ -103,6 +103,10 @@ describe("RowActions", () => {
 
     const trigger = screen.getByRole("button", { name: "Acciones de Ana" });
     expect(trigger).toHaveAttribute("aria-haspopup", "dialog");
+    // Tableros M-Usuarios, M-Empresa y M-Configuracion (.ap-ib): el ⋮ de 20, casi negro, en el botón de 44.
+    expect(trigger).toHaveAttribute("data-slot", "row-actions");
+    expect(trigger).toHaveClass("max-md:size-11", "max-md:text-[var(--t1)]");
+    expect(trigger.querySelector("svg")).toHaveClass("max-md:size-5");
     await userEvent.click(trigger);
     const sheet = await screen.findByRole("dialog", { name: "Ana Gómez" });
     expect(sheet).toHaveClass("bottom-0", "rounded-t-[20px]");

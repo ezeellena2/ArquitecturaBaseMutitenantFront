@@ -1,10 +1,10 @@
-import { MoreVertical, Star, Trash2 } from "lucide-react";
+import { Star, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import googleMark from "@/assets/google-mark.svg";
 import type { AccountLoginMethod } from "@/shared/api/types";
 import { Button } from "@/shared/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
-import { MailIcon } from "@/shared/ui/icons";
+import { MailIcon, MoreVerticalIcon } from "@/shared/ui/icons";
 import { List, ListItem } from "@/shared/ui/List";
 import { AccountGoogleButton } from "./AccountGoogleButton";
 
@@ -36,8 +36,10 @@ function MethodMenu({ method, onAction }: { method: AccountLoginMethod; onAction
   const { t } = useTranslation("account");
   return <DropdownMenu>
     <DropdownMenuTrigger asChild>
-      <button type="button" aria-label={t("actionsFor", { value: method.value })} className="inline-flex size-8 shrink-0 items-center justify-center rounded-[8px] text-[var(--t3)] hover:bg-[var(--s3)]">
-        <MoreVertical size={16} aria-hidden="true" />
+      {/* Tableros Cuenta (el ⋮ de 16, gris medio) y M-Cuenta (.ap-it .ap-ib: de 20, casi negro, en un botón de 44, así la
+          fila mide 60). */}
+      <button type="button" aria-label={t("actionsFor", { value: method.value })} className="inline-flex size-8 shrink-0 items-center justify-center rounded-[8px] text-[var(--t2)] hover:bg-[var(--s3)] max-md:size-11 max-md:rounded-full max-md:text-[var(--t1)]">
+        <MoreVerticalIcon className="size-4 max-md:size-5" />
       </button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">

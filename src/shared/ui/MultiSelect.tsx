@@ -61,7 +61,7 @@ export function MultiSelect({
         <span className="truncate">
           {picked.length > 0 ? picked.map((option) => option.label).join(", ") : placeholder}
         </span>
-        <ChevronDownIcon strokeWidth={2} className="size-3.5 shrink-0 text-[var(--t2)]" />
+        <ChevronDownIcon strokeWidth={2} className="size-3.5 shrink-0 text-[var(--t2)] max-md:size-[18px] max-md:text-[var(--t1)]" />
       </DropdownMenuTrigger>
       {/* Tablero Usuario (.o-lst) y «Criterio · Formularios», Desplegable: la lista se abre debajo del campo y mide lo mismo
           que él, con 4 de margen adentro; cada opción, el nombre y debajo su descripción, en gris de 12 (.n2 y .d). */}

@@ -65,7 +65,8 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon strokeWidth={2} className="size-3.5 opacity-50" />
+        {/* En el teléfono (tableros M-Configuracion, M-Cuenta y M-Usuario-Empresa, .in2 svg), la flechita de 18 y casi negra. */}
+        <ChevronDownIcon strokeWidth={2} className="size-3.5 text-muted-foreground opacity-50 max-md:size-[18px] max-md:text-[var(--t1)] max-md:opacity-100" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )

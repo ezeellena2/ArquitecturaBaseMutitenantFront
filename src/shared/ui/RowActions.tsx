@@ -41,9 +41,12 @@ export function RowActions({ label, title, actions }: { label: string; title?: s
     aria-haspopup={phone ? "dialog" : undefined}
     aria-expanded={phone ? sheetOpen : undefined}
     onClick={phone ? () => setSheetOpen(true) : undefined}
-    className="inline-flex size-8 items-center justify-center rounded-[8px] max-md:size-11 max-md:rounded-full max-md:text-[var(--t2)] border border-transparent bg-transparent text-[var(--t3)] hover:border-[var(--borde)] hover:bg-[var(--lado-activo)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
+    data-slot="row-actions"
+    // En el teléfono (tableros M-Usuarios, M-Empresa y M-Configuracion, .ap-ib): el ⋮ de 20, casi negro, en un botón de 44;
+    // en una fila sin círculo (M-Roles, M-Empresas), ListRow lo pasa a gris.
+    className="inline-flex size-8 items-center justify-center rounded-[8px] max-md:size-11 max-md:rounded-full max-md:text-[var(--t1)] border border-transparent bg-transparent text-[var(--t3)] hover:border-[var(--borde)] hover:bg-[var(--lado-activo)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
   >
-    <MoreVerticalIcon className="size-[18px]" />
+    <MoreVerticalIcon className="size-[18px] max-md:size-5" />
   </button>;
 
   if (phone) return <>

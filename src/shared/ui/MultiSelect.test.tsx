@@ -72,6 +72,8 @@ describe("MultiSelect", () => {
     // Abierto, el campo lleva el borde petróleo y el halo (.o-dd > button.ct[aria-expanded="true"]).
     const trigger = screen.getByRole("button", { name: "Roles", hidden: true });
     expect(trigger).toHaveAttribute("aria-expanded", "true");
+    // En el teléfono (.in2 svg), la flechita de 18 y casi negra.
+    expect(trigger.querySelector("svg")).toHaveClass("max-md:size-[18px]", "max-md:text-[var(--t1)]");
     expect(trigger).toHaveClass("aria-expanded:border-[var(--marca)]", "aria-expanded:ring-[3px]", "aria-expanded:ring-[var(--foco-halo)]");
     expect(admin).toHaveClass("min-h-9", "gap-2.5", "rounded-[6px]", "px-2.5", "py-1");
     expect(admin).not.toHaveClass("border-t");

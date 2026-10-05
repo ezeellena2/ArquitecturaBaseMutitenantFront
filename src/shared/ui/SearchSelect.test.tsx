@@ -69,6 +69,8 @@ describe("SearchSelect · Criterio · Formularios", () => {
     const control = screen.getByRole("combobox", { name: "Idioma y región" });
     expect(control).toHaveTextContent("Español (Argentina)");
     expect(control).toHaveClass("h-9", "rounded-[8px]", "border-[var(--borde2)]");
+    // En el teléfono (.in2 svg), la flechita de 18 y casi negra.
+    expect(control.querySelector("svg")).toHaveClass("max-md:size-[18px]", "max-md:text-[var(--t1)]");
     // Tablero Usuario (.o-dd > button.ct[aria-expanded="true"]): abierto, el campo lleva el borde petróleo y el halo.
     expect(control).toHaveClass("aria-expanded:border-[var(--marca)]", "aria-expanded:ring-[3px]", "aria-expanded:ring-[var(--foco-halo)]");
     control.focus();

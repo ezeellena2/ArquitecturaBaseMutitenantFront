@@ -140,7 +140,7 @@ export function SearchSelect({
       {selected?.icon && !renderValue ? selected.icon : null}
       <span className="truncate">{shown ?? placeholder}</span>
     </span>
-    <ChevronDownIcon strokeWidth={2} className="size-3.5 shrink-0 text-[var(--t2)]" />
+    <ChevronDownIcon strokeWidth={2} className="size-3.5 shrink-0 text-[var(--t2)] max-md:size-[18px] max-md:text-[var(--t1)]" />
   </button>;
 
   const search = withSearch ? <div className={phone ? "relative px-5 pt-1 pb-2" : "relative border-b border-[var(--borde)] p-2"}>

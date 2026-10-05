@@ -35,6 +35,20 @@ describe("listas en el teléfono", () => {
     expect(screen.getByText("T")).toHaveClass("size-11", "rounded-full", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
   });
 
+  // Tableros M-Roles y M-Empresas (.ap-fila .ap-ib): en una fila sin círculo el ⋮ va gris y 4 más afuera; en la de una
+  // persona (M-Usuarios, M-Empresa), casi negro y en su lugar.
+  it("el ⋮ de una fila sin círculo va gris y 4 más afuera; el de una persona, no", () => {
+    render(<MemoryRouter><ul>
+      <ListRow title="Recursos humanos" trailing={<button type="button" data-slot="row-actions">{"⋮"}</button>} />
+      <ListRow leading={<RowAvatar name="Tomás Acosta" />} title="Tomás Acosta" trailing={<button type="button" data-slot="row-actions">{"⋮"}</button>} />
+    </ul></MemoryRouter>);
+
+    const [plain, person] = screen.getAllByRole("listitem");
+    expect(plain).toHaveClass("[&>[data-slot=row-actions]]:text-[var(--t2)]", "[&>[data-slot=row-actions]]:-mr-1");
+    expect(person).not.toHaveClass("[&>[data-slot=row-actions]]:text-[var(--t2)]");
+    expect(person).not.toHaveClass("[&>[data-slot=row-actions]]:-mr-1");
+  });
+
   // Tablero M-Usuarios (.w-av.g): una invitación sin nombre lleva «@» en gris, sin el degradé.
   it("una invitación sin nombre lleva «@» en gris", () => {
     render(<RowAvatar name="" invitation />);

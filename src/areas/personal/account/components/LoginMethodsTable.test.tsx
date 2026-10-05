@@ -31,6 +31,12 @@ describe("métodos de cuenta", () => {
 
     expect(screen.queryByRole("button", { name: "Acciones de ana@example.test" })).not.toBeInTheDocument();
     expect(screen.getByText("Administrado por Grupo Delta")).toBeVisible();
+    // Tableros Cuenta (el ⋮ de 16, gris medio) y M-Cuenta (.ap-it .ap-ib: de 20, casi negro, en un botón de 44, y la fila de
+    // 60); es el ⋮ del set, con los puntos rellenos.
+    const kebab = screen.getByRole("button", { name: "Acciones de ana@delta.ejemplo.com" });
+    expect(kebab).toHaveClass("size-8", "text-[var(--t2)]", "max-md:size-11", "max-md:rounded-full", "max-md:text-[var(--t1)]");
+    expect(kebab.querySelector("svg")).toHaveClass("size-4", "max-md:size-5");
+    expect(kebab.querySelectorAll("svg circle[fill='currentColor']")).toHaveLength(3);
     await user.click(screen.getByRole("button", { name: "Acciones de ana@delta.ejemplo.com" }));
     expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Hacer principal", "Quitar"]);
     expect(screen.getByRole("separator")).toBeInTheDocument();

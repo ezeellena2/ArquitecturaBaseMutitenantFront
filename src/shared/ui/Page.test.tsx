@@ -243,6 +243,15 @@ describe("Page", () => {
       </AppChromeProvider>,
     );
 
+    // Tableros M-Usuarios y M-Usuario (.ap-bar .ap-ib): el ⋮ de la barra mide 20.
+    it("en el teléfono, el ⋮ de la barra mide 20", () => {
+      renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+        <MemoryRouter><Page title="Usuarios" moreActions={{ label: "Más acciones", items: [{ label: "Cargar teléfonos", onSelect: () => {} }] }}><p>{"lista"}</p></Page></MemoryRouter>
+      </AppChromeProvider>);
+
+      expect(screen.getByRole("button", { name: "Más acciones" }).querySelector("svg")).toHaveClass("size-5");
+    });
+
     // M-Configuracion y M-Rol (.ap-cuerpo): el cuerpo con margen va con 4 arriba, 20 a los costados y 14 entre bloques.
     it("en el teléfono, el cuerpo con margen va como el del tablero", () => {
       renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>

@@ -35,7 +35,9 @@ export function ListRow({ leading, title, meta, lines = [], trailing, to, onClic
     </span>
   </>;
   const bodyClass = cn("flex min-w-0 flex-1 gap-3.5 text-left", person ? "items-start" : "items-center");
-  return <li className={cn("relative flex items-center gap-1 py-3 pr-1.5 pl-4 after:absolute after:right-0 after:bottom-0 after:h-px after:bg-[var(--borde)]", leading ? "after:left-[74px]" : "after:left-4", className)}>
+  // Tableros M-Roles y M-Empresas (.ap-fila .ap-ib): en una fila sin círculo, el ⋮ va gris y 4 más afuera.
+  return <li className={cn("relative flex items-center gap-1 py-3 pr-1.5 pl-4 after:absolute after:right-0 after:bottom-0 after:h-px after:bg-[var(--borde)]",
+    leading ? "after:left-[74px]" : "after:left-4 [&>[data-slot=row-actions]]:-mr-1 [&>[data-slot=row-actions]]:text-[var(--t2)]", className)}>
     {to ? <Link to={to} className={bodyClass}>{body}</Link>
       : onClick ? <button type="button" onClick={onClick} className={bodyClass}>{body}</button>
         : <span className={bodyClass}>{body}</span>}
