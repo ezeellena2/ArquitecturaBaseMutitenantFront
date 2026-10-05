@@ -187,9 +187,35 @@ describe("CompaniesPage", () => {
     expect(posts).toBe(0);
   });
 
-  // «Criterio · Diálogos» y «Criterio · Formularios»: el error general del diálogo va en la franja arriba de los botones,
-  // no arriba de los campos.
-  it("un error al crear va en la franja del diálogo, arriba de los botones", async () => {
+  // «Criterio · Diálogos» y «Criterio · Formularios»: el error general del diálogo, como el 409 de otra persona, va en la
+  // franja arriba de los botones, no arriba de los campos.
+  it("un error general va en la franja del diálogo, arriba de los botones", async () => {
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [company], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/filter-counts", () => HttpResponse.json({ all: 1, active: 1, inactive: 0 })),
+      http.put("/api/companies/company-1", () => HttpResponse.json({ status: 409, code: "General.ConcurrencyConflict", title: "Conflicto",
+        detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar." }, { status: 409 })),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
+    (await screen.findByRole("button", { name: "Acciones para Delta S.A." })).focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Editar" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar empresa" });
+    await user.type(within(dialog).getByRole("textbox", { name: "Nombre" }), " Norte");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+
+    const alert = await within(dialog).findByRole("alert");
+    expect(alert).toHaveTextContent("Otra persona cambió esto. Revisá la versión más reciente antes de guardar.");
+    const following = (from: Node, to: Node) => Boolean(from.compareDocumentPosition(to) & Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(following(within(dialog).getByRole("combobox", { name: "Zona de negocio" }), alert)).toBe(true);
+    expect(following(alert, within(dialog).getByRole("button", { name: "Cancelar" }))).toBe(true);
+    expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
+  });
+
+  // Diseño, siguiendo formularios.md: el CUIT repetido es un rechazo de ese dato y va debajo del CUIT, con el borde rojo y
+  // el texto del back (`errors.ts`), no en la franja.
+  it("el CUIT repetido va debajo del CUIT, con el texto del back y sin franja", async () => {
     server.use(
       http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
       http.get("/api/companies/filter-counts", () => HttpResponse.json({ all: 0, active: 0, inactive: 0 })),
@@ -202,20 +228,18 @@ describe("CompaniesPage", () => {
     const dialog = await screen.findByRole("dialog", { name: "Crear empresa" });
     await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
     await user.paste("Delta Norte S.A.");
-    await user.click(within(dialog).getByRole("textbox", { name: "CUIT" }));
+    const cuit = within(dialog).getByRole("textbox", { name: "CUIT" });
+    await user.click(cuit);
     await user.paste("30712345671");
     await user.click(within(dialog).getByRole("button", { name: "Crear empresa" }));
 
-    const alert = await within(dialog).findByRole("alert");
-    expect(alert).toHaveTextContent("Ya hay una empresa con esa identificación fiscal.");
-    const following = (from: Node, to: Node) => Boolean(from.compareDocumentPosition(to) & Node.DOCUMENT_POSITION_FOLLOWING);
-    expect(following(within(dialog).getByRole("combobox", { name: "Zona de negocio" }), alert)).toBe(true);
-    expect(following(alert, within(dialog).getByRole("button", { name: "Cancelar" }))).toBe(true);
+    await waitFor(() => expect(cuit).toHaveAccessibleDescription("Ya hay una empresa con esa identificación fiscal."));
+    expect(cuit).toHaveAttribute("aria-invalid", "true");
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
   });
 
   // formularios.md y errores.md: lo que el back rechaza de un dato va debajo de ese dato, con el texto del back
-  // (`errors.ts`); la franja queda para lo demás, como el CUIT repetido de la prueba anterior (tablero Empresas).
+  // (`errors.ts`); la franja queda para lo demás, como el 409 de otra persona.
   it("el CUIT que rechaza el back va debajo del CUIT, con el texto del back", async () => {
     server.use(
       http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),

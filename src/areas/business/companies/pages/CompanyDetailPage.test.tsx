@@ -604,6 +604,26 @@ describe("CompanyDetailPage", () => {
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
   });
 
+  // Diseño, siguiendo formularios.md: en «Editar empresa», el CUIT repetido va debajo del CUIT, con el texto del back, y
+  // no en la franja; el último administrador sí sigue en la franja (prueba de arriba).
+  it("«Editar empresa»: el CUIT repetido va debajo del CUIT, con el texto del back y sin franja", async () => {
+    detailApi([member]);
+    server.use(http.put("/api/companies/company-1", () => HttpResponse.json({ status: 409, code: "Tenancy.Company.TaxIdAlreadyUsed",
+      title: "Conflicto", detail: "Ya hay una empresa con esa identificación fiscal." }, { status: 409 })));
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Editar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar empresa" });
+    const cuit = within(dialog).getByRole("textbox", { name: "CUIT" });
+    await user.click(cuit);
+    await user.paste("30712345671");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => expect(cuit).toHaveAccessibleDescription("Ya hay una empresa con esa identificación fiscal."));
+    expect(cuit).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
+  });
+
   // accesibilidad.md: un diálogo le devuelve el foco a lo que lo abrió. Los de la banda, al botón; los del ⋮ de una fila,
   // a ese ⋮, porque la opción se va con el menú.
   it("cada diálogo de la ficha le devuelve el foco a lo que lo abrió", async () => {

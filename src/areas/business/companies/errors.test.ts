@@ -10,15 +10,16 @@ describe("companyErrorField", () => {
     ["Tenancy.Company.NameRequired", "name"],
     ["Tenancy.Company.NameTooLong", "name"],
     ["TaxIds.TaxId.Invalid", "taxNumber"],
+    ["Tenancy.Company.TaxIdAlreadyUsed", "taxNumber"],
     ["Tenancy.Company.TimeZoneRequired", "timeZoneId"],
     ["Tenancy.Company.TimeZoneUnavailable", "timeZoneId"],
   ])("%s va en el campo %s", (code, field) => {
     expect(companyErrorField(rejected(code))).toBe(field);
   });
 
-  // Tableros Empresas y M-Empresas («Crear empresa: ya hay una con ese CUIT»): el CUIT repetido va en la franja.
-  it("el CUIT repetido, el 409 de otra persona y lo que no es del back no tienen campo", () => {
-    expect(companyErrorField(rejected("Tenancy.Company.TaxIdAlreadyUsed", 409))).toBeNull();
+  // Diseño, siguiendo formularios.md: el CUIT repetido va debajo del CUIT (lista de arriba); el 409 de otra persona va en
+  // la franja.
+  it("el 409 de otra persona y lo que no es del back no tienen campo", () => {
     expect(companyErrorField(rejected("General.ConcurrencyConflict", 409))).toBeNull();
     expect(companyErrorField(new Error("bug"))).toBeNull();
   });

@@ -321,7 +321,7 @@ src/
 │   │   │   │   ├── companies.ts                     empresas, sus miembros y sus roles (la ruta de la empresa con company.members.read, o /api/roles/paged, B4)
 │   │   │   │   └── companies.test.ts                tests de companies
 │   │   │   ├── columns.tsx                          las columnas de Empresas y de Miembros (createCompanyColumns, createCompanyMemberColumns), sus filas del teléfono y los tonos de sus estados
-│   │   │   ├── errors.ts                            el campo donde va lo que el back rechaza de un dato de la empresa o del miembro (el CUIT repetido, en la franja)
+│   │   │   ├── errors.ts                            el campo donde va lo que el back rechaza de un dato de la empresa o del miembro (también el CUIT repetido; el último administrador, en la franja)
 │   │   │   ├── errors.test.ts                       tests de errors
 │   │   │   ├── components/
 │   │   │   │   ├── CompanyFields.tsx                Nombre, CUIT y «Zona de negocio», atados al formulario de CompanyDialog

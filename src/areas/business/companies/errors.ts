@@ -6,12 +6,14 @@ export type CompanyField = "name" | "taxNumber" | "timeZoneId";
 /// Los de «Agregar miembro» y «Roles de …».
 export type MemberField = "memberId" | "roleIds";
 
-// El CUIT repetido (`Tenancy.Company.TaxIdAlreadyUsed`) no está: los tableros Empresas y M-Empresas lo dibujan en la
-// franja del diálogo. Tampoco el último administrador, que el tablero Empresa (v97) pone en la franja.
+// El CUIT repetido (`Tenancy.Company.TaxIdAlreadyUsed`) es un rechazo del CUIT y va debajo de él, con el texto del back
+// (Diseño, siguiendo formularios.md). El último administrador no tiene campo: el tablero Empresa (v97) lo pone en la
+// franja.
 const companyFields: Readonly<Record<string, CompanyField>> = {
   "Tenancy.Company.NameRequired": "name",
   "Tenancy.Company.NameTooLong": "name",
   "TaxIds.TaxId.Invalid": "taxNumber",
+  "Tenancy.Company.TaxIdAlreadyUsed": "taxNumber",
   "Tenancy.Company.TimeZoneRequired": "timeZoneId",
   "Tenancy.Company.TimeZoneUnavailable": "timeZoneId",
 };
@@ -28,8 +30,8 @@ const memberFields: Readonly<Record<string, MemberField>> = {
 const fieldOf = <TField extends string>(fields: Readonly<Record<string, TField>>, error: unknown): TField | null =>
   error instanceof ApiError && error.code ? fields[error.code] ?? null : null;
 
-/// Como Roles: lo que el back rechaza de un dato de la empresa va debajo de ese dato, con el texto del back; lo demás
-/// (el CUIT repetido, el 409 de otra persona) va en la franja del diálogo.
+/// Como Roles: lo que el back rechaza de un dato de la empresa va debajo de ese dato, con el texto del back, también el
+/// CUIT repetido; lo demás (el 409 de otra persona) va en la franja del diálogo.
 export function companyErrorField(error: unknown): CompanyField | null {
   return fieldOf(companyFields, error);
 }

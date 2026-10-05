@@ -83,8 +83,8 @@ export function CompanyDialog({ company, inDetail = false, onClose, returnFocusT
   const create = useIdempotentMutation((request: CreateCompanyRequest, key) => createCompany(request, key));
   const update = useMutation({ mutationFn: ({ id, request }: { id: string; request: UpdateCompanyRequest }) => updateCompany(id, request) });
 
-  // Lo que el back rechaza de un dato va debajo de ese dato (`errors.ts`); lo demás, también el 409 y el CUIT repetido
-  // (tablero Empresas), en la franja arriba de los botones.
+  // Lo que el back rechaza de un dato va debajo de ese dato (`errors.ts`), también el CUIT repetido; lo demás, como el
+  // 409, en la franja arriba de los botones.
   function rejected(error: unknown) {
     if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, serverFields)) return;
     const field = companyErrorField(error);
