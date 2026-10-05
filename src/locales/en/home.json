@@ -22,10 +22,7 @@
     },
     "publicPage": {
       "title": "Public page",
-      "short": "Page",
-      "Published": "Published",
-      "Draft": "Draft",
-      "Blocked": "Unpublished"
+      "short": "Page"
     },
     "settings": {
       "title": "Settings",

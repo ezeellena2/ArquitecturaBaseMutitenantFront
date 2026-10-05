@@ -63,6 +63,8 @@ describe("BusinessHomePage", () => {
     expect(card("Empresas")).toHaveTextContent("3 empresas");
     expect(card("Página pública")).toHaveAttribute("href", "/org/pagina");
     expect(card("Página pública")).toHaveTextContent("Publicada");
+    // El punto del tono que registra el Inicio para el estado de la página (statusTones), como la Página pública.
+    expect(card("Página pública").querySelector("[data-slot='status-dot']")).toHaveClass("bg-[var(--punto-ok)]");
     expect(card("Configuración")).toHaveTextContent("delta.ejemplo.com");
     expect(card("Auditoría")).toHaveTextContent("Último cambio hoy, 10:42");
 

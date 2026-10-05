@@ -271,7 +271,7 @@ src/
 │   │   ├── home/                                    [E3] inicio de la organización (ADR 0040)
 │   │   │   ├── api/home.ts                          GET /api/home: las tarjetas de las áreas o «Tus empresas», y «Para resolver», en un solo pedido
 │   │   │   ├── components/
-│   │   │   │   ├── HomeCards.tsx                    Inicio-Org: una tarjeta por área que la API devolvió, con su dato real; Inicio-Miembro: «Tus empresas»
+│   │   │   │   ├── HomeCards.tsx                    Inicio-Org: una tarjeta por área que la API devolvió, con su dato real (el estado de la página, con StatusBadge y sus tonos); Inicio-Miembro: «Tus empresas»
 │   │   │   │   ├── ToResolve.tsx                    «Para resolver» en la compu: Pendiente, Área (o Empresa, en Inicio-Miembro), Estado, Desde y la acción; «Nada para resolver»
 │   │   │   │   ├── PhoneHome.tsx                    el inicio en el teléfono, la billetera (M-Inicio-Org y M-Inicio-Miembro)
 │   │   │   │   ├── pendingItems.ts                  cada fila de «Para resolver» (área y tipo) → texto, estado, ícono y enlace; un tipo desconocido no se muestra

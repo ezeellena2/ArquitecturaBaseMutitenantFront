@@ -31,7 +31,7 @@
 
 ## Lo verifica
 - `format-usage.test.ts` (E1): formateo fuera de lugar.
-- `statusTones.test.ts` (E7): los tonos se registran con el enum del contrato, y Usuarios, Empresas, la Página pública y Configuración no escriben un color de estado; `StatusBadge.test.tsx` (E7): la palabra del enum y el punto de su tono, y `StatusMark`, solo el punto.
+- `statusTones.test.ts` (E7): los tonos se registran con el enum del contrato, y Usuarios, Empresas, la Página pública, Configuración y la tarjeta de la Página pública del Inicio (`HomeCards`) no escriben un color de estado; `StatusBadge.test.tsx` (E7): la palabra del enum y el punto de su tono, y `StatusMark`, solo el punto.
 - `formatters.test.ts` (E1): recorre el mismo `format-cases.json` que el back; ambos lados producen el mismo texto en casos válidos y rechazan los casos con `error`. La fecha corta, en es-AR y en-US, con el año en curso, con otro año y en el cambio de año de la zona (E7).
 - `DateText.test.tsx` (E7): `shortDate` y `shortDateTime`, con la fecha completa en el tooltip; `UsersPage.test.tsx` y `AuditPage.test.tsx` (E7): las listas del teléfono usan la fecha corta.
 - `referenceData.test.ts` (E1): selectores y patrones consumen catálogos, sin listas fijas.

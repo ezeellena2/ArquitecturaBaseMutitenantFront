@@ -22,10 +22,7 @@
     },
     "publicPage": {
       "title": "Página pública",
-      "short": "Página",
-      "Published": "Publicada",
-      "Draft": "Borrador",
-      "Blocked": "Despublicada"
+      "short": "Página"
     },
     "settings": {
       "title": "Configuración",

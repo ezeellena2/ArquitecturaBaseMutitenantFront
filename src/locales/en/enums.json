@@ -18,5 +18,10 @@
     "PendingDeletion": "Deletion requested",
     "Inactive": "Inactive",
     "Invited": "Invitation pending"
+  },
+  "HomePublicPageState": {
+    "Published": "Published",
+    "Draft": "Draft",
+    "Blocked": "Unpublished"
   }
 }

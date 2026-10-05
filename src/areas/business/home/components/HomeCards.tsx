@@ -3,13 +3,16 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import type { HomeCompanyCard, HomeOrganizationSummary } from "@/shared/api/types";
+import { defineStatusTones } from "@/shared/format/statusTones";
 import { useFormat } from "@/shared/format/useFormat";
 import { initials } from "@/shared/lib/initials";
-import { StatusDot, type StatusTone } from "@/shared/ui/StatusDot";
+import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { companyDetail } from "./companyDetail";
 import { areaIcons, areaPaths, type HomeArea } from "./pendingItems";
 
-const pageTones: Record<string, StatusTone> = { Published: "success", Draft: "neutral", Blocked: "danger" };
+/// Tablero Inicio-Org, como la Página pública: publicada en verde, borrador en gris y despublicada por la plataforma en
+/// rojo. La palabra sale de `enums.HomePublicPageState` (formatos.md).
+const publicPageStateTones = defineStatusTones("HomePublicPageState", { Published: "success", Draft: "neutral", Blocked: "danger" });
 
 function Card({ to, icon, title, detail }: { to: string; icon: ReactNode; title: string; detail: ReactNode }) {
   return <Link to={to} style={{ boxShadow: "var(--shadow-card)" }}
@@ -34,8 +37,7 @@ export function AreaCards({ organization }: { organization: HomeOrganizationSumm
   if (organization.roles) details.push(["roles", t("cards.roles.count", { count: organization.roles.total })]);
   if (organization.companies) details.push(["companies", t("cards.companies.count", { count: organization.companies.total })]);
   if (organization.publicPage) {
-    const state = organization.publicPage.state;
-    details.push(["publicPage", <StatusDot key="page" tone={pageTones[state] ?? "neutral"} label={t(`cards.publicPage.${state}`)} />]);
+    details.push(["publicPage", <StatusBadge key="page" tones={publicPageStateTones} value={organization.publicPage.state} />]);
   }
   if (organization.settings) details.push(["settings", organization.settings.domain ?? t("cards.settings.noDomain")]);
   if (organization.audit) {

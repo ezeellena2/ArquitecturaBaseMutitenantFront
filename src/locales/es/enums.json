@@ -18,5 +18,10 @@
     "PendingDeletion": "Baja pedida",
     "Inactive": "Inactivo",
     "Invited": "Invitación pendiente"
+  },
+  "HomePublicPageState": {
+    "Published": "Publicada",
+    "Draft": "Borrador",
+    "Blocked": "Despublicada"
   }
 }
