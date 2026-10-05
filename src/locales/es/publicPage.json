@@ -20,6 +20,10 @@
   "blockedFallback": "La plataforma la revisó.",
   "blockedStep1": "Corregí los datos de la página",
   "blockedStep2": "Pedí a la plataforma que la habilite",
+  "noAddressTitle": "Página sin dirección",
+  "noAddressReason": "Para publicarla, la página necesita una dirección.",
+  "noAddressStep1": "Elegí la dirección de la página",
+  "noAddressStep2": "Guardá los cambios",
   "unpublishTitle": "¿Despublicar la página?",
   "unpublishDescription": "Deja de verse en {{host}}. La podés volver a publicar cuando quieras.",
   "states": {

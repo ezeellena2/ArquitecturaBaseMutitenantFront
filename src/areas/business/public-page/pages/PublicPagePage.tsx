@@ -168,6 +168,9 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
   });
 
   const blocked = page.publishBlockedAtUtc != null;
+  // «Criterio · Avisos»: lo que no se puede usar queda apagado y abre lo mismo que el ⓘ. La publicación se traba si la
+  // plataforma la despublicó o si la página todavía no tiene una dirección guardada.
+  const locked = blocked || !savedSlug;
   const slugState = slugAvailability.data?.availability;
 
   async function chooseLogo(file: File | undefined) {
@@ -244,9 +247,12 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
                 teléfono la dirección se cortaba. */}
             <span className="flex min-w-0 items-center gap-1.5">
               <span id={visibleId} className="min-w-0 truncate text-[13px] font-medium text-[var(--t1)] max-md:text-[15.5px]">{t("publicPage:visibleAt", { host: `${savedSlug}${PUBLIC_DOMAIN}` })}</span>
-              {blocked ? <InfoButton label={t("publicPage:blockedInfo")} onClick={() => setBlockedInfoOpen(true)} /> : null}
+              {locked ? <InfoButton label={t("publicPage:blockedInfo")} onClick={() => setBlockedInfoOpen(true)} /> : null}
             </span>
-            <Switch className="ml-auto" aria-labelledby={visibleId} checked={page.isPublished} disabled={blocked || !savedSlug || publication.isPending}
+            {/* Trabado, el interruptor se ve apagado pero se puede tocar: abre el aviso, como la ⓘ, y no publica. */}
+            <Switch className="ml-auto" aria-labelledby={visibleId} checked={page.isPublished} disabled={!locked && publication.isPending}
+              aria-disabled={locked || undefined}
+              onClick={(event) => { if (!locked) return; event.preventDefault(); setBlockedInfoOpen(true); }}
               onCheckedChange={(checked) => { if (checked) publication.mutate(true); else setUnpublishOpen(true); }} />
           </div>
         </Section>
@@ -311,10 +317,13 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
     </Dialog>
 
     {/* Tablero Pagina-Org (despublicada, aviso abierto): el aviso importante compartido. */}
-    <ImportantNotice open={blockedInfoOpen} onOpenChange={setBlockedInfoOpen} title={t("publicPage:blockedTitle")}
+    {blocked ? <ImportantNotice open={blockedInfoOpen} onOpenChange={setBlockedInfoOpen} title={t("publicPage:blockedTitle")}
       reason={page.publishBlockedReason ?? t("publicPage:blockedFallback")}
       detail={<Trans ns="publicPage" i18nKey="blockedOn" components={{ date: <DateText value={page.publishBlockedAtUtc} kind="date" /> }} />}
       steps={[t("publicPage:blockedStep1"), t("publicPage:blockedStep2")]} />
+      // Sin dirección guardada: el mismo aviso importante, con el motivo y los pasos para publicarla.
+      : <ImportantNotice open={blockedInfoOpen} onOpenChange={setBlockedInfoOpen} title={t("publicPage:noAddressTitle")}
+        reason={t("publicPage:noAddressReason")} steps={[t("publicPage:noAddressStep1"), t("publicPage:noAddressStep2")]} />}
 
     <ConfirmDialog open={unpublishOpen} onOpenChange={setUnpublishOpen} title={t("publicPage:unpublishTitle")}
       description={t("publicPage:unpublishDescription", { host: `${savedSlug}${PUBLIC_DOMAIN}` })} confirmLabel={t("publicPage:unpublish")} destructive

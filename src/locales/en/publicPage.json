@@ -20,6 +20,10 @@
   "blockedFallback": "The platform reviewed it.",
   "blockedStep1": "Fix the page details",
   "blockedStep2": "Ask the platform to enable it",
+  "noAddressTitle": "Page without an address",
+  "noAddressReason": "To publish it, the page needs an address.",
+  "noAddressStep1": "Choose the page address",
+  "noAddressStep2": "Save the changes",
   "unpublishTitle": "Unpublish the page?",
   "unpublishDescription": "It stops showing at {{host}}. You can publish it again anytime.",
   "states": {

@@ -207,7 +207,11 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     api({ ...page, isPublished: false, publishBlockedAtUtc: "2026-09-26T15:00:00Z", publishBlockedReason: "Datos de contacto falsos" });
     renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
 
-    expect(await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" })).toBeDisabled();
+    // «Criterio · Avisos»: lo que no se puede usar queda apagado y abre lo mismo que el ⓘ; no se apaga del todo, así se
+    // puede tocar (y enfocar) para saber por qué.
+    const toggle = await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" });
+    expect(toggle).toHaveAttribute("aria-disabled", "true");
+    expect(toggle).not.toBeDisabled();
     expect(subline()).toHaveTextContent(/^Despublicada por la plataforma$/);
     // Tablero Pagina-Org (.o-fila-tit, .o-i): la ⓘ va a 6 de la dirección, en su mismo grupo, y el interruptor aparte; en
     // el teléfono la dirección entra entera.
@@ -226,6 +230,43 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(within(notice).getAllByRole("listitem").map((item) => item.textContent?.replace(/^\d/, ""))).toEqual(["Corregí los datos de la página", "Pedí a la plataforma que la habilite"]);
     await user.click(within(notice).getByRole("button", { name: "Entendido" }));
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Página despublicada" })).not.toBeInTheDocument());
+  });
+
+  // «Criterio · Avisos»: el interruptor trabado abre el mismo aviso que la ⓘ y no publica.
+  it("despublicada por la plataforma: tocar el interruptor trabado abre el aviso y no publica", async () => {
+    const user = userEvent.setup();
+    const calls: string[] = [];
+    api({ ...page, isPublished: false, publishBlockedAtUtc: "2026-09-26T15:00:00Z", publishBlockedReason: "Datos de contacto falsos" }, calls);
+    renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+
+    const toggle = await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" });
+    await user.click(toggle);
+    const notice = await screen.findByRole("dialog", { name: "Página despublicada" });
+    expect(notice).toHaveTextContent("Datos de contacto falsos");
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+    expect(calls).toEqual([]);
+  });
+
+  // Sin dirección guardada la página no se puede publicar: el interruptor queda trabado y, con la ⓘ, abre su aviso con
+  // el motivo y qué hacer.
+  it("sin dirección: el interruptor trabado y la ⓘ abren el aviso de la dirección y no publica", async () => {
+    const user = userEvent.setup();
+    const calls: string[] = [];
+    api({ ...page, slug: null as unknown as string, isPublished: false }, calls);
+    renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+
+    const toggle = await screen.findByRole("switch", { name: /^Visible en/ });
+    expect(toggle).toHaveAttribute("aria-disabled", "true");
+    await user.click(toggle);
+    const notice = await screen.findByRole("dialog", { name: "Página sin dirección" });
+    expect(notice).toHaveTextContent("Para publicarla, la página necesita una dirección.");
+    expect(within(notice).getAllByRole("listitem").map((item) => item.textContent?.replace(/^\d/, ""))).toEqual(["Elegí la dirección de la página", "Guardá los cambios"]);
+    expect(calls).toEqual([]);
+    await user.click(within(notice).getByRole("button", { name: "Entendido" }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Página sin dirección" })).not.toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Ver el motivo y qué podés hacer" }));
+    expect(await screen.findByRole("dialog", { name: "Página sin dirección" })).toBeVisible();
   });
 
   // Paquete 2: Página pública también avisa con el cartel de concurrencia, debajo de la banda, y no con un aviso
