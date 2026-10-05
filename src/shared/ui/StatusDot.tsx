@@ -22,10 +22,16 @@ const tones: Record<StatusTone, string> = {
 export function StatusDot({ tone, label, className, ...props }: StatusDotProps) {
   return (
     <span className={cn("inline-flex w-fit max-w-full items-center gap-1.5 text-[13px] text-[var(--t1)]", className)} {...props}>
-      <span data-slot="status-dot" aria-hidden="true" className={cn("size-2 shrink-0 rounded-full", tones[tone])} />
+      <StatusDotMark tone={tone} />
       <span className="min-w-0 truncate">{label}</span>
     </span>
   );
+}
+
+/// El punto solo, de 8 px y del color de su tono: `StatusDot` lo pone delante de la palabra y `StatusMark`, delante de
+/// una palabra que va dentro de otro texto.
+export function StatusDotMark({ tone, className }: { tone: StatusTone; className?: string }) {
+  return <span data-slot="status-dot" aria-hidden="true" className={cn("size-2 shrink-0 rounded-full", tones[tone], className)} />;
 }
 
 /// Lo que aclara un estado en la segunda línea de una fila («Vence 02/10/2026»): debajo de la palabra y no del punto

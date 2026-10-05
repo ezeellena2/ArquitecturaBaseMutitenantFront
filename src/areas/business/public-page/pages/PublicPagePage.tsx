@@ -9,7 +9,8 @@ import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
-import type { PublicPageResponse, TenantSlugAvailability, UpdatePublicPageRequest } from "@/shared/api/types";
+import type { ApiSchemas, PublicPageResponse, TenantSlugAvailability, UpdatePublicPageRequest } from "@/shared/api/types";
+import { defineStatusTones } from "@/shared/format/statusTones";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
@@ -20,6 +21,7 @@ import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
+import { StatusMark } from "@/shared/ui/format/StatusBadge";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Input } from "@/shared/ui/input";
 import { phoneDraftFromE164, phoneE164FromDraft } from "@/shared/phone/phoneInput";
@@ -65,6 +67,10 @@ function valuesFromPage(page: PublicPageResponse): PageForm {
     logo: { dataUri: page.logoDataUri ?? null, base64: null, contentType: null, remove: false },
   };
 }
+
+/// Tableros Pagina-Org y M-Pagina-Org (`.w-est`): publicada en verde, borrador en gris y despublicada por la plataforma en
+/// rojo, con la palabra también en rojo (tema.md).
+const publicPageStateTones = defineStatusTones("HomePublicPageState", { Published: "success", Draft: "neutral", Blocked: "danger" });
 
 function pageRequest(values: PageForm, version: number): UpdatePublicPageRequest {
   return {
@@ -206,10 +212,10 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
     setFailure(undefined);
   }
 
-  const stateDot = blocked ? "bg-[var(--peligro)]" : page.isPublished ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-apagado)]";
+  const pageState: ApiSchemas["HomePublicPageState"] = blocked ? "Blocked" : page.isPublished ? "Published" : "Draft";
   const stateText = t(blocked ? "publicPage:states.blocked" : page.isPublished ? "publicPage:states.published" : "publicPage:states.draft");
   const state = <span className={`inline-flex items-center gap-1.5 ${blocked ? "text-[var(--peligro)]" : "text-[var(--t1)] max-md:text-[var(--t3)]"}`}>
-    <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${stateDot}`} />{stateText}
+    <StatusMark tones={publicPageStateTones} value={pageState} />{stateText}
   </span>;
   const summary = <>{state}{edit.unsaved ? <><span aria-hidden="true">{" · "}</span>{edit.unsaved}</> : null}</>;
 

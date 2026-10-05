@@ -567,7 +567,7 @@ src/
 │       │   ├── CultureText.tsx                      [E1] nombre de idioma y región, nunca código crudo
 │       │   ├── EnumText.tsx                         enums.<Enum>.<Valor>
 │       │   ├── EnumText.test.tsx                    tests de EnumText
-│       │   ├── StatusBadge.tsx                      el punto y la palabra, con el tono de statusTones
+│       │   ├── StatusBadge.tsx                      el punto y la palabra, con el tono de statusTones; StatusMark, solo el punto, cuando la palabra va dentro de otro texto
 │       │   ├── StatusBadge.test.tsx                 tests de StatusBadge
 │       │   ├── BooleanText.tsx                      Sí / No
 │       │   ├── EmptyValue.tsx                       — con aria-label "Sin dato"

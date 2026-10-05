@@ -45,7 +45,7 @@ Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena
 
 Los nombres de esta tabla son los **únicos** que usan los componentes. Los `--color-*` de ArquitecturaBaseFront no se heredan. Las variables de shadcn (`--primary`, `--ring`, `--destructive`, `--border`, `--input`, `--background`…) existen en `index.css` solo como **alias** de estos tokens: `--primary: var(--marca)`, `--ring: var(--foco)`, `--destructive: var(--peligro)`, `--border: var(--borde)`, `--input: var(--t3)`, `--background: var(--fondo)`. El borde de control alcanza al menos 3:1 sobre `--fondo` y `--peligro` sobre `--peligro-t` alcanza al menos 4,5:1.
 
-El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas y listas»). Los tonos de `statusTones` pintan el punto (`StatusDot`, `StatusBadge`); la palabra va en el color del texto:
+El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas y listas»). Los tonos de `statusTones` pintan el punto (`StatusDot`, `StatusBadge`, `StatusMark`); la palabra va en el color del texto:
 
 | Tono | Punto |
 |---|---|

@@ -28,9 +28,9 @@ describe("statusTones", () => {
 
   // Plan de consolidación, bloque 6: Usuarios, Empresas y Miembros pintan sus estados con StatusBadge y los tonos que
   // registra su feature; ninguna pantalla escribe un color de estado (los `--punto-*` viven en StatusDot) ni elige un tono
-  // suelto con StatusDot.
-  it("Usuarios y Empresas no escriben un color de estado ni un tono suelto", () => {
-    const loose = ["areas/business/users", "areas/business/companies"]
+  // suelto con StatusDot. En 6d, también el estado de la Página pública y el de cada dominio de Configuración.
+  it("Usuarios, Empresas, la Página pública y Configuración no escriben un color de estado ni un tono suelto", () => {
+    const loose = ["areas/business/users", "areas/business/companies", "areas/business/public-page", "areas/business/settings"]
       .flatMap((folder) => sourceFiles(path.join(srcRoot, folder)))
       .filter((file) => /--punto-(?:ok|alerta|apagado)|<StatusDot\b/.test(readFileSync(file, "utf8")))
       .map((file) => path.relative(srcRoot, file).replaceAll("\\", "/"));

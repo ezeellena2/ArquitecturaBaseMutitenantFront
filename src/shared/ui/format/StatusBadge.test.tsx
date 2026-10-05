@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { StatusTone, StatusTones } from "@/shared/format/statusTones";
-import { StatusBadge } from "./StatusBadge";
+import { StatusBadge, StatusMark } from "./StatusBadge";
 
 vi.mock("@/shared/format/useFormat", () => ({
   useFormat: () => ({ isLoading: false, formatEnum: (name: string, value: string) => `${name} ${value}`, formatEmpty: () => "—" }),
@@ -35,5 +35,15 @@ describe("StatusBadge", () => {
     render(<StatusBadge tones={tones} value={null} />);
     expect(screen.getByText("—")).toBeVisible();
     expect(document.querySelector('[data-slot="status-dot"]')).toBeNull();
+  });
+
+  // Tableros Pagina-Org y M-Configuracion: cuando la palabra va dentro de otro texto con su letra, va solo el punto, con
+  // el tono que registró la feature.
+  it("StatusMark pinta solo el punto del tono registrado, sin la palabra", () => {
+    const { container } = render(<StatusMark tones={tones} value="danger" className="max-md:mr-1.5" />);
+    const statusDot = container.querySelector('[data-slot="status-dot"]');
+    expect(statusDot).toHaveClass("size-2", "rounded-full", "bg-[var(--peligro)]", "max-md:mr-1.5");
+    expect(statusDot).toHaveAttribute("aria-hidden", "true");
+    expect(container).toHaveTextContent("");
   });
 });
