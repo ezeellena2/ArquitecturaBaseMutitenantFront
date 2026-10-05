@@ -253,7 +253,7 @@ src/
 │   │   │   │   ├── deletion.ts                      POST /api/me/deletion: motivo + ReauthTicket, con useIdempotentMutation
 │   │   │   │   └── dataExport.ts                    [E10] POST /api/me/data-export, con useIdempotentMutation
 │   │   │   ├── components/
-│   │   │   │   ├── AccountProfileForm.tsx           «Tus datos»: nombre, idioma y región, y zona, en tres columnas; React Hook Form con zod, useEditForm y useEditPage
+│   │   │   │   ├── AccountProfileForm.tsx           «Tus datos»: nombre, idioma y región, y zona, en tres columnas; React Hook Form con zod, useEditForm y useEditPage; accountWritten, después de cambiar un método de ingreso
 │   │   │   │   ├── LoginMethodsTable.tsx            los métodos de ingreso en su lista, con «Principal» o «Sin verificar» en la segunda línea y su ⋮ (verificar, quitar, hacer principal)
 │   │   │   │   ├── LoginMethodsTable.test.tsx       tests de LoginMethodsTable
 │   │   │   │   ├── VerifyLoginMethodDialog.tsx      verificar un método sin verificar: el diálogo de shared/account/AddLoginMethodDialog
