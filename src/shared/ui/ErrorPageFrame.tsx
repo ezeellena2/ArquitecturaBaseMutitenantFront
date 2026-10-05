@@ -63,7 +63,8 @@ export function ErrorPageFrame({ icon, title, back, screen, standalone = false, 
   return page(<div className="flex min-h-full flex-1 items-center justify-center px-5 py-12 text-[var(--t1)]">
     <div className="flex w-full max-w-[460px] flex-col items-center gap-4 text-center">
       <span aria-hidden="true" className="inline-flex size-16 items-center justify-center rounded-full bg-[var(--s3)] text-[var(--t2)]">{icon}</span>
-      {announce(<h1 className="text-2xl font-bold tracking-[-0.02em]">{title}</h1>)}
+      {/* Tablero Error-Org: el título de 24 con el renglón de la página (1,5: 36), a 16 del círculo y del botón. */}
+      {announce(<h1 className="text-[24px] leading-[1.5] font-bold tracking-[-0.02em]">{title}</h1>)}
       {/* Tablero Error-Org y «Criterio · Botones»: el botón principal de siempre, de 36 y letra de 14; «Reintentar», el
           secundario («Criterio · Avisos», Pantalla de error). */}
       {retry

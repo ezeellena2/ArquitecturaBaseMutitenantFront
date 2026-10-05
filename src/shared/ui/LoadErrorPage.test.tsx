@@ -19,6 +19,8 @@ describe("LoadErrorPage", () => {
 
     expect(screen.getByRole("alert")).toHaveTextContent("No pudimos abrir esta pantalla");
     expect(screen.getByRole("heading", { level: 1, name: "No pudimos abrir esta pantalla" })).toBeVisible();
+    // Tablero Error-Org: el título de 24 con su renglón de 36 (el de la página), así el botón queda donde el tablero.
+    expect(screen.getByRole("heading", { level: 1, name: "No pudimos abrir esta pantalla" })).toHaveClass("text-[24px]", "leading-[1.5]");
     const retry = screen.getByRole("button", { name: "Reintentar" });
     expect(retry).toHaveAttribute("data-variant", "outline");
     expect(container.querySelector("svg")?.parentElement).toHaveClass("size-16", "rounded-full", "bg-[var(--s3)]");

@@ -39,6 +39,15 @@ describe("OrganizationUnavailablePage", () => {
     expect(screen.getByRole("heading", { name: "Beta S.R.L. está suspendida" })).toBeVisible();
     expect(screen.getByText("Nadie de la organización puede entrar por ahora. Tus otros perfiles siguen funcionando.")).toBeVisible();
     expect(screen.getByText("Elegí otro perfil")).toBeVisible();
+    // Tablero Perfil-Suspendido: el círculo, el texto, la tarjeta y «Salir» van a 22 uno del otro; el título y el párrafo,
+    // con la altura normal de su letra (el párrafo, a 6 del título); «Elegí otro perfil» con 6 arriba y 2 abajo, como el
+    // título de un menú; las flechas, en el gris claro de los íconos de un menú.
+    const heading = screen.getByRole("heading", { name: "Beta S.R.L. está suspendida" });
+    expect(heading).toHaveClass("leading-[normal]");
+    expect(heading.nextElementSibling).toHaveClass("mt-1.5", "leading-[normal]");
+    expect(heading.parentElement?.previousElementSibling?.parentElement).toHaveClass("gap-[22px]");
+    expect(screen.getByText("Elegí otro perfil")).toHaveClass("pt-1.5", "pb-0.5", "leading-[normal]");
+    expect(screen.getByRole("button", { name: /Personal.*Tu perfil personal/ }).querySelector("svg:last-child")).toHaveClass("text-[var(--t3)]");
     expect(screen.queryByRole("button", { name: /Beta S.R.L./ })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Gamma S.A./ })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /Personal.*Tu perfil personal/ }));
