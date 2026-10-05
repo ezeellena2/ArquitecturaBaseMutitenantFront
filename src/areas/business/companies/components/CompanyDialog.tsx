@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
 import { useMemo } from "react";
-import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -11,6 +10,7 @@ import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { CompanyResponse, CreateCompanyRequest, UpdateCompanyRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import type { TaxIdTypeReference } from "@/shared/referenceData/referenceData";
 import { Button } from "@/shared/ui/button";
@@ -44,8 +44,10 @@ type CompanyFormValues = z.output<ReturnType<typeof companyFormSchema>>;
 // Los errores de validación del back, en camelCase, a su campo.
 const serverFields: Record<string, keyof CompanyForm> = { name: "name", taxIdNumber: "taxNumber", timeZoneId: "timeZoneId" };
 
-function valuesFromCompany(company: CompanyResponse): CompanyForm {
-  return { name: company.name, taxNumber: company.taxId?.number ?? "", timeZoneId: company.timeZoneId };
+/// Al editar, lo guardado; al crear, todo vacío.
+function valuesFromCompany(company: CompanyResponse | undefined): CompanyForm {
+  return company ? { name: company.name, taxNumber: company.taxId?.number ?? "", timeZoneId: company.timeZoneId }
+    : { name: "", taxNumber: "", timeZoneId: "" };
 }
 
 /// Solo el número: el tipo de identificación sale del país de la organización (el back lo resuelve). Sin zona, la de la
@@ -58,10 +60,11 @@ function companyRequest(values: CompanyFormValues): CreateCompanyRequest {
  * «Crear empresa» y «Editar empresa» (tableros Empresas y Empresa): el diálogo normal y, en el teléfono, la hoja desde
  * abajo, con React Hook Form y zod, como Roles. Es dueño de lo escrito, de su guardado y de su error. Se monta solo
  * mientras está abierto y, al cerrar, le devuelve el foco a lo que lo abrió, o a `returnFocusTo` si lo abrió una opción
- * de un menú ⋮.
+ * de un menú ⋮. Al editar, `useEditForm` recuerda la empresa de cuando se abrió: la ficha le pasa su lectura viva y una
+ * relectura de fondo no cambia la versión que manda el guardado (formularios.md).
  */
 export function CompanyDialog({ company, inDetail = false, onClose, returnFocusTo }: {
-  /** Sin empresa, la crea; con una, la edita con su versión. */
+  /** Sin empresa, la crea; con una, la edita con la versión de cuando se abrió el diálogo. */
   company?: CompanyResponse;
   /** En la ficha, el aviso de guardado no repite el nombre, que ya está en la banda. */
   inDetail?: boolean;
@@ -73,9 +76,8 @@ export function CompanyDialog({ company, inDetail = false, onClose, returnFocusT
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const cuitType = useCuitType();
   const schema = useMemo(() => companyFormSchema(t, cuitType), [t, cuitType]);
-  const form = useForm<CompanyForm, unknown, CompanyFormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: company ? valuesFromCompany(company) : { name: "", taxNumber: "", timeZoneId: "" },
+  const { form, version } = useEditForm<CompanyResponse | undefined, CompanyForm, CompanyFormValues>({
+    read: company, toValues: valuesFromCompany, resolver: zodResolver(schema),
   });
   const { failure, clear, fail, close } = useDialogFailure(onClose);
   const create = useIdempotentMutation((request: CreateCompanyRequest, key) => createCompany(request, key));
@@ -102,7 +104,7 @@ export function CompanyDialog({ company, inDetail = false, onClose, returnFocusT
     clear();
     const request = companyRequest(values);
     if (company) {
-      update.mutate({ id: company.id, request: { ...request, version: company.version } }, {
+      update.mutate({ id: company.id, request: { ...request, version } }, {
         onSuccess: () => { void saved(inDetail ? t("companies:messages.detailUpdated") : sentence(t("companies:messages.updated", { name: request.name }))); },
         onError: rejected,
       });

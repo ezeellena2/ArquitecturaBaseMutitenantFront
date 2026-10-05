@@ -325,7 +325,7 @@ src/
 │   │   │   ├── errors.test.ts                       tests de errors
 │   │   │   ├── components/
 │   │   │   │   ├── CompanyFields.tsx                Nombre, CUIT y «Zona de negocio», atados al formulario de CompanyDialog
-│   │   │   │   ├── CompanyDialog.tsx                crear y editar (Empresas y la ficha): React Hook Form con zod; dueño de lo escrito, su guardado y su error
+│   │   │   │   ├── CompanyDialog.tsx                crear y editar (Empresas y la ficha): React Hook Form con zod y useEditForm (la versión de cuando se abrió); dueño de lo escrito, su guardado y su error
 │   │   │   │   ├── AddMemberDialog.tsx              «Agregar miembro»: la persona y sus roles en la empresa; React Hook Form con zod
 │   │   │   │   ├── MemberRolesDialog.tsx            «Roles de …»: los roles de un miembro en la empresa; React Hook Form con zod
 │   │   │   │   ├── useCuitType.ts                   el tipo CUIT del catálogo, para revisar el CUIT

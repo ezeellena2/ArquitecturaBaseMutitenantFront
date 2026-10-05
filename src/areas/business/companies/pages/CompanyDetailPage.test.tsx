@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -660,5 +660,40 @@ describe("CompanyDetailPage", () => {
     const again = await screen.findByRole("dialog", { name: "Editar empresa" });
     expect(within(again).getByRole("textbox", { name: "Nombre" })).toHaveValue("Delta S.A.");
     expect(within(again).getByRole("textbox", { name: "Nombre" })).not.toHaveAccessibleDescription("Escribí el nombre de la empresa.");
+  });
+
+  // formularios.md (Ediciones simultáneas): «Editar empresa» manda la versión de la empresa de cuando se abrió. La ficha
+  // le pasa su lectura viva, y una relectura de fondo con otra versión no la cambia: el back responde 409 en vez de pisar
+  // lo que cambió otra persona.
+  it("«Editar empresa» manda la versión de cuando se abrió, aunque llegue una relectura con otra", async () => {
+    const user = userEvent.setup();
+    detailApi([member]);
+    let current = company;
+    const sent: unknown[] = [];
+    server.use(
+      http.get("/api/companies/company-1", () => HttpResponse.json(current)),
+      http.put("/api/companies/company-1", async ({ request }) => {
+        const body = await request.json() as { version: number };
+        sent.push(body);
+        return body.version === current.version ? new HttpResponse(null, { status: 204 })
+          : HttpResponse.json({ status: 409, code: "General.ConcurrencyConflict", title: "Conflicto",
+            detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar." }, { status: 409 });
+      }),
+    );
+    const { queryClient } = renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Editar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar empresa" });
+
+    current = { ...company, name: "Delta Sur S.A.", version: 4 };
+    await act(() => queryClient.invalidateQueries({ queryKey: ["companies", "detail", "company-1"] }));
+    await waitFor(() => expect(screen.getByRole("heading", { level: 1, name: "Delta Sur S.A.", hidden: true })).toBeInTheDocument());
+    const name = within(dialog).getByRole("textbox", { name: "Nombre" });
+    expect(name).toHaveValue("Delta S.A.");
+    await user.clear(name);
+    await user.type(name, "Delta Norte S.A.");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => expect(sent).toEqual([expect.objectContaining({ name: "Delta Norte S.A.", version: 3 })]));
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent("Otra persona cambió esto. Revisá la versión más reciente antes de guardar.");
   });
 });
