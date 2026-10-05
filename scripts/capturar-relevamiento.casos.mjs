@@ -19,6 +19,7 @@ const withBoardCuits = (text) => boardCuits.reduce((result, [before, now]) => re
 //   «Plataforma». Los datos son los del generador de la etapa 6, al día con el tablero Auditoria-Org (v107).
 // - Cada dominio, con `managedEmailCount` («Verificado · 10 correos administrados por …» del tablero Configuracion).
 // - La ficha de una empresa, con la ruta de sus roles (B4): los de cualquier empresa y los suyos, filtrados como el back.
+// - Un guardado con versión responde 200 con la versión nueva, y no 204 (tanda 6d-3b, back `4ea3d53`).
 // - Las rutas que cambiaron de nombre: crear un rol es /org/roles/nuevo (frontend.md §3, tanda 6a).
 const currentAudit = new Map(auditResponses().map((item) => [item.path, item]));
 const renamedRoutes = [["route=%2Forg%2Froles%2Fnew", "route=%2Forg%2Froles%2Fnuevo"]];
@@ -36,6 +37,7 @@ function withCurrentContract(entry) {
     if (item.method === "GET" && item.path === "/api/organization/settings/domains" && Array.isArray(item.body)) {
       return { ...item, body: item.body.map((domain) => ({ managedEmailCount: domain.status === "Verified" ? 10 : 0, ...domain })) };
     }
+    if (item.method === "PUT" && item.status === 204) return { ...item, status: 200, body: { version: 13 } };
     return item;
   });
   const companyId = next.map((item) => item.method === "GET" && item.path.startsWith("/api/companies/company-") && item.path.split("/").length === 4 ? item.path.split("/")[3] : null).find(Boolean);

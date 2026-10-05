@@ -31,6 +31,15 @@ test("el relevamiento tiene cada estado a 1440 y a 390, contra tableros vigentes
   }
 });
 
+// Los manifiestos de las etapas son fotos con el contrato de entonces: un guardado respondía 204. Desde 6d-3b responde
+// 200 con la versión nueva, y la app la toma como base; con un 204, «Guardamos la configuración.» no sale nunca.
+test("los guardados simulados responden como el back de hoy: 200 con la versión nueva, nunca 204", () => {
+  const stale = buildCases().flatMap((entry) => (entry.app?.responses ?? [])
+    .filter((item) => item.method === "PUT" && item.status < 400 && typeof item.body?.version !== "number")
+    .map((item) => `${entry.id}: ${item.method} ${item.path} ${item.status}`));
+  assert.deepEqual(stale, []);
+});
+
 test("con --out, el manifest de la tanda suma los casos de cada corrida en el orden del catálogo, sin repetirlos", () => {
   const catalogCases = buildCases();
   const folder = mkdtempSync(path.join(os.tmpdir(), "relevamiento-tanda-"));
