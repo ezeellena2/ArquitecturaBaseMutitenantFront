@@ -5,6 +5,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
+import { asPhone } from "@/test/utils/phone";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { AccountDeletionDialog } from "./AccountDeletionDialog";
 
@@ -43,4 +44,16 @@ it("exige motivo, confirma con código del principal y devuelve fecha", async ()
   await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Dejé de usarla");
   await user.click(screen.getByRole("button", { name: "Dar de baja" }));
   await waitFor(() => expect(complete).toHaveBeenCalledWith("2026-10-30T12:00:00Z"));
+});
+
+// M-Cuenta-Baja (6d-3b, E7): en el teléfono, «Dar de baja» es el botón destructivo, en rojo como en la compu. El lienzo
+// v107 lo había dibujado en petróleo por error y Diseño lo corrigió.
+it("en el teléfono, «Dar de baja» confirma con el botón destructivo, como en la compu", async () => {
+  const restore = asPhone();
+  try {
+    server.use(http.post("/api/me/reauth", () => HttpResponse.json({ sourceMethodId: "primary", destination: "a***@example.test", resendAfterSeconds: 60 })));
+    renderWithProviders(<AccountDeletionDialog graceDays={30} onClose={() => {}} onComplete={() => {}} />);
+
+    expect(await screen.findByRole("button", { name: "Dar de baja" })).toHaveAttribute("data-variant", "destructive");
+  } finally { restore(); }
 });

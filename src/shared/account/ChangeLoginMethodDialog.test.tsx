@@ -5,6 +5,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
+import { asPhone } from "@/test/utils/phone";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { ChangeLoginMethodDialog } from "./ChangeLoginMethodDialog";
 
@@ -97,4 +98,20 @@ it("el código a medias y el incorrecto van debajo de los casilleros, y un dígi
   expect(first).not.toHaveAttribute("aria-invalid");
   await user.click(screen.getByRole("button", { name: "Quitar" }));
   await waitFor(() => expect(complete).toHaveBeenCalled());
+});
+
+// M-Cuenta-Metodo (6d-3b, E7): en el teléfono, «Quitar» un correo o un teléfono y «Desvincular» Google confirman con el
+// botón destructivo, en rojo como en la compu. El lienzo v107 los había dibujado en petróleo por error y Diseño lo corrigió.
+it.each([
+  { type: "Phone" as const, value: "+5491155554521", action: "Quitar" },
+  { type: "Google" as const, value: "lucia.fer@gmail.com", action: "Desvincular" },
+])("en el teléfono, «$action» confirma con el botón destructivo, como en la compu", async ({ type, value, action }) => {
+  const restore = asPhone();
+  try {
+    server.use(http.post("/api/me/reauth", () => HttpResponse.json({ sourceMethodId: "source", destination: "a***@example.test", resendAfterSeconds: 60 })));
+    renderWithProviders(<ChangeLoginMethodDialog action="remove" onClose={() => {}}
+      method={{ id: "target", type, value, isVerified: true, isPrimary: false, canRemove: true, canMakePrimary: false }} />);
+
+    expect(await screen.findByRole("button", { name: action })).toHaveAttribute("data-variant", "destructive");
+  } finally { restore(); }
 });
