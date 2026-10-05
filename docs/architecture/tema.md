@@ -1,6 +1,6 @@
 # Tema visual (aprobado el 2026-09-27)
 
-La fuente de cada pantalla es el [lienzo vigente "Sistema visual · Multitenant"](../design/lienzo/README.md): mandan los ocho tableros «Criterio» y, para cada pantalla, su tablero validado, sobre cualquier descripción textual. Estos tokens van en `src/index.css` como variables CSS, y los componentes los usan siempre por nombre, nunca con el valor. Reemplaza los colores, la marca y el menú lateral de `visual-baseline.md`. La densidad compacta, la banda de título, los listados y las migas siguen como dice la sección "UI y pantallas" de [`frontend.md`](frontend.md).
+La fuente de cada pantalla es el [lienzo vigente "Sistema visual · Multitenant"](../design/lienzo/README.md): mandan los ocho tableros «Criterio» y, para cada pantalla, su tablero validado, sobre cualquier descripción textual. Estos tokens van en `src/index.css` como variables CSS, y los componentes los usan siempre por nombre, nunca con el valor. Reemplaza los colores, la marca y el menú lateral de `../ArquitecturaBaseFront/docs/design/visual-baseline.md`. La densidad compacta, la banda de título, los listados y las migas siguen como dice la sección "UI y pantallas" de [`frontend.md`](frontend.md).
 
 ## Colores
 Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena** (menú lateral y barra superior) un tono más marcado que el centro, para que se despegue.
@@ -66,7 +66,7 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 - **Avisos pasajeros en la compu** (tablero Avisos): abajo a la derecha, una tarjeta blanca de 340 con borde, radio de 10 y `--sombra-aviso` (`0 12px 32px oklch(0.24 0.014 78 / 0.16)`); solo el ícono lleva color (`--aviso-ok`, `--peligro`).
 
 ## Menú lateral y panel de Administración
-- **Arriba:** Inicio y los módulos del producto. **Abajo de todo:** "Administración".
+- **Arriba:** Inicio y los módulos de uso diario del producto. **Abajo de todo**, después de una línea en `--lado-borde`: "Administración". Un módulo de uso diario (como WhatsApp, en la E11) abre su propio panel al lado del menú, como Administración, y se abre uno a la vez («Criterio · Menús», R10).
 - **Las opciones** («Criterio · Menús», `layouts/components/menuRow.ts`, igual en el menú y en el panel): miden 32, con 2 px
   entre una y otra y la línea fina adentro de ese espacio (34 de una a otra, lienzo v92). Las que no están activas van en
   `--lado-t2`; la activa, en blanco con `--marca-tx`; el grupo que se despliega, en 600 y `--t1`.

@@ -5,16 +5,15 @@
 ## Cómo se hace
 ```
 <feature>/
-├── api/<recurso>.ts     query keys + funciones (tipos de generated/); un archivo por recurso (ej. companies.ts, companyMembers.ts)
-├── columns.tsx          columnas tipadas del listado principal
-├── <x>Columns.tsx       columnas de otra tabla de la feature (ej. memberColumns.tsx), si la hay
+├── api/<recurso>.ts     query keys + funciones (tipos de generated/); un archivo por recurso, con sus subrecursos (ej. companies.ts lleva también los miembros y los roles de una empresa)
+├── columns.tsx          columnas tipadas de cada tabla (create<X>Columns), su fila del teléfono (<x>PhoneRow) y los tonos de sus estados (ej. createCompanyColumns y createCompanyMemberColumns)
 ├── errors.ts            switch (error.code)
 ├── components/          diálogos y piezas propias
-├── tabs/                una pestaña por archivo (<X>Tab.tsx); solo si la ficha tiene dos o más tablas grandes (pantallas-y-ui)
+├── tabs/                una pestaña por archivo (<X>Tab.tsx) y el hook de sus datos (use<X>.ts); una pestaña por grupo de datos (pantallas-y-ui)
 ├── lib/                 lógica pura de la feature (con tests)
 └── pages/               una pantalla por archivo, lazy en routes.tsx
 ```
-Las carpetas que la feature no necesita no se crean (`settings/` puede tener solo `api/` y `pages/`).
+Las carpetas que la feature no necesita no se crean (`audit/` tiene solo `api/` y `pages/`).
 - Una ruta nueva se declara una vez en el manifiesto de su área (`layouts/navigation/<área>.ts`: camino, permiso, módulo y, si va en el menú, rótulo e ícono); `app/routes.tsx` le suma su pantalla con `lazyPage`.
 - Si dos features necesitan lo mismo, se mueve a `shared/` (por ejemplo `shared/account/`, que usan Mi cuenta y el Inicio personal); no se importa de la otra feature.
 - Imports con alias `@/`. `import type` para los tipos.

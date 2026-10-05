@@ -11,7 +11,7 @@
 | `FilterBar` | buscador y filtros en su tarjeta | igual | la lupa y el filtro son íconos de la barra; el filtro abre una hoja con las opciones y su conteo |
 | `DataTable` | todas las columnas | sin las `priority: "low"` | la fila de lista de la pantalla (`mobileRow`, con `ListRow`): de borde a borde, hasta tres líneas, el ⋮ solo si hay acciones; el paginado es «Cargar más» |
 | `Section` | caja con el título en el encabezado arena | igual | el título gris arriba y una tarjeta blanca (`card`), la tarjeta dentro de una página con margen (`inset`) o los campos sueltos (`untitled`) |
-| `Dialog` | centrado, 560 px (420 para confirmar; 640 la vista previa de la Página pública) | centrado | hoja desde abajo, con manija y botones de 48 a lo ancho; la confirmación, sin ✕ |
+| `Dialog` | centrado, 560 px, o 420 (`size="sm"`: uno o dos campos y las confirmaciones); 640 solo la vista previa de la Página pública (`size="preview"`) | centrado | hoja desde abajo, con manija y botones de 48 a lo ancho; la confirmación, sin ✕ |
 | Pantalla de edición | al editar, «Descartar cambios» y «Guardar cambios» en la banda; al crear, «Cancelar» y la acción | igual | los mismos botones, fijos abajo (`FixedActions`) |
 | Avisos | abajo a la derecha; los carteles debajo de la banda | igual | lo pasajero, en una franja oscura abajo; lo que sigue, en una banda debajo de la barra |
 | Pantallas públicas | dos mitades (formulario + panel de la marca) | igual | una columna, sin el panel; el sitio público, web con ☰ (la página de una organización, sin ☰) |
@@ -27,7 +27,7 @@
   ```
   Cada tabla tiene **una** columna `primary`. En la fila del teléfono, el ⋮ va solo si la fila tiene acciones; si no, se toca la fila.
 - **Lo que aclara un dato va en su segunda línea**, en la computadora y en el teléfono: el correo debajo del nombre, el rol debajo de la empresa. Dos datos sin relación nunca van juntos.
-- **Tamaños:** en la computadora, botón normal de 36 px, chico de 32 y campo de 36; en el teléfono, campos de 48 con letra de 16 y botones de 44 a 50. Ingreso y registro usan botones grandes de 44. El tablero manda si este resumen difiere.
+- **Tamaños:** en la computadora, botón normal de 36 px, chico de 32 y campo de 36; en el teléfono, campos de 48 con letra de 16 y botones de 44 a 50. Ingreso y registro usan botones grandes de 44 y campos de 44 con radio 10 y letra de 15 en cualquier ancho (`FormField variant="auth"`). El tablero manda si este resumen difiere.
 - **Cortes:** los de Tailwind (`md` = 768 y `lg` = 1024), sin cortes propios. `useMediaQuery("(max-width: 767px)")` solo en el marco (`PrivateLayoutFrame`, que cuenta en `AppChrome` si es un teléfono) y en las pantallas fuera del marco; las demás piezas leen `useAppChrome()` o usan clases `max-md:`.
 - **Tableros:** cada pantalla nueva se dibuja en el lienzo **a 1440 y a 390** antes de programarse.
 

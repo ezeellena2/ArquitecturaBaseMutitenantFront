@@ -12,7 +12,7 @@
 ```
 - **Cerrado:** la bandera y el prefijo («+54»), en una caja de 112 (decisión del usuario del 2026-10-04).
 - **Selector de país:** `CountrySelect` vive en `shared/ui/fields` y es un combobox con buscador (por nombre, código ISO o prefijo: "arg", "AR" o "+54"). Cada fila lleva bandera SVG, nombre traducido y prefijo.
-  - Las opciones habilitadas vienen de `shared/referenceData` (`GET /api/reference-data`), con `Name`, `CallingCode` y `SortOrder` del catálogo `Countries`. Las destacadas se ordenan por `SortOrder` y las demás por nombre traducido; no existe `priorityCountries.ts` ni una lista de códigos en el front.
+  - Las opciones habilitadas vienen de `shared/referenceData` (`GET /api/reference-data`), con `Name`, `CallingCode` y `SortOrder` del catálogo `Countries`. Las destacadas se ordenan por `SortOrder` y las demás por nombre traducido (`shared/phone/countries.ts`); en el front no hay un archivo de países destacados ni una lista de códigos.
 - `libphonenumber-js` valida y formatea números y prefijos; **no** define la lista de países ni sus nombres de pantalla. Mientras llega el catálogo, el selector muestra estado de carga.
 - **Banderas:** `country-flag-icons` (SVG 3:2), cargadas solo cuando se abre el selector. Si falla la importación, se muestra el código del país con `role="img"` y el nombre traducido como etiqueta accesible, sin derribar el formulario. **Nunca emojis:** Windows no los dibuja.
 - **País por defecto:** el del número si ya hay uno; si no, el `CountryCode` de la cultura efectiva (hoy `es-AR` → AR); si no, el de la organización. Todas esas relaciones vienen del catálogo.
