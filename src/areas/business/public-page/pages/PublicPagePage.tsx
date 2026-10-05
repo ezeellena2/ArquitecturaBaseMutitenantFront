@@ -1,8 +1,14 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Globe } from "lucide-react";
 import { useId, useState } from "react";
+import { useController, useForm, useWatch } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { z } from "zod";
+import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
+import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { PublicPageResponse, TenantSlugAvailability, UpdatePublicPageRequest } from "@/shared/api/types";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useEditPage } from "@/shared/hooks/useEditPage";
@@ -26,31 +32,45 @@ import { DateText } from "@/shared/ui/format/DateText";
 import { initials } from "@/shared/lib/initials";
 import { cn } from "@/shared/lib/utils";
 import { toastError } from "@/shared/ui/sonner";
-import { toast } from "sonner";
 import { checkOrganizationSlug, fetchPublicPage, publicPageQueryKey, setPublicPagePublished, slugAvailabilityQueryKey, updatePublicPage } from "../api/publicPage";
-
-interface PageDraft {
-  slug: string;
-  name: string;
-  description: string;
-  contactEmail: string;
-  contactPhone: PhoneDraft | null;
-  address: string;
-  website: string;
-  logoDataUri: string | null;
-  uploadedLogoBase64: string | null;
-  logoContentType: string | null;
-  removeLogo: boolean;
-}
 
 // El dominio público de la plataforma; en desarrollo la URL real se arma con `publicUrl`.
 const PUBLIC_DOMAIN = ".plataforma.com";
 
-function draftFromPage(page: PublicPageResponse): PageDraft {
+/// La página pública no tiene reglas propias en la pantalla: lo que el back rechaza de un dato va debajo de ese dato, y
+/// lo demás (la dirección tomada, el logo), en la franja. El logo es lo que se ve, la imagen nueva o el pedido de quitarlo.
+const pageFormSchema = z.object({
+  slug: z.string(),
+  name: z.string(),
+  description: z.string(),
+  contactEmail: z.string(),
+  contactPhone: z.custom<PhoneDraft>().nullable(),
+  address: z.string(),
+  website: z.string(),
+  logo: z.object({ dataUri: z.string().nullable(), base64: z.string().nullable(), contentType: z.string().nullable(), remove: z.boolean() }),
+});
+type PageForm = z.infer<typeof pageFormSchema>;
+
+// Los errores de validación del back, en camelCase, a su campo.
+const serverFields: Record<string, keyof PageForm> = {
+  slug: "slug", name: "name", description: "description", contactEmail: "contactEmail", contactPhone: "contactPhone",
+  "contactPhone.country": "contactPhone", "contactPhone.number": "contactPhone", address: "address", website: "website",
+};
+
+function valuesFromPage(page: PublicPageResponse): PageForm {
   return {
     slug: page.slug ?? "", name: page.name, description: page.description ?? "", contactEmail: page.contactEmail ?? "",
     contactPhone: phoneDraftFromE164(page.contactPhone), address: page.address ?? "", website: page.website ?? "",
-    logoDataUri: page.logoDataUri ?? null, uploadedLogoBase64: null, logoContentType: null, removeLogo: false,
+    logo: { dataUri: page.logoDataUri ?? null, base64: null, contentType: null, remove: false },
+  };
+}
+
+function pageRequest(values: PageForm, version: number): UpdatePublicPageRequest {
+  return {
+    slug: values.slug.trim(), name: values.name, description: values.description, contactEmail: values.contactEmail,
+    contactPhone: values.contactPhone?.number.trim() ? { country: values.contactPhone.country, number: values.contactPhone.number } : null,
+    address: values.address, website: values.website,
+    logoBase64: values.logo.base64, logoContentType: values.logo.contentType, removeLogo: values.logo.remove, version,
   };
 }
 
@@ -83,13 +103,40 @@ function slugStateText(state: TenantSlugAvailability | undefined, t: (key: strin
 
 export function PublicPagePage() {
   const { t } = useTranslation(["publicPage", "common"]);
+  const page = useQuery({ queryKey: publicPageQueryKey, queryFn: fetchPublicPage, meta: { silent: true, blocksView: true } });
+
+  // «Criterio · Avisos» (Pantalla de error): la página no cargó y no hay nada que mostrar.
+  if (page.isError && !page.data) return <LoadErrorPage onRetry={() => { void page.refetch(); }} />;
+  if (!page.data) return <Page icon={Globe} title={t("publicPage:title")}><p role="status" className="text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  return <PublicPageEditor page={page.data} loadError={page.error} reload={async () => (await page.refetch()).data} />;
+}
+
+/// La página pública de la organización (tableros Pagina-Org y M-Pagina-Org), como el editor de Roles: React Hook Form
+/// con zod, y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`. La publicación se
+/// aplica al momento, sin esperar a «Guardar cambios».
+function PublicPageEditor({ page, loadError, reload }: { page: PublicPageResponse; loadError: unknown; reload: () => Promise<PublicPageResponse | undefined> }) {
+  const { t } = useTranslation(["publicPage", "common"]);
   const client = useQueryClient();
   const visibleId = useId();
-  const page = useQuery({ queryKey: publicPageQueryKey, queryFn: fetchPublicPage, meta: { silent: true, blocksView: true } });
-  const [draftState, setDraftState] = useState<PageDraft | null>(null);
-  const draft = draftState ?? (page.data ? draftFromPage(page.data) : null);
-  const debouncedSlug = useDebouncedValue(draft?.slug.trim() ?? "");
-  const slugChanged = Boolean(page.data && draft && draft.slug !== (page.data.slug ?? ""));
+  const form = useForm<PageForm>({ resolver: zodResolver(pageFormSchema), defaultValues: valuesFromPage(page) });
+  const { errors } = form.formState;
+  const slugField = useController({ control: form.control, name: "slug" });
+  const phoneField = useController({ control: form.control, name: "contactPhone" });
+  const [slug, name, description, contactEmail, contactPhone, address, website, logo] = useWatch({
+    control: form.control, name: ["slug", "name", "description", "contactEmail", "contactPhone", "address", "website", "logo"],
+  });
+  const [failure, setFailure] = useState<unknown>();
+  const isDirty = form.formState.isDirty;
+  // Tableros Pagina-Org y Avisos: el 409 en su cartel, «Cambios sin guardar» después del estado, el error de guardado en
+  // la franja del formulario y «¿Salir sin guardar?» antes de irse con cambios.
+  const edit = useEditPage({
+    isDirty, error: failure,
+    onSeeNew: () => { void reload().then((fresh) => { if (fresh) form.reset(valuesFromPage(fresh)); setFailure(undefined); }); },
+    onContinueEditing: () => setFailure(undefined),
+  });
+  const savedSlug = page.slug ?? "";
+  const debouncedSlug = useDebouncedValue(slug.trim());
+  const slugChanged = slug !== savedSlug;
   const slugAvailability = useQuery({
     queryKey: slugAvailabilityQueryKey(debouncedSlug),
     queryFn: () => checkOrganizationSlug(debouncedSlug),
@@ -99,68 +146,59 @@ export function PublicPagePage() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [blockedInfoOpen, setBlockedInfoOpen] = useState(false);
   const [unpublishOpen, setUnpublishOpen] = useState(false);
-  const update = useMutation({
-    mutationFn: updatePublicPage,
-    // El error queda en `update.error`: el 409 va en su cartel y el resto, en la franja del formulario (useEditPage).
-    onSuccess: async () => { setDraftState(null); toast.success(t("publicPage:saved")); await client.invalidateQueries({ queryKey: publicPageQueryKey }); },
-  });
+  const update = useMutation({ mutationFn: updatePublicPage });
   // Tablero Pagina-Org: el interruptor de «Publicación» se aplica al momento, sin esperar a «Guardar cambios».
   const publication = useMutation({
-    mutationFn: (published: boolean) => setPublicPagePublished(published, { version: page.data!.version }),
+    mutationFn: (published: boolean) => setPublicPagePublished(published, { version: page.version }),
     onSuccess: async (_result, published) => { toast.success(t(published ? "publicPage:published" : "publicPage:unpublished")); await client.invalidateQueries({ queryKey: publicPageQueryKey }); },
     onError: (error) => toastActionError(error, t),
   });
 
-  const pageData = page.data;
-  const isDirty = Boolean(pageData && draft && JSON.stringify(draft) !== JSON.stringify(draftFromPage(pageData)));
-  // Tableros Pagina-Org y Avisos: el 409 en su cartel, «Cambios sin guardar» después del estado, el error de guardado en
-  // la franja del formulario y «¿Salir sin guardar?» antes de irse con cambios.
-  const edit = useEditPage({
-    isDirty, error: update.error,
-    onSeeNew: () => { setDraftState(null); update.reset(); void page.refetch(); },
-    onContinueEditing: () => update.reset(),
-  });
-  const blocked = pageData?.publishBlockedAtUtc != null;
+  const blocked = page.publishBlockedAtUtc != null;
   const slugState = slugAvailability.data?.availability;
-  const canSave = Boolean(isDirty && draft && pageData);
-  const savedSlug = pageData?.slug ?? "";
 
   async function chooseLogo(file: File | undefined) {
-    if (!file || !draft) return;
+    if (!file) return;
     if (file.size > 512 * 1024 || !["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
       toastError(t("publicPage:invalidLogo"));
       return;
     }
     try {
       const image = await readImage(file);
-      setDraftState({ ...draft, logoDataUri: image.dataUri, uploadedLogoBase64: image.base64, logoContentType: file.type, removeLogo: false });
+      form.setValue("logo", { dataUri: image.dataUri, base64: image.base64, contentType: file.type, remove: false }, { shouldDirty: true });
     } catch {
       toastError(t("publicPage:invalidLogo"));
     }
   }
 
-  function saveChanges() {
-    if (!draft || !pageData) return;
-    const request: UpdatePublicPageRequest = {
-      slug: draft.slug.trim(), name: draft.name, description: draft.description, contactEmail: draft.contactEmail,
-      contactPhone: draft.contactPhone?.number.trim() ? { country: draft.contactPhone.country, number: draft.contactPhone.number } : null,
-      address: draft.address, website: draft.website,
-      logoBase64: draft.uploadedLogoBase64, logoContentType: draft.logoContentType,
-      removeLogo: draft.removeLogo, version: pageData.version,
-    };
-    update.mutate(request);
+  function rejected(error: unknown) {
+    if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, serverFields)) return;
+    setFailure(error);
   }
 
-  const stateDot = blocked ? "bg-[var(--peligro)]" : pageData?.isPublished ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-apagado)]";
-  const stateText = t(blocked ? "publicPage:states.blocked" : pageData?.isPublished ? "publicPage:states.published" : "publicPage:states.draft");
-  const state = pageData ? <span className={`inline-flex items-center gap-1.5 ${blocked ? "text-[var(--peligro)]" : "text-[var(--t1)] max-md:text-[var(--t3)]"}`}>
-    <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${stateDot}`} />{stateText}
-  </span> : undefined;
-  const summary = state ? <>{state}{edit.unsaved ? <><span aria-hidden="true">{" · "}</span>{edit.unsaved}</> : null}</> : undefined;
-  // Tablero M-Pagina-Org: los campos van adentro de la tarjeta blanca, uno debajo del otro.
+  async function saved(values: PageForm) {
+    setFailure(undefined);
+    form.reset(values);
+    toast.success(t("publicPage:saved"));
+    await client.invalidateQueries({ queryKey: publicPageQueryKey });
+  }
 
-  // «Criterio · Avisos» (Pantalla de error): la página no cargó y no hay nada que mostrar.
-  if (page.isError && !pageData) return <LoadErrorPage onRetry={() => { void page.refetch(); }} />;
+  const submit = form.handleSubmit((values) => {
+    setFailure(undefined);
+    update.mutate(pageRequest(values, page.version), { onSuccess: () => { void saved(values); }, onError: rejected });
+  });
+
+  function discard() {
+    form.reset();
+    setFailure(undefined);
+  }
+
+  const stateDot = blocked ? "bg-[var(--peligro)]" : page.isPublished ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-apagado)]";
+  const stateText = t(blocked ? "publicPage:states.blocked" : page.isPublished ? "publicPage:states.published" : "publicPage:states.draft");
+  const state = <span className={`inline-flex items-center gap-1.5 ${blocked ? "text-[var(--peligro)]" : "text-[var(--t1)] max-md:text-[var(--t3)]"}`}>
+    <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${stateDot}`} />{stateText}
+  </span>;
+  const summary = <>{state}{edit.unsaved ? <><span aria-hidden="true">{" · "}</span>{edit.unsaved}</> : null}</>;
 
   return <>
     <Page
@@ -170,69 +208,70 @@ export function PublicPagePage() {
       summary={summary}
       phoneSubtitle={summary}
       phoneBody="gray"
-      barAction={pageData?.isPublished && pageData.slug
-        ? { label: t("publicPage:view"), href: publicUrl(pageData.slug) }
+      barAction={page.isPublished && page.slug
+        ? { label: t("publicPage:view"), href: publicUrl(page.slug) }
         : { label: t("publicPage:preview"), onClick: () => setPreviewOpen(true) }}
       actions={<>
-        <Button type="button" variant="outline" onClick={() => { setDraftState(null); update.reset(); }}>{t("publicPage:discard")}</Button>
-        <Button type="button" disabled={!canSave} pending={update.isPending} onClick={saveChanges}>{t("publicPage:save")}</Button>
+        <Button type="button" variant="outline" onClick={discard}>{t("publicPage:discard")}</Button>
+        <Button type="submit" form="public-page-editor" disabled={!isDirty} pending={update.isPending}>{t("publicPage:save")}</Button>
       </>}
     >
-      <div className="flex flex-col gap-4 max-md:gap-0">
-        {page.error ? <FormError message={apiErrorMessage(page.error, t)} /> : null}
+      {/* Tablero M-Pagina-Org: los campos van adentro de la tarjeta blanca, uno debajo del otro. */}
+      <form id="public-page-editor" noValidate aria-label={t("publicPage:title")} onSubmit={(event) => { void submit(event); }} className="flex flex-col gap-4 max-md:gap-0">
+        {loadError ? <FormError message={apiErrorMessage(loadError, t)} /> : null}
         {/* La franja del error de guardado; en el teléfono va en la banda debajo de la barra (M-Pagina-Org, v106). */}
         {edit.formError}
-        {page.isPending ? <p role="status" className="text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft && pageData ? <>
-          <Section title={t("publicPage:publicationTitle")}>
-            <div className="flex items-center gap-3 px-4 py-3 md:px-5 max-md:min-h-14 max-md:py-2 max-md:pr-3.5">
-              <Globe aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)] max-md:hidden" />
-              <span id={visibleId} className="min-w-0 truncate text-[13px] font-medium text-[var(--t1)] max-md:text-[15.5px]">{t("publicPage:visibleAt", { host: `${savedSlug}${PUBLIC_DOMAIN}` })}</span>
-              {blocked ? <InfoButton label={t("publicPage:blockedInfo")} onClick={() => setBlockedInfoOpen(true)} /> : null}
-              <Switch className="ml-auto" aria-labelledby={visibleId} checked={pageData.isPublished} disabled={blocked || !savedSlug || publication.isPending}
-                onCheckedChange={(checked) => { if (checked) publication.mutate(true); else setUnpublishOpen(true); }} />
-            </div>
-          </Section>
+        <Section title={t("publicPage:publicationTitle")}>
+          <div className="flex items-center gap-3 px-4 py-3 md:px-5 max-md:min-h-14 max-md:py-2 max-md:pr-3.5">
+            <Globe aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)] max-md:hidden" />
+            <span id={visibleId} className="min-w-0 truncate text-[13px] font-medium text-[var(--t1)] max-md:text-[15.5px]">{t("publicPage:visibleAt", { host: `${savedSlug}${PUBLIC_DOMAIN}` })}</span>
+            {blocked ? <InfoButton label={t("publicPage:blockedInfo")} onClick={() => setBlockedInfoOpen(true)} /> : null}
+            <Switch className="ml-auto" aria-labelledby={visibleId} checked={page.isPublished} disabled={blocked || !savedSlug || publication.isPending}
+              onCheckedChange={(checked) => { if (checked) publication.mutate(true); else setUnpublishOpen(true); }} />
+          </div>
+        </Section>
 
-          <Section title={t("publicPage:pageTitle")}>
-            <div className="flex items-center gap-3 border-b border-[var(--borde)] px-4 py-2.5 md:px-5 max-md:gap-3.5 max-md:border-0 max-md:px-4 max-md:pt-3.5 max-md:pb-0">
-              {draft.logoDataUri ? <img src={draft.logoDataUri} alt={t("publicPage:logoAlt")} className="size-9 rounded-[9px] object-contain max-md:size-14 max-md:rounded-[14px]" />
-                : <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-[9px] bg-[var(--marca-t)] text-[11.5px] font-bold text-[var(--marca-tx)] max-md:size-14 max-md:rounded-[14px] max-md:bg-[var(--marca)] max-md:text-[18px] max-md:font-bold max-md:text-[var(--lado-activo)]">{initials(draft.name)}</span>}
-              <span className="text-[13px] font-medium text-[var(--t1)] max-md:sr-only">{t("publicPage:logoTitle")}</span>
-              <span className="ml-auto flex items-center gap-2 max-md:ml-0">
-                {draft.logoDataUri ? <Button type="button" variant="outline" size="sm" className="max-md:h-10 max-md:rounded-[10px] max-md:px-3.5 max-md:text-[14px]" onClick={() => setDraftState({ ...draft, logoDataUri: null, uploadedLogoBase64: null, logoContentType: null, removeLogo: true })}>{t("publicPage:removeLogo")}</Button> : null}
-                {/* Tablero Pagina-Org: «Subir imagen» es el botón chico con borde, como «Quitar logo». */}
-                <label className={cn(buttonVariants({ variant: "outline", size: "sm" }), "cursor-pointer max-md:h-10 max-md:rounded-[10px] max-md:px-3.5 max-md:text-[14px]")}>
-                  {t("publicPage:uploadLogo")}
-                  <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => { void chooseLogo(event.target.files?.[0]); }} />
-                </label>
-              </span>
-            </div>
-            <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
-              <div className="flex flex-col gap-1.5">
-                {/* El sufijo va sobre el borde derecho del campo: FormField ata el rótulo a su único hijo, el Input. */}
-                <div className="relative">
-                  <FormField label={t("publicPage:fields.slug")} required>
-                    <Input value={draft.slug} maxLength={63} autoComplete="off" className="pr-[124px] max-md:pr-[140px]" onChange={(event) => setDraftState({ ...draft, slug: event.target.value.toLowerCase() })} />
-                  </FormField>
-                  <span aria-hidden="true" className="absolute bottom-px right-px flex h-[32px] items-center rounded-r-[7px] border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[13px] text-[var(--t2)] lg:h-[34px] max-md:h-[46px] max-md:rounded-r-[11px] max-md:border-[var(--borde2)] max-md:bg-[var(--s3)] max-md:text-[15px]">{PUBLIC_DOMAIN}</span>
-                </div>
-                {slugChanged && slugState ? <p className={`text-[13px] ${slugState === "Available" ? "text-[var(--ok)]" : "text-[var(--peligro)]"}`}>{slugStateText(slugState, t)}</p> : null}
+        <Section title={t("publicPage:pageTitle")}>
+          <div className="flex items-center gap-3 border-b border-[var(--borde)] px-4 py-2.5 md:px-5 max-md:gap-3.5 max-md:border-0 max-md:px-4 max-md:pt-3.5 max-md:pb-0">
+            {logo.dataUri ? <img src={logo.dataUri} alt={t("publicPage:logoAlt")} className="size-9 rounded-[9px] object-contain max-md:size-14 max-md:rounded-[14px]" />
+              : <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-[9px] bg-[var(--marca-t)] text-[11.5px] font-bold text-[var(--marca-tx)] max-md:size-14 max-md:rounded-[14px] max-md:bg-[var(--marca)] max-md:text-[18px] max-md:font-bold max-md:text-[var(--lado-activo)]">{initials(name)}</span>}
+            <span className="text-[13px] font-medium text-[var(--t1)] max-md:sr-only">{t("publicPage:logoTitle")}</span>
+            <span className="ml-auto flex items-center gap-2 max-md:ml-0">
+              {logo.dataUri ? <Button type="button" variant="outline" size="sm" className="max-md:h-10 max-md:rounded-[10px] max-md:px-3.5 max-md:text-[14px]"
+                onClick={() => form.setValue("logo", { dataUri: null, base64: null, contentType: null, remove: true }, { shouldDirty: true })}>{t("publicPage:removeLogo")}</Button> : null}
+              {/* Tablero Pagina-Org: «Subir imagen» es el botón chico con borde, como «Quitar logo». */}
+              <label className={cn(buttonVariants({ variant: "outline", size: "sm" }), "cursor-pointer max-md:h-10 max-md:rounded-[10px] max-md:px-3.5 max-md:text-[14px]")}>
+                {t("publicPage:uploadLogo")}
+                <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => { void chooseLogo(event.target.files?.[0]); }} />
+              </label>
+            </span>
+          </div>
+          <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
+            <div className="flex flex-col gap-1.5">
+              {/* El sufijo va sobre el borde derecho del campo: FormField ata el rótulo a su único hijo, el Input. */}
+              <div className="relative">
+                <FormField label={t("publicPage:fields.slug")} required error={errors.slug?.message}>
+                  <Input name={slugField.field.name} value={slugField.field.value} onBlur={slugField.field.onBlur} maxLength={63} autoComplete="off" className="pr-[124px] max-md:pr-[140px]"
+                    onChange={(event) => slugField.field.onChange(event.target.value.toLowerCase())} />
+                </FormField>
+                <span aria-hidden="true" className="absolute bottom-px right-px flex h-[32px] items-center rounded-r-[7px] border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[13px] text-[var(--t2)] lg:h-[34px] max-md:h-[46px] max-md:rounded-r-[11px] max-md:border-[var(--borde2)] max-md:bg-[var(--s3)] max-md:text-[15px]">{PUBLIC_DOMAIN}</span>
               </div>
-              <FormField label={t("publicPage:fields.name")} required><Input value={draft.name} maxLength={120} onChange={(event) => setDraftState({ ...draft, name: event.target.value })} /></FormField>
-              <div className="md:col-span-2"><FormField label={t("publicPage:fields.description")}><Textarea value={draft.description} maxLength={1000} onChange={(event) => setDraftState({ ...draft, description: event.target.value })} /></FormField></div>
-            </SectionFields>
-          </Section>
+              {slugChanged && slugState ? <p className={`text-[13px] ${slugState === "Available" ? "text-[var(--ok)]" : "text-[var(--peligro)]"}`}>{slugStateText(slugState, t)}</p> : null}
+            </div>
+            <FormField label={t("publicPage:fields.name")} required error={errors.name?.message}><Input {...form.register("name")} maxLength={120} /></FormField>
+            <div className="md:col-span-2"><FormField label={t("publicPage:fields.description")} error={errors.description?.message}><Textarea {...form.register("description")} maxLength={1000} /></FormField></div>
+          </SectionFields>
+        </Section>
 
-          <Section title={t("publicPage:contactTitle")}>
-            <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
-              <FormField label={t("publicPage:fields.email")}><Input type="email" value={draft.contactEmail} maxLength={254} onChange={(event) => setDraftState({ ...draft, contactEmail: event.target.value })} /></FormField>
-              <FormField label={t("publicPage:fields.phone")}><PhoneField value={draft.contactPhone} onChange={(contactPhone) => setDraftState({ ...draft, contactPhone })} /></FormField>
-              <FormField label={t("publicPage:fields.address")}><Input value={draft.address} maxLength={500} onChange={(event) => setDraftState({ ...draft, address: event.target.value })} /></FormField>
-              <FormField label={t("publicPage:fields.website")}><Input type="url" value={draft.website} maxLength={2048} onChange={(event) => setDraftState({ ...draft, website: event.target.value })} /></FormField>
-            </SectionFields>
-          </Section>
-        </> : null}
-      </div>
+        <Section title={t("publicPage:contactTitle")}>
+          <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
+            <FormField label={t("publicPage:fields.email")} error={errors.contactEmail?.message}><Input type="email" {...form.register("contactEmail")} maxLength={254} /></FormField>
+            <FormField label={t("publicPage:fields.phone")} error={errors.contactPhone?.message}><PhoneField value={phoneField.field.value} onChange={phoneField.field.onChange} /></FormField>
+            <FormField label={t("publicPage:fields.address")} error={errors.address?.message}><Input {...form.register("address")} maxLength={500} /></FormField>
+            <FormField label={t("publicPage:fields.website")} error={errors.website?.message}><Input type="url" {...form.register("website")} maxLength={2048} /></FormField>
+          </SectionFields>
+        </Section>
+      </form>
     </Page>
 
     <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
@@ -241,17 +280,17 @@ export function PublicPagePage() {
           desde abajo. Muestra lo que está escrito, aunque todavía no esté guardado. */}
       <DialogContent size="preview">
         <DialogHeader><DialogTitle>{t("publicPage:preview")}</DialogTitle><DialogDescription className="sr-only">{t("publicPage:previewDescription")}</DialogDescription></DialogHeader>
-        {draft ? <div className={cn(publicPageBackdropClass, "flex justify-center px-10 py-6 max-md:mt-2 max-md:mb-4 max-md:p-4")}>
-          <PublicPageCard page={{ ...draft, contactPhone: phoneE164FromDraft(draft.contactPhone) }} />
-        </div> : null}
+        <div className={cn(publicPageBackdropClass, "flex justify-center px-10 py-6 max-md:mt-2 max-md:mb-4 max-md:p-4")}>
+          <PublicPageCard page={{ name, description, contactEmail, address, website, logoDataUri: logo.dataUri, contactPhone: phoneE164FromDraft(contactPhone) }} />
+        </div>
         <DialogFooter><Button type="button" onClick={() => setPreviewOpen(false)}>{t("common:actions.close")}</Button></DialogFooter>
       </DialogContent>
     </Dialog>
 
     {/* Tablero Pagina-Org (despublicada, aviso abierto): el aviso importante compartido. */}
     <ImportantNotice open={blockedInfoOpen} onOpenChange={setBlockedInfoOpen} title={t("publicPage:blockedTitle")}
-      reason={pageData?.publishBlockedReason ?? t("publicPage:blockedFallback")}
-      detail={<Trans ns="publicPage" i18nKey="blockedOn" components={{ date: <DateText value={pageData?.publishBlockedAtUtc} kind="date" /> }} />}
+      reason={page.publishBlockedReason ?? t("publicPage:blockedFallback")}
+      detail={<Trans ns="publicPage" i18nKey="blockedOn" components={{ date: <DateText value={page.publishBlockedAtUtc} kind="date" /> }} />}
       steps={[t("publicPage:blockedStep1"), t("publicPage:blockedStep2")]} />
 
     <ConfirmDialog open={unpublishOpen} onOpenChange={setUnpublishOpen} title={t("publicPage:unpublishTitle")}
