@@ -75,7 +75,9 @@ describe("OtpInput", () => {
     expect(screen.getByRole("textbox", { name: "Código 2" })).toHaveFocus();
   });
 
-  it("ignora letras y marca todas las casillas cuando el código falla", async () => {
+  // Cuenta-Verificar y M-Cuenta-Verificar (`.p-otp.mal`, `.ap-cod6.mal`): en un diálogo, el código incorrecto marca solo
+  // el borde de cada casilla en rojo, sin fondo rosado.
+  it("ignora letras y marca todas las casillas cuando el código falla: en un diálogo, solo el borde rojo", async () => {
     const onChange = vi.fn();
     const { rerender } = render(<OtpInput length={6} value="" onChange={onChange} label="Código" />);
     await userEvent.type(screen.getByRole("textbox", { name: "Código 1" }), "a");
@@ -83,7 +85,17 @@ describe("OtpInput", () => {
     rerender(<OtpInput length={6} value="482915" onChange={onChange} label="Código" invalid />);
     for (const box of screen.getAllByRole("textbox")) {
       expect(box).toHaveAttribute("aria-invalid", "true");
-      expect(box).toHaveClass("aria-invalid:bg-[var(--peligro-t)]");
+      expect(box).toHaveClass("aria-invalid:border-[var(--peligro)]");
+      expect(box.className).not.toMatch(/aria-invalid:bg-/);
+    }
+  });
+
+  // Ingreso, Registro y Registro-Empresa, y sus M-* (`.otp.mal input`): en el ingreso y los registros, el borde rojo y el
+  // fondo rosado.
+  it("en el ingreso y los registros, el código incorrecto lleva el borde rojo y el fondo rosado", () => {
+    render(<OtpInput length={6} value="482915" onChange={vi.fn()} label="Código" variant="auth" invalid />);
+    for (const box of screen.getAllByRole("textbox")) {
+      expect(box).toHaveClass("aria-invalid:border-[var(--peligro)]", "aria-invalid:bg-[var(--peligro-t)]");
     }
   });
 

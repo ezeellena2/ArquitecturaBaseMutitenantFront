@@ -24,10 +24,12 @@ interface OtpInputProps {
 // teléfono. «Criterio · Formularios» (Código) y Cuenta-Verificar: en un diálogo, casillas de 40 × 44 a la izquierda, radio 8
 // y número de 18; en la hoja del teléfono (M-Cuenta-Verificar), a todo el ancho, de 52, radio 12 y número de 22. Las
 // medidas `max-md:` van todas: si no, las del campo del teléfono (48, radio 12, letra de 16) se cuelan en el código.
+// El código incorrecto marca el borde en rojo; en el ingreso y los registros (`.otp.mal input`), también el fondo rosado,
+// y en un diálogo (Cuenta-Verificar y M-Cuenta-Verificar, `.p-otp.mal` y `.ap-cod6.mal`), solo el borde.
 const layout = {
   auth: {
     group: "grid grid-cols-6 gap-2",
-    box: "h-11 w-full rounded-[8px] text-[22px] max-md:h-11 max-md:rounded-[8px] max-md:text-[22px]",
+    box: "h-11 w-full rounded-[8px] text-[22px] max-md:h-11 max-md:rounded-[8px] max-md:text-[22px] aria-invalid:bg-[var(--peligro-t)]",
   },
   default: {
     group: "flex gap-2 max-md:grid max-md:grid-cols-6",
@@ -120,7 +122,7 @@ export function OtpInput({
           onChange={(event) => handleChange(index, event)}
           onKeyDown={(event) => handleKeyDown(index, event)}
           onPaste={handlePaste}
-          className={cn(layout[variant].box, "border-[var(--borde2)] p-0 text-center font-semibold max-md:px-0 aria-invalid:bg-[var(--peligro-t)] disabled:border-[var(--borde2)] disabled:bg-[var(--s2)] disabled:text-[var(--t3)] disabled:opacity-100")}
+          className={cn(layout[variant].box, "border-[var(--borde2)] p-0 text-center font-semibold max-md:px-0 aria-invalid:border-[var(--peligro)] disabled:border-[var(--borde2)] disabled:bg-[var(--s2)] disabled:text-[var(--t3)] disabled:opacity-100")}
         />
       ))}
     </div>
