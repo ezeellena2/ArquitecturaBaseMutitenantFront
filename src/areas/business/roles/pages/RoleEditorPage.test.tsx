@@ -246,12 +246,12 @@ describe("RoleEditorPage", () => {
     expect(screen.getByText("Ver roles")).toBeVisible();
     expect(screen.queryByText("Los roles y sus permisos.")).not.toBeInTheDocument();
     expect(screen.getByText("2 de 2 elegidos")).toBeVisible();
-    // Tablero Rol: las casillas de un rol de sistema, bloqueadas y grises; en el teléfono, el borde petróleo de las marcadas
-    // es solo para las que se pueden tocar.
+    // Tablero Rol: las casillas de un rol de sistema, bloqueadas y grises. En el teléfono, M-Rol (v107, «Ver el rol Dueño»,
+    // .ap-chk.on.fijo): las marcadas en petróleo a 0,55.
     const locked = screen.getByRole("checkbox", { name: "Ver roles" });
     expect(locked).toBeDisabled();
     expect(locked).toHaveClass("disabled:data-[state=checked]:bg-[var(--borde2)]", "max-md:enabled:data-[state=checked]:border-[var(--marca)]!");
-    expect(locked).not.toHaveClass("max-md:data-[state=checked]:border-[var(--marca)]!");
+    expect(locked).toHaveClass("max-md:disabled:data-[state=checked]:bg-[var(--marca)]!", "max-md:disabled:data-[state=checked]:border-[var(--marca)]!", "max-md:disabled:opacity-55!");
     expect(screen.getByRole("checkbox", { name: "Todos los permisos de Roles" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Abrir o cerrar Roles" }));
     expect(screen.queryByText("Ver roles")).not.toBeInTheDocument();
@@ -355,6 +355,9 @@ describe("RoleEditorPage", () => {
     expect(document.querySelector(`label[for="${valeEn.id}"]`)).toHaveTextContent(/^Vale en$/);
     expect(screen.getByRole("textbox", { name: "Nombre" })).toHaveAttribute("aria-required", "true");
     expect(screen.getByRole("textbox", { name: "Descripción" }).closest("[data-slot='role-description']")).toHaveClass("lg:col-span-2");
+    // Tableros Rol (.o-vacio) y M-Rol (.ap-sin-vale): sin «Vale en», los permisos dicen qué falta, en gris claro de 13 y,
+    // en el teléfono, de 14,5.
+    expect(screen.getByText("Elegí dónde vale el rol para ver sus permisos.")).toHaveClass("text-[13px]", "text-[var(--t3)]", "max-md:text-[14.5px]", "max-md:text-[var(--t2)]");
     // Tablero Rol: la caja de «Descripción» crece con el texto y no tiene el tirador para cambiarle el tamaño.
     const description = screen.getByRole("textbox", { name: "Descripción" });
     expect(description).toHaveClass("resize-none");
@@ -374,7 +377,7 @@ describe("RoleEditorPage", () => {
 
       await screen.findByRole("textbox", { name: "Nombre" });
       // Tablero M-Rol: «Vale en» se lee como texto, de 16 debajo de su rótulo de 13,5.
-      expect(screen.getByText("Toda la organización")).toHaveClass("max-md:text-[16px]");
+      expect(screen.getByText("Toda la organización")).toHaveClass("max-md:text-[16px]", "max-md:leading-[normal]");
       expect(screen.getByText("Vale en")).toHaveClass("max-md:text-[13.5px]");
       expect(await axe(container)).toHaveNoViolations();
       expect(screen.getByRole("heading", { level: 1, name: "Solo lectura" }).closest("header")).toHaveTextContent("Vale en toda la organización · 0 usuarios lo tienen");

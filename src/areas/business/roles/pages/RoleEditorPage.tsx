@@ -244,7 +244,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
 
         <Section title={t("roles:permissionsTitle")} phone="inset" meta={scope ? t("roles:permissionCount", count) : undefined}>
           {errors.permissions?.message ? <FormError className="mx-4 mt-3 max-md:mx-3.5" message={errors.permissions.message} /> : null}
-          {!scope ? <p className="p-4 text-[13px] text-[var(--t2)]">{t("roles:scope.chooseForPermissions")}</p>
+          {!scope ? <p className="p-4 text-[13px] text-[var(--t3)] max-md:px-4 max-md:py-3.5 max-md:text-[14.5px] max-md:text-[var(--t2)]">{t("roles:scope.chooseForPermissions")}</p>
             : permissionGroups.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
               : <PermissionPicker key={scope} groups={scopeGroups} value={permissions} onChange={permissionsField.field.onChange} readOnly={!editable} />}
         </Section>

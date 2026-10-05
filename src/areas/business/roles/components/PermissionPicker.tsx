@@ -14,8 +14,10 @@ interface PermissionPickerProps {
   readonly readOnly?: boolean;
 }
 
-// La casilla: en la compu, la de siempre con borde visible; en el teléfono (tablero M-Rol, .ap-chk), de 22 con borde de 1,5.
-const checkClass = "border-[var(--t2)] max-md:size-[22px]! max-md:rounded-[6px]! max-md:border-[1.5px]! max-md:border-[var(--borde2)]! max-md:enabled:data-[state=checked]:border-[var(--marca)]!";
+// La casilla: en la compu, la de siempre con borde visible (bloqueada, gris, como el tablero Rol); en el teléfono (tablero
+// M-Rol, .ap-chk), de 22 con borde de 1,5, y bloqueada (.fijo, un rol de sistema) en petróleo o blanca a 0,55.
+const checkClass = "border-[var(--t2)] max-md:size-[22px]! max-md:rounded-[6px]! max-md:border-[1.5px]! max-md:border-[var(--borde2)]! max-md:enabled:data-[state=checked]:border-[var(--marca)]!"
+  + " max-md:disabled:opacity-55! max-md:disabled:bg-[var(--lado-activo)]! max-md:disabled:data-[state=checked]:bg-[var(--marca)]! max-md:disabled:data-[state=checked]:border-[var(--marca)]!";
 
 /// «Permisos» de un rol («Criterio · Formularios»: la única lista con grupos que se abren y se cierran). Tableros Rol y
 /// M-Rol: cada área es una fila (40 en la compu, 52 en el teléfono) con la flecha, la casilla de todos, el nombre (que
