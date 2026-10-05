@@ -103,9 +103,10 @@ const stage3a = [
   ["registro-cerrado", "registro", "Registro cerrado"],
   ["registro-codigo-enviado", "registro", "Registro: código enviado"],
   ["registro-codigo-incorrecto", "registro", "Registro: código incorrecto"],
-  ["inicio-personal", "inicios", "Inicio personal, sin aviso"],
+  // El tablero Inicio-Personal dibuja por defecto «Con el aviso»; la app de estos casos no tiene aviso.
+  ["inicio-personal", "inicios", "Inicio personal, sin aviso", { desktop: { props: { estado: "Sin el aviso" } }, phone: { props: { estado: "Sin el aviso" } } }],
   ["inicio-org", "inicios", "Inicio de la organización"],
-  ["perfiles-personal", "inicios", "Inicio personal con el menú de perfiles abierto (en el teléfono, «Más»)"],
+  ["perfiles-personal", "inicios", "Inicio personal con el menú de perfiles abierto (en el teléfono, «Más»)", { desktop: { props: { estado: "Sin el aviso" } } }],
   ["perfiles-org", "inicios", "Inicio de la organización con el menú de perfiles abierto (en el teléfono, «Más»)"],
   ["error-org-403", "errores", "Sin permiso (403)"],
   ["error-org-404", "errores", "Página no encontrada (404)"],
@@ -292,7 +293,8 @@ function extraCases(root) {
   const usuarioActivo = (width) => stageCases(root, "etapa-6").find((entry) => entry.pair === "usuario-activo" && entry.viewport.width === width).app;
   return [
     ...pairCases(root, { stage: "etapa-3a", pair: "inicio-org", id: "inicio-org-sin-pendientes", group: "inicios", state: "Inicio de la organización: nada para resolver",
-      desktop: { props: { pendientes: "Nada para resolver" } }, app: withoutPending(homeOf(1440)), phoneApp: withoutPending(homeOf(390)) }),
+      desktop: { props: { pendientes: "Nada para resolver" } }, phone: { props: { pendientes: "Nada para resolver" } },
+      app: withoutPending(homeOf(1440)), phoneApp: withoutPending(homeOf(390)) }),
     ...custom({ id: "inicio-miembro", group: "inicios", state: "Inicio de una persona con roles solo en una empresa («Tus empresas»)",
       desktop: { board: "Inicio-Miembro", props: { rol: "Solo lectura" } },
       phone: { board: "M-Inicio-Miembro", props: { rol: "Solo lectura" }, state: "Inicio de una persona con roles solo en una empresa, en el teléfono: la billetera con «Tus empresas» (v106)" },
@@ -715,7 +717,7 @@ export function catalog(root) {
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
   const renameApp = { actions: [appFill("Nombre y apellido", "Lucía Fernández Pérez")] };
   return [
-    ...stage3a.flatMap(([pair, group, state]) => pairCases(root, { stage: "etapa-3a", pair, group, state })),
+    ...stage3a.flatMap(([pair, group, state, boards = {}]) => pairCases(root, { stage: "etapa-3a", pair, group, state, ...boards })),
     ...stage3c.flatMap(([pair, state, app]) => pairCases(root, { stage: "etapa-3c", pair, id: `invitacion-${pair}`, group: "invitacion", state, app: { userFixture: "visual-personal", ...app }, phoneApp: { userFixture: "visual-personal", ...app } })),
     ...invitationV106Cases(root),
     ...stage3b.flatMap(([pair, group, state, board]) => pairCases(root, { stage: "etapa-3b", pair, group, state, desktop: board, phone: board, app: { userFixture: "visual-personal" }, phoneApp: { userFixture: "visual-personal" } })),

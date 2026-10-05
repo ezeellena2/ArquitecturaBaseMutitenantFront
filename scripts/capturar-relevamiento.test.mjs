@@ -40,6 +40,18 @@ test("los guardados simulados responden como el back de hoy: 200 con la versión
   assert.deepEqual(stale, []);
 });
 
+// El relevamiento final encontró tableros en otro estado que la app: el inicio personal sin aviso se comparaba con
+// «Con el aviso» (el valor por defecto de Inicio-Personal) y «nada para resolver» del teléfono, con «Con pendientes».
+test("los inicios sin aviso o sin pendientes se comparan con ese estado del tablero", () => {
+  const props = new Map(buildCases().map((entry) => [entry.id, entry.props]));
+  for (const id of ["inicio-personal-escritorio", "inicio-personal-movil", "perfiles-personal-escritorio"]) {
+    assert.equal(props.get(id)?.estado, "Sin el aviso", id);
+  }
+  for (const id of ["inicio-org-sin-pendientes-escritorio", "inicio-org-sin-pendientes-movil"]) {
+    assert.equal(props.get(id)?.pendientes, "Nada para resolver", id);
+  }
+});
+
 test("con --out, el manifest de la tanda suma los casos de cada corrida en el orden del catálogo, sin repetirlos", () => {
   const catalogCases = buildCases();
   const folder = mkdtempSync(path.join(os.tmpdir(), "relevamiento-tanda-"));
