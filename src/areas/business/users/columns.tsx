@@ -6,11 +6,15 @@ import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { DateText } from "@/shared/ui/format/DateText";
 import type { ReactNode } from "react";
 import { ListRow, RowAvatar } from "@/shared/ui/app/ListRow";
-import { StatusDetail, StatusDot, type StatusTone } from "@/shared/ui/StatusDot";
+import { defineStatusTones } from "@/shared/format/statusTones";
+import { StatusBadge } from "@/shared/ui/format/StatusBadge";
+import { StatusDetail } from "@/shared/ui/StatusDot";
 
-const stateTones: Record<OrganizationUserResponse["state"], StatusTone> = {
+/// Tablero Usuarios (ESTADOS_USUARIO): activo en verde, la invitación pendiente en petróleo, la vencida y la baja pedida
+/// en ámbar, deshabilitado en gris. También los usa la ficha de Usuario.
+export const userStateTones = defineStatusTones("OrganizationUserState", {
   Active: "success", PendingDeletion: "warning", Inactive: "neutral", Invited: "pending", Expired: "warning",
-};
+});
 
 /// Tablero M-Usuarios: en el teléfono cada persona es una fila con su círculo, el correo y, en la línea de abajo, el
 /// estado con su punto, los roles de la organización y la empresa. Una invitación sin nombre lleva «@».
@@ -24,7 +28,7 @@ export function userPhoneRow(user: OrganizationUserResponse, t: TFunction, trail
     ? (user.invitationExpiresAtUtc ? [<>{t(user.state === "Expired" ? "users:columns.expiredInline" : "users:columns.expiresInline")} <DateText value={user.invitationExpiresAtUtc} kind="shortDate" /></>] : [])
     : [...organizationRoles, ...(company ? [company] : [])];
   const status = <span className="inline-flex max-w-full items-center gap-1">
-    <StatusDot tone={stateTones[user.state]} label={userStateLabel(user.state, t)} className="text-[12.5px] text-[var(--t2)]" />
+    <StatusBadge tones={userStateTones} value={user.state} className="text-[12.5px] text-[var(--t2)]" />
     {details.map((detail, index) => <span key={index} className="truncate">{" · "}{detail}</span>)}
   </span>;
   const named = Boolean(user.displayName);
@@ -33,10 +37,6 @@ export function userPhoneRow(user: OrganizationUserResponse, t: TFunction, trail
     title={user.displayName || user.email || ""}
     lines={named ? [user.email ?? "", status] : [company ?? "", status]}
     trailing={trailing} />;
-}
-
-export function userStateLabel(state: OrganizationUserResponse["state"], t: TFunction): string {
-  return t(`users:states.${state}`);
 }
 
 export function createUserColumns(t: TFunction): Column<OrganizationUserResponse>[] {
@@ -63,8 +63,7 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
       detail: (user) => user.companies[0]?.roles.map((role) => role.name).join(", ") || null,
     },
     {
-      id: "state", header: t("users:columns.state"), type: "custom", mobile: "status", className: "w-[202px] max-md:w-[38%]",
-      cell: (user) => <StatusDot tone={stateTones[user.state]} label={userStateLabel(user.state, t)} />,
+      id: "state", header: t("users:columns.state"), type: "status", tones: userStateTones, value: (user) => user.state, mobile: "status", className: "w-[202px] max-md:w-[38%]",
       // Una invitación dice hasta cuándo vale, debajo de la palabra del estado.
       detail: (user) => user.invitationExpiresAtUtc && (user.state === "Invited" || user.state === "Expired")
         ? <StatusDetail>{t(user.state === "Expired" ? "users:columns.expiredPrefix" : "users:columns.expiresPrefix")} <DateText value={user.invitationExpiresAtUtc} kind="date" /></StatusDetail>

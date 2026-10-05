@@ -1,5 +1,22 @@
 {
   "TestStatus": {
     "Active": "Activo"
+  },
+  "OrganizationUserState": {
+    "Active": "Activo",
+    "PendingDeletion": "Baja pedida",
+    "Invited": "Invitación pendiente",
+    "Expired": "Invitación vencida",
+    "Inactive": "Deshabilitado"
+  },
+  "CompanyStatus": {
+    "Active": "Activa",
+    "Inactive": "Inactiva"
+  },
+  "CompanyMemberState": {
+    "Active": "Activo",
+    "PendingDeletion": "Baja pedida",
+    "Inactive": "Inactivo",
+    "Invited": "Invitación pendiente"
   }
 }

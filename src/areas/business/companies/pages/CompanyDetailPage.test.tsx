@@ -174,6 +174,26 @@ describe("CompanyDetailPage", () => {
     expect(within(edit).getByRole("textbox", { name: "Nombre" }).closest("[data-slot='dialog-body']")).not.toBeNull();
   });
 
+  // Bloque 6 (estados): cada estado de un miembro con el color del lienzo (tablero Empresa): activo en verde, la baja
+  // pedida en ámbar y quitado de la empresa en gris; la invitación pendiente, en petróleo como en Usuarios.
+  it("el estado de cada miembro va con el punto del color del lienzo", async () => {
+    const pending = { ...member, memberId: "member-2", displayName: "Diego Ríos", state: "PendingDeletion" as const };
+    const removed = { ...member, memberId: "member-3", displayName: "Marcos Giménez", membershipStatus: "Inactive" as const };
+    const invited = { ...member, memberId: "member-4", displayName: "Paula Méndez", state: "Invited" as const };
+    detailApi([member, pending, removed, invited]);
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+
+    const members = await screen.findByRole("tabpanel");
+    const dot = async (name: string, state: string) => {
+      const row = (await within(members).findByText(name)).closest("tr")!;
+      return within(row).getByText(state).parentElement!.querySelector("[data-slot='status-dot']");
+    };
+    expect(await dot("Lucía Fernández", "Activo")).toHaveClass("bg-[var(--punto-ok)]");
+    expect(await dot("Diego Ríos", "Baja pedida")).toHaveClass("bg-[var(--punto-alerta)]");
+    expect(await dot("Marcos Giménez", "Inactivo")).toHaveClass("bg-[var(--punto-apagado)]");
+    expect(await dot("Paula Méndez", "Invitación pendiente")).toHaveClass("bg-[var(--marca)]");
+  });
+
   // B3: la tabla de miembros tiene las cuatro columnas del tablero Empresa, en su orden; las acciones, sin rótulo visible.
   it("los miembros van con Miembro, Roles en la empresa, Estado y Acciones, como el tablero", async () => {
     detailApi([member]);

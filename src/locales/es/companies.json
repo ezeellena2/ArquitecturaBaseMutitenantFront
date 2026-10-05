@@ -20,10 +20,6 @@
     "status": "Estado: todas",
     "all": "Todas"
   },
-  "status": {
-    "Active": "Activa",
-    "Inactive": "Inactiva"
-  },
   "statusFilters": {
     "Active": "Activas",
     "Inactive": "Inactivas"
@@ -87,12 +83,6 @@
     "email": "Correo",
     "roles": "Roles en la empresa",
     "state": "Estado"
-  },
-  "memberStates": {
-    "Active": "Activo",
-    "PendingDeletion": "Baja pedida",
-    "Inactive": "Inactivo",
-    "Invited": "Invitación pendiente"
   },
   "back": "Volver a Empresas",
   "detail": {

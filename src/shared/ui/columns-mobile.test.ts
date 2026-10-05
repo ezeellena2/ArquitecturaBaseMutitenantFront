@@ -11,7 +11,7 @@ vi.mock("react-i18next", () => ({ useTranslation: () => ({ t: (key: string) => k
 interface Row { id: string; name: string; status: string }
 
 const primary: Column<Row> = { id: "name", header: "Nombre", type: "text", value: (row) => row.name, mobile: "primary" };
-const status: Column<Row> = { id: "status", header: "Estado", type: "status", enum: "TestStatus", value: (row) => row.status, mobile: "status" };
+const status: Column<Row> = { id: "status", header: "Estado", type: "status", tones: { enum: "TestStatus", tones: { Active: "success" } }, value: (row) => row.status, mobile: "status" };
 const areaColumns = import.meta.glob<Record<string, unknown>>("../../areas/**/columns.tsx", { eager: true });
 
 function columnDefinitions(module: Record<string, unknown>): Column<unknown>[][] {

@@ -20,10 +20,6 @@
     "status": "Status: all",
     "all": "All"
   },
-  "status": {
-    "Active": "Active",
-    "Inactive": "Inactive"
-  },
   "statusFilters": {
     "Active": "Active",
     "Inactive": "Inactive"
@@ -87,12 +83,6 @@
     "email": "Email",
     "roles": "Company roles",
     "state": "Status"
-  },
-  "memberStates": {
-    "Active": "Active",
-    "PendingDeletion": "Deletion requested",
-    "Inactive": "Inactive",
-    "Invited": "Invitation pending"
   },
   "back": "Back to Companies",
   "detail": {

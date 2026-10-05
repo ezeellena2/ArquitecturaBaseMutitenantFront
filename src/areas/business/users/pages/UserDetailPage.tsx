@@ -26,6 +26,7 @@ import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { DateText } from "@/shared/ui/format/DateText";
+import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { toast } from "sonner";
 import { ChoiceSheet, CheckRow, RadioRow } from "../components/AccessSheets";
 import { RolesField } from "../components/RolesField";
@@ -33,6 +34,7 @@ import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { List, ListItem } from "@/shared/ui/List";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { fetchAssignableRoles, fetchCompanyOptions, fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userCompaniesQueryKey, userQueryKey, userRolesQueryKey, usersQueryRoot } from "../api/users";
+import { userStateTones } from "../columns";
 import { userErrorMessage, type UserAction } from "../errors";
 import { activeOrganization, homeOf } from "@/tenancy/access";
 
@@ -43,15 +45,6 @@ type AccessDraft = { isActive: boolean; roleIds: string[] };
 type UserState = OrganizationUserResponse["state"];
 /// De dónde salió un guardado: su error va en la franja de la ficha o en la del diálogo, arriba de sus botones.
 type SaveOrigin = "page" | "dialog";
-
-// Tablero Usuario: punto de color y palabra, sin pastilla.
-const stateDot: Record<UserState, string> = {
-  Active: "bg-[var(--punto-ok)]",
-  Invited: "bg-[var(--marca)]",
-  Expired: "bg-[var(--punto-alerta)]",
-  Inactive: "bg-[var(--punto-apagado)]",
-  PendingDeletion: "bg-[var(--punto-alerta)]",
-};
 
 function organizationRoleIds(user: OrganizationUserResponse): string[] {
   return user.roles.filter((role) => role.scope === "Organization").map((role) => role.id);
@@ -246,7 +239,8 @@ export function UserDetailPage() {
     revoke: { title: t("users:detail.confirm.revokeTitle", { email: member.email ?? "" }), description: t("users:detail.confirm.revokeDescription"), label: t("users:detail.confirm.revokeConfirm"), run: () => { if (member.invitationId) revoke.mutate(member.invitationId); } },
   };
   const confirmation = confirmAction ? confirmations[confirmAction] : null;
-  const stateLabel = <span className="inline-flex items-center gap-1.5"><span aria-hidden="true" className={`size-[7px] shrink-0 rounded-full ${stateDot[shownState]}`} />{t(`users:states.${shownState}`)}</span>;
+  // Tableros Usuario y M-Usuario: punto de color y palabra, sin pastilla, con los tonos de Usuarios.
+  const stateLabel = <StatusBadge tones={userStateTones} value={shownState} className="text-[var(--t3)]" />;
   const roleNames = current.roleIds.map((id) => orgRoles.find((role) => role.id === id)?.name ?? member.roles.find((role) => role.id === id)?.name)
     .filter(Boolean).join(", ");
 
@@ -254,7 +248,7 @@ export function UserDetailPage() {
     ? <Trans ns="users" i18nKey={member.state === "Expired" ? "detail.expiredOn" : "detail.expiresOn"} components={{ date: <DateText value={member.invitationExpiresAtUtc} kind="date" /> }} />
     : <Trans ns="users" i18nKey="detail.since" components={{ date: <DateText value={member.createdAtUtc} kind="date" /> }} />;
   const summary = <>
-    <span className="inline-flex items-center gap-1.5 text-[var(--t1)]"><span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${stateDot[shownState]}`} />{t(`users:states.${shownState}`)}</span>
+    <StatusBadge tones={userStateTones} value={shownState} />
     {edit.unsaved ? <><Separator />{edit.unsaved}</> : null}
     {member.email ? <><Separator />{member.email}</> : null}
     <Separator />{detail}

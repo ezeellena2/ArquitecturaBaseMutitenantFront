@@ -1,12 +1,17 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import type { StatusTone, StatusTones } from "@/shared/format/statusTones";
 import { StatusBadge } from "./StatusBadge";
 
-const getStatusTone = vi.hoisted(() => vi.fn((_name: string, value: string) => value));
-vi.mock("@/shared/format/statusTones", () => ({ getStatusTone }));
 vi.mock("@/shared/format/useFormat", () => ({
-  useFormat: () => ({ isLoading: false, formatEnum: (_name: string, value: string) => "Estado " + value, formatEmpty: () => "—" }),
+  useFormat: () => ({ isLoading: false, formatEnum: (name: string, value: string) => `${name} ${value}`, formatEmpty: () => "—" }),
 }));
+
+// Un enum de prueba con un valor por tono: cada feature registra los suyos con `defineStatusTones`.
+const tones: StatusTones<StatusTone> = {
+  enum: "TestStatus",
+  tones: { success: "success", warning: "warning", danger: "danger", neutral: "neutral", pending: "pending" },
+};
 
 describe("StatusBadge", () => {
   it.each([
@@ -16,14 +21,19 @@ describe("StatusBadge", () => {
     ["danger", "--peligro"],
     ["neutral", "--punto-apagado"],
     ["pending", "--marca"],
-  ])("traduce el estado y usa el punto del tono %s sin badge", (tone, dot) => {
-    render(<StatusBadge enum="TestStatus" value={tone} />);
-    expect(getStatusTone).toHaveBeenCalledWith("TestStatus", tone);
-    const state = screen.getByText("Estado " + tone).parentElement!;
-    const statusDot = state?.querySelector('[data-slot="status-dot"]');
+  ] as const)("traduce el estado con su enum y pinta el punto del tono %s, sin badge", (tone, dot) => {
+    render(<StatusBadge tones={tones} value={tone} />);
+    const state = screen.getByText("TestStatus " + tone).parentElement!;
+    const statusDot = state.querySelector('[data-slot="status-dot"]');
     expect(state).toHaveClass("inline-flex", "text-[13px]");
     expect(state).not.toHaveClass("rounded-full");
     expect(statusDot).toHaveClass("size-2", "bg-[var(" + dot + ")]");
     expect(statusDot).toHaveAttribute("aria-hidden", "true");
+  });
+
+  it("sin estado muestra el vacío, no un punto", () => {
+    render(<StatusBadge tones={tones} value={null} />);
+    expect(screen.getByText("—")).toBeVisible();
+    expect(document.querySelector('[data-slot="status-dot"]')).toBeNull();
   });
 });

@@ -17,7 +17,7 @@
 - **En un formulario:** `DateField` (fecha civil, sin zona), `DateTimeField` (convierte la zona efectiva a UTC), `MoneyField` + `CurrencySelect`, `NumberField`, `PercentField` (12,5 → 0.125) y `PhoneField` + `CountrySelect` (→ `{ country, number }`; el back lo pasa a E.164). `TimeZoneSelect`, `CultureSelect` y `TaxIdField` también leen el catálogo; muestran carga hasta recibir opciones. `TaxIdField` emite `{ type, number }` con `type = TaxIdTypes.Code` (por ejemplo, `AR-CUIT`).
 - **Fecha corta** (lienzo v99): **solo en las listas del teléfono** y solo para el año en curso, la fecha va sin el año: `<DateText kind="shortDate" />` («27/09»; en en-US, «09/27») o `kind="shortDateTime"` («27/09 10:42»). La de otro año va completa, y en la compu, en las fichas y en los textos siempre lleva el año. `useFormat` la da (`formatShortDate`, `formatShortDateTime`): sale del patrón de la cultura sin el año, y el año en curso es el de la zona de la persona.
 - **Fuera de JSX** (por ejemplo, en el `aria-label` de un gráfico): `const f = useFormat(); f.money(x)`.
-- **Estados:** `<StatusBadge enum="TenantStatus" value={s} />`; el tono (`success`, `warning`, `danger`, `neutral` o `pending`) sale de `statusTones.ts`, y sus colores, de los tokens de [tema.md](../architecture/tema.md).
+- **Estados:** cada feature registra los tonos de sus estados con el enum del contrato y el color del lienzo para cada valor: `defineStatusTones("CompanyStatus", { Active: "success", Inactive: "neutral" })` (`statusTones.ts`; TypeScript pide un tono por valor). Se muestran con `<StatusBadge tones={companyStatusTones} value={c.status} />` o, en una tabla, con la columna `type: "status"` y sus `tones`: la palabra sale de `enums.<Enum>.<Valor>` y el color de cada tono (`success`, `warning`, `danger`, `neutral` o `pending`), de los tokens de [tema.md](../architecture/tema.md). Ninguna pantalla escribe un color de estado ni elige un tono suelto.
 
 ## Prohibido
 - `toLocaleString`, `toLocaleDateString`, `toFixed`, `Intl.*` o `new Date(...)` para mostrar, fuera de `shared/format` y `shared/time`. Los nombres de países vienen del catálogo, no de `Intl.DisplayNames` en el front.
@@ -31,6 +31,7 @@
 
 ## Lo verifica
 - `format-usage.test.ts` (E1): formateo fuera de lugar.
+- `statusTones.test.ts` (E7): los tonos se registran con el enum del contrato, y Usuarios y Empresas no escriben un color de estado; `StatusBadge.test.tsx` (E7): la palabra del enum y el punto de su tono.
 - `formatters.test.ts` (E1): recorre el mismo `format-cases.json` que el back; ambos lados producen el mismo texto en casos válidos y rechazan los casos con `error`. La fecha corta, en es-AR y en-US, con el año en curso, con otro año y en el cambio de año de la zona (E7).
 - `DateText.test.tsx` (E7): `shortDate` y `shortDateTime`, con la fecha completa en el tooltip; `UsersPage.test.tsx` y `AuditPage.test.tsx` (E7): las listas del teléfono usan la fecha corta.
 - `referenceData.test.ts` (E1): selectores y patrones consumen catálogos, sin listas fijas.

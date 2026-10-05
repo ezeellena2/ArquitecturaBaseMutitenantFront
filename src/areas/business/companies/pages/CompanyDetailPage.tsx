@@ -10,6 +10,7 @@ import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
+import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { TaxIdText } from "@/shared/ui/format/TaxIdText";
 import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
@@ -18,6 +19,7 @@ import { Page } from "@/shared/ui/Page";
 import { TabCount, Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { homeOf } from "@/tenancy/access";
 import { changeCompanyStatus, companiesQueryRoot, companyQueryKey, fetchCompany } from "../api/companies";
+import { companyStatusTones } from "../columns";
 import { AddMemberDialog } from "../components/AddMemberDialog";
 import { CompanyDialog } from "../components/CompanyDialog";
 import { CompanyMembersTab } from "../tabs/CompanyMembersTab";
@@ -87,7 +89,7 @@ export function CompanyDetailPage() {
         : canManageRoles ? { label: t("companies:detail.createRole"), to: createRolePath } : undefined}
       // Tablero Empresa: el estado primero, con punto y palabra; después el CUIT y la zona, formateados.
       summary={<>
-        <span className="inline-flex items-center gap-1.5 text-[var(--t1)]"><span aria-hidden="true" className={`size-2 rounded-full ${data.status === "Active" ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-apagado)]"}`} />{t(`companies:status.${data.status}`)}</span>
+        <StatusBadge tones={companyStatusTones} value={data.status} />
         {data.taxId ? <><span aria-hidden="true">{" · "}</span><TaxIdText value={data.taxId} withType /></> : null}
         <span aria-hidden="true">{" · "}</span><TimeZoneText value={data.timeZoneId} />
       </>}

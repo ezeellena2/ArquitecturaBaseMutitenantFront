@@ -1,7 +1,8 @@
 import type { ComponentProps, ReactNode } from "react";
+import type { StatusTone } from "@/shared/format/statusTones";
 import { cn } from "@/shared/lib/utils";
 
-export type StatusTone = "success" | "warning" | "danger" | "neutral" | "pending";
+export type { StatusTone };
 
 export interface StatusDotProps extends Omit<ComponentProps<"span">, "children"> {
   tone: StatusTone;

@@ -103,7 +103,7 @@ export function CompanyMembersTab({ company, list, roles }: {
       ]}
       clearLabel={t("common:actions.clear")} onClear={filters.clear} />
     <Surface className="overflow-hidden" phoneFlush>
-      <DataTable columns={columns} mobileRow={(member) => companyMemberPhoneRow(member, t, memberActions(member))} rows={members.data?.items ?? []} rowKey={(member) => member.memberId}
+      <DataTable columns={columns} mobileRow={(member) => companyMemberPhoneRow(member, memberActions(member))} rows={members.data?.items ?? []} rowKey={(member) => member.memberId}
         isLoading={members.isPending} isFetching={members.isFetching} error={members.error ? apiErrorMessage(members.error, t) : undefined}
         onRetry={() => { void members.refetch(); void counts.refetch(); }}
         emptyTitle={filtered ? t("companies:detail.empty.filtered") : t("companies:detail.empty.all")}

@@ -1,5 +1,6 @@
 import { Fragment, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import type { StatusTones } from "@/shared/format/statusTones";
 import type { DateRangeValue, MoneyValue } from "@/shared/format/useFormat";
 import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "./app/AppChrome";
@@ -61,7 +62,9 @@ export type Column<TRow> =
   | ValueColumn<TRow, "dateRange", DateRangeValue>
   | ValueColumn<TRow, "taxId", { country?: string; type: string; number: string }>
   | ValueColumn<TRow, "boolean", boolean>
-  | (ValueColumn<TRow, "enum" | "status", string> & { enum: string })
+  | (ValueColumn<TRow, "enum", string> & { enum: string })
+  // Un estado: el punto del tono que registró la feature (`defineStatusTones`) y la palabra de su enum.
+  | (ValueColumn<TRow, "status", string> & { tones: StatusTones })
   | (ColumnBase<TRow> & { type: "custom"; cell: (row: TRow) => ReactNode })
   | (ColumnBase<TRow> & { type: "actions"; cell: (row: TRow) => ReactNode });
 
@@ -143,7 +146,7 @@ function columnCell<TRow>(column: Column<TRow>, row: TRow): ReactNode {
     case "enum":
       return <EnumText enum={column.enum} value={column.value(row)} />;
     case "status":
-      return <StatusBadge enum={column.enum} value={column.value(row)} />;
+      return <StatusBadge tones={column.tones} value={column.value(row)} />;
     case "boolean":
       return <BooleanText value={column.value(row)} />;
   }
