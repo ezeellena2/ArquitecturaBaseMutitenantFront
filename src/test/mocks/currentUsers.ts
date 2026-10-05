@@ -65,7 +65,7 @@ export const visualPersonal: MeResponse = {
   ...consumerWithoutOrganizations,
   id: "lucia",
   displayName: "Lucía Fernández",
-  // Como el back (/api/me): el correo principal en cualquier perfil, que es el personal (Cuenta y M-Mas-Personal).
+  // Como el back (/api/me): en el perfil personal, el correo principal (Cuenta y M-Mas-Personal).
   email: "lucia.fer@gmail.com",
   organizations: visualOrganizations,
 };
@@ -74,6 +74,8 @@ export const visualBusiness: MeResponse = {
   ...visualPersonal,
   access: "business",
   activeTenantId: "grupo-delta",
+  // Como el back (/api/me, R3c): en una organización, el correo verificado que ella administra, como los tableros.
+  email: "lucia.fernandez@delta.ejemplo.com",
 };
 
 /** Lucía como Dueña de Grupo Delta: con «Administración», como en los tableros de Organización. */
