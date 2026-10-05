@@ -121,4 +121,15 @@ describe("FormField", () => {
     expect(screen.getByText("Correo electrónico").parentElement).not.toHaveClass("lg:gap-2");
     expect(screen.getByLabelText("Correo electrónico")).toHaveClass("h-11", "rounded-[10px]", "text-[15px]");
   });
+
+  // M-Ingreso, M-Registro y M-Registro-Empresa (.in2.lg, medido en el lienzo v106): en el teléfono, el campo del ingreso y
+  // del registro sigue en 44, con radio 10 y letra de 15, y no toma los 48, 12 y 16 de los campos de la app (M-Cuenta,
+  // M-Configuracion, M-Rol: .ct).
+  it("en ingreso y registro, también en el teléfono, el campo mide 44 con radio 10 y letra de 15", () => {
+    render(<FormField label="Correo electrónico" variant="auth"><Input /></FormField>);
+
+    const input = screen.getByLabelText("Correo electrónico");
+    expect(input).toHaveClass("max-md:h-11", "max-md:rounded-[10px]", "max-md:text-[15px]");
+    for (const phoneApp of ["max-md:h-12", "max-md:rounded-[12px]", "max-md:text-[16px]"]) expect(input).not.toHaveClass(phoneApp);
+  });
 });

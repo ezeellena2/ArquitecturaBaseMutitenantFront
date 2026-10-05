@@ -35,7 +35,9 @@ export function FormField({ label, htmlFor, hint, error, required, aside, varian
       {aside ? <div className="flex items-center justify-between gap-3">{labelElement}{aside}</div> : labelElement}
       {cloneElement(children, {
         id: controlId,
-        className: variant === "auth" ? cn(children.props.className, "h-11 rounded-[10px] px-3.5 text-[15px]") : children.props.className,
+        // Ingreso y registro (tableros Ingreso, Registro y sus M-*, .in2.lg): 44 con radio 10 y letra de 15 en cualquier
+        // tamaño; en el teléfono no toman los 48, 12 y 16 de los campos de la app.
+        className: variant === "auth" ? cn(children.props.className, "h-11 rounded-[10px] px-3.5 text-[15px] max-md:h-11 max-md:rounded-[10px] max-md:text-[15px]") : children.props.className,
         "aria-invalid": error ? true : undefined,
         "aria-describedby": message ? messageId : undefined,
         "aria-required": required ? true : undefined,
