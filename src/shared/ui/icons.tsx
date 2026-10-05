@@ -128,6 +128,16 @@ export function ClipboardIcon(props: IconProps) {
   );
 }
 
+/// «Copiar» (tablero M-Configuracion-Verificar, .ap-cod): dos hojas chicas, una delante de la otra.
+export function CopyIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <rect x="8" y="8" width="11" height="11" rx="2" />
+      <path d="M5 15V6a1 1 0 0 1 1-1h9" />
+    </Icon>
+  );
+}
+
 /// «Administración», en el pie del menú: el escudo con la tilde.
 export function ShieldCheckIcon(props: IconProps) {
   return (

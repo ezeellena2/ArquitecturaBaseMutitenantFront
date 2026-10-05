@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Copy, Globe, Trash2 } from "lucide-react";
+import { Globe, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -21,7 +21,7 @@ import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { SettingsIcon } from "@/shared/ui/icons";
+import { CopyIcon, SettingsIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { CultureSelect } from "@/shared/ui/fields/CultureSelect";
 import { CurrencySelect } from "@/shared/ui/fields/CurrencySelect";
@@ -238,15 +238,17 @@ function SettingsEditor({ settings, loadError, reload }: {
         <DialogBody>
           <DialogDescription>{t("settings:domains.verifyDescription")}</DialogDescription>
           {/* Tablero M-Configuracion-Verificar: en el teléfono, el rótulo como el de los campos (13,5 y gris), el registro en
-              la caja gris de 48 sin borde y «Copiar» en texto petróleo con su ícono, como las acciones en texto (.ap-txt). */}
+              la caja gris de 48 sin borde y «Copiar» en texto petróleo con su ícono, como las acciones en texto (.ap-txt).
+              Configuracion-Verificar (.rt y .o-codigo): el rótulo en 12,5 y gris medio, el registro en 13 en una caja de
+              radio 8 con 10 y 12 de relleno. Los dos, con la altura normal de su letra. */}
           <div className="flex flex-col gap-1.5">
-            <span className={phone ? "text-[13.5px] font-semibold text-[var(--t2)]" : "text-[12px] font-semibold text-[var(--t1)] lg:text-[13px]"}>{t("settings:domains.txtLabel", { domain: domainToVerify?.domain ?? "" })}</span>
-            <div className={phone ? "flex min-h-12 items-center gap-2 rounded-xl bg-[var(--s3)] pl-3.5 pr-1.5" : "flex items-center gap-3 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] py-2 pl-3 pr-2"}>
-              <code className={cn("min-w-0 flex-1 break-all font-mono text-[var(--t1)]", phone ? "text-[14px]" : "text-[12.5px]")}>{domainToVerify?.txtRecordValue}</code>
+            <span className={phone ? "text-[13.5px] leading-[normal] font-semibold text-[var(--t2)]" : "text-[12.5px] font-semibold text-[var(--t2)]"}>{t("settings:domains.txtLabel", { domain: domainToVerify?.domain ?? "" })}</span>
+            <div className={phone ? "flex min-h-12 items-center gap-2 rounded-[12px] bg-[var(--s3)] pl-3.5 pr-1.5" : "flex items-center gap-3 rounded-[8px] border border-[var(--borde)] bg-[var(--s2)] px-3 py-2.5"}>
+              <code className={cn("min-w-0 flex-1 break-all font-mono text-[var(--t1)]", phone ? "text-[14px] leading-[normal]" : "text-[13px] leading-[normal]")}>{domainToVerify?.txtRecordValue}</code>
               {phone
                 ? <button type="button" onClick={() => { if (domainToVerify?.txtRecordValue) copyTxt(domainToVerify.txtRecordValue); }}
                   className="inline-flex h-10 shrink-0 items-center gap-1.5 px-2.5 text-[15.5px] font-semibold text-[var(--marca-tx)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
-                  <Copy aria-hidden="true" className="size-4" />{copied ? t("settings:domains.copied") : t("settings:domains.copy")}
+                  <CopyIcon className="size-4" />{copied ? t("settings:domains.copied") : t("settings:domains.copy")}
                 </button>
                 : <Button type="button" variant="outline" size="sm" onClick={() => { if (domainToVerify?.txtRecordValue) copyTxt(domainToVerify.txtRecordValue); }}>{copied ? t("settings:domains.copied") : t("settings:domains.copy")}</Button>}
             </div>
