@@ -31,10 +31,10 @@
 - Deshabilitar axe en un test.
 
 ## Copiá de
-- `src/areas/business/roles/pages/RolesPage.test.tsx` (E4).
+- `src/areas/business/users/pages/UsersPage.test.tsx` (E6): axe en la lista y en el diálogo para invitar.
 
 ## Lo verifica
-- `vitest-axe` (E0) en cada test de pantalla (`toHaveNoViolations`).
+- `vitest-axe` (E0) en cada test de pantalla (`toHaveNoViolations`); `harness.test.ts` (E7) falla si un `pages/*Page.test.tsx` no corre axe.
 - `FormField.test.tsx` (E7): con un `Select` adentro, el desplegable se rotula, es obligatorio y lleva su error.
 - Antes de cerrar una etapa: una pasada de axe en el navegador real, a 1440 y a 390, que cubre el contraste y no se puede hacer en jsdom.
 

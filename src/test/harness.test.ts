@@ -198,6 +198,19 @@ describe("arnés de reglas", () => {
     }
   });
 
+  // accesibilidad.md (ADR 0029): cada test de pantalla corre axe y falla con cualquier violación.
+  it("cada test de pantalla corre axe", () => {
+    const pageTests = allFiles(src)
+      .map((file) => path.relative(root, file).replaceAll("\\", "/"))
+      .filter((file) => /\/pages\/[^/]+Page\.test\.tsx$/.test(file));
+    expect(pageTests.length).toBeGreaterThan(0);
+    const withoutAxe = pageTests.filter((file) => {
+      const source = readFileSync(path.join(root, file), "utf8");
+      return !/\baxe\(/.test(source) || !source.includes("toHaveNoViolations()");
+    });
+    expect(withoutAxe, "tests de pantalla sin axe").toEqual([]);
+  });
+
   it("exige los Copiá de y tests de etapas cerradas", () => {
     const sourceFiles = allFiles(src);
     for (const file of ficheFiles) {
