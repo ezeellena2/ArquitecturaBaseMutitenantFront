@@ -35,7 +35,7 @@ export function AuthLayout({ access, children, brandPanel = "content", brandPane
 
   return <div className="grid min-h-screen grid-cols-1 bg-[var(--lado-activo)] text-[var(--t1)] md:grid-cols-2">
     <div className="flex min-h-screen flex-col px-4 pb-4 pt-[18px] md:px-10 md:pb-[22px] md:pt-6">
-      <Link to="/" className="inline-flex items-center gap-2.5 self-start text-[15px] font-bold tracking-tight text-[var(--t1)] no-underline">
+      <Link to="/" className="inline-flex items-center gap-2.5 self-start text-[15px] font-bold tracking-[-0.01em] text-[var(--t1)] no-underline">
         <BrandMark />
         {t("brand")}
       </Link>

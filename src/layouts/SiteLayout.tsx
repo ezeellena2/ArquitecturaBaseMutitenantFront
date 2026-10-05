@@ -10,7 +10,7 @@ export function SiteLayout({ children, variant = "landing" }: { children: ReactN
   return <div className={`min-h-screen bg-[var(--lado-activo)] text-[var(--t1)] ${variant === "legal" ? "flex flex-col" : ""}`}>
     <header className="h-[60px] border-b border-[var(--borde)] md:h-[72px]">
       <div className="mx-auto flex h-full max-w-[1280px] items-center gap-0 px-4 md:gap-8 md:px-10">
-        <Link to="/" className="inline-flex shrink-0 items-center gap-2.5 text-base font-bold tracking-tight text-[var(--t1)] no-underline md:text-lg">
+        <Link to="/" className="inline-flex shrink-0 items-center gap-2.5 text-base font-bold tracking-[-0.01em] text-[var(--t1)] no-underline md:text-lg">
           <BrandMark className="md:size-8 md:rounded-[9px]" />
           {t("brand")}
         </Link>

@@ -15,6 +15,8 @@ describe("SiteLayout", () => {
 
     expect(screen.getByRole("link", { name: "ArquitecturaBase" })).toHaveAttribute("href", "/");
     expect(screen.getByRole("link", { name: "ArquitecturaBase" }).querySelector(".brand-mark")).not.toBeNull();
+    // La marca, con el espaciado del tablero (.lp-marca, -0.01em).
+    expect(screen.getByRole("link", { name: "ArquitecturaBase" })).toHaveClass("tracking-[-0.01em]");
     expect(screen.getByRole("navigation", { name: "Secciones" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Personas" })).toHaveAttribute("href", "#personas");
     expect(screen.getByRole("link", { name: "Empresas" })).toHaveAttribute("href", "#organizaciones");

@@ -29,6 +29,8 @@ describe("AuthLayout", () => {
     expect(screen.getByRole("heading", { name: "Ingresá a tu cuenta" })).toBeVisible();
     expect(screen.getByTestId("auth-brand-panel")).toHaveClass("hidden", "md:flex");
     expect(screen.getByRole("link", { name: "ArquitecturaBase" })).toHaveAttribute("href", "/");
+    // La marca, con el espaciado del tablero (.auth-top, -0.01em): `tracking-tight` la apretaba 3 a 4 px.
+    expect(screen.getByRole("link", { name: "ArquitecturaBase" })).toHaveClass("tracking-[-0.01em]");
     expect(screen.getByRole("link", { name: "ArquitecturaBase" }).firstElementChild).toHaveClass("size-7", "bg-gradient-to-br");
     expect(screen.getByRole("link", { name: "ArquitecturaBase" }).querySelector(".brand-mark > span")).toHaveClass("-rotate-45", "border-r-transparent");
     expect(screen.getByTestId("auth-brand-panel").querySelectorAll("li svg")).toHaveLength(3);
