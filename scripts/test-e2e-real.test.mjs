@@ -175,14 +175,17 @@ async function invitationFromPickup(email, before) {
   throw new Error("No llegó el .eml con el enlace real de invitación al pickup aislado.");
 }
 
-async function inviteFromUsersPage(page, email, companyName) {
+// Sin `organizationRole` (null), la persona entra solo con su rol en la empresa: un Administrador de empresa (B4).
+async function inviteFromUsersPage(page, email, companyName, { organizationRole = "Dueño" } = {}) {
   await page.goto(new URL("/org/usuarios", baseUrl).href);
   await page.getByRole("button", { name: "Invitar usuario", exact: true }).click();
   const before = new Set(await pickupFiles());
   await page.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
-  await page.getByRole("button", { name: "Roles de la organización", exact: true }).click();
-  await page.getByRole("menuitemcheckbox", { name: "Dueño", exact: true }).click();
-  await page.keyboard.press("Escape");
+  if (organizationRole) {
+    await page.getByRole("button", { name: "Roles de la organización", exact: true }).click();
+    await page.getByRole("menuitemcheckbox", { name: organizationRole, exact: true }).click();
+    await page.keyboard.press("Escape");
+  }
   if (companyName) {
     // Tablero Usuarios (Invitar): una sola Empresa con sus roles.
     const dialog = page.getByRole("dialog");
@@ -848,6 +851,68 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               await recipientContext.close();
             }
           }
+          // B4 (decisiones 86 y 87): quien administra una empresa sin roles de la organización ve en su Inicio la
+          // invitación vencida de esa empresa, y «Reenviar» lo lleva a la ficha de la empresa, donde busca y filtra.
+          setStage("invita a un Administrador de empresa sin roles de la organización");
+          const companyAdminEmail = `e2e-company-admin-${randomUUID()}@example.test`;
+          const { link: companyAdminLink } = await inviteFromUsersPage(adminPage, companyAdminEmail, e2eCompanyName, { organizationRole: null });
+          setStage("deja vencida otra invitación de la misma empresa");
+          const expiredEmail = `e2e-company-expired-${randomUUID()}@example.test`;
+          const { invitationId: expiredInvitationId } = await inviteFromUsersPage(adminPage, expiredEmail, e2eCompanyName, { organizationRole: null });
+          await invitationCommand(readyFile, { kind: "expire", email: expiredEmail, invitationId: expiredInvitationId });
+          const companyAdminBrowser = adminPage.context().browser();
+          assert.ok(companyAdminBrowser, "El recorrido requiere el navegador real de Playwright.");
+          const companyAdminContext = await companyAdminBrowser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          const companyAdminPage = await companyAdminContext.newPage();
+          try {
+            setStage("el Administrador de empresa acepta su invitación");
+            await companyAdminPage.goto(companyAdminLink);
+            await companyAdminPage.getByRole("heading", { name: "Te sumás a Empresa E2E", exact: true }).waitFor({ timeout: 15_000 });
+            await companyAdminPage.locator("dl").getByText(e2eCompanyName, { exact: true }).waitFor();
+            const companyAdminAccepted = companyAdminPage.waitForResponse((response) =>
+              new URL(response.url()).pathname === "/api/invitations/accept" && response.request().method() === "POST");
+            await companyAdminPage.getByRole("button", { name: "Aceptar invitación", exact: true }).click();
+            assert.equal((await companyAdminAccepted).status(), 200);
+            await companyAdminPage.getByRole("heading", { name: "Te sumaste a Empresa E2E", exact: true }).waitFor();
+            await companyAdminPage.getByRole("button", { name: "Más tarde", exact: true }).click();
+            await expectPath(companyAdminPage, "/org", "entrada del Administrador de empresa");
+
+            setStage("el Administrador de empresa ve su «Para resolver», con la empresa de la fila");
+            await companyAdminPage.getByRole("heading", { level: 2, name: "Tus empresas" }).waitFor();
+            const companyToResolve = companyAdminPage.getByRole("region", { name: "Para resolver" });
+            const expiredRow = companyToResolve.getByRole("row").filter({ hasText: expiredEmail });
+            await expiredRow.getByText(e2eCompanyName, { exact: true }).waitFor();
+            await expiredRow.getByText("Vencida", { exact: true }).waitFor();
+            const resend = expiredRow.getByRole("link", { name: "Reenviar", exact: true });
+            assert.equal(await resend.getAttribute("href"), `/org/empresas/${e2eCompanyId}`);
+
+            setStage("«Reenviar» abre la ficha de su empresa, con sus miembros");
+            await resend.click();
+            await expectPath(companyAdminPage, `/org/empresas/${e2eCompanyId}`, "ficha de la empresa del Administrador de empresa");
+            await companyAdminPage.getByRole("heading", { level: 1, name: e2eCompanyName, exact: true }).waitFor();
+            const companyMembers = companyAdminPage.getByRole("tabpanel");
+            await companyMembers.getByRole("row").filter({ hasText: companyAdminEmail }).getByText("Administrador", { exact: true }).waitFor();
+            assert.equal(await companyAdminPage.getByRole("heading", { name: "No tenés permiso para ver esta página" }).count(), 0);
+
+            setStage("busca un miembro y filtra los miembros por estado");
+            const membersRead = (check) => companyAdminPage.waitForResponse((response) => {
+              const url = new URL(response.url());
+              return url.pathname === `/api/companies/${e2eCompanyId}/members/paged` && check(url.searchParams) && response.status() === 200;
+            });
+            const searched = membersRead((params) => params.get("search") === companyAdminEmail);
+            await companyAdminPage.getByRole("searchbox", { name: "Buscar por nombre o correo", exact: true }).fill(companyAdminEmail);
+            await searched;
+            await companyMembers.getByRole("row").filter({ hasText: companyAdminEmail }).waitFor();
+            const filtered = membersRead((params) => params.get("state") === "Active");
+            await companyAdminPage.getByRole("button", { name: "Estado: todos", exact: true }).click();
+            await companyAdminPage.getByRole("menuitemradio", { name: /^Activos/ }).click();
+            await filtered;
+            assert.equal(new URL(companyAdminPage.url()).searchParams.get("state"), "Active");
+            await companyMembers.getByRole("row").filter({ hasText: companyAdminEmail }).getByText("Activo", { exact: true }).waitFor();
+          } finally {
+            await companyAdminContext.close();
+          }
+
           const updatedCompanyName = `${e2eCompanyName} actualizada`;
           setStage("edita la empresa desde su ficha");
           await adminPage.goto(new URL(`/org/empresas/${e2eCompanyId}`, baseUrl).href);
