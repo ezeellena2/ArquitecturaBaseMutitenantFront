@@ -432,6 +432,11 @@ describe("RoleEditorPage", () => {
     expect(within(row).getByText("1 de 2")).toHaveClass("ml-auto");
     const permission = screen.getByRole("checkbox", { name: "Ver roles" }).closest("label")!;
     expect(permission).toHaveClass("min-h-10", "pl-[52px]");
+    // M-Rol (.ap-area y .ap-perm): en el teléfono, la flecha ocupa 18 (la casilla del área queda en 62), el área va sin
+    // línea y cada permiso lleva la suya arriba: entre dos áreas cerradas no hay línea.
+    expect(within(row).getByRole("button", { name: "Abrir o cerrar Roles" })).toHaveClass("max-md:w-[18px]");
+    expect(row).toHaveClass("max-md:border-b-0");
+    expect(permission).toHaveClass("max-md:border-b-0", "max-md:border-t");
     expect(screen.queryByText("Los roles y sus permisos.")).not.toBeInTheDocument();
     // Tablero Rol (.o-gnom): el nombre del área también la cierra y la abre.
     const user = userEvent.setup();

@@ -37,8 +37,10 @@ export function PermissionPicker({ groups, value, onChange, readOnly = false }: 
       const toggleArea = () => setToggled((current) => ({ ...current, [group.area]: !expanded }));
       return <fieldset key={group.area} className="m-0 p-0">
         <legend className="sr-only">{group.name}</legend>
-        <div data-slot="permission-area" className="flex min-h-10 items-center gap-2 border-b border-[var(--borde)] bg-[var(--s2)] pr-4 pl-2 text-[13px] font-semibold text-[var(--t1)] max-md:min-h-[52px] max-md:gap-3 max-md:bg-transparent max-md:pr-3.5 max-md:pl-3 max-md:text-[15.5px]">
-          <button type="button" aria-expanded={expanded} aria-label={t("roles:toggleArea", { name: group.name })} onClick={toggleArea} className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-[var(--t2)] hover:bg-[var(--s3)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)] max-md:text-[var(--t3)]">
+        {/* M-Rol (.ap-area y .ap-perm): en el teléfono, la flecha ocupa 18 (la casilla del área queda en 62) y el área va
+            sin línea; cada permiso lleva la suya arriba (50 más su línea), así entre dos áreas cerradas no hay línea. */}
+        <div data-slot="permission-area" className="flex min-h-10 items-center gap-2 border-b border-[var(--borde)] bg-[var(--s2)] pr-4 pl-2 text-[13px] font-semibold text-[var(--t1)] max-md:min-h-[52px] max-md:gap-3 max-md:border-b-0 max-md:bg-transparent max-md:pr-3.5 max-md:pl-3 max-md:text-[15.5px]">
+          <button type="button" aria-expanded={expanded} aria-label={t("roles:toggleArea", { name: group.name })} onClick={toggleArea} className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-[var(--t2)] hover:bg-[var(--s3)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)] max-md:w-[18px] max-md:text-[var(--t3)]">
             <ChevronRight aria-hidden="true" className={`size-4 transition-transform motion-reduce:transition-none ${expanded ? "rotate-90" : ""}`} />
           </button>
           <Checkbox aria-label={t("roles:allPermissions", { area: group.name })} checked={codes.length > 0 && count.selected === codes.length} disabled={readOnly}
@@ -47,7 +49,7 @@ export function PermissionPicker({ groups, value, onChange, readOnly = false }: 
           <button type="button" tabIndex={-1} aria-expanded={expanded} onClick={toggleArea} className="ml-1 min-w-0 truncate text-left font-semibold max-md:ml-0">{group.name}</button>
           <span className="ml-auto shrink-0 font-medium text-[var(--t3)] tabular-nums max-md:text-[13px]">{t("roles:groupCount", count)}</span>
         </div>
-        {expanded ? group.permissions.map((permission) => <label key={permission.code} className="flex min-h-10 items-center gap-2.5 border-b border-[var(--borde)] pr-4 pl-[52px] text-[13px] font-medium text-[var(--t1)] max-md:min-h-[50px] max-md:gap-3 max-md:pr-3.5 max-md:pl-[46px] max-md:text-[15px] max-md:font-normal">
+        {expanded ? group.permissions.map((permission) => <label key={permission.code} className="flex min-h-10 items-center gap-2.5 border-b border-[var(--borde)] pr-4 pl-[52px] text-[13px] font-medium text-[var(--t1)] max-md:min-h-[51px] max-md:gap-3 max-md:border-t max-md:border-b-0 max-md:pr-3.5 max-md:pl-[46px] max-md:text-[15px] max-md:font-normal">
           <Checkbox checked={value.includes(permission.code)} disabled={readOnly} onCheckedChange={(checked) => onChange(withPermission(value, permission.code, checked === true))} className={checkClass} />
           <span className="min-w-0 flex-1">{permission.name}</span>
         </label>) : null}
