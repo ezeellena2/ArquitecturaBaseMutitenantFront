@@ -87,6 +87,9 @@ const barTextClass = "inline-flex h-10 shrink-0 items-center px-2.5 text-[15.5px
 /// banda (el estado, «Cambios sin guardar» y el resumen), en el gris tenue y a 6 de cada lado. Dentro de un mismo dato
 /// («CUIT 30-71234567-1 · Buenos Aires») va « · », como texto.
 export function SublineSeparator(): ReactNode {
+  const { phone } = useAppChrome();
+  // En el teléfono (tableros M-*, la línea de abajo del título en la barra), « · » como texto, en el gris de esa línea.
+  if (phone) return <span aria-hidden="true">{" · "}</span>;
   return <span aria-hidden="true" data-slot="subline-separator" className="mx-1.5 shrink-0 text-[var(--t3)]">{"·"}</span>;
 }
 

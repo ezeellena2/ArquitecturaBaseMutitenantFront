@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import { AppChromeProvider } from "./app/AppChrome";
-import { Page } from "./Page";
+import { Page, SublineSeparator } from "./Page";
 import { UsersIcon } from "./icons";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 
@@ -242,6 +242,16 @@ describe("Page", () => {
         <MemoryRouter><Page icon={UsersIcon} title="Delta S.A." tabs={tabs} /></MemoryRouter>
       </AppChromeProvider>,
     );
+
+    // Tableros M-* (.ap-bar .sub): en el teléfono, debajo del título, el «·» va como texto, « · », y no con los 6 de la compu.
+    it("en el teléfono, el separador de la línea de abajo del título es « · »", () => {
+      renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+        <MemoryRouter><Page title="Página pública" phoneSubtitle={<>{"Publicada"}<SublineSeparator />{"Cambios sin guardar"}</>}><p>{"datos"}</p></Page></MemoryRouter>
+      </AppChromeProvider>);
+
+      expect(screen.getByRole("heading", { level: 1, name: "Página pública" }).closest("header")).toHaveTextContent("Publicada · Cambios sin guardar");
+      expect(document.querySelector("[data-slot=subline-separator]")).toBeNull();
+    });
 
     // Tableros M-Usuarios y M-Usuario (.ap-bar .ap-ib): el ⋮ de la barra mide 20.
     it("en el teléfono, el ⋮ de la barra mide 20", () => {
