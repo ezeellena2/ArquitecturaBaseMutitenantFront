@@ -89,6 +89,21 @@ describe("SettingsPage", () => {
     expect(await screen.findByRole("textbox", { name: "Nombre de la organización" })).toHaveValue("Grupo Delta");
   });
 
+  // Tablero Configuracion: el ícono del título es la rueda (un círculo con ocho rayos), no los deslizadores del menú.
+  it("el título lleva la rueda del tablero", async () => {
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+    );
+    renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+
+    const header = (await screen.findByRole("heading", { level: 1, name: "Configuración" })).closest("header")!;
+    const icon = header.querySelector("svg")!;
+    expect(icon).not.toHaveClass("lucide-sliders-horizontal");
+    expect(icon.querySelectorAll("circle")).toHaveLength(1);
+    expect(icon.querySelectorAll("path")).toHaveLength(8);
+  });
+
   it("guarda con la versión y la ficha pasa axe", async () => {
     let updateBody: unknown;
     server.use(
@@ -190,6 +205,8 @@ describe("SettingsPage", () => {
     await user.click(await screen.findByRole("button", { name: "Agregar dominio" }));
     const add = await screen.findByRole("dialog", { name: "Agregar dominio" });
 
+    // «Criterio · Formularios»: el dominio es obligatorio y lleva el asterisco rojo, como M-Configuracion-Dominio.
+    expect(within(add).getByText("Dominio").closest("label")).toHaveTextContent("Dominio *");
     const next = within(add).getByRole("button", { name: "Siguiente" });
     expect(next).toBeEnabled();
     await user.click(next);

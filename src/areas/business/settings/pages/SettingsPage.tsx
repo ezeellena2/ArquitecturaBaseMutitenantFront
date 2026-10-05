@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Globe, SlidersHorizontal, Trash2 } from "lucide-react";
+import { Globe, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -13,6 +13,7 @@ import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
+import { SettingsIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { CultureSelect } from "@/shared/ui/fields/CultureSelect";
 import { CurrencySelect } from "@/shared/ui/fields/CurrencySelect";
@@ -129,8 +130,9 @@ export function SettingsPage() {
   if (settings.isError && !settings.data) return <LoadErrorPage onRetry={() => { void settings.refetch(); void domains.refetch(); }} />;
 
   return <>
+    {/* Tablero Configuracion: el título lleva la rueda; los deslizadores son el ícono del menú. */}
     <Page banner={edit.banner}
-      icon={SlidersHorizontal}
+      icon={SettingsIcon}
       title={t("settings:title")}
       summary={edit.unsaved}
       phoneSubtitle={edit.unsaved}
