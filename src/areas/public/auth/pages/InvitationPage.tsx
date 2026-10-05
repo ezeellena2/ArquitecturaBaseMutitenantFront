@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Check, Clock } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
@@ -29,6 +29,12 @@ function initials(value: string | null | undefined, fallback: string): string {
 // «Vence: En 6 días» del tablero, redondeado; el último medio día dice «Hoy».
 function daysUntil(value: string): number {
   return Math.max(0, Math.round((Date.parse(value) - Date.now()) / 86_400_000));
+}
+
+// Tablero Invitacion (v106), «Sin cuenta: cargando»: lo que pasa mientras tanto, en una línea centrada y gris, con 48
+// arriba y abajo; en el teléfono, con la letra de 14,5 de M-Invitacion. También al entrar a la organización.
+function StatusText({ children }: { children: ReactNode }) {
+  return <p role="status" aria-busy="true" className="py-12 text-center text-[13px] leading-normal text-[var(--t2)] max-md:text-[14.5px]">{children}</p>;
 }
 
 export function InvitationPage() {
@@ -144,13 +150,13 @@ function InvitationFlow() {
   const note = "text-center text-xs leading-normal text-[var(--t3)]";
 
   return <AuthLayout access="consumer">
-    {loading ? <div role="status" aria-busy="true" aria-label={t("loading")} className="flex min-h-36 items-center justify-center text-sm text-[var(--t2)]">{t("loading")}</div>
+    {loading ? <StatusText>{t("loading")}</StatusText>
       : error ? <div className="flex flex-col gap-5">
         <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("pageTitle")}</h1>
         <FormError message={apiErrorMessage(error, tErrors)} />
         <Button type="button" variant="outline" size="lg" onClick={retry}>{t("retry")}</Button>
       </div>
-        : invitation ? entering && !actionError ? <div role="status" aria-busy="true" className="flex min-h-36 items-center justify-center text-sm text-[var(--t2)]">{t("accepted.entering", { organization: organizationName })}</div>
+        : invitation ? entering && !actionError ? <StatusText>{t("accepted.entering", { organization: organizationName })}</StatusText>
           : acceptedView ? <AuthStatus icon={Check} tone="ok" largeIcon title={t("accepted.title", { organization: organizationName })}
             detail={<Trans ns="invitations" i18nKey="accepted.email" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />}
             actions={needsPersonalMethod ? <>
@@ -201,8 +207,11 @@ function InvitationFlow() {
             }}>{t("join.signIn")}</Button>
             <p className={note}>{t("join.signInDescription", { email })}</p>
           </> : <>
-            <Button type="button" size="lg" disabled={accept.isPending} onClick={() => void acceptInvitationNow()}>
-              {accept.isPending ? t("join.accepting") : t("join.accept")}
+            {/* «Criterio · Botones», Guardando (tablero Invitacion, «Sin cuenta: aceptando»): dice qué hace, con el aro blanco
+                de 14, y no se puede volver a tocar. */}
+            <Button type="button" size="lg" disabled={accept.isPending} className="disabled:opacity-85" onClick={() => void acceptInvitationNow()}>
+              {accept.isPending ? <><span aria-hidden="true" className="size-3.5 animate-spin rounded-full border-2 border-[var(--lado-activo)]/40 border-t-[var(--lado-activo)] motion-reduce:animate-none" />{t("join.accepting")}</>
+                : t("join.accept")}
             </Button>
             <p className={note}>{invitation.state === "NoAccount" ? t("join.termsNotice")
               : t("join.joinsProfiles", { organization: organizationName })}</p>

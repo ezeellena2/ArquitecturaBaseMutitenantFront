@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { HttpResponse, http } from "msw";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { HttpResponse, delay, http } from "msw";
 import type { User } from "oidc-client-ts";
 import type { AuthContextProps } from "react-oidc-context";
 import { createMemoryRouter, RouterProvider } from "react-router";
@@ -140,6 +140,8 @@ describe("InvitationPage", () => {
       expect(screen.getByRole("status")).toHaveTextContent("Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.");
       // El cartel de atención de «Criterio · Avisos» (Banner), no un aviso hecho a mano.
       expect(screen.getByRole("status")).toHaveClass("min-h-11", "text-[var(--alerta-tx)]");
+      // Lienzo v104: el cartel de «Aceptada» no lleva botón; lo que se puede hacer va en los botones de abajo.
+      expect(within(screen.getByRole("status")).queryByRole("button")).not.toBeInTheDocument();
       expect(acceptRequests).toHaveLength(1);
       expect(acceptRequests[0].url).toMatch(/\/api\/invitations\/accept$/);
       expect(acceptRequests[0].body).toEqual({ token: invitationToken, acceptedTerms: true });
@@ -152,6 +154,43 @@ describe("InvitationPage", () => {
       replaceState.mockRestore();
       Object.defineProperty(window, "innerWidth", { configurable: true, value: originalWidth });
     }
+  });
+
+  // Tablero Invitacion (v106), «Sin cuenta: cargando»: el texto solo, centrado y en gris, con 48 arriba y abajo.
+  it("mientras trae la invitación dice «Cargando invitación…» como el tablero", async () => {
+    server.use(http.post("/api/invitations/preview", async () => { await delay("infinite"); return HttpResponse.json(previewResponse); }));
+    show();
+
+    const loading = await screen.findByRole("status");
+    expect(loading).toHaveTextContent("Cargando invitación…");
+    expect(loading.tagName).toBe("P");
+    expect(loading).toHaveClass("py-12", "text-center", "text-[13px]", "leading-normal", "text-[var(--t2)]", "max-md:text-[14.5px]");
+  });
+
+  // Tablero Invitacion (v106), «Sin cuenta: aceptando»: el botón dice qué hace, con el aro, y no se puede volver a tocar
+  // («Criterio · Botones», Guardando).
+  it("mientras acepta, «Aceptando…» lleva el aro y no se puede volver a tocar", async () => {
+    server.use(http.post("/api/invitations/accept", async () => { await delay("infinite"); return HttpResponse.json({}); }));
+    show();
+    fireEvent.click(await screen.findByRole("button", { name: "Aceptar invitación" }));
+
+    const accepting = await screen.findByRole("button", { name: "Aceptando…" });
+    expect(accepting).toBeDisabled();
+    expect(accepting).toHaveClass("disabled:opacity-85");
+    expect(accepting.querySelector("[aria-hidden='true']")).toHaveClass("size-3.5", "animate-spin", "rounded-full", "border-2");
+  });
+
+  // Tablero Invitacion (v106), «Sin cuenta: error al aceptar»: la franja roja debajo de la leyenda, y se puede reintentar.
+  it("si falla al aceptar, la franja va debajo de la leyenda y se puede volver a aceptar", async () => {
+    server.use(http.post("/api/invitations/accept", () => HttpResponse.json({ status: 500, title: "Error" }, { status: 500 })));
+    show();
+    fireEvent.click(await screen.findByRole("button", { name: "Aceptar invitación" }));
+
+    const error = await screen.findByRole("alert");
+    expect(error).toHaveTextContent("Algo salió mal. Probá de nuevo en un rato.");
+    const note = screen.getByText("Al aceptar creamos tu cuenta con este correo y aceptás los Términos y la Política de privacidad.");
+    expect(note.compareDocumentPosition(error) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Aceptar invitación" })).toBeEnabled();
   });
 
   it("abre el ingreso con retorno fijo a /invitacion sin seleccionar Consumer", async () => {
