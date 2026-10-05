@@ -457,8 +457,10 @@ function r3bCases(root) {
   const home = (roles, pending) => ({ path: "/src/test/visualApp.html?as=visual-error-org&route=%2Forg", captureMode: "harness", userFixture: "visual-error-org",
     readyText: "Tus empresas", responses: [api("GET", "/api/home", { organization: null,
       companies: [{ companyId: "33333333-3333-4333-8333-333333333333", name: "Delta Norte S.A.", roles, memberCount: 3 }], pending })] });
+  // B4: la invitación vencida de la empresa que administra trae la empresa (ADR 0040); «Desde», la fecha del tablero.
   const expired = { area: "users", kind: "invitationExpired", subject: "martin.paz@delta.ejemplo.com", urgent: false,
-    sinceUtc: "2026-09-25T15:00:00Z", dueAtUtc: null, targetId: "member-martin" };
+    sinceUtc: "2026-09-29T15:00:00Z", dueAtUtc: null, targetId: "member-martin",
+    companyId: "33333333-3333-4333-8333-333333333333", companyName: "Delta Norte S.A." };
   const withoutName = { actions: [appClick("button", "Crear empresa"), appClick("button", "Crear empresa")], readySelector: '[role="dialog"] [role="alert"]' };
   return [
     ...custom({ id: "inicio-miembro-administra", group: "inicios", state: "Inicio de una persona que administra su empresa: «Tus empresas» y su «Para resolver»",
@@ -549,6 +551,26 @@ function b6aCases(root) {
   ];
 }
 
+// B6b · La ficha de Empresa, los estados y B4 (lienzo v107). La ficha como la abre quien administra solo su empresa (los
+// tableros dibujan a la Dueña: sin «Editar empresa», el ⋮ ni la pestaña Roles, que piden permisos de la organización) y
+// el filtro «Estado» abierto: el menú sin líneas entre opciones y con la elegida resaltada como el tablero.
+function b6bCases(root) {
+  const companyAdmin = { path: "/src/test/visualApp.html?as=visual-company-admin&route=%2Forg%2Fempresas%2Fcompany-1", userFixture: "visual-company-admin" };
+  const stateFilter = { actions: [appClick("button", "Estado: todos")], readySelector: '[role="menu"]' };
+  const openState = [click('button.pill-sel:has-text("Estado")')];
+  return [
+    ...pairCases(root, { stage: "etapa-6", pair: "empresa-miembros", id: "empresa-administrador", group: "empresas",
+      state: "Empresa: la ficha como la abre su Administrador de empresa, sin roles de la organización (B4; el tablero dibuja a la Dueña, con «Editar empresa», el ⋮ y la pestaña Roles)",
+      phone: { state: "Empresa en el teléfono como la abre su Administrador de empresa (B4; el tablero dibuja a la Dueña)" },
+      app: companyAdmin, phoneApp: companyAdmin }),
+    // M-Empresa no tiene filtros (FilterBar con phoneTools="none"): el teléfono muestra la ficha como su tablero.
+    ...pairCases(root, { stage: "etapa-6", pair: "empresa-miembros", id: "empresa-filtro-estado", group: "empresas",
+      state: "Empresa: el filtro «Estado» abierto, sin líneas entre opciones y con «Todos» resaltado",
+      desktop: { boardActions: openState }, phone: { state: "Empresa en el teléfono: M-Empresa no tiene filtros; el menú del filtro es de la compu" },
+      app: stateFilter }),
+  ];
+}
+
 export function catalog(root) {
   const rename ={ board: "Cuenta", boardActions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
@@ -571,5 +593,6 @@ export function catalog(root) {
     ...r3fCases(root),
     ...r3cCases(root),
     ...b6aCases(root),
+    ...b6bCases(root),
   ];
 }
