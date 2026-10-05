@@ -41,15 +41,32 @@ test("los guardados simulados responden como el back de hoy: 200 con la versión
 });
 
 // El relevamiento final encontró tableros en otro estado que la app: el inicio personal sin aviso se comparaba con
-// «Con el aviso» (el valor por defecto de Inicio-Personal) y «nada para resolver» del teléfono, con «Con pendientes».
-test("los inicios sin aviso o sin pendientes se comparan con ese estado del tablero", () => {
-  const props = new Map(buildCases().map((entry) => [entry.id, entry.props]));
-  for (const id of ["inicio-personal-escritorio", "inicio-personal-movil", "perfiles-personal-escritorio"]) {
-    assert.equal(props.get(id)?.estado, "Sin el aviso", id);
-  }
-  for (const id of ["inicio-org-sin-pendientes-escritorio", "inicio-org-sin-pendientes-movil"]) {
-    assert.equal(props.get(id)?.pendientes, "Nada para resolver", id);
-  }
+// «Con el aviso» (el valor por defecto de Inicio-Personal), «nada para resolver» del teléfono con «Con pendientes», y
+// varios estados que el lienzo dibuja desde v106 y v107 (el dominio pendiente, los cambios sin guardar, el 409 de la
+// Página pública, el error de «Agregar dominio», la vista previa y la pestaña Roles del teléfono) con su estado de siempre.
+test("cada estado se compara con ese estado del tablero, si el tablero lo dibuja", () => {
+  const cases = new Map(buildCases().map((entry) => [entry.id, entry]));
+  const expected = {
+    "inicio-personal-escritorio": { estado: "Sin el aviso" },
+    "inicio-personal-movil": { estado: "Sin el aviso" },
+    "perfiles-personal-escritorio": { estado: "Sin el aviso" },
+    "inicio-org-sin-pendientes-escritorio": { pendientes: "Nada para resolver" },
+    "inicio-org-sin-pendientes-movil": { pendientes: "Nada para resolver" },
+    "empresa-roles-movil": { estado: "Roles" },
+    "configuracion-pendiente-movil": { estado: "Dominio pendiente" },
+    "configuracion-cambios-sin-guardar-movil": { estado: "Cambios sin guardar" },
+    "configuracion-agregar-dominio-vacio-escritorio": { estado: "Sin dominio: error" },
+    "configuracion-agregar-dominio-vacio-movil": { estado: "Sin dominio: error" },
+    "pagina-publica-borrador-movil": { estado: "Borrador" },
+    "pagina-publica-bloqueada-movil": { estado: "Despublicada por la plataforma" },
+    "pagina-publica-cambios-sin-guardar-movil": { estado: "Cambios sin guardar" },
+    "pagina-publica-error-al-guardar-escritorio": { estado: "Publicada: error al guardar" },
+    "pagina-publica-error-al-guardar-movil": { estado: "Error al guardar" },
+    "pagina-publica-vista-previa-escritorio": { estado: "Borrador: vista previa" },
+    "pagina-publica-vista-previa-movil": { estado: "Borrador: vista previa" },
+  };
+  for (const [id, props] of Object.entries(expected)) assert.deepEqual(cases.get(id)?.props, props, id);
+  assert.equal(cases.get("pagina-publica-error-al-guardar-escritorio")?.board, "Pagina-Org");
 });
 
 test("con --out, el manifest de la tanda suma los casos de cada corrida en el orden del catálogo, sin repetirlos", () => {

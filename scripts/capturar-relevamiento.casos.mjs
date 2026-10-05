@@ -192,18 +192,18 @@ const stage6 = [
   ["empresas-lista", "empresas", "Empresas: la lista", {}],
   ["empresas-crear", "empresas", "Empresas: crear una empresa", { props: { estado: "Crear empresa" } }],
   ["empresa-miembros", "empresas", "Empresa: la ficha, pestaña Miembros", {}],
-  ["empresa-roles", "empresas", "Empresa: la ficha, pestaña Roles", { state: "Empresa en el teléfono: pestaña Roles (el tablero dibuja una sola pestaña)" }],
+  ["empresa-roles", "empresas", "Empresa: la ficha, pestaña Roles", { props: { estado: "Roles" }, state: "Empresa en el teléfono: pestaña Roles" }],
   ["empresa-editar", "empresas", "Empresa: editar los datos", { props: { estado: "Editar empresa" } }],
   ["configuracion-verificada", "configuracion", "Configuración: dominio verificado", {}],
   ["configuracion-pendiente", "configuracion", "Configuración: dominio pendiente de verificar",
-    { board: "M-Configuracion", props: {}, state: "Configuración en el teléfono: dominio pendiente (el tablero dibuja solo el verificado)" }],
+    { board: "M-Configuracion", props: { estado: "Dominio pendiente" }, state: "Configuración en el teléfono: dominio pendiente" }],
   ["configuracion-agregar-dominio", "configuracion", "Configuración: agregar un dominio", { board: "M-Configuracion-Dominio", props: {} }],
   ["configuracion-quitar-dominio", "configuracion", "Configuración: quitar un dominio", { board: "M-Configuracion-Quitar", props: {} }],
   ["pagina-publica-publicada", "pagina-publica", "Página pública: publicada", { board: "M-Pagina-Org", props: {} }],
   ["pagina-publica-borrador", "pagina-publica", "Página pública: borrador",
-    { board: "M-Pagina-Org", props: {}, state: "Página pública en el teléfono: borrador (el tablero dibuja un solo estado)" }],
+    { board: "M-Pagina-Org", props: { estado: "Borrador" }, state: "Página pública en el teléfono: borrador" }],
   ["pagina-publica-bloqueada", "pagina-publica", "Página pública: despublicada por la plataforma, con el motivo",
-    { board: "M-Pagina-Org", props: {}, boardActions: [], state: "Página pública en el teléfono: despublicada por la plataforma (el tablero dibuja un solo estado)" }],
+    { board: "M-Pagina-Org", props: { estado: "Despublicada por la plataforma" }, boardActions: [], state: "Página pública en el teléfono: despublicada por la plataforma" }],
   ["auditoria-lista", "auditoria", "Auditoría: la lista", {}],
   ["error-organizacion", "errores", "Organización: sin permiso (403) dentro de /org", { board: "M-Error-Org", props: { caso: "Sin permiso (403)" } }],
   ["aviso-guardado", "avisos", "Aviso «Guardamos los cambios» después de guardar la configuración", { board: "M-Avisos", props: { caso: "Guardado" } }],
@@ -212,11 +212,13 @@ const stage6 = [
 // Consolidación F7: los estados con cambios sin guardar, el 409 y los errores de guardado (ya tienen sus tableros vigentes).
 // El tercer dato cambia el tablero del teléfono: desde v106 el lienzo dibuja esos estados en su `M-*` (R3b).
 const stageF7 = [
-  ["configuracion-cambios-sin-guardar", "configuracion"],
+  ["configuracion-cambios-sin-guardar", "configuracion", { props: { estado: "Cambios sin guardar" }, state: "Configuración en el teléfono con el nombre cambiado: «Cambios sin guardar»" }],
   ["configuracion-salir-sin-guardar", "configuracion"],
   ["configuracion-otra-persona-cambio", "configuracion"],
-  ["pagina-publica-cambios-sin-guardar", "pagina-publica"],
-  ["pagina-publica-error-al-guardar", "pagina-publica"],
+  ["pagina-publica-cambios-sin-guardar", "pagina-publica", { props: { estado: "Cambios sin guardar" }, state: "Página pública en el teléfono con el nombre cambiado: «Cambios sin guardar»" }],
+  // El 409 de la Página pública, con el cartel ámbar, como lo dibujan Pagina-Org y M-Pagina-Org desde v107.
+  ["pagina-publica-error-al-guardar", "pagina-publica", { board: "M-Pagina-Org", props: { estado: "Error al guardar" }, state: "Página pública en el teléfono: el 409 al guardar, con el cartel ámbar" },
+    { board: "Pagina-Org", props: { estado: "Publicada: error al guardar" }, state: "Página pública: el 409 al guardar, con el cartel ámbar" }],
   ["pagina-publica-salir-sin-guardar", "pagina-publica"],
   ["usuario-salir-sin-guardar", "usuarios"],
   ["usuario-error-al-guardar", "usuarios", { props: { estado: "Error al guardar" }, state: "Ficha de Usuario en el teléfono: el error al guardar, con el texto del back, en la banda debajo de la barra (M-Usuario, v106)" }],
@@ -374,8 +376,8 @@ function errorsAndButtonsCases(root) {
       phone: { state: "«Crear empresa» en el teléfono con el CUIT mal (el tablero no dibuja esa hoja)" },
       app: wrongCuit, phoneApp: wrongCuit }),
     ...pairCases(root, { stage: "etapa-6", pair: "configuracion-agregar-dominio", id: "configuracion-agregar-dominio-vacio", group: "configuracion",
-      state: "«Agregar dominio»: «Siguiente» sin dominio marca el campo con «Escribí el dominio.» (el tablero no dibuja el error)",
-      phone: { board: "M-Configuracion-Dominio", props: {} },
+      state: "«Agregar dominio»: «Siguiente» sin dominio marca el campo con «Escribí el dominio.»",
+      desktop: { props: { estado: "Sin dominio: error" } }, phone: { board: "M-Configuracion-Dominio", props: { estado: "Sin dominio: error" } },
       app: emptyDomain, phoneApp: emptyDomain }),
     ...pairCases(root, { stage: "etapa-6", pair: "auditoria-lista", id: "auditoria-detalle", group: "auditoria",
       state: "Auditoría: el detalle de un movimiento, en el diálogo normal de 560",
@@ -384,8 +386,8 @@ function errorsAndButtonsCases(root) {
       phone: { state: "Auditoría en el teléfono: el detalle de un movimiento (el tablero no dibuja esa hoja)" },
       app: auditDetail, phoneApp: auditDetailPhone }),
     ...pairCases(root, { stage: "etapa-6", pair: "pagina-publica-borrador", id: "pagina-publica-vista-previa", group: "pagina-publica",
-      state: "Página pública: la vista previa, en el diálogo normal de 560 (el tablero no dibuja la vista previa)",
-      phone: { board: "M-Pagina-Org", props: {} },
+      state: "Página pública: la vista previa, abierta desde «Vista previa» de la banda del borrador",
+      desktop: { props: { estado: "Borrador: vista previa" } }, phone: { board: "M-Pagina-Org", props: { estado: "Borrador: vista previa" } },
       app: preview, phoneApp: preview }),
   ];
 }
@@ -712,6 +714,47 @@ function b6d3bCases(root) {
   ];
 }
 
+// Tanda 6d-4a (decisiones del usuario del 2026-10-05, lienzo v108): «Editar empresa» sin cambios, con «Guardar cambios»
+// apagado como en toda edición; «Quitar» un correo mientras espera, con «Quitando…» y el aro de «Guardando» (Criterio ·
+// Botones › Estados dice los textos de espera; Cuenta-Metodo no dibuja la espera), sobre el correo del tablero y con el
+// código al WhatsApp, como en b6d3b; y la ficha de Empresa como la abre su Administrador de empresa: un solo grupo,
+// Miembros, sin la barra de pestañas («Administra solo la empresa» de Empresa y M-Empresa, con otros datos de prueba).
+function b6d4aCases(root) {
+  const stageApp = (stage, pair, width) => stageCases(root, stage).find((entry) => entry.pair === pair && entry.viewport.width === width).app;
+  const work = { id: "5", type: "Email", value: "lucia.trabajo@gmail.com", isPrimary: false, isVerified: true, canRemove: true, canMakePrimary: true };
+  const removing = (width) => {
+    const app = stageApp("etapa-4", "cuenta", width);
+    const responses = app.responses.map((item) => item.method === "GET" && item.path === "/api/me/login-methods"
+      ? { ...item, body: { ...item.body, methods: [...item.body.methods, work] } }
+      : item);
+    return {
+      responses: [...responses, api("POST", "/api/me/reauth", { sourceMethodId: "3", destination: "•••• 4521", resendAfterSeconds: 60 }, 202)],
+      hang: { path: "/api/me/reauth/verify", method: "POST" },
+      actions: [appClick("button", "Acciones de lucia.trabajo@gmail.com"), appClick("menuitem", "Quitar"), { type: "otp", value: "482910" }, appClick("button", "Quitar")],
+      readySelector: '[role="dialog"]', readyText: "Quitando…",
+    };
+  };
+  const companyAdmin = { path: "/src/test/visualApp.html?as=visual-company-admin&route=%2Forg%2Fempresas%2Fcompany-1", userFixture: "visual-company-admin" };
+  return [
+    ...pairCases(root, { stage: "etapa-6", pair: "empresa-editar", id: "empresa-editar-sin-cambios", group: "empresas",
+      state: "«Editar empresa» sin cambios: «Guardar cambios» apagado, como en toda edición",
+      desktop: { board: "Empresa", props: { pestana: "Miembros", quien: "Administra la organización" }, boardActions: [click("text=Editar empresa")] },
+      phone: { board: "M-Empresa", props: { estado: "Editar empresa" }, boardActions: [] } }),
+    ...pairCases(root, { stage: "etapa-4", pair: "cuenta", id: "cuenta-quitar-correo-quitando", group: "cuenta",
+      state: "«Quitar» un correo mientras espera: «Quitando…» con el aro de «Guardando», en rojo",
+      desktop: { board: "Criterio-Botones", section: "Estados", props: {}, boardActions: [],
+        state: "«Quitar» un correo mientras espera: «Quitando…» con el aro (Criterio · Botones › Estados dice los textos de espera; Cuenta-Metodo no dibuja la espera)" },
+      phone: { board: "M-Cuenta-Metodo", props: { estado: "Quitar un correo: el código llega por WhatsApp" }, boardActions: [],
+        state: "«Quitar» un correo en el teléfono mientras espera: «Quitando…» con el aro (M-Cuenta-Metodo no dibuja la espera)" },
+      app: removing(1440), phoneApp: removing(390) }),
+    ...pairCases(root, { stage: "etapa-6", pair: "empresa-miembros", id: "empresa-administrador-sin-pestanas", group: "empresas",
+      state: "Empresa como la abre su Administrador de empresa: un solo grupo, Miembros, sin la barra de pestañas",
+      desktop: { props: { pestana: "Miembros", quien: "Administra solo la empresa" } },
+      phone: { board: "M-Empresa", props: { estado: "Administra solo la empresa" } },
+      app: companyAdmin, phoneApp: companyAdmin }),
+  ];
+}
+
 export function catalog(root) {
   const rename ={ board: "Cuenta", boardActions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
@@ -726,7 +769,7 @@ export function catalog(root) {
       desktop: rename, phone: renamePhone, app: renameApp, phoneApp: renameApp }),
     ...stage4Roles.flatMap(([pair, group, state, estado]) => pairCases(root, { stage: "etapa-4", pair, group, state, phone: { props: { estado } } })),
     ...stage6.flatMap(([pair, group, state, onPhone]) => pairCases(root, { stage: "etapa-6", pair, group, state, phone: onPhone })),
-    ...stageF7.flatMap(([pair, group, onPhone]) => pairCases(root, { stage: "consolidacion/f7", pair, group, phone: onPhone })),
+    ...stageF7.flatMap(([pair, group, onPhone, onDesktop]) => pairCases(root, { stage: "consolidacion/f7", pair, group, phone: onPhone, desktop: onDesktop })),
     ...signupCases(root),
     ...extraCases(root),
     ...r3bCases(root),
@@ -739,5 +782,6 @@ export function catalog(root) {
     ...b6d2Cases(root),
     ...b6d3Cases(root),
     ...b6d3bCases(root),
+    ...b6d4aCases(root),
   ];
 }
