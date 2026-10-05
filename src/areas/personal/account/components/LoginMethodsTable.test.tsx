@@ -20,6 +20,24 @@ describe("métodos de cuenta", () => {
     // Criterio · Menús: solo lo que se puede hacer con esa fila; nada de opciones grises.
     expect(screen.queryByRole("button", { name: "Acciones de ana@example.test" })).not.toBeInTheDocument();
   });
+  // Tablero Cuenta (lienzo v96): el ⋮ va solo en las filas con acciones. El principal, único método personal, no lo
+  // lleva; el correo de la empresa sí, con «Hacer principal» y, separado, «Quitar».
+  it("el correo de la empresa lleva ⋮ con «Hacer principal» y «Quitar»; el principal personal, no", async () => {
+    const user = userEvent.setup();
+    const onAction = vi.fn();
+    const managed: AccountLoginMethod = { ...method, id: "managed", value: "ana@delta.ejemplo.com", isPrimary: false, canRemove: true, canMakePrimary: true,
+      managedByTenantId: "tenant-delta", managedByOrganizationName: "Grupo Delta" };
+    renderWithProviders(<LoginMethodsTable methods={[method, managed]} onAction={onAction} />);
+
+    expect(screen.queryByRole("button", { name: "Acciones de ana@example.test" })).not.toBeInTheDocument();
+    expect(screen.getByText("Administrado por Grupo Delta")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Acciones de ana@delta.ejemplo.com" }));
+    expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Hacer principal", "Quitar"]);
+    expect(screen.getByRole("separator")).toBeInTheDocument();
+    await user.click(screen.getByRole("menuitem", { name: "Hacer principal" }));
+    expect(onAction).toHaveBeenCalledWith("primary", managed);
+  });
+
   it("ofrece verificar un pendiente y entrega su id", async () => {
     const user = userEvent.setup();
     const onAction = vi.fn();
