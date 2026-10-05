@@ -1,11 +1,16 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Copy, Globe, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { z } from "zod";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
+import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
-import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { OrganizationDomainResponse, OrganizationSettingsResponse, UpdateOrganizationSettingsRequest } from "@/shared/api/types";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Button } from "@/shared/ui/button";
@@ -30,20 +35,45 @@ import { CultureText } from "@/shared/ui/format/CultureText";
 import { CurrencyText } from "@/shared/ui/format/CurrencyText";
 import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
 import { toastError } from "@/shared/ui/sonner";
-import { toast } from "sonner";
 import {
   fetchOrganizationDomains, fetchOrganizationSettings, organizationDomainsKey, organizationSettingsKey,
-  registerOrganizationDomain, removeOrganizationDomain, updateOrganizationSettings, verifyOrganizationDomain,
+  removeOrganizationDomain, updateOrganizationSettings, verifyOrganizationDomain,
 } from "../api/settings";
+import { AddDomainDialog } from "../components/AddDomainDialog";
 import { activeOrganization } from "@/tenancy/access";
 
-type SettingsDraft = Pick<OrganizationSettingsResponse, "name" | "defaultCulture" | "defaultTimeZoneId" | "defaultCurrency">;
+/// Los datos de la organización no tienen reglas propias en la pantalla: lo que el back rechaza de un dato va debajo de
+/// ese dato, y lo demás, en la franja.
+const settingsFormSchema = z.object({ name: z.string(), defaultCulture: z.string(), defaultTimeZoneId: z.string(), defaultCurrency: z.string() });
+type SettingsForm = z.infer<typeof settingsFormSchema>;
 
-function settingsDraft(settings: OrganizationSettingsResponse): SettingsDraft {
+// Los errores de validación del back, en camelCase, a su campo.
+const serverFields: Record<string, keyof SettingsForm> = {
+  name: "name", defaultCulture: "defaultCulture", defaultTimeZoneId: "defaultTimeZoneId", defaultCurrency: "defaultCurrency",
+};
+
+function valuesFromSettings(settings: OrganizationSettingsResponse): SettingsForm {
   return { name: settings.name, defaultCulture: settings.defaultCulture, defaultTimeZoneId: settings.defaultTimeZoneId, defaultCurrency: settings.defaultCurrency };
 }
 
 export function SettingsPage() {
+  const { t } = useTranslation(["settings", "common"]);
+  const settings = useQuery({ queryKey: organizationSettingsKey, queryFn: fetchOrganizationSettings, meta: { silent: true, blocksView: true } });
+
+  // «Criterio · Avisos» (Pantalla de error): la configuración no cargó y no hay nada que mostrar.
+  if (settings.isError && !settings.data) return <LoadErrorPage onRetry={() => { void settings.refetch(); }} />;
+  if (!settings.data) return <Page icon={SettingsIcon} title={t("settings:title")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  return <SettingsEditor settings={settings.data} loadError={settings.error} reload={async () => (await settings.refetch()).data} />;
+}
+
+/// Configuración (tableros Configuracion y M-Configuracion), como el editor de Roles: los datos con React Hook Form y zod,
+/// y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`. Los dominios se guardan al
+/// momento, desde sus diálogos.
+function SettingsEditor({ settings, loadError, reload }: {
+  settings: OrganizationSettingsResponse;
+  loadError: unknown;
+  reload: () => Promise<OrganizationSettingsResponse | undefined>;
+}) {
   const { t } = useTranslation(["settings", "common"]);
   const { data: currentUser } = useCurrentUser();
   const { can } = usePermissions();
@@ -51,36 +81,28 @@ export function SettingsPage() {
   const organizationName = activeOrganization(currentUser)?.name ?? "";
   const { phone } = useAppChrome();
   const client = useQueryClient();
-  const settings = useQuery({ queryKey: organizationSettingsKey, queryFn: fetchOrganizationSettings, meta: { silent: true, blocksView: true } });
   const domains = useQuery({ queryKey: organizationDomainsKey, queryFn: fetchOrganizationDomains, meta: { silent: true } });
-  const [draftState, setDraftState] = useState<SettingsDraft | null>(null);
+  const form = useForm<SettingsForm>({ resolver: zodResolver(settingsFormSchema), defaultValues: valuesFromSettings(settings) });
+  const { errors } = form.formState;
+  const culture = useController({ control: form.control, name: "defaultCulture" });
+  const timeZone = useController({ control: form.control, name: "defaultTimeZoneId" });
+  const currency = useController({ control: form.control, name: "defaultCurrency" });
   const [failure, setFailure] = useState<unknown>();
-  const [domainDialogOpen, setDomainDialogOpen] = useState(false);
-  // Tocó «Siguiente» sin escribir el dominio: el campo queda en rojo hasta que escribe.
-  const [missingDomain, setMissingDomain] = useState(false);
-  const [domainDraft, setDomainDraft] = useState("");
+  const isDirty = canManage && form.formState.isDirty;
+  // Tableros Configuracion y Avisos: el 409 en su cartel, «Cambios sin guardar» solo en la banda, el error de guardado en
+  // la franja y «¿Salir sin guardar?» antes de irse con cambios.
+  const edit = useEditPage({
+    isDirty, error: failure,
+    onSeeNew: () => { void reload().then((fresh) => { if (fresh) form.reset(valuesFromSettings(fresh)); setFailure(undefined); }); },
+    onContinueEditing: () => setFailure(undefined),
+  });
+  const [addingDomain, setAddingDomain] = useState(false);
   const [domainToRemove, setDomainToRemove] = useState<OrganizationDomainResponse | null>(null);
   // Tablero Configuracion-Verificar: después de «Siguiente» o de «Verificar», el TXT va en un diálogo, no en la fila.
   const [domainToVerify, setDomainToVerify] = useState<OrganizationDomainResponse | null>(null);
   const [verifyFailure, setVerifyFailure] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const save = useMutation({
-    mutationFn: (request: UpdateOrganizationSettingsRequest) => updateOrganizationSettings(request),
-    // Después de guardar, la ficha queda limpia con lo guardado: se escribe en la caché y se suelta el borrador; la
-    // relectura trae la versión nueva.
-    onSuccess: async (_result, request) => {
-      setFailure(undefined);
-      client.setQueryData<OrganizationSettingsResponse>(organizationSettingsKey, (current) => current ? {
-        ...current, name: request.name ?? current.name, defaultCulture: request.defaultCulture ?? current.defaultCulture,
-        defaultTimeZoneId: request.defaultTimeZoneId ?? current.defaultTimeZoneId, defaultCurrency: request.defaultCurrency ?? current.defaultCurrency,
-      } : current);
-      setDraftState(null);
-      toast.success(t("settings:saved"));
-      await client.invalidateQueries({ queryKey: organizationSettingsKey });
-    },
-    onError: (error) => setFailure(error),
-  });
-  const addDomain = useIdempotentMutation((domain: { domain: string }, key) => registerOrganizationDomain(domain, key));
+  const save = useMutation({ mutationFn: (request: UpdateOrganizationSettingsRequest) => updateOrganizationSettings(request) });
   const verifyDomain = useMutation({
     mutationFn: (domain: OrganizationDomainResponse) => verifyOrganizationDomain(domain.id),
     onSuccess: async (_result, domain) => { closeVerify(); toast.success(t("settings:domains.verified", { domain: domain.domain })); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
@@ -92,11 +114,33 @@ export function SettingsPage() {
     onError: (error) => toastActionError(error, t),
   });
 
-  // «Criterio · Botones»: «Siguiente» no se apaga; sin dominio, el campo dice qué falta.
-  function submitDomain() {
-    const domain = domainDraft.trim();
-    if (!domain) { setMissingDomain(true); return; }
-    addDomain.mutate({ domain }, { onSuccess: async (added) => { setDomainDraft(""); setDomainDialogOpen(false); openVerify(added); await client.invalidateQueries({ queryKey: organizationDomainsKey }); } });
+  function rejected(error: unknown) {
+    if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, serverFields)) return;
+    setFailure(error);
+  }
+
+  // Después de guardar, la ficha queda limpia con lo guardado, aunque la relectura todavía no lo traiga.
+  async function saved(values: SettingsForm) {
+    setFailure(undefined);
+    form.reset(values);
+    toast.success(t("settings:saved"));
+    await client.invalidateQueries({ queryKey: organizationSettingsKey });
+  }
+
+  const submit = form.handleSubmit((values) => {
+    setFailure(undefined);
+    save.mutate({ ...values, version: settings.version }, { onSuccess: () => { void saved(values); }, onError: rejected });
+  });
+
+  function discard() {
+    form.reset();
+    setFailure(undefined);
+  }
+
+  async function domainAdded(added: OrganizationDomainResponse) {
+    setAddingDomain(false);
+    openVerify(added);
+    await client.invalidateQueries({ queryKey: organizationDomainsKey });
   }
 
   function openVerify(domain: OrganizationDomainResponse) {
@@ -115,22 +159,9 @@ export function SettingsPage() {
     void navigator.clipboard.writeText(value).then(() => setCopied(true)).catch(() => toastError(t("common:states.error")));
   }
 
-  const draft = draftState ?? (settings.data ? settingsDraft(settings.data) : null);
-  const isDirty = Boolean(settings.data && draft && JSON.stringify(draft) !== JSON.stringify(settingsDraft(settings.data)));
-  // Tableros Configuracion y Avisos: el 409 en su cartel, «Cambios sin guardar» solo en la banda, el error de guardado en
-  // la franja y «¿Salir sin guardar?» antes de irse con cambios.
-  const edit = useEditPage({
-    isDirty, error: failure,
-    onSeeNew: () => { void settings.refetch().then((result) => { if (result.data) setDraftState(settingsDraft(result.data)); setFailure(undefined); }); },
-    onContinueEditing: () => setFailure(undefined),
-  });
-  const error = settings.error ?? domains.error;
+  const error = loadError ?? domains.error;
   const showGeneralError = error ? apiErrorMessage(error, t) : undefined;
-  const addDomainError = actionErrorMessage(addDomain.error, t);
   const activeDomains = (domains.data ?? []).filter((domain) => domain.status !== "Removed");
-
-  // «Criterio · Avisos» (Pantalla de error): la configuración no cargó y no hay nada que mostrar.
-  if (settings.isError && !settings.data) return <LoadErrorPage onRetry={() => { void settings.refetch(); void domains.refetch(); }} />;
 
   return <>
     {/* Tablero Configuracion: el título lleva la rueda; los deslizadores son el ícono del menú. */}
@@ -139,9 +170,9 @@ export function SettingsPage() {
       title={t("settings:title")}
       summary={edit.unsaved}
       phoneSubtitle={edit.unsaved}
-      actions={canManage && draft && settings.data ? <>
-        <Button type="button" variant="outline" onClick={() => { setDraftState(settingsDraft(settings.data!)); setFailure(undefined); }}>{t("settings:discard")}</Button>
-        <Button type="button" disabled={!isDirty} pending={save.isPending} onClick={() => save.mutate({ ...draft, version: settings.data!.version })}>{t("settings:save")}</Button>
+      actions={canManage ? <>
+        <Button type="button" variant="outline" onClick={discard}>{t("settings:discard")}</Button>
+        <Button type="submit" form="settings-editor" disabled={!isDirty} pending={save.isPending}>{t("settings:save")}</Button>
       </> : undefined}
     >
       <div className="flex flex-col gap-4 max-md:gap-3.5">
@@ -149,23 +180,25 @@ export function SettingsPage() {
         {edit.formError}
         {/* Tablero M-Configuracion: en el teléfono los datos van sueltos sobre blanco, sin título a la vista. */}
         <Section title={t("settings:dataTitle")} phone="untitled">
-          {settings.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft ? <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
-            {/* Tablero «Criterio · Formularios»: sin permiso para cambiar, los datos se leen como texto, sin campos grises. */}
-            {canManage ? <>
-              <FormField label={t("settings:fields.name")} required><Input value={draft.name} maxLength={120} onChange={(event) => setDraftState({ ...draft, name: event.target.value })} /></FormField>
-              <FormField label={t("settings:fields.culture")}><CultureSelect value={draft.defaultCulture} onChange={(defaultCulture) => setDraftState({ ...draft, defaultCulture })} placeholder={t("settings:chooseCulture")} /></FormField>
-              <FormField label={t("settings:fields.timeZone")}><TimeZoneSelect value={draft.defaultTimeZoneId} onChange={(defaultTimeZoneId) => setDraftState({ ...draft, defaultTimeZoneId })} placeholder={t("settings:chooseTimeZone")} /></FormField>
-              <FormField label={t("settings:fields.currency")}><CurrencySelect value={draft.defaultCurrency} onChange={(defaultCurrency) => setDraftState({ ...draft, defaultCurrency })} placeholder={t("settings:chooseCurrency")} /></FormField>
-            </> : <>
-              <ReadOnlyField label={t("settings:fields.name")}>{draft.name}</ReadOnlyField>
-              <ReadOnlyField label={t("settings:fields.culture")}><CultureText value={draft.defaultCulture} /></ReadOnlyField>
-              <ReadOnlyField label={t("settings:fields.timeZone")}><TimeZoneText value={draft.defaultTimeZoneId} /></ReadOnlyField>
-              <ReadOnlyField label={t("settings:fields.currency")}><CurrencyText value={draft.defaultCurrency} /></ReadOnlyField>
-            </>}
-          </SectionFields> : null}
+          <form id="settings-editor" noValidate aria-label={t("settings:title")} onSubmit={(event) => { void submit(event); }}>
+            <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
+              {/* Tablero «Criterio · Formularios»: sin permiso para cambiar, los datos se leen como texto, sin campos grises. */}
+              {canManage ? <>
+                <FormField label={t("settings:fields.name")} required error={errors.name?.message}><Input {...form.register("name")} maxLength={120} /></FormField>
+                <FormField label={t("settings:fields.culture")} error={errors.defaultCulture?.message}><CultureSelect value={culture.field.value} onChange={culture.field.onChange} placeholder={t("settings:chooseCulture")} /></FormField>
+                <FormField label={t("settings:fields.timeZone")} error={errors.defaultTimeZoneId?.message}><TimeZoneSelect value={timeZone.field.value} onChange={timeZone.field.onChange} placeholder={t("settings:chooseTimeZone")} /></FormField>
+                <FormField label={t("settings:fields.currency")} error={errors.defaultCurrency?.message}><CurrencySelect value={currency.field.value} onChange={currency.field.onChange} placeholder={t("settings:chooseCurrency")} /></FormField>
+              </> : <>
+                <ReadOnlyField label={t("settings:fields.name")}>{settings.name}</ReadOnlyField>
+                <ReadOnlyField label={t("settings:fields.culture")}><CultureText value={settings.defaultCulture} /></ReadOnlyField>
+                <ReadOnlyField label={t("settings:fields.timeZone")}><TimeZoneText value={settings.defaultTimeZoneId} /></ReadOnlyField>
+                <ReadOnlyField label={t("settings:fields.currency")}><CurrencyText value={settings.defaultCurrency} /></ReadOnlyField>
+              </>}
+            </SectionFields>
+          </form>
         </Section>
 
-        <Section title={t("settings:domains.title")} phone="inset" action={canManage ? { label: t("settings:domains.add"), onClick: () => setDomainDialogOpen(true) } : undefined}>
+        <Section title={t("settings:domains.title")} phone="inset" action={canManage ? { label: t("settings:domains.add"), onClick: () => setAddingDomain(true) } : undefined}>
           {domains.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
             : activeDomains.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)]">{t("settings:domains.empty")}</p>
               : <List label={t("settings:domains.title")}>{activeDomains.map((domain) => <ListItem key={domain.id} icon={<Globe aria-hidden="true" />} title={domain.domain}
@@ -186,22 +219,7 @@ export function SettingsPage() {
       </div>
     </Page>
 
-    <Dialog open={domainDialogOpen} onOpenChange={(open) => { setDomainDialogOpen(open); if (!open) setMissingDomain(false); }}>
-      <DialogContent size="sm">
-        <DialogHeader><DialogTitle>{t("settings:domains.addTitle")}</DialogTitle></DialogHeader>
-        {/* «Criterio · Diálogos»: el cuerpo común, y el error general en la franja arriba de los botones. */}
-        <DialogBody>
-          <FormField label={t("settings:domains.domain")} required error={missingDomain ? t("settings:domains.domainRequired") : undefined}>
-            <Input autoComplete="off" value={domainDraft} onChange={(event) => { setDomainDraft(event.target.value); setMissingDomain(false); }} />
-          </FormField>
-          <FormError message={addDomainError} />
-        </DialogBody>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => { setDomainDialogOpen(false); setMissingDomain(false); }}>{t("common:actions.cancel")}</Button>
-          <Button type="button" pending={addDomain.isPending} onClick={submitDomain}>{t("settings:domains.next")}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    {addingDomain ? <AddDomainDialog onClose={() => setAddingDomain(false)} onAdded={(added) => { void domainAdded(added); }} /> : null}
 
     <Dialog open={domainToVerify !== null} onOpenChange={(open) => { if (!open && !verifyDomain.isPending) closeVerify(); }}>
       <DialogContent>

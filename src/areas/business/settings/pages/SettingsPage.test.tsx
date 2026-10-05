@@ -242,6 +242,33 @@ describe("SettingsPage", () => {
     expect(within(add).queryByText("Escribí el dominio.")).not.toBeInTheDocument();
   });
 
+  // formularios.md (Diálogo): se monta solo mientras está abierto; al cerrarlo, lo escrito y su error se van con él.
+  it("«Agregar dominio» se abre vacío cada vez, sin el error de la vez anterior", async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([])),
+      http.post("/api/organization/settings/domains", () => HttpResponse.json(
+        { status: 409, code: "Settings.TenantDomain.AlreadyRegistered", title: "Conflicto", detail: "Ese dominio ya está registrado." }, { status: 409 })),
+    );
+    renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+    const open = await screen.findByRole("button", { name: "Agregar dominio" });
+    await user.click(open);
+    const first = await screen.findByRole("dialog", { name: "Agregar dominio" });
+    await user.type(within(first).getByRole("textbox", { name: "Dominio" }), "delta.example.test");
+    await user.click(within(first).getByRole("button", { name: "Siguiente" }));
+    expect(await within(first).findByRole("alert")).toHaveTextContent("Ese dominio ya está registrado.");
+    await user.click(within(first).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Agregar dominio" })).not.toBeInTheDocument());
+
+    // En jsdom, después de cerrar un diálogo, Radix a veces ignora el clic del puntero: se abre con foco y Enter.
+    open.focus();
+    await user.keyboard("{Enter}");
+    const second = await screen.findByRole("dialog", { name: "Agregar dominio" });
+    expect(within(second).getByRole("textbox", { name: "Dominio" })).toHaveValue("");
+    expect(within(second).queryByRole("alert")).not.toBeInTheDocument();
+  });
+
   // Tablero M-Configuracion-Verificar: en el teléfono, el rótulo del TXT en 13,5 y gris, el registro en una caja gris de
   // 48 sin borde, con radio 12, y «Copiar» en texto petróleo con su ícono, como las acciones en texto del teléfono.
   it("en el teléfono, «Verificar» lleva el rótulo del TXT y «Copiar» del tablero", async () => {
