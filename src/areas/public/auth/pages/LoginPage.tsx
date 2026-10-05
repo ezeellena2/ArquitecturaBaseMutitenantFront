@@ -16,6 +16,7 @@ import { requestLoginCode, verifyLoginCode } from "../api/loginCode";
 import { AuthStatus, type AuthStatusProps } from "../components/AuthStatus";
 import { BusinessAccessResult } from "../components/BusinessAccessResult";
 import { AuthCodeStep } from "../components/AuthCodeStep";
+import { AuthLink } from "../components/AuthLink";
 import { EmailCodeForm } from "../components/EmailCodeForm";
 import { GoogleButton } from "../components/GoogleButton";
 import { loginCodeMessage } from "../errors";
@@ -189,11 +190,11 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <EmailCodeForm onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? { text: t("login.googleError"), details: [t("login.googleErrorHelp")] } : undefined} />
       <div className="flex flex-col gap-2 text-center text-[13px] text-[var(--t2)]">
         {access === "consumer" ? <>
-          <div>{t("login.noAccount")} <Link to="/registro" className="font-semibold text-[var(--marca)] hover:underline">{t("login.createOne")}</Link></div>
-          <div>{t("login.haveBusiness")} <Link to={loginPathOf("business")} className="font-semibold text-[var(--marca)] hover:underline">{t("login.enterAsBusiness")}</Link></div>
+          <div>{t("login.noAccount")} <AuthLink to="/registro">{t("login.createOne")}</AuthLink></div>
+          <div>{t("login.haveBusiness")} <AuthLink to={loginPathOf("business")}>{t("login.enterAsBusiness")}</AuthLink></div>
         </> : <>
-          <div>{t("login.businessNotRegistered")} <Link to="/registro/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("login.registerIt")}</Link></div>
-          <div>{t("login.enterAsPersonQuestion")} <Link to="/login" className="font-semibold text-[var(--marca)] hover:underline">{t("login.enterHere")}</Link></div>
+          <div>{t("login.businessNotRegistered")} <AuthLink to="/registro/empresa">{t("login.registerIt")}</AuthLink></div>
+          <div>{t("login.enterAsPersonQuestion")} <AuthLink to="/login">{t("login.enterHere")}</AuthLink></div>
         </>}
       </div>
     </div> : <AuthCodeStep destination={step.destination} code={code} onBack={backToEmail}
@@ -204,6 +205,6 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       verifyLabel={verifyRetry.label ?? undefined} verifyDisabled={verify.isPending || verifyRetry.isRunning || codeSpent || accountClosed}
       resendSeconds={accountClosed ? 0 : resendTimer.seconds} resendRetryLabel={accountClosed ? null : resendRetry.label}
       resendDisabled={resend.isPending || accountClosed}
-      footer={accountClosed ? <button type="button" onClick={backToEmail} className="self-center text-[13px] font-semibold text-[var(--marca)]">{t("login.backToLogin")}</button> : null} />}
+      footer={accountClosed ? <div className="text-center"><Button type="button" variant="link" className="text-[13px]" onClick={backToEmail}>{t("login.backToLogin")}</Button></div> : null} />}
   </AuthLayout>;
 }

@@ -45,6 +45,12 @@ describe("BusinessSignupPage", () => {
         expect(screen.getByRole("button", { name: "Continuar" })).toBeEnabled();
         expect(screen.queryByRole("alert")).not.toBeInTheDocument();
         expect(screen.getByRole("textbox", { name: "Tu correo electrónico" })).toBeVisible();
+        // Los enlaces de texto son la variante link de Button, en --marca-tx (como .lnk del tablero).
+        const acceptance = within(screen.getByRole("checkbox", { name: /Acepto los Términos/ }).closest("label")!);
+        for (const link of [acceptance.getByRole("link", { name: "Términos" }), acceptance.getByRole("link", { name: "Política de privacidad" }),
+          screen.getByRole("link", { name: "Ingresá como empresa" })]) {
+          expect(link).toHaveAttribute("data-variant", "link");
+        }
         fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
         expect(screen.queryByRole("button", { name: "Seguir con Google" })).not.toBeInTheDocument();
         unmount();

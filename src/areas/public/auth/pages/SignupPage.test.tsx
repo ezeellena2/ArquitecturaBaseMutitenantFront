@@ -69,6 +69,12 @@ describe("SignupPage", () => {
     expect(checkbox.closest("label")).toHaveClass("items-center", "gap-2.5", "text-[14px]", "text-[var(--t1)]");
     // Los dos enlaces de abajo, a 22 entre sí, como el resto de la columna (en el ingreso van a 8).
     expect(screen.getByRole("link", { name: "Ingresá" }).parentElement?.parentElement).toHaveClass("gap-[22px]");
+    // Los enlaces de texto, también los de la aceptación, son la variante link de Button, en --marca-tx.
+    const acceptance = within(checkbox.closest("label")!);
+    for (const link of [acceptance.getByRole("link", { name: "Términos" }), acceptance.getByRole("link", { name: "Política de privacidad" }),
+      screen.getByRole("link", { name: "Ingresá" }), screen.getByRole("link", { name: "Registrala" })]) {
+      expect(link).toHaveAttribute("data-variant", "link");
+    }
   });
 
   it("reproduce Correo a 390: no pide nombre", async () => {

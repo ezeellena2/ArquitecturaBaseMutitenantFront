@@ -122,6 +122,9 @@ describe("LoginPage", () => {
     const signupLink = within(main).getByRole("link", { name: "Creá una" });
     expect(signupLink).toHaveAttribute("href", "/registro");
     expect(signupLink.parentElement?.parentElement).toHaveClass("text-center");
+    // Los enlaces de texto son la variante link de Button, en --marca-tx (como .lnk del tablero).
+    expect(signupLink).toHaveAttribute("data-variant", "link");
+    expect(signupLink).toHaveClass("text-[var(--marca-tx)]");
     expect(within(main).getByRole("link", { name: "Ingresá como empresa" })).toHaveAttribute("href", "/login/empresa");
     expect(within(main).queryByText("Recuperá tu cuenta")).not.toBeInTheDocument();
     expect(within(main).queryByText("Registrala")).not.toBeInTheDocument();
@@ -347,6 +350,10 @@ describe("LoginPage", () => {
     }
     if (code === "Identity.Account.Suspended") {
       expect(screen.getByRole("button", { name: "Reenviar código" })).toBeDisabled();
+      // Tablero Ingreso: «Volver a ingresar» es un enlace de texto de 13, centrado debajo de los botones.
+      const back = screen.getByRole("button", { name: "Volver a ingresar" });
+      expect(back).toHaveAttribute("data-variant", "link");
+      expect(back).toHaveClass("text-[var(--marca-tx)]", "text-[13px]");
     }
   });
 });

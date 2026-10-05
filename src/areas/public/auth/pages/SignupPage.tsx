@@ -19,6 +19,7 @@ import { EmailField } from "@/shared/ui/fields/EmailField";
 import { requestSignup, verifySignup } from "../api/signup";
 import { AuthStatus } from "../components/AuthStatus";
 import { AuthCodeStep } from "../components/AuthCodeStep";
+import { AuthLink } from "../components/AuthLink";
 import { GoogleButton } from "../components/GoogleButton";
 import { loginCodeErrorKey, loginCodeMessage } from "../errors";
 import { safeReturnUrl } from "../lib/returnUrl";
@@ -115,7 +116,7 @@ export function SignupPage() {
       }} className="flex flex-col gap-[22px]">
         <label className="flex items-center gap-2.5 text-[14px] text-[var(--t1)]">
           <input type="checkbox" {...register("acceptedTerms", { onChange: () => clearErrors("acceptedTerms") })} className="size-[18px] shrink-0 accent-[var(--marca)]" />
-          <span>{t("signup.acceptPrefix")} <Link to="/terminos" className="font-semibold text-[var(--marca)] hover:underline">{t("signup.terms")}</Link> {t("signup.acceptJoin")} <Link to="/privacidad" className="font-semibold text-[var(--marca)] hover:underline">{t("signup.privacy")}</Link></span>
+          <span>{t("signup.acceptPrefix")} <AuthLink to="/terminos">{t("signup.terms")}</AuthLink> {t("signup.acceptJoin")} <AuthLink to="/privacidad">{t("signup.privacy")}</AuthLink></span>
         </label>
         {errors.acceptedTerms ? <p role="alert" className="text-[13px] text-[var(--peligro)]">{errors.acceptedTerms.message ?? t("signup.acceptRequired")}</p> : null}
         <GoogleButton mode="signup" acceptedTerms={acceptedTerms} onTermsRequired={requireTerms} returnTo={returnTo} />
@@ -128,8 +129,8 @@ export function SignupPage() {
       </form>
       {/* Tablero Registro: los dos enlaces a 22 entre sí, como el resto de la columna (en Ingreso van a 8). */}
       <div className="flex flex-col gap-[22px] text-center text-[13px] text-[var(--t2)]">
-        <div>{t("signup.haveAccount")} <Link to="/login" className="font-semibold text-[var(--marca)] hover:underline">{t("signup.login")}</Link></div>
-        <div>{t("login.haveBusiness")} <Link to="/registro/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("login.registerIt")}</Link></div>
+        <div>{t("signup.haveAccount")} <AuthLink to="/login">{t("signup.login")}</AuthLink></div>
+        <div>{t("login.haveBusiness")} <AuthLink to="/registro/empresa">{t("login.registerIt")}</AuthLink></div>
       </div>
     </div> : <AuthCodeStep destination={step.email} code={code} onBack={() => { setStep(null); setCode(""); setError(null); }}
       onCodeChange={(next) => { setCode(next); if (error?.code === "Auth.LoginCode.Invalid") setError(null); }}

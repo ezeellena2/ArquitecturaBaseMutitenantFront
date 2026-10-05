@@ -51,9 +51,10 @@ export function AuthCodeStep({ destination, code, onCodeChange, onBack, onVerify
   }
 
   return <div className="flex flex-col gap-[22px]">
-    <button type="button" onClick={onBack} className="inline-flex items-center gap-1 self-start text-sm font-semibold text-[var(--marca)] hover:underline">
+    {/* .lnk del tablero: un enlace de texto con su flecha, a 4. */}
+    <Button type="button" variant="link" onClick={onBack} className="gap-1 self-start">
       <ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />{t("login.otherEmail")}
-    </button>
+    </Button>
     <div>
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.checkEmail")}</h1>
       <p id={hintId} className="mt-1.5 text-sm leading-normal text-[var(--t2)] wrap-anywhere">

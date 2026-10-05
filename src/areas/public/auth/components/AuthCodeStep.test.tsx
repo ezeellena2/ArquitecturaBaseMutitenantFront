@@ -34,6 +34,9 @@ describe("AuthCodeStep", () => {
     const group = screen.getByRole("group", { name: "Código" });
     expect(group).toHaveAttribute("aria-describedby", hint.id);
     expect(within(group).getAllByRole("textbox")).toHaveLength(6);
+    // «Usar otro correo» es un enlace de texto (.lnk): la variante link de Button, en --marca-tx, a 4 de su flecha.
+    expect(screen.getByRole("button", { name: "Usar otro correo" })).toHaveAttribute("data-variant", "link");
+    expect(screen.getByRole("button", { name: "Usar otro correo" })).toHaveClass("text-[var(--marca-tx)]", "gap-1", "self-start");
     fireEvent.click(screen.getByRole("button", { name: "Usar otro correo" }));
     expect(onBack).toHaveBeenCalledOnce();
     expect(await axe(container)).toHaveNoViolations();

@@ -28,6 +28,7 @@ import {
 } from "../api/businessSignup";
 import { AuthStatus } from "../components/AuthStatus";
 import { AuthCodeStep } from "../components/AuthCodeStep";
+import { AuthLink } from "../components/AuthLink";
 import { AuthMessage } from "../components/AuthMessage";
 import { GoogleButton } from "../components/GoogleButton";
 import { loginCodeErrorKey, loginCodeMessage } from "../errors";
@@ -239,7 +240,7 @@ export function BusinessSignupPage() {
             <label className="flex items-center gap-2.5 text-[14px] text-[var(--t1)]">
               <input type="checkbox" checked={acceptedTerms} onChange={(event) => { setAcceptedTerms(event.target.checked); setTermsError(false); }}
                 className="size-[18px] shrink-0 accent-[var(--marca)]" />
-              <span>{t("businessSignup.accept")} <Link to="/terminos" className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.terms")}</Link> {t("businessSignup.join")} <Link to="/privacidad" className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.privacy")}</Link></span>
+              <span>{t("businessSignup.accept")} <AuthLink to="/terminos">{t("businessSignup.terms")}</AuthLink> {t("businessSignup.join")} <AuthLink to="/privacidad">{t("businessSignup.privacy")}</AuthLink></span>
             </label>
             {termsError ? <p role="alert" className="-mt-4 text-[13px] text-[var(--peligro)]">{t("businessSignup.acceptRequired")}</p> : null}
             <GoogleButton mode="signup" access="business" acceptedTerms={acceptedTerms} onTermsRequired={() => setTermsError(true)} returnTo="/registro/empresa" />
@@ -250,7 +251,7 @@ export function BusinessSignupPage() {
             <FormError message={requestErrorText} />
             <Button type="button" size="lg" className="w-full" disabled={requestCode.isPending || retry.isRunning}
               onClick={() => { if (acceptedTerms) void sendCode(); else setTermsError(true); }}>{retry.label ?? t("businessSignup.continue")}</Button>
-            <div className="text-center text-[13px] text-[var(--t2)]">{t("businessSignup.alreadyRegistered")} <Link to={loginPathOf("business")} className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.loginBusiness")}</Link></div>
+            <div className="text-center text-[13px] text-[var(--t2)]">{t("businessSignup.alreadyRegistered")} <AuthLink to={loginPathOf("business")}>{t("businessSignup.loginBusiness")}</AuthLink></div>
           </section>
             : step === "code" ? <AuthCodeStep destination={email} code={code} onBack={() => { setStep("email"); setCode(""); setRequestError(null); }}
               onCodeChange={(next) => { setCode(next); setRequestError(null); }} onVerify={() => void confirmCode()} onResend={() => void resendCode()}
