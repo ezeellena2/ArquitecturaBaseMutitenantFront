@@ -29,7 +29,9 @@ describe("Page", () => {
 
     const band = screen.getByRole("heading", { level: 1 }).closest("header");
     const body = container.querySelector('[class~="p-4"]');
-    expect(band).toHaveClass("min-h-16");
+    // «Criterio · Marco» (.bnd): 64 de alto con 10 arriba y abajo; con la segunda línea, 65 (los tableros de edición, 64).
+    expect(band).toHaveClass("min-h-16", "py-2.5");
+    expect(band).not.toHaveClass("py-3");
     expect(band).not.toHaveClass("sticky");
     expect(body).toHaveClass("p-4", "lg:px-6", "lg:py-5", "text-[13px]", "flex", "flex-col", "gap-3.5");
   });
@@ -191,7 +193,7 @@ describe("Page", () => {
 
     const subline = screen.getByText("De sistema").closest("[data-slot='page-subline']");
     expect(subline?.textContent).toBe("De sistema·Vale en toda la organización · 1 usuario lo tiene");
-    // Tableros (.banda-pag .res): la segunda línea va a 2 del título, y la banda mide 69 como en el lienzo.
+    // «Criterio · Marco» (.bnd .res): la segunda línea va a 2 del título, y la banda mide 65.
     expect(subline).toHaveClass("mt-0.5");
   });
 

@@ -174,7 +174,8 @@ export function Page({
 
   return withTabs(
     <>
-      <header className="flex min-h-16 flex-wrap items-center justify-between gap-4 border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4 py-3 md:flex-nowrap md:px-6">
+      {/* «Criterio · Marco», La banda de la página (.bnd): 64 de alto, con 10 arriba y abajo; con la segunda línea, 65. */}
+      <header className="flex min-h-16 flex-wrap items-center justify-between gap-4 border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4 py-2.5 md:flex-nowrap md:px-6">
         <div className="flex min-w-0 flex-[1_1_12rem] items-center gap-3 md:flex-1">
           {backTo ? (
             <Link
