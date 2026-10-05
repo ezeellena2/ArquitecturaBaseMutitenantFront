@@ -46,6 +46,16 @@ describe("FilterBar", () => {
     expect(container.querySelector('[data-slot="filter-pills"]')).toContainElement(filterTrigger);
   });
 
+  // Tableros de listas (.fb-limpiar: Usuarios, Roles, Empresas, Auditoría y «Criterio · Tablas»): «Limpiar» va en gris de
+  // 14 y se oscurece con el mouse, sin el petróleo de un enlace.
+  it("«Limpiar» va en gris de 14, como los tableros", () => {
+    render(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="zzz" onSearchChange={vi.fn()} filters={[]} clearLabel="Limpiar" onClear={vi.fn()} />);
+
+    const clear = screen.getByRole("button", { name: "Limpiar" });
+    expect(clear).toHaveClass("text-[14px]", "text-[var(--t3)]", "hover:text-[var(--t1)]", "hover:bg-[var(--s2)]");
+    expect(clear).not.toHaveClass("text-[var(--marca-tx)]");
+  });
+
   // Tablero Roles: sin filtro, el botón dice «Vale en: todos» y el menú tiene «Todos» marcado.
   it("sin filtro muestra su propio texto y marca la opción «Todos»", async () => {
     render(

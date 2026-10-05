@@ -6,24 +6,28 @@ import { cn } from "@/shared/lib/utils";
 /// `className` es para el vacío que vive adentro de una tarjeta que ya tiene su borde, como el del selector de
 /// permisos: ahí el recuadro punteado sería una caja dentro de otra. `descriptionClassName`, para ponerle un ancho
 /// máximo al motivo cuando repite lo que escribió el usuario: en una tarjeta ancha, una búsqueda larga lo
-/// estiraría de punta a punta en una sola línea.
+/// estiraría de punta a punta en una sola línea. `framed={false}`, para el que va dentro de una tabla, debajo de sus
+/// encabezados («Criterio · Tablas», «Ninguno coincide»).
 export function EmptyState({
   title,
   description,
   action,
   className,
   descriptionClassName,
+  framed = true,
 }: {
   title: string;
   description?: string;
   action?: ReactNode;
   className?: string;
   descriptionClassName?: string;
+  framed?: boolean;
 }) {
   return (
     <div
       className={cn(
-        "flex flex-col items-center gap-2 rounded-[12px] border border-dashed border-[var(--borde)] p-8 text-center",
+        "flex flex-col items-center gap-2 p-8 text-center",
+        framed && "rounded-[12px] border border-dashed border-[var(--borde)]",
         className,
       )}
     >

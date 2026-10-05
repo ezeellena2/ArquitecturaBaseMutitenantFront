@@ -194,22 +194,19 @@ export function DataTable<TRow>({
   const { phone } = useAppChrome();
   assertOneMobilePrimary(columns);
 
-  if (error) {
-    return (
-      <EmptyState
-        title={error}
-        description={errorDescription}
-        action={onRetry ? <Button type="button" variant="outline" onClick={onRetry}>{t("actions.retry")}</Button> : undefined}
-      />
-    );
-  }
-  if (isLoading) return <div className="flex justify-center p-10"><Spinner /></div>;
-  if (rows.length === 0) return <EmptyState title={emptyTitle ?? t("states.empty")} description={emptyDescription} action={emptyAction} />;
-  if (phone && mobileRow) return <ul aria-busy={isFetching === true} className={cn("m-0 list-none p-0", isFetching ? "opacity-60" : undefined)}>
+  const list = phone && mobileRow;
+  // El aviso de una lista vacía o que no cargó. En la compu va en la tabla, debajo de sus encabezados y sin recuadro
+  // propio («Criterio · Tablas», «Ninguno coincide»; tablero Roles); en una lista del teléfono, solo.
+  const notice = error
+    ? <EmptyState title={error} description={errorDescription} action={onRetry ? <Button type="button" variant="outline" onClick={onRetry}>{t("actions.retry")}</Button> : undefined} framed={Boolean(list)} />
+    : rows.length === 0 && !isLoading ? <EmptyState title={emptyTitle ?? t("states.empty")} description={emptyDescription} action={emptyAction} framed={Boolean(list)} />
+      : null;
+  if (!error && isLoading) return <div className="flex justify-center p-10"><Spinner /></div>;
+  if (list) return notice ?? <ul aria-busy={isFetching === true} className={cn("m-0 list-none p-0", isFetching ? "opacity-60" : undefined)}>
     {rows.map((row) => <Fragment key={rowKey(row)}>{mobileRow(row)}</Fragment>)}
   </ul>;
   // «Criterio · Tablas»: las filas miden 40; si alguna lleva segunda línea, todas las de la tabla miden 52.
-  const details = rows.map((row) => columns.map((column) => column.detail?.(row)));
+  const details = notice ? [] : rows.map((row) => columns.map((column) => column.detail?.(row)));
   const twoLines = details.some((cells) => cells.some(hasContent));
 
   return (
@@ -239,7 +236,9 @@ export function DataTable<TRow>({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map((row, rowIndex) => (
+        {notice ? <TableRow className="hover:bg-transparent">
+          <TableCell colSpan={columns.length} className="p-0 whitespace-normal">{notice}</TableCell>
+        </TableRow> : rows.map((row, rowIndex) => (
           <TableRow key={rowKey(row)} className={twoLines ? "h-[52px]" : "h-10"}>
             {columns.map((column, columnIndex) => {
               const detail = details[rowIndex][columnIndex];

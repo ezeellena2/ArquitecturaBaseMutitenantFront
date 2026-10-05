@@ -64,11 +64,15 @@ export function RolesPage() {
     queryFn: () => fetchRoles({ page: 1, pageSize: 10, search: debouncedSearch || undefined, companyId: company.id }),
     meta: { silent: true },
   })) });
-  const scopeCounts = useQueries({ queries: roleCountScopes.map((countScope) => ({
-    queryKey: [...rolesQueryKeyRoot, "scope-count", countScope ?? "all", debouncedSearch ?? ""],
-    queryFn: () => fetchRoles({ page: 1, pageSize: 10, search: debouncedSearch || undefined, scope: countScope }),
+  // Tablero Roles: el menú de «Vale en» cuenta lo que coincide con la búsqueda; el resumen de la banda, todos los roles.
+  // Sin búsqueda son las mismas consultas.
+  const countsFor = (search: string) => roleCountScopes.map((countScope) => ({
+    queryKey: [...rolesQueryKeyRoot, "scope-count", countScope ?? "all", search],
+    queryFn: () => fetchRoles({ page: 1, pageSize: 10, search: search || undefined, scope: countScope }),
     meta: { silent: true },
-  })) });
+  }));
+  const scopeCounts = useQueries({ queries: countsFor(debouncedSearch ?? "") });
+  const totalCounts = useQueries({ queries: countsFor("") });
   const [roleToDelete, setRoleToDelete] = useState<RoleResponse | null>(null);
   const remove = useMutation({
     mutationFn: (role: RoleResponse) => deleteRole(role.id, role.version),
@@ -100,9 +104,9 @@ export function RolesPage() {
     { id: "actions", header: t("roles:columns.actions"), type: "actions", cell: rowActions },
   ];
 
-  const listSummary = roles.data ? scopeCounts.every((count) => count.data !== undefined)
-    ? t("roles:listSummary", { total: scopeCounts[0].data?.totalCount ?? roles.data.totalCount, count: scopeCounts[0].data?.totalCount ?? roles.data.totalCount,
-      organization: scopeCounts[1].data?.totalCount ?? 0, company: scopeCounts[2].data?.totalCount ?? 0 })
+  const listSummary = roles.data ? totalCounts.every((count) => count.data !== undefined)
+    ? t("roles:listSummary", { total: totalCounts[0].data?.totalCount ?? roles.data.totalCount, count: totalCounts[0].data?.totalCount ?? roles.data.totalCount,
+      organization: totalCounts[1].data?.totalCount ?? 0, company: totalCounts[2].data?.totalCount ?? 0 })
     : t("roles:listSummaryFallback", { count: roles.data.totalCount }) : undefined;
   // Sin filtro el botón dice «Vale en: todos» y el menú ofrece «Todos», como el tablero.
   const filterValue = vale ?? "";

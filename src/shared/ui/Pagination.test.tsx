@@ -56,6 +56,15 @@ describe("Pagination", () => {
     expect(screen.getByRole("button", { name: "Página siguiente" })).not.toHaveClass("min-h-11");
   });
 
+  // Tablero Roles («Ningún rol coincide con los filtros»): sin filas, «0 de 0» y «Página 1 de 1», nunca «de 0».
+  it("sin filas dice «Página 1 de 1»", async () => {
+    await changeCulture("es-AR");
+    renderPagination({ totalCount: 0, totalPages: 0, hasNext: false });
+
+    expect(screen.getByText("Página 1 de 1")).toBeInTheDocument();
+    expect(screen.queryByText("Página 1 de 0")).not.toBeInTheDocument();
+  });
+
   it("ofrece 10, 20, 50 y 100 por página y avisa el tamaño elegido", async () => {
     await changeCulture("es-AR");
     const { onPageSizeChange } = renderPagination();

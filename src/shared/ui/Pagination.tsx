@@ -59,7 +59,8 @@ export function Pagination({
           </SelectContent>
         </Select>
         <span className="tabular-nums">
-          {t("pagination.page", { page: formatInteger(page), totalPages: formatInteger(totalPages) })}
+          {/* Sin filas, «Página 1 de 1» y no «de 0» (tablero Roles, «Ningún rol coincide con los filtros»). */}
+          {t("pagination.page", { page: formatInteger(page), totalPages: formatInteger(Math.max(totalPages, 1)) })}
         </span>
         <Button
           type="button"

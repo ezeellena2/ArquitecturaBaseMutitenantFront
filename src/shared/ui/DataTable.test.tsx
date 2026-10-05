@@ -104,9 +104,15 @@ describe("DataTable", () => {
     rerender(<DataTable columns={columns} rows={[]} rowKey={(row) => row.id} emptyTitle="Sin usuarios" emptyAction={<button type="button">{"Limpiar"}</button>} />);
     expect(screen.getByText("Sin usuarios")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Limpiar" })).toBeInTheDocument();
+    // «Criterio · Tablas» («Ninguno coincide») y tablero Roles: la tabla conserva sus encabezados y el aviso va debajo, en
+    // el cuerpo de la tabla, sin un recuadro punteado propio.
+    expect(screen.getByRole("columnheader", { name: "Nombre" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: /Sin usuarios/ })).toHaveAttribute("colspan", String(columns.length));
+    expect(screen.getByText("Sin usuarios").parentElement).not.toHaveClass("border-dashed");
 
     rerender(<DataTable columns={columns} rows={[]} rowKey={(row) => row.id} error="No se pudo cargar" errorDescription="Código 123" onRetry={onRetry} />);
     expect(screen.getByText("No se pudo cargar")).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Nombre" })).toBeInTheDocument();
     expect(screen.getByText("Código 123")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Reintentar" }));
     expect(onRetry).toHaveBeenCalledOnce();

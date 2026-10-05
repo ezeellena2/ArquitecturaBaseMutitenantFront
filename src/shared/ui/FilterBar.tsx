@@ -175,7 +175,8 @@ export function FilterBar({
         <button
           type="button"
           onClick={onClear}
-          className="min-h-11 rounded-[8px] px-2 py-1.5 text-[13px] text-[var(--marca-tx)] hover:bg-[var(--marca-t)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] md:min-h-8"
+          // Tableros de listas (.fb-limpiar): gris de 14, que se oscurece con el mouse.
+          className="min-h-11 rounded-[8px] px-2.5 py-1.5 text-[14px] text-[var(--t3)] hover:bg-[var(--s2)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] md:min-h-8"
         >
           {clearLabel}
         </button>

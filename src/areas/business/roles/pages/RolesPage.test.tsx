@@ -181,14 +181,25 @@ describe("RolesPage", () => {
     await waitFor(() => expect(router.state.location.search).toBe(""));
   });
 
+  // Tablero Roles: sin coincidencias, el resumen sigue contando todos los roles, la tabla conserva sus encabezados con el
+  // aviso y «Limpiar filtros» debajo, y el pie dice «Página 1 de 1».
   it("con filtros y sin resultados: «Ningún rol coincide con los filtros» y «Limpiar filtros»", async () => {
     const user = userEvent.setup();
     server.use(
       http.get("/api/companies/paged", () => HttpResponse.json(companies)),
-      http.get("/api/roles/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/roles/paged", ({ request }) => {
+        const url = new URL(request.url);
+        const scope = url.searchParams.get("scope");
+        const items = url.searchParams.get("search") ? []
+          : scope === "Organization" ? [owner] : scope === "Company" ? [companyAdmin, companyReader] : [owner, companyAdmin, companyReader];
+        return HttpResponse.json({ items, page: 1, pageSize: 10, totalCount: items.length, totalPages: items.length > 0 ? 1 : 0, hasPrevious: false, hasNext: false });
+      }),
     );
     const { router, container } = renderRouteWithProviders("/org/roles?search=zzz", { as: "business-e6-admin" });
     expect(await screen.findByText("Ningún rol coincide con los filtros")).toBeVisible();
+    expect(await screen.findByText("3 roles · 1 de la organización · 2 de empresas")).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Vale en" })).toBeVisible();
+    expect(screen.getByText("Página 1 de 1")).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
     await user.click(screen.getByRole("button", { name: "Limpiar filtros" }));
     await waitFor(() => expect(router.state.location.search).not.toContain("search="));
