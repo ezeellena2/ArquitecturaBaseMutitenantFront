@@ -25,7 +25,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 - Los tamaños disponibles viven una sola vez en `shared/api/pageSizes.ts`, tipados con el `PagedRequest` generado. El hook y `Pagination` los comparten; `pageSizes.test.ts` compara su lista y orden con el enum del OpenAPI del back.
 - Si llegan `items` vacíos con `totalCount > 0` (por ejemplo, se borró la única fila de la última página), `usePagedQuery` salta solo a la última página que tiene filas, con `replace` y sin agregar historial. Mira solo la respuesta de esa página, nunca la anterior que se muestra mientras carga. No expone `correctPage` a quien lo llama.
 - Los conteos de los filtros salen de `GET …/filter-counts`, con los mismos filtros.
-- **Auditoría y actividad** (lo que solo crece): `useCursorList` + `<LoadMore />`, de a tandas y sin total.
+- **Auditoría y actividad** (lo que solo crece): `useInfiniteQuery` con el cursor opaco + `<LoadMore />`, de a tandas y sin total. `useCursorList` lo envuelve para una lista sin opciones propias; `AuditPage` arma el suyo porque pide `placeholderData` y `meta` (`blocksView`), que el hook todavía no recibe.
 - **El pie** de `Pagination` va en letra de 12: «1–10 de 11» o, con una sola fila en la página, «1 de 1» (`pagination.single`), y el tamaño de página en una píldora de 28. «Cargar más» es siempre `LoadMore`: en la compu, el botón normal (36 y letra de 14); en el teléfono, el de 44, también como paginado de `Pagination`.
 - Vacío, sin coincidencias, carga y error: los resuelve `DataTable` (`emptyTitle`, `emptyAction`).
 
