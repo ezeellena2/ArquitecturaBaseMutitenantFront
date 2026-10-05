@@ -299,7 +299,7 @@ export function UserDetailPage() {
               </Select>
             </FormField> : <ReadOnlyField label={t("users:detail.status")}>{t(`users:states.${member.state}`)}</ReadOnlyField>}
             {editable ? <RolesField label={t("users:detail.organizationRoles")} allLabel={t("users:detail.allRoles")}
-              options={orgRoles.map((role) => ({ value: role.id, label: role.name }))} value={current.roleIds}
+              options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={current.roleIds}
               onChange={(roleIds) => changeDraft({ roleIds })} placeholder={t("users:detail.noRoles")} />
               : <ReadOnlyField label={t("users:detail.organizationRoles")}>{member.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || t("users:detail.noRoles")}</ReadOnlyField>}
           </SectionFields>}
@@ -350,7 +350,7 @@ export function UserDetailPage() {
             </Select>
           </FormField> : null}
           {companyDialog?.companyId ? <RolesField label={t("users:invite.companyRoles")} allLabel={t("users:detail.allRoles")}
-            options={dialogCompanyRoles.map((role: RoleResponse) => ({ value: role.id, label: role.name }))} value={companyDialog.roleIds}
+            options={dialogCompanyRoles.map((role: RoleResponse) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={companyDialog.roleIds}
             onChange={(roleIds) => changeCompanyDialog({ ...companyDialog, roleIds })} placeholder={t("users:detail.noRoles")} /> : null}
           {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
           {dialogError ? <FormError message={dialogError} /> : null}

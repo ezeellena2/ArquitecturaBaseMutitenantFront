@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactNode } from "react";
+import { useId, type ComponentProps, type ReactNode } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "./dropdown-menu";
@@ -38,6 +38,7 @@ export function MultiSelect({
 }: MultiSelectProps): ReactNode {
   // En el orden de las opciones y no en el de los clics: así el texto no cambia según cómo se llegó.
   const picked = options.filter((option) => value.includes(option.value));
+  const optionId = useId();
 
   function toggle(optionValue: string, checked: boolean) {
     onChange(checked ? [...value, optionValue] : value.filter((item) => item !== optionValue));
@@ -61,19 +62,23 @@ export function MultiSelect({
         </span>
         <ChevronDownIcon aria-hidden="true" className="size-3.5 shrink-0 text-[var(--t2)]" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-(--radix-dropdown-menu-trigger-width) min-w-48">
-        {options.map((option) => (
+      {/* Tablero Usuario (.o-lst): la lista mide lo mismo que el campo, con 4 de margen adentro; cada opción, el nombre y
+          debajo su descripción, en gris de 12 (.n2 y .d). */}
+      <DropdownMenuContent align="start" className="w-(--radix-dropdown-menu-trigger-width) max-w-none min-w-48 p-1">
+        {options.map((option, index) => (
+          // El nombre de la opción es el rol; la descripción la acompaña como descripción, no como parte del nombre.
           <DropdownMenuCheckboxItem
             key={option.value}
             checked={value.includes(option.value)}
             onCheckedChange={(checked) => toggle(option.value, checked)}
             onSelect={(event) => event.preventDefault()}
-            className="items-start"
+            aria-labelledby={`${optionId}-${index}`}
+            aria-describedby={option.description ? `${optionId}-${index}-description` : undefined}
           >
-            <span className="flex flex-col gap-0.5">
-              <span>{option.label}</span>
+            <span className="flex min-w-0 flex-col leading-[1.35]">
+              <span id={`${optionId}-${index}`}>{option.label}</span>
               {option.description ? (
-                <span className="text-xs text-[var(--t2)]">{option.description}</span>
+                <span id={`${optionId}-${index}-description`} className="text-[12px] text-[var(--t3)]">{option.description}</span>
               ) : null}
             </span>
           </DropdownMenuCheckboxItem>

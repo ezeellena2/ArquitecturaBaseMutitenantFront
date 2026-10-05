@@ -212,7 +212,7 @@ describe("UsersPage", () => {
   it("tablero Usuarios, Invitar: una empresa con sus roles, todo opcional salvo el correo, e idempotente", async () => {
     const bodies: unknown[] = [];
     const keys: (string | null)[] = [];
-    const companyAdminRole = { id: "role-company-admin", name: "Administrador", isSystemRole: true, scope: "AnyCompany" as const, companyId: null, description: null, userCount: 1, permissions: [], version: 1, createdAtUtc: "2026-09-27T12:00:00Z" };
+    const companyAdminRole = { id: "role-company-admin", name: "Administrador", isSystemRole: true, scope: "AnyCompany" as const, companyId: null, description: "Administra la empresa: sus miembros y sus roles.", userCount: 1, permissions: [], version: 1, createdAtUtc: "2026-09-27T12:00:00Z" };
     server.use(
       http.get("/api/users/paged", () => HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
       http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 1, pendingDeletion: 0, invited: 0, expired: 0, inactive: 0 })),
@@ -256,7 +256,9 @@ describe("UsersPage", () => {
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
     await user.click(within(again).getByRole("button", { name: "Roles en la empresa" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
+    // Tablero Usuarios: cada rol del desplegable, con su descripción debajo.
+    expect(await screen.findByRole("menuitemcheckbox", { name: "Administrador" })).toHaveAccessibleDescription("Administra la empresa: sus miembros y sus roles.");
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Administrador" }));
     await user.keyboard("{Escape}");
     await user.click(within(again).getByRole("button", { name: "Invitar" }));
     await waitFor(() => expect(bodies.at(-1)).toEqual({ email: "otra@example.com", roleIds: ["role-owner"], companies: [{ companyId: "company-1", roleIds: ["role-company-admin"] }] }));

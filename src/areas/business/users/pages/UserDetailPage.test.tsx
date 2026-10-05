@@ -31,8 +31,8 @@ function api(user: typeof member, writes: { put?: unknown[]; deleted?: string[] 
   server.use(
     http.get("/api/users/member-1", () => HttpResponse.json(user)),
     http.get("/api/roles/paged", ({ request }) => HttpResponse.json(page(new URL(request.url).searchParams.get("scope") === "Organization"
-      ? [{ ...role("role-owner", "Dueño", "Organization"), isSystemRole: true }, role("role-support", "Soporte", "Organization")]
-      : [role("role-company-manager", "Administrador", "AnyCompany")]))),
+      ? [{ ...role("role-owner", "Dueño", "Organization"), isSystemRole: true }, { ...role("role-support", "Soporte", "Organization"), description: "Atiende las consultas." }]
+      : [{ ...role("role-company-manager", "Administrador", "AnyCompany"), description: "Administra la empresa: sus miembros y sus roles." }]))),
     http.get("/api/companies/paged", () => HttpResponse.json(page([company]))),
     http.put("/api/users/member-1", async ({ request }) => { writes.put?.push(await request.json()); return new HttpResponse(null, { status: 204 }); }),
     http.delete("/api/users/member-1", ({ request }) => { writes.deleted?.push(new URL(request.url).search); return new HttpResponse(null, { status: 204 }); }),
@@ -161,6 +161,27 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(await axe(container)).toHaveNoViolations();
   // Límite de 10 s: revisa con axe la ficha entera, que con la máquina cargada pasaba los 5 s.
   }, 10_000);
+
+  // Tablero Usuario (el desplegable de roles abierto): cada rol con su casilla y, debajo, su descripción; también los
+  // roles de una empresa en «Sumar empresa».
+  it("el desplegable de roles de la compu muestra la descripción de cada rol", async () => {
+    const user = userEvent.setup();
+    api(member);
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+
+    await open(user, await screen.findByRole("button", { name: "Roles de la organización" }));
+    expect(await screen.findByRole("menuitemcheckbox", { name: "Soporte" })).toHaveAccessibleDescription("Atiende las consultas.");
+    expect(screen.getByRole("menuitemcheckbox", { name: "Dueño" })).not.toHaveAccessibleDescription();
+    await user.keyboard("{Escape}");
+
+    await user.click(screen.getByRole("button", { name: "Sumar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
+    await open(user, within(dialog).getByRole("combobox", { name: "Empresa" }));
+    await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
+    await open(user, within(dialog).getByRole("button", { name: "Roles en la empresa" }));
+    expect(await screen.findByRole("menuitemcheckbox", { name: "Administrador" })).toHaveAccessibleDescription("Administra la empresa: sus miembros y sus roles.");
+  });
 
   it("las migas siguen el camino hasta la persona", async () => {
     api(member);

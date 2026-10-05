@@ -93,15 +93,18 @@ function DropdownMenuCheckboxItem({
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
       className={cn(
-        "relative flex min-h-9 cursor-default items-center gap-2 border-t border-[var(--borde)] py-1.5 pr-3.5 pl-8 text-[13px] outline-hidden select-none first:border-t-0 focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[15px]",
+        // Tablero Usuario (el desplegable de roles, .o-lst label.op): 36 de alto, 4/10 de relleno y radio 6, con la
+        // casilla de 16 a la izquierda y 10 hasta el texto; sin líneas entre opciones y sin fondo al marcarla.
+        "group relative flex min-h-9 cursor-default items-center gap-2.5 rounded-[6px] px-2.5 py-1 text-[13px] text-[var(--t1)] outline-hidden select-none focus:bg-[var(--s2)] focus:text-[var(--t1)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className
       )}
       checked={checked}
       {...props}
     >
-      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+      {/* La casilla, como la de «Todos» (Checkbox): borde gris y, marcada, petróleo con el tilde blanco. */}
+      <span data-slot="dropdown-menu-check" aria-hidden="true" className="pointer-events-none flex size-4 shrink-0 items-center justify-center rounded-[4px] border border-input bg-[var(--lado-activo)] text-primary-foreground group-data-[state=checked]:border-primary group-data-[state=checked]:bg-primary">
         <DropdownMenuPrimitive.ItemIndicator>
-          <CheckIcon className="size-4" />
+          <CheckIcon className="size-3.5" />
         </DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}

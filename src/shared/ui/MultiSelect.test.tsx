@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it } from "vitest";
@@ -51,6 +51,29 @@ describe("MultiSelect", () => {
     await user.keyboard("{Escape}");
 
     expect(screen.getByRole("button", { name: "Roles" })).toHaveTextContent("Admin, User");
+  });
+
+  // Tablero Usuario (el desplegable de roles abierto): la lista mide lo mismo que el campo, con 4 de margen; cada opción
+  // lleva su casilla a la izquierda y la descripción debajo del nombre, sin líneas entre opciones ni fondo al marcarla.
+  it("shows a checkbox before each option and its description below the name, as wide as the field", async () => {
+    renderWithProviders(<Harness initial={["Admin"]} />);
+    const user = userEvent.setup();
+
+    // Por teclado, como el test de abajo: en jsdom, después de otro test con un menú de Radix, el clic no lo abre.
+    screen.getByRole("button", { name: "Roles" }).focus();
+    await user.keyboard("{Enter}");
+    // El nombre es el del rol; la descripción, su descripción accesible.
+    const admin = await screen.findByRole("menuitemcheckbox", { name: "Admin" });
+    expect(admin).toHaveAccessibleDescription("Puede hacer todo.");
+    expect(screen.getByRole("menu")).toHaveClass("w-(--radix-dropdown-menu-trigger-width)", "max-w-none", "p-1");
+    expect(admin).toHaveClass("min-h-9", "gap-2.5", "rounded-[6px]", "px-2.5", "py-1");
+    expect(admin).not.toHaveClass("border-t");
+    // La casilla, como la de «Todos»: borde gris y, marcada, petróleo.
+    const box = admin.querySelector("[data-slot='dropdown-menu-check']")!;
+    expect(box).toHaveClass("size-4", "rounded-[4px]", "border", "border-input", "group-data-[state=checked]:bg-primary");
+    expect(box.compareDocumentPosition(within(admin).getByText("Admin")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(admin).getByText("Puede hacer todo.")).toHaveClass("text-[12px]", "text-[var(--t3)]");
+    expect(screen.getByRole("menuitemcheckbox", { name: /user/i }).querySelector("[data-slot='dropdown-menu-check']")).not.toBeNull();
   });
 
   it("unpicks an option that was picked", async () => {

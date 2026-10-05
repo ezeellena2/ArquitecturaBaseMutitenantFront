@@ -17,7 +17,7 @@ const member = {
   createdAtUtc: "2026-09-27T12:00:00Z",
 };
 const companyAdmin = {
-  id: "role-company-admin", name: "Administrador", description: null, scope: "AnyCompany" as const,
+  id: "role-company-admin", name: "Administrador", description: "Administra la empresa: sus miembros y sus roles.", scope: "AnyCompany" as const,
   companyId: null, isSystemRole: true, userCount: 1, permissions: ["company.members.read", "company.members.manage"],
   version: 1, createdAtUtc: "2026-09-27T12:00:00Z",
 };
@@ -65,7 +65,9 @@ async function openRolesDialog(user: ReturnType<typeof userEvent.setup>) {
   await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
   const dialog = await screen.findByRole("dialog", { name: "Roles de Lucía Fernández" });
   await user.click(within(dialog).getByRole("button", { name: "Roles en la empresa" }));
-  await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
+  // Tablero Empresa: cada rol del desplegable, con su descripción debajo.
+  expect(await screen.findByRole("menuitemcheckbox", { name: "Administrador" })).toHaveAccessibleDescription("Administra la empresa: sus miembros y sus roles.");
+  await user.click(screen.getByRole("menuitemcheckbox", { name: "Administrador" }));
   await user.keyboard("{Escape}");
   return dialog;
 }

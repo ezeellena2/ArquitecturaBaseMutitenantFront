@@ -293,7 +293,7 @@ export function CompanyDetailPage() {
               </Select>
             </FormField>
             <FormField label={t("companies:addMember.roles")}>
-              <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleIds} onChange={setRoleIds} placeholder={t("companies:addMember.noRoles")} />
+              <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds} onChange={setRoleIds} placeholder={t("companies:addMember.noRoles")} />
             </FormField>
             {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
             {candidateQuery.isError ? <FormError message={apiErrorMessage(candidateQuery.error, t)} /> : null}
@@ -313,7 +313,7 @@ export function CompanyDetailPage() {
         <DialogHeader><DialogTitle>{roleTarget ? t("companies:editMemberRoles.title", { name: roleTarget.displayName }) : t("companies:editMemberRoles.title", { name: "" })}</DialogTitle></DialogHeader>
         <DialogBody>
           <FormField label={t("companies:editMemberRoles.roles")}>
-            <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name }))} value={roleDraft} onChange={(next) => { setRoleDraft(next); setMutationError(undefined); }} placeholder={t("companies:addMember.noRoles")} />
+            <MultiSelect options={selectableRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleDraft} onChange={(next) => { setRoleDraft(next); setMutationError(undefined); }} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* Tablero Empresa (v97): el error, una sola vez, en la franja con su ícono arriba de los botones. */}
           <FormError message={actionErrorMessage(mutationError, t)} />

@@ -217,7 +217,7 @@ export function UsersPage() {
           <DialogBody>
             <FormField label={t("users:invite.email")} required><Input autoComplete="email" type="email" required maxLength={254} placeholder={t("users:invite.emailPlaceholder")} value={email} onChange={(event) => setEmail(event.target.value)} /></FormField>
             <FormField label={t("users:invite.organizationRoles")}>
-              <MultiSelect options={organizationRoles.map((role: RoleResponse) => ({ value: role.id, label: role.name }))} value={organizationRoleIds} onChange={setOrganizationRoleIds} placeholder={t("users:invite.noRoles")} />
+              <MultiSelect options={organizationRoles.map((role: RoleResponse) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={organizationRoleIds} onChange={setOrganizationRoleIds} placeholder={t("users:invite.noRoles")} />
             </FormField>
             <div className="grid gap-3.5 md:grid-cols-2">
               <FormField label={t("users:invite.company")}>
@@ -231,7 +231,7 @@ export function UsersPage() {
               </FormField>
               <FormField label={t("users:invite.companyRoles")}>
                 {inviteCompanyId
-                  ? <MultiSelect options={companyRoles.filter((role) => role.scope === "AnyCompany" || role.companyId === inviteCompanyId).map((role) => ({ value: role.id, label: role.name }))} value={inviteCompanyRoleIds} onChange={setInviteCompanyRoleIds} placeholder={t("users:invite.noRoles")} />
+                  ? <MultiSelect options={companyRoles.filter((role) => role.scope === "AnyCompany" || role.companyId === inviteCompanyId).map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={inviteCompanyRoleIds} onChange={setInviteCompanyRoleIds} placeholder={t("users:invite.noRoles")} />
                   : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[8px] border border-[var(--borde2)] bg-[var(--s2)] px-3 text-left text-[13px] text-[var(--t3)] max-md:h-12 max-md:rounded-[12px] max-md:text-[16px]">{t("users:invite.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" /></button>}
               </FormField>
             </div>
