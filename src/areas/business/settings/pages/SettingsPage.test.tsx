@@ -44,6 +44,8 @@ describe("SettingsPage", () => {
       const domains = screen.getByRole("region", { name: "Dominio de correo" });
       expect(within(domains).getByRole("button", { name: "Agregar dominio" })).toHaveClass("text-[var(--marca-tx)]");
       expect((await within(domains).findByText("delta.example.test")).closest("ul")!.parentElement).toHaveClass("rounded-[14px]");
+      // Tablero M-Configuracion: «● Verificado · 10 correos administrados por …» sigue en otra línea en lugar de cortarse.
+      expect(within(domains).getByText("Verificado").parentElement!.parentElement).toHaveClass("max-md:whitespace-normal");
       expect(screen.getByRole("button", { name: "Guardar cambios" }).parentElement).toHaveAttribute("data-slot", "fixed-actions");
     } finally {
       restore();
