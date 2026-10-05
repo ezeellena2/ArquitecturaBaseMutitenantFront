@@ -28,8 +28,9 @@ export function BusinessHomePage() {
     .filter((row): row is PendingRow => row !== null);
   const organization = home.data?.organization;
 
-  if (phone && organization) {
-    return <PhoneHome organization={organization} rows={rows} organizationName={organizationName}
+  // Tableros M-Inicio-Org y M-Inicio-Miembro: en el teléfono, los dos inicios son la billetera.
+  if (phone && home.data) {
+    return <PhoneHome organization={organization ?? null} companies={home.data.companies} rows={rows} organizationName={organizationName}
       firstName={currentUser?.displayName?.trim().split(/\s+/)[0] ?? ""} />;
   }
   return <Page icon={House} title={t("common:home.title")} summary={organizationName}>

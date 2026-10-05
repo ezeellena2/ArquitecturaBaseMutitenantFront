@@ -6,6 +6,7 @@ import type { HomeCompanyCard, HomeOrganizationSummary } from "@/shared/api/type
 import { useFormat } from "@/shared/format/useFormat";
 import { initials } from "@/shared/lib/initials";
 import { StatusDot, type StatusTone } from "@/shared/ui/StatusDot";
+import { companyDetail } from "./companyDetail";
 import { areaIcons, areaPaths, type HomeArea } from "./pendingItems";
 
 const pageTones: Record<string, StatusTone> = { Published: "success", Draft: "neutral", Blocked: "danger" };
@@ -53,10 +54,7 @@ export function AreaCards({ organization }: { organization: HomeOrganizationSumm
 export function CompanyCards({ companies }: { companies: readonly HomeCompanyCard[] }) {
   const { t } = useTranslation("home");
   return <div className={grid}>
-    {companies.map((company) => {
-      const roles = company.roles.join(", ");
-      const detail = company.memberCount == null ? roles : `${roles} · ${t("members", { count: company.memberCount })}`;
-      return <Card key={company.companyId} to={`/org/empresas/${company.companyId}`} icon={initials(company.name)} title={company.name} detail={detail} />;
-    })}
+    {companies.map((company) => <Card key={company.companyId} to={`/org/empresas/${company.companyId}`} icon={initials(company.name)}
+      title={company.name} detail={companyDetail(company, t)} />)}
   </div>;
 }

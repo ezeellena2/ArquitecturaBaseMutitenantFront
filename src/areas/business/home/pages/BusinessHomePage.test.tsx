@@ -134,4 +134,47 @@ describe("BusinessHomePage", () => {
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  // Tablero M-Inicio-Miembro (v106, «Solo lectura»): la billetera de M-Inicio-Org, con la cabecera de color, «Hola, …» y
+  // la organización; abajo, «Tus empresas» en filas (las iniciales en un cuadrado de 40, el nombre y «rol · miembros»,
+  // con ›). Sin atajos ni «Para resolver» si no puede resolver nada.
+  it("tablero M-Inicio-Miembro: en el teléfono, la billetera con «Tus empresas» en filas", async () => {
+    phone(true);
+    serveHome({ organization: null, companies: [{ companyId: "company-dn", name: "Delta Norte S.A.", roles: ["Solo lectura"], memberCount: 3 }], pending: [] });
+    const { container } = renderRouteWithProviders("/org", { as: "visual-error-org" });
+
+    expect(await screen.findByText("Hola, Valentina")).toBeVisible();
+    expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" })).toBeVisible();
+    expect(screen.queryByRole("heading", { level: 1, name: "Inicio" })).not.toBeInTheDocument();
+    const companies = screen.getByRole("region", { name: "Tus empresas" });
+    expect(within(companies).getByRole("heading", { level: 2, name: "Tus empresas" })).toHaveClass("text-[18px]", "font-bold");
+    const company = within(companies).getByRole("link", { name: /Delta Norte S\.A\./ });
+    expect(company).toHaveAttribute("href", "/org/empresas/company-dn");
+    expect(company).toHaveClass("py-2.5", "pl-5", "pr-4");
+    expect(company.closest("li")).not.toBeNull();
+    expect(within(company).getByText("DN")).toHaveClass("size-10", "rounded-[10px]", "text-[14px]", "font-bold");
+    expect(within(company).getByText("Delta Norte S.A.")).toHaveClass("text-[15px]", "font-semibold");
+    expect(within(company).getByText("Solo lectura · 3 miembros")).toHaveClass("text-[13px]", "text-[var(--t3)]");
+    expect(screen.queryByRole("region", { name: "Para resolver" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("navigation", { name: "Áreas de la organización" })).not.toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  // Tablero M-Inicio-Miembro (v106, «Administra su empresa»): si administra su empresa, debajo de «Tus empresas» va su
+  // «Para resolver», con las filas de M-Inicio-Org.
+  it("tablero M-Inicio-Miembro: si administra su empresa, abajo su «Para resolver»", async () => {
+    phone(true);
+    serveHome({ organization: null, companies: [{ companyId: "company-dn", name: "Delta Norte S.A.", roles: ["Administrador"], memberCount: 3 }],
+      pending: [{ area: "users", kind: "invitationExpired", subject: "martin.paz@delta.ejemplo.com", urgent: false, sinceUtc: "2026-09-25T15:00:00Z", dueAtUtc: null, targetId: "member-martin" }] });
+    renderRouteWithProviders("/org", { as: "visual-error-org" });
+
+    const companies = await screen.findByRole("region", { name: "Tus empresas" });
+    expect(within(companies).getByRole("link", { name: /Delta Norte S\.A\./ })).toHaveTextContent("Administrador · 3 miembros");
+    const toResolve = screen.getByRole("region", { name: "Para resolver" });
+    expect(within(toResolve).getByText("1")).toBeVisible();
+    const invitation = within(toResolve).getByText("martin.paz@delta.ejemplo.com").closest("li")!;
+    expect(invitation).toHaveTextContent("Invitación vencida");
+    expect(within(invitation).getByRole("link", { name: "Reenviar" })).toBeVisible();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
 });
