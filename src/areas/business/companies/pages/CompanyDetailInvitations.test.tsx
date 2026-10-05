@@ -108,6 +108,10 @@ describe("CompanyDetailPage: las invitaciones de la empresa (6e)", () => {
     await openActions(user, "Sofía Herrera");
     expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Reenviar invitación", "Revocar invitación"]);
     expect(screen.getByRole("menuitem", { name: "Revocar invitación" })).toHaveAttribute("data-variant", "destructive");
+    // «Criterio · Menús» y tablero Empresa (v109): «Revocar invitación» va abajo, después de la franja, en rojo y con la ✕.
+    expect(screen.getByRole("separator")).toBeInTheDocument();
+    expect([...screen.getByRole("menuitem", { name: "Revocar invitación" }).querySelectorAll("svg path")].map((item) => item.getAttribute("d")))
+      .toEqual(["M7 7l10 10", "M17 7 7 17"]);
     await user.click(screen.getByRole("menuitem", { name: "Reenviar invitación" }));
 
     expect(await screen.findByText("Reenviamos la invitación a sofia.herrera@delta.ejemplo.com.")).toBeVisible();
@@ -115,6 +119,8 @@ describe("CompanyDetailPage: las invitaciones de la empresa (6e)", () => {
   });
 
   // Tablero Empresa: revocar es de peligro y pide confirmación con el correo; «Revocar» la cancela entera (decisión 97).
+  // El texto (v109) sirve para la Dueña y para el Administrador de empresa, que no puede volver a invitar: solo
+  // «El enlace deja de funcionar.».
   it.each([[companyAdmin], [owner]])("%s: «Revocar invitación» confirma con el correo y revoca", async (as) => {
     const user = userEvent.setup();
     const calls = companyApi([valentina, martin]);
@@ -123,7 +129,8 @@ describe("CompanyDetailPage: las invitaciones de la empresa (6e)", () => {
     await openActions(user, "Martín Paz");
     await user.click(await screen.findByRole("menuitem", { name: "Revocar invitación" }));
     const confirm = await screen.findByRole("dialog", { name: "¿Revocar la invitación a martin.paz@delta.ejemplo.com?" });
-    expect(confirm).toHaveTextContent("El enlace deja de funcionar. Podés volver a invitar a esta persona cuando quieras.");
+    expect(within(confirm).getByText("El enlace deja de funcionar.")).toBeVisible();
+    expect(confirm).not.toHaveTextContent("volver a invitar");
     expect(calls.revoke).toEqual([]);
     await user.click(within(confirm).getByRole("button", { name: "Revocar" }));
 

@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Plus, Power, RotateCw, Trash2 } from "lucide-react";
-import { UsersIcon } from "@/shared/ui/icons";
+import { CloseIcon, UsersIcon } from "@/shared/ui/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -111,7 +111,8 @@ export function UsersPage() {
         { label: t("users:actions.resend"), accessibleName: t("users:actions.resend"), icon: RotateCw, onSelect: () => { if (member.invitationId) resend.mutate(member.invitationId, { onSuccess: async () => { toast.success(t("users:messages.resent", { email: member.email ?? "" })); await invalidate(); }, onError: (error) => toastActionError(error, t) }); }, hidden: !canInvite || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
         { label: t("users:actions.enable"), accessibleName: t("users:actions.enable"), icon: Power, onSelect: () => changeStatus.mutate({ ...member, isActive: true }), hidden: !canManage || member.state !== "Inactive" },
         { label: t("users:actions.disable"), accessibleName: t("users:actions.disable"), icon: Power, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("disable"); }, hidden: !canManage || member.state !== "Active" },
-        { label: t("users:actions.revoke"), accessibleName: t("users:actions.revoke"), icon: Trash2, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("revoke"); }, hidden: !canManage || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
+        // «Criterio · Menús» y tablero Usuarios (v109): abajo, después de la franja, en rojo y con la ✕.
+        { label: t("users:actions.revoke"), accessibleName: t("users:actions.revoke"), icon: CloseIcon, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("revoke"); }, hidden: !canManage || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },
         { label: t("users:actions.remove"), accessibleName: t("users:actions.remove"), icon: Trash2, destructive: true, onSelect: () => { setTarget(member); setConfirmAction("remove"); }, hidden: !canManage || member.state !== "PendingDeletion" },
       ]}
     />;

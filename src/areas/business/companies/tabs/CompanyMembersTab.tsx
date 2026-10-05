@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Power, RotateCw, ShieldCheck, Trash2, UserRound } from "lucide-react";
+import { Power, RotateCw, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -14,6 +14,7 @@ import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
 import { Pagination } from "@/shared/ui/Pagination";
+import { CloseIcon } from "@/shared/ui/icons";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import {
@@ -101,7 +102,8 @@ export function CompanyMembersTab({ company, list, roles }: {
       const hidden = !canManageMembers || !editable || !member.invitationId;
       return <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName} actions={[
         { label: t("companies:actions.resendInvitation"), accessibleName: t("companies:actions.resendInvitation"), icon: RotateCw, hidden, onSelect: () => resend(member) },
-        { label: t("companies:actions.revokeInvitation"), accessibleName: t("companies:actions.revokeInvitation"), icon: Trash2, destructive: true, hidden,
+        // «Criterio · Menús» y tablero Empresa (v109): abajo, después de la franja, en rojo y con la ✕.
+        { label: t("companies:actions.revokeInvitation"), accessibleName: t("companies:actions.revokeInvitation"), icon: CloseIcon, destructive: true, hidden,
           onSelect: (trigger) => setRevokeTarget({ member, trigger }) },
       ]} />;
     }

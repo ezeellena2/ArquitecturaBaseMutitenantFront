@@ -69,7 +69,7 @@
     "deactivateConfirm": "Deactivate",
     "removeMemberConfirm": "Remove",
     "revokeInvitation": "Revoke the invitation to {{email}}?",
-    "revokeInvitationDescription": "The link stops working. You can invite this person again whenever you want.",
+    "revokeInvitationDescription": "The link stops working.",
     "revokeInvitationConfirm": "Revoke"
   },
   "messages": {

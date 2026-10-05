@@ -181,6 +181,23 @@ describe("UsersPage", () => {
     expect(router.state.location.search).toContain("companyId=none");
   });
 
+  // Tablero Usuarios (v109): una invitación vencida dice «Venció …» debajo del estado, nunca «Vence» con una fecha pasada.
+  it("tablero Usuarios: la invitación vencida dice «Venció» con su fecha", async () => {
+    const expired = { ...member, memberId: "member-3", userId: null, displayName: "", email: "valentina@example.com", state: "Expired" as const,
+      roles: [], invitationId: "invitation-3", invitationIssuedAtUtc: "2026-09-22T12:00:00Z", invitationExpiresAtUtc: "2026-09-29T12:00:00Z" };
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [expired], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 0, pendingDeletion: 0, invited: 0, expired: 1, inactive: 0 })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+    );
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+
+    const state = await screen.findByText("Invitación vencida");
+    const detail = state.closest("td")?.querySelector('[data-slot="cell-detail"]');
+    expect(detail).toHaveTextContent(/^Venció 29\/09\/2026$/);
+    expect(screen.queryByText(/^Vence /)).not.toBeInTheDocument();
+  });
+
   it("tablero Usuarios: confirmaciones y avisos con el nombre, en pasado", async () => {
     const user = userEvent.setup();
     const invited = { ...member, memberId: "member-2", userId: null, displayName: "", email: "sofia@example.com", state: "Invited" as const, roles: [], invitationId: "invitation-2" };
@@ -203,7 +220,12 @@ describe("UsersPage", () => {
     expect(await screen.findByText("Deshabilitamos a Lucía Fernández.")).toBeVisible();
 
     await open("Acciones de sofia@example.com");
-    await user.click(await screen.findByRole("menuitem", { name: "Revocar invitación" }));
+    // «Criterio · Menús» y tablero Usuarios (v109): «Revocar invitación» abajo, después de la franja, en rojo y con la ✕.
+    const revokeOption = await screen.findByRole("menuitem", { name: "Revocar invitación" });
+    expect(revokeOption).toHaveAttribute("data-variant", "destructive");
+    expect(screen.getByRole("separator")).toBeInTheDocument();
+    expect([...revokeOption.querySelectorAll("svg path")].map((item) => item.getAttribute("d"))).toEqual(["M7 7l10 10", "M17 7 7 17"]);
+    await user.click(revokeOption);
     const revoke = await screen.findByRole("dialog", { name: "¿Revocar la invitación a sofia@example.com?" });
     expect(revoke).toHaveTextContent("El enlace deja de funcionar. Podés volver a invitarla cuando quieras.");
     await user.click(within(revoke).getByRole("button", { name: "Revocar" }));

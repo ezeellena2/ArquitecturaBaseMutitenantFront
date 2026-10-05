@@ -69,7 +69,7 @@
     "deactivateConfirm": "Inactivar",
     "removeMemberConfirm": "Quitar",
     "revokeInvitation": "¿Revocar la invitación a {{email}}?",
-    "revokeInvitationDescription": "El enlace deja de funcionar. Podés volver a invitar a esta persona cuando quieras.",
+    "revokeInvitationDescription": "El enlace deja de funcionar.",
     "revokeInvitationConfirm": "Revocar"
   },
   "messages": {
