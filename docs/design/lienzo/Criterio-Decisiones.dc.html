@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 2960px; min-height: 6900px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 2960px; min-height: 7300px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -568,6 +568,9 @@
 .cb-pri { background: linear-gradient(180deg, var(--marca) 0%, var(--marca-h) 100%) !important; box-shadow: 0 1px 2px var(--marca-sombra), inset 0 1px 0 rgb(255 255 255 / 0.15); }
 .cb-pri:hover, .cb-pri.h { filter: brightness(1.05); }
 </style>
+<style data-vuelta="1004-cola-guia"></style>
+<style data-vuelta="1004-empresa-admin">
+</style>
 
   <style data-criterio="decisiones">
 .dec { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; font-size: 13.5px; }
@@ -603,6 +606,11 @@
     <h2>Reglas que salieron de estas decisiones</h2>
     <div class="dec">
       <div class="c" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Regla</span><span>Tablero</span><span>Desde</span></div>
+      <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>«Guardar cambios» se apaga sin cambios en todas las ediciones, también en los diálogos; ningún botón se apaga porque falta un dato.</span><span>Botones</span><span class="gris">05/10/2026</span></div>
+      <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Un botón que espera dice qué está haciendo, también los de peligro: «Quitando…», «Desvinculando…», «Dando de baja…».</span><span>Botones</span><span class="gris">05/10/2026</span></div>
+      <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Una ficha con un solo grupo de datos va sin la barra de pestañas.</span><span>Marco y pantallas</span><span class="gris">05/10/2026</span></div>
+      <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Un rechazo del back sobre un dato va debajo de su campo; la franja queda para lo que no es de un campo.</span><span>Formularios y campos</span><span class="gris">05/10/2026</span></div>
+      <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>La vista previa de la página pública va en un diálogo de 640, con la tarjeta del público tal cual.</span><span>Diálogos</span><span class="gris">05/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Las pestañas de una ficha van abajo de la banda, sobre el fondo, alineadas con el contenido.</span><span>Marco y pantallas</span><span class="gris">04/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>El pie del paginado va con letra de 12.</span><span>Tablas y listas</span><span class="gris">04/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>El botón principal lleva el degradé de la marca en todas las pantallas, también en el teléfono.</span><span>Botones</span><span class="gris">04/10/2026</span></div>
@@ -745,6 +753,13 @@
     </div>
   </section>
   <section>
+    <h2>La Guía y el usuario · 05/10</h2>
+    <div class="dec">
+      <div class="c" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><span>Pantalla</span><span>Qué se eligió</span><span>En el lienzo</span></div>
+      <div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Administrador de una empresa</strong><span><span class="op">A</span>Sin roles de la organización: suma a su empresa personas de la organización (con el correo tapado), reenvía y revoca las invitaciones de su empresa desde la ficha y ve la ficha sin pestañas.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Guardar cambios</strong><span>Apagado sin cambios en todas las ediciones, también en «Editar empresa» y en los roles de un miembro; nunca por un dato que falta.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Textos de espera</strong><span>«Quitando…», «Desvinculando…» y «Dando de baja…», como los demás botones.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Página pública · vista previa</strong><span>En el teléfono, la misma tarjeta que la página del público; en la compu, diálogo de 640.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Auditoría</strong><span>«Quién» con las personas por nombre y después «Sistema» y «Plataforma»; en el teléfono, la hoja del detalle de un cambio.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Quitar dominio</strong><span>Con un correo administrado, «El que ya lo está sigue igual.»; sin ninguno, sin la frase.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Roles</strong><span>«Crear rol» nunca apagado; «Vale en» sin asterisco; casillas fijas en gris; la lista vacía del teléfono con el recuadro punteado.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Empresas</strong><span>El CUIT repetido debajo del campo, con el texto del back.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Botones de peligro · teléfono</strong><span>«Dar de baja», «Quitar» y «Desvincular» en rojo: v107 los había dejado en petróleo.</span><span class="est ok">Dibujada</span></div>
+    </div>
+  </section>
+  <section>
     <h2>Lo que sigue</h2>
     <div class="dec">
       <div class="c" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><span>Pantalla</span><span>Qué se eligió</span><span>En el lienzo</span></div>
@@ -756,7 +771,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2960,"height":6900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2960,"height":7300}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

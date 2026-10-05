@@ -612,6 +612,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-alineacion-app">
 .in2.mal { border-color: var(--peligro) !important; }
 </style>
+<style data-vuelta="1004-cola-guia"></style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -1019,7 +1020,8 @@ return EVENTOS.filter((a) => (q === '' || (a.que + ' ' + a.donde + ' ' + a.quien
     const filas = this.filtrar({});
 const visibles = s.mas ? filas : filas.slice(0, 8);
 const d = EVENTOS.find((a) => a.id === s.detalle);
-const personas = [...new Set(EVENTOS.map((a) => a.quien))];
+const actores = [...new Set(EVENTOS.map((a) => a.quien))];
+const personas = [...actores.filter((p) => p !== 'Sistema' && p !== 'Plataforma').sort((a, b) => a.localeCompare(b, 'es')), ...['Sistema', 'Plataforma'].filter((p) => actores.includes(p))];
 
     return {
       ...this.comunes(),

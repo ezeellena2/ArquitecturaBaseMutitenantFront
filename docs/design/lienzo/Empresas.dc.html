@@ -610,6 +610,9 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-alineacion-app">
 .in2.mal { border-color: var(--peligro) !important; }
 </style>
+<style data-vuelta="1004-empresa-admin">
+</style>
+<style data-vuelta="1004-cola-guia"></style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -797,7 +800,7 @@ textarea.in2 { height: auto; min-height: 84px; }
         <sc-if value="{{errServidor}}" hint-placeholder-val="{{no}}"><div class="aviso-mal" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 15.8h.01"/></svg><span>{{errServidor}}</span></div></sc-if></div>
         <div class="dlg-f">
           <button type="button" class="b b-sec" onClick="{{cerrarDialogo}}">Cancelar</button>
-          <button type="button" class="b b-pri" onClick="{{guardarEmpresa}}" disabled="{{guardando}}">{{textoGuardar}}</button>
+          <button type="button" class="b b-pri" onClick="{{guardarEmpresa}}" disabled="{{noGuardarEmpresa}}">{{textoGuardar}}</button>
         </div>
       </div>
     </div>
@@ -857,7 +860,7 @@ class Component extends DCLogic {
     
     this.state = { wa: false, adm: true, abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', empresas: EMPRESAS, busqueda: '', estado: null, siguiente: 4, dialogo: null, nombre: '', cuit: '', zona: null, errNombre: '', errCuit: '', guardando: false };
     // Tweak «diálogo»: «Crear empresa» con el error que devuelve el back (otra empresa de la organización ya tiene ese CUIT).
-    if (props.dialogo === 'Crear empresa: ya hay una con ese CUIT') Object.assign(this.state, { dialogo: 'nueva', nombre: 'Delta Oeste S.A.', cuit: '30-71234567-1', errServidor: 'Ya hay una empresa con esa identificación fiscal.' });
+    if (props.dialogo === 'Crear empresa: ya hay una con ese CUIT') Object.assign(this.state, { dialogo: 'nueva', nombre: 'Delta Oeste S.A.', cuit: '30-71234567-1', errCuit: 'Ya hay una empresa con esa identificación fiscal.' });
   }
 
   avisar(texto, tipo = 'ok') {
@@ -1049,8 +1052,11 @@ class Component extends DCLogic {
 
   valsDialogo(empresas, id) {
     const s = this.state;
+    const orig = id ? empresas.find((x) => x.id === id) : null;
+    const sinCambios = !!orig && s.nombre.trim() === orig.n && s.cuit.replace(/\D/g, '') === orig.cuit.replace(/\D/g, '') && s.zona === orig.zona;
 
     return {
+      noGuardarEmpresa: !!s.guardando || sinCambios,
       cerrarDialogo: () => this.setState({ dialogo: null, guardando: false, abierto: null, errServidor: '' }),
       Nombre: s.nombre,
       onNombre: (e) => this.setState({ nombre: e.target.value, errNombre: '' }),

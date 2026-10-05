@@ -621,6 +621,10 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-alineacion-app">
 .in2.mal { border-color: var(--peligro) !important; }
 </style>
+<style data-vuelta="1004-empresa-admin">
+.solo-emp li:has(> .wa-btn), .solo-emp .admin-grupo, .solo-emp .adm-panel { display: none !important; }
+.dos .n2.sang { padding-left: 13px; }
+</style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -635,7 +639,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 .ab-root.wa-abierto .ab-sidebar__toggle { display: none; }
 .wa-panel .wa-cnt { margin-left: auto; font-size: 12px; font-weight: 600; color: oklch(0.43 0.09 195); }
 </style>
-<div class="ab-root ab-app-shell {{admClase}} {{waClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
+<div class="ab-root ab-app-shell {{admClase}} {{waClase}} {{claseSolo}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
   <aside class="ab-sidebar" aria-label="Navegación principal">
     <div class="ab-sidebar__head"><span class="brand" aria-hidden="true"></span></div>
     <button type="button" class="ab-btn ab-btn--ghost ab-btn--size-icon ab-sidebar__toggle" aria-label="Contraer navegación"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
@@ -651,7 +655,7 @@ textarea.in2 { height: auto; min-height: 84px; }
         <ul class="ab-sidebar__list"><li><button type="button" class="ab-sidebar__link adm-btn" aria-controls="adm-panel" aria-expanded="{{admExp}}" onClick="{{alternarAdm}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 5 6v5.5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6Z"/><path d="m9.5 12 1.8 1.8 3.4-3.6"/></svg><span class="ab-sidebar__link-label">Administración</span><svg class="adm-flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button></li></ul>
       </div>
     </nav>
-    <div class="ab-sidebar__footer"><div class="ab-sidebar__user"><span class="avatar" aria-hidden="true">L</span><div class="ab-sidebar__identity"><p class="ab-sidebar__name">Lucía Fernández</p><p class="ab-sidebar__email">lucia.fernandez@delta.ejemplo.com</p></div></div></div>
+    <div class="ab-sidebar__footer"><div class="ab-sidebar__user"><span class="avatar" aria-hidden="true">{{yoInicial}}</span><div class="ab-sidebar__identity"><p class="ab-sidebar__name">{{yoNombre}}</p><p class="ab-sidebar__email">{{yoCorreo}}</p></div></div></div>
   </aside>
   <aside class="adm-panel" id="adm-panel" aria-label="Administración">
     <div class="adm-cab"><strong>Administración</strong><button type="button" class="adm-cerrar" aria-label="Cerrar Administración" onClick="{{alternarAdm}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button></div>
@@ -686,17 +690,17 @@ textarea.in2 { height: auto; min-height: 84px; }
       </div>
       <span class="envoltura">
         <button type="button" class="um-btn" aria-haspopup="menu" aria-expanded="{{expUsuario}}" onClick="{{alternarUsuario}}">
-          <span class="avatar" aria-hidden="true">L</span>
-          <span class="um-txt"><span class="n1">Lucía Fernández</span><span class="n2">Grupo Delta</span></span>
+          <span class="avatar" aria-hidden="true">{{yoInicial}}</span>
+          <span class="um-txt"><span class="n1">{{yoNombre}}</span><span class="n2">Grupo Delta</span></span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
         </button>
         <sc-if value="{{abiertoUsuario}}" hint-placeholder-val="{{no}}">
-          <div class="menu der" role="menu" aria-label="Menú de Lucía Fernández" style="min-width: 320px;">
-          <div class="menu-cab"><span class="avatar" aria-hidden="true" style="width: 40px; height: 40px; font-size: 16px;">L</span><span class="perfil-t"><span class="n1" style="font-size: 15px; font-weight: 600;">Lucía Fernández</span><span class="n2">lucia.fernandez@delta.ejemplo.com</span></span></div>
+          <div class="menu der" role="menu" aria-label="Menú de {{yoNombre}}" style="min-width: 320px;">
+          <div class="menu-cab"><span class="avatar" aria-hidden="true" style="width: 40px; height: 40px; font-size: 16px;">{{yoInicial}}</span><span class="perfil-t"><span class="n1" style="font-size: 15px; font-weight: 600;">{{yoNombre}}</span><span class="n2">{{yoCorreo}}</span></span></div>
           <div class="menu-sep" role="separator"></div>
           <div class="menu-tit">Perfiles</div>
           <a class="menu-it" role="menuitemradio" aria-checked="false" href="Inicio-Personal.dc.html"><span class="ico-perfil">P</span><span class="perfil-t"><span class="n1">Personal</span><span class="n2">Tu perfil personal</span></span></a>
-          <a class="menu-it on" role="menuitemradio" aria-checked="true" href="Inicio-Org.dc.html"><span class="ico-perfil">GD</span><span class="perfil-t"><span class="n1">Grupo Delta</span><span class="n2">Dueño</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></a>
+          <a class="menu-it on" role="menuitemradio" aria-checked="true" href="Inicio-Org.dc.html"><span class="ico-perfil">GD</span><span class="perfil-t"><span class="n1">Grupo Delta</span><span class="n2">{{yoRol}}</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></a>
           <a class="menu-it apagado" role="menuitem" href="Perfil-Suspendido.dc.html"><span class="ico-perfil">BS</span><span class="perfil-t"><span class="n1">Beta S.R.L.</span><span class="n2">Suspendida</span></span></a>
           <div class="menu-sep" role="separator"></div>
           <a class="menu-it" role="menuitem" href="Cuenta.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Mi cuenta</a>
@@ -710,18 +714,18 @@ textarea.in2 { height: auto; min-height: 84px; }
     <main class="ab-app-shell__main">
       <div class="banda-pag">
         <div class="izq"><a class="atras" href="Empresas.dc.html" aria-label="Volver a Empresas"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></a><div style="min-width: 0;"><div class="tit"><h1>{{nombre}}</h1></div><p class="res"><span class="pill {{pillEmpresa}}">{{estadoEmpresa}}</span><span>{{meta}}</span></p></div></div>
-        <div class="acciones"><span class="envoltura">
+        <div class="acciones"><sc-if value="{{noSolo}}" hint-placeholder-val="{{si}}"><span class="envoltura">
           <button type="button" class="mas" aria-label="Más acciones" aria-haspopup="menu" aria-expanded="{{expMas}}" onClick="{{alternarMas}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
           <sc-if value="{{abiertoMas}}" hint-placeholder-val="{{no}}"><div class="menu der" role="menu"><button type="button" class="menu-it {{claseAccionEstado}}" role="menuitem" onClick="{{cambiarEstado}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> {{accionEstado}}</button></div></sc-if>
-        </span><button type="button" class="b b-sec" onClick="{{abrirEditar}}">Editar empresa</button><sc-if value="{{enMiembros}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-pri" onClick="{{abrirAgregar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Agregar miembro</button></sc-if><sc-if value="{{enRoles}}" hint-placeholder-val="{{no}}"><a class="b b-pri" href="Rol.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Crear rol</a></sc-if></div>
+        </span><button type="button" class="b b-sec" onClick="{{abrirEditar}}">Editar empresa</button></sc-if><sc-if value="{{enMiembros}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-pri" onClick="{{abrirAgregar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Agregar miembro</button></sc-if><sc-if value="{{enRoles}}" hint-placeholder-val="{{no}}"><a class="b b-pri" href="Rol.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Crear rol</a></sc-if></div>
       </div>
       <div class="pagina">
         <div style="display: flex; flex-direction: column;">
-          <div class="tabs2" role="tablist" aria-label="Secciones de la empresa">
+          <sc-if value="{{noSolo}}" hint-placeholder-val="{{si}}"><div class="tabs2" role="tablist" aria-label="Secciones de la empresa">
             <sc-for list="{{pestanas}}" as="t" hint-placeholder-count="2">
               <button type="button" role="tab" class="tab2" aria-selected="{{t.sel}}" onClick="{{t.elegir}}">{{t.n}}<span class="cnt">{{t.c}}</span></button>
             </sc-for>
-          </div>
+          </div></sc-if>
 
           <sc-if value="{{enMiembros}}" hint-placeholder-val="{{si}}">
             <div role="tabpanel" aria-label="Miembros" style="display: flex; flex-direction: column; gap: 16px; padding-top: 16px;">
@@ -760,14 +764,14 @@ textarea.in2 { height: auto; min-height: 84px; }
                       <sc-for list="{{m.roles}}" as="r" hint-placeholder-count="1"><span class="rol">{{r}}</span></sc-for>
                       <sc-if value="{{m.sinRoles}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if>
                     </span>
-                    <span><span class="pill {{m.pill}}">{{m.textoEstado}}</span></span>
+                    <span class="dos"><span><span class="pill {{m.pill}}">{{m.textoEstado}}</span></span><sc-if value="{{m.invitado}}" hint-placeholder-val="{{no}}"><span class="n2 sang">Vence {{m.vence}}</span></sc-if></span>
                     <span class="der envoltura">
                 <button type="button" class="kebab" aria-haspopup="menu" aria-expanded="{{m.exp}}" aria-label="{{m.ariaMenu}}" onClick="{{m.alternar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
                 <sc-if value="{{m.menu}}" hint-placeholder-val="{{no}}">
                   <div class="menu der {{m.claseMenu}}" role="menu">
                           <sc-if value="{{m.activo}}" hint-placeholder-val="{{si}}"><button type="button" class="menu-it" role="menuitem" onClick="{{m.abrirRoles}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.5c0 4.2 2.9 7.8 7 9.5 4.1-1.7 7-5.3 7-9.5V6z"/></svg> Cambiar roles</button></sc-if>
-                          <a class="menu-it" role="menuitem" href="Usuario.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Ver usuario</a>
-                          <div class="menu-sep" role="separator"></div>
+                          <sc-if value="{{m.invitado}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it" role="menuitem" onClick="{{m.reenviar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg> Reenviar invitación</button></sc-if><sc-if value="{{m.noInvitado}}" hint-placeholder-val="{{si}}"><a class="menu-it" role="menuitem" href="Usuario.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Ver usuario</a>
+                          <div class="menu-sep" role="separator"></div></sc-if>
                           <button type="button" class="menu-it {{m.claseAccion}}" role="menuitem" onClick="{{m.cambiarEstado}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> {{m.accion}}</button>
                   </div>
                 </sc-if>
@@ -875,7 +879,7 @@ textarea.in2 { height: auto; min-height: 84px; }
         </div>
         <div class="dlg-f">
           <button type="button" class="b b-sec" onClick="{{cerrarDialogo}}">Cancelar</button>
-          <button type="button" class="b b-pri" onClick="{{guardarEmpresa}}" disabled="{{guardando}}">{{textoGuardar}}</button>
+          <button type="button" class="b b-pri" onClick="{{guardarEmpresa}}" disabled="{{noGuardarEmpresa}}">{{textoGuardar}}</button>
         </div>
       </div>
     </div>
@@ -892,15 +896,15 @@ textarea.in2 { height: auto; min-height: 84px; }
         <div class="dlg-b una">
             <div class="campo2 envoltura">
               <span class="et" id="et-Usuario">Usuario<span class="req" aria-hidden="true">*</span></span>
-              <button type="button" class="in2 {{malUsuario}}" aria-haspopup="listbox" aria-expanded="{{expUsuario}}" aria-labelledby="et-Usuario" onClick="{{alternarUsuario}}" disabled="{{bloqUsuario}}"><span class="val {{claseValUsuario}}">{{textoUsuario}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
-              <sc-if value="{{abiertoUsuario}}" hint-placeholder-val="{{no}}">
+              <button type="button" class="in2 {{malCandidato}}" aria-haspopup="listbox" aria-expanded="{{expCandidato}}" aria-labelledby="et-Usuario" onClick="{{alternarCandidato}}" disabled="{{bloqCandidato}}"><span class="val {{claseValCandidato}}">{{textoCandidato}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+              <sc-if value="{{abiertoCandidato}}" hint-placeholder-val="{{no}}">
                 <div class="menu lista" role="listbox" aria-labelledby="et-Usuario" style="top: 60px;">
-                  <sc-for list="{{opcionesUsuario}}" as="o" hint-placeholder-count="3">
+                  <sc-for list="{{opcionesCandidato}}" as="o" hint-placeholder-count="3">
                     <button type="button" role="option" aria-selected="{{o.sel}}" class="op2 {{o.clase}}" onClick="{{o.elegir}}"><span><span class="opn">{{o.n}}</span><sc-if value="{{o.d}}" hint-placeholder-val="{{no}}"><span class="opd">{{o.d}}</span></sc-if></span></button>
                   </sc-for>
                 </div>
               </sc-if>
-              <sc-if value="{{errUsuario}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errUsuario}}</span></sc-if>
+              <sc-if value="{{errCandidato}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errCandidato}}</span></sc-if>
             </div>
             <div class="campo2 envoltura">
               <span class="et"><span id="et-RolesA">Roles en la empresa</span></span>
@@ -928,7 +932,7 @@ textarea.in2 { height: auto; min-height: 84px; }
       <sc-if value="{{hayAbierto}}" hint-placeholder-val="{{no}}"><button type="button" class="capa" tabindex="-1" aria-hidden="true" onClick="{{cerrarMenus}}"></button></sc-if>
       <div class="dlg chico" role="dialog" aria-modal="true" aria-labelledby="dlg-dlgRoles">
         <div class="dlg-h">
-          <div><h2 id="dlg-dlgRoles">Roles de {{miembroDialogo}}</h2><p>{{nombre}}</p></div>
+          <div><h2 id="dlg-dlgRoles">Roles de {{miembroDialogo}}</h2></div>
           <button type="button" class="dlg-x" aria-label="Cerrar" onClick="{{cerrarDialogo}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button>
         </div>
         <div class="dlg-b una">
@@ -947,7 +951,7 @@ textarea.in2 { height: auto; min-height: 84px; }
         </div>
         <div class="dlg-f">
           <button type="button" class="b b-sec" onClick="{{cerrarDialogo}}">Cancelar</button>
-          <button type="button" class="b b-pri" onClick="{{guardarRoles}}">Guardar cambios</button>
+          <button type="button" class="b b-pri" onClick="{{guardarRoles}}" disabled="{{rolesSinCambios}}">Guardar cambios</button>
         </div>
       </div>
     </div>
@@ -980,7 +984,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"pestana":{"editor":"enum","options":["Miembros","Roles"],"default":"Miembros","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"pestana":{"editor":"enum","options":["Miembros","Roles"],"default":"Miembros","section":"Estado"},"quien":{"editor":"enum","options":["Administra la organización","Administra solo la empresa"],"default":"Administra la organización","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 const ORG_ZONA = 'America/Argentina/Buenos_Aires';
 // La zona se guarda con su ID; en pantalla va la ciudad y el desfase.
 const NOMBRES_ZONA = { 'America/Argentina/Buenos_Aires': 'Buenos Aires (GMT−3)', 'America/Argentina/Cordoba': 'Córdoba (GMT−3)', 'America/Argentina/Mendoza': 'Mendoza (GMT−3)', 'America/Argentina/Tucuman': 'Tucumán (GMT−3)', 'America/Montevideo': 'Montevideo (GMT−3)', 'America/Santiago': 'Santiago (GMT−3)', 'America/Asuncion': 'Asunción (GMT−3)' };
@@ -1024,13 +1028,28 @@ const MIEMBROS = [
   { id: 'u5', email: 'paula.mendez@delta.ejemplo.com', nombre: 'Paula Méndez', roles: ['Solo lectura'], estado: 'activo' },
   { id: 'u9', email: 'martin.paz@delta.ejemplo.com', nombre: 'Martín Paz', roles: ['Solo lectura'], estado: 'activo' },
   { id: 'u8', email: 'marcos.gimenez@delta.ejemplo.com', nombre: 'Marcos Giménez', roles: [], estado: 'inactivo' },
+  // Invitación pendiente con un rol en la empresa: la reenvía o la revoca quien administra la empresa (decisión del 05/10).
+  { id: 'u6', email: 'sofia.herrera@delta.ejemplo.com', nombre: 'Sofía Herrera', roles: ['Solo lectura'], estado: 'invitado', vence: '02/10/2026' },
+];
+// Delta Norte S.A. como la ve Valentina Ruiz, que la administra sin roles de la organización (Inicio-Miembro).
+const MIEMBROS_DN = [
+  { id: 'u7', email: 'valentina.ruiz@gmail.com', nombre: 'Valentina Ruiz', roles: ['Administrador'], estado: 'activo' },
+  { id: 'u5', email: 'paula.mendez@delta.ejemplo.com', nombre: 'Paula Méndez', roles: ['Solo lectura'], estado: 'activo' },
+  { id: 'u10', email: 'carolina.vega@delta.ejemplo.com', nombre: 'Carolina Vega', roles: ['Solo lectura'], estado: 'activo' },
+  { id: 'u9', email: 'martin.paz@delta.ejemplo.com', nombre: 'Martín Paz', roles: ['Solo lectura'], estado: 'vencida', vence: '29/09/2026' },
 ];
 // Usuarios de la organización que todavía no están en la empresa. Los deshabilitados no se ofrecen.
 const CANDIDATOS = [
   { id: 'u3', email: 'julieta.sosa@delta.ejemplo.com', nombre: 'Julieta Sosa' },
   { id: 'u10', email: 'carolina.vega@delta.ejemplo.com', nombre: 'Carolina Vega' },
-  { id: 'u6', email: 'sofia.herrera@delta.ejemplo.com', nombre: 'Sofía Herrera', pendiente: true },
 ];
+const CANDIDATOS_DN = [
+  { id: 'u1', email: 'lucia.fernandez@delta.ejemplo.com', nombre: 'Lucía Fernández' },
+  { id: 'u2', email: 'tomas.acosta@delta.ejemplo.com', nombre: 'Tomás Acosta' },
+  { id: 'u3', email: 'julieta.sosa@delta.ejemplo.com', nombre: 'Julieta Sosa' },
+];
+// Sin roles de la organización no ve la lista de Usuarios: el correo va tapado.
+const tapar = (m) => m.slice(0, 2) + '•••@' + m.split('@')[1];
 const PESTANAS = { 'Miembros': 'miembros', 'Roles': 'roles' };
 const ROLES_C1 = rolesDeEmpresa('c1');
 const ordenar = (lista) => ROLES_C1.map((r) => r.v).filter((n) => lista.includes(n));
@@ -1039,7 +1058,7 @@ class Component extends DCLogic {
   constructor(props) {
     super(props);
     
-    this.state = { wa: false, adm: true, abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', clavePestana: props.pestana, pestana: PESTANAS[props.pestana ?? 'Miembros'], empresa: EMPRESAS[0], miembros: MIEMBROS, busqueda: '', estadoM: null, rol: undefined, borrador: [], usuario: null, errUsuario: '', errRoles: '', dlgMiembro: null, dialogo: null, nombre: '', cuit: '', zona: null, errNombre: '', errCuit: '', guardando: false };
+    this.state = { wa: false, adm: true, abierto: null, aviso: '', avisoTipo: 'ok', confirmar: null, motivo: '', errMotivo: '', clavePestana: props.pestana, pestana: PESTANAS[props.pestana ?? 'Miembros'], ...this.deQuien(props.quien), busqueda: '', estadoM: null, rol: undefined, borrador: [], usuario: null, errUsuario: '', errRoles: '', dlgMiembro: null, dialogo: null, nombre: '', cuit: '', zona: null, errNombre: '', errCuit: '', guardando: false };
   }
 
   avisar(texto, tipo = 'ok') {
@@ -1231,8 +1250,11 @@ class Component extends DCLogic {
 
   valsDialogo(empresas, id) {
     const s = this.state;
+    const orig = id ? empresas.find((x) => x.id === id) : null;
+    const sinCambios = !!orig && s.nombre.trim() === orig.n && s.cuit.replace(/\D/g, '') === orig.cuit.replace(/\D/g, '') && s.zona === orig.zona;
 
     return {
+      noGuardarEmpresa: !!s.guardando || sinCambios,
       cerrarDialogo: () => this.setState({ dialogo: null, guardando: false, abierto: null }),
       Nombre: s.nombre,
       onNombre: (e) => this.setState({ nombre: e.target.value, errNombre: '' }),
@@ -1247,7 +1269,14 @@ class Component extends DCLogic {
     };
   }
 
+  deQuien(q) {
+    const solo = q === 'Administra solo la empresa';
+
+    return { claveQuien: q, solo, empresa: solo ? EMPRESAS[2] : EMPRESAS[0], miembros: solo ? MIEMBROS_DN : MIEMBROS };
+  }
+
   componentDidUpdate() {
+    if (this.props.quien !== this.state.claveQuien) this.setState({ ...this.deQuien(this.props.quien), dialogo: null, abierto: null });
     if (this.props.pestana !== this.state.clavePestana) this.setState({ clavePestana: this.props.pestana, pestana: PESTANAS[this.props.pestana ?? 'Miembros'] });
   }
 
@@ -1300,7 +1329,7 @@ class Component extends DCLogic {
     const filas = this.filtrar({});
     const pg = this.paginar(filas);
     const ph = this.paginar(ROLES_SOLO, 'h');
-    const candidatos = CANDIDATOS.filter((c) => !s.miembros.some((m) => m.id === c.id));
+    const candidatos = (s.solo ? CANDIDATOS_DN : CANDIDATOS).filter((c) => !s.miembros.some((m) => m.id === c.id));
     const dlgM = s.miembros.find((m) => m.id === s.dlgMiembro);
     const activos = s.miembros.filter((m) => m.estado === 'activo').length;
     const activa = e.estado === 'activa';
@@ -1309,6 +1338,9 @@ class Component extends DCLogic {
       ...this.comunes(),
       admClase: this.state.adm ? 'adm-abierto' : '', admExp: this.state.adm ? 'true' : 'false', alternarAdm: () => this.setState({ adm: !this.state.adm, wa: false }), waClase: this.state.wa ? 'wa-abierto' : '', waExp: this.state.wa ? 'true' : 'false', alternarWa: () => this.setState({ wa: !this.state.wa, adm: false }),
       nombre: e.n,
+      claseSolo: s.solo ? 'solo-emp' : '', noSolo: !s.solo,
+      yoNombre: s.solo ? 'Valentina Ruiz' : 'Lucía Fernández', yoCorreo: s.solo ? 'valentina.ruiz@gmail.com' : 'lucia.fernandez@delta.ejemplo.com', yoInicial: s.solo ? 'V' : 'L',
+      yoRol: s.solo ? 'Administrador en Delta Norte S.A.' : 'Dueño',
       pillEmpresa: activa ? 'ok' : 'off',
       estadoEmpresa: activa ? 'Activa' : 'Inactiva',
       meta: [e.cuit ? 'CUIT ' + e.cuit : '', nombreZona(e.zona ?? ORG_ZONA)].filter(Boolean).join(' · '),
@@ -1350,18 +1382,39 @@ class Component extends DCLogic {
       miembros: pg.items.map((m) => {
         const act = m.estado === 'activo';
         const baja = m.estado === 'bajaPedida';
+        const inv = m.estado === 'invitado' || m.estado === 'vencida';
 
         return {
           ...this.fila(m.id, m.nombre),
           email: m.email, nombre: m.nombre, roles: m.roles, sinRoles: m.roles.length === 0, activo: act,
-          pill: act ? 'ok' : baja ? 'alerta' : 'off',
-          textoEstado: act ? 'Activo' : baja ? 'Baja pedida' : 'Inactivo',
+          pill: act ? 'ok' : baja || m.estado === 'vencida' ? 'alerta' : inv ? 'pend' : 'off',
+          textoEstado: act ? 'Activo' : baja ? 'Baja pedida' : m.estado === 'invitado' ? 'Invitación pendiente' : m.estado === 'vencida' ? 'Invitación vencida' : 'Inactivo',
+          invitado: inv, noInvitado: !inv, vence: m.vence || '',
+          // POST /api/companies/{id}/invitations/{invitationId}/resend con company.members.manage (decisión del 05/10).
+          reenviar: () => {
+            this.setState({ abierto: null, miembros: s.miembros.map((x) => (x.id === m.id ? { ...x, estado: 'invitado', vence: '12/10/2026' } : x)) });
+            this.avisar('Reenviamos la invitación a ' + m.email + '.');
+          },
           clase: m.nuevo ? 'nueva' : '',
           abrirRoles: () => this.setState({ abierto: null, dialogo: 'roles', dlgMiembro: m.id, borrador: [...m.roles], errRoles: '' }),
-          accion: act || baja ? 'Quitar de la empresa' : 'Volver a sumar',
-          claseAccion: act || baja ? 'pel' : '',
+          accion: inv ? 'Revocar invitación' : act || baja ? 'Quitar de la empresa' : 'Volver a sumar',
+          claseAccion: inv || act || baja ? 'pel' : '',
           // PUT /api/companies/{id}/members/{userId}/status: 409 Companies.Member.LastCompanyAdmin.
           cambiarEstado: () => {
+            if (inv) {
+              this.pedirConfirmacion({
+                titulo: '¿Revocar la invitación a ' + m.email + '?',
+                texto: 'El enlace deja de funcionar. Podés volver a invitar a esta persona cuando quieras.',
+                boton: 'Revocar',
+                accion: () => {
+                  this.setState({ miembros: this.state.miembros.filter((x) => x.id !== m.id) });
+                  this.avisar('Revocamos la invitación a ' + m.email + '.');
+                },
+              });
+
+              return;
+            }
+
             if (!act && !baja) {
               this.setState({ abierto: null, miembros: s.miembros.map((x) => (x.id === m.id ? { ...x, estado: 'activo' } : x)) });
               this.avisar('Volvimos a sumar a ' + m.nombre + '. Dale los roles de nuevo.');
@@ -1399,13 +1452,14 @@ class Component extends DCLogic {
 
       abrirAgregar: () => this.setState({ dialogo: 'agregar', usuario: null, borrador: [], errUsuario: '', abierto: null }),
       dlgAgregar: s.dialogo === 'agregar',
-      ...this.uno('Usuario', 'usuario', candidatos.map((c) => ({ v: c.id, n: c.nombre, d: c.email + (c.pendiente ? ' · invitación pendiente' : '') })), 'Elegí un usuario de la organización', { error: s.errUsuario, alElegir: () => ({ errUsuario: '' }) }),
+      ...this.uno('Candidato', 'usuario', candidatos.map((c) => ({ v: c.id, n: c.nombre, d: (s.solo ? tapar(c.email) : c.email) + (c.pendiente ? ' · invitación pendiente' : '') })), 'Elegí un usuario de la organización', { error: s.errUsuario, alElegir: () => ({ errUsuario: '' }) }),
       ...this.varios('RolesA', 'borrador', ROLES_C1, 'Sin roles'),
       textoAgregar: s.guardando ? 'Agregando…' : 'Agregar miembro',
       agregar: () => this.agregar(),
 
       dlgRoles: s.dialogo === 'roles',
       miembroDialogo: dlgM ? dlgM.nombre : '',
+      rolesSinCambios: !dlgM || [...s.borrador].sort().join('|') === [...dlgM.roles].sort().join('|'),
       ...this.varios('RolesM', 'borrador', ROLES_C1, 'Sin roles', { alCambiar: () => ({ errRoles: '' }) }),
       errRoles: s.errRoles,
       // PUT /api/companies/{id}/members/{userId}/roles: 409 si la empresa se queda sin administrador.

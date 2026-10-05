@@ -6,7 +6,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 6900
+ALTO = 7300
 ANCHO = 2960
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
@@ -52,6 +52,11 @@ ESTADOS = {
 
 # Reglas generales que salieron de las decisiones: (regla, tablero donde quedó, fecha).
 REGLAS = [
+    ("«Guardar cambios» se apaga sin cambios en todas las ediciones, también en los diálogos; ningún botón se apaga porque falta un dato.", "Botones", "05/10/2026"),
+    ("Un botón que espera dice qué está haciendo, también los de peligro: «Quitando…», «Desvinculando…», «Dando de baja…».", "Botones", "05/10/2026"),
+    ("Una ficha con un solo grupo de datos va sin la barra de pestañas.", "Marco y pantallas", "05/10/2026"),
+    ("Un rechazo del back sobre un dato va debajo de su campo; la franja queda para lo que no es de un campo.", "Formularios y campos", "05/10/2026"),
+    ("La vista previa de la página pública va en un diálogo de 640, con la tarjeta del público tal cual.", "Diálogos", "05/10/2026"),
     ("Las pestañas de una ficha van abajo de la banda, sobre el fondo, alineadas con el contenido.", "Marco y pantallas", "04/10/2026"),
     ("El pie del paginado va con letra de 12.", "Tablas y listas", "04/10/2026"),
     ("El botón principal lleva el degradé de la marca en todas las pantallas, también en el teléfono.", "Botones", "04/10/2026"),
@@ -266,6 +271,17 @@ DECISIONES = {
         ("Empresas", "", "Toda empresa tiene su zona; «La de la organización», en gris, solo al crear. Al editar, el CUIT sin guiones y «Guardar cambios» activo. En el teléfono, la hoja de roles sin bajada ni «Todos», con «Sin roles».", "Dibujada"),
         ("Usuario · teléfono", "", "El error al guardar con el caso de la app: Lucía se quita el rol de Dueña y la franja dice «Tiene que quedar al menos un Dueño…».", "Dibujada"),
         ("Botón principal", "", "Con el degradé en todas las pantallas, como la app.", "Dibujada"),
+    ],
+    "La Guía y el usuario · 05/10": [
+        ("Administrador de una empresa", "A", "Sin roles de la organización: suma a su empresa personas de la organización (con el correo tapado), reenvía y revoca las invitaciones de su empresa desde la ficha y ve la ficha sin pestañas.", "Dibujada"),
+        ("Guardar cambios", "", "Apagado sin cambios en todas las ediciones, también en «Editar empresa» y en los roles de un miembro; nunca por un dato que falta.", "Dibujada"),
+        ("Textos de espera", "", "«Quitando…», «Desvinculando…» y «Dando de baja…», como los demás botones.", "Dibujada"),
+        ("Página pública · vista previa", "", "En el teléfono, la misma tarjeta que la página del público; en la compu, diálogo de 640.", "Dibujada"),
+        ("Auditoría", "", "«Quién» con las personas por nombre y después «Sistema» y «Plataforma»; en el teléfono, la hoja del detalle de un cambio.", "Dibujada"),
+        ("Quitar dominio", "", "Con un correo administrado, «El que ya lo está sigue igual.»; sin ninguno, sin la frase.", "Dibujada"),
+        ("Roles", "", "«Crear rol» nunca apagado; «Vale en» sin asterisco; casillas fijas en gris; la lista vacía del teléfono con el recuadro punteado.", "Dibujada"),
+        ("Empresas", "", "El CUIT repetido debajo del campo, con el texto del back.", "Dibujada"),
+        ("Botones de peligro · teléfono", "", "«Dar de baja», «Quitar» y «Desvincular» en rojo: v107 los había dejado en petróleo.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
