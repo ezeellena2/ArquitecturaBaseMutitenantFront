@@ -236,15 +236,19 @@ src/
 │   │   │   ├── memberColumns.tsx
 │   │   │   ├── errors.ts
 │   │   │   ├── components/
-│   │   │   │   ├── CompanyDialog.tsx
+│   │   │   │   ├── CompanyFields.tsx                Nombre, CUIT y «Zona de negocio»; useCompanyValidation
+│   │   │   │   ├── CompanyDialog.tsx                crear y editar (Empresas y la ficha): dueño de su borrador, su guardado y su error
 │   │   │   │   ├── AddMemberDialog.tsx
-│   │   │   │   └── MemberRolesDialog.tsx
+│   │   │   │   ├── MemberRolesDialog.tsx
+│   │   │   │   └── useDialogFailure.ts              el error del diálogo; después de un 409, relee al cerrar
 │   │   │   ├── tabs/
-│   │   │   │   ├── CompanyMembersTab.tsx            Miembros
-│   │   │   │   └── CompanyRolesTab.tsx              Roles que valen solo en esta empresa (alcance SpecificCompany)
+│   │   │   │   ├── CompanyMembersTab.tsx            Miembros: filtros, tabla, ⋮ y sus diálogos
+│   │   │   │   ├── CompanyRolesTab.tsx              Roles que valen solo en esta empresa (alcance SpecificCompany)
+│   │   │   │   ├── useCompanyMembers.ts             la lista paginada (la ficha la pide para la cantidad de la pestaña)
+│   │   │   │   └── useCompanyRoles.ts               los roles asignables y los propios, en una consulta (B4: por la ruta de la empresa)
 │   │   │   └── pages/
 │   │   │       ├── CompaniesPage.tsx
-│   │   │       └── CompanyPage.tsx                  banda con los datos en una línea; pestañas debajo; la acción de la pestaña va en la banda
+│   │   │       └── CompanyDetailPage.tsx            banda con los datos en una línea; pestañas debajo; la acción de la pestaña va en la banda
 │   │   ├── settings/                                [E6] /org/configuracion
 │   │   │   ├── api/settings.ts
 │   │   │   ├── api/emailDomain.ts                   dominio de correo: agregar, comprobar el registro TXT y quitar
