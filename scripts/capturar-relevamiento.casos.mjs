@@ -675,6 +675,39 @@ function b6d3Cases(root) {
   ];
 }
 
+// Tanda 6d-3b (el pulido final): en el teléfono, «Quitar» un correo y «Desvincular» Google (M-Cuenta-Metodo) confirman con
+// el botón destructivo, en rojo como en la compu (Cuenta-Metodo, al lado). Diseño corrigió que v107 los dibujó en petróleo
+// en el teléfono: la copia limpia de v107 todavía los muestra así. La app no lista los teléfonos entre los métodos, así que
+// «Quitar» va sobre el correo del tablero (lucia.trabajo@gmail.com), con el código al WhatsApp, como en b6d2. «Dar de baja»
+// (M-Cuenta-Baja) es el caso baja-cuenta y el Inicio, inicio-org. El diálogo está listo cuando dice a dónde mandamos el
+// código.
+function b6d3bCases(root) {
+  const stageApp = (pair, width) => stageCases(root, "etapa-4").find((entry) => entry.pair === pair && entry.viewport.width === width).app;
+  const work = { id: "5", type: "Email", value: "lucia.trabajo@gmail.com", isPrimary: false, isVerified: true, canRemove: true, canMakePrimary: true };
+  const google = { id: "4", type: "Google", value: "lucia.fer@gmail.com", isPrimary: false, isVerified: true, canRemove: true, canMakePrimary: false };
+  const withMethod = (responses, method, canLinkGoogle = true) => responses.map((item) => item.method === "GET" && item.path === "/api/me/login-methods"
+    ? { ...item, body: { ...item.body, canLinkGoogle, methods: [...item.body.methods, method] } }
+    : item);
+  const reauth = (sourceMethodId, destination) => api("POST", "/api/me/reauth", { sourceMethodId, destination, resendAfterSeconds: 60 }, 202);
+  const sheet = (width, method, canLinkGoogle, target, action, [sourceMethodId, destination]) => ({
+    responses: [...withMethod(stageApp("cuenta", width).responses, method, canLinkGoogle), reauth(sourceMethodId, destination)],
+    actions: [appClick("button", `Acciones de ${target}`), appClick("menuitem", action)], readySelector: '[role="dialog"]', readyText: destination });
+  const removeEmail = (width) => sheet(width, work, true, "lucia.trabajo@gmail.com", "Quitar", ["3", "•••• 4521"]);
+  const unlinkGoogle = (width) => sheet(width, google, false, "lucia.fer@gmail.com", "Desvincular", ["2", "lu•••@gmail.com"]);
+  const removeEmailBoard = { props: { estado: "Quitar un correo: el código llega por WhatsApp" } };
+  const unlinkGoogleBoard = { props: { estado: "Desvincular Google" } };
+  return [
+    ...pairCases(root, { stage: "etapa-4", pair: "cuenta", id: "cuenta-quitar-correo", group: "cuenta",
+      state: "«Quitar» un correo: el botón destructivo, en rojo en la compu y en el teléfono (M-Cuenta-Metodo v107 lo dibuja en petróleo; Diseño lo corrigió)",
+      desktop: { board: "Cuenta-Metodo", ...removeEmailBoard }, phone: { board: "M-Cuenta-Metodo", ...removeEmailBoard },
+      app: removeEmail(1440), phoneApp: removeEmail(390) }),
+    ...pairCases(root, { stage: "etapa-4", pair: "cuenta", id: "cuenta-desvincular-google", group: "cuenta",
+      state: "«Desvincular» Google: el botón destructivo, en rojo en la compu y en el teléfono (M-Cuenta-Metodo v107 lo dibuja en petróleo; Diseño lo corrigió)",
+      desktop: { board: "Cuenta-Metodo", ...unlinkGoogleBoard }, phone: { board: "M-Cuenta-Metodo", ...unlinkGoogleBoard },
+      app: unlinkGoogle(1440), phoneApp: unlinkGoogle(390) }),
+  ];
+}
+
 export function catalog(root) {
   const rename ={ board: "Cuenta", boardActions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
@@ -701,5 +734,6 @@ export function catalog(root) {
     ...b6cCases(root),
     ...b6d2Cases(root),
     ...b6d3Cases(root),
+    ...b6d3bCases(root),
   ];
 }

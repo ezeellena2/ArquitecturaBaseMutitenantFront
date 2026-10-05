@@ -1,0 +1,962 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "inicio-org-escritorio",
+      "pair": "inicio-org",
+      "group": "inicios",
+      "state": "Inicio de la organización",
+      "board": "Inicio-Org",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "captureMode": "harness",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg",
+        "userFixture": "visual-owner",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Lucía Fernández"
+      }
+    },
+    {
+      "id": "inicio-org-movil",
+      "pair": "inicio-org",
+      "group": "inicios",
+      "state": "Inicio de la organización",
+      "board": "M-Inicio-Org",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "captureMode": "harness",
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg",
+        "userFixture": "visual-owner",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/home",
+            "status": 200,
+            "body": {
+              "organization": {
+                "users": {
+                  "total": 11
+                },
+                "roles": {
+                  "total": 7
+                },
+                "companies": {
+                  "total": 3
+                },
+                "publicPage": {
+                  "state": "Published"
+                },
+                "settings": {
+                  "domain": "delta.ejemplo.com"
+                },
+                "audit": {
+                  "lastChangeAtUtc": "2026-10-03T13:42:00Z"
+                }
+              },
+              "companies": [],
+              "pending": [
+                {
+                  "area": "users",
+                  "kind": "invitationExpired",
+                  "subject": "carla.bianchi@delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-25T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "member-carla"
+                },
+                {
+                  "area": "users",
+                  "kind": "deletionRequested",
+                  "subject": "Diego Ríos",
+                  "urgent": false,
+                  "sinceUtc": "2026-09-27T15:00:00Z",
+                  "dueAtUtc": "2026-10-27T15:00:00Z",
+                  "targetId": "member-diego"
+                },
+                {
+                  "area": "settings",
+                  "kind": "domainUnverified",
+                  "subject": "delta.ejemplo.com",
+                  "urgent": false,
+                  "sinceUtc": "2026-10-01T15:00:00Z",
+                  "dueAtUtc": null,
+                  "targetId": "domain-1"
+                }
+              ]
+            }
+          }
+        ],
+        "readySelector": "nav[data-slot=\"bottom-nav\"]"
+      }
+    },
+    {
+      "id": "baja-cuenta-escritorio",
+      "pair": "baja-cuenta",
+      "group": "cuenta",
+      "state": "Mi cuenta: dar de baja",
+      "board": "Cuenta-Baja",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "3",
+                  "type": "Phone",
+                  "value": "011 15-5555-4521",
+                  "isPrimary": false,
+                  "isVerified": false,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/me/reauth",
+            "body": {
+              "sourceMethodId": "2",
+              "destination": "lu•••@gmail.com",
+              "resendAfterSeconds": 60
+            },
+            "status": 202
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Dar de baja"
+          }
+        ],
+        "readySelector": "[role=\"dialog\"]"
+      }
+    },
+    {
+      "id": "baja-cuenta-movil",
+      "pair": "baja-cuenta",
+      "group": "cuenta",
+      "state": "Mi cuenta: dar de baja",
+      "board": "M-Cuenta-Baja",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "3",
+                  "type": "Phone",
+                  "value": "011 15-5555-4521",
+                  "isPrimary": false,
+                  "isVerified": false,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/me/reauth",
+            "body": {
+              "sourceMethodId": "2",
+              "destination": "lu•••@gmail.com",
+              "resendAfterSeconds": 60
+            },
+            "status": 202
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Dar de baja"
+          }
+        ],
+        "readySelector": "[role=\"dialog\"]"
+      }
+    },
+    {
+      "id": "cuenta-quitar-correo-escritorio",
+      "pair": "cuenta-quitar-correo",
+      "group": "cuenta",
+      "state": "«Quitar» un correo: el botón destructivo, en rojo en la compu y en el teléfono (M-Cuenta-Metodo v107 lo dibuja en petróleo; Diseño lo corrigió)",
+      "board": "Cuenta-Metodo",
+      "props": {
+        "estado": "Quitar un correo: el código llega por WhatsApp"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "3",
+                  "type": "Phone",
+                  "value": "011 15-5555-4521",
+                  "isPrimary": false,
+                  "isVerified": false,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "5",
+                  "type": "Email",
+                  "value": "lucia.trabajo@gmail.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "canRemove": true,
+                  "canMakePrimary": true
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/me/reauth",
+            "body": {
+              "sourceMethodId": "3",
+              "destination": "•••• 4521",
+              "resendAfterSeconds": 60
+            },
+            "status": 202
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de lucia.trabajo@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Quitar"
+          }
+        ],
+        "readySelector": "[role=\"dialog\"]",
+        "readyText": "•••• 4521"
+      }
+    },
+    {
+      "id": "cuenta-quitar-correo-movil",
+      "pair": "cuenta-quitar-correo",
+      "group": "cuenta",
+      "state": "«Quitar» un correo: el botón destructivo, en rojo en la compu y en el teléfono (M-Cuenta-Metodo v107 lo dibuja en petróleo; Diseño lo corrigió)",
+      "board": "M-Cuenta-Metodo",
+      "props": {
+        "estado": "Quitar un correo: el código llega por WhatsApp"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "3",
+                  "type": "Phone",
+                  "value": "011 15-5555-4521",
+                  "isPrimary": false,
+                  "isVerified": false,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "5",
+                  "type": "Email",
+                  "value": "lucia.trabajo@gmail.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "canRemove": true,
+                  "canMakePrimary": true
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/me/reauth",
+            "body": {
+              "sourceMethodId": "3",
+              "destination": "•••• 4521",
+              "resendAfterSeconds": 60
+            },
+            "status": 202
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de lucia.trabajo@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Quitar"
+          }
+        ],
+        "readySelector": "[role=\"dialog\"]",
+        "readyText": "•••• 4521"
+      }
+    },
+    {
+      "id": "cuenta-desvincular-google-escritorio",
+      "pair": "cuenta-desvincular-google",
+      "group": "cuenta",
+      "state": "«Desvincular» Google: el botón destructivo, en rojo en la compu y en el teléfono (M-Cuenta-Metodo v107 lo dibuja en petróleo; Diseño lo corrigió)",
+      "board": "Cuenta-Metodo",
+      "props": {
+        "estado": "Desvincular Google"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "3",
+                  "type": "Phone",
+                  "value": "011 15-5555-4521",
+                  "isPrimary": false,
+                  "isVerified": false,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "4",
+                  "type": "Google",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": false,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/me/reauth",
+            "body": {
+              "sourceMethodId": "2",
+              "destination": "lu•••@gmail.com",
+              "resendAfterSeconds": 60
+            },
+            "status": 202
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Desvincular"
+          }
+        ],
+        "readySelector": "[role=\"dialog\"]",
+        "readyText": "lu•••@gmail.com"
+      }
+    },
+    {
+      "id": "cuenta-desvincular-google-movil",
+      "pair": "cuenta-desvincular-google",
+      "group": "cuenta",
+      "state": "«Desvincular» Google: el botón destructivo, en rojo en la compu y en el teléfono (M-Cuenta-Metodo v107 lo dibuja en petróleo; Diseño lo corrigió)",
+      "board": "M-Cuenta-Metodo",
+      "props": {
+        "estado": "Desvincular Google"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "3",
+                  "type": "Phone",
+                  "value": "011 15-5555-4521",
+                  "isPrimary": false,
+                  "isVerified": false,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "4",
+                  "type": "Google",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": false,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/me/reauth",
+            "body": {
+              "sourceMethodId": "2",
+              "destination": "lu•••@gmail.com",
+              "resendAfterSeconds": 60
+            },
+            "status": 202
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Desvincular"
+          }
+        ],
+        "readySelector": "[role=\"dialog\"]",
+        "readyText": "lu•••@gmail.com"
+      }
+    }
+  ]
+}
