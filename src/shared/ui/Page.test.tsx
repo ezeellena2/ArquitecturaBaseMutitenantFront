@@ -248,6 +248,16 @@ describe("Page", () => {
       expect(screen.getByText("los datos").parentElement).toHaveClass("gap-3.5", "px-5", "pt-1");
     });
 
+    // M-Avisos (.ap-cuerpo, «Alguien cambió esto»): debajo del cartel, el cuerpo arranca a 14.
+    it("en el teléfono, con un cartel arriba, el cuerpo con margen arranca a 14", () => {
+      renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+        <MemoryRouter><Page title="Configuración" banner={<div role="status">{"Otra persona cambió esto"}</div>}><p>{"los datos"}</p></Page></MemoryRouter>
+      </AppChromeProvider>);
+
+      expect(screen.getByText("los datos").parentElement).toHaveClass("pt-3.5");
+      expect(screen.getByText("los datos").parentElement).not.toHaveClass("pt-1");
+    });
+
     it.each([["la compu", false], ["el teléfono", true]] as const)("con un solo grupo va sin la barra de pestañas, en %s", (_, phone) => {
       const { container } = renderPage(groups(false), phone);
 
