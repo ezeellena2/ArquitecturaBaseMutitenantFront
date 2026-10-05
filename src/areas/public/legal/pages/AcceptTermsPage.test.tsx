@@ -2,6 +2,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { beforeEach, expect, it } from "vitest";
+import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { consumerWithoutOrganizations } from "@/test/mocks/currentUsers";
@@ -18,8 +19,9 @@ it("bloquea versión nueva, exige casilla y acepta el documento exacto antes de 
     server.use(http.get("/api/me", () => HttpResponse.json(consumerWithoutOrganizations)));
     return new HttpResponse(null, { status: 204 });
   }));
-  const { router } = renderRouteWithProviders("/cuenta", { as: "consumer-new-terms" });
+  const { router, container } = renderRouteWithProviders("/cuenta", { as: "consumer-new-terms" });
   expect(await screen.findByRole("heading", { name: "Actualizamos los términos" })).toBeVisible();
+  expect(await axe(container)).toHaveNoViolations();
   expect(router.state.location.pathname).toBe("/aceptar-terminos");
   expect(screen.getByText(/versión 2/)).toBeVisible();
   // Como el tablero Aceptar-Terminos: el botón no se apaga; sin la casilla pide la aceptación debajo de ella.
@@ -30,6 +32,7 @@ it("bloquea versión nueva, exige casilla y acepta el documento exacto antes de 
   expect(alert).toHaveTextContent("Aceptá los Términos y la Política de privacidad.");
   expect(screen.getByRole("checkbox").closest("label")?.nextElementSibling).toBe(alert);
   expect(accepted).toBeUndefined();
+  expect(await axe(container)).toHaveNoViolations();
   await user.click(screen.getByRole("checkbox"));
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Aceptar y seguir" }));

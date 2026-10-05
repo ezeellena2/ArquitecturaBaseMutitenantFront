@@ -2,6 +2,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
@@ -34,7 +35,7 @@ describe("CompaniesPage", () => {
       http.get("/api/companies/filter-counts", () => HttpResponse.json({ all: 1, active: 1, inactive: 0 })),
     );
 
-    const { router } = renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
+    const { router, container } = renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
 
     expect(await screen.findByRole("heading", { level: 1, name: "Empresas" })).toBeVisible();
     expect(await screen.findByRole("link", { name: "Delta S.A." })).toHaveAttribute("href", "/org/empresas/company-1");
@@ -54,6 +55,7 @@ describe("CompaniesPage", () => {
     expect(screen.getByText("1 empresa · 1 activa")).toBeVisible();
     // Tableros de listas (.pagina, compacto): 14 entre la caja de los filtros y la tabla.
     expect(screen.getByRole("search").parentElement).toHaveClass("md:gap-3.5");
+    expect(await axe(container)).toHaveNoViolations();
 
     await user.click(screen.getByRole("button", { name: "Estado: todas" }));
     expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent?.replace(/\d+$/, ""))).toEqual(["Todas", "Activas", "Inactivas"]);

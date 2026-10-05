@@ -2,6 +2,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
@@ -83,7 +84,7 @@ describe("CompanyDetailPage", () => {
   it("tablero Empresa: banda, columnas, filtros y la pestaña Roles con los roles propios de la empresa", async () => {
     const user = userEvent.setup();
     detailApi([member]);
-    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    const { container } = renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
 
     const edit = await screen.findByRole("button", { name: "Editar empresa" });
     expect(edit.querySelector("svg")).toBeNull();
@@ -93,6 +94,7 @@ describe("CompanyDetailPage", () => {
     expect(screen.getByText("lucia@example.com")).toHaveAttribute("data-slot", "cell-detail");
     expect(screen.getByRole("button", { name: "Rol: todos" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Estado: todos" })).toBeVisible();
+    expect(await axe(container)).toHaveNoViolations();
 
     await user.click(screen.getByRole("tab", { name: /Roles/ }));
     expect(await screen.findByRole("link", { name: "Crear rol" })).toHaveAttribute("href", "/org/roles/nuevo?scope=SpecificCompany&companyId=company-1");
@@ -106,6 +108,7 @@ describe("CompanyDetailPage", () => {
     expect(within(roles).getByText("1 de 1")).toBeVisible();
     expect(within(roles).getByText("Página 1 de 1")).toBeVisible();
     expect(within(roles).getByRole("combobox", { name: /por página/ })).toBeVisible();
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   // Tablero Empresa (v100) y «Criterio · Diálogos»: «Roles de …» y «Agregar miembro» van en el diálogo chico, sin bajada

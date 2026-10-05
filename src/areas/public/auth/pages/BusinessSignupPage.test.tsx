@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { MemoryRouter } from "react-router";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { axe } from "vitest-axe";
 import { configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
@@ -39,7 +40,7 @@ describe("BusinessSignupPage", () => {
     const originalWidth = window.innerWidth;
     try {
       for (const viewport of [390, 1440]) {
-        const { unmount } = show("/registro/empresa", viewport);
+        const { unmount, container } = show("/registro/empresa", viewport);
         expect(screen.getByRole("heading", { name: "Registrá tu empresa" })).toBeVisible();
         expect(screen.getByRole("checkbox", { name: /Acepto los Términos y la Política de privacidad/ })).not.toBeChecked();
         expect(screen.getByRole("button", { name: "Continuar" })).toBeEnabled();
@@ -53,6 +54,7 @@ describe("BusinessSignupPage", () => {
         }
         fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
         expect(screen.queryByRole("button", { name: "Seguir con Google" })).not.toBeInTheDocument();
+        expect(await axe(container)).toHaveNoViolations();
         unmount();
       }
     } finally {

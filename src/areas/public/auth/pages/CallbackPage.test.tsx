@@ -4,6 +4,7 @@ import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { ErrorResponse } from "oidc-client-ts";
 import { beforeAll, describe, expect, it } from "vitest";
+import { axe } from "vitest-axe";
 import { configureI18n } from "@/shared/i18n";
 import { CallbackPage } from "./CallbackPage";
 
@@ -31,9 +32,10 @@ function show(auth: Partial<AuthContextProps>) {
 }
 
 describe("CallbackPage", () => {
-  it("muestra el estado Sesión mientras OIDC canjea el código", () => {
-    show({ isLoading: true, isAuthenticated: false });
+  it("muestra el estado Sesión mientras OIDC canjea el código", async () => {
+    const { container } = show({ isLoading: true, isAuthenticated: false });
     expect(screen.getByRole("heading", { name: "Iniciando sesión…" })).toBeVisible();
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("vuelve al destino interno conservado en state, una vez autenticada", async () => {
