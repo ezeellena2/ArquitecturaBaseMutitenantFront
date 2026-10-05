@@ -66,8 +66,9 @@ export function AuditPage() {
   // Como el tablero: cualquier filtro distinto de «Últimos 30 días» sin búsqueda ni tema ni persona cuenta.
   const filtered = Boolean(category || actorId || pagination.search || filters.values.period && period !== "30");
   return <>
-    {/* Tablero M-Auditoria-Org: en el teléfono, debajo del título va el período elegido. */}
-    <Page icon={ClipboardList} title={t("audit:title")} phoneBody="flush" phoneSubtitle={t(`audit:period.${({ "0": "today", "7": "days7", "30": "days30", all: "all" } as Record<string, string>)[periodValue] ?? "days30"}`)}>
+    {/* Tablero M-Auditoria-Org y lienzo v99: en el teléfono, debajo del título va el camino («Administración»), como en
+        toda pantalla interna; el período elegido se ve en el filtro. */}
+    <Page icon={ClipboardList} title={t("audit:title")} phoneBody="flush">
       <div className="flex flex-col gap-3">
         <FilterBar phoneTools="filter"
           label={t("audit:filters.label")}

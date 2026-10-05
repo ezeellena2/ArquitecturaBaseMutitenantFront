@@ -102,6 +102,9 @@ describe("AuditPage", () => {
       expect(within(thisYear).getByText("02/10 09:00")).toHaveAttribute("datetime", "2026-10-02T12:00:00Z");
       const lastYear = screen.getByText("Deshabilitó a Tomás Acosta").closest("li")!;
       expect(within(lastYear).getByText("30/12/2025 09:00")).toBeInTheDocument();
+      // Lienzo v99 (Criterio · Decisiones): debajo del título va el camino, «Administración», y no el período del filtro.
+      expect(screen.getByText("Administración", { selector: "[data-slot='app-bar'] span" })).toBeInTheDocument();
+      expect(screen.queryByText("Últimos 30 días", { selector: "[data-slot='app-bar'] span" })).not.toBeInTheDocument();
     } finally {
       restore();
       vi.useRealTimers();
