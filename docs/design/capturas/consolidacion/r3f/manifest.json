@@ -2,6 +2,129 @@
   "version": 1,
   "cases": [
     {
+      "id": "inicio-personal-escritorio",
+      "pair": "inicio-personal",
+      "group": "inicios",
+      "state": "Inicio personal, sin aviso",
+      "board": "Inicio-Personal",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "captureMode": "harness",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "Lucía Fernández"
+      }
+    },
+    {
+      "id": "inicio-personal-movil",
+      "pair": "inicio-personal",
+      "group": "inicios",
+      "state": "Inicio personal, sin aviso",
+      "board": "M-Inicio-Personal",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "captureMode": "harness",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2F",
+        "userFixture": "visual-personal",
+        "readySelector": "nav[data-slot=\"bottom-nav\"]"
+      }
+    },
+    {
+      "id": "pagina-publica-borrador-escritorio",
+      "pair": "pagina-publica-borrador",
+      "group": "pagina-publica",
+      "state": "Página pública: borrador",
+      "board": "Pagina-Org",
+      "props": {
+        "estado": "Borrador"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fpagina",
+        "captureMode": "harness",
+        "userFixture": "visual-owner",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/organization/public-page",
+            "body": {
+              "slug": "delta",
+              "name": "Grupo Delta",
+              "description": "Grupo Delta y sus empresas, en un solo lugar.",
+              "logoDataUri": null,
+              "contactEmail": "contacto@delta.ejemplo.com",
+              "contactPhone": "+541143215678",
+              "address": "Av. Corrientes 1234, piso 5, Buenos Aires",
+              "website": "https://delta.ejemplo.com",
+              "isPublished": false,
+              "publishBlockedAtUtc": null,
+              "publishBlockedReason": null,
+              "version": 5
+            },
+            "status": 200
+          }
+        ],
+        "actions": [],
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "pagina-publica-borrador-movil",
+      "pair": "pagina-publica-borrador",
+      "group": "pagina-publica",
+      "state": "Página pública en el teléfono: borrador (el tablero dibuja un solo estado)",
+      "board": "M-Pagina-Org",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fpagina",
+        "captureMode": "harness",
+        "userFixture": "visual-owner",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/organization/public-page",
+            "body": {
+              "slug": "delta",
+              "name": "Grupo Delta",
+              "description": "Grupo Delta y sus empresas, en un solo lugar.",
+              "logoDataUri": null,
+              "contactEmail": "contacto@delta.ejemplo.com",
+              "contactPhone": "+541143215678",
+              "address": "Av. Corrientes 1234, piso 5, Buenos Aires",
+              "website": "https://delta.ejemplo.com",
+              "isPublished": false,
+              "publishBlockedAtUtc": null,
+              "publishBlockedReason": null,
+              "version": 5
+            },
+            "status": 200
+          }
+        ],
+        "actions": [],
+        "readySelector": "main"
+      }
+    },
+    {
       "id": "pagina-publica-vista-previa-tarjeta-escritorio",
       "pair": "pagina-publica-vista-previa-tarjeta",
       "group": "pagina-publica",

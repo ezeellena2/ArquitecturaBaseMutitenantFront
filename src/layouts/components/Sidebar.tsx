@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router";
 import { Avatar } from "@/shared/ui/Avatar";
 import { BrandMark } from "@/shared/ui/BrandMark";
 import type { NavigationConfig } from "../navigation/types";
-import { menuLineClass, menuRowClass } from "./menuRow";
+import { menuLineClass, menuRowClass, panelEdgeButtonClass } from "./menuRow";
 
 export interface SidebarProps {
   navigation: NavigationConfig;
@@ -33,8 +33,9 @@ export function Sidebar({ navigation, account, context, collapsed, administratio
       <span className="text-[14px] font-bold text-[var(--t1)]">{context.title}</span>
       <span className="mt-px text-[12.5px] text-[var(--t3)]">{context.detail}</span>
     </div> : null}
-    {!administrationOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className="absolute -right-3.5 top-[78px] z-30 flex size-7 items-center justify-center rounded-full border border-[var(--lado-borde)] bg-[var(--lado-activo)] text-[var(--t2)] shadow-sm">
-      {collapsed ? <ChevronRight size={15} aria-hidden="true" /> : <ChevronLeft size={15} aria-hidden="true" />}
+    {/* La flecha va en el borde del último panel: acá, solo si Administración está cerrada (lienzo v107). */}
+    {!administrationOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className={panelEdgeButtonClass}>
+      {collapsed ? <ChevronRight size={18} strokeWidth={1.75} aria-hidden="true" /> : <ChevronLeft size={18} strokeWidth={1.75} aria-hidden="true" />}
     </button> : null}
     <nav aria-label={t("navigation.general")} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1">
       <ul className="flex flex-col gap-0.5">

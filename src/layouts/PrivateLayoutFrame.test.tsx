@@ -66,6 +66,27 @@ describe("PrivateLayoutFrame", () => {
     expect(screen.getByRole("button", { name: "Cerrar Administración" })).toHaveClass("size-7", "rounded-full");
   });
 
+  // Lienzo v107 («Criterio · Decisiones», flecha para achicar el menú; `.w-plegar` de los tableros): va en el borde del
+  // último panel, el de Administración si está abierta y si no el menú, también en Personal. Es la misma en los dos
+  // lugares: blanca, redonda, de 28, con borde arena, la flecha de 18 y a 64 de arriba.
+  it.each([
+    ["Personal", "/", personalNavigation, "personal", [], "Contraer menú", "Navegación principal"],
+    ["la organización", "/org", businessNavigation, "business", ["users.read"], "Contraer menú", "Navegación principal"],
+    ["la organización con Administración abierta", "/org/usuarios", businessNavigation, "business", ["users.read"], "Cerrar Administración", "Administración"],
+  ] as const)("en %s, la flecha va en el borde del último panel", (_, path, navigation, scope, permissions, name, panel) => {
+    localStorage.clear();
+    session.permissions = [...permissions];
+    render(<MemoryRouter initialEntries={[path]}><PrivateLayoutFrame navigation={navigation} scope={scope}><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
+    const arrows = screen.getAllByRole("button", { name: /^(Contraer menú|Expandir menú|Cerrar Administración)$/ });
+    expect(arrows).toHaveLength(1);
+    const [arrow] = arrows;
+    expect(arrow).toHaveAccessibleName(name);
+    expect(arrow.closest("aside, nav")).toHaveAccessibleName(panel);
+    expect(arrow).toHaveClass("absolute", "-right-3.5", "top-16", "size-7", "rounded-full", "border-[var(--borde2)]", "bg-[var(--lado-activo)]",
+      "text-[var(--t1)]", "hover:text-[var(--marca)]");
+    expect(arrow.querySelector("svg")).toHaveAttribute("width", "18");
+  });
+
   it("en Inicio arranca con el panel cerrado", () => {
     session.permissions = ["users.read"];
     render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);

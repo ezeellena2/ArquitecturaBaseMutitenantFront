@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
 import { findAdministrationEntry } from "../navigation/administration";
 import type { NavigationPanel } from "../navigation/types";
-import { menuGroupClass, menuLineClass, menuRowClass } from "./menuRow";
+import { menuGroupClass, menuLineClass, menuRowClass, panelEdgeButtonClass } from "./menuRow";
 
 // «Criterio · Menús» (lienzo v102): las mismas opciones del menú lateral, con la sección en la que estás en blanco. Un
 // grupo («Gestión de usuarios») arranca abierto solo si estás en una de sus pantallas, con sus opciones a 18 de sangría;
@@ -21,8 +21,8 @@ export function AdminPanel({ panel, open, onClose }: { panel: NavigationPanel | 
 
   return <nav aria-label={t(panel.labelKey)} className="relative flex h-full w-[232px] shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--panel)]">
     <div className="flex h-[52px] items-center border-b border-[var(--lado-borde)] px-3.5 text-[14px] font-bold text-[var(--t1)]">{t(panel.labelKey)}</div>
-    <button type="button" aria-label={t("layout.sidebar.closeAdministration")} onClick={onClose} className="absolute -right-3.5 top-16 z-30 flex size-7 items-center justify-center rounded-full border border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t1)] shadow-sm">
-      <ChevronLeft size={15} aria-hidden="true" />
+    <button type="button" aria-label={t("layout.sidebar.closeAdministration")} onClick={onClose} className={panelEdgeButtonClass}>
+      <ChevronLeft size={18} strokeWidth={1.75} aria-hidden="true" />
     </button>
     <ul className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-2.5">
       {sections.map((section, index) => {
