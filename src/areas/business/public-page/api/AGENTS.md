@@ -1,5 +1,5 @@
 # API de página pública
 
-Funciones tipadas para editar, publicar y verificar el slug de la página de organización.
+Funciones tipadas para leer, editar, publicar y despublicar la página (`/api/organization/public-page`) y para ver si un slug está libre (`/api/public-site/slug-availability`).
 Usá el contrato OpenAPI generado y la versión de la página en cada edición.
-La lectura pública pertenece al flujo `public-site`, no a esta API administrativa.
+La lectura pública del subdominio (`GET /api/public-site`, `PublicSiteController`) no va acá: va en `areas/storefront/` (E7).

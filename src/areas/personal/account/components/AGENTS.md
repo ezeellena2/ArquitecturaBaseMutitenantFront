@@ -1,3 +1,4 @@
-Formularios y diálogos de Mi cuenta. Leé formularios, concurrencia y datos-y-api.
-Usá controles compartidos, recursos es/en y clientes tipados; ningún código o ticket sale en URL.
-La versión del draft se conserva hasta guardar o descartar explícitamente.
+Formularios y diálogos de Mi cuenta: la referencia de formulario y de diálogo que copian las demás features.
+`AccountProfileForm` («Tus datos»: React Hook Form con zod y `useEditPage`), `LoginMethodsTable` (los métodos de ingreso con su ⋮), `VerifyLoginMethodDialog` (verificar un método, con el diálogo de `shared/account`), `AccountGoogleButton` (vincular Google), `AccountDeletionDialog` (se monta al abrirse, devuelve el foco y lleva su error arriba de los botones) y `DeletionRequestedPage`.
+Leé [formularios](../../../../../docs/rules/formularios.md) y [datos-y-api](../../../../../docs/rules/datos-y-api.md); ningún código o ticket sale en la URL.
+La versión de lo cargado se conserva hasta guardar o descartar.
