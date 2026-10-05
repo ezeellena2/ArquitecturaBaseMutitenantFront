@@ -600,6 +600,49 @@ function b6cCases(root) {
   ];
 }
 
+// Tanda 6d-2 (el pulido final): el error del código al confirmar que sos vos (quitar un correo) y al dar de baja la cuenta,
+// debajo de los casilleros y solo con el borde rojo, como Cuenta-Verificar; y «Sin dominio» de Configuración con el tamaño
+// de su tablero (en el teléfono, la fila apagada que M-Configuracion-Dominio dibuja detrás de la hoja).
+function b6d2Cases(root) {
+  const stageApp = (pair, width) => stageCases(root, "etapa-4").find((entry) => entry.pair === pair && entry.viewport.width === width).app;
+  const wrongCode = api("POST", "/api/me/reauth/verify", { status: 400, code: "Auth.LoginCode.Invalid", title: "Código", detail: "El código no es válido." }, 400);
+  const deletionWrongCode = (width) => ({
+    responses: [...stageApp("baja-cuenta", width).responses, wrongCode],
+    actions: [...stageApp("baja-cuenta", width).actions, appFill("Motivo", "Ya no la uso."), { type: "otp", value: "482910" }, appClick("button", "Dar de baja")],
+    readySelector: '[role="dialog"] [role="alert"]',
+  });
+  // El correo que quita el tablero (lucia.trabajo@gmail.com) y el código, al WhatsApp (•••• 4521).
+  const removeEmailWrongCode = (width) => {
+    const app = stageApp("cuenta", width);
+    const responses = app.responses.map((item) => item.method === "GET" && item.path === "/api/me/login-methods"
+      ? { ...item, body: { ...item.body, methods: [...item.body.methods, { id: "5", type: "Email", value: "lucia.trabajo@gmail.com", isPrimary: false, isVerified: true, canRemove: true, canMakePrimary: true }] } }
+      : item);
+    return {
+      responses: [...responses, api("POST", "/api/me/reauth", { sourceMethodId: "3", destination: "•••• 4521", resendAfterSeconds: 60 }, 202), wrongCode],
+      actions: [appClick("button", "Acciones de lucia.trabajo@gmail.com"), appClick("menuitem", "Quitar"), { type: "otp", value: "482910" }, appClick("button", "Quitar")],
+      readySelector: '[role="dialog"] [role="alert"]',
+    };
+  };
+  const removeEmailBoard = { props: { estado: "Quitar un correo: el código llega por WhatsApp" } };
+  const noDomain = { actions: [], readySelector: "main", readyText: "Sin dominio" };
+  return [
+    ...pairCases(root, { stage: "etapa-4", pair: "baja-cuenta", id: "baja-cuenta-codigo-incorrecto", group: "cuenta",
+      state: "«Dar de baja»: el código incorrecto, debajo de los casilleros y solo con el borde rojo",
+      desktop: { board: "Cuenta-Baja", props: { estado: "Código incorrecto" } }, phone: { board: "M-Cuenta-Baja", props: { estado: "Código incorrecto" } },
+      app: deletionWrongCode(1440), phoneApp: deletionWrongCode(390) }),
+    ...pairCases(root, { stage: "etapa-4", pair: "cuenta", id: "quitar-correo-codigo-incorrecto", group: "cuenta",
+      state: "Confirmá que sos vos al quitar un correo: el código incorrecto, debajo de los casilleros, como en Cuenta-Verificar (el tablero dibuja el paso sin error)",
+      desktop: { board: "Cuenta-Metodo", ...removeEmailBoard }, phone: { board: "M-Cuenta-Metodo", ...removeEmailBoard },
+      app: removeEmailWrongCode(1440), phoneApp: removeEmailWrongCode(390) }),
+    ...pairCases(root, { stage: "etapa-6", pair: "configuracion-agregar-dominio", id: "configuracion-sin-dominio", group: "configuracion",
+      state: "Configuración sin dominio: «Sin dominio» en 13 y gris claro, como .o-dom-vacio",
+      desktop: { board: "Configuracion", props: { dominio: "Sin dominio" } },
+      phone: { board: "M-Configuracion-Dominio", props: { estado: "Con dominio" },
+        state: "Configuración en el teléfono sin dominio: «Sin dominio» es una fila apagada de la lista (el tablero la dibuja detrás de la hoja de «Agregar dominio»)" },
+      app: noDomain, phoneApp: noDomain }),
+  ];
+}
+
 export function catalog(root) {
   const rename ={ board: "Cuenta", boardActions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
@@ -624,5 +667,6 @@ export function catalog(root) {
     ...b6aCases(root),
     ...b6bCases(root),
     ...b6cCases(root),
+    ...b6d2Cases(root),
   ];
 }
