@@ -732,6 +732,46 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           assert.match(createdUiRoleId, /^[0-9a-f-]{36}$/i);
           await rolesPage.getByRole("heading", { name: uiRoleName }).waitFor();
 
+          // B2 (tablero Rol): el nombre repetido se dice debajo del nombre, con el texto del back; corregido, el mismo
+          // formulario crea el rol con otra Idempotency-Key (con la misma, el back respondería 422 hasta recargar).
+          setStage("intenta crear otro rol con el mismo nombre");
+          const repeatedRolePath = "/api/roles";
+          await rolesPage.goto(new URL("/org/roles/nuevo", baseUrl).href);
+          const repeatedNameField = rolesPage.getByRole("textbox", { name: "Nombre" });
+          await repeatedNameField.fill(uiRoleName);
+          await rolesPage.getByRole("combobox", { name: "Vale en" }).click();
+          await rolesPage.getByRole("option", { name: "Toda la organización" }).click();
+          await rolesPage.getByRole("button", { name: "Abrir o cerrar Roles", exact: true }).click();
+          const repeatedPermission = rolesPage.getByRole("checkbox", { name: "Ver roles", exact: true });
+          await repeatedPermission.focus();
+          await repeatedPermission.press("Space");
+          const repeatedCreate = rolesPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === repeatedRolePath && response.request().method() === "POST");
+          await rolesPage.getByRole("button", { name: "Crear rol", exact: true }).click();
+          const repeatedResponse = await repeatedCreate;
+          assert.equal(repeatedResponse.status(), 409, "Un nombre repetido en la organización debe responder 409.");
+          const repeatedProblem = await repeatedResponse.json();
+          assert.equal(repeatedProblem.code, "Roles.Role.AlreadyExists");
+          const repeatedKey = repeatedResponse.request().headers()["idempotency-key"];
+          assert.match(repeatedKey ?? "", /^[0-9a-f-]{36}$/i, "El alta debe mandar su Idempotency-Key.");
+          setStage("ve el nombre repetido debajo de su campo");
+          await rolesPage.getByText(repeatedProblem.detail, { exact: true }).waitFor();
+          assert.equal(await repeatedNameField.getAttribute("aria-invalid"), "true", "El error del nombre va en su campo.");
+          assert.equal(new URL(rolesPage.url()).pathname, "/org/roles/nuevo", "Con el error, sigue en el alta.");
+
+          setStage("corrige el nombre y crea el rol con otra clave");
+          const correctedRoleName = `${uiRoleName} corregido`;
+          await repeatedNameField.fill(correctedRoleName);
+          const correctedCreate = rolesPage.waitForResponse((response) =>
+            new URL(response.url()).pathname === repeatedRolePath && response.request().method() === "POST");
+          await rolesPage.getByRole("button", { name: "Crear rol", exact: true }).click();
+          const correctedResponse = await correctedCreate;
+          assert.equal(correctedResponse.status(), 201, "Con el nombre corregido, el mismo formulario crea el rol.");
+          const correctedKey = correctedResponse.request().headers()["idempotency-key"];
+          assert.match(correctedKey ?? "", /^[0-9a-f-]{36}$/i);
+          assert.notEqual(correctedKey, repeatedKey, "El segundo «Crear rol» sale con otra Idempotency-Key.");
+          await rolesPage.getByRole("heading", { name: correctedRoleName }).waitFor();
+
           setStage("intenta borrar un rol de sistema con su versión vigente");
           const systemRoleUrl = new URL(`/api/roles/${systemRole.id}`, baseUrl);
           const systemDelete = await rolesPage.request.delete(systemRoleUrl.href, { headers, data: { version: systemRole.version } });
@@ -947,6 +987,45 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             "Configuración debe mostrar el nombre que acaba de guardar.",
           );
 
+          // B11 (tablero Avisos › «Salir sin guardar»): con cambios, un enlace del menú pregunta antes de salir;
+          // «Seguir editando» conserva lo escrito y «Salir sin guardar» se va sin mandar nada.
+          setStage("cambia el nombre en Configuración y toca Inicio en el menú");
+          let settingsWritesWhileLeaving = 0;
+          const countSettingsWrites = (request) => {
+            if (new URL(request.url()).pathname === "/api/organization/settings" && request.method() !== "GET") settingsWritesWhileLeaving++;
+          };
+          adminPage.on("request", countSettingsWrites);
+          try {
+            await organizationName.fill("Empresa E2E sin guardar");
+            await adminPage.getByText("Cambios sin guardar", { exact: true }).first().waitFor();
+            const homeLink = adminPage.getByRole("navigation", { name: "General", exact: true }).getByRole("link", { name: "Inicio", exact: true });
+            await homeLink.click();
+            const leaveDialog = adminPage.getByRole("dialog", { name: "¿Salir sin guardar?" });
+            await leaveDialog.waitFor();
+            await leaveDialog.getByText("Se pierde lo que cambiaste acá.", { exact: true }).waitFor();
+            assert.equal(new URL(adminPage.url()).pathname, "/org/configuracion", "Antes de confirmar, sigue en Configuración.");
+            setStage("«Seguir editando» conserva lo escrito");
+            await leaveDialog.getByRole("button", { name: "Seguir editando", exact: true }).click();
+            await leaveDialog.waitFor({ state: "detached" });
+            assert.equal(await organizationName.inputValue(), "Empresa E2E sin guardar", "«Seguir editando» conserva lo escrito.");
+            setStage("sale sin guardar");
+            await homeLink.click();
+            await leaveDialog.getByRole("button", { name: "Salir sin guardar", exact: true }).click();
+            await expectPath(adminPage, "/org", "salir de Configuración sin guardar");
+          } finally {
+            adminPage.off("request", countSettingsWrites);
+          }
+          assert.equal(settingsWritesWhileLeaving, 0, "Salir sin guardar no manda el cambio.");
+          setStage("vuelve a Configuración y encuentra lo último guardado");
+          await adminPage.goto(new URL("/org/configuracion", baseUrl).href);
+          await organizationName.waitFor();
+          let nameAfterLeaving = "";
+          for (const deadline = Date.now() + 10_000; Date.now() < deadline; await delay(200)) {
+            nameAfterLeaving = await organizationName.inputValue();
+            if (nameAfterLeaving !== "") break;
+          }
+          assert.equal(nameAfterLeaving, "Empresa E2E configurada", "Salir sin guardar deja el nombre guardado.");
+
           setStage("abre la Página pública para editarla");
           await adminPage.goto(new URL("/org/pagina", baseUrl).href);
           const publicSlug = adminPage.getByRole("textbox", { name: "Dirección de la página", exact: true });
@@ -1006,13 +1085,16 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             { headers: { Authorization: authorization } });
           assert.equal(auditResponse.status(), 200, "La organización debe consultar su auditoría real.");
           const audit = await auditResponse.json();
-          assert.ok(audit.items.some((entry) => entry.affectedDisplayName === "Persona invitada E2E"
-            && entry.whereText === updatedCompanyName),
-          "La auditoría debe indicar el nombre afectado y la empresa donde se asignó el rol.");
+          const invitedEntry = audit.items.find((entry) => entry.affectedDisplayName === "Persona invitada E2E"
+            && entry.whereText === updatedCompanyName);
+          assert.ok(invitedEntry, "La auditoría debe indicar el nombre afectado y la empresa donde se asignó el rol.");
+          // Tablero Auditoria-Org (tandas 4f y 4g del back): invitar a alguien a una empresa con sus roles es una sola
+          // entrada, «Invitó a …» con el correo de la invitación tapado; la persona afectada sale con su nombre de hoy.
+          assert.match(invitedEntry.actionText, /^Invitó a /, `La entrada de la invitación dice «${invitedEntry.actionText}».`);
           await adminPage.goto(new URL("/org/auditoria", baseUrl).href);
           await adminPage.getByRole("heading", { name: "Auditoría", exact: true }).waitFor();
-          await adminPage.getByText("Cambió los roles de Persona invitada E2E", { exact: true }).first().waitFor();
-          await adminPage.getByText(updatedCompanyName, { exact: true }).first().waitFor();
+          await adminPage.getByText(invitedEntry.actionText, { exact: true }).filter({ visible: true }).first().waitFor();
+          await adminPage.getByText(updatedCompanyName, { exact: true }).filter({ visible: true }).first().waitFor();
         }],
         ...[false, true].map((existingAccount) => [
           `3c: aceptar invitación ${existingAccount ? "con cuenta previa sin Personal" : "sin cuenta y sin Personal"} desde el .eml`,
