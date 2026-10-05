@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Clock3, ChevronRight, LockKeyhole, TriangleAlert } from "lucide-react";
-import { LogOutIcon } from "@/shared/ui/icons";
+import { ChevronRight } from "lucide-react";
+import { AlertTriangleIcon, ClockIcon, LockIcon, LogOutIcon } from "@/shared/ui/icons";
 import { useTranslation } from "react-i18next";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { useIsSigningOut } from "@/auth/signOutStatus";
@@ -37,7 +37,8 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
   const closed = code === "Tenancy.Tenant.Closed";
   const title = t(`errors:errorPage.unavailable.${pending ? "pendingTitle" : closed ? "closedTitle" : "suspendedTitle"}`, { organizationName });
   const description = t(`errors:errorPage.unavailable.${pending ? "pendingDescription" : closed ? "closedDescription" : "suspendedDescription"}`);
-  const Icon = pending ? Clock3 : closed ? LockKeyhole : TriangleAlert;
+  // Tableros Perfil-Suspendido y M-Perfil-Suspendido: el reloj, el candado y el triángulo del set (shared/ui/icons).
+  const Icon = pending ? ClockIcon : closed ? LockIcon : AlertTriangleIcon;
   const iconTone = pending ? "bg-[var(--marca-t)] text-[var(--marca-tx)]" : closed ? "bg-[var(--s3)] text-[var(--t2)]" : "bg-[var(--alerta-t)] text-[var(--alerta)]";
   const organizations = account?.organizations.filter((item) => item.id !== organizationId && isSelectable(item)) ?? [];
 
@@ -53,7 +54,7 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
     const profileInitials = (text: string) => <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--s3)] text-[13px] font-bold text-[var(--t2)]">{text}</span>;
     return <main className="flex min-h-dvh flex-col bg-[var(--s2)] text-[var(--t1)]">
       <div className="flex flex-col items-center gap-2.5 px-8 pt-16 pb-[22px] text-center">
-        <span aria-hidden="true" className={`inline-flex size-16 items-center justify-center rounded-full ${iconTone}`}><Icon size={28} strokeWidth={1.75} /></span>
+        <span aria-hidden="true" className={`inline-flex size-16 items-center justify-center rounded-full ${iconTone}`}><Icon className="size-7" /></span>
         <h1 className="mt-1.5 text-[22px] font-bold leading-tight tracking-[-0.015em]">{title}</h1>
         <p className="text-[15px] leading-normal text-[var(--t2)]">{description}</p>
       </div>
@@ -77,7 +78,7 @@ export function OrganizationUnavailablePage({ code, organizationName, organizati
     </div>
     <div className="mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-[460px] flex-col justify-center gap-[22px] pt-3">
       <div className="flex flex-col items-center gap-4 text-center">
-        <span aria-hidden="true" className={`inline-flex size-[52px] items-center justify-center rounded-full ${iconTone}`}><Icon size={20} strokeWidth={1.75} /></span>
+        <span aria-hidden="true" className={`inline-flex size-[52px] items-center justify-center rounded-full ${iconTone}`}><Icon className="size-5" /></span>
         <div>
           <h1 className="text-xl font-bold tracking-[-0.02em]">{title}</h1>
           <p className="mt-2 text-sm text-[var(--t2)]">{description}</p>

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { useTranslation } from "react-i18next";
-import { Clock3, LockKeyhole, TriangleAlert } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { takeExpiredSessionNotice } from "@/auth/sessionExpiredNotice";
@@ -12,6 +11,7 @@ import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useCountdown } from "@/shared/hooks/useCountdown";
 import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
+import { AlertTriangleIcon, ClockIcon, LockIcon } from "@/shared/ui/icons";
 import { requestLoginCode, verifyLoginCode } from "../api/loginCode";
 import { AuthStatus, type AuthStatusProps } from "../components/AuthStatus";
 import { BusinessAccessResult } from "../components/BusinessAccessResult";
@@ -40,9 +40,9 @@ const followAuthorize = (url: string) => globalThis.location.assign(url);
 
 // La organización suspendida, en revisión o cerrada: los textos de la organización no disponible, con el círculo de su estado.
 const unavailableResults: Record<UnavailableCode, { title: string; description: string; icon: AuthStatusProps["icon"]; tone: AuthStatusProps["tone"] }> = {
-  "Tenancy.Tenant.Suspended": { title: "suspendedTitle", description: "suspendedDescription", icon: TriangleAlert, tone: "warning" },
-  "Tenancy.Tenant.PendingApproval": { title: "pendingTitle", description: "pendingDescription", icon: Clock3, tone: "brand" },
-  "Tenancy.Tenant.Closed": { title: "closedTitle", description: "closedDescription", icon: LockKeyhole, tone: "neutral" },
+  "Tenancy.Tenant.Suspended": { title: "suspendedTitle", description: "suspendedDescription", icon: AlertTriangleIcon, tone: "warning" },
+  "Tenancy.Tenant.PendingApproval": { title: "pendingTitle", description: "pendingDescription", icon: ClockIcon, tone: "brand" },
+  "Tenancy.Tenant.Closed": { title: "closedTitle", description: "closedDescription", icon: LockIcon, tone: "neutral" },
 };
 
 export function LoginPage({ access, completeLogin = followAuthorize }: LoginPageProps) {

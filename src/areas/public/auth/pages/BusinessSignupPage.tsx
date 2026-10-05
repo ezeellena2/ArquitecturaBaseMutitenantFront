@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
-import { Check, Clock3, LockKeyhole } from "lucide-react";
+import { Check } from "lucide-react";
+import { ClockIcon, LockIcon } from "@/shared/ui/icons";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { ApiError } from "@/shared/api/ApiError";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -228,12 +229,12 @@ export function BusinessSignupPage() {
     : null;
 
   return <AuthLayout access="business" panelIntro={t("businessSignup.panelIntro")}>
-    {step === "closed" ? <AuthStatus icon={LockKeyhole} title={t("businessSignup.closedTitle")} detail={t("businessSignup.closedDetail")}
+    {step === "closed" ? <AuthStatus icon={LockIcon} title={t("businessSignup.closedTitle")} detail={t("businessSignup.closedDetail")}
       actions={<Button asChild variant="outline" size="lg"><Link to="/">{t("businessSignup.backHome")}</Link></Button>} />
       : step === "success" ? <AuthStatus icon={Check} tone="ok" title={t("businessSignup.doneTitle", { organization: organizationName.trim() })}
         detail={t("businessSignup.doneDetail")}
         actions={<Button type="button" size="lg" onClick={() => void enterOrganization()}>{t("businessSignup.openOrganization", { organization: organizationName.trim() })}</Button>} />
-        : step === "approval" ? <AuthStatus icon={Clock3} tone="warning" title={t("businessSignup.approvalTitle")}
+        : step === "approval" ? <AuthStatus icon={ClockIcon} tone="warning" title={t("businessSignup.approvalTitle")}
           detail={<Trans ns="auth" i18nKey="businessSignup.approvalDetail" values={{ organization: organizationName.trim(), email: notificationEmail }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />}
           actions={<Button asChild variant="outline" size="lg"><Link to="/">{t("businessSignup.backHome")}</Link></Button>} />
           : step === "email" ? <section className="flex flex-col gap-[22px]">

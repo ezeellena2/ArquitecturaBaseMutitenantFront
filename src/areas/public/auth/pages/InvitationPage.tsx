@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Check, Clock } from "lucide-react";
+import { Check } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useAuth } from "react-oidc-context";
@@ -16,6 +16,7 @@ import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
 import { DateText } from "@/shared/ui/format/DateText";
 import { FormError } from "@/shared/ui/FormError";
+import { ClockIcon } from "@/shared/ui/icons";
 import { useSignOut } from "@/auth/useSignOut";
 import { accountPagePaths } from "@/shared/api/accountContract";
 import { homeOf, parseAccess } from "@/tenancy/access";
@@ -166,7 +167,7 @@ function InvitationFlow() {
             {needsPersonalMethod ? <Banner tone="warning">{t("accepted.personalMethodNotice")}</Banner> : null}
             <FormError message={actionError} />
           </AuthStatus> : invitation.state === "Expired" || invitation.state === "Invalid" || invitation.state === "OrganizationSuspended"
-            ? <AuthStatus icon={Clock} tone={invitation.state === "Invalid" ? "neutral" : "warning"}
+            ? <AuthStatus icon={ClockIcon} tone={invitation.state === "Invalid" ? "neutral" : "warning"}
               title={t(`states.${invitation.state}.title`, { organization: organizationName, inviter })}
               detail={t(`states.${invitation.state}.description`, { organization: organizationName, inviter })}
               actions={<Button asChild variant="outline" size="lg"><Link to="/login">{t("backToSignIn")}</Link></Button>} />

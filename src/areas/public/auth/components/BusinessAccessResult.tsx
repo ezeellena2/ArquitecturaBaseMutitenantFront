@@ -1,7 +1,8 @@
-import { Ban, Building2 } from "lucide-react";
+import { Ban } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { Button } from "@/shared/ui/button";
+import { BuildingIcon } from "@/shared/ui/icons";
 import { AuthStatus } from "./AuthStatus";
 
 export type BusinessAccessResultProps =
@@ -16,7 +17,7 @@ export function BusinessAccessResult(props: BusinessAccessResultProps) {
   const enterAsPerson = <Link to="/login">{t("login.enterAsPerson")}</Link>;
 
   return props.status === "noBusiness"
-    ? <AuthStatus icon={Building2} title={t("login.noBusiness")} actions={<>
+    ? <AuthStatus icon={BuildingIcon} title={t("login.noBusiness")} actions={<>
       <Button asChild size="lg">{register}</Button>
       <Button asChild variant="outline" size="lg">{enterAsPerson}</Button>
     </>} />

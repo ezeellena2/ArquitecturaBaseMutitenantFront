@@ -5,7 +5,7 @@ import { useAuth } from "react-oidc-context";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 import { z } from "zod";
-import { LockKeyhole } from "lucide-react";
+import { LockIcon } from "@/shared/ui/icons";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { ApiError } from "@/shared/api/ApiError";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
@@ -106,7 +106,7 @@ export function SignupPage() {
   if (googleComplete) return <SessionStatusPage status="starting" />;
 
   return <AuthLayout access="consumer">
-    {closed ? <AuthStatus icon={LockKeyhole} title={t("signup.closedTitle")} detail={t("signup.closedDetail")}
+    {closed ? <AuthStatus icon={LockIcon} title={t("signup.closedTitle")} detail={t("signup.closedDetail")}
       actions={<Button asChild size="lg"><Link to="/login">{t("signup.backToLogin")}</Link></Button>} />
       : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("signup.title")}</h1>

@@ -77,6 +77,8 @@ describe("LoginPage", () => {
     fireEvent.change(code, { target: { value: "123456" } });
     fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
     expect(await screen.findByRole("heading", { name: "Tu cuenta tiene la baja pedida" })).toBeVisible();
+    // El reloj del tablero Ingreso («Cuenta con la baja pedida»).
+    expect(screen.getByRole("main").querySelector("span[aria-hidden='true'] svg circle")).toHaveAttribute("r", "8.5");
     expect(completeLogin).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" }));
     try {
@@ -283,7 +285,9 @@ describe("LoginPage", () => {
 
     expect(await screen.findByRole("heading", { name: title })).toBeVisible();
     const icon = screen.getByRole("main").querySelector("svg");
-    expect(icon?.getAttribute("class")).toContain(code === "Tenancy.Access.NotMember" ? "lucide-building" : "lucide-ban");
+    // El edificio del tablero Ingreso (shared/ui/icons), no el de lucide; el acceso deshabilitado sigue con su círculo tachado.
+    if (code === "Tenancy.Access.NotMember") expect(icon?.querySelector("path")).toHaveAttribute("d", "M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16");
+    else expect(icon?.getAttribute("class")).toContain("lucide-ban");
     // Como el tablero Ingreso: la acción principal primero, rellena; la otra, con borde. Son los botones de 44 y letra de
     // 15 del ingreso y el registro (Button lg), no enlaces con medidas propias.
     const actions = within(screen.getByRole("main")).getAllByRole("link").filter((link) => link.textContent !== "ArquitecturaBase");
@@ -313,6 +317,10 @@ describe("LoginPage", () => {
 
     expect(await screen.findByRole("heading", { name: title })).toBeVisible();
     expect(screen.getByText(description)).toBeVisible();
+    // En revisión, el reloj; cerrada, el candado: los del tablero (shared/ui/icons).
+    const circle = screen.getByRole("main").querySelector("span[aria-hidden='true'] svg");
+    if (code === "Tenancy.Tenant.PendingApproval") expect(circle?.querySelector("circle")).toHaveAttribute("r", "8.5");
+    if (code === "Tenancy.Tenant.Closed") expect(circle?.querySelector("rect")).toHaveAttribute("y", "10.5");
     expect(screen.getByRole("link", { name: "Ingresá como persona" })).toHaveAttribute("href", "/login");
     expect(screen.queryByRole("button", { name: "Verificar" })).not.toBeInTheDocument();
     expect(screen.queryByText("Algo salió mal. Probá de nuevo en un rato.")).not.toBeInTheDocument();

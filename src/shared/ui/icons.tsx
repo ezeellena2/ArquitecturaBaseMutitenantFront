@@ -44,12 +44,28 @@ export function AppHomeIcon(props: IconProps) {
   );
 }
 
-/// El candado del 403 (tableros Error-Org y M-Error-Org): el cuerpo y el arco, sin cerradura.
+/// El candado del 403 (tableros Error-Org y M-Error-Org) y de las pantallas de estado (el alta cerrada de Registro y
+/// Registro-Empresa, la organización cerrada de Perfil-Suspendido): el cuerpo y el arco, sin cerradura.
 export function LockIcon(props: IconProps) {
   return (
     <Icon {...props}>
       <rect x="5" y="10.5" width="14" height="10" rx="2" />
       <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
+    </Icon>
+  );
+}
+
+/// El edificio de las pantallas de estado (tablero Ingreso, «Empresa: la cuenta no está en ninguna empresa»): el cuerpo
+/// con sus ventanas, el ala de la derecha y el piso.
+export function BuildingIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16" />
+      <path d="M15 9h4a1 1 0 0 1 1 1v11" />
+      <path d="M3 21h18" />
+      <path d="M8 8h3" />
+      <path d="M8 12h3" />
+      <path d="M8 16h3" />
     </Icon>
   );
 }
@@ -225,11 +241,13 @@ export function UserIcon(props: IconProps) {
   );
 }
 
-/// Algo que venció: el enlace del chat que ya no sirve (tablero "WhatsApp · El enlace del chat").
+/// El reloj de las pantallas de estado (tableros Ingreso, Registro-Empresa, Invitacion y Perfil-Suspendido: la baja
+/// pedida, la organización en revisión, la invitación vencida) y de «Tu sesión venció» (.msj.info de Ingreso). También
+/// algo que venció, como el enlace del chat que ya no sirve (tablero "WhatsApp · El enlace del chat").
 export function ClockIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <circle cx="12" cy="12" r="8.25" />
+      <circle cx="12" cy="12" r="8.5" />
       <path d="M12 7.5V12l3 2" />
     </Icon>
   );

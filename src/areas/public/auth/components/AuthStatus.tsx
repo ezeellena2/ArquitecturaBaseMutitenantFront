@@ -1,5 +1,4 @@
-import type { LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
 
 type Tone = "neutral" | "ok" | "warning" | "brand" | "danger";
@@ -13,8 +12,12 @@ const tones: Record<Tone, string> = {
   danger: "bg-[var(--peligro-t)] text-[var(--peligro)]",
 };
 
+/// Un ícono de `shared/ui/icons` (el edificio, el candado, el reloj) o, mientras no esté en el set, uno de lucide, que
+/// toma el tamaño y el trazo que le pasa la pantalla.
+export type AuthStatusIcon = ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
+
 export interface AuthStatusProps {
-  icon: LucideIcon;
+  icon: AuthStatusIcon;
   tone?: Tone;
   title: ReactNode;
   detail?: ReactNode;
@@ -31,7 +34,7 @@ export interface AuthStatusProps {
 export function AuthStatus({ icon: Icon, tone = "neutral", title, detail, children, actions, largeIcon = false }: AuthStatusProps) {
   return <div className="flex flex-col gap-[22px]">
     <span aria-hidden="true" className={cn("flex size-[52px] items-center justify-center self-center rounded-full", tones[tone])}>
-      <Icon size={largeIcon ? 22 : 20} strokeWidth={largeIcon ? 2 : 1.75} />
+      <Icon className={largeIcon ? "size-[22px]" : "size-5"} size={largeIcon ? 22 : 20} strokeWidth={largeIcon ? 2 : 1.75} />
     </span>
     <div className="text-center">
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{title}</h1>

@@ -41,3 +41,22 @@ describe("el set de íconos", () => {
     expect(container.querySelector("svg")).toHaveAttribute("stroke-width", "1.75");
   });
 });
+
+// Tableros Ingreso, Registro, Registro-Empresa, Invitacion y Perfil-Suspendido (.circulo): las pantallas de estado dibujan
+// su edificio, su candado y su reloj, no los de un paquete de íconos.
+describe("los íconos de las pantallas de estado", () => {
+  it("dibujan el edificio, el candado y el reloj del tablero", () => {
+    const building = render(<icons.BuildingIcon />).container.querySelector("svg")!;
+    expect([...building.querySelectorAll("path")].map((path) => path.getAttribute("d"))).toEqual([
+      "M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16", "M15 9h4a1 1 0 0 1 1 1v11", "M3 21h18", "M8 8h3", "M8 12h3", "M8 16h3",
+    ]);
+
+    const lock = render(<icons.LockIcon />).container.querySelector("svg")!;
+    expect(lock.querySelector("rect")).toHaveAttribute("y", "10.5");
+    expect(lock.querySelector("path")).toHaveAttribute("d", "M8 10.5V8a4 4 0 0 1 8 0v2.5");
+
+    const clock = render(<icons.ClockIcon />).container.querySelector("svg")!;
+    expect(clock.querySelector("circle")).toHaveAttribute("r", "8.5");
+    expect(clock.querySelector("path")).toHaveAttribute("d", "M12 7.5V12l3 2");
+  });
+});
