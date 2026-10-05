@@ -42,6 +42,9 @@ describe("LegalDocumentPage", () => {
     const { container } = show("terms");
     expect(await screen.findByRole("heading", { name: "Términos y condiciones" })).toBeVisible();
     expect(screen.getByText(/Versión/)).toHaveTextContent("Versión 1 · vigente desde 01/09/2026");
+    // Tablero Legal (.leg): en la compu, el título a 40 de la cabecera y la versión con renglones de 1,6.
+    expect(screen.getByRole("heading", { name: "Términos y condiciones" }).parentElement?.parentElement).toHaveClass("md:py-10");
+    expect(screen.getByText(/Versión/)).toHaveClass("md:leading-[1.6]");
     expect(screen.getByRole("article", { name: "Términos y condiciones" })).toHaveTextContent(demonstration["es-AR"].terms);
     expect(await axe(container)).toHaveNoViolations();
   });
