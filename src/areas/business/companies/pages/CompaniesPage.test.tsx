@@ -47,6 +47,9 @@ describe("CompaniesPage", () => {
     expect(screen.getAllByRole("columnheader").map((header) => header.textContent))
       .toEqual(["Empresa", "Zona horaria", "Miembros", "Estado", "Acciones"]);
     expect(screen.getByText("CUIT 30-71234567-1")).toBeVisible();
+    // «Criterio · Tablas» (lienzo v92): el CUIT va en la segunda línea gris, debajo del nombre, y la fila mide 52.
+    expect(screen.getByText("CUIT 30-71234567-1").closest('[data-slot="cell-detail"]')).not.toBeNull();
+    expect(screen.getAllByRole("row")[1]).toHaveClass("h-[52px]");
     // Tablero Empresas: «1 empresa · 1 activa» y el filtro «Estado: todas».
     expect(screen.getByText("1 empresa · 1 activa")).toBeVisible();
 
@@ -72,7 +75,7 @@ describe("CompaniesPage", () => {
     expect(await screen.findByRole("link", { name: "Empresa 50" })).toHaveAttribute("href", "/org/empresas/company-50");
     expect(screen.getAllByRole("row")).toHaveLength(51);
     expect(screen.getByText(/50 empresas/)).toBeVisible();
-    expect(screen.getByText("Sin CUIT")).toBeVisible();
+    expect(screen.getByText("Sin CUIT")).toHaveAttribute("data-slot", "cell-detail");
     expect(container.querySelector("table")).toBeVisible();
   }, 10_000);
 

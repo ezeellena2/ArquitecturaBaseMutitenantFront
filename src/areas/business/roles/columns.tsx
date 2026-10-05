@@ -46,15 +46,14 @@ function visiblePermissionCount(role: RoleResponse): number {
 export function createRoleColumns(t: TranslateRole, companyNames: ReadonlyMap<string, string> = new Map()): Column<RoleResponse>[] {
   return [
     {
-      // Anchos del tablero Roles: 1.6fr, 1.3fr, 100 px y 100 px, más los márgenes de cada celda.
+      // Anchos del tablero Roles: 1.6fr, 1.3fr, 100 px y 100 px, más los márgenes de cada celda. Debajo del nombre, «De
+      // sistema» (Criterio · Tablas).
       ...roleColumnDefinitions.name,
       header: t("roles:columns.name"),
       type: "custom",
       className: "w-[39%]",
-      cell: (role) => <div className="min-w-0">
-        <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={`/org/roles/${encodeURIComponent(role.id)}`}>{displayRoleName(role, t)}</Link>
-        {role.isSystemRole ? <span className="block text-xs text-[var(--t3)]">{t("roles:system")}</span> : null}
-      </div>,
+      cell: (role) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={`/org/roles/${encodeURIComponent(role.id)}`}>{displayRoleName(role, t)}</Link>,
+      detail: (role) => role.isSystemRole ? t("roles:system") : null,
     },
     { ...roleColumnDefinitions.scope, header: t("roles:columns.scope"), type: "custom", cell: (role) => <span>{scopeLabel(role.scope, t, role.companyId ? companyNames.get(role.companyId) : undefined)}</span> },
     { ...roleColumnDefinitions.userCount, header: t("roles:columns.users"), className: "w-[112px]" },

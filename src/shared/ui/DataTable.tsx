@@ -26,7 +26,7 @@ import { TimeZoneText } from "./format/TimeZoneText";
 type OptionalValue<T> = T | null | undefined;
 type MobileRole = "primary" | "status";
 
-interface ColumnBase {
+interface ColumnBase<TRow> {
   /** Campo del backend usado también para el orden. */
   id: string;
   header: string;
@@ -35,9 +35,15 @@ interface ColumnBase {
   priority?: "low";
   mobile?: MobileRole;
   className?: string;
+  /**
+   * Lo que aclara la celda, en una segunda línea gris de 12 («Criterio · Tablas», lienzo v92): el correo debajo del
+   * nombre, los roles debajo de la empresa, cuándo vence debajo del estado. Sin nada que aclarar, `null`. Si alguna fila
+   * la tiene, todas las filas de la tabla miden 52.
+   */
+  detail?: (row: TRow) => ReactNode;
 }
 
-type ValueColumn<TRow, TType extends string, TValue> = TType extends string ? ColumnBase & {
+type ValueColumn<TRow, TType extends string, TValue> = TType extends string ? ColumnBase<TRow> & {
   type: TType;
   value: (row: TRow) => OptionalValue<TValue>;
 } : never;
@@ -56,8 +62,8 @@ export type Column<TRow> =
   | ValueColumn<TRow, "taxId", { country?: string; type: string; number: string }>
   | ValueColumn<TRow, "boolean", boolean>
   | (ValueColumn<TRow, "enum" | "status", string> & { enum: string })
-  | (ColumnBase & { type: "custom"; cell: (row: TRow) => ReactNode })
-  | (ColumnBase & { type: "actions"; cell: (row: TRow) => ReactNode });
+  | (ColumnBase<TRow> & { type: "custom"; cell: (row: TRow) => ReactNode })
+  | (ColumnBase<TRow> & { type: "actions"; cell: (row: TRow) => ReactNode });
 
 interface DataTableProps<TRow> {
   columns: readonly Column<TRow>[];
@@ -143,6 +149,10 @@ function columnCell<TRow>(column: Column<TRow>, row: TRow): ReactNode {
   }
 }
 
+function hasContent(node: ReactNode): boolean {
+  return node !== null && node !== undefined && node !== false && node !== "";
+}
+
 function isNumericColumn<TRow>(column: Column<TRow>): boolean {
   return column.type === "integer" || column.type === "decimal" || column.type === "quantity"
     || column.type === "compact" || column.type === "percent" || column.type === "money"
@@ -195,6 +205,9 @@ export function DataTable<TRow>({
   if (phone && mobileRow) return <ul aria-busy={isFetching === true} className={cn("m-0 list-none p-0", isFetching ? "opacity-60" : undefined)}>
     {rows.map((row) => <Fragment key={rowKey(row)}>{mobileRow(row)}</Fragment>)}
   </ul>;
+  // «Criterio · Tablas»: las filas miden 40; si alguna lleva segunda línea, todas las de la tabla miden 52.
+  const details = rows.map((row) => columns.map((column) => column.detail?.(row)));
+  const twoLines = details.some((cells) => cells.some(hasContent));
 
   return (
     <Table aria-busy={isFetching === true} className={cn("table-fixed text-[13px]", isFetching ? "opacity-60" : undefined)}>
@@ -223,24 +236,30 @@ export function DataTable<TRow>({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map((row) => (
-          <TableRow key={rowKey(row)} className="h-10">
-            {columns.map((column) => (
-              <TableCell
-                key={column.id}
-                className={cn(
-                  // El ⋮ (32) entra en una fila de 40 sin relleno; el texto lleva 8 arriba y abajo (52 con dos líneas).
-                  "overflow-hidden whitespace-nowrap",
-                  column.type === "actions" ? "py-0" : "py-2",
-                  edgeClass(column),
-                  column.className,
-                  columnVisibility(column),
-                  alignClass(column),
-                )}
-              >
-                {columnCell(column, row)}
-              </TableCell>
-            ))}
+        {rows.map((row, rowIndex) => (
+          <TableRow key={rowKey(row)} className={twoLines ? "h-[52px]" : "h-10"}>
+            {columns.map((column, columnIndex) => {
+              const detail = details[rowIndex][columnIndex];
+              return (
+                <TableCell
+                  key={column.id}
+                  className={cn(
+                    // El ⋮ (32) entra en una fila de 40 sin relleno; el texto lleva 8 arriba y abajo (52 con dos líneas).
+                    "overflow-hidden whitespace-nowrap",
+                    column.type === "actions" ? "py-0" : "py-2",
+                    edgeClass(column),
+                    column.className,
+                    columnVisibility(column),
+                    alignClass(column),
+                  )}
+                >
+                  {hasContent(detail) ? <span className="flex min-w-0 flex-col leading-[1.35]">
+                    {columnCell(column, row)}
+                    <span data-slot="cell-detail" className="block truncate text-[12px] text-[var(--t3)]">{detail}</span>
+                  </span> : columnCell(column, row)}
+                </TableCell>
+              );
+            })}
           </TableRow>
         ))}
       </TableBody>

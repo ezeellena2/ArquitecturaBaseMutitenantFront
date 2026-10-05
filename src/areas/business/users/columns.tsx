@@ -6,7 +6,7 @@ import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { DateText } from "@/shared/ui/format/DateText";
 import type { ReactNode } from "react";
 import { ListRow, RowAvatar } from "@/shared/ui/app/ListRow";
-import { StatusDot, type StatusTone } from "@/shared/ui/StatusDot";
+import { StatusDetail, StatusDot, type StatusTone } from "@/shared/ui/StatusDot";
 
 const stateTones: Record<OrganizationUserResponse["state"], StatusTone> = {
   Active: "success", PendingDeletion: "warning", Inactive: "neutral", Invited: "pending", Expired: "warning",
@@ -42,12 +42,11 @@ export function userStateLabel(state: OrganizationUserResponse["state"], t: TFun
 export function createUserColumns(t: TFunction): Column<OrganizationUserResponse>[] {
   return [
     {
-      // Anchos del tablero Usuarios: 1.6fr, 1fr, 1.3fr y 190 px, más los márgenes de cada celda.
+      // Anchos del tablero Usuarios: 1.6fr, 1fr, 1.3fr y 190 px, más los márgenes de cada celda. Debajo del nombre, el
+      // correo (Criterio · Tablas).
       id: "displayName", header: t("users:columns.person"), type: "custom", mobile: "primary", sortable: true, className: "w-[30%]",
-      cell: (user) => <div className="min-w-0">
-        <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}>{user.displayName || user.email || <EmptyValue />}</Link>
-        {user.displayName && user.email && user.displayName !== user.email ? <span className="hidden truncate text-xs text-[var(--t3)] md:block">{user.email}</span> : null}
-      </div>,
+      cell: (user) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}>{user.displayName || user.email || <EmptyValue />}</Link>,
+      detail: (user) => user.displayName && user.email && user.displayName !== user.email ? user.email : null,
     },
     {
       id: "roles", header: t("users:columns.organizationRoles"), type: "text", className: "w-[19%]",
@@ -59,21 +58,17 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
       cell: (user) => {
         const [first, ...others] = user.companies;
         if (!first) return <EmptyValue />;
-        return <span className="block min-w-0">
-          <span className="block truncate text-[var(--t1)]">{others.length > 0 ? t("users:columns.companyAndMore", { company: first.companyName, count: others.length }) : first.companyName}</span>
-          {first.roles.length > 0 ? <span className="block truncate text-xs text-[var(--t3)]">{first.roles.map((role) => role.name).join(", ")}</span> : null}
-        </span>;
+        return <span className="block truncate text-[var(--t1)]">{others.length > 0 ? t("users:columns.companyAndMore", { company: first.companyName, count: others.length }) : first.companyName}</span>;
       },
+      detail: (user) => user.companies[0]?.roles.map((role) => role.name).join(", ") || null,
     },
     {
       id: "state", header: t("users:columns.state"), type: "custom", mobile: "status", className: "w-[202px] max-md:w-[38%]",
-      cell: (user) => <span className="flex min-w-0 flex-col gap-0.5">
-        <span className="inline-flex max-w-full items-center gap-1.5 text-[13px] text-[var(--t1)]">
-          <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${user.state === "Active" ? "bg-[var(--punto-ok)]" : user.state === "PendingDeletion" ? "bg-[var(--punto-alerta)]" : user.state === "Inactive" ? "bg-[var(--punto-apagado)]" : user.state === "Expired" ? "bg-[var(--punto-alerta)]" : "bg-[var(--marca)]"}`} />
-          <span className="min-w-0 truncate">{userStateLabel(user.state, t)}</span>
-        </span>
-        {user.invitationExpiresAtUtc && (user.state === "Invited" || user.state === "Expired") ? <span className="text-xs text-[var(--t3)]">{t(user.state === "Expired" ? "users:columns.expiredPrefix" : "users:columns.expiresPrefix")} <DateText value={user.invitationExpiresAtUtc} kind="date" /></span> : null}
-      </span>,
+      cell: (user) => <StatusDot tone={stateTones[user.state]} label={userStateLabel(user.state, t)} />,
+      // Una invitación dice hasta cuándo vale, debajo de la palabra del estado.
+      detail: (user) => user.invitationExpiresAtUtc && (user.state === "Invited" || user.state === "Expired")
+        ? <StatusDetail>{t(user.state === "Expired" ? "users:columns.expiredPrefix" : "users:columns.expiresPrefix")} <DateText value={user.invitationExpiresAtUtc} kind="date" /></StatusDetail>
+        : null,
     },
   ];
 }

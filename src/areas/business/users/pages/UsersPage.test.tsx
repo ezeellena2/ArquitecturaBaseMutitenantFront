@@ -98,10 +98,12 @@ describe("UsersPage", () => {
       { companyId: "company-1", companyName: "Delta S.A.", status: "Active", roles: [{ id: "role-reader", name: "Solo lectura", isSystemRole: false, scope: "SpecificCompany", companyId: "company-1" }] },
       { companyId: "company-2", companyName: "Delta Sur S.R.L.", status: "Active", roles: [] },
     ] };
+    const invited = { ...member, memberId: "member-2", userId: null, displayName: "Sofía Herrera", email: "sofia@example.com", state: "Invited" as const,
+      roles: [], invitationId: "invitation-1", invitationIssuedAtUtc: "2026-09-25T12:00:00Z", invitationExpiresAtUtc: "2026-10-02T12:00:00Z" };
     server.use(
       http.get("/api/users/paged", ({ request }) => {
         requests.push(new URL(request.url));
-        return HttpResponse.json({ items: [twoCompanies], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false });
+        return HttpResponse.json({ items: [twoCompanies, invited], page: 1, pageSize: 10, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false });
       }),
       http.get("/api/users/filter-counts", ({ request }) => {
         const url = new URL(request.url);
@@ -119,6 +121,15 @@ describe("UsersPage", () => {
     const company = await screen.findByText("Delta S.A. y 1 más");
     expect(company.parentElement).toHaveTextContent("Delta S.A. y 1 másSolo lectura");
     expect(screen.queryByText("Delta Sur S.R.L.")).not.toBeInTheDocument();
+    // «Criterio · Tablas» (lienzo v92): la segunda línea gris de la tabla. El correo debajo del nombre, los roles de la
+    // empresa debajo de la empresa y «Vence…» debajo del estado, bajo la palabra y no bajo el punto; todas las filas, de 52.
+    const detail = (text: string | RegExp) => screen.getByText(text).closest('[data-slot="cell-detail"]');
+    expect(detail("lucia@example.com")).not.toBeNull();
+    expect(detail("Solo lectura")).not.toBeNull();
+    const expires = detail(/^Vence/);
+    expect(expires).toHaveTextContent("Vence 02/10/2026");
+    expect(expires?.firstElementChild).toHaveClass("pl-3.5");
+    expect(screen.getAllByRole("row").slice(1).every((row) => row.classList.contains("h-[52px]"))).toBe(true);
 
     screen.getByRole("button", { name: "Estado: todos" }).focus();
     await user.keyboard("{Enter}");

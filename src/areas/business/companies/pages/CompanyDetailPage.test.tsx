@@ -87,6 +87,8 @@ describe("CompanyDetailPage", () => {
     expect(edit.querySelector("svg")).toBeNull();
     expect(screen.getByRole("button", { name: "Agregar miembro" })).toBeVisible();
     for (const name of ["Miembro", "Roles en la empresa", "Estado"]) expect(await screen.findByRole("columnheader", { name })).toBeVisible();
+    // «Criterio · Tablas» (lienzo v92): el correo va en la segunda línea gris, debajo del nombre.
+    expect(screen.getByText("lucia@example.com")).toHaveAttribute("data-slot", "cell-detail");
     expect(screen.getByRole("button", { name: "Rol: todos" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Estado: todos" })).toBeVisible();
 

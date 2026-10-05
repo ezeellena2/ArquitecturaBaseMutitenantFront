@@ -137,6 +137,35 @@ describe("DataTable", () => {
     expect(screen.getByRole("columnheader", { name: "Acciones" })).toHaveClass("w-[50px]", "last:pr-3", "text-right");
   });
 
+  // «Criterio · Tablas» (lienzo v92): lo que aclara una celda va debajo, en una segunda línea gris de 12. Si alguna fila
+  // la tiene, todas las filas de la tabla miden 52; sin segunda línea, 40.
+  it("dibuja la segunda línea gris que declara la columna y entonces todas las filas miden 52", () => {
+    const withDetail: Column<Row>[] = [
+      { ...columns[0], detail: (row) => row.id === "1" ? row.email : null },
+      columns[2],
+    ];
+    render(<DataTable columns={withDetail} rows={[rows[0], { ...rows[0], id: "2", name: "Bruno Díaz" }]} rowKey={(row) => row.id} />);
+
+    const detail = screen.getByText("ana@example.com");
+    expect(detail).toHaveAttribute("data-slot", "cell-detail");
+    expect(detail).toHaveClass("block", "truncate", "text-[12px]", "text-[var(--t3)]");
+    expect(detail.parentElement).toHaveClass("flex", "flex-col", "leading-[1.35]");
+    expect(detail.parentElement).toContainElement(screen.getByText("Ana García"));
+    const [, first, second] = screen.getAllByRole("row");
+    expect(first).toHaveClass("h-[52px]");
+    expect(second).toHaveClass("h-[52px]");
+    expect(within(second).queryByText("ana@example.com")).not.toBeInTheDocument();
+    expect(second.querySelector('[data-slot="cell-detail"]')).toBeNull();
+  });
+
+  it("sin segunda línea en ninguna fila, las filas miden 40", () => {
+    render(<DataTable columns={[{ ...columns[0], detail: () => null }, columns[2]]} rows={rows} rowKey={(row) => row.id} />);
+
+    expect(screen.getAllByRole("row")[1]).toHaveClass("h-10");
+    expect(screen.getAllByRole("row")[1]).not.toHaveClass("h-[52px]");
+    expect(document.querySelector('[data-slot="cell-detail"]')).toBeNull();
+  });
+
   it("muestra el estado con un punto y texto, sin pastilla", () => {
     render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} />);
 

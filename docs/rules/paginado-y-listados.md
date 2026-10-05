@@ -19,6 +19,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
   ```
   `filterKeys` es una constante del módulo; `query` es la consulta ya armada (los conteos toman de ahí la búsqueda y los filtros) y `pagination` da la búsqueda escrita, el orden y sus cambios para `FilterBar` y `DataTable`.
 - Las columnas son ordenables con `sortable: true`, y su `id` es el campo del backend.
+- **La segunda línea gris** (lo que aclara la celda: el correo debajo del nombre, los roles debajo de la empresa, «Vence…» debajo del estado) la declara la columna con `detail: (row) => …` y la dibuja `DataTable`, en 12 y `--t3`; sin nada que aclarar, `null`. Si alguna fila la tiene, todas las filas de la tabla miden 52. Debajo de un estado va con `StatusDetail`, bajo la palabra y no bajo el punto. La celda nunca arma su propia segunda línea.
 - Cambiar la búsqueda (con 300 ms de debounce), un filtro, el orden o el tamaño vuelve a la página 1, y lo hace `usePagination`.
 - `usePagination` normaliza `page` a un entero seguro desde 1 y `pageSize` a 10, 20, 50 o 100. Un valor inválido vuelve a 1/10; los valores por defecto se omiten de la URL y la corrección usa `replace`, sin agregar historial. Si el orden inicial es descendente (`-campo`), pulsar esa columna alterna a `campo` ascendente y de regreso al descendente.
 - Los tamaños disponibles viven una sola vez en `shared/api/pageSizes.ts`, tipados con el `PagedRequest` generado. El hook y `Pagination` los comparten; `pageSizes.test.ts` compara su lista y orden con el enum del OpenAPI del back.
@@ -42,6 +43,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 - `pageSizes.test.ts` (E2): exige concordancia exacta con `PagedRequest.properties.pageSize.enum` del OpenAPI; el repo hermano es obligatorio en local y solo ese chequeo se omite con aviso en CI aislado.
 - Tests de pantalla: sin coincidencias y cambio de página; en el teléfono, la lista y su «+».
 - `src/shared/ui/app/lists.test.tsx` (E5): en el teléfono, filas de lista, filtros en una hoja y «Cargar más».
+- `DataTable.test.tsx` (E7): la segunda línea que declara la columna, gris de 12, y las filas de 52 si alguna la tiene; si no, de 40. `UsersPage.test.tsx`, `CompaniesPage.test.tsx`, `CompanyDetailPage.test.tsx` y `RolesPage.test.tsx` (E7): el correo, los roles de la empresa, «Vence…», el CUIT y «De sistema» van en esa línea.
 
 ## Detalle
 [frontend.md §4, "Paginado, orden y búsqueda"](../architecture/frontend.md#paginado-orden-y-búsqueda) · back: `docs/rules/paginado-y-busqueda.md`

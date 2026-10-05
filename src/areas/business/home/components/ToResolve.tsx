@@ -11,11 +11,8 @@ export function ToResolve({ rows }: { rows: readonly PendingRow[] }) {
   const { t } = useTranslation("home");
   const titleId = useId();
   const columns: Column<PendingRow>[] = [
-    { id: "title", header: t("toResolve.pending"), type: "custom", mobile: "primary", className: "w-[37%]", cell: (row) =>
-      <span className="flex min-w-0 flex-col">
-        <span className="truncate text-[var(--t1)]">{row.title}</span>
-        {row.detail ? <span className="truncate text-xs text-[var(--t3)]">{row.detail}</span> : null}
-      </span> },
+    { id: "title", header: t("toResolve.pending"), type: "custom", mobile: "primary", className: "w-[37%]",
+      cell: (row) => <span className="block truncate text-[var(--t1)]">{row.title}</span>, detail: (row) => row.detail },
     { id: "area", header: t("toResolve.area"), type: "text", className: "w-[19%]", value: (row) => row.areaLabel },
     { id: "state", header: t("toResolve.state"), type: "custom", cell: (row) =>
       <StatusDot tone={row.tone} label={row.state} /> },

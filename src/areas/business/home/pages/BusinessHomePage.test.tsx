@@ -71,6 +71,8 @@ describe("BusinessHomePage", () => {
     expect(toResolve).not.toHaveTextContent("+54 9 351 555-0200");
     const invitation = within(toResolve).getByText("carla.bianchi@delta.ejemplo.com").closest("tr")!;
     expect(invitation).toHaveTextContent("Invitación");
+    // «Criterio · Tablas» (lienzo v92): lo que aclara el pendiente va en la segunda línea gris de la tabla.
+    expect(within(invitation).getByText("Invitación")).toHaveAttribute("data-slot", "cell-detail");
     expect(invitation).toHaveTextContent("Usuarios");
     expect(invitation).toHaveTextContent("Vencida");
     expect(invitation).toHaveTextContent("25/09/2026");

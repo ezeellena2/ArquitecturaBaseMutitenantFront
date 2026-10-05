@@ -26,3 +26,9 @@ export function StatusDot({ tone, label, className, ...props }: StatusDotProps) 
     </span>
   );
 }
+
+/// Lo que aclara un estado en la segunda línea de una fila («Vence 02/10/2026»): debajo de la palabra y no del punto
+/// («Criterio · Tablas», `.l2.sang`), corrido lo que miden el punto (8) y su espacio (6).
+export function StatusDetail({ children }: { children: ReactNode }) {
+  return <span className="pl-3.5">{children}</span>;
+}
