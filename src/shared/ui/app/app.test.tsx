@@ -53,6 +53,9 @@ describe("marco de app del teléfono", () => {
     render(<MemoryRouter><Fab label="Invitar usuario" onClick={onClick} /></MemoryRouter>);
     const fab = screen.getByRole("button", { name: "Invitar usuario" });
     expect(fab).toHaveClass("fixed", "size-14", "rounded-2xl", "bg-[var(--marca)]");
+    // Tableros M-Usuarios y M-Empresa (.ap-fab): a 25 de la línea de arriba de la barra de abajo (que mide 68 sin la raya
+    // de inicio), no a 16.
+    expect(fab).toHaveClass("bottom-[calc(93px+env(safe-area-inset-bottom))]");
     await userEvent.click(fab);
     expect(onClick).toHaveBeenCalledOnce();
   });
