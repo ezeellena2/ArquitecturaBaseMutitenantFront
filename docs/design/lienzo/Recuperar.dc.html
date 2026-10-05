@@ -619,6 +619,8 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-alineacion-app">
 .in2.mal { border-color: var(--peligro) !important; }
 </style>
+<style data-vuelta="1004-plataforma-v111">
+</style>
 </helmet>
 
 <div class="auth">
@@ -628,11 +630,11 @@ textarea.in2 { height: auto; min-height: 84px; }
       <div class="auth-caja">
       <sc-if value="{{enCuenta}}" hint-placeholder-val="{{si}}">
         <div style="display: flex; flex-direction: column; gap: 22px;">
-          <div><h1>Recuperar mi cuenta</h1><p class="sub">Escribí el correo o el teléfono con el que entrabas.</p></div>
-          <div class="seg2" role="group" aria-label="Entrabas con">
+          <div><h1>Recuperar mi cuenta</h1><p class="sub">{{subViejo}}</p></div>
+          <sc-if value="{{conWa}}" hint-placeholder-val="{{no}}"><div class="seg2" role="group" aria-label="Entrabas con">
             <button type="button" aria-pressed="{{viejoCorreo}}" onClick="{{viejoUsarCorreo}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7 8 6 8-6"/></svg> Correo</button>
             <button type="button" aria-pressed="{{viejoTel}}" onClick="{{viejoUsarTel}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"/></svg> WhatsApp</button>
-          </div>
+          </div></sc-if>
           <sc-if value="{{viejoCorreoB}}" hint-placeholder-val="{{si}}">
             <div class="campo2">
               <label class="et" for="f-viejo-correo">Correo electrónico</label>
@@ -657,11 +659,11 @@ textarea.in2 { height: auto; min-height: 84px; }
       <sc-if value="{{enNuevo}}" hint-placeholder-val="{{no}}">
         <div style="display: flex; flex-direction: column; gap: 22px;">
           <button type="button" class="lnk" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 4px;" onClick="{{volverCuenta}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg> Atrás</button>
-          <div><h1>¿Dónde te escribimos?</h1><p class="sub">Decinos un correo o un WhatsApp nuevo donde podamos escribirte.</p></div>
-          <div class="seg2" role="group" aria-label="Escribinos a">
+          <div><h1>¿Dónde te escribimos?</h1><p class="sub">{{subNuevo}}</p></div>
+          <sc-if value="{{conWa}}" hint-placeholder-val="{{no}}"><div class="seg2" role="group" aria-label="Escribinos a">
             <button type="button" aria-pressed="{{nuevoCorreo}}" onClick="{{nuevoUsarCorreo}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7 8 6 8-6"/></svg> Correo</button>
             <button type="button" aria-pressed="{{nuevoTel}}" onClick="{{nuevoUsarTel}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"/></svg> WhatsApp</button>
-          </div>
+          </div></sc-if>
           <sc-if value="{{nuevoCorreoB}}" hint-placeholder-val="{{si}}">
             <div class="campo2">
               <label class="et" for="f-nuevo-correo">Correo electrónico nuevo</label>
@@ -731,7 +733,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"paso":{"editor":"enum","options":["1. El correo o teléfono de antes","2. Un correo o WhatsApp nuevo","3. Pedido recibido"],"default":"1. El correo o teléfono de antes"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"paso":{"editor":"enum","options":["1. El correo o teléfono de antes","2. Un correo o WhatsApp nuevo","3. Pedido recibido"],"default":"1. El correo o teléfono de antes"},"whatsapp":{"editor":"enum","options":["Sin WhatsApp (hasta la Etapa 8)","Con WhatsApp"],"default":"Sin WhatsApp (hasta la Etapa 8)","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 const PASOS = {
   '1. El correo o teléfono de antes': { paso: 'cuenta', viejo: '' },
   '2. Un correo o WhatsApp nuevo': { paso: 'nuevo', viejo: 'lucia.fernandez@delta.ejemplo.com', nuevo: '' },
@@ -807,6 +809,9 @@ class Component extends DCLogic {
     const nuevo = nuevoTel ? s.nuevo.trim() : s.nuevo.trim().toLowerCase();
 
     return {
+      conWa: this.props.whatsapp === 'Con WhatsApp',
+      subViejo: this.props.whatsapp === 'Con WhatsApp' ? 'Escribí el correo o el teléfono con el que entrabas.' : 'Escribí el correo con el que entrabas.',
+      subNuevo: this.props.whatsapp === 'Con WhatsApp' ? 'Decinos un correo o un WhatsApp nuevo donde podamos escribirte.' : 'Decinos un correo nuevo donde podamos escribirte.',
       si: true,
       no: false,
       enCuenta: s.paso === 'cuenta',

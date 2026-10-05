@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 110 · 5 de octubre de 2026"
+VERSION = "versión 111 · 5 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {

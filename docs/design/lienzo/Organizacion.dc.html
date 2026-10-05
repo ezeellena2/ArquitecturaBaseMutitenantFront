@@ -621,6 +621,8 @@ textarea.in2 { height: auto; min-height: 84px; }
 .tarjeta, .fb { border-radius: 12px !important; box-shadow: none !important; }
 .tarjeta > .tt-h:first-child { border-radius: 11px 11px 0 0 !important; }
 </style>
+<style data-vuelta="1004-plataforma-v111">
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{plMenuClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -657,7 +659,7 @@ textarea.in2 { height: auto; min-height: 84px; }
           <div class="menu der" role="menu" aria-label="Menú de Martín Sosa" style="min-width: 320px;">
           <div class="menu-cab"><span class="avatar" aria-hidden="true" style="width: 40px; height: 40px; font-size: 16px;">M</span><span class="perfil-t"><span class="n1" style="font-size: 15px; font-weight: 600;">Martín Sosa</span><span class="n2">martin.sosa@arquitecturabase.ejemplo.com</span></span></div>
           <div class="menu-sep" role="separator"></div>
-          <a class="menu-it" role="menuitem" href="Ingreso.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Salir</a>
+          <a class="menu-it" role="menuitem" href="Cuenta.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Mi cuenta</a><div class="menu-sep" role="separator"></div><a class="menu-it" role="menuitem" href="Ingreso.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg> Salir</a>
           </div>
         </sc-if>
       </span>
@@ -666,7 +668,7 @@ textarea.in2 { height: auto; min-height: 84px; }
     <main class="ab-app-shell__main">
       <div class="banda-pag">
         <div class="izq"><a class="atras" href="Organizaciones.dc.html" aria-label="Volver a Organizaciones"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></a><div style="min-width: 0;"><div class="tit"><h1>Grupo Delta</h1></div><p class="res"><span class="pill {{pill}}">{{textoEstado}}</span><span>{{resumen}}</span></p></div></div>
-        <div class="acciones"><sc-if value="{{pendiente}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-pel" onClick="{{rechazar}}">Rechazar</button><button type="button" class="b b-pri" onClick="{{aprobar}}">Aprobar</button></sc-if><sc-if value="{{activa}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-sec" onClick="{{suspender}}">Suspender</button></sc-if><sc-if value="{{suspendida}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-sec" onClick="{{reactivar}}">Reactivar</button><button type="button" class="b b-pel" onClick="{{cerrar}}">Cerrar</button></sc-if></div>
+        <div class="acciones"><sc-if value="{{fallo}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-pri" onClick="{{reintentar}}">Reintentar el alta</button></sc-if><sc-if value="{{pendiente}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-pel" onClick="{{rechazar}}">Rechazar</button><button type="button" class="b b-pri" onClick="{{aprobar}}">Aprobar</button></sc-if><sc-if value="{{activa}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-sec" onClick="{{suspender}}">Suspender</button></sc-if><sc-if value="{{suspendida}}" hint-placeholder-val="{{no}}"><button type="button" class="b b-sec" onClick="{{reactivar}}">Reactivar</button><button type="button" class="b b-pel" onClick="{{cerrar}}">Cerrar</button></sc-if></div>
       </div>
       <div class="pagina">
         <sc-if value="{{hayBanner}}" hint-placeholder-val="{{no}}">
@@ -696,9 +698,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             <div class="tarjeta" role="tabpanel" aria-label="Dueños" style="margin-top: 16px;">
               <div class="tt-h" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) 160px;"><span>Dueño</span><span>Último ingreso</span><span>Estado</span></div>
               <div class="tt-f o-alto" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) 160px;">
-                <span class="dos"><span class="c1">Lucía Fernández</span><span class="n2">lucia.fernandez@delta.ejemplo.com</span></span>
-                <span class="c1 n">hace 55 minutos</span>
-                <span><span class="pill ok">Activo</span></span>
+                <span class="dos"><span class="c1">{{duenoNombre}}</span><span class="n2">lucia.fernandez@delta.ejemplo.com</span></span> <span class="c1 n">{{duenoIngreso}}</span> <span><span class="pill {{duenoPill}}">{{duenoEstado}}</span></span>
               </div>
             </div>
           </sc-if>
@@ -805,7 +805,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Activa","Espera aprobación","Suspendida","Cerrada"],"default":"Activa","section":"Estado"},"pestana":{"editor":"enum","options":["Historial","Dueños","Módulos","Dominio verificado","Página pública"],"default":"Historial","section":"Estado"},"pagina":{"editor":"enum","options":["Publicada","Borrador","Despublicada por la plataforma"],"default":"Publicada","section":"Estado"},"dominio":{"editor":"enum","options":["Verificado","Pendiente"],"default":"Verificado","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Activa","Espera aprobación","Falló el alta","Suspendida","Cerrada"],"default":"Activa","section":"Estado"},"pestana":{"editor":"enum","options":["Historial","Dueños","Módulos","Dominio verificado","Página pública"],"default":"Historial","section":"Estado"},"pagina":{"editor":"enum","options":["Publicada","Borrador","Despublicada por la plataforma"],"default":"Publicada","section":"Estado"},"dominio":{"editor":"enum","options":["Verificado","Pendiente"],"default":"Verificado","section":"Estado"},"duenos":{"editor":"enum","options":["Con su Dueño","Sin Dueño todavía","Con el Dueño suspendido"],"default":"Con su Dueño","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 // GET /api/platform/tenants/{id}/security-events
 const HISTORIAL = [
   { fecha: '20/09/2026 11:02', que: 'Reactivó la organización', quien: 'Martín Sosa', motivo: 'Regularizó el pago.' },
@@ -821,9 +821,10 @@ const MODULOS = [
 ];
 const PESTANAS = { 'Historial': 'historial', 'Dueños': 'admins', 'Módulos': 'modulos', 'Dominio verificado': 'dominio', 'Página pública': 'pagina' };
 // Estado de la organización (PendingApproval, Active, Suspended, Closed) y lo que cambia en la ficha con cada uno.
-const ESTADOS = { 'Activa': 'activa', 'Espera aprobación': 'pendiente', 'Suspendida': 'suspendida', 'Cerrada': 'cerrada' };
+const ESTADOS = { 'Activa': 'activa', 'Espera aprobación': 'pendiente', 'Falló el alta': 'fallo', 'Suspendida': 'suspendida', 'Cerrada': 'cerrada' };
 const HISTORIAL_ESTADO = {
   activa: HISTORIAL,
+  fallo: [{ fecha: '12/01/2026 08:40', que: 'Pidió crear la organización', quien: 'Lucía Fernández', motivo: '—' }],
   pendiente: [{ fecha: '12/01/2026 08:40', que: 'Pidió crear la organización', quien: 'Lucía Fernández', motivo: '—' }],
   suspendida: [{ fecha: '25/09/2026 10:15', que: 'Suspendió la organización', quien: 'Martín Sosa', motivo: 'Dos meses sin pago.' }, ...HISTORIAL],
   cerrada: [{ fecha: '26/09/2026 12:30', que: 'Cerró la organización', quien: 'Martín Sosa', motivo: 'Lo pidió la Dueña por escrito.' }, { fecha: '25/09/2026 10:15', que: 'Suspendió la organización', quien: 'Martín Sosa', motivo: 'Dos meses sin pago.' }, ...HISTORIAL],
@@ -1072,6 +1073,10 @@ class Component extends DCLogic {
     const s = this.state;
 
     return {
+      duenoNombre: this.props.duenos === 'Sin Dueño todavía' ? '—' : 'Lucía Fernández',
+      duenoIngreso: this.props.duenos === 'Sin Dueño todavía' ? 'Nunca' : this.props.duenos === 'Con el Dueño suspendido' ? 'hace 3 días' : 'hace 55 minutos',
+      duenoPill: { 'Sin Dueño todavía': 'pend', 'Con el Dueño suspendido': 'alerta' }[this.props.duenos] || 'ok',
+      duenoEstado: { 'Sin Dueño todavía': 'Invitación pendiente', 'Con el Dueño suspendido': 'Suspendido' }[this.props.duenos] || 'Activo',
       ...this.comunes(),
       plMenuClase: s.plNav ? 'adm-abierto' : '',
       plTitulo: s.plNav === 'gestion' ? 'Gestión' : s.plNav === 'whatsapp' ? 'WhatsApp' : 'Administración',
@@ -1086,10 +1091,12 @@ class Component extends DCLogic {
       plAbrirAdministracion: () => this.setState({ plNav: s.plNav === 'administracion' ? null : 'administracion' }),
       plCerrar: () => this.setState({ plNav: null }),
 
-      pill: { pendiente: 'pend', activa: 'ok', suspendida: 'alerta', cerrada: 'off' }[s.estadoOrg],
-      textoEstado: { pendiente: 'Espera aprobación', activa: 'Activa', suspendida: 'Suspendida', cerrada: 'Cerrada' }[s.estadoOrg],
-      resumen: s.estadoOrg === 'pendiente' ? 'Pidió el alta el 12/01/2026 por autoservicio · 1 empresa · 1 miembro' : 'Alta el 12/01/2026 por autoservicio · 3 empresas · 11 miembros',
+      pill: { pendiente: 'pend', fallo: 'mal', activa: 'ok', suspendida: 'alerta', cerrada: 'off' }[s.estadoOrg],
+      textoEstado: { pendiente: 'Espera aprobación', fallo: 'Falló el alta', activa: 'Activa', suspendida: 'Suspendida', cerrada: 'Cerrada' }[s.estadoOrg],
+      resumen: s.estadoOrg === 'fallo' ? 'Pidió el alta el 12/01/2026 por autoservicio · sin empresas' : s.estadoOrg === 'pendiente' ? 'Pidió el alta el 12/01/2026 por autoservicio · 1 empresa · 1 miembro' : 'Alta el 12/01/2026 por autoservicio · 3 empresas · 11 miembros',
       pendiente: s.estadoOrg === 'pendiente',
+      fallo: s.estadoOrg === 'fallo',
+      reintentar: () => { this.setState({ estadoOrg: 'activa' }); this.avisar('Terminamos el alta de Grupo Delta.'); },
       activa: s.estadoOrg === 'activa',
       suspendida: s.estadoOrg === 'suspendida',
       editable: s.estadoOrg !== 'cerrada',
