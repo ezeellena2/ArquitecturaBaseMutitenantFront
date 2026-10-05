@@ -22,6 +22,7 @@ import { addLoginEmail, sendLoginMethodCode, verifyLoginMethod } from "./api/log
 import { ChangeLoginMethodDialog } from "./ChangeLoginMethodDialog";
 import { loginMethodErrorField } from "./errors";
 import { useHasLoginChannel } from "./useLoginChannels";
+import { maskEmail } from "@/shared/format/personalData";
 
 interface Props { open: boolean; onOpenChange: (open: boolean) => void; onComplete: () => void; method?: AccountLoginMethod }
 
@@ -105,7 +106,8 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
         <DialogHeader><DialogTitle>{t(method || codeStep ? "account:verifyTitle" : whatsApp ? "account:add" : "account:addEmail")}</DialogTitle></DialogHeader>
         <DialogBody>
           {codeStep ? <>
-            <DialogDescription id="method-code-hint">{t("account:sentHint", { value: emailForm.getValues("email") })}</DialogDescription>
+            {/* Cuenta-Verificar: el correo va tapado («lu•••@gmail.com»), como lo tapa el back. */}
+            <DialogDescription id="method-code-hint">{t("account:sentHint", { value: maskEmail(emailForm.getValues("email")) })}</DialogDescription>
             {/* Tableros Cuenta-Verificar (.err2) y M-Cuenta-Verificar (.ap-err): el error del código, debajo de los casilleros. */}
             <OtpInput length={codeLength} value={code.field.value} label={t("common:code.label")} autoFocus disabled={busy} error={codeError}
               aria-describedby="method-code-hint"

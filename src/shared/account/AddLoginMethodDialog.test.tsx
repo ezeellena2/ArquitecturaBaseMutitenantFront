@@ -49,7 +49,9 @@ it("suma correo: el título dice el paso, el código incorrecto va debajo de los
   await user.click(within(add).getByRole("button", { name: "Enviar código" }));
 
   const verify = await screen.findByRole("dialog", { name: "Verificar tu correo" });
-  expect(verify).toHaveTextContent("Te mandamos un código a nuevo@example.test.");
+  // Cuenta-Verificar: el correo tapado, como lo tapa el back (`PersonalDataMask.Email`).
+  expect(verify).toHaveTextContent("Te mandamos un código a nu•••@example.test.");
+  expect(verify).not.toHaveTextContent("nuevo@example.test");
   const code = within(verify).getByRole("group", { name: "Código" });
   const first = within(verify).getByRole("textbox", { name: "Código 1" });
   expect(within(verify).getByRole("button", { name: "Verificar" })).toBeEnabled();
@@ -66,7 +68,7 @@ it("suma correo: el título dice el paso, el código incorrecto va debajo de los
   expect(message).toHaveAttribute("role", "alert");
   expect(code.nextElementSibling).toBe(message);
   expect(message).toHaveClass("text-[13px]", "text-[var(--peligro)]", "max-md:text-[13.5px]");
-  expect(code).toHaveAccessibleDescription("Te mandamos un código a nuevo@example.test. El código no es válido.");
+  expect(code).toHaveAccessibleDescription("Te mandamos un código a nu•••@example.test. El código no es válido.");
   expect(first).toHaveAttribute("aria-invalid", "true");
   expect(screen.getAllByRole("alert")).toEqual([message]);
 
