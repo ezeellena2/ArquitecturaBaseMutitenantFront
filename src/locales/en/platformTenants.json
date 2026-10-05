@@ -1,0 +1,26 @@
+{
+  "title": "Organizations",
+  "platform": "Platform",
+  "summary_one": "{{total}} organizations · {{pending}} awaits approval",
+  "summary_other": "{{total}} organizations · {{pending}} await approval",
+  "rowActions": "Actions for {{name}}",
+  "filters": {
+    "label": "Filter organizations", "search": "Search by name or email",
+    "status": "Status: all", "statusMenu": "Filter by status",
+    "source": "Source: all", "sourceMenu": "Filter by source",
+    "statuses": { "all": "All", "PendingApproval": "Awaiting approval", "Active": "Active", "Suspended": "Suspended", "Provisioning": "Setup failed", "Closed": "Closed" },
+    "sources": { "all": "All", "SelfService": "Self service", "Platform": "Created by the platform" }
+  },
+  "columns": { "organization": "Organization", "owner": "Owner", "companies": "Companies", "members": "Members", "status": "Status", "actions": "Actions", "created": "Created", "noCompanies": "no companies", "company_one": "company", "company_other": "companies", "member_one": "member", "member_other": "members" },
+  "actions": { "view": "View details", "approve": "Approve", "reject": "Reject", "retry": "Retry setup", "suspend": "Suspend", "reactivate": "Reactivate", "close": "Close" },
+  "empty": { "all": "There are no organizations yet", "filtered": "No organization matches the filters", "clear": "Clear filters" },
+  "create": { "title": "Create organization", "name": "Organization name", "firstCompany": "First company", "email": "Owner's email", "zone": "Time zone", "culture": "Language and region", "submit": "Create organization", "pending": "Creating…", "nameRequired": "Enter the organization name.", "companyRequired": "Enter the first company name.", "emailRequired": "Enter the email.", "emailInvalid": "Check the email: it doesn't look valid." },
+  "confirm": {
+    "approve": { "title": "Approve {{name}}?", "description": "We'll finish setup and {{owner}} can sign in as Owner.", "pending": "Approving…" },
+    "reject": { "title": "Reject {{name}}?", "description": "The organization will be closed and we'll notify {{email}}. Their personal account will keep working.", "pending": "Rejecting…" },
+    "suspend": { "title": "Suspend {{name}}?", "description": "Nobody can enter the organization while it is suspended, and its open sessions will be closed. Its members' personal profiles will keep working.", "pending": "Suspending…" },
+    "reactivate": { "title": "Reactivate {{name}}?", "description": "Its members can sign in again with the same roles.", "pending": "Reactivating…" },
+    "close": { "title": "Close {{name}}?", "description": "This cannot be undone. Its data will be retained until purging and nobody can enter again.", "pending": "Closing…" }
+  },
+  "messages": { "created": "We created {{name}} and invited {{email}} as Owner.", "approve": "We approved {{name}}. We notified {{email}}.", "approveOwners": "We approved {{name}}. We notified its Owners.", "reject": "We rejected {{name}}.", "suspend": "We suspended {{name}}.", "reactivate": "We reactivated {{name}}.", "close": "We closed {{name}}.", "retried": "We finished setting up {{name}}." }
+}

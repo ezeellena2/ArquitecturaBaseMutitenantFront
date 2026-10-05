@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
+import { createServer } from "node:http";
 import { chromium } from "playwright";
 import { loadCases } from "./casos.mjs";
 import { startLiveServer } from "./servidor.mjs";
@@ -9,6 +10,39 @@ import { openLiveView } from "./vista.mjs";
 import { ensureVite } from "./vite.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+
+test("espera la primera tanda antes de Cargar más y conserva la fecha del caso en vivo", { timeout: 30_000 }, async () => {
+  const fixture = createServer((_request, response) => response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" }).end(`
+    <button onclick="load()">Cargar más</button><main>10 filas</main>
+    <script>
+      let count = 10;
+      function load() {
+        const next = count === 10 ? 20 : 50;
+        setTimeout(() => { count = next; document.querySelector('main').textContent = next + ' filas · ' + new Date().toISOString(); }, 150);
+      }
+    </script>`));
+  await new Promise((resolve) => fixture.listen(0, "127.0.0.1", resolve));
+  const viteUrl = `http://127.0.0.1:${fixture.address().port}`;
+  const cases = [{ id: "prueba/cargar-mas-movil", etapa: "prueba", pair: "cargar-mas", device: "Teléfono", board: "M-Organizaciones",
+    viewport: { width: 390, height: 844 }, boardViewport: { width: 390, height: 844 }, props: {}, boardActions: [],
+    app: { path: "/", userFixture: "platform", now: "2026-09-27T20:35:00.000Z", responses: [], actions: [
+      { type: "click", role: "button", name: "Cargar más" },
+      { type: "click", role: "button", name: "Cargar más", waitFor: "20 filas" },
+    ] } }];
+  const live = await startLiveServer({ cases, viteUrl });
+  const browser = await chromium.launch({ headless: true, channel: "chrome" });
+  try {
+    const context = await browser.newContext({ viewport: { width: 1800, height: 1000 }, locale: "es-AR" });
+    const page = await openLiveView(context, { url: live.url, cases, viteUrl, initial: cases[0].id });
+    const app = page.frameLocator("iframe[title='App']");
+    await app.getByText("50 filas", { exact: false }).waitFor({ timeout: 5_000 });
+    assert.match(await app.locator("main").textContent(), /2026-09-27T20:35:00\.000Z/);
+  } finally {
+    await browser.close();
+    await live.close();
+    await new Promise((resolve, reject) => fixture.close((error) => error ? reject(error) : resolve()));
+  }
+});
 
 test("reproduce el código de recuperación escribiendo en campos con etiqueta, en compu y teléfono", { timeout: 30_000 }, async () => {
   const cases = [

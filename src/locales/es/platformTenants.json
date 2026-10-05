@@ -1,0 +1,26 @@
+{
+  "title": "Organizaciones",
+  "platform": "Plataforma",
+  "summary_one": "{{total}} organizaciones · {{pending}} espera aprobación",
+  "summary_other": "{{total}} organizaciones · {{pending}} esperan aprobación",
+  "rowActions": "Acciones de {{name}}",
+  "filters": {
+    "label": "Filtrar organizaciones", "search": "Buscar por nombre o correo",
+    "status": "Estado: todas", "statusMenu": "Filtrar por estado",
+    "source": "Origen: todos", "sourceMenu": "Filtrar por origen",
+    "statuses": { "all": "Todas", "PendingApproval": "Espera aprobación", "Active": "Activa", "Suspended": "Suspendida", "Provisioning": "Falló el alta", "Closed": "Cerrada" },
+    "sources": { "all": "Todos", "SelfService": "Autoservicio", "Platform": "Creada por la plataforma" }
+  },
+  "columns": { "organization": "Organización", "owner": "Dueño", "companies": "Empresas", "members": "Miembros", "status": "Estado", "actions": "Acciones", "created": "Alta", "noCompanies": "sin empresas", "company_one": "empresa", "company_other": "empresas", "member_one": "miembro", "member_other": "miembros" },
+  "actions": { "view": "Ver ficha", "approve": "Aprobar", "reject": "Rechazar", "retry": "Reintentar el alta", "suspend": "Suspender", "reactivate": "Reactivar", "close": "Cerrar" },
+  "empty": { "all": "Todavía no hay organizaciones", "filtered": "Ninguna organización coincide con los filtros", "clear": "Limpiar filtros" },
+  "create": { "title": "Crear organización", "name": "Nombre de la organización", "firstCompany": "Primera empresa", "email": "Correo del Dueño", "zone": "Zona horaria", "culture": "Idioma y región", "submit": "Crear organización", "pending": "Creando…", "nameRequired": "Escribí el nombre de la organización.", "companyRequired": "Escribí el nombre de la primera empresa.", "emailRequired": "Escribí el correo.", "emailInvalid": "Revisá el correo: no parece válido." },
+  "confirm": {
+    "approve": { "title": "¿Aprobar {{name}}?", "description": "Terminamos el alta y {{owner}} ya puede entrar como Dueño.", "pending": "Aprobando…" },
+    "reject": { "title": "¿Rechazar {{name}}?", "description": "La organización queda cerrada y le avisamos a {{email}}. Su cuenta personal sigue funcionando.", "pending": "Rechazando…" },
+    "suspend": { "title": "¿Suspender {{name}}?", "description": "Nadie entra a la organización mientras esté suspendida y se cierran las sesiones abiertas en ella. Los perfiles personales de sus miembros siguen funcionando.", "pending": "Suspendiendo…" },
+    "reactivate": { "title": "¿Reactivar {{name}}?", "description": "Sus miembros vuelven a entrar con los mismos roles.", "pending": "Reactivando…" },
+    "close": { "title": "¿Cerrar {{name}}?", "description": "No se puede deshacer. Sus datos se conservan hasta la purga y nadie vuelve a entrar.", "pending": "Cerrando…" }
+  },
+  "messages": { "created": "Creamos {{name}} e invitamos a {{email}} como Dueño.", "approve": "Aprobamos {{name}}. Le avisamos a {{email}}.", "approveOwners": "Aprobamos {{name}}. Les avisamos a sus Dueños.", "reject": "Rechazamos {{name}}.", "suspend": "Suspendimos {{name}}.", "reactivate": "Reactivamos {{name}}.", "close": "Cerramos {{name}}.", "retried": "Terminamos el alta de {{name}}." }
+}

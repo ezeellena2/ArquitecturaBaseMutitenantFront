@@ -1,4 +1,6 @@
 {
+  "TenantStatus": { "PendingApproval": "Espera aprobación", "Provisioning": "Falló el alta", "Active": "Activa", "Suspended": "Suspendida", "Closed": "Cerrada" },
+  "TenantRegistrationSource": { "SelfService": "Autoservicio", "Platform": "Plataforma" },
   "TestStatus": {
     "Active": "Activo"
   },

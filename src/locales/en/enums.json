@@ -1,4 +1,6 @@
 {
+  "TenantStatus": { "PendingApproval": "Awaiting approval", "Provisioning": "Setup failed", "Active": "Active", "Suspended": "Suspended", "Closed": "Closed" },
+  "TenantRegistrationSource": { "SelfService": "Self service", "Platform": "Platform" },
   "TestStatus": {
     "Active": "Active"
   },

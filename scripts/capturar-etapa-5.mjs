@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 import { boardChoices, capturePaths, otpMaskStyle, startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
 import { platformReasons } from "../src/test/mocks/platformReasons.ts";
+import { platformTenantsCaptureResponses } from "../src/test/mocks/platformTenants.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const canvas = path.join(root, "docs/design/lienzo");
@@ -59,6 +60,51 @@ function recoveryApp(entry) {
   return { ...entry.app, path: `/src/test/visualApp.html?as=visual-personal&route=${encodeURIComponent(route)}`,
     captureMode: "harness", userFixture: "visual-personal", responses, actions,
     ...(readyHeading ? { readyHeading } : {}), ...(readyText ? { readyText } : {}) };
+}
+
+function organizationsApp(entry) {
+  const pair = entry.pair;
+  const phone = entry.viewport.width === 390;
+  let actions = [];
+  let readyText = "Gamma S.A.";
+  let readyHeading;
+  let readySelector = "main";
+  if (pair.startsWith("organizaciones-menu-")) {
+    const names = { "espera-aprobacion": "Gamma S.A.", activa: "Grupo Delta", suspendida: "Beta S.R.L.", "fallo-alta": "Sigma S.A.", cerrada: "Kappa S.R.L." };
+    actions = [click(`Acciones de ${names[pair.slice("organizaciones-menu-".length)]}`)];
+    readySelector = phone ? '[role="dialog"]' : '[role="menu"]';
+  } else if (pair.startsWith("organizaciones-crear")) {
+    actions = [click("Crear organización")];
+    readyHeading = "Crear organización";
+    readySelector = '[role="dialog"]';
+    if (pair === "organizaciones-crear-correo-invalido") actions.push(fill("Correo del Dueño", "lucia"));
+    if (pair !== "organizaciones-crear") {
+      actions.push(click("Crear organización"));
+      readyText = pair.endsWith("correo-invalido") ? "Revisá el correo: no parece válido." : "Escribí el nombre de la organización.";
+    }
+  } else if (pair.startsWith("organizaciones-confirmacion") || pair === "organizaciones-409") {
+    actions = [click("Acciones de Grupo Delta"), click("Suspender", "menuitem")];
+    readyHeading = "¿Suspender Grupo Delta?";
+    readySelector = '[role="dialog"]';
+    if (pair.endsWith("motivo")) actions.push(fill("Motivo", "Dos meses sin pago."));
+    if (pair.endsWith("error")) { actions.push(click("Suspender")); readyText = "Escribí el motivo."; }
+    if (pair.endsWith("409")) {
+      actions.push(fill("Motivo", "Revisión simultánea."), click("Suspender")); readyText = "La organización no puede pasar a ese estado.";
+    }
+  } else if (pair === "organizaciones-sin-coincidencias") {
+    actions = [...(phone ? [click("Buscar")] : []), fill("Buscar por nombre o correo", "sin coincidencias", "searchbox")];
+    readyText = "Ninguna organización coincide con los filtros";
+  } else if (pair === "organizaciones-50-filas") {
+    actions = phone ? [click("Cargar más"), { ...click("Cargar más"), waitFor: "Organización de prueba 20" }]
+      : [click("Filas por página", "combobox"), click("50 por página", "option")];
+    readyText = "Organización de prueba 50";
+  }
+  return { ...entry.app,
+    path: "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma", captureMode: "harness", userFixture: "visual-operator",
+    scenario: `${pair}: lista real T21b`, actions, readySelector,
+    responses: platformTenantsCaptureResponses({ many: pair === "organizaciones-50-filas", conflict: pair === "organizaciones-409" }),
+    ...(readyText ? { readyText } : {}), ...(readyHeading ? { readyHeading } : {}),
+  };
 }
 
 function reasonApp(entry) {
@@ -270,6 +316,7 @@ export function buildCases() {
     route: door === "Empresa" ? "/login/empresa" : "/login", readyText: "Recuperá tu cuenta" });
   return cases.map((entry) => {
     if (entry.group === "recuperar") return { ...entry, app: recoveryApp(entry) };
+    if (entry.group === "plataforma-organizaciones") return { ...entry, app: organizationsApp(entry) };
     if (entry.pair in platformReasons) return { ...entry, app: reasonApp(entry) };
     if (entry.group === "plataforma-marco") {
       const realMore = entry.viewport.width === 390 && entry.app.path === "/plataforma/mas";

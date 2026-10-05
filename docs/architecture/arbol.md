@@ -367,22 +367,26 @@ src/
 │   │   └── <módulo B2B del producto>/               misma forma que roles/
 │   │
 │   └── platform/                                    ÁREA PLATAFORMA [E5]
+│       ├── AGENTS.md · CLAUDE.md                     permisos individuales y páginas parciales
 │       ├── tenants/
-│       │   ├── api/tenants.ts                       estado, dueños, módulos, dominio verificado y página pública de una organización
-│       │   ├── columns.tsx                          ⋮ por fila: Ver ficha, Aprobar, Rechazar, Reintentar el alta (solo en «Falló el alta», directo y sin motivo), Reactivar, Suspender, Cerrar
-│       │   ├── errors.ts
+│       │   ├── AGENTS.md · CLAUDE.md                 fuente Organizaciones y M-Organizaciones; coordinación de versión
+│       │   ├── api/tenants.ts                       T21b: listado, conteos, alta y acciones con versión e Idempotency-Key; detalle y subrecursos llegan en T21c–d
+│       │   ├── api/tenants.test.ts                  rutas, filtros, cuerpos y clave recibida
+│       │   ├── columns.tsx                          columnas y fila del teléfono sin avatar; tonos de TenantStatus
+│       │   ├── errors.ts                            códigos de campo del alta y conflictos de estado
 │       │   ├── components/
-│       │   │   ├── CreateOrganizationDialog.tsx
-│       │   │   └── ChangeStatusDialog.tsx           aprobar, rechazar, suspender, reactivar o cerrar, con motivo
-│       │   ├── tabs/
+│       │   │   ├── CreateOrganizationDialog.tsx     cinco campos, defaults del operador y clave por cuerpo/recorrido
+│       │   │   └── CreateOrganizationDialog.test.tsx validaciones, referencias, 400, foco, red y claves
+│       │   ├── tabs/                               objetivo T21c–d; aún no montadas
 │       │   │   ├── OrganizationHistoryTab.tsx       Historial: fecha y hora, qué pasó, quién y motivo (eventos de seguridad)
 │       │   │   ├── OrganizationOwnersTab.tsx        Dueños
 │       │   │   ├── OrganizationModulesTab.tsx       Módulos (P8): Prender, Extender prueba (hasta una fecha) o Apagar, con motivo
 │       │   │   ├── OrganizationDomainTab.tsx        Dominio verificado: registro TXT, Verificar o Quitar, con motivo
 │       │   │   └── OrganizationPublicPageTab.tsx    Página pública: Ver página, Despublicar (vuelve a borrador con el bloqueo) o Permitir publicar (levanta el bloqueo), con motivo: POST /api/platform/tenants/{id}/public-site/unpublish y …/allow-publish
 │       │   └── pages/
-│       │       ├── OrganizationsPage.tsx            /plataforma: el listado es el inicio del acceso platform (homeOf en tenancy/access.ts)
-│       │       └── OrganizationPage.tsx             /plataforma/organizaciones/:id: banda con el estado y sus acciones (y el motivo si está suspendida o cerrada); pestañas debajo
+│       │       ├── OrganizationsPage.tsx            /plataforma: banda global, filtros cruzados, menú por estado, ReasonDialog y reintento directo del alta
+│       │       ├── OrganizationsPage.test.tsx       tabla/móvil, filtros/URL, permisos, acciones, versión respondida, 409, red, estados y axe
+│       │       └── OrganizationPage.tsx             objetivo T21c: /plataforma/organizaciones/:id; aún no montada
 │       ├── accounts/                                /plataforma/cuentas: cuentas y operadores
 │       │   ├── api/
 │       │   │   ├── accounts.ts                      incluye POST /api/platform/accounts/{id}/deletion (ADR 0035)
@@ -432,6 +436,7 @@ src/
 │   │   ├── home.json                                el inicio de la organización: tarjetas, «Tus empresas» y «Para resolver»
 │   │   ├── roles.json                               [E4]
 │   │   ├── platform.json                            [E5]
+│   │   ├── platformTenants.json                     [E5/T21b] listado, alta y confirmaciones de organizaciones
 │   │   ├── users.json                               [E6]
 │   │   ├── companies.json                           [E6]
 │   │   ├── settings.json                            [E6]
@@ -753,7 +758,8 @@ src/
     │   ├── authContext.ts                           el contexto de sesión de un fixture, sin OIDC
     │   ├── currentUsers.ts                          [E3] fixtures: persona sin/con organizaciones, empresa admin/sin permisos y operador
     │   ├── currentUsers.test.tsx                    tests de currentUsers
-    │   └── platformReasons.ts                       confirmaciones literales v111 para capturar las piezas de Plataforma
+    │   ├── platformReasons.ts                       confirmaciones literales v111 para capturar las piezas de Plataforma
+    │   └── platformTenants.ts                       siete organizaciones literales v111 y filas adicionales exclusivas del paginado de prueba
     ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
     └── utils/
         ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]; devuelve el QueryClient, para una relectura de fondo [E7]

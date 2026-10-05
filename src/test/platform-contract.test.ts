@@ -1,6 +1,9 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { http, HttpResponse } from "msw";
+import { server } from "@/test/mocks/server";
+import { changeTenantState, createTenant, fetchTenantCounts, fetchTenants, retryTenantProvisioning } from "@/areas/platform/tenants/api/tenants";
 
 const front = path.resolve(import.meta.dirname, "../..");
 const back = path.resolve(front, "../ArquitecturaBaseMutitenant");
@@ -40,6 +43,34 @@ function referencedProperties(schema: Schema) {
 }
 
 describe("contratos de Plataforma entre back y front", () => {
+  it.each(["approve", "reject", "suspend", "reactivate", "close"] as const)("T21b el cliente %s usa el POST real y su cuerpo versionado del contrato", async (action) => {
+    const route = `/api/platform/tenants/{id}/${action}`;
+    const operation = openApi.paths[route].post;
+    const properties = referencedProperties(operation.requestBody!.content["application/json"].schema);
+    let sent: unknown; let key: string | null = null;
+    server.use(http.post(`/api/platform/tenants/org/${action}`, async ({ request }) => { sent = await request.json(); key = request.headers.get("Idempotency-Key"); return HttpResponse.json({ version: 71 }); }));
+    expect(await changeTenantState("org", action, { version: 37, reason: "Revisión" }, "contract-key")).toEqual({ version: 71 });
+    expect(sent).toEqual({ version: 37, reason: "Revisión" }); expect(Object.keys(properties).sort()).toEqual(["reason", "version"]); expect(key).toBe("contract-key");
+  });
+  it("T21b el cliente usa las rutas de listado, conteos, alta y reintento sin motivo", async () => {
+    const seen: { path: string; query?: Record<string, string>; body?: unknown; key?: string | null }[] = [];
+    server.use(
+      http.get("/api/platform/tenants/paged", ({ request }) => { const url = new URL(request.url); seen.push({ path: url.pathname, query: Object.fromEntries(url.searchParams) }); return HttpResponse.json({ items: [], page: 1, pageSize: 50, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false }); }),
+      http.get("/api/platform/tenants/filter-counts", ({ request }) => { const url = new URL(request.url); seen.push({ path: url.pathname, query: Object.fromEntries(url.searchParams) }); return HttpResponse.json({ total: 0, statuses: [], sources: [] }); }),
+      http.post("/api/platform/tenants", async ({ request }) => { seen.push({ path: new URL(request.url).pathname, body: await request.json(), key: request.headers.get("Idempotency-Key") }); return HttpResponse.json({ id: "org", name: "Delta", slug: "delta", firstCompanyId: "company", invitationId: "invite" }, { status: 201 }); }),
+      http.post("/api/platform/tenants/org/retry-provisioning", async ({ request }) => { seen.push({ path: new URL(request.url).pathname, body: await request.json(), key: request.headers.get("Idempotency-Key") }); return HttpResponse.json({ version: 8 }); }),
+    );
+    await fetchTenants({ page: 1, pageSize: 50, sort: "name", search: "Delta", status: "Provisioning", source: "SelfService" });
+    await fetchTenantCounts({ search: "Delta", status: "Provisioning", source: "SelfService" });
+    const body = { name: "Delta", firstCompanyName: "Delta S.A.", ownerEmail: "owner@example.com", culture: "es-AR", timeZoneId: "America/Argentina/Buenos_Aires" };
+    await createTenant(body, "create-key"); await retryTenantProvisioning("org", { version: 7 }, "retry-key");
+    expect(seen[0]).toEqual({ path: "/api/platform/tenants/paged", query: { page: "1", pageSize: "50", sort: "name", search: "Delta", status: "Provisioning", source: "SelfService" } });
+    expect(seen[1]).toEqual({ path: "/api/platform/tenants/filter-counts", query: { search: "Delta", status: "Provisioning", source: "SelfService" } });
+    expect(seen[2]).toEqual({ path: "/api/platform/tenants", body, key: "create-key" }); expect(seen[3]).toEqual({ path: "/api/platform/tenants/org/retry-provisioning", body: { version: 7 }, key: "retry-key" });
+    expect(Object.keys(openApi.components.schemas.CreatePlatformTenantHttpRequest.properties).sort()).toEqual(Object.keys(body).sort());
+    expect(Object.keys(openApi.components.schemas.PlatformTenantRetryHttpRequest.properties)).toEqual(["version"]);
+    for (const name of Object.keys(seen[0].query ?? {})) expect(openApi.paths[seen[0].path].get.parameters?.map((parameter) => parameter.name.toLowerCase())).toContain(name.toLowerCase());
+  });
   it("los permisos de Plataforma viajan en effectivePermissions de /api/me (E5)", () => {
     const permissions = openApi.components.schemas.EffectivePermissions.properties;
     expect(Object.keys(permissions).sort()).toEqual(["companies", "organization", "platform"]);

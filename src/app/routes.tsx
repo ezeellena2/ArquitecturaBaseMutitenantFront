@@ -51,7 +51,9 @@ const businessPageRoutes: RouteObject[] = (Object.keys(businessPages) as (keyof 
 export type PlatformPages = Partial<Record<keyof typeof platformRoutes, LazyRouteFunction<RouteObject>>>;
 
 // Las páginas se suman en T21–T23: una entrada del manifiesto sola no monta una pantalla futura.
-export const platformPages: PlatformPages = {};
+export const platformPages: PlatformPages = {
+  organizations: lazyPage(() => import("@/areas/platform/tenants/pages/OrganizationsPage"), (page) => page.OrganizationsPage),
+};
 
 /// Monta sólo las páginas disponibles, con el permiso del manifiesto. El inicio elige Gestión y luego Administración.
 export function createPlatformPageRoutes(pages: PlatformPages): RouteObject[] {

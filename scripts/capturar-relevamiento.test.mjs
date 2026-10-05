@@ -22,10 +22,12 @@ test("los rótulos de Más real de T20c corresponden al tamaño móvil, sin here
   assert.ok(cases.filter((entry) => entry.viewport.width === 1440).every((entry) => !entry.state.includes("Más real")));
 });
 
-test("el catálogo suma sólo los diálogos implementados T20d y conserva las otras pantallas de Plataforma pendientes", () => {
+test("el catálogo compara Organizaciones real T21b y conserva sólo los diálogos de fichas pendientes T20d", () => {
   const cases = buildCases();
-  for (const pair of ["organizaciones-confirmacion-motivo", "organizaciones-confirmacion-error", "organizacion-confirmar-aprobar",
-    "organizacion-modulo-extender-prueba", "cuentas-baja-bloqueada", "organizaciones-409"]) {
+  const organizations = cases.filter((entry) => entry.group === "plataforma-organizaciones");
+  assert.equal(organizations.length, 28);
+  assert.ok(organizations.every((entry) => entry.app.captureMode === "harness" && entry.state.includes("lista real T21b")));
+  for (const pair of ["organizacion-confirmar-aprobar", "organizacion-modulo-extender-prueba", "cuentas-baja-bloqueada"]) {
     const entries = cases.filter((entry) => entry.pair === pair);
     assert.equal(entries.length, 2, pair);
     assert.ok(entries.every((entry) => entry.app.captureMode === "harness" && entry.state.includes("diálogo real T20d")));

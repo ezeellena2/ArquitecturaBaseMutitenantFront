@@ -126,6 +126,16 @@ function platformRouter(path: string, pages: PlatformPages = testPages, account:
 }
 
 describe("las rutas del marco de Plataforma", () => {
+  it("T21b monta sólo Organizaciones lazy; la ficha y las demás features conservan sólo su manifiesto", async () => {
+    expect(Object.keys(platformPages)).toEqual(["organizations"]);
+    const available = createPlatformPageRoutes(platformPages);
+    expect(available).toHaveLength(1);
+    expect(available[0].children?.[0]).toMatchObject({ index: true, lazy: platformPages.organizations });
+    const page = platformPages.organizations;
+    expect(typeof page).toBe("function");
+    if (typeof page === "function") expect(await page()).toHaveProperty("Component");
+    expect(available.flatMap((route) => route.children ?? []).some((route) => route.path === platformRoutes.organization.path)).toBe(false);
+  });
   it("cada destino declara el permiso del contrato de Plataforma", () => {
     expect(Object.fromEntries(Object.values(platformRoutes).map((route) => [route.path, route.platformPermission]))).toEqual({
       "/plataforma": "platform.tenants.read",
@@ -139,7 +149,7 @@ describe("las rutas del marco de Plataforma", () => {
       "/plataforma/configuracion": "platform.settings.manage",
     });
   });
-  it("el inicio real, sin pantallas montadas y sin permisos, muestra Sin permiso dentro del marco", async () => {
+  it("el inicio real sin permisos muestra Sin permiso dentro del marco", async () => {
     platformRouter("/plataforma", {}, { ...platformOperator, effectivePermissions: { platform: [], organization: [], companies: {} } }, true);
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
     expect(screen.getByRole("complementary", { name: "Navegación principal" })).toBeVisible();

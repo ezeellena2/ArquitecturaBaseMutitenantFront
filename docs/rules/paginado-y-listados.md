@@ -46,6 +46,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 
 ## Copiá de
 - `src/areas/business/roles/pages/RolesPage.tsx` y `roles/columns.tsx` (E4): `usePagedQuery`, `FilterBar`, `DataTable`, `Pagination`, «Ningún rol coincide con los filtros» y la fila del teléfono
+- `src/areas/platform/tenants/pages/OrganizationsPage.tsx` (E5/T21b): banda con conteos globales y opciones con conteos cruzados; el backend ordena por nombre; fila móvil sin avatar y fecha completa del tablero M-Organizaciones.
 - por cursor: `src/areas/business/audit/pages/AuditPage.tsx` (E7): `useCursorList`, los filtros en la URL y `LoadMore`
 
 ## Lo verifica

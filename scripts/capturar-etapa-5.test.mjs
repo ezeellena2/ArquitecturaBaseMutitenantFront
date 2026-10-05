@@ -9,10 +9,41 @@ import { buildCases, canvas, output } from "./capturar-etapa-5.mjs";
 const groups = ["plataforma-marco", "plataforma-organizaciones", "plataforma-organizacion", "plataforma-cuentas",
   "plataforma-cuenta", "plataforma-recuperaciones", "plataforma-legales", "plataforma-auditoria", "plataforma-configuracion", "recuperar"];
 
-test("T20d compara el diálogo real sobre el marco, sin representar listas futuras como terminadas", () => {
+test("T21b compara todas las variantes de Organizaciones con la lista real", () => {
+  const cases = buildCases().filter((entry) => entry.group === "plataforma-organizaciones");
+  assert.equal(cases.length, 28);
+  for (const entry of cases) {
+    const params = new URL(entry.app.path, "http://example.test").searchParams;
+    assert.equal(params.get("frame"), null, entry.id);
+    assert.equal(params.get("reason"), null, entry.id);
+    assert.equal(params.get("route"), "/plataforma", entry.id);
+    assert.equal(params.get("as"), "visual-operator", entry.id);
+    assert.equal(entry.app.captureMode, "harness", entry.id);
+    assert.match(entry.app.scenario, /lista real T21b/, entry.id);
+    assert.ok(entry.app.responses.some((response) => response.path === "/api/platform/tenants/paged"));
+    for (const action of entry.app.actions) assert.ok(action.role && !action.selector, entry.id);
+  }
+});
+
+test("T21b captura siete filas del tablero y cincuenta datos de prueba sin falsear la referencia", () => {
   const cases = buildCases();
-  for (const pair of ["organizaciones-confirmacion-motivo", "organizaciones-confirmacion-error", "organizacion-confirmar-aprobar",
-    "organizacion-modulo-extender-prueba", "cuentas-baja-bloqueada", "organizaciones-409"]) {
+  for (const entry of cases.filter((entry) => entry.pair === "organizaciones-lista")) {
+    const data = entry.app.responses.find((response) => response.path === "/api/platform/tenants/paged" && !response.query).body;
+    assert.equal(data.totalCount, 7);
+    assert.ok(data.items.some((row) => row.name === "Omega S.A." && row.ownerName === null));
+    assert.ok(data.items.some((row) => row.name === "Sigma S.A." && row.status === "Provisioning" && row.companyCount === 0));
+  }
+  for (const entry of cases.filter((entry) => entry.pair === "organizaciones-50-filas")) {
+    const data = entry.app.responses.find((response) => response.query?.pageSize === "50").body;
+    assert.equal(data.items.length, 50);
+    assert.equal(data.totalCount, 50);
+    assert.equal(entry.boardReference.kind, "base");
+  }
+});
+
+test("T20d conserva el diálogo aislado de las fichas todavía pendientes", () => {
+  const cases = buildCases();
+  for (const pair of ["organizacion-confirmar-aprobar", "organizacion-modulo-extender-prueba", "cuentas-baja-bloqueada"]) {
     const entries = cases.filter((entry) => entry.pair === pair);
     assert.equal(entries.length, 2);
     for (const entry of entries) {

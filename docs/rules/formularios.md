@@ -57,6 +57,7 @@
 - formulario y diálogo: `src/areas/personal/account/components/AccountProfileForm.tsx` (E4: React Hook Form con zod, `useEditForm`, `useEditPage` y el error del back en su campo) · `src/areas/personal/account/components/AccountDeletionDialog.tsx` (E4: el diálogo que se monta al abrirse, devuelve el foco y lleva su error arriba de los botones)
 - editor en pantalla propia: `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4: zod, `useEditPage`, `ReadOnlyField`, «Crear rol» que no se apaga, el rechazo del back en su campo con `errors.ts`, y sus piezas `PermissionPicker` y `RoleScopeField`)
 - diálogo de alta con React Hook Form y zod: `src/areas/business/users/components/InviteUserDialog.tsx` (E7: se monta al abrirse, «Invitar» no se apaga y el correo dice qué corregir) · el código de un diálogo: `src/shared/account/AddLoginMethodDialog.tsx` (E7: el título dice el paso y el código incorrecto va debajo de los casilleros)
+- `src/areas/platform/tenants/components/CreateOrganizationDialog.tsx` (E5/T21b): cinco campos, referencias del catálogo y defaults del operador; correo normalizado, errores en su campo y clave distinta al corregir un cuerpo cuya respuesta se perdió.
 - diálogo que crea y edita: `src/areas/business/companies/components/CompanyDialog.tsx` (E7: «Crear empresa» no se apaga; al editar, «Guardar cambios» se apaga sin cambios y no por un dato mal)
 
 ## Lo verifica
