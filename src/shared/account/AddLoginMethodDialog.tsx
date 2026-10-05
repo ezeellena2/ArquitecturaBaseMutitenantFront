@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { TFunction } from "i18next";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -44,7 +44,6 @@ type CodeForm = z.infer<ReturnType<typeof codeFormSchema>>;
 export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }: Props) {
   const { t } = useTranslation(["account", "auth", "common", "errors"]);
   const restoreFocus = useRestoreFocusOnClose(open);
-  const codeErrorId = useId();
   const [methodId, setMethodId] = useState<string | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
   const [reauthTicket, setReauthTicket] = useState<string | null>(null);
@@ -104,11 +103,10 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
         <DialogBody>
           {codeStep ? <>
             <DialogDescription id="method-code-hint">{t("account:sentHint", { value: emailForm.getValues("email") })}</DialogDescription>
-            <OtpInput length={codeLength} value={code.field.value} label={t("common:code.label")} autoFocus disabled={busy} invalid={Boolean(codeError)}
-              aria-describedby={codeError ? `method-code-hint ${codeErrorId}` : "method-code-hint"}
+            {/* Tableros Cuenta-Verificar (.err2) y M-Cuenta-Verificar (.ap-err): el error del código, debajo de los casilleros. */}
+            <OtpInput length={codeLength} value={code.field.value} label={t("common:code.label")} autoFocus disabled={busy} error={codeError}
+              aria-describedby="method-code-hint"
               onChange={(value) => { code.field.onChange(value); codeForm.clearErrors("code"); setFailure(null); }} />
-            {/* Tableros Cuenta-Verificar (.err2) y M-Cuenta-Verificar (.ap-err): debajo de los casilleros, en 13 y 13,5. */}
-            {codeError ? <p id={codeErrorId} role="alert" className="text-[13px] text-[var(--peligro)] max-md:-mt-0.5 max-md:text-[13.5px]">{codeError}</p> : null}
           </> : <>
             {!method ? <div role="group" aria-label={t("account:chooseMethod")} className="rounded-lg bg-[var(--s3)] p-1"><button type="button" aria-pressed="true" className="w-full rounded-md bg-[var(--lado-activo)] py-2 text-[13px] font-medium">{t("account:email")}</button></div> : null}
             <Controller control={emailForm.control} name="email" render={({ field }) => <FormField label={t("account:email")} error={emailForm.formState.errors.email?.message}>

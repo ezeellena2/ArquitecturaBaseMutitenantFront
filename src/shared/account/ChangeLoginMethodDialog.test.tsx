@@ -56,3 +56,45 @@ it("espera el cooldown sin reintentar solo y permite pedir el código desde el m
   expect(await screen.findByRole("textbox", { name: "Código 1" }, { timeout: 2500 })).toBeVisible();
   expect(requests).toBe(2);
 });
+
+// Tableros Cuenta-Verificar y M-Cuenta-Verificar (.err2 y .ap-err): al confirmar que sos vos, como al verificar un correo,
+// el código a medias y el que el back rechaza van debajo de los casilleros, en rojo, y un dígito nuevo los saca; la
+// franja queda para lo demás.
+it("el código a medias y el incorrecto van debajo de los casilleros, y un dígito nuevo los saca", async () => {
+  const user = userEvent.setup();
+  const complete = vi.fn();
+  let attempts = 0;
+  server.use(
+    http.post("/api/me/reauth", () => HttpResponse.json({ sourceMethodId: "source", destination: "a***@example.test", resendAfterSeconds: 60 })),
+    http.post("/api/me/reauth/verify", () => attempts++ === 0
+      ? HttpResponse.json({ status: 400, code: "Auth.LoginCode.Invalid", title: "Código", detail: "El código no es válido." }, { status: 400 })
+      : HttpResponse.json({ reauthTicket: "opaque-ticket" })),
+    http.delete("/api/me/login-methods/target", () => new HttpResponse(null, { status: 204 })),
+  );
+  renderWithProviders(<ChangeLoginMethodDialog action="remove" method={{ id: "target", type: "Email", value: "nuevo@example.test", isVerified: true, isPrimary: false, canRemove: true, canMakePrimary: true }} onClose={() => {}} onComplete={complete} />);
+  const first = await screen.findByRole("textbox", { name: "Código 1" });
+  const code = screen.getByRole("group", { name: "Código" });
+
+  await user.click(screen.getByRole("button", { name: "Quitar" }));
+  const incomplete = await screen.findByText("Escribí los 6 números del código.");
+  expect(code.nextElementSibling).toBe(incomplete);
+  expect(first).toHaveAttribute("aria-invalid", "true");
+  await user.type(first, "123456");
+  expect(screen.queryByText("Escribí los 6 números del código.")).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Quitar" }));
+
+  const message = await screen.findByText("El código no es válido.");
+  expect(message).toHaveAttribute("role", "alert");
+  expect(code.nextElementSibling).toBe(message);
+  expect(message).toHaveClass("text-[13px]", "text-[var(--peligro)]", "max-md:text-[13.5px]");
+  expect(code).toHaveAccessibleDescription("El código no es válido.");
+  expect(first).toHaveAttribute("aria-invalid", "true");
+  expect(screen.getAllByRole("alert")).toEqual([message]);
+
+  await user.click(first);
+  await user.paste("654321");
+  expect(screen.queryByText("El código no es válido.")).not.toBeInTheDocument();
+  expect(first).not.toHaveAttribute("aria-invalid");
+  await user.click(screen.getByRole("button", { name: "Quitar" }));
+  await waitFor(() => expect(complete).toHaveBeenCalled());
+});

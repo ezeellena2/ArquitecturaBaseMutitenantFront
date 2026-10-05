@@ -1,4 +1,4 @@
-import { useRef, type ChangeEvent, type ClipboardEvent, type KeyboardEvent } from "react";
+import { useId, useRef, type ChangeEvent, type ClipboardEvent, type KeyboardEvent } from "react";
 import { cn } from "@/shared/lib/utils";
 import { Input } from "./input";
 
@@ -10,6 +10,9 @@ interface OtpInputProps {
   disabled?: boolean;
   /// El código que se verificó no era el correcto: todas las casillas quedan marcadas hasta que se escriba otro.
   invalid?: boolean;
+  /// Lo que dice el error del código (a medias, incorrecto): va debajo de los casilleros, marca las casillas y describe al
+  /// grupo, como en Cuenta-Verificar. Lo demás (vencido, sin conexión) va en la franja del diálogo.
+  error?: string | null;
   /// La primera casilla toma el foco al aparecer: en el diálogo del perfil, el código reemplaza al campo en el que se
   /// estaba escribiendo, y sin esto el foco se pierde con él.
   autoFocus?: boolean;
@@ -46,11 +49,15 @@ export function OtpInput({
   label,
   disabled,
   invalid,
+  error,
   autoFocus,
-  "aria-describedby": describedBy,
+  "aria-describedby": hintId,
   variant = "default",
 }: OtpInputProps) {
   const boxes = useRef<(HTMLInputElement | null)[]>([]);
+  const errorId = useId();
+  const marked = invalid || Boolean(error);
+  const describedBy = [hintId, error ? errorId : null].filter(Boolean).join(" ") || undefined;
   const normalizedValue = value.replace(/\D/gu, "").slice(0, length);
   const digits = normalizedValue.padEnd(length, " ").split("");
 
@@ -101,7 +108,7 @@ export function OtpInput({
     focusBox(pasted.length);
   }
 
-  return (
+  return (<>
     <div role="group" aria-label={label} aria-describedby={describedBy} className={layout[variant].group}>
       {digits.map((digit, index) => (
         <Input
@@ -117,7 +124,7 @@ export function OtpInput({
           maxLength={index === 0 ? length : 1}
           disabled={disabled}
           aria-label={`${label} ${index + 1}`}
-          aria-invalid={invalid ? true : undefined}
+          aria-invalid={marked ? true : undefined}
           value={digit.trim()}
           onChange={(event) => handleChange(index, event)}
           onKeyDown={(event) => handleKeyDown(index, event)}
@@ -126,5 +133,7 @@ export function OtpInput({
         />
       ))}
     </div>
-  );
+    {/* Tableros Cuenta-Verificar (.err2) y M-Cuenta-Verificar (.ap-err): debajo de los casilleros, en 13 y 13,5. */}
+    {error ? <p id={errorId} role="alert" className="text-[13px] text-[var(--peligro)] max-md:-mt-0.5 max-md:text-[13.5px]">{error}</p> : null}
+  </>);
 }

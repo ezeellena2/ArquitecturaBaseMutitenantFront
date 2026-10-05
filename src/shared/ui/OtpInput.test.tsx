@@ -99,6 +99,19 @@ describe("OtpInput", () => {
     }
   });
 
+  // Tableros Cuenta-Verificar (.err2) y M-Cuenta-Verificar (.ap-err): el error del código va debajo de los casilleros,
+  // en rojo, marca las casillas y describe al grupo.
+  it("con un error, lo dice debajo de los casilleros, marca las casillas y describe al grupo", () => {
+    render(<><p id="hint">{"Te mandamos un código."}</p><OtpInput length={6} value="48" onChange={vi.fn()} label="Código" aria-describedby="hint" error="El código no es válido." /></>);
+    const group = screen.getByRole("group", { name: "Código" });
+    const message = screen.getByRole("alert");
+    expect(message).toHaveTextContent("El código no es válido.");
+    expect(group.nextElementSibling).toBe(message);
+    expect(message).toHaveClass("text-[13px]", "text-[var(--peligro)]", "max-md:text-[13.5px]");
+    expect(group).toHaveAccessibleDescription("Te mandamos un código. El código no es válido.");
+    for (const box of screen.getAllByRole("textbox")) expect(box).toHaveAttribute("aria-invalid", "true");
+  });
+
   it("usa superficie apagada del tablero cuando un código queda bloqueado", () => {
     render(<OtpInput length={6} value="" onChange={vi.fn()} label="Código" disabled />);
     const first = screen.getByRole("textbox", { name: "Código 1" });

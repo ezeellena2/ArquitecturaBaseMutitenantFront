@@ -24,7 +24,7 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, o
   const label = adding ? "common:code.verify" : action === "primary" ? "makePrimary" : google ? "unlink" : "remove";
   async function confirm() {
     if (!reauth.proof) { await reauth.send(); return; }
-    if (reauth.code.length !== 6) { reauth.setFailure(t("common:code.incomplete")); return; }
+    if (!reauth.codeComplete()) return;
     reauth.setFailure(null); setSaving(true);
     try {
       const request = { reauthTicket: await reauth.getTicket() };
@@ -44,7 +44,8 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, o
       <DialogHeader><DialogTitle>{t(title)}</DialogTitle></DialogHeader>
       <DialogBody>
       <DialogDescription>{reauth.proof ? t(adding ? "reauthHint" : action === "primary" ? "primaryHint" : "removeHint", { value: method?.value, backup: reauth.proof.destination }) : null}</DialogDescription>
-      {reauth.proof ? <OtpInput length={6} value={reauth.code} onChange={(value) => { reauth.setCode(value); reauth.setFailure(null); }} label={t("common:code.label")} autoFocus disabled={busy} /> : null}
+      {/* Como en Cuenta-Verificar: el código a medias o incorrecto va debajo de los casilleros; lo demás, en la franja. */}
+      {reauth.proof ? <OtpInput length={6} value={reauth.code} onChange={reauth.changeCode} label={t("common:code.label")} autoFocus disabled={busy} error={reauth.codeFailure} /> : null}
       <FormError message={reauth.failure} />
       </DialogBody>
       <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("cancel")}</Button><Button type="submit" variant={action === "remove" ? "destructive" : "default"} disabled={reauth.retry.isRunning || (!reauth.proof && !reauth.failure)} pending={busy} pendingLabel={pendingLabel}>{reauth.retry.label ?? t(label)}</Button></DialogFooter>
