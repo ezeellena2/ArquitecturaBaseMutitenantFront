@@ -96,6 +96,11 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
 
     const visible = await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" });
     expect(visible).toBeChecked();
+    // Tablero Pagina-Org (.w-it, .w-sw y .o-logo-chico): la fila de «Publicación» mide 56 como mínimo; el interruptor, 36
+    // por 20, gris claro si está apagado; el logo, 40 con radio 10 y la sigla en 14.
+    expect(visible.parentElement).toHaveClass("min-h-14");
+    expect(visible).toHaveClass("data-[size=default]:w-9", "data-[size=default]:h-5", "data-[state=unchecked]:bg-[var(--borde2)]");
+    expect(screen.getByText("GD")).toHaveClass("size-10", "rounded-[10px]", "text-[14px]");
     expect(subline()).toHaveTextContent(/^Publicada$/);
     expect(screen.getByRole("link", { name: "Ver página" })).toBeVisible();
     expect(screen.queryByRole("button", { name: "Despublicar" })).not.toBeInTheDocument();

@@ -241,7 +241,8 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
         {/* La franja del error de guardado; en el teléfono va en la banda debajo de la barra (M-Pagina-Org, v106). */}
         {edit.formError}
         <Section title={t("publicPage:publicationTitle")}>
-          <div className="flex items-center gap-3 px-4 py-3 md:px-5 max-md:min-h-14 max-md:py-2 max-md:pr-3.5">
+          {/* Pagina-Org (.w-it): la fila mide 56 como mínimo, con el interruptor a 12 del borde. */}
+          <div className="flex min-h-14 items-center gap-3 py-1.5 pr-3 pl-5 max-md:py-2 max-md:pr-3.5 max-md:pl-4">
             <GlobeIcon className="size-4 shrink-0 text-[var(--t3)] max-md:hidden" />
             {/* Pagina-Org (.o-fila-tit, .o-i): la ⓘ va a 6 de la dirección, en su grupo; con los 12 del interruptor, en el
                 teléfono la dirección se cortaba. */}
@@ -258,9 +259,10 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
         </Section>
 
         <Section title={t("publicPage:pageTitle")}>
-          <div className="flex items-center gap-3 border-b border-[var(--borde)] px-4 py-2.5 md:px-5 max-md:gap-3.5 max-md:border-0 max-md:px-4 max-md:pt-3.5 max-md:pb-0">
-            {logo.dataUri ? <img src={logo.dataUri} alt={t("publicPage:logoAlt")} className="size-9 rounded-[9px] object-contain max-md:size-14 max-md:rounded-[14px]" />
-              : <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-[9px] bg-[var(--marca-t)] text-[11.5px] font-bold text-[var(--marca-tx)] max-md:size-14 max-md:rounded-[14px] max-md:bg-[var(--marca)] max-md:text-[18px] max-md:font-bold max-md:text-[var(--lado-activo)]">{initials(name)}</span>}
+          <div className="flex min-h-14 items-center gap-3 border-b border-[var(--borde)] px-4 py-1.5 md:px-5 max-md:min-h-0 max-md:gap-3.5 max-md:border-0 max-md:px-4 max-md:pt-3.5 max-md:pb-0">
+            {/* Pagina-Org (.o-logo-chico): el logo de 40, con radio 10 y la sigla en 14. */}
+            {logo.dataUri ? <img src={logo.dataUri} alt={t("publicPage:logoAlt")} className="size-10 rounded-[10px] object-contain max-md:size-14 max-md:rounded-[14px]" />
+              : <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-[10px] bg-[var(--marca-t)] text-[14px] font-bold text-[var(--marca-tx)] max-md:size-14 max-md:rounded-[14px] max-md:bg-[var(--marca)] max-md:text-[18px] max-md:font-bold max-md:text-[var(--lado-activo)]">{initials(name)}</span>}
             <span className="text-[13px] font-medium text-[var(--t1)] max-md:sr-only">{t("publicPage:logoTitle")}</span>
             <span className="ml-auto flex items-center gap-2 max-md:ml-0">
               {logo.dataUri ? <Button type="button" variant="outline" size="sm" className="max-md:h-10 max-md:rounded-[10px] max-md:px-3.5 max-md:text-[14px]"
