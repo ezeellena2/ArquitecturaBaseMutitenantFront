@@ -13,7 +13,8 @@ export async function checkContracts({ source, target }, ci = process.env.CI ===
   if (!existsSync(target)) throw new Error(`Generated TypeScript schema not found: ${target}`);
 
   const expected = await renderContracts(source);
-  const actual = readFileSync(target, "utf8");
+  // Una copia nueva en Windows (core.autocrlf) trae el schema con CRLF: se comparan los tipos, no los finales de línea.
+  const actual = readFileSync(target, "utf8").replace(/\r\n/g, "\n");
   if (actual !== expected) throw new Error("Generated schema.d.ts is stale. Run npm run contracts.");
   console.log("Generated TypeScript schema matches OpenAPI.");
 }

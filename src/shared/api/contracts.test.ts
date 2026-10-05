@@ -53,6 +53,16 @@ describe("OpenAPI contracts", () => {
     expect(run(checker, source, target).status).not.toBe(0);
   }, 20_000);
 
+  // Git de Windows con core.autocrlf saca el schema con CRLF en una copia nueva (un worktree): el contenido es el
+  // mismo, así que el chequeo no puede fallar por los finales de línea.
+  it("accepts the checked in schema with Windows line endings", () => {
+    const { source, target } = fixture();
+    expect(run(generated, source, target).status).toBe(0);
+    writeFileSync(target, readFileSync(target, "utf8").replace(/\r?\n/g, "\r\n"));
+
+    expect(run(checker, source, target).status).toBe(0);
+  }, 20_000);
+
   it("requires the backend checkout locally and warns when CI lacks it", () => {
     const { source, target } = fixture();
     const missing = path.join(path.dirname(source), "missing-repo/docs/contracts/openapi.json");
