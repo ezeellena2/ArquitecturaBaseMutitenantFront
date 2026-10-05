@@ -618,6 +618,9 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-dialogos-r2b">
 .dlg-b { padding: 20px; gap: 14px; }
 </style>
+<style data-vuelta="1004-alineacion-app">
+.in2.mal { border-color: var(--peligro) !important; }
+</style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -984,6 +987,7 @@ const NOMBRES_ZONA = { 'America/Argentina/Buenos_Aires': 'Buenos Aires (GMT−3)
 const nombreZona = (z) => NOMBRES_ZONA[z] || z;
 const ZONAS = [
   { v: null, n: 'La de la organización', d: nombreZona(ORG_ZONA) },
+  { v: ORG_ZONA, n: nombreZona(ORG_ZONA) },
   ...['America/Argentina/Cordoba', 'America/Argentina/Mendoza', 'America/Argentina/Tucuman', 'America/Montevideo'].map((z) => ({ v: z, n: nombreZona(z) })),
 ];
 const ZONAS_TODAS = ['America/Argentina/Buenos_Aires', 'America/Argentina/Cordoba', 'America/Argentina/Mendoza', 'America/Argentina/Tucuman', 'America/Montevideo', 'America/Santiago', 'America/Asuncion'].map((z) => ({ v: z, n: nombreZona(z) }));
@@ -991,9 +995,9 @@ const IDIOMAS = [{ v: 'es-AR', n: 'Español (Argentina)', d: '27/09/2026 14:35 �
 const MONEDAS = [{ v: 'ARS', n: 'Peso argentino (ARS)', d: '$ 1.234,50' }, { v: 'USD', n: 'Dólar estadounidense (USD)', d: 'US$ 1.234,50' }];
 // GET /api/companies
 const EMPRESAS = [
-  { id: 'c1', n: 'Delta S.A.', cuit: '30-71234567-1', zona: null, miembros: 6, estado: 'activa' },
+  { id: 'c1', n: 'Delta S.A.', cuit: '30-71234567-1', zona: 'America/Argentina/Buenos_Aires', miembros: 6, estado: 'activa' },
   { id: 'c2', n: 'Delta Sur S.R.L.', cuit: '30-71555444-1', zona: 'America/Argentina/Cordoba', miembros: 4, estado: 'activa' },
-  { id: 'c3', n: 'Delta Norte S.A.', cuit: '', zona: null, miembros: 3, estado: 'activa' },
+  { id: 'c3', n: 'Delta Norte S.A.', cuit: '', zona: 'America/Argentina/Buenos_Aires', miembros: 3, estado: 'activa' },
 ];
 const nombreEmpresa = (id) => (EMPRESAS.find((e) => e.id === id) || { n: '' }).n;
 // GET /api/roles: los de sistema y los que crea cada organización. Solo usan los permisos que existen en la
@@ -1059,7 +1063,7 @@ class Component extends DCLogic {
       ['exp' + clave]: abierto ? 'true' : 'false',
       ['alternar' + clave]: () => this.alternarMenu(clave),
       ['texto' + clave]: actual ? actual.n : vacio,
-      ['claseVal' + clave]: actual ? '' : 'vacio2',
+      ['claseVal' + clave]: actual && actual.v !== null ? '' : 'vacio2',
       ['mal' + clave]: extra.error ? 'mal' : '',
       ['err' + clave]: extra.error || '',
       ['bloq' + clave]: !!extra.bloqueado,
@@ -1386,7 +1390,7 @@ class Component extends DCLogic {
       }),
 
       cerrarDialogo: () => this.setState({ dialogo: null, guardando: false, abierto: null }),
-      abrirEditar: () => this.setState({ dialogo: 'editar', nombre: e.n, cuit: e.cuit, zona: e.zona, errNombre: '', errCuit: '', abierto: null }),
+      abrirEditar: () => this.setState({ dialogo: 'editar', nombre: e.n, cuit: e.cuit.replace(/\D/g, ''), zona: e.zona, errNombre: '', errCuit: '', abierto: null }),
       dlgEditar: s.dialogo === 'editar',
       tituloDialogo: 'Editar empresa',
       textoGuardar: 'Guardar cambios',

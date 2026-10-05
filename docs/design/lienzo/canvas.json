@@ -974,7 +974,7 @@
       "x": 10640,
       "y": 260,
       "w": 2960,
-      "h": 6300,
+      "h": 6900,
       "title": "Criterio · Decisiones por pantalla",
       "page": "criterio"
     },
@@ -2007,7 +2007,8 @@
     "M-Plat-WA-Alta.dc.html",
     "M-Plat-WA-Bot.dc.html",
     "M-Plat-WA-Equipos.dc.html",
-    "M-Plat-WA-Plantillas.dc.html"
+    "M-Plat-WA-Plantillas.dc.html",
+    "M-Inicio-Miembro.dc.html"
   ],
   "pages": [
     {

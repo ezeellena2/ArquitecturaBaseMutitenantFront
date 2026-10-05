@@ -6,7 +6,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 6300
+ALTO = 6900
 ANCHO = 2960
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
@@ -52,6 +52,9 @@ ESTADOS = {
 
 # Reglas generales que salieron de las decisiones: (regla, tablero donde quedó, fecha).
 REGLAS = [
+    ("Las pestañas de una ficha van abajo de la banda, sobre el fondo, alineadas con el contenido.", "Marco y pantallas", "04/10/2026"),
+    ("El pie del paginado va con letra de 12.", "Tablas y listas", "04/10/2026"),
+    ("El botón principal lleva el degradé de la marca en todas las pantallas, también en el teléfono.", "Botones", "04/10/2026"),
     ("Dentro de una caja, dos columnas iguales que ocupan todo el ancho; tres solo si todos los datos son cortos, como en «Tus datos».", "Formularios y campos", "04/10/2026"),
     ("El selector de país de un teléfono lleva la bandera, como imagen y no emoji, en la lista y en el control cerrado: «[bandera] +54».", "Formularios y campos", "04/10/2026"),
     ("Sin textos que explican: el estado se dice una vez arriba y un ⓘ abre el aviso importante.", "Avisos y errores · Diálogos", "02/10/2026"),
@@ -248,6 +251,21 @@ DECISIONES = {
         ("Empresas y Empresa", "", "«Crear empresa» con el CUIT repetido, en la compu y en el teléfono. En el teléfono, la hoja de crear y la de editar, la pestaña Roles y la hoja de roles de un miembro con su error. Las hojas suben desde abajo, no a pantalla completa.", "Dibujada"),
         ("Configuración · teléfono", "", "Dominio pendiente, con «Verificar», y «Cambios sin guardar».", "Dibujada"),
         ("Página pública", "", "En el teléfono, borrador, despublicada por la plataforma (con su hoja), «Cambios sin guardar» y error al guardar. En la compu, el error al guardar arriba del contenido.", "Dibujada"),
+    ],
+    "La app manda · 04/10": [
+        ("Pestañas", "B", "Abajo de la banda, sobre el fondo, como Empresa y la app.", "Dibujada"),
+        ("Usuarios", "", "«Vence…» debajo de la palabra del estado, no del punto.", "Dibujada"),
+        ("Paginado", "", "El pie con letra de 12.", "Dibujada"),
+        ("Inicio · Para resolver", "", "Todas las filas de 52.", "Dibujada"),
+        ("Flecha para achicar el menú", "", "En el borde del último panel de las 49 pantallas con el marco nuevo: en Administración si está abierta; si no, en el menú.", "Dibujada"),
+        ("Campo con error", "", "Borde rojo también en Empresas, Empresa y los tableros que lo dejaban gris.", "Dibujada"),
+        ("Agregar dominio", "", "Con el asterisco; sin dominio, «Escribí el dominio.», en la compu y en el teléfono.", "Dibujada"),
+        ("Página pública · vista previa", "", "La misma tarjeta que ve el público: en un diálogo en la compu y en una hoja en el teléfono. Cambia la app.", "Dibujada"),
+        ("Página pública · otra persona cambió", "", "El cartel ámbar con «Seguir editando» y «Ver lo nuevo», en la compu y en el teléfono.", "Dibujada"),
+        ("Auditoría", "", "Los textos del back: «Cambió la invitación de …» (aceptada o revocada), «Habilitó a …» y «Cambió el acceso de …». El correo de la invitación vencida, tapado; la zona, con su nombre. De la plataforma, solo la aprobación. El detalle queda como el tablero: cambia la app.", "Dibujada"),
+        ("Empresas", "", "Toda empresa tiene su zona; «La de la organización», en gris, solo al crear. Al editar, el CUIT sin guiones y «Guardar cambios» activo. En el teléfono, la hoja de roles sin bajada ni «Todos», con «Sin roles».", "Dibujada"),
+        ("Usuario · teléfono", "", "El error al guardar con el caso de la app: Lucía se quita el rol de Dueña y la franja dice «Tiene que quedar al menos un Dueño…».", "Dibujada"),
+        ("Botón principal", "", "Con el degradé en todas las pantallas, como la app.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

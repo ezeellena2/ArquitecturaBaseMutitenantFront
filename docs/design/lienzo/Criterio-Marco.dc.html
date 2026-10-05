@@ -867,6 +867,12 @@
 </style>
 <style data-vuelta="1004-cuit-valido">
 </style>
+<style data-vuelta="1004-alineacion-app">
+.tabs-fondo { padding: 20px 24px 6px; background: var(--fondo); }
+.tabs-fondo .tabs2 { padding: 0 4px; background: none; }
+.cb-pri { background: linear-gradient(180deg, var(--marca) 0%, var(--marca-h) 100%) !important; box-shadow: 0 1px 2px var(--marca-sombra), inset 0 1px 0 rgb(255 255 255 / 0.15); }
+.cb-pri:hover, .cb-pri.h { filter: brightness(1.05); }
+</style>
 </helmet>
 
 <div class="crit">
@@ -947,10 +953,10 @@
     <h2>Pestañas</h2>
     <div class="marco1">
       <div class="bnd"><div class="iz"><span class="vol"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></span><div><h3>Delta S.A.</h3><p class="res"><span class="ok">Activa</span> · CUIT 30-71234567-1 · Buenos Aires (GMT−3)</p></div></div><div class="ac"><button type="button" class="ib" aria-label="Más acciones" style="border-color: var(--borde);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button><button type="button" class="cb cb-sec">Editar empresa</button><button type="button" class="cb cb-pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Agregar miembro</button></div></div>
-      <div class="tabs2"><span class="on">Miembros <span class="n">6</span></span><span>Roles <span class="n">3</span></span></div>
+      <div class="tabs-fondo"><div class="tabs2"><span class="on">Miembros <span class="n">6</span></span><span>Roles <span class="n">3</span></span></div></div>
     </div>
     <ul class="reglas2 dos" style="margin-top: 14px;">
-      <li><strong>En una ficha, una por cada grupo de datos,</strong> aunque tenga una sola fila, como «Dominio verificado» en la ficha de una organización. También dos vistas del mismo contenido, como «Configuración» y «Recorrido» del bot.</li>
+      <li><strong>Abajo de la banda, sobre el fondo,</strong> separadas de ella y alineadas con el contenido. La línea de abajo va a lo ancho del contenido.</li> <li><strong>En una ficha, una por cada grupo de datos,</strong> aunque tenga una sola fila, como «Dominio verificado» en la ficha de una organización. También dos vistas del mismo contenido, como «Configuración» y «Recorrido» del bot.</li>
       <li><strong>La cantidad, en gris</strong> al lado del nombre. Sin etiqueta.</li>
       <li><strong>La acción de la banda cambia con la pestaña:</strong> «Agregar miembro» o «Crear rol».</li>
       <li><strong>Nunca una pestaña «Resumen»</strong> con rótulos y valores: los datos van en la banda.</li>

@@ -604,6 +604,10 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-dialogos-r2b">
 .dlg-b { padding: 20px; gap: 14px; }
 </style>
+<style data-vuelta="1004-alineacion-app">
+.dos .n2.sang { padding-left: 13px; }
+.in2.mal { border-color: var(--peligro) !important; }
+</style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -728,7 +732,7 @@ textarea.in2 { height: auto; min-height: 84px; }
         <div class="tarjeta">
           <div class="tt-h {{claseEncabezado}}" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1.3fr) 190px 28px;"><span>Usuario</span><span>Rol en la organización</span><span>Empresa</span><span>Estado</span><span class="sr">Acciones</span></div>
           <sc-for list="{{filas}}" as="u" hint-placeholder-count="8">
-            <div class="tt-f {{u.clase}} o-alto" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1.3fr) 190px 28px;"><span class="dos"><sc-if value="{{u.conNombre}}" hint-placeholder-val="{{si}}"><a class="c1" href="Usuario.dc.html">{{u.nombre}}</a></sc-if><sc-if value="{{u.sinNombre}}" hint-placeholder-val="{{no}}"><a class="c1" href="Usuario.dc.html">{{u.email}}</a></sc-if><sc-if value="{{u.conNombre}}" hint-placeholder-val="{{si}}"><span class="n2">{{u.email}}</span></sc-if></span><span class="roles"><sc-for list="{{u.rolesOrg}}" as="r" hint-placeholder-count="1"><span class="rol">{{r}}</span></sc-for><sc-if value="{{u.sinRolesOrg}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if></span><span class="dos"><sc-if value="{{u.conEmpresa}}" hint-placeholder-val="{{si}}"><span>{{u.empresa}}</span><span class="n2">{{u.rolesEmpresa}}</span></sc-if><sc-if value="{{u.sinEmpresa}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if></span><span class="dos"><span><span class="pill {{u.pill}}">{{u.estado}}</span></span><sc-if value="{{u.esInvitacion}}" hint-placeholder-val="{{no}}"><span class="n2">Vence {{u.vence}}</span></sc-if></span><span class="der envoltura">
+            <div class="tt-f {{u.clase}} o-alto" style="grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1.3fr) 190px 28px;"><span class="dos"><sc-if value="{{u.conNombre}}" hint-placeholder-val="{{si}}"><a class="c1" href="Usuario.dc.html">{{u.nombre}}</a></sc-if><sc-if value="{{u.sinNombre}}" hint-placeholder-val="{{no}}"><a class="c1" href="Usuario.dc.html">{{u.email}}</a></sc-if><sc-if value="{{u.conNombre}}" hint-placeholder-val="{{si}}"><span class="n2">{{u.email}}</span></sc-if></span><span class="roles"><sc-for list="{{u.rolesOrg}}" as="r" hint-placeholder-count="1"><span class="rol">{{r}}</span></sc-for><sc-if value="{{u.sinRolesOrg}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if></span><span class="dos"><sc-if value="{{u.conEmpresa}}" hint-placeholder-val="{{si}}"><span>{{u.empresa}}</span><span class="n2">{{u.rolesEmpresa}}</span></sc-if><sc-if value="{{u.sinEmpresa}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if></span><span class="dos"><span><span class="pill {{u.pill}}">{{u.estado}}</span></span><sc-if value="{{u.esInvitacion}}" hint-placeholder-val="{{no}}"><span class="n2 sang">Vence {{u.vence}}</span></sc-if></span><span class="der envoltura">
                 <button type="button" class="kebab" aria-haspopup="menu" aria-expanded="{{u.exp}}" aria-label="{{u.ariaMenu}}" onClick="{{u.alternar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
                 <sc-if value="{{u.menu}}" hint-placeholder-val="{{no}}">
                   <div class="menu der {{u.claseMenu}}" role="menu">

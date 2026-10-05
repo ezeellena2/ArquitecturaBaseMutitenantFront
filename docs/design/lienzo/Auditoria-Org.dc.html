@@ -609,6 +609,9 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-dialogos-r2b">
 .dlg-b { padding: 20px; gap: 14px; }
 </style>
+<style data-vuelta="1004-alineacion-app">
+.in2.mal { border-color: var(--peligro) !important; }
+</style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -806,13 +809,17 @@ textarea.in2 { height: auto; min-height: 84px; }
 
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
 const EVENTOS = [
+  { id: 'a11', fecha: '27/09/2026 11:05', rel: 'hace 5 horas', periodo: 0, tema: 'usuarios', que: 'Cambió la invitación de ma•••@delta.ejemplo.com', donde: 'Delta S.A.', quien: 'Martín Paz', email: 'martin.paz@delta.ejemplo.com', cambios: [['Estado', 'Invitación pendiente', 'Invitación aceptada']] },
   { id: 'a1', fecha: '27/09/2026 10:42', rel: 'hace 6 horas', periodo: 0, tema: 'usuarios', que: 'Cambió los roles de Tomás Acosta', donde: 'Delta S.A.', quien: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', cambios: [['Roles en la empresa', 'Sin roles', 'Solo lectura']] },
   { id: 'a2', fecha: '27/09/2026 09:15', rel: 'hace 8 horas', periodo: 0, tema: 'usuarios', que: 'Invitó a va•••@gmail.com', donde: 'Delta Norte S.A.', quien: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', cambios: [['Correo', '', 'va•••@gmail.com'], ['Empresa', '', 'Delta Norte S.A.'], ['Roles en la empresa', '', 'Solo lectura']] },
   { id: 'a3', fecha: '26/09/2026 18:03', rel: 'ayer', periodo: 1, tema: 'empresas', que: 'Agregó a Paula Méndez', donde: 'Delta Sur S.R.L.', quien: 'Carolina Vega', email: 'carolina.vega@delta.ejemplo.com', cambios: [['Roles en la empresa', '', 'Solo lectura']] },
   { id: 'a4', fecha: '26/09/2026 11:20', rel: 'ayer', periodo: 1, tema: 'roles', que: 'Creó el rol Recursos humanos', donde: 'Toda la organización', quien: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', cambios: [['Nombre', '', 'Recursos humanos'], ['Permisos', '', 'Ver usuarios, Invitar usuarios, Administrar usuarios']] },
+  { id: 'a12', fecha: '25/09/2026 17:20', rel: 'hace 2 días', periodo: 7, tema: 'usuarios', que: 'Habilitó a Tomás Acosta', donde: 'Toda la organización', quien: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', cambios: [['Estado', 'Deshabilitado', 'Activo']] },
+  { id: 'a13', fecha: '25/09/2026 10:05', rel: 'hace 2 días', periodo: 7, tema: 'usuarios', que: 'Cambió la invitación de ju•••@gmail.com', donde: 'Delta Sur S.R.L.', quien: 'Carolina Vega', email: 'carolina.vega@delta.ejemplo.com', cambios: [['Estado', 'Invitación pendiente', 'Invitación revocada']] },
   { id: 'a5', fecha: '24/09/2026 16:40', rel: 'hace 3 días', periodo: 7, tema: 'usuarios', que: 'Deshabilitó a Marcos Giménez', donde: 'Toda la organización', quien: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', cambios: [['Estado', 'Activo', 'Deshabilitado']] },
-  { id: 'a6', fecha: '23/09/2026 08:00', rel: 'hace 4 días', periodo: 7, tema: 'usuarios', que: 'Venció la invitación a carla.bianchi@delta.ejemplo.com', donde: 'Delta Sur S.R.L.', quien: 'Sistema', email: '', cambios: [['Estado', 'Invitación pendiente', 'Invitación vencida']] },
-  { id: 'a7', fecha: '22/09/2026 12:31', rel: 'hace 5 días', periodo: 7, tema: 'empresas', que: 'Cambió la zona de Delta Sur S.R.L.', donde: 'Delta Sur S.R.L.', quien: 'Carolina Vega', email: 'carolina.vega@delta.ejemplo.com', cambios: [['Zona de negocio', 'La de la organización', 'Córdoba (GMT−3)']] },
+  { id: 'a6', fecha: '23/09/2026 08:00', rel: 'hace 4 días', periodo: 7, tema: 'usuarios', que: 'Venció la invitación a ca•••@delta.ejemplo.com', donde: 'Delta Sur S.R.L.', quien: 'Sistema', email: '', cambios: [['Estado', 'Invitación pendiente', 'Invitación vencida']] },
+  { id: 'a7', fecha: '22/09/2026 12:31', rel: 'hace 5 días', periodo: 7, tema: 'empresas', que: 'Cambió la zona de Delta Sur S.R.L.', donde: 'Delta Sur S.R.L.', quien: 'Carolina Vega', email: 'carolina.vega@delta.ejemplo.com', cambios: [['Zona de negocio', 'Buenos Aires (GMT−3)', 'Córdoba (GMT−3)']] },
+  { id: 'a14', fecha: '21/09/2026 16:05', rel: 'hace 6 días', periodo: 7, tema: 'empresas', que: 'Cambió el acceso de Marcos Giménez', donde: 'Delta S.A.', quien: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', cambios: [['Estado', 'Activo', 'Inactivo']] },
   { id: 'a8', fecha: '20/09/2026 15:12', rel: '20/09/2026', periodo: 30, tema: 'configuracion', que: 'Cambió el idioma y la región predeterminados', donde: 'Toda la organización', quien: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', cambios: [['Idioma y región', 'English (United States)', 'Español (Argentina)']] },
   { id: 'a9', fecha: '10/03/2026 10:00', rel: '10/03/2026', periodo: 30, tema: 'empresas', que: 'Creó la empresa Delta Norte S.A.', donde: 'Delta Norte S.A.', quien: 'Lucía Fernández', email: 'lucia.fernandez@delta.ejemplo.com', cambios: [['Nombre', '', 'Delta Norte S.A.']] },
   { id: 'a10', fecha: '12/01/2026 09:03', rel: '12/01/2026', periodo: 30, tema: 'organizacion', que: 'La plataforma aprobó la organización', donde: 'Toda la organización', quien: 'Plataforma', email: '', cambios: [['Estado', 'Espera aprobación', 'Activa']] },
