@@ -25,6 +25,8 @@
       "Verified": "Verified",
       "Removed": "Removed"
     },
+    "managedEmails_one": "{{count}} email managed by {{organization}}",
+    "managedEmails_other": "{{count}} emails managed by {{organization}}",
     "verify": "Verify",
     "verified": "We verified {{domain}}.",
     "remove": "Remove",

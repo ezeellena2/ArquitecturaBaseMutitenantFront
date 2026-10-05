@@ -50,6 +50,26 @@ describe("SettingsPage", () => {
     }
   });
 
+  // Tablero Configuracion: el dominio verificado dice cuántos correos administra la organización («Verificado · 10 correos
+  // administrados por Grupo Delta», con managedEmailCount del back); el pendiente, solo su estado.
+  it("el dominio verificado dice cuántos correos administra la organización; el pendiente, solo «Pendiente»", async () => {
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([
+        { ...verified, managedEmailCount: 10 },
+        { ...verified, id: "domain-2", domain: "delta-norte.example.test", managedEmailCount: 1 },
+        { ...pending, id: "domain-3", domain: "delta-sur.example.test", managedEmailCount: 0 },
+      ])),
+    );
+    renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+
+    expect((await screen.findByText("delta.example.test")).closest("li")).toHaveTextContent("Verificado · 10 correos administrados por Empresa A");
+    expect(screen.getByText("delta-norte.example.test").closest("li")).toHaveTextContent("Verificado · 1 correo administrado por Empresa A");
+    const pendingRow = screen.getByText("delta-sur.example.test").closest("li")!;
+    expect(pendingRow).toHaveTextContent("Pendiente");
+    expect(pendingRow).not.toHaveTextContent("administrad");
+  });
+
   // Tablero «Criterio · Formularios»: lo que no se edita se muestra como texto, nunca como un campo gris.
   it("sin permiso para cambiar, muestra los datos como texto y sin botones", async () => {
     server.use(
@@ -142,7 +162,8 @@ describe("SettingsPage", () => {
     (await screen.findByRole("button", { name: "Acciones de delta.example.test" })).focus();
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("menuitem", { name: "Quitar" }));
-    // Tablero Configuracion-Quitar (la cantidad de correos administrados llega cuando la API la exponga).
+    // Tablero Configuracion-Quitar. La API ya manda la cantidad (managedEmailCount), pero el tablero dibuja solo «Los 10 que
+    // ya lo están siguen igual.»: el texto para uno y para ninguno queda para Diseño, y mientras tanto va sin el número.
     const dialog = await screen.findByRole("dialog", { name: "¿Quitar delta.example.test?" });
     expect(dialog).toHaveTextContent("Los correos nuevos de delta.example.test ya no quedan administrados por Empresa A. Los que ya lo están siguen igual.");
     await user.click(within(dialog).getByRole("button", { name: "Quitar" }));

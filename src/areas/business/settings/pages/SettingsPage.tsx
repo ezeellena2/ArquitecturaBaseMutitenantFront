@@ -172,7 +172,10 @@ export function SettingsPage() {
                 detail={<span className="inline-flex items-center gap-1.5">
                   {/* Tablero M-Configuracion: en el teléfono el estado lleva su punto. */}
                   <span aria-hidden="true" className={`hidden size-[7px] shrink-0 rounded-full max-md:inline-block ${domain.status === "Verified" ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-alerta)]"}`} />
-                  {t(`settings:domains.status.${domain.status}`)}
+                  {/* Tableros Configuracion y M-Configuracion: el verificado dice cuántos correos administra la organización
+                      («Verificado · 10 correos administrados por Grupo Delta», con managedEmailCount del back). */}
+                  <span><span>{t(`settings:domains.status.${domain.status}`)}</span>{domain.status === "Verified"
+                    ? ` · ${t("settings:domains.managedEmails", { count: domain.managedEmailCount, organization: organizationName })}` : null}</span>
                 </span>}>
                 {domain.status === "Pending" && canManage && domain.txtRecordValue ? <Button type="button" variant="outline" size="sm" onClick={() => openVerify(domain)}>{t("settings:domains.verify")}</Button> : null}
                 {canManage ? <RowActions label={t("settings:domains.actions", { domain: domain.domain })} actions={[
