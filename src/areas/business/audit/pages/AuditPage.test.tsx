@@ -14,6 +14,12 @@ beforeEach(async () => {
   await changeCulture("es-AR");
 });
 
+// Como las demás pruebas de menús de la app: el desplegable se abre con el teclado (foco y Enter).
+async function openMenu(user: ReturnType<typeof userEvent.setup>, name: string) {
+  screen.getByRole("button", { name }).focus();
+  await user.keyboard("{Enter}");
+}
+
 describe("AuditPage", () => {
   it("con filtros y sin resultados: «Nada coincide con los filtros» y «Limpiar filtros»", async () => {
     const user = userEvent.setup();
@@ -38,7 +44,8 @@ describe("AuditPage", () => {
           actionText: "Cambió los roles de Tomás Acosta", entityType: "Member", entityText: "Usuario",
           affectedDisplayName: "Tomás Acosta", whereText: "Delta S.A.",
           actorKind: "User", actorText: "Persona", actorId: "actor-1", actorDisplayName: "Lucía", actorEmail: "lucia@example.com",
-          changes: [{ field: "Estado", oldValue: "Inactivo", newValue: "Activo" }],
+          // Como lo arma el back (tanda 4g) y lo muestra el tablero Auditoria-Org (v107): por nombre, sin ids.
+          changes: [{ field: "Roles en la empresa", oldValue: "Sin roles", newValue: "Solo lectura" }],
         }], nextCursor: null, hasMore: false });
       }),
       http.get("/api/organization/audit/actors", () => HttpResponse.json([
@@ -77,9 +84,55 @@ describe("AuditPage", () => {
     expect(detail).not.toHaveTextContent("02/10/2026");
     expect(detail).toHaveTextContent("QuiénLucía · lucia@example.com");
     expect(detail).toHaveTextContent("DóndeDelta S.A.");
-    expect(detail).toHaveTextContent("EstadoInactivo → Activo");
+    expect(detail).toHaveTextContent("Roles en la empresaSin roles → Solo lectura");
+    expect(within(detail).getByText("Sin roles")).toHaveClass("line-through");
     await user.click(within(detail).getAllByRole("button", { name: "Cerrar" }).at(-1)!);
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
+  // Tablero Auditoria-Org: «Quién» ofrece las personas, «Sistema» y «Plataforma», en el orden del back (decisión 77).
+  // Una persona se filtra por su id; el sistema y la plataforma, que no tienen, por su tipo (`actorKind`, decisión 76).
+  it("«Quién» ofrece las personas, «Sistema» y «Plataforma», y filtra a cada uno por lo suyo", async () => {
+    const user = userEvent.setup();
+    const requests: URLSearchParams[] = [];
+    server.use(
+      http.get("/api/organization/audit", ({ request }) => {
+        requests.push(new URL(request.url).searchParams);
+        return HttpResponse.json({ items: [], nextCursor: null, hasMore: false });
+      }),
+      http.get("/api/organization/audit/actors", () => HttpResponse.json([
+        { actorId: "user-carolina", actorKind: "User", actorText: "Persona", displayName: "Carolina Vega" },
+        { actorId: "user-lucia", actorKind: "User", actorText: "Persona", displayName: "Lucía Fernández" },
+        { actorId: null, actorKind: "System", actorText: "Sistema", displayName: null },
+        { actorId: null, actorKind: "PlatformOperator", actorText: "Plataforma", displayName: null },
+      ])),
+    );
+    const { router } = renderRouteWithProviders("/org/auditoria", { as: "business-e6-admin" });
+    expect(await screen.findByText("No hay movimientos para mostrar")).toBeVisible();
+
+    await openMenu(user, "Quién: todos");
+    await waitFor(() => expect(screen.getAllByRole("menuitemradio").map((option) => option.textContent))
+      .toEqual(["Todas las personas", "Carolina Vega", "Lucía Fernández", "Sistema", "Plataforma"]));
+    await user.click(screen.getByRole("menuitemradio", { name: "Sistema" }));
+    await waitFor(() => expect(requests.at(-1)?.get("actorKind")).toBe("System"));
+    expect(requests.at(-1)?.has("actorId")).toBe(false);
+    expect(router.state.location.search).toContain("actorKind=System");
+
+    await openMenu(user, "Sistema");
+    await user.click(await screen.findByRole("menuitemradio", { name: "Lucía Fernández" }));
+    await waitFor(() => expect(requests.at(-1)?.get("actorId")).toBe("user-lucia"));
+    expect(requests.at(-1)?.has("actorKind")).toBe(false);
+
+    await openMenu(user, "Lucía Fernández");
+    await user.click(await screen.findByRole("menuitemradio", { name: "Plataforma" }));
+    await waitFor(() => expect(requests.at(-1)?.get("actorKind")).toBe("PlatformOperator"));
+    expect(requests.at(-1)?.has("actorId")).toBe(false);
+
+    await openMenu(user, "Plataforma");
+    await user.click(await screen.findByRole("menuitemradio", { name: "Todas las personas" }));
+    await waitFor(() => expect(router.state.location.search).not.toContain("actorKind"));
+    expect(requests.at(-1)?.has("actorKind")).toBe(false);
+    expect(requests.at(-1)?.has("actorId")).toBe(false);
   });
 
   // Tablero M-Auditoria-Org y lienzo v99 («Fecha corta»): en el teléfono, cuándo va sin el año si es del año en curso

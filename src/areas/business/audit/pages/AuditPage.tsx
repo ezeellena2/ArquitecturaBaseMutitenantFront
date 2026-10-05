@@ -4,6 +4,7 @@ import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useFilters } from "@/shared/hooks/useFilters";
+import { useQueryUpdate } from "@/shared/hooks/useQueryUpdate";
 import { usePagination } from "@/shared/hooks/usePagination";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import type { Column } from "@/shared/ui/DataTable";
@@ -17,9 +18,9 @@ import { ListRow } from "@/shared/ui/app/ListRow";
 import { Surface } from "@/shared/ui/Surface";
 import { DateText } from "@/shared/ui/format/DateText";
 import type { OrganizationAuditEntryResponse } from "@/shared/api/types";
-import { auditQueryRoot, fetchAudit, fetchAuditActors } from "../api/audit";
+import { auditActorKinds, auditQueryRoot, fetchAudit, fetchAuditActors } from "../api/audit";
 
-const auditFilterKeys = ["period", "category", "actorId"] as const;
+const auditFilterKeys = ["period", "category", "actorId", "actorKind"] as const;
 const auditCategories = ["users", "roles", "companies", "settings", "organization"] as const;
 
 export function AuditPage() {
@@ -31,7 +32,9 @@ export function AuditPage() {
   const period = filters.values.period ?? "30";
   const category = filters.values.category;
   const actorId = filters.values.actorId;
-  const baseQuery = { period, category, actorId, search: search || undefined };
+  const actorKind = auditActorKinds.find((kind) => kind === filters.values.actorKind);
+  const baseQuery = { period, category, actorId, actorKind, search: search || undefined };
+  const updateQuery = useQueryUpdate();
 
   const audit = useInfiniteQuery({
     queryKey: [...auditQueryRoot, baseQuery],
@@ -64,7 +67,7 @@ export function AuditPage() {
   ];
   const periodValue = period;
   // Como el tablero: cualquier filtro distinto de «Últimos 30 días» sin búsqueda ni tema ni persona cuenta.
-  const filtered = Boolean(category || actorId || pagination.search || filters.values.period && period !== "30");
+  const filtered = Boolean(category || actorId || actorKind || pagination.search || filters.values.period && period !== "30");
   return <>
     {/* Tablero M-Auditoria-Org y lienzo v99: en el teléfono, debajo del título va el camino («Administración»), como en
         toda pantalla interna; el período elegido se ve en el filtro. */}
@@ -95,10 +98,18 @@ export function AuditPage() {
               options: [{ value: "all", label: t("audit:filters.allCategories") }, ...auditCategories.map((value) => ({ value, label: t(`audit:categories.${value}`) }))],
             },
             {
-              key: "actorId", label: t("audit:filters.actor"), menuLabel: t("audit:filters.actorMenu"),
-              value: actorId ?? "", active: actorId !== undefined,
-              onChange: (value) => filters.setFilter("actorId", value === "all" ? undefined : value),
-              options: [{ value: "all", label: t("audit:filters.allActors") }, ...(actors.data ?? []).flatMap((actor) => actor.actorId ? [{ value: actor.actorId, label: actor.displayName ?? actor.actorText }] : [])],
+              // Tablero Auditoria-Org: las personas, «Sistema» y «Plataforma», en el orden del back. Una persona va por su id;
+              // el sistema y la plataforma, que no tienen, por su tipo. Los dos viajan en un solo cambio de la URL.
+              key: "actor", label: t("audit:filters.actor"), menuLabel: t("audit:filters.actorMenu"),
+              value: actorKind ?? actorId ?? "", active: actorId !== undefined || actorKind !== undefined,
+              onChange: (value) => {
+                const kind = auditActorKinds.find((item) => item === value);
+                updateQuery({ actorId: value === "all" || kind ? undefined : value, actorKind: kind, page: undefined });
+              },
+              options: [{ value: "all", label: t("audit:filters.allActors") }, ...(actors.data ?? []).flatMap((actor) => {
+                const value = actor.actorId ?? auditActorKinds.find((kind) => kind === actor.actorKind);
+                return value ? [{ value, label: actor.displayName ?? actor.actorText }] : [];
+              })],
             },
           ]}
           clearLabel={t("common:actions.clear")}

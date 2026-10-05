@@ -3,6 +3,7 @@
 // acá se decide solo el lado del tablero: cuál, con qué estado y con qué pasos.
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { auditResponses } from "./capturar-etapa-6.mjs";
 
 const desktop = { width: 1440, height: 900 };
 const phone = { width: 390, height: 844 };
@@ -12,9 +13,38 @@ const phone = { width: 390, height: 844 };
 const boardCuits = [["30712345678", "30712345671"], ["30715554442", "30715554441"]];
 const withBoardCuits = (text) => boardCuits.reduce((result, [before, now]) => result.replaceAll(before, now), text);
 
+// Los manifiestos tampoco se reescriben cuando cambia el contrato del back: lo que cambió después de la etapa se completa
+// acá, como lo devuelve hoy el back (R3c).
+// - La auditoría, con la forma de las tandas 4f y 4g del back: el detalle por nombre y sin ids, y «Quién» con «Sistema» y
+//   «Plataforma». Los datos son los del generador de la etapa 6, al día con el tablero Auditoria-Org (v107).
+// - Cada dominio, con `managedEmailCount` («Verificado · 10 correos administrados por …» del tablero Configuracion).
+// - La ficha de una empresa, con la ruta de sus roles (B4): los de cualquier empresa y los suyos, filtrados como el back.
+const currentAudit = new Map(auditResponses().map((item) => [item.path, item]));
+function withCurrentContract(entry) {
+  const responses = entry.app?.responses;
+  if (!responses) return entry;
+  const next = responses.map((item) => {
+    if (item.method === "GET" && currentAudit.has(item.path)) return currentAudit.get(item.path);
+    if (item.method === "GET" && item.path === "/api/organization/settings/domains" && Array.isArray(item.body)) {
+      return { ...item, body: item.body.map((domain) => ({ managedEmailCount: domain.status === "Verified" ? 10 : 0, ...domain })) };
+    }
+    return item;
+  });
+  const companyId = next.map((item) => item.method === "GET" && item.path.startsWith("/api/companies/company-") && item.path.split("/").length === 4 ? item.path.split("/")[3] : null).find(Boolean);
+  const roles = next.find((item) => item.method === "GET" && item.path === "/api/roles/paged" && item.query?.scope === "Company");
+  const rolesPath = `/api/companies/${companyId}/roles/paged`;
+  if (companyId && roles && !next.some((item) => item.path === rolesPath)) {
+    const items = roles.body.items.filter((role) => role.scope === "AnyCompany" || role.companyId === companyId);
+    next.push({ method: "GET", path: rolesPath, body: { ...roles.body, items, pageSize: 100, totalCount: items.length, totalPages: 1, hasNext: false }, status: 200 });
+  }
+  return { ...entry, app: { ...entry.app, responses: next } };
+}
+
 const manifests = new Map();
 function stageCases(root, name) {
-  if (!manifests.has(name)) manifests.set(name, JSON.parse(withBoardCuits(readFileSync(path.join(root, "docs/design/capturas", name, "manifest.json"), "utf8"))).cases);
+  if (!manifests.has(name)) {
+    manifests.set(name, JSON.parse(withBoardCuits(readFileSync(path.join(root, "docs/design/capturas", name, "manifest.json"), "utf8"))).cases.map(withCurrentContract));
+  }
   return manifests.get(name);
 }
 
@@ -432,6 +462,17 @@ function r3bCases(root) {
   ];
 }
 
+// R3c · Contratos y auditoría: «Quién» con las personas, «Sistema» y «Plataforma» (tablero Auditoria-Org, v107). Los demás
+// casos de R3c ya están en el catálogo (Auditoría y su detalle, Configuración y Empresa): cambian por los datos al día.
+function r3cCases(root) {
+  return pairCases(root, { stage: "etapa-6", pair: "auditoria-lista", id: "auditoria-filtro-quien", group: "auditoria",
+    state: "Auditoría: «Quién» abierto, con las personas, «Sistema» y «Plataforma»",
+    desktop: { boardActions: [click('button.pill-sel:has-text("Quién")')] },
+    phone: { state: "Auditoría en el teléfono: la hoja de filtros, con «Quién» (el tablero no dibuja esa hoja)" },
+    app: { actions: [appClick("button", "Quién: todos")], readySelector: '[role="menu"]' },
+    phoneApp: { actions: [appClick("button", "Filtros de auditoría")], ...dialog } });
+}
+
 // R3e · Piezas comunes: el estado «Guardando» de Button («Criterio · Botones», Estados) en una ficha, en el ingreso y en la
 // invitación (que ya tenía su caso, «invitacion-envio»). Lo que se guarda o se manda queda sin respuesta.
 function r3eCases(root) {
@@ -487,5 +528,6 @@ export function catalog(root) {
     ...r3bCases(root),
     ...r3eCases(root),
     ...r3fCases(root),
+    ...r3cCases(root),
   ];
 }

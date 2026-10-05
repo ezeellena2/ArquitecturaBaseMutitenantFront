@@ -85,29 +85,39 @@ const companyMembers = [
   memberId, userId: memberId.replace("member-", "user-"), displayName, email: `${emailUser}@delta.ejemplo.com`,
   state, membershipStatus: state === "Inactive" ? "Inactive" : "Active", roles: memberRoles, version: 8, createdAtUtc: member.createdAtUtc,
 }));
+// «Quién» como lo devuelve el back (decisión 77): las personas por nombre, «Sistema» y «Plataforma», sin id.
 const actors = [
-  { actorId: "user-lucia", actorKind: "User", actorText: "Persona", displayName: "Lucía Fernández" },
   { actorId: "user-carolina", actorKind: "User", actorText: "Persona", displayName: "Carolina Vega" },
+  { actorId: "user-lucia", actorKind: "User", actorText: "Persona", displayName: "Lucía Fernández" },
+  { actorId: "user-martin", actorKind: "User", actorText: "Persona", displayName: "Martín Paz" },
   { actorId: null, actorKind: "System", actorText: "Sistema", displayName: null },
+  { actorId: null, actorKind: "PlatformOperator", actorText: "Plataforma", displayName: null },
 ];
-const lucia = { actorKind: "User", actorText: "Persona", actorId: "user-lucia", actorDisplayName: "Lucía Fernández", actorEmail: "lucia.fernandez@delta.ejemplo.com" };
-const carolina = { actorKind: "User", actorText: "Persona", actorId: "user-carolina", actorDisplayName: "Carolina Vega", actorEmail: "carolina.vega@delta.ejemplo.com" };
-const system = { actorKind: "System", actorText: "Sistema", actorId: null, actorDisplayName: null, actorEmail: null };
-// Tablero Auditoria-Org. «Cambió los roles…» va como lo escribe hoy el back: una entrada por asignación, con sus
-// columnas («un registro» y la empresa como identificador). Agruparla por persona y empresa es de la consolidación.
+const person = (id, displayName, emailUser) => ({ actorKind: "User", actorText: "Persona", actorId: `user-${id}`, actorDisplayName: displayName, actorEmail: `${emailUser}@delta.ejemplo.com` });
+const lucia = person("lucia", "Lucía Fernández", "lucia.fernandez");
+const carolina = person("carolina", "Carolina Vega", "carolina.vega");
+const martin = person("martin", "Martín Paz", "martin.paz");
+const change = (field, oldValue, newValue) => ({ field, oldValue, newValue });
+// Tablero Auditoria-Org (lienzo v107): las ocho primeras filas y «Cargar más», como las arma el back después de las
+// tandas 4f y 4g: una entrada por acción, el detalle por nombre y en el idioma de quien mira, sin ids, y los correos
+// tapados. La hora del tablero es la de Buenos Aires (UTC−3).
 const auditEntries = [
-  ["Created", "Cambió los roles de Tomás Acosta", "Delta S.A.", "Tomás Acosta", "2026-09-27T13:42:00Z", "RoleAssignment", lucia, [
-    { field: "Empresa", oldValue: null, newValue: "0199a6c2-4f1e-7c3a-9b21-5d0e8f7a6c11" },
-    { field: "un registro", oldValue: null, newValue: "0199a6c2-51b3-7d40-8e62-1a2b3c4d5e6f" },
-    { field: "un registro", oldValue: null, newValue: "0199a6c2-5a77-7e91-a3c4-7f8e9d0c1b2a" },
-  ]],
-  ["Created", "Invitó a valentina.ruiz@gmail.com", "Delta Norte S.A.", "valentina.ruiz@gmail.com", "2026-09-27T12:15:00Z", "Invitation", lucia, []],
-  ["Created", "Agregó a Paula Méndez", "Delta Sur S.R.L.", "Paula Méndez", "2026-09-26T21:03:00Z", "CompanyMembership", carolina, []],
-  ["Created", "Creó el rol Recursos humanos", "Toda la organización", "Recursos humanos", "2026-09-26T14:20:00Z", "Role", lucia, [{ field: "Nombre", oldValue: null, newValue: "Recursos humanos" }]],
-  ["Updated", "Deshabilitó a Marcos Giménez", "Toda la organización", "Marcos Giménez", "2026-09-24T19:40:00Z", "Member", lucia, [{ field: "Estado", oldValue: "Active", newValue: "Inactive" }]],
-  ["Updated", "Venció la invitación a carla.bianchi@delta.ejemplo.com", "Delta Sur S.R.L.", "carla.bianchi@delta.ejemplo.com", "2026-09-23T11:00:00Z", "Invitation", system, []],
-  ["Updated", "Cambió la zona de Delta Sur S.R.L.", "Delta Sur S.R.L.", "Delta Sur S.R.L.", "2026-09-22T15:31:00Z", "Company", carolina, [{ field: "Zona horaria", oldValue: "America/Argentina/Buenos_Aires", newValue: "America/Argentina/Cordoba" }]],
-  ["Updated", "Cambió el idioma y la región predeterminados", "Toda la organización", "Grupo Delta", "2026-09-20T18:12:00Z", "TenantSettings", lucia, [{ field: "Idioma y región", oldValue: "en-US", newValue: "es-AR" }]],
+  ["Updated", "Cambió la invitación de ma•••@delta.ejemplo.com", "Delta S.A.", "ma•••@delta.ejemplo.com", "2026-09-27T14:05:00Z", "Invitation", martin,
+    [change("Estado", "Invitación pendiente", "Invitación aceptada")]],
+  ["Updated", "Cambió los roles de Tomás Acosta", "Delta S.A.", "Tomás Acosta", "2026-09-27T13:42:00Z", "CompanyMembership", lucia,
+    [change("Roles en la empresa", "Sin roles", "Solo lectura")]],
+  ["Created", "Invitó a va•••@gmail.com", "Delta Norte S.A.", "va•••@gmail.com", "2026-09-27T12:15:00Z", "Invitation", lucia,
+    [change("Correo", null, "va•••@gmail.com"), change("Empresa", null, "Delta Norte S.A."), change("Roles en la empresa", null, "Solo lectura")]],
+  ["Created", "Agregó a Paula Méndez", "Delta Sur S.R.L.", "Paula Méndez", "2026-09-26T21:03:00Z", "CompanyMembership", carolina,
+    [change("Roles en la empresa", null, "Solo lectura")]],
+  ["Created", "Creó el rol Recursos humanos", "Toda la organización", "Recursos humanos", "2026-09-26T14:20:00Z", "Role", lucia,
+    [change("Nombre", null, "Recursos humanos"), change("Permisos", null, "Ver usuarios, Invitar usuarios, Administrar usuarios")]],
+  ["Updated", "Habilitó a Tomás Acosta", "Toda la organización", "Tomás Acosta", "2026-09-25T20:20:00Z", "Member", lucia,
+    [change("Estado", "Deshabilitado", "Activo")]],
+  ["Updated", "Cambió la invitación de ju•••@gmail.com", "Delta Sur S.R.L.", "ju•••@gmail.com", "2026-09-25T13:05:00Z", "Invitation", carolina,
+    [change("Estado", "Invitación pendiente", "Invitación revocada")]],
+  ["Updated", "Deshabilitó a Marcos Giménez", "Toda la organización", "Marcos Giménez", "2026-09-24T19:40:00Z", "Member", lucia,
+    [change("Estado", "Activo", "Deshabilitado")]],
 ].map(([action, actionText, whereText, affectedDisplayName, occurredAtUtc, entityType, actor, changes], index) => ({
   id: `audit-${index + 1}`, occurredAtUtc, action, actionText, entityType, entityText: entityType, affectedDisplayName, whereText,
   ...actor, changes,
@@ -194,12 +204,14 @@ export function settingsResponses(domainState = "Verified") {
     txtRecordName: domainState === "Pending" ? "delta.ejemplo.com" : null,
     txtRecordValue: domainState === "Pending" ? "ab-verificacion=7f3c9a2e41b8d605" : null,
     createdAtUtc: "2026-10-02T12:00:00Z", verifiedAtUtc: domainState === "Verified" ? "2026-10-02T12:05:00Z" : null, version: 4,
+    // Tablero Configuracion: «Verificado · 10 correos administrados por Grupo Delta»; uno pendiente todavía no administra.
+    managedEmailCount: domainState === "Verified" ? 10 : 0,
   };
   return [
     api("GET", "/api/organization/settings", { name: "Grupo Delta", defaultCulture: "es-AR", defaultTimeZoneId: "America/Argentina/Buenos_Aires", defaultCurrency: "ARS", version: 12 }),
     api("GET", "/api/organization/settings/domains", domainState === "Sin dominio" ? [] : [domain]),
     api("PUT", "/api/organization/settings", null, 204),
-    api("POST", "/api/organization/settings/domains", { ...domain, status: "Pending" }, 201),
+    api("POST", "/api/organization/settings/domains", { ...domain, status: "Pending", managedEmailCount: 0 }, 201),
     api("DELETE", "/api/organization/settings/domains/domain-1", null, 204),
   ];
 }
@@ -216,7 +228,7 @@ export function publicPageResponses(state = "Published") {
   })];
 }
 
-function auditResponses() {
+export function auditResponses() {
   return [
     api("GET", "/api/organization/audit", { items: auditEntries, nextCursor: "audit-next", hasMore: true }),
     api("GET", "/api/organization/audit/actors", actors),

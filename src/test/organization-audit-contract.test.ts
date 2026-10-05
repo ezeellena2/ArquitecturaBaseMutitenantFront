@@ -10,10 +10,12 @@ const readFront = (file: string) => readFileSync(path.join(front, file), "utf8")
 describe("contrato de auditoría de organización entre back y front", () => {
   it("publica nombre afectado y empresa en los campos consumidos por Auditoría", () => {
     const models = readBack("src/ArquitecturaBaseMultitenant.Application/Models/Auditing/OrganizationAuditModels.cs");
-    const service = readBack("src/ArquitecturaBaseMultitenant.Application/Services/Auditing/OrganizationAuditService.cs");
+    // Los textos de cada entrada los arma OrganizationAuditEntryBuilder (tandas 4f y 4g del back), en el idioma de quien mira.
+    const builder = readBack("src/ArquitecturaBaseMultitenant.Application/Services/Auditing/OrganizationAuditEntryBuilder.cs");
     const reader = readBack("src/ArquitecturaBaseMultitenant.Infrastructure/Persistence/Readers/OrganizationAuditReader.cs");
+    const httpQuery = readBack("src/ArquitecturaBaseMultitenant.Api/Contracts/Organization/OrganizationAuditHttpQuery.cs");
     const openApi = JSON.parse(readBack("docs/contracts/openapi.json")) as {
-      paths: Record<string, Record<string, { responses?: Record<string, { content?: Record<string, { schema?: { $ref?: string } }> }> }>>;
+      paths: Record<string, Record<string, { parameters?: { name: string }[]; responses?: Record<string, { content?: Record<string, { schema?: { $ref?: string } }> }> }>>;
       components: { schemas: Record<string, { properties?: Record<string, unknown> }> };
     };
     const generated = readFront("src/shared/api/generated/schema.d.ts");
@@ -25,12 +27,20 @@ describe("contrato de auditoría de organización entre back y front", () => {
     expect(models).toContain("string? AffectedDisplayName, string WhereText");
     expect(reader).toContain("displayData[entry.Id].AffectedDisplayName");
     expect(reader).toContain("displayData[entry.Id].CompanyName");
-    expect(service).toContain("AuditTexts.Summary(row.Action, row.EntityType, row.AffectedDisplayName)");
-    expect(service).toContain("row.CompanyName ?? AuditTexts.WholeOrganization()");
+    expect(builder).toContain("AuditTexts.Summary(row.Action, row.EntityType, affected, Variant(row, changes))");
+    expect(builder).toContain("row.CompanyName ?? AuditTexts.WholeOrganization()");
+    // Tablero Auditoria-Org: «Roles en la empresa: Sin roles → Solo lectura»; el detalle llega por nombre, sin ids.
+    expect(builder).toContain("AuditTexts.NoRoles()");
 
     const auditRoute = openApi.paths["/api/organization/audit"];
     expect(auditRoute.get.responses?.["200"].content?.["application/json"]?.schema?.$ref)
       .toBe("#/components/schemas/CursorResultOfOrganizationAuditEntryResponse");
+    // «Quién» con «Sistema» y «Plataforma» (decisión 76 del back): sin id, se filtran por su tipo.
+    expect(httpQuery).toContain("string? ActorKind = null");
+    expect(auditRoute.get.parameters?.map((parameter) => parameter.name)).toContain("ActorKind");
+    expect(generated).toContain("ActorKind?: string;");
+    expect(client).toContain("actorKind?: AuditActorKind;");
+    expect(page).toContain("actorKind");
     expect(openApi.components.schemas.OrganizationAuditEntryResponse.properties)
       .toHaveProperty("affectedDisplayName");
     expect(openApi.components.schemas.OrganizationAuditEntryResponse.properties).toHaveProperty("whereText");
