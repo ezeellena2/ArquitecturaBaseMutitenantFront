@@ -190,6 +190,8 @@ describe("Page", () => {
 
     const subline = screen.getByText("De sistema").closest("[data-slot='page-subline']");
     expect(subline?.textContent).toBe("De sistema·Vale en toda la organización · 1 usuario lo tiene");
+    // Tableros (.banda-pag .res): la segunda línea va a 2 del título, y la banda mide 69 como en el lienzo.
+    expect(subline).toHaveClass("mt-0.5");
   });
 
   // Tablero «Criterio · Avisos»: el cartel va arriba del contenido, debajo de la banda, a todo el ancho.

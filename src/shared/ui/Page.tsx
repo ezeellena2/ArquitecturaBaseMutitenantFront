@@ -138,10 +138,10 @@ export function Page({
           <div className="min-w-0">
             <h1 className="truncate text-[18px] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>
             {summary === null || summary === undefined ? (
-              status ? <p data-slot="page-subline" className="truncate text-[13px] text-[var(--t2)]">{status}</p> : null
+              status ? <p data-slot="page-subline" className="mt-0.5 truncate text-[13px] text-[var(--t2)]">{status}</p> : null
             ) : (
               // Tableros Usuario y Rol: el estado va primero; después, el resumen.
-              <p data-slot="page-subline" className="flex min-w-0 items-center gap-1 text-[13px] text-[var(--t2)]">
+              <p data-slot="page-subline" className="mt-0.5 flex min-w-0 items-center gap-1 text-[13px] text-[var(--t2)]">
                 {status ? <><span className="shrink-0">{status}</span><span aria-hidden="true">{"·"}</span></> : null}
                 <span className="truncate">{summary}</span>
               </p>
@@ -175,7 +175,7 @@ export function Page({
       {/* Tableros Empresa, Organizacion y Cuenta-Plat: las pestañas abren el contenido, dentro de su margen, con la línea
           a lo ancho del contenido y 16 hasta lo de abajo. */}
       <div className={bodyClassName}>{banner}{tabs ? <div className="flex min-w-0 flex-col">
-        <div data-slot="page-tabs" className="border-b border-[var(--borde)] px-1">{tabs}</div>
+        <div data-slot="page-tabs" className="border-b border-[var(--borde)] px-1 [&>[role=tablist]]:-mb-px">{tabs}</div>
         <div className="pt-4">{children}</div>
       </div> : children}</div>
     </>
