@@ -1,6 +1,6 @@
 # Arquitectura del front
 
-> Documento canónico del SPA. Copia las convenciones de `../ArquitecturaBaseFront` (su `CLAUDE.md`; de `docs/design/visual-baseline.md`, solo las migas: los colores remiten a [tema.md](tema.md)) y les suma, en una sola app, el modelo de accesos de `../ArquitecturaBaseMutitenant/docs/architecture/multitenancy.md`:
+> Documento canónico del SPA. Copia las convenciones de `../ArquitecturaBaseFront` (su `CLAUDE.md`; de `../ArquitecturaBaseFront/docs/design/visual-baseline.md`, solo las migas: los colores remiten a [tema.md](tema.md)) y les suma, en una sola app, el modelo de accesos de `../ArquitecturaBaseMutitenant/docs/architecture/multitenancy.md`:
 - **una cuenta con dos accesos que no se mezclan**: como persona (B2C) y como empresa (B2B);
 - el **sitio de la plataforma** y la **página pública de cada organización en su subdominio**;
 - el **backoffice** de la plataforma.
@@ -29,10 +29,10 @@ Mismo stack y mismas versiones que ArquitecturaBaseFront. **El `node_modules` vi
 
 ```
 src/
-├─ app/          providers · router · routes: elige el árbol de rutas por host (dominio principal o subdominio de organización) · RequirePermission
-├─ auth/         AuthProvider · authConfig · SessionRecovery · ProtectedRoute · AccessRoute · useCurrentUser · usePermissions (can, canInCompany, hasFeature)
-├─ tenancy/      access.ts (inicio, puerta, organización activa y estados de cada acceso) · useAccess · useSwitchAccess (persona ↔ empresa, y entre organizaciones) · AccessMenu · useCompanyParam · usePublicSite (subdominio)
-├─ layouts/      PersonalLayout · BusinessLayout · PlatformLayout (mismo armazón: Sidebar + Topbar) · SiteLayout (sitio y páginas públicas) · AuthLayout · navigation/ (el manifiesto de rutas y el menú de cada área) · components/
+├─ app/          providers · router · routes (en la E7 elige el árbol de rutas por host: dominio principal o subdominio de organización) · RequirePermission · RouteViews
+├─ auth/         AuthProvider · authConfig · SessionRecovery · ProtectedRoute · AccessRoute · LegalAcceptanceGate · useCurrentUser · usePermissions (can, canInCompany, hasFeature) · useSignOut
+├─ tenancy/      access.ts (inicio, puerta, organización activa y estados de cada acceso) · useAccess · useSwitchAccess (persona ↔ empresa, y entre organizaciones) · AccessMenu · useProfiles · usePublicSite (subdominio, E7)
+├─ layouts/      AppShell · PrivateLayoutFrame (el marco de los tres accesos: Sidebar + Topbar en la compu, la app en el teléfono) con PersonalLayout · BusinessLayout · PlatformLayout · AccountLayout (/cuenta y /mas, en el marco del acceso) · MorePage · SiteLayout (sitio y páginas públicas) · AuthLayout · navigation/ (el manifiesto de rutas y el menú de cada área) · components/
 ├─ areas/        una feature no importa de otra, ni un área de otra; lo común sube a shared/
 │  ├─ public/    auth (ingresar como persona o como empresa, registro de personas, «Registrá tu empresa», invitación) · site (portada y directorio de la plataforma) · legal (términos, privacidad y la aceptación bloqueante de una versión nueva) · errors
 │  ├─ storefront/ página pública de una organización, en su subdominio + lo que publiquen los módulos del producto
@@ -41,12 +41,14 @@ src/
 │  └─ platform/  tenants (/plataforma) · accounts (personas y operadores) · recoveries · legal · audit · settings
 ├─ locales/      {es,en}/<namespace>.json + parity.test.ts
 ├─ shared/
-│  ├─ api/       httpClient · ApiError · queryClient · formErrors · types.ts (alias) · generated/schema.d.ts (no se edita)
+│  ├─ api/       httpClient · ApiError · queryClient · errorMessage · formErrors · useIdempotentMutation · types.ts (alias) · generated/schema.d.ts (no se edita)
+│  ├─ account/   lo de la cuenta que usan varias áreas: agregar y cambiar un método de ingreso, la reautenticación y el aviso de método propio
 │  ├─ format/    ÚNICO lugar que formatea fechas, números, moneda, porcentajes, teléfonos (formatos.md)
 │  ├─ referenceData/ GET /api/reference-data, catálogos compartidos y patrones de cultura
-│  ├─ time/      useEffectiveTimeZone · cálculo del offset actual
-│  ├─ i18n/ · hooks/ · lib/
-│  └─ ui/        shadcn + propios + format/ (DateText, MoneyText…) + fields/ (campos y selectores de referencia)
+│  ├─ time/      useEffectiveTimeZone · zona del navegador
+│  ├─ phone/     interpretación telefónica y banderas SVG
+│  ├─ i18n/ · hooks/ (usePagedQuery, useEditPage…) · lib/
+│  └─ ui/        shadcn + propios + format/ (DateText, MoneyText…) + fields/ (campos y selectores de referencia) + app/ (el marco de app del teléfono)
 └─ test/         setup · mocks · utils
 ```
 
@@ -96,11 +98,11 @@ Van en español. Cada ruta de un área se declara una vez en su manifiesto (`lay
   3. `queryClient.clear()`, **obligatorio**;
   4. el inicio del acceso nuevo.
 - **La cuenta** (`/cuenta`: nombre, idioma y región, zona y **métodos de ingreso**, con el aviso de método propio) es de la identidad y vale en los dos accesos. Desde el acceso B2B se llega por «Mi cuenta» del menú, y se ve dentro del `BusinessLayout`.
-- **Aviso de método propio** (`multitenancy.md` §3.1 del back): pide agregar un método propio verificado para no perder la cuenta al dejar la empresa. En E3 ofrece correo; WhatsApp se muestra si `GET /api/auth/methods` trae el canal desde E8. Aparece mientras todos los métodos los administra una organización o solo existe el correo de la invitación, al aceptar esa invitación, en `/cuenta` y en el inicio personal. Se va solo cuando se verifica un método propio.
+- **Aviso de método propio** (`multitenancy.md` §3.1 del back): pide agregar un método propio verificado para no perder la cuenta al dejar la empresa. En E3 ofrece correo; WhatsApp se muestra si `GET /api/auth/methods` trae el canal desde E8. Aparece mientras todos los métodos los administra una organización o solo existe el correo de la invitación, al aceptar esa invitación, en `/cuenta` y en el inicio personal (`PersonalLoginMethodNotice`, en `shared/account`). Se va solo cuando se verifica un método propio.
 - **Métodos de ingreso** (en `/cuenta`; diseño en `multitenancy.md` §3.1 del back): en la Etapa 3 se gestionan correo y Google; `Phone` es solo modelo. Sumar y verificar un teléfono se habilita cuando el módulo WhatsApp registra su canal (Etapa 8); la opción aparece si `GET /api/auth/methods` trae ese canal. Sumar un método pide verificarlo con un código que llega a ese dato. Quitar un método, cambiarlo o elegir el principal pide un código en **otro** método ya verificado (`ReauthTicket`, válido 5 minutos). El diálogo muestra el destino enmascarado. Siempre tiene que quedar al menos un método propio o activo, y todo cambio se avisa en todos los métodos.
 - **Baja de la cuenta** (en `/cuenta`, sección Privacidad; diseño en `multitenancy.md` §3.2 del back): diálogo con motivo y código a su método principal, la sugerencia de exportar antes, los errores de la política (único Dueño, operador, bloqueos de módulos) y, al confirmar, sesión cerrada con "Tu cuenta se elimina el dd/mm/aaaa". En la organización, un usuario con la baja pedida se ve con el estado "Baja pedida"; en la plataforma, la cuenta también.
 - **Una persona nunca ve "crear empresa" en el lado Personal:** «Registrá tu empresa» (`/registro/empresa`, `BusinessSignupPage`) nace en E6. Desde E6 está en la portada, en la puerta de empresas (`/login/empresa`) y en «Crear cuenta» (`/registro`); nunca en el lado Personal ni en el menú de la cuenta. En 3a se ocultan todos esos controles en todas las pantallas; no se muestran deshabilitados.
-- **Empresas del grupo:** el `companyId` sale de la URL (`useCompanyParam`) y `canInCompany` (`usePermissions`) evalúa `effectivePermissions.companies[companyId]`; si la empresa no figura, los permisos de la organización.
+- **Empresas del grupo:** el `companyId` sale de la URL (`/org/empresas/:companyId`, con `useParams`); nunca hay una «empresa activa» guardada. `canInCompany` (`usePermissions`) evalúa `effectivePermissions.companies[companyId]`; si la empresa no figura, los permisos de la organización. Una ruta de empresa declara en su manifiesto `companyPermission` además de `permission`, y `RequirePermission` la abre con cualquiera de los dos (la ficha de Empresa: `companies.read` o `company.members.read` en esa empresa, B4).
 - **Organización suspendida, en espera de aprobación o cerrada:** `OrganizationUnavailablePage`, con los tres estados del tablero Perfil-Suspendido. El 403 `Tenancy.Tenant.Suspended` muestra «Suspendida», `Tenancy.Tenant.PendingApproval` muestra «Espera aprobación» y `Tenancy.Tenant.Closed` muestra «Cerrada». La página lleva el menú «Elegí otro perfil», con Personal y las otras organizaciones (en la espera no aparece la organización que se está revisando), y «Salir».
 
 ## 4. Convenciones
@@ -109,7 +111,7 @@ Van en español. Cada ruta de un área se declara una vez en su manifiesto (`lay
 - Todo pasa por `shared/api/httpClient`: `fetch`, rutas relativas, `Authorization: Bearer`, `Accept-Language` con la **cultura efectiva** (`es-AR`), una sola renovación silenciosa ante un 401 y reintento.
 - Los tipos **salen de `generated/schema.d.ts`**; los alias legibles escritos a mano viven en `shared/api/types.ts`, que reexporta desde `generated`. El `api/*.ts` de cada feature exporta query keys (`usersQueryKeyRoot`, `usersQueryKey(q)`, `userQueryKey(id)`) y funciones (`fetchUsers`, `createUser`) tipadas con el schema.
 - `useQuery` y `useMutation` se usan directo en las páginas, con `placeholderData: keepPreviousData` en los listados. Nada de `useEffect` con fetch. Una mutación invalida la raíz de su feature.
-- `npm run contracts` regenera los tipos; `contracts:check` es obligatorio en local. Hasta que ambos repos estén en GitHub, el CI del front avisa y salta ese chequeo si falta el repo hermano; con ambos presentes, falla si `schema.d.ts` difiere del contrato.
+- `npm run contracts` regenera los tipos; `contracts:check` es obligatorio en local, con el repo hermano al lado, y falla si `schema.d.ts` difiere del contrato. El CI del front todavía no compara los contratos: descarga un solo repo, así que avisa y salta ese chequeo. El chequeo cruzado en el CI llega con la Etapa 10 (enmienda de la ADR 0016).
 - `shared/referenceData` carga una vez todas las filas de los cinco catálogos, traducidas y con `isEnabled`, con TanStack Query (`staleTime: Infinity`) desde `GET /api/reference-data`; conserva el `ETag` para revalidar. Los selectores ofrecen solo filas habilitadas; `shared/format` puede mostrar una deshabilitada ya guardada. Monedas, países, zonas, culturas y tipos fiscales no se enumeran en el código. E1 usa el adaptador JSON del back; E2 cambia a tablas sin alterar el contrato.
 
 ### Presentación de datos
@@ -176,7 +178,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
   - con la sesión de la misma persona (la cuenta ya tiene el correo invitado): «Aceptar invitación» la suma a la organización sin volver a ingresar;
   - con la sesión de otra persona: avisa y ofrece salir y seguir con la cuenta invitada;
   - vencida, que ya no sirve u organización suspendida: una pantalla de error propia;
-  - aceptada, si la cuenta queda solo con el correo de la empresa (sin otro método propio): «Te sumaste a …» con el aviso de método propio, «Agregar ahora» y «Más tarde» (`PersonalMethodBanner`).
+  - aceptada, si la cuenta queda solo con el correo de la empresa (sin otro método propio): «Te sumaste a …» con el aviso de método propio en un `Banner` ámbar, «Agregar ahora» (lleva a `/cuenta`) y «Más tarde» (al inicio de la organización).
 - **Estados de sesión**, a pantalla completa: «Iniciando sesión…», «Cambiando a …», «Cerrando sesión…» y «No pudimos iniciar tu sesión».
 
 ### Idioma y cultura
@@ -239,7 +241,7 @@ Rige el [lienzo vigente](../design/lienzo/README.md): **mandan los ocho tableros
 **Menús y desplegables** («Criterio · Menús y desplegables»)
 - El ⋮ de una fila ofrece solo lo que se puede hacer con ella (nada de opciones grises), las comunes arriba y las de peligro abajo, en rojo y después de una franja; cada opción, de 36 px, con su ícono gris y un verbo («Editar», «Reenviar invitación»), y una línea fina entre opciones. Abre debajo, alineado a la derecha, o hacia arriba si no hay lugar.
 - **Tu menú** (`AccessMenu`): arriba, quién sos; después, los perfiles (el actual con tilde; uno que no está disponible, en gris, dice por qué en la segunda línea y al tocarlo abre la pantalla que lo explica); al final, «Mi cuenta» y «Salir».
-- El **menú lateral** es igual en los tres perfiles: arriba, Inicio y los módulos de uso diario (como WhatsApp); abajo de todo, con una línea, «Administración». Los dos abren un segundo panel al lado, uno a la vez. Un grupo con hijos se despliega en el lugar; el activo va en blanco con letra petróleo; contraído muestra solo los íconos; hay una línea fina entre opciones; la flechita que lo contrae es blanca, redonda, de 28 px y con borde arena, y va en el borde del último panel: el de Administración si está abierto (ahí lo cierra) y, si no, el menú (lienzo v107).
+- El **menú lateral** es igual en los tres perfiles: arriba, Inicio y los módulos de uso diario (como WhatsApp); abajo de todo, con una línea, «Administración». Los dos abren un segundo panel al lado, uno a la vez. Un grupo con hijos se despliega en el lugar y arranca abierto solo en una de sus pantallas; en las demás va cerrado y lleva a su primera opción (lienzo v102); el activo va en blanco con letra petróleo; contraído muestra solo los íconos; hay una línea fina entre opciones; la flechita que lo contrae es blanca, redonda, de 28 px y con borde arena, y va en el borde del último panel: el de Administración si está abierto (ahí lo cierra) y, si no, el menú (lienzo v107).
 - Todo menú se abre con un clic y se cierra al elegir, con Escape o con un clic afuera; uno a la vez; se recorre con las flechas. Más de 8 opciones es una pantalla o un desplegable con buscador.
 
 **Diálogos** («Criterio · Diálogos»)
@@ -304,4 +306,4 @@ Rige el [lienzo vigente](../design/lienzo/README.md): **mandan los ocho tableros
   - **el formato de los datos que muestra con es-AR y en-US**;
   - axe sin violaciones y, si tiene tabla o formulario, la vista a 390 px.
 - Por cada cambio coherente con lógica, escribir primero un test focal que falle y hacerlo pasar; verificar el build y lint del alcance afectado antes del commit.
-- Al cerrar una etapa y en CI, ejecutar `npm run build`, `npm run lint`, `npm test` y `npm run contracts:check` completos y limpios. La puerta de etapa conserva el E2E real desde E3a y la comparación visual con el lienzo aprobado.
+- Al cerrar una etapa, ejecutar `npm run build`, `npm run lint`, `npm test` y `npm run contracts:check` completos y limpios; el CI corre los mismos, salvo `contracts:check`, que se saltea hasta la Etapa 10 (ADR 0016). La puerta de etapa conserva el E2E real desde E3a y la comparación visual con el lienzo aprobado.
