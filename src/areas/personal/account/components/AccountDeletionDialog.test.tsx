@@ -1,6 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { HttpResponse, http } from "msw";
+import { HttpResponse, delay, http } from "msw";
 import { beforeEach, expect, it, vi } from "vitest";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -56,4 +56,24 @@ it("en el teléfono, «Dar de baja» confirma con el botón destructivo, como en
 
     expect(await screen.findByRole("button", { name: "Dar de baja" })).toHaveAttribute("data-variant", "destructive");
   } finally { restore(); }
+});
+
+// «Criterio · Botones», Guardando (decisión del 2026-10-05, 6d-4a): mientras da de baja, el botón dice «Dando de baja…»
+// con el aro de «Guardando…», y no su propio texto.
+it("mientras da de baja dice «Dando de baja…» con el aro", async () => {
+  const user = userEvent.setup();
+  server.use(
+    http.post("/api/me/reauth", () => HttpResponse.json({ sourceMethodId: "primary", destination: "a***@example.test", resendAfterSeconds: 60 })),
+    http.post("/api/me/reauth/verify", () => HttpResponse.json({ reauthTicket: "proof" })),
+    http.post("/api/me/deletion", async () => { await delay("infinite"); return HttpResponse.json({ scheduledForUtc: "2026-10-30T12:00:00Z" }); }),
+  );
+  renderWithProviders(<AccountDeletionDialog graceDays={30} onClose={() => {}} onComplete={() => {}} />);
+  await user.type(await screen.findByRole("textbox", { name: "Código 1" }), "123456");
+  await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Dejé de usarla");
+  await user.click(screen.getByRole("button", { name: "Dar de baja" }));
+
+  const button = await screen.findByRole("button", { name: "Dando de baja…" });
+  expect(button).toHaveAttribute("data-pending", "true");
+  expect(button).toHaveAttribute("data-variant", "destructive");
+  expect(button.querySelector("[data-slot='button-ring']")).not.toBeNull();
 });

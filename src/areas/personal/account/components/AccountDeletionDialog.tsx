@@ -43,7 +43,7 @@ export function AccountDeletionDialog({ graceDays, onClose, onComplete }: { grac
       <FormError message={reauth.failure} />
       </DialogBody>
       <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("cancel")}</Button><Button type="submit" variant="destructive" disabled={reauth.retry.isRunning || (!reauth.proof && !reauth.failure)} pending={busy}
-        pendingLabel={reauth.proof ? t("requestDeletion") : t("common:code.sending")}>{reauth.retry.label ?? t("requestDeletion")}</Button></DialogFooter>
+        pendingLabel={reauth.proof ? t("requestingDeletion") : t("common:code.sending")}>{reauth.retry.label ?? t("requestDeletion")}</Button></DialogFooter>
     </form>
   </DialogContent></Dialog>;
 }

@@ -57,7 +57,8 @@ function Button({
     asChild?: boolean
     /** «Criterio · Botones», Guardando: mientras espera la respuesta de lo que guarda o manda. No se puede tocar. */
     pending?: boolean
-    /** Lo que dice mientras tanto: «Guardando…» si no se pasa; «Invitando…», «Enviando…» o el del tablero, si no. */
+    /** Lo que dice mientras tanto: «Guardando…» si no se pasa; «Invitando…», «Enviando…» o el del tablero, si no. Una
+     * acción de peligro dice lo que hace («Quitando…», «Desvinculando…», «Dando de baja…»), nunca su propio texto. */
     pendingLabel?: React.ReactNode
   }) {
   const Comp = asChild ? Slot.Root : "button"

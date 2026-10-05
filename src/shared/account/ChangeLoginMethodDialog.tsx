@@ -37,8 +37,10 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, o
   }
   const busy = saving || reauth.isPending;
   // «Criterio · Botones», Guardando: mientras manda el código, «Enviando…»; al verificarlo para sumar un medio, «Verificando…»;
-  // al hacerlo principal, «Guardando…». Quitar y desvincular siguen con su texto y el aro: el lienzo no dibuja otro.
-  const pendingLabel = !reauth.proof ? t("common:code.sending") : adding ? t("common:code.verifying") : action === "primary" ? undefined : t(label);
+  // al hacerlo principal, «Guardando…»; al quitar, «Quitando…», y al desvincular, «Desvinculando…» (decisión del usuario
+  // del 2026-10-05).
+  const pendingLabel = !reauth.proof ? t("common:code.sending") : adding ? t("common:code.verifying") : action === "primary" ? undefined
+    : t(google ? "unlinking" : "removing");
   return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}><DialogContent showCloseButton={action !== "remove"} size="sm" onCloseAutoFocus={restoreFocus}>
     <form onSubmit={(event) => { event.preventDefault(); void confirm(); }}>
       <DialogHeader><DialogTitle>{t(title)}</DialogTitle></DialogHeader>
