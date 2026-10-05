@@ -379,6 +379,40 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(await screen.findByText("Quitamos a Lucía Fernández de Delta S.A.")).toBeVisible();
   });
 
+  // accesibilidad.md: la opción del ⋮ se va con el menú; el diálogo que abre le devuelve el foco al ⋮ de la fila.
+  it("«Cambiar roles» del ⋮ le devuelve el foco al ⋮ de la fila al cerrarse", async () => {
+    const user = userEvent.setup();
+    api({ ...member, companies: [{ companyId: company.id, companyName: company.name, status: "Active", roles: [] }] });
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+
+    const actions = within(screen.getByRole("region", { name: "Empresas" })).getByRole("button", { name: "Acciones de Delta S.A." });
+    await open(user, actions);
+    await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
+    const dialog = await screen.findByRole("dialog", { name: "Roles en Delta S.A." });
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(actions).toHaveFocus());
+  });
+
+  // Sacar un rol y volver a ponerlo deja lo guardado: no hay «Cambios sin guardar» ni nada para guardar.
+  it("sacar un rol y volver a ponerlo no cuenta como un cambio", async () => {
+    const user = userEvent.setup();
+    api({ ...member, roles: [ownerRole, { ...ownerRole, id: "role-support", name: "Soporte", isSystemRole: false }] });
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+
+    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Dueño" }));
+    await user.keyboard("{Escape}");
+    expect(subline("Lucía Fernández")).toHaveTextContent(/Cambios sin guardar/);
+    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Dueño" }));
+    await user.keyboard("{Escape}");
+    expect(subline("Lucía Fernández")).not.toHaveTextContent(/Cambios sin guardar/);
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
+  });
+
   it("muestra en la franja el error del último Dueño y el conflicto de concurrencia", async () => {
     const user = userEvent.setup();
     api(member);

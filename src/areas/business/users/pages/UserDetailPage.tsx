@@ -1,62 +1,65 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
 import { Building2, Settings2, Trash2, UserRound } from "lucide-react";
 import { useRef, useState } from "react";
+import { useController, useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
+import { toast } from "sonner";
+import { z } from "zod";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
-import { actionErrorMessage, isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
-import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
-import type { OrganizationUserResponse, RoleResponse, UpdateOrganizationUserRequest } from "@/shared/api/types";
 import { ApiError } from "@/shared/api/ApiError";
+import { actionErrorMessage, isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
+import type { OrganizationUserResponse, UpdateOrganizationUserRequest } from "@/shared/api/types";
+import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
-import { FormError } from "@/shared/ui/FormError";
+import { EmptyState } from "@/shared/ui/EmptyState";
+import { FormField } from "@/shared/ui/FormField";
+import { List, ListItem } from "@/shared/ui/List";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
-import { FormField } from "@/shared/ui/FormField";
-import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { RowActions } from "@/shared/ui/RowActions";
 import { Page } from "@/shared/ui/Page";
+import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
+import { RowActions } from "@/shared/ui/RowActions";
 import { Section, SectionFields } from "@/shared/ui/Section";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
-import { EmptyState } from "@/shared/ui/EmptyState";
 import { DateText } from "@/shared/ui/format/DateText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
-import { toast } from "sonner";
-import { ChoiceSheet, CheckRow, RadioRow } from "../components/AccessSheets";
-import { RolesField } from "../components/RolesField";
-import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
-import { List, ListItem } from "@/shared/ui/List";
-import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
+import { activeOrganization, homeOf } from "@/tenancy/access";
 import { fetchAssignableRoles, fetchCompanyOptions, fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userCompaniesQueryKey, userQueryKey, userRolesQueryKey, usersQueryRoot } from "../api/users";
 import { userStateTones } from "../columns";
+import { ChoiceSheet, CheckRow, RadioRow } from "../components/AccessSheets";
+import { RolesField } from "../components/RolesField";
+import { UserCompanyDialog } from "../components/UserCompanyDialog";
 import { userErrorMessage, type UserAction } from "../errors";
-import { activeOrganization, homeOf } from "@/tenancy/access";
+import { companyAssignments, orderLike, organizationRoleIds, sentence, type CompanyAssignment } from "../lib/access";
 
-type CompanyAssignmentDraft = { companyId: string; roleIds: string[] };
-/// `missingCompany`: tocó «Sumar» sin elegir la empresa (el campo queda en rojo hasta que elige una).
-type CompanyDialogDraft = { mode: "add" | "roles"; companyId: string; roleIds: string[]; missingCompany?: boolean };
-type AccessDraft = { isActive: boolean; roleIds: string[] };
+/// El acceso a la organización no tiene reglas propias en la pantalla: lo que el back rechaza va en la franja.
+const accessFormSchema = z.object({ isActive: z.boolean(), roleIds: z.array(z.string()) });
+type AccessForm = z.infer<typeof accessFormSchema>;
 type UserState = OrganizationUserResponse["state"];
 /// De dónde salió un guardado: su error va en la franja de la ficha o en la del diálogo, arriba de sus botones.
 type SaveOrigin = "page" | "dialog";
+/// «Sumar empresa» o «Cambiar roles» de una empresa; `returnFocusTo`, el ⋮ que lo abrió.
+type CompanyDialogState = { mode: "add" | "roles"; assignment: CompanyAssignment; returnFocusTo?: HTMLElement | null };
 
-function organizationRoleIds(user: OrganizationUserResponse): string[] {
-  return user.roles.filter((role) => role.scope === "Organization").map((role) => role.id);
+interface SaveVariables {
+  request: UpdateOrganizationUserRequest;
+  message: string;
+  origin: SaveOrigin;
+  /** El acceso que se guardó: la ficha queda limpia con eso. Sin esto (las empresas), lo que se está editando se conserva. */
+  access?: AccessForm;
 }
 
-function sameRoles(left: readonly string[], right: readonly string[]): boolean {
-  return [...left].sort().join("|") === [...right].sort().join("|");
-}
-
-// «Sumamos a Ana a Delta S.A.» no lleva otro punto: el nombre ya termina en uno (tablero Usuario).
-function sentence(text: string): string {
-  return text.replace(/\.\.$/, ".");
+function savedAccess(user: OrganizationUserResponse): AccessForm {
+  return { isActive: user.state === "Active", roleIds: organizationRoleIds(user) };
 }
 
 function Separator() {
@@ -66,6 +69,26 @@ function Separator() {
 export function UserDetailPage() {
   const { t } = useTranslation(["users", "common"]);
   const { memberId = "" } = useParams();
+  const user = useQuery({ queryKey: userQueryKey(memberId), queryFn: () => fetchUser(memberId), enabled: Boolean(memberId), meta: { silent: true, blocksView: true } });
+  useBreadcrumbLeaf(user.data ? user.data.displayName || user.data.email || undefined : undefined);
+
+  if (user.isPending) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.loading")}><p role="status">{t("common:states.loading")}</p></Page>;
+  // «Criterio · Avisos» (Pantalla de error): la ficha no cargó y no hay nada que mostrar; si no existe (404),
+  // «No encontramos esta página» (errores.md).
+  if (user.error && !user.data) return isNotFoundError(user.error)
+    ? <NotFoundPage homePath={homeOf("business")} screen={t("users:detail.title")} back={{ to: "/org/usuarios", label: t("users:back") }} />
+    : <LoadErrorPage onRetry={() => { void user.refetch(); }} screen={t("users:detail.title")} back={{ to: "/org/usuarios", label: t("users:back") }} />;
+  if (!user.data) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.title")}><EmptyState title={t("users:empty.missing")} /></Page>;
+  // Lo que se edita depende del estado: si cambia (aceptó la invitación, la deshabilitó otra persona, pidió la baja), la
+  // ficha se arma de nuevo con lo guardado.
+  return <UserDetail key={`${memberId}:${user.data.state}`} memberId={memberId} member={user.data} reload={async () => (await user.refetch()).data} />;
+}
+
+/// La ficha de una persona (tableros Usuario y M-Usuario), como el editor de Roles: el acceso con React Hook Form y zod,
+/// y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`. Las empresas se guardan al
+/// momento, desde su diálogo o el ⋮, y conservan lo que se está editando del acceso.
+function UserDetail({ memberId, member, reload }: { memberId: string; member: OrganizationUserResponse; reload: () => Promise<OrganizationUserResponse | undefined> }) {
+  const { t } = useTranslation(["users", "common"]);
   const { data: currentUser } = useCurrentUser();
   const { can } = usePermissions();
   const canInvite = can("users.invite");
@@ -75,10 +98,11 @@ export function UserDetailPage() {
   const navigate = useNavigate();
   const { phone } = useAppChrome();
   const [sheet, setSheet] = useState<"state" | "roles" | null>(null);
-  const user = useQuery({ queryKey: userQueryKey(memberId), queryFn: () => fetchUser(memberId), enabled: Boolean(memberId), meta: { silent: true, blocksView: true } });
-  useBreadcrumbLeaf(user.data ? user.data.displayName || user.data.email || undefined : undefined);
-  const [draft, setDraft] = useState<AccessDraft | null>(null);
-  const [companyDialog, setCompanyDialog] = useState<CompanyDialogDraft | null>(null);
+  const form = useForm<AccessForm>({ resolver: zodResolver(accessFormSchema), defaultValues: savedAccess(member) });
+  const isActiveField = useController({ control: form.control, name: "isActive" });
+  const roleIdsField = useController({ control: form.control, name: "roleIds" });
+  const current: AccessForm = { isActive: isActiveField.field.value, roleIds: roleIdsField.field.value };
+  const [companyDialog, setCompanyDialog] = useState<CompanyDialogState | null>(null);
   // Lo que el back rechazó en la ficha, al guardar el acceso o al quitar de la organización: va en su franja (tablero Usuario).
   const [failure, setFailure] = useState<{ error: unknown; action: UserAction }>();
   const [dialogFailure, setDialogFailure] = useState<unknown>();
@@ -86,32 +110,39 @@ export function UserDetailPage() {
   // Va aparte del error del diálogo, que se borra al cambiar algo en él.
   const staleAfterDialog = useRef(false);
   const [confirmAction, setConfirmAction] = useState<"disable" | "remove" | "revoke" | null>(null);
-  // Antes de las salidas tempranas: la pregunta de salida y el cartel del 409 siguen el borrador del acceso.
-  const loaded = user.data;
-  const isDirty = Boolean(loaded && draft && canManage && loaded.state !== "PendingDeletion"
-    && (draft.isActive !== (loaded.state === "Active") || !sameRoles(draft.roleIds, organizationRoleIds(loaded))));
+  const isInvitation = member.state === "Invited" || member.state === "Expired";
+  const isMember = member.state === "Active" || member.state === "Inactive";
+  const pendingDeletion = member.state === "PendingDeletion";
+  const editable = canManage && !pendingDeletion;
+  const isDirty = editable && form.formState.isDirty;
   // La ficha es la de quien está mirando («Lucía (vos)» en el tablero Usuario): los errores de la última Dueña lo dicen.
-  const self = Boolean(loaded?.userId && loaded.userId === currentUser?.id);
+  const self = Boolean(member.userId && member.userId === currentUser?.id);
   // Tableros Usuario y Avisos: el 409 en su cartel, «Cambios sin guardar» en la banda, el error de guardado en la franja
   // y «¿Salir sin guardar?» antes de irse con cambios.
   const edit = useEditPage({
     isDirty, error: failure?.error,
-    onSeeNew: () => { void user.refetch().then(() => { setDraft(null); setFailure(undefined); }); },
+    onSeeNew: () => { void reload().then((fresh) => { if (fresh) form.reset(savedAccess(fresh)); setFailure(undefined); }); },
     onContinueEditing: () => setFailure(undefined),
     errorMessage: (error) => userErrorMessage(error, t, { self, action: failure?.action ?? "save" }),
   });
   const roles = useQueries({ queries: (["Organization", "Company"] as const).map((scope) => ({
-    queryKey: userRolesQueryKey(scope), queryFn: () => fetchAssignableRoles(scope), enabled: canManage && user.data !== undefined,
-    meta: { silent: true },
+    queryKey: userRolesQueryKey(scope), queryFn: () => fetchAssignableRoles(scope), enabled: canManage, meta: { silent: true },
   })) });
-  const companies = useQuery({ queryKey: userCompaniesQueryKey, queryFn: fetchCompanyOptions, enabled: canManage && user.data !== undefined, meta: { silent: true } });
+  const companies = useQuery({ queryKey: userCompaniesQueryKey, queryFn: fetchCompanyOptions, enabled: canManage, meta: { silent: true } });
   const orgRoles = roles[0].data?.items ?? [];
   const companyRoles = roles[1].data?.items ?? [];
   const activeCompanies = (companies.data?.items ?? []).filter((company) => company.status === "Active");
   const refresh = () => Promise.all([client.invalidateQueries({ queryKey: userQueryKey(memberId) }), client.invalidateQueries({ queryKey: usersQueryRoot })]);
   const save = useMutation({
-    mutationFn: ({ request }: { request: UpdateOrganizationUserRequest; message: string; keepDraft?: boolean; origin: SaveOrigin }) => updateUser(memberId, request),
-    onSuccess: async (_result, { message, keepDraft }) => { setFailure(undefined); setDialogFailure(undefined); if (!keepDraft) setDraft(null); setCompanyDialog(null); toast.success(sentence(message)); await refresh(); },
+    mutationFn: ({ request }: SaveVariables) => updateUser(memberId, request),
+    onSuccess: async (_result, { message, access }) => {
+      setFailure(undefined);
+      setDialogFailure(undefined);
+      if (access) form.reset(access);
+      setCompanyDialog(null);
+      toast.success(sentence(message));
+      await refresh();
+    },
     onError: (error, { origin }) => {
       if (origin !== "dialog") { setFailure({ error, action: "save" }); return; }
       if (error instanceof ApiError && error.code === "General.ConcurrencyConflict") staleAfterDialog.current = true;
@@ -119,85 +150,65 @@ export function UserDetailPage() {
     },
   });
   const remove = useMutation({
-    mutationFn: (_message: string) => removeUser(memberId, user.data?.version ?? 0),
+    mutationFn: (_message: string) => removeUser(memberId, member.version),
     // Ya no hay nada que perder: la salida al listado no pregunta.
     onSuccess: async (_result, message) => { toast.success(sentence(message)); await client.invalidateQueries({ queryKey: usersQueryRoot }); edit.allowNextNavigation(); void navigate("/org/usuarios"); },
     onError: (error) => setFailure({ error, action: "remove" }),
   });
   const revoke = useMutation({
     mutationFn: (invitationId: string) => revokeUserInvitation(invitationId),
-    onSuccess: async () => { toast.success(sentence(t("users:detail.messages.revoked", { email: user.data?.email ?? "" }))); await refresh(); },
+    onSuccess: async () => { toast.success(sentence(t("users:detail.messages.revoked", { email: member.email ?? "" }))); await refresh(); },
     onError: (error) => toastActionError(error, t),
   });
   const resend = useIdempotentMutation((invitationId: string, key) => resendUserInvitation(invitationId, key));
 
-  if (user.isPending) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.loading")}><p role="status">{t("common:states.loading")}</p></Page>;
-  // «Criterio · Avisos» (Pantalla de error): la ficha no cargó y no hay nada que mostrar; si no existe (404),
-  // «No encontramos esta página» (errores.md).
-  if (user.error && !user.data) return isNotFoundError(user.error)
-    ? <NotFoundPage homePath={homeOf("business")} screen={t("users:detail.title")} back={{ to: "/org/usuarios", label: t("users:back") }} />
-    : <LoadErrorPage onRetry={() => { void user.refetch(); }} screen={t("users:detail.title")} back={{ to: "/org/usuarios", label: t("users:back") }} />;
-  if (!user.data) return <Page backTo={{ to: "/org/usuarios", label: t("users:back") }} title={t("users:detail.title")}><EmptyState title={t("users:empty.missing")} /></Page>;
-
-  const member = user.data;
   const displayName = member.displayName || member.email || "";
-  const isInvitation = member.state === "Invited" || member.state === "Expired";
-  const isMember = member.state === "Active" || member.state === "Inactive";
-  const pendingDeletion = member.state === "PendingDeletion";
-  const editable = canManage && !pendingDeletion;
-  const saved: AccessDraft = { isActive: member.state === "Active", roleIds: organizationRoleIds(member) };
-  const current = draft ?? saved;
   const shownState: UserState = isMember ? (current.isActive ? "Active" : "Inactive") : member.state;
   const dialogError = actionErrorMessage(dialogFailure, t);
-  const registryById = new Map((companies.data?.items ?? []).map((company) => [company.id, company]));
-  const preservedCompanyIds = new Set(member.companies.filter((company) => company.status !== "Active"
-    || registryById.get(company.companyId)?.status === "Inactive").map((company) => company.companyId));
-  const changeableAssignments = member.companies.filter((company) => !preservedCompanyIds.has(company.companyId))
-    .map((company) => ({ companyId: company.companyId, roleIds: company.roles.map((role) => role.id) }));
+  const { preserved: preservedCompanyIds, changeable: changeableAssignments } = companyAssignments(member.companies, companies.data?.items ?? []);
   const assignedCompanyIds = new Set(member.companies.map((company) => company.companyId));
   const companyName = (companyId: string) => activeCompanies.find((company) => company.id === companyId)?.name
     ?? member.companies.find((company) => company.companyId === companyId)?.companyName ?? "";
-  const dialogCompanyRoles = companyRoles.filter((role) => role.scope === "AnyCompany" || role.companyId === companyDialog?.companyId);
   const managedDomain = member.hasManagedEmail && member.email ? member.email.slice(member.email.indexOf("@") + 1) : null;
 
-  function changeDraft(change: Partial<AccessDraft>) {
-    setDraft({ ...current, ...change });
+  // Lo elegido va en el orden de lo guardado: sacar un rol y volver a ponerlo no cuenta como un cambio.
+  function changeAccess(change: Partial<AccessForm>) {
+    if (change.isActive !== undefined) isActiveField.field.onChange(change.isActive);
+    if (change.roleIds) roleIdsField.field.onChange(orderLike(form.formState.defaultValues?.roleIds, change.roleIds));
     setFailure(undefined);
   }
 
-  async function saveAccess() {
+  function saveAccess(values: AccessForm) {
     setFailure(undefined);
-    try {
-      await save.mutateAsync({
-        request: { ...(isMember ? { isActive: current.isActive } : {}), roleIds: current.roleIds, companies: changeableAssignments, version: member.version },
-        message: t("users:detail.messages.saved", { name: displayName }), origin: "page",
-      });
-    } catch { /* El error queda visible en la franja o en el cartel de concurrencia. */ }
+    save.mutate({
+      request: { ...(isMember ? { isActive: values.isActive } : {}), roleIds: values.roleIds, companies: changeableAssignments, version: member.version },
+      message: t("users:detail.messages.saved", { name: displayName }), origin: "page", access: values,
+    });
   }
+
+  // Tablero Usuario: deshabilitar pide confirmación antes de guardar.
+  const submit = form.handleSubmit((values) => {
+    if (member.state === "Active" && !values.isActive) setConfirmAction("disable");
+    else saveAccess(values);
+  });
 
   // Las empresas se guardan al momento, desde el diálogo o el ⋮: no esperan a «Guardar cambios».
-  async function saveCompanies(assignments: CompanyAssignmentDraft[], message: string, origin: SaveOrigin) {
+  function saveCompanies(assignments: CompanyAssignment[], message: string, origin: SaveOrigin) {
     if (origin === "dialog") setDialogFailure(undefined); else setFailure(undefined);
-    try {
-      await save.mutateAsync({ request: { roleIds: saved.roleIds, companies: assignments, version: member.version }, message, keepDraft: true, origin });
-    } catch { /* El error queda visible en la franja de la ficha o en la del diálogo. */ }
+    save.mutate({ request: { roleIds: organizationRoleIds(member), companies: assignments, version: member.version }, message, origin });
   }
 
-  async function saveCompanyDialog() {
-    if (!companyDialog) return;
-    // «Criterio · Botones»: «Sumar» no se apaga; sin empresa, el campo dice qué falta.
-    if (!companyDialog.companyId) { setCompanyDialog({ ...companyDialog, missingCompany: true }); return; }
-    const name = companyName(companyDialog.companyId);
-    if (companyDialog.mode === "add") {
-      await saveCompanies([...changeableAssignments, { companyId: companyDialog.companyId, roleIds: companyDialog.roleIds }],
-        t("users:detail.messages.companyAdded", { name: displayName, company: name }), "dialog");
+  function saveCompanyDialog(mode: CompanyDialogState["mode"], assignment: CompanyAssignment) {
+    const name = companyName(assignment.companyId);
+    if (mode === "add") {
+      saveCompanies([...changeableAssignments, assignment], t("users:detail.messages.companyAdded", { name: displayName, company: name }), "dialog");
       return;
     }
-    await saveCompanies(changeableAssignments.map((assignment) => assignment.companyId === companyDialog.companyId
-      ? { ...assignment, roleIds: companyDialog.roleIds } : assignment), t("users:detail.messages.companyRolesSaved", { company: name }), "dialog");
+    saveCompanies(changeableAssignments.map((item) => item.companyId === assignment.companyId ? assignment : item),
+      t("users:detail.messages.companyRolesSaved", { company: name }), "dialog");
   }
 
-  function openCompanyDialog(next: CompanyDialogDraft) {
+  function openCompanyDialog(next: CompanyDialogState) {
     setCompanyDialog(next);
     setDialogFailure(undefined);
   }
@@ -209,12 +220,16 @@ export function UserDetailPage() {
     setDialogFailure(undefined);
     if (!staleAfterDialog.current) return;
     staleAfterDialog.current = false;
-    if (!isDirty) { setDraft(null); void refresh(); }
+    if (isDirty) return;
+    void refresh().then(() => {
+      const fresh = client.getQueryData<OrganizationUserResponse>(userQueryKey(memberId));
+      if (fresh) form.reset(savedAccess(fresh));
+    });
   }
 
-  function changeCompanyDialog(next: CompanyDialogDraft) {
-    setCompanyDialog(next);
-    setDialogFailure(undefined);
+  function discard() {
+    form.reset();
+    setFailure(undefined);
   }
 
   function resendInvitation() {
@@ -234,7 +249,7 @@ export function UserDetailPage() {
       ? t("users:detail.confirm.removeManagedDescription", { organization: organizationName, domain: managedDomain })
       : t("users:detail.confirm.removeDescription", { organization: organizationName });
   const confirmations = {
-    disable: { title: t("users:detail.confirm.disableTitle", { name: displayName }), description: t("users:detail.confirm.disableDescription", { organization: organizationName }), label: t("users:detail.confirm.disableConfirm"), run: () => { void saveAccess(); } },
+    disable: { title: t("users:detail.confirm.disableTitle", { name: displayName }), description: t("users:detail.confirm.disableDescription", { organization: organizationName }), label: t("users:detail.confirm.disableConfirm"), run: () => saveAccess(form.getValues()) },
     remove: { title: t("users:detail.confirm.removeTitle", { name: displayName, organization: organizationName }), description: removeDescription, label: t("users:detail.confirm.removeConfirm"), run: () => { setFailure(undefined); remove.mutate(t("users:detail.messages.removed", { name: displayName, organization: organizationName })); } },
     revoke: { title: t("users:detail.confirm.revokeTitle", { email: member.email ?? "" }), description: t("users:detail.confirm.revokeDescription"), label: t("users:detail.confirm.revokeConfirm"), run: () => { if (member.invitationId) revoke.mutate(member.invitationId); } },
   };
@@ -266,9 +281,8 @@ export function UserDetailPage() {
       actions={canManage ? pendingDeletion
         ? <Button type="button" variant="danger" onClick={() => setConfirmAction("remove")}>{t("users:actions.remove")}</Button>
         : <>
-          <Button type="button" variant="outline" onClick={() => { setDraft(null); setFailure(undefined); }}>{t("users:detail.discard")}</Button>
-          <Button type="button" disabled={!isDirty || !roles[0].data || !roles[1].data || !companies.data} pending={save.isPending}
-            onClick={() => { if (saved.isActive && !current.isActive) setConfirmAction("disable"); else void saveAccess(); }}>
+          <Button type="button" variant="outline" onClick={discard}>{t("users:detail.discard")}</Button>
+          <Button type="submit" form="user-access" disabled={!isDirty || !roles[0].data || !roles[1].data || !companies.data} pending={save.isPending}>
             {t("users:detail.save")}
           </Button>
         </> : undefined}>
@@ -279,30 +293,32 @@ export function UserDetailPage() {
         {pendingDeletion ? <Banner tone="warning"><Trans ns="users" i18nKey="detail.deletionScheduled" components={{ date: <DateText value={member.deletionScheduledForUtc} kind="date" /> }} /></Banner> : null}
 
         <Section title={t("users:detail.accessTitle")}>
-          {/* Tablero M-Usuario: en el teléfono, filas con › que abren una hoja para elegir. */}
-          {phone ? <ul className="m-0 list-none p-0">
-            <SettingsItem title={t("users:detail.status")} detail={stateLabel} onClick={editable && isMember ? () => setSheet("state") : undefined} />
-            <SettingsItem title={t("users:detail.organizationRoles")} detail={roleNames || t("users:detail.noRoles")} onClick={editable ? () => setSheet("roles") : undefined} />
-          </ul> : <SectionFields className="grid gap-4 md:grid-cols-2">
-            {editable && isMember ? <FormField label={t("users:detail.status")}>
-              <Select value={current.isActive ? "Active" : "Inactive"} onValueChange={(value) => changeDraft({ isActive: value === "Active" })}>
-                <SelectTrigger className="w-full" aria-label={t("users:detail.status")}><SelectValue /></SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectItem value="Active" description={t("users:detail.statusActiveDescription")}>{t("users:states.Active")}</SelectItem>
-                  <SelectItem value="Inactive" description={t("users:detail.statusInactiveDescription")}>{t("users:states.Inactive")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormField> : <ReadOnlyField label={t("users:detail.status")}>{t(`users:states.${member.state}`)}</ReadOnlyField>}
-            {editable ? <RolesField label={t("users:detail.organizationRoles")} allLabel={t("users:detail.allRoles")}
-              options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={current.roleIds}
-              onChange={(roleIds) => changeDraft({ roleIds })} placeholder={t("users:detail.noRoles")} />
-              : <ReadOnlyField label={t("users:detail.organizationRoles")}>{member.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || t("users:detail.noRoles")}</ReadOnlyField>}
-          </SectionFields>}
+          <form id="user-access" noValidate aria-label={displayName || t("users:detail.title")} onSubmit={(event) => { void submit(event); }}>
+            {/* Tablero M-Usuario: en el teléfono, filas con › que abren una hoja para elegir. */}
+            {phone ? <ul className="m-0 list-none p-0">
+              <SettingsItem title={t("users:detail.status")} detail={stateLabel} onClick={editable && isMember ? () => setSheet("state") : undefined} />
+              <SettingsItem title={t("users:detail.organizationRoles")} detail={roleNames || t("users:detail.noRoles")} onClick={editable ? () => setSheet("roles") : undefined} />
+            </ul> : <SectionFields className="grid gap-4 md:grid-cols-2">
+              {editable && isMember ? <FormField label={t("users:detail.status")}>
+                <Select value={current.isActive ? "Active" : "Inactive"} onValueChange={(value) => changeAccess({ isActive: value === "Active" })}>
+                  <SelectTrigger className="w-full" aria-label={t("users:detail.status")}><SelectValue /></SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectItem value="Active" description={t("users:detail.statusActiveDescription")}>{t("users:states.Active")}</SelectItem>
+                    <SelectItem value="Inactive" description={t("users:detail.statusInactiveDescription")}>{t("users:states.Inactive")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormField> : <ReadOnlyField label={t("users:detail.status")}>{t(`users:states.${member.state}`)}</ReadOnlyField>}
+              {editable ? <RolesField label={t("users:detail.organizationRoles")} allLabel={t("users:detail.allRoles")}
+                options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={current.roleIds}
+                onChange={(roleIds) => changeAccess({ roleIds })} placeholder={t("users:detail.noRoles")} />
+                : <ReadOnlyField label={t("users:detail.organizationRoles")}>{member.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || t("users:detail.noRoles")}</ReadOnlyField>}
+            </SectionFields>}
+          </form>
         </Section>
 
         <Section title={t("users:detail.companyAccess")} action={editable ? { label: t("users:detail.addCompany"),
           disabled: !companies.data || activeCompanies.every((company) => assignedCompanyIds.has(company.id)) || save.isPending,
-          onClick: () => openCompanyDialog({ mode: "add", companyId: "", roleIds: [] }) } : undefined}>
+          onClick: () => openCompanyDialog({ mode: "add", assignment: { companyId: "", roleIds: [] } }) } : undefined}>
             {member.companies.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)] md:px-5">{t("users:detail.noCompanies")}</p> : <List label={t("users:detail.companyAccess")}>
               {member.companies.map((company) => {
                 const preserved = preservedCompanyIds.has(company.companyId);
@@ -311,9 +327,10 @@ export function UserDetailPage() {
                 return <ListItem key={company.companyId} icon={<Building2 aria-hidden="true" />} title={company.companyName}
                   detail={preserved ? <>{roleNames}<Separator />{t("users:detail.companyInactive")}</> : roleNames}>
                   {editable && !preserved ? <RowActions label={t("users:detail.companyActions", { name: company.companyName })} actions={[
-                    { label: t("users:detail.changeCompanyRoles"), accessibleName: t("users:detail.changeCompanyRoles"), icon: Settings2, onSelect: () => openCompanyDialog({ mode: "roles", ...assignment }) },
+                    { label: t("users:detail.changeCompanyRoles"), accessibleName: t("users:detail.changeCompanyRoles"), icon: Settings2,
+                      onSelect: (trigger) => openCompanyDialog({ mode: "roles", assignment, returnFocusTo: trigger }) },
                     { label: t("users:detail.removeCompanyAction"), accessibleName: t("users:detail.removeCompanyAction"), icon: Trash2, destructive: true,
-                      onSelect: () => { void saveCompanies(changeableAssignments.filter((item) => item.companyId !== company.companyId), t("users:detail.messages.companyRemoved", { name: displayName, company: company.companyName }), "page"); } },
+                      onSelect: () => saveCompanies(changeableAssignments.filter((item) => item.companyId !== company.companyId), t("users:detail.messages.companyRemoved", { name: displayName, company: company.companyName }), "page") },
                   ]} /> : null}
                 </ListItem>;
               })}
@@ -325,37 +342,17 @@ export function UserDetailPage() {
         con casillas, sin «Todos», y «Listo» cierra la hoja. Lo elegido queda como «Cambios sin guardar» hasta guardar. */}
     <ChoiceSheet open={sheet === "state"} onOpenChange={(open) => { if (!open) setSheet(null); }} title={t("users:detail.status")}>
       {(["Active", "Inactive"] as const).map((value) => <RadioRow key={value} name="user-state" label={t(`users:states.${value}`)}
-        checked={current.isActive === (value === "Active")} onChoose={() => { changeDraft({ isActive: value === "Active" }); setSheet(null); }} />)}
+        checked={current.isActive === (value === "Active")} onChoose={() => { changeAccess({ isActive: value === "Active" }); setSheet(null); }} />)}
     </ChoiceSheet>
     <ChoiceSheet open={sheet === "roles"} onOpenChange={(open) => { if (!open) setSheet(null); }} title={t("users:detail.organizationRoles")}
       done={{ label: t("common:actions.done"), onClick: () => setSheet(null) }}>
       {orgRoles.map((role) => <CheckRow key={role.id} label={role.name} checked={current.roleIds.includes(role.id)}
-        onCheckedChange={(checked) => changeDraft({ roleIds: checked ? [...current.roleIds, role.id] : current.roleIds.filter((id) => id !== role.id) })} />)}
+        onCheckedChange={(checked) => changeAccess({ roleIds: checked ? [...current.roleIds, role.id] : current.roleIds.filter((id) => id !== role.id) })} />)}
     </ChoiceSheet>
-    <Dialog open={companyDialog !== null} onOpenChange={(open) => { if (!open && !save.isPending) closeCompanyDialog(); }}>
-      {/* «Criterio · Diálogos»: dos campos, el chico de 420 px. Tablero Usuario (v100): «Roles en la empresa» aparece al
-          elegir la empresa y es opcional. */}
-      <DialogContent size="sm">
-        <DialogHeader><DialogTitle>{companyDialog?.mode === "add" ? t("users:detail.addCompanyTitle") : t("users:detail.changeCompanyRolesTitle", { name: companyName(companyDialog?.companyId ?? "") })}</DialogTitle></DialogHeader>
-        <DialogBody>
-          {companyDialog?.mode === "add" ? <FormField label={t("users:invite.company")} required error={companyDialog.missingCompany ? t("users:detail.companyRequired") : undefined}>
-            <Select value={companyDialog.companyId} onValueChange={(companyId) => changeCompanyDialog({ ...companyDialog, companyId, roleIds: [], missingCompany: false })}>
-              <SelectTrigger className="w-full" aria-label={t("users:invite.company")}><SelectValue placeholder={t("users:invite.chooseCompany")} /></SelectTrigger>
-              <SelectContent position="popper">{activeCompanies.filter((company) => !assignedCompanyIds.has(company.id)).map((company) => <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>)}</SelectContent>
-            </Select>
-          </FormField> : null}
-          {companyDialog?.companyId ? <RolesField label={t("users:invite.companyRoles")} allLabel={t("users:detail.allRoles")}
-            options={dialogCompanyRoles.map((role: RoleResponse) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={companyDialog.roleIds}
-            onChange={(roleIds) => changeCompanyDialog({ ...companyDialog, roleIds })} placeholder={t("users:detail.noRoles")} /> : null}
-          {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
-          {dialogError ? <FormError message={dialogError} /> : null}
-        </DialogBody>
-        <DialogFooter>
-          <Button type="button" variant="outline" disabled={save.isPending} onClick={closeCompanyDialog}>{t("common:actions.cancel")}</Button>
-          <Button type="button" pending={save.isPending} onClick={() => { void saveCompanyDialog(); }}>{companyDialog?.mode === "add" ? t("users:detail.addCompanyConfirm") : t("users:detail.saveCompanyRoles")}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    {companyDialog ? <UserCompanyDialog mode={companyDialog.mode} assignment={companyDialog.assignment} companyName={companyName(companyDialog.assignment.companyId)}
+      companies={activeCompanies.filter((company) => !assignedCompanyIds.has(company.id))} roles={companyRoles} pending={save.isPending} error={dialogError}
+      returnFocusTo={companyDialog.returnFocusTo} onEdit={() => setDialogFailure(undefined)} onClose={closeCompanyDialog}
+      onSave={(assignment) => saveCompanyDialog(companyDialog.mode, assignment)} /> : null}
     <ConfirmDialog open={confirmation !== null} onOpenChange={(open) => { if (!open) setConfirmAction(null); }} destructive
       title={confirmation?.title ?? ""} description={confirmation?.description} confirmLabel={confirmation?.label ?? ""}
       onConfirm={() => confirmation?.run()} />
