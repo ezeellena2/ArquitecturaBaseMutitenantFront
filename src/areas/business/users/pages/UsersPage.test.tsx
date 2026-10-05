@@ -76,6 +76,7 @@ describe("UsersPage", () => {
     }
   });
 
+  // Límite de 10 s: escribe la búsqueda con user-event y espera la consulta, que sale después de la pausa del buscador; con toda la suite tarda unos 3,5 s.
   it("muestra conteos y resultados, y mantiene búsqueda y estado en la URL", async () => {
     const user = userEvent.setup();
     const requests: URL[] = [];
@@ -178,7 +179,7 @@ describe("UsersPage", () => {
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("withoutCompany")).toBe("true"));
     expect(requests.at(-1)?.searchParams.get("companyId")).toBeNull();
     expect(router.state.location.search).toContain("companyId=none");
-  }, 15_000);
+  });
 
   it("tablero Usuarios: confirmaciones y avisos con el nombre, en pasado", async () => {
     const user = userEvent.setup();
@@ -207,8 +208,9 @@ describe("UsersPage", () => {
     expect(revoke).toHaveTextContent("El enlace deja de funcionar. Podés volver a invitarla cuando quieras.");
     await user.click(within(revoke).getByRole("button", { name: "Revocar" }));
     expect(await screen.findByText("Revocamos la invitación a sofia@example.com.")).toBeVisible();
-  }, 15_000);
+  });
 
+  // Límite de 20 s: invita dos veces, escribe los correos con user-event y elige roles y empresa en tres desplegables; con toda la suite tarda unos 6,5 s.
   it("tablero Usuarios, Invitar: una empresa con sus roles, todo opcional salvo el correo, e idempotente", async () => {
     const bodies: unknown[] = [];
     const keys: (string | null)[] = [];
@@ -266,6 +268,7 @@ describe("UsersPage", () => {
 
   // «Criterio · Diálogos» y «Criterio · Formularios»: el error general del diálogo va en la franja arriba de los botones,
   // no arriba de los campos.
+  // Límite de 10 s: abre el diálogo y escribe el correo con user-event; con toda la suite tarda unos 2,2 s.
   it("un error al invitar va en la franja del diálogo, arriba de los botones", async () => {
     server.use(
       http.get("/api/users/paged", () => HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
@@ -307,5 +310,5 @@ describe("UsersPage", () => {
     expect(screen.getAllByRole("row")).toHaveLength(11);
     expect(screen.getByText(/50 usuarios/)).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
-  }, 10_000);
+  });
 });

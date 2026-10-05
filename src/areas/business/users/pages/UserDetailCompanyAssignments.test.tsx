@@ -30,6 +30,7 @@ beforeEach(async () => {
 });
 
 describe("UserDetailPage company assignments", () => {
+  // Límite de 10 s: abre el ⋮ y el diálogo, y elige los roles con user-event en el desplegable; con toda la suite tarda unos 3 s.
   it("guarda al momento los roles de empresa desde el diálogo", async () => {
     const user = userEvent.setup();
     let updateBody: unknown;

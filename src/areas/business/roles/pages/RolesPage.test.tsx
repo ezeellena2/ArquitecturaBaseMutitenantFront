@@ -53,6 +53,7 @@ beforeEach(async () => {
 });
 
 describe("RolesPage", () => {
+  // Límite de 10 s: escribe la búsqueda con user-event y espera la consulta, que sale después de la pausa del buscador; con toda la suite tarda cerca de 5 s.
   it("lista roles del backend y lleva búsqueda y «Vale en» a la URL y a la consulta", async () => {
     const user = userEvent.setup();
     const requests: URL[] = [];
@@ -175,7 +176,7 @@ describe("RolesPage", () => {
 
     expect(await screen.findByRole("link", { name: "Rol 01" })).toBeVisible();
     await waitFor(() => expect(router.state.location.search).toBe(""));
-  }, 10_000);
+  });
 
   it("con filtros y sin resultados: «Ningún rol coincide con los filtros» y «Limpiar filtros»", async () => {
     const user = userEvent.setup();

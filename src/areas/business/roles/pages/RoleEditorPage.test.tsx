@@ -44,6 +44,7 @@ beforeEach(async () => {
 });
 
 describe("RoleEditorPage", () => {
+  // Límite de 10 s: escribe el nombre y la descripción con user-event y marca permisos; con toda la suite tarda unos 4 s.
   it("crea un rol organizacional con una escritura idempotente y los permisos elegidos", async () => {
     const user = userEvent.setup();
     let createBody: unknown;
@@ -75,6 +76,7 @@ describe("RoleEditorPage", () => {
   }, 10_000);
 
   // B2: el back guarda la respuesta de cada clave; con la misma clave y otro cuerpo daría 422 hasta recargar.
+  // Límite de 10 s: escribe con user-event y guarda dos veces; con toda la suite tarda unos 2,6 s.
   it("después de un nombre repetido, corregirlo y crear de nuevo manda otra clave y crea el rol", async () => {
     const user = userEvent.setup();
     const sent: Array<{ key: string | null; name: unknown }> = [];
@@ -112,6 +114,7 @@ describe("RoleEditorPage", () => {
     expect(sent[1]?.key).not.toBe(sent[0]?.key);
   }, 10_000);
 
+  // Límite de 10 s: escribe con user-event y elige la empresa en el desplegable; con toda la suite tarda unos 2 s.
   it("«Vale en» ofrece toda la organización o cada empresa por nombre, y crea el rol de la empresa elegida", async () => {
     const user = userEvent.setup();
     let createBody: unknown;
@@ -189,7 +192,7 @@ describe("RoleEditorPage", () => {
     await user.click(await screen.findByRole("button", { name: "Salir sin guardar" }));
     await waitFor(() => expect(name).toHaveValue("Nombre actualizado"));
     expect(reads).toBe(2);
-  }, 10_000);
+  });
 
   // B12 (Criterio · Avisos): si se corta la red al guardar, un solo aviso dice qué pasó y «Reintentar» vuelve a
   // guardar lo mismo; la franja del formulario no repite el error.
@@ -218,7 +221,7 @@ describe("RoleEditorPage", () => {
     expect(await screen.findByText("Guardamos el rol Solo consulta.")).toBeVisible();
     expect(bodies).toHaveLength(2);
     expect(bodies[1]).toEqual(bodies[0]);
-  }, 10_000);
+  });
 
   it("muestra los roles de sistema en solo lectura", async () => {
     const user = userEvent.setup();
