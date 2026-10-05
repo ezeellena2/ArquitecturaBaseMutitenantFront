@@ -11,6 +11,7 @@
 - M-Roles: el estado «Sin coincidencias», con el recuadro punteado de la app y «Limpiar filtros».
 - Empresas y M-Empresas: el CUIT repetido, debajo del campo CUIT con el texto del back, no en la franja.
 - M-Cuenta-Baja y M-Cuenta-Metodo: «Dar de baja», «Quitar» y «Desvincular» con el botón de peligro (`.cb-pel.lleno`), como en la compu.
+- Empresa, «Administra solo la empresa»: sin el relleno de 16 del panel de pestañas (6d-4a).
 Lleva `data-vuelta="1004-cola-guia"`; si ya la tiene, no se toca."""
 import json
 import pathlib
@@ -170,6 +171,11 @@ for nombre, veces in [("M-Cuenta-Baja", 3), ("M-Cuenta-Metodo", 3)]:
     t = tocar(nombre)
     if t:
         poner(nombre, rep(t, ROJO_A_MANO, '<button type="button" class="cb cb-pel lleno">', veces))
+
+# Empresa, «Administra solo la empresa» (6d-4a): sin pestañas, la lista arranca en el margen de la página, como Empresas y Usuarios.
+t = tocar("Empresa")
+if t:
+    poner("Empresa", t, '.solo-emp [role="tabpanel"] { padding-top: 0 !important; }\n')
 
 escritos = 0
 for nombre, t in textos.items():

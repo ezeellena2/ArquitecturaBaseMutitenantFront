@@ -52,6 +52,8 @@ ESTADOS = {
 
 # Reglas generales que salieron de las decisiones: (regla, tablero donde quedó, fecha).
 REGLAS = [
+    ("Un desplegable se abre debajo del campo y del mismo ancho, como los filtros y el ⋮ de una fila.", "Formularios y campos", "05/10/2026"),
+    ("En el teléfono, el ⋮ de una fila de cualquier lista abre una hoja desde abajo con el dato de la fila como título.", "Menús y desplegables", "05/10/2026"),
     ("«Guardar cambios» se apaga sin cambios en todas las ediciones, también en los diálogos; ningún botón se apaga porque falta un dato.", "Botones", "05/10/2026"),
     ("Un botón que espera dice qué está haciendo, también los de peligro: «Quitando…», «Desvinculando…», «Dando de baja…».", "Botones", "05/10/2026"),
     ("Una ficha con un solo grupo de datos va sin la barra de pestañas.", "Marco y pantallas", "05/10/2026"),
@@ -282,6 +284,8 @@ DECISIONES = {
         ("Roles", "", "«Crear rol» nunca apagado; «Vale en» sin asterisco; casillas fijas en gris; la lista vacía del teléfono con el recuadro punteado.", "Dibujada"),
         ("Empresas", "", "El CUIT repetido debajo del campo, con el texto del back.", "Dibujada"),
         ("Botones de peligro · teléfono", "", "«Dar de baja», «Quitar» y «Desvincular» en rojo: v107 los había dejado en petróleo.", "Dibujada"),
+        ("Desplegables", "A", "Debajo del campo y del mismo ancho; la app lo cambia en una sola pieza.", "Dibujada"),
+        ("Invitaciones en la ficha de una empresa", "", "Revocar dice «El enlace deja de funcionar.»; la vencida, «Venció …» (también en Usuarios); «Revocar invitación» abajo, en rojo y después de una franja; «Agregar miembro» con el correo tapado para todos.", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

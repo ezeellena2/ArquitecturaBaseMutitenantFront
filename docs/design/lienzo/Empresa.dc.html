@@ -625,6 +625,13 @@ textarea.in2 { height: auto; min-height: 84px; }
 .solo-emp li:has(> .wa-btn), .solo-emp .admin-grupo, .solo-emp .adm-panel { display: none !important; }
 .dos .n2.sang { padding-left: 13px; }
 </style>
+<style data-vuelta="1004-cola-guia">
+.solo-emp [role="tabpanel"] { padding-top: 0 !important; }
+</style>
+<style data-vuelta="1004-cola-guia-b"></style>
+<style data-vuelta="1004-desplegable">
+.campo2.envoltura .menu.lista { left: 0; right: 0; width: auto; min-width: 0; max-width: none; }
+</style>
 </helmet>
 
 <style data-menu="wa-ab">
@@ -764,15 +771,15 @@ textarea.in2 { height: auto; min-height: 84px; }
                       <sc-for list="{{m.roles}}" as="r" hint-placeholder-count="1"><span class="rol">{{r}}</span></sc-for>
                       <sc-if value="{{m.sinRoles}}" hint-placeholder-val="{{no}}"><span style="color: var(--t3);">—</span></sc-if>
                     </span>
-                    <span class="dos"><span><span class="pill {{m.pill}}">{{m.textoEstado}}</span></span><sc-if value="{{m.invitado}}" hint-placeholder-val="{{no}}"><span class="n2 sang">Vence {{m.vence}}</span></sc-if></span>
+                    <span class="dos"><span><span class="pill {{m.pill}}">{{m.textoEstado}}</span></span><sc-if value="{{m.invitado}}" hint-placeholder-val="{{no}}"><span class="n2 sang">{{m.textoVence}}</span></sc-if></span>
                     <span class="der envoltura">
                 <button type="button" class="kebab" aria-haspopup="menu" aria-expanded="{{m.exp}}" aria-label="{{m.ariaMenu}}" onClick="{{m.alternar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
                 <sc-if value="{{m.menu}}" hint-placeholder-val="{{no}}">
                   <div class="menu der {{m.claseMenu}}" role="menu">
                           <sc-if value="{{m.activo}}" hint-placeholder-val="{{si}}"><button type="button" class="menu-it" role="menuitem" onClick="{{m.abrirRoles}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.5c0 4.2 2.9 7.8 7 9.5 4.1-1.7 7-5.3 7-9.5V6z"/></svg> Cambiar roles</button></sc-if>
-                          <sc-if value="{{m.invitado}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it" role="menuitem" onClick="{{m.reenviar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg> Reenviar invitación</button></sc-if><sc-if value="{{m.noInvitado}}" hint-placeholder-val="{{si}}"><a class="menu-it" role="menuitem" href="Usuario.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Ver usuario</a>
+                          <sc-if value="{{m.invitado}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it" role="menuitem" onClick="{{m.reenviar}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg> Reenviar invitación</button><div class="menu-sep" role="separator"></div></sc-if><sc-if value="{{m.noInvitado}}" hint-placeholder-val="{{si}}"><a class="menu-it" role="menuitem" href="Usuario.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M5 20a7 7 0 0 1 14 0"/></svg> Ver usuario</a>
                           <div class="menu-sep" role="separator"></div></sc-if>
-                          <button type="button" class="menu-it {{m.claseAccion}}" role="menuitem" onClick="{{m.cambiarEstado}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> {{m.accion}}</button>
+                          <sc-if value="{{m.noInvitado}}" hint-placeholder-val="{{si}}"><button type="button" class="menu-it {{m.claseAccion}}" role="menuitem" onClick="{{m.cambiarEstado}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v7.5"/><path d="M17.7 7.3a8 8 0 1 1-11.4 0"/></svg> {{m.accion}}</button></sc-if><sc-if value="{{m.invitado}}" hint-placeholder-val="{{no}}"><button type="button" class="menu-it pel" role="menuitem" onClick="{{m.cambiarEstado}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg> Revocar invitación</button></sc-if>
                   </div>
                 </sc-if>
               </span>
@@ -1048,7 +1055,7 @@ const CANDIDATOS_DN = [
   { id: 'u2', email: 'tomas.acosta@delta.ejemplo.com', nombre: 'Tomás Acosta' },
   { id: 'u3', email: 'julieta.sosa@delta.ejemplo.com', nombre: 'Julieta Sosa' },
 ];
-// Sin roles de la organización no ve la lista de Usuarios: el correo va tapado.
+// «Agregar miembro» tiene una sola forma: el correo va tapado para todos (lo pidió el usuario el 05/10).
 const tapar = (m) => m.slice(0, 2) + '•••@' + m.split('@')[1];
 const PESTANAS = { 'Miembros': 'miembros', 'Roles': 'roles' };
 const ROLES_C1 = rolesDeEmpresa('c1');
@@ -1389,7 +1396,7 @@ class Component extends DCLogic {
           email: m.email, nombre: m.nombre, roles: m.roles, sinRoles: m.roles.length === 0, activo: act,
           pill: act ? 'ok' : baja || m.estado === 'vencida' ? 'alerta' : inv ? 'pend' : 'off',
           textoEstado: act ? 'Activo' : baja ? 'Baja pedida' : m.estado === 'invitado' ? 'Invitación pendiente' : m.estado === 'vencida' ? 'Invitación vencida' : 'Inactivo',
-          invitado: inv, noInvitado: !inv, vence: m.vence || '',
+          invitado: inv, noInvitado: !inv, textoVence: (m.estado === 'vencida' ? 'Venció ' : 'Vence ') + (m.vence || ''),
           // POST /api/companies/{id}/invitations/{invitationId}/resend con company.members.manage (decisión del 05/10).
           reenviar: () => {
             this.setState({ abierto: null, miembros: s.miembros.map((x) => (x.id === m.id ? { ...x, estado: 'invitado', vence: '12/10/2026' } : x)) });
@@ -1404,7 +1411,7 @@ class Component extends DCLogic {
             if (inv) {
               this.pedirConfirmacion({
                 titulo: '¿Revocar la invitación a ' + m.email + '?',
-                texto: 'El enlace deja de funcionar. Podés volver a invitar a esta persona cuando quieras.',
+                texto: 'El enlace deja de funcionar.',
                 boton: 'Revocar',
                 accion: () => {
                   this.setState({ miembros: this.state.miembros.filter((x) => x.id !== m.id) });
@@ -1452,7 +1459,7 @@ class Component extends DCLogic {
 
       abrirAgregar: () => this.setState({ dialogo: 'agregar', usuario: null, borrador: [], errUsuario: '', abierto: null }),
       dlgAgregar: s.dialogo === 'agregar',
-      ...this.uno('Candidato', 'usuario', candidatos.map((c) => ({ v: c.id, n: c.nombre, d: (s.solo ? tapar(c.email) : c.email) + (c.pendiente ? ' · invitación pendiente' : '') })), 'Elegí un usuario de la organización', { error: s.errUsuario, alElegir: () => ({ errUsuario: '' }) }),
+      ...this.uno('Candidato', 'usuario', candidatos.map((c) => ({ v: c.id, n: c.nombre, d: tapar(c.email) + (c.pendiente ? ' · invitación pendiente' : '') })), 'Elegí un usuario de la organización', { error: s.errUsuario, alElegir: () => ({ errUsuario: '' }) }),
       ...this.varios('RolesA', 'borrador', ROLES_C1, 'Sin roles'),
       textoAgregar: s.guardando ? 'Agregando…' : 'Agregar miembro',
       agregar: () => this.agregar(),
