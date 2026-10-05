@@ -482,6 +482,8 @@ src/
 │   │   ├── useFormat.test.tsx                       tests de useFormat
 │   │   ├── useFormat.account.test.tsx               el formato con la cultura y la zona de la cuenta
 │   │   ├── useDateInTimeZone.ts                     una fecha y hora en la zona que se le pasa (la de una prueba de cuenta), no la del navegador
+│   │   ├── personalData.ts                          el correo tapado («lu•••@gmail.com»), como PersonalDataMask.Email del back
+│   │   ├── personalData.test.ts                     tests de personalData
 │   │   ├── statusTones.ts                           estado → tono visual (success, warning, danger, neutral, pending); colores en tema.md
 │   │   ├── statusTones.test.ts                      tests de statusTones
 │   │   └── format-usage.test.ts                     falla si se formatea fuera de shared/format y shared/time o se fijan catálogos en código
@@ -496,14 +498,16 @@ src/
 │   │   └── referenceData.test.ts                    catálogos, ausencia de listas fijas y estado de carga
 │   ├── account/                                     [E3] lo de la cuenta que usan varias áreas (ADR 0033)
 │   │   ├── api/
+│   │   │   ├── loginChannels.ts                     los canales con los que se entra (GET /api/auth/methods): correo, Google y, con su módulo, WhatsApp
 │   │   │   ├── loginMethods.ts                      los métodos de ingreso: leer, agregar un correo, verificar, quitar, hacer principal y vincular Google
 │   │   │   └── reauth.ts                            pedir y verificar el código de reautenticación (ReauthTicket)
-│   │   ├── AddLoginMethodDialog.tsx                 «Agregar correo o teléfono» y «Verificar tu correo»: el correo, el código en sus casilleros y su error debajo; React Hook Form con zod
+│   │   ├── AddLoginMethodDialog.tsx                 «Agregar correo o teléfono» («Agregar correo» sin el módulo de WhatsApp) y «Verificar tu correo»: el correo tapado, el código en sus casilleros y su error debajo; React Hook Form con zod
 │   │   ├── AddLoginMethodDialog.test.tsx            tests de AddLoginMethodDialog
 │   │   ├── ChangeLoginMethodDialog.tsx              quitar un método (o desvincular Google) o hacerlo principal, con código en otro método verificado (ReauthTicket de 5 min)
 │   │   ├── ChangeLoginMethodDialog.test.tsx         tests de ChangeLoginMethodDialog
 │   │   ├── PersonalLoginMethodNotice.tsx            el aviso de método propio, con «Agregar» (Inicio-Personal y Mi cuenta); en el teléfono, la tarjeta de sugerencia
 │   │   ├── useAccountReauth.ts                      la reautenticación: la prueba queda en memoria y se reusa si la mutación final perdió su respuesta
+│   │   ├── useLoginChannels.ts                      si se entra con un canal: sin «whatsapp» (sin el módulo), Mi cuenta ofrece «Agregar correo»
 │   │   ├── errors.ts                                el código que el back rechaza va debajo de los casilleros
 │   │   └── errors.test.ts                           tests de errors
 │   ├── hooks/                                       [E0] de la base solo los hooks sin dependencias de etapas posteriores; cada uno con su test
@@ -692,7 +696,9 @@ src/
 │       ├── StatusDot.tsx                            [E0] pieza nueva
 │       ├── StatusDot.test.tsx                       tests de StatusDot
 │       ├── Surface.tsx                              [E0] pieza nueva
-│       ├── icons.tsx                                [E1] SVG propios, trazo 1.75
+│       ├── IconDefaults.tsx                         el trazo 1.75 de los íconos de lucide, una sola vez en la raíz de la app
+│       ├── IconDefaults.test.tsx                    tests de IconDefaults
+│       ├── icons.tsx                                [E1] SVG propios, trazo 1.75; los de las áreas, con el dibujo del marco de los tableros
 │       ├── icons.test.tsx                           tests de icons
 │       └── app/                                     el marco de app del teléfono (tableros M-*, «Criterio · Marco y pantallas»)
 │           ├── AppChrome.tsx                        si es un teléfono, a dónde vuelve «‹», qué va debajo del título y si se esconde la barra de abajo
