@@ -29,6 +29,7 @@ function renderPrivateRoute(strict = false, path = "/org") {
         ] },
         { element: <AccessRoute access="platform" />, children: [
           { path: "/plataforma", element: <main aria-label="Inicio de plataforma" /> },
+          { path: "/plataforma/cuentas", element: <main aria-label="Cuentas de plataforma" /> },
         ] },
       ] },
     ] },
@@ -82,6 +83,26 @@ describe("SessionRecovery", () => {
     await waitFor(() => expect(router.state.location.pathname).toBe("/login/empresa"));
     expect(router.state.location.search).toContain("returnUrl=%2Forg");
     expect(signinSilent).toHaveBeenCalledOnce();
+  });
+
+  it("canjea la cookie tras F5 en Cuentas conservando el acceso y la ruta de Plataforma", async () => {
+    let complete = (): void => { throw new Error("No se inició la recuperación"); };
+    signinSilent.mockImplementation(() => new Promise<User>((resolve) => {
+      complete = () => {
+        auth.user = { access_token: "token", profile: { access: "platform" } } as unknown as User;
+        auth.isAuthenticated = true;
+        resolve(auth.user);
+      };
+    }));
+    const router = renderPrivateRoute(false, "/plataforma/cuentas");
+    await waitFor(() => expect(signinSilent).toHaveBeenCalledOnce());
+    expect(signinSilent).toHaveBeenCalledWith({ extraQueryParams: { access: "platform" } });
+    expect(screen.getByRole("heading", { name: "Iniciando sesión…" })).toBeVisible();
+    expect(screen.queryByRole("main", { name: "Cuentas de plataforma" })).not.toBeInTheDocument();
+    await act(async () => { complete(); });
+    expect(screen.getByRole("main", { name: "Cuentas de plataforma" })).toBeInTheDocument();
+    expect(auth.user?.profile.access).toBe("platform");
+    expect(router.state.location.pathname).toBe("/plataforma/cuentas");
   });
 
   it("recupera el acceso de plataforma desde su ruta", async () => {

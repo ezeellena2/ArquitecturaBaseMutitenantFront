@@ -1,7 +1,7 @@
 import { Check } from "lucide-react";
 import { LogOutIcon } from "@/shared/ui/icons";
 import { useTranslation } from "react-i18next";
-import { Navigate } from "react-router";
+import { Navigate, useLocation } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
@@ -11,11 +11,12 @@ import { Avatar } from "@/shared/ui/Avatar";
 import { GroupTitle, SettingsGroup, SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { initials, useProfiles } from "@/tenancy/useProfiles";
 import { businessNavigation } from "./navigation/business";
+import { platformNavigation } from "./navigation/platform";
 import { visibleNavigation } from "./navigation/visible";
 import { activeOrganization, homeOf } from "@/tenancy/access";
 
-/// Tableros M-Mas-Personal y M-WA-Menu: la pestaña «Más» del teléfono. Arriba quién sos; después tus perfiles, para
-/// cambiar de uno a otro; en una organización, Administración con lo que tus permisos dejan ver; al final Mi cuenta y
+/// Tableros M-Mas-Personal, M-WA-Menu y M-Mas-Plat: la pestaña «Más» del teléfono. Arriba quién sos; después tus perfiles, para
+/// cambiar de uno a otro (Plataforma no tiene perfiles); Administración con lo que tus permisos dejan ver; al final Mi cuenta y
 /// Salir. En la compu no existe: el menú lateral y el de la cuenta hacen lo mismo, así que vuelve al Inicio.
 export function MorePage() {
   const { t } = useTranslation();
@@ -23,12 +24,16 @@ export function MorePage() {
   const { data: user } = useCurrentUser();
   const permissions = usePermissions();
   const { name, email, access, profiles, signOut, status } = useProfiles();
+  const { pathname } = useLocation();
   if (!phone) return <Navigate to={homeOf(access ?? "consumer")} replace />;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
+  if (access === "platform" && pathname === "/mas" && platformNavigation.moreTo) return <Navigate to={platformNavigation.moreTo} replace />;
 
-  const panel = visibleNavigation(businessNavigation, permissions).administration;
-  const administration = access === "business" && panel ? [...(panel.sections ?? []).flatMap((section) => section.links), ...panel.links] : [];
-  const subtitle = access === "business" ? activeOrganization(user)?.name : t("accessMenu.personal");
+  const panel = access === "platform" ? visibleNavigation(platformNavigation, permissions).administration
+    : access === "business" ? visibleNavigation(businessNavigation, permissions).administration : null;
+  const administration = panel ? [...(panel.sections ?? []).flatMap((section) => section.links), ...panel.links] : [];
+  const subtitle = access === "platform" ? t("navigation.platform")
+    : access === "business" ? activeOrganization(user)?.name : t("accessMenu.personal");
 
   return <div className="flex min-h-full flex-col bg-[var(--s2)]">
     <AppBar title={t("navigation.more")} subtitle={subtitle} />
@@ -40,14 +45,16 @@ export function MorePage() {
       </span>
     </div>
 
-    <GroupTitle>{t("accessMenu.profiles")}</GroupTitle>
-    <SettingsGroup label={t("accessMenu.profiles")}>
-      {profiles.map((profile) => <SettingsItem key={profile.key} title={profile.name} detail={profile.detail ?? undefined} onClick={profile.select}
-        tone={profile.unavailable ? "muted" : undefined}
-        leading={<span aria-hidden="true" className={cn("inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] text-[13px] font-bold",
-          profile.checked ? "bg-[var(--marca-t)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]")}>{initials(profile.name)}</span>}
-        trailing={profile.checked ? <Check size={18} strokeWidth={2.25} aria-label={t("accessMenu.current")} className="shrink-0 text-[var(--marca)]" /> : <span />} />)}
-    </SettingsGroup>
+    {access !== "platform" ? <>
+      <GroupTitle>{t("accessMenu.profiles")}</GroupTitle>
+      <SettingsGroup label={t("accessMenu.profiles")}>
+        {profiles.map((profile) => <SettingsItem key={profile.key} title={profile.name} detail={profile.detail ?? undefined} onClick={profile.select}
+          tone={profile.unavailable ? "muted" : undefined}
+          leading={<span aria-hidden="true" className={cn("inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] text-[13px] font-bold",
+            profile.checked ? "bg-[var(--marca-t)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]")}>{initials(profile.name)}</span>}
+          trailing={profile.checked ? <Check size={18} strokeWidth={2.25} aria-label={t("accessMenu.current")} className="shrink-0 text-[var(--marca)]" /> : <span />} />)}
+      </SettingsGroup>
+    </> : null}
 
     {administration.length > 0 ? <>
       <GroupTitle>{t("navigation.administration")}</GroupTitle>

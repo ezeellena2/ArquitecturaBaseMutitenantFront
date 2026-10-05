@@ -20,6 +20,22 @@ function session(organization: string[], features: string[] = []) {
 }
 
 describe("visibleNavigation", () => {
+  it("las secciones inferiores de Plataforma referencian las rutas de Gestión y usan su permiso", () => {
+    const sections = platformNavigation.bottomSections;
+    expect(sections?.map((section) => section.link)).toEqual([
+      platformRoutes.organizations, platformRoutes.accounts, platformRoutes.recoveries,
+    ]);
+    for (const permission of platformPermissions) {
+      const shown = visibleNavigation(platformNavigation, permissionsOf({ features: [], effectivePermissions: {
+        platform: [permission], organization: ["users.read", "roles.read"], companies: {},
+      } }));
+      expect(shown.bottomSections?.map((section) => section.link)).toEqual(
+        sections?.filter((section) => section.link.platformPermission === permission).map((section) => section.link),
+      );
+      expect(shown.moreTo).toBe("/plataforma/mas");
+    }
+  });
+
   it("los dos paneles de Plataforma usan el manifiesto y cada enlace exige sólo su permiso", () => {
     const links = [...(platformNavigation.management?.links ?? []), ...(platformNavigation.administration?.links ?? [])];
     expect(links).toHaveLength(6);

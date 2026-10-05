@@ -55,32 +55,35 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
     : scope === "business" && organization ? { title: organization.name, detail: t("layout.sidebar.organization") }
       : scope === "platform" ? { title: t("navigation.platform"), detail: t("layout.sidebar.platformDetail") } : null;
 
-  // Tableros M-* («Criterio · Marco»): en el teléfono, Inicio y «Más» abajo; las demás pantallas se abren desde
-  // «Más» y vuelven a él con ‹. Debajo del título va el camino («Administración») o la organización.
+  // Tableros M-* («Criterio · Marco»): el manifiesto declara las secciones inferiores; sin ellas, Inicio y Más.
+  // Las pantallas de Administración se abren desde Más y vuelven a él con ‹.
   const home = navigation.links.at(0);
   // Una pantalla que vuelve al Inicio con ‹ (la ficha de la empresa de quien la administra sola) también es del Inicio.
   const onHome = home?.path === pathname || homeMarked;
   const onMore = navigation.moreTo === pathname;
+  const bottomSection = !onMore ? navigation.bottomSections?.find((section) => section.link === panelEntry?.link || section.link.path === pathname) : undefined;
   const routePanel = panelEntry ? navigation[panelEntry.panel] : null;
   const chrome = useMemo<AppChrome>(() => ({
     phone: isMobile,
-    parent: isMobile && navigation.moreTo && !onHome && !onMore ? { to: navigation.moreTo, label: t("layout.app.backToMore") } : null,
-    subtitle: routePanel ? t(routePanel.labelKey) : context?.title ?? null,
-    title: panelEntry ? t(panelEntry.link.labelKey) : null,
+    parent: isMobile && navigation.moreTo && !onHome && !onMore && !bottomSection ? { to: navigation.moreTo, label: t("layout.app.backToMore") } : null,
+    subtitle: routePanel && !bottomSection && !onMore ? t(routePanel.labelKey) : context?.title ?? null,
+    title: panelEntry && !onMore ? t(panelEntry.link.labelKey) : null,
     hideBottomNav,
     hideActiveSection,
-    homePath: home?.path ?? null,
+    homePath: home?.path ?? navigation.breadcrumbRoot?.path ?? null,
     markHome,
-  }), [isMobile, navigation.moreTo, routePanel, onHome, onMore, panelEntry, context?.title, hideBottomNav, hideActiveSection, home?.path, markHome, t]);
+  }), [isMobile, navigation.moreTo, navigation.breadcrumbRoot?.path, routePanel, onHome, onMore, bottomSection, panelEntry, context?.title, hideBottomNav, hideActiveSection, home?.path, markHome, t]);
 
   if (isSigningOut) return <SessionStatusPage status="closing" />;
 
   if (isMobile) return <AppChromeProvider value={chrome}>
     <div className="flex h-svh flex-col bg-[var(--lado-activo)]">
       <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">{children ?? <Outlet />}</main>
-      {home && navigation.moreTo && !bottomNavHidden ? <BottomNav label={t("navigation.sections")} items={[
-        { key: "home", label: t(home.labelKey), to: home.path, icon: <AppHomeIcon className="size-6" />, active: onHome && !activeSectionHidden },
-        { key: "more", label: t("navigation.more"), to: navigation.moreTo, avatar: name.charAt(0).toUpperCase() || undefined, active: !onHome && !activeSectionHidden },
+      {navigation.moreTo && !bottomNavHidden ? <BottomNav label={t("navigation.sections")} items={[
+        ...(shownNavigation.bottomSections?.map(({ link, icon: Icon }) => ({
+          key: link.path, label: t(link.labelKey), to: link.path, icon: <Icon className="size-6" />, active: link === bottomSection?.link && !activeSectionHidden,
+        })) ?? (home ? [{ key: "home", label: t(home.labelKey), to: home.path, icon: <AppHomeIcon className="size-6" />, active: onHome && !activeSectionHidden }] : [])),
+        { key: "more", label: t("navigation.more"), to: navigation.moreTo, avatar: name.charAt(0).toUpperCase() || undefined, active: !(navigation.bottomSections ? bottomSection : onHome) && !activeSectionHidden },
       ]} /> : null}
     </div>
   </AppChromeProvider>;

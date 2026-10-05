@@ -91,12 +91,13 @@
       },
       "boardReadyText": "Administración",
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fmas",
-        "scenario": "marco-administracion: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fmas",
+        "scenario": "marco-administracion: Más real T20c, contenido pendiente T21–T23",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "main",
+        "readyHeading": "Más"
       }
     },
     {
@@ -150,12 +151,13 @@
         "note": "M-Mas-Plat dibuja las opciones del operador en Más; no un menú desplegable de usuario."
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fmas",
-        "scenario": "marco-tu-menu: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fmas",
+        "scenario": "marco-tu-menu: Más real T20c, contenido pendiente T21–T23",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "main",
+        "readyHeading": "Más"
       }
     },
     {
@@ -246,12 +248,13 @@
       },
       "boardReadyText": "Más",
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fmas",
-        "scenario": "marco-mas: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fmas",
+        "scenario": "marco-mas: Más real T20c, contenido pendiente T21–T23",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "main",
+        "readyHeading": "Más"
       }
     },
     {

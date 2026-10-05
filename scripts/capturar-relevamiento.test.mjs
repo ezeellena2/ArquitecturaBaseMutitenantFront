@@ -14,6 +14,14 @@ test("incluye los trece pares aprobados de Recuperar v111 para comparar la app d
   assert.ok(cases.some((entry) => entry.id === "recuperar-paso-3-movil"));
 });
 
+test("los rótulos de Más real de T20c corresponden al tamaño móvil, sin heredar el marco desktop", () => {
+  const cases = buildCases().filter((entry) => entry.group === "plataforma-marco");
+  const more = cases.filter((entry) => entry.viewport.width === 390 && entry.app.readyHeading === "Más");
+  assert.equal(more.length, 3);
+  for (const entry of more) assert.match(entry.state, /Más real T20c/, entry.id);
+  assert.ok(cases.filter((entry) => entry.viewport.width === 1440).every((entry) => !entry.state.includes("Más real")));
+});
+
 test("el relevamiento ejecuta las acciones por rol del tablero de Recuperar v111", async () => {
   const server = await startCanvasServer(canvas);
   let browser;

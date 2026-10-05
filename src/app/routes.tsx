@@ -106,7 +106,10 @@ export const routes: RouteObject[] = [
         ] },
       ] },
       { element: <AccessRoute access="platform" />, children: [
-        { path: homeOf("platform"), element: <PlatformLayout />, children: createPlatformPageRoutes(platformPages) },
+        { path: homeOf("platform"), element: <PlatformLayout />, children: [
+          ...createPlatformPageRoutes(platformPages),
+          { path: platformNavigation.moreTo, lazy: lazyPage(() => import("@/layouts/MorePage"), (page) => page.MorePage), errorElement: <AppErrorPage /> },
+        ] },
       ] },
       ] },
     ] },

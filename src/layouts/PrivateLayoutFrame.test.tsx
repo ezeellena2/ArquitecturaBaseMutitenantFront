@@ -3,23 +3,26 @@ import userEvent from "@testing-library/user-event";
 import { act } from "react";
 import { MemoryRouter } from "react-router";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { axe } from "vitest-axe";
 import { configureI18n } from "@/shared/i18n";
 import { beginSignOut, cancelSignOut } from "@/auth/signOutStatus";
 import { businessNavigation } from "./navigation/business";
 import { personalNavigation } from "./navigation/personal";
+import { platformNavigation } from "./navigation/platform";
+import { platformPermissions } from "@/auth/usePermissions";
 import { Page } from "@/shared/ui/Page";
 import { PrivateLayoutFrame } from "./PrivateLayoutFrame";
 
 const viewport = vi.hoisted(() => ({ mobile: false }));
-const session = vi.hoisted(() => ({ permissions: [] as string[] }));
+const session = vi.hoisted(() => ({ permissions: [] as string[], platform: [] as string[] }));
 vi.mock("@/shared/hooks/useMediaQuery", () => ({ useMediaQuery: () => viewport.mobile }));
-vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: { displayName: "Ana", email: "ana@example.com", activeTenantId: "empresa-a", organizations: [{ id: "empresa-a", name: "Empresa A" }], features: [], effectivePermissions: { platform: [], organization: session.permissions, companies: {} } } }) }));
+vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: { displayName: "Ana", email: "ana@example.com", activeTenantId: "empresa-a", organizations: [{ id: "empresa-a", name: "Empresa A" }], features: [], effectivePermissions: { platform: session.platform, organization: session.permissions, companies: {} } } }) }));
 vi.mock("@/tenancy/AccessMenu", () => ({ AccessMenu: () => <button type="button">{"Cuenta"}</button> }));
 
 beforeAll(async () => {
   await configureI18n([{ code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true }]);
 });
-afterEach(() => { viewport.mobile = false; session.permissions = []; cancelSignOut(); });
+afterEach(() => { viewport.mobile = false; session.permissions = []; session.platform = []; cancelSignOut(); });
 
 describe("PrivateLayoutFrame", () => {
   it("muestra el contexto de empresa sin enlaces de Administración de etapas futuras", () => {
@@ -119,6 +122,78 @@ describe("PrivateLayoutFrame", () => {
     expect(screen.getByRole("link", { name: "Volver a Más" })).toHaveAttribute("href", "/mas");
     expect(screen.getByText("Administración")).toBeInTheDocument();
     expect(within(screen.getByRole("navigation", { name: "Secciones" })).getByRole("link", { name: "Más" })).toHaveAttribute("aria-current", "page");
+  });
+
+  it.each([
+    ["/plataforma", "Organizaciones"],
+    ["/plataforma/organizaciones/delta", "Organizaciones"],
+    ["/plataforma/cuentas", "Cuentas"],
+    ["/plataforma/cuentas/ana", "Cuentas"],
+    ["/plataforma/recuperaciones", "Recuperaciones"],
+    ["/plataforma/mas", "Más"],
+    ["/plataforma/auditoria", "Más"],
+    ["/plataforma/legales/nueva", "Más"],
+    ["/plataforma/configuracion", "Más"],
+    ["/cuenta", "Más"],
+  ])("en Plataforma, %s marca %s en las cuatro secciones inferiores", async (path, current) => {
+    viewport.mobile = true;
+    session.platform = [...platformPermissions];
+    const { container } = render(<MemoryRouter initialEntries={[path]}><PrivateLayoutFrame navigation={platformNavigation} scope="platform">
+      <Page title="Vista de prueba"><p>{"contenido"}</p></Page>
+    </PrivateLayoutFrame></MemoryRouter>);
+    const links = within(screen.getByRole("navigation", { name: "Secciones" })).getAllByRole("link");
+    expect(links).toHaveLength(4);
+    ["Organizaciones", "Cuentas", "Recuperaciones", "Más"].forEach((label, index) => expect(links[index]).toHaveAccessibleName(label));
+    const selected = links.filter((link) => link.getAttribute("aria-current") === "page");
+    expect(selected).toHaveLength(1);
+    expect(selected[0]).toHaveAccessibleName(current);
+    expect(links.at(-1)).toHaveAttribute("href", "/plataforma/mas");
+    if (current === "Organizaciones" || current === "Cuentas" || current === "Recuperaciones") {
+      expect(screen.queryByRole("link", { name: "Volver a Más" })).not.toBeInTheDocument();
+    }
+    expect(screen.queryByText("Consultas")).not.toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it.each([
+    ["platform.tenants.read", "Organizaciones"],
+    ["platform.accounts.read", "Cuentas"],
+    ["platform.recoveries.manage", "Recuperaciones"],
+    ["platform.accounts.manage", null],
+    ["platform.operators.manage", null],
+  ])("la barra de Plataforma con %s muestra sólo su sección y Más", (permission, section) => {
+    viewport.mobile = true;
+    session.platform = [permission];
+    session.permissions = ["users.read", "audit.read"];
+    render(<MemoryRouter initialEntries={["/plataforma/mas"]}><PrivateLayoutFrame navigation={platformNavigation} scope="platform">
+      <h1>{"Más"}</h1>
+    </PrivateLayoutFrame></MemoryRouter>);
+    const links = within(screen.getByRole("navigation", { name: "Secciones" })).getAllByRole("link");
+    const labels = section ? [section, "Más"] : ["Más"];
+    expect(links).toHaveLength(labels.length);
+    labels.forEach((label, index) => expect(links[index]).toHaveAccessibleName(label));
+  });
+
+  it("las secciones principales de Plataforma llevan el título grande y Plataforma debajo", () => {
+    viewport.mobile = true;
+    session.platform = ["platform.accounts.read"];
+    render(<MemoryRouter initialEntries={["/plataforma/cuentas"]}><PrivateLayoutFrame navigation={platformNavigation} scope="platform">
+      <Page title="Cuentas"><p>{"lista"}</p></Page>
+    </PrivateLayoutFrame></MemoryRouter>);
+    expect(screen.getByRole("heading", { name: "Cuentas" })).toHaveClass("text-[24px]");
+    expect(screen.getByText("Plataforma")).toBeVisible();
+    expect(screen.queryByRole("link", { name: "Volver a Más" })).not.toBeInTheDocument();
+  });
+
+  it("Administración de Plataforma vuelve a Más y muestra el grupo debajo del título", () => {
+    viewport.mobile = true;
+    session.platform = ["platform.settings.manage"];
+    render(<MemoryRouter initialEntries={["/plataforma/configuracion"]}><PrivateLayoutFrame navigation={platformNavigation} scope="platform">
+      <Page title="Configuración"><p>{"ajustes"}</p></Page>
+    </PrivateLayoutFrame></MemoryRouter>);
+    expect(screen.getByRole("heading", { name: "Configuración" })).toHaveClass("text-[20px]");
+    expect(screen.getByRole("link", { name: "Volver a Más" })).toHaveAttribute("href", "/plataforma/mas");
+    expect(screen.getByText("Administración")).toBeVisible();
   });
 
   // Tablero M-Empresa («Administra solo la empresa», v108): quien administra solo su empresa llega a la ficha desde su

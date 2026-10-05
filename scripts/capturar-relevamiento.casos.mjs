@@ -877,7 +877,9 @@ export function catalog(root) {
     ...[...new Set(stageCases(root, "etapa-5").filter((entry) => ["recuperar", "plataforma-marco"].includes(entry.group)).map((entry) => entry.pair))]
       .flatMap((pair) => {
         const source = stageCases(root, "etapa-5").find((entry) => entry.pair === pair);
-        return pairCases(root, { stage: "etapa-5", pair, group: source.group, state: `v111: ${source.app.scenario ?? pair}` });
+        const mobile = stageCases(root, "etapa-5").find((entry) => entry.pair === pair && entry.viewport.width === 390);
+        return pairCases(root, { stage: "etapa-5", pair, group: source.group,
+          state: `v111: ${source.app.scenario ?? pair}`, phone: { state: `v111: ${mobile.app.scenario ?? pair}` } });
       }),
     ...stage3a.flatMap(([pair, group, state, boards = {}]) => pairCases(root, { stage: "etapa-3a", pair, group, state, ...boards })),
     ...stage3c.flatMap(([pair, state, app]) => pairCases(root, { stage: "etapa-3c", pair, id: `invitacion-${pair}`, group: "invitacion", state, app: { userFixture: "visual-personal", ...app }, phoneApp: { userFixture: "visual-personal", ...app } })),

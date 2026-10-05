@@ -51,6 +51,33 @@ export function AppHomeIcon(props: IconProps) {
   );
 }
 
+/// «Organizaciones» en la barra inferior de Plataforma (M-Organizaciones): edificio con seis ventanas.
+export function AppOrganizationsIcon(props: IconProps) {
+  return <Icon {...props}>
+    <rect x="5" y="3.5" width="14" height="17" rx="1.5" />
+    <path d="M9 7.5h2M13 7.5h2M9 11h2M13 11h2M9 14.5h2M13 14.5h2" />
+  </Icon>;
+}
+
+/// «Cuentas» en la barra inferior de Plataforma (M-Organizaciones): dos personas.
+export function AppAccountsIcon(props: IconProps) {
+  return <Icon {...props}>
+    <circle cx="9" cy="8" r="3.5" />
+    <path d="M3 19.5c.6-3.2 3-5 6-5s5.4 1.8 6 5" />
+    <path d="M16 4.8a3.5 3.5 0 0 1 0 6.4" />
+    <path d="M18 14.8c1.6.7 2.7 2.3 3 4.7" />
+  </Icon>;
+}
+
+/// «Recuperaciones» en la barra inferior de Plataforma (M-Organizaciones): la llave chica.
+export function AppRecoveriesIcon(props: IconProps) {
+  return <Icon {...props}>
+    <circle cx="8" cy="15" r="3.5" />
+    <path d="M10.5 12.5 19 4" />
+    <path d="m16 7 2 2" />
+  </Icon>;
+}
+
 /// El candado del 403 (tableros Error-Org y M-Error-Org) y de las pantallas de estado (el alta cerrada de Registro y
 /// Registro-Empresa, la organización cerrada de Perfil-Suspendido): el cuerpo y el arco, sin cerradura.
 export function LockIcon(props: IconProps) {

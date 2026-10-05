@@ -21,6 +21,7 @@ export function visibleNavigation(navigation: NavigationConfig, permissions: Per
       ? { ...source, links, ...(sections ? { sections } : {}) } : null;
   };
   return { ...navigation, links: navigation.links.filter(visible),
+    ...(navigation.bottomSections ? { bottomSections: navigation.bottomSections.filter((section) => visible(section.link)) } : {}),
     ...(navigation.management !== undefined ? { management: panel(navigation.management) } : {}),
     administration: panel(navigation.administration),
   };

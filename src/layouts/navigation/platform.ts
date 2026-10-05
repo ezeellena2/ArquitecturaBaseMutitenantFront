@@ -1,4 +1,4 @@
-import { BuildingIcon, ClipboardIcon, DocumentIcon, GridIcon, KeyIcon, ShieldCheckIcon, SlidersHorizontalIcon, UsersIcon } from "@/shared/ui/icons";
+import { AppAccountsIcon, AppOrganizationsIcon, AppRecoveriesIcon, BuildingIcon, ClipboardIcon, DocumentIcon, GridIcon, KeyIcon, ShieldCheckIcon, SlidersHorizontalIcon, UsersIcon } from "@/shared/ui/icons";
 import { homeOf } from "@/tenancy/access";
 import type { AppRoute, NavigationConfig } from "./types";
 
@@ -17,6 +17,12 @@ export const platformRoutes = {
 
 export const platformNavigation: NavigationConfig = {
   links: [],
+  moreTo: "/plataforma/mas",
+  bottomSections: [
+    { link: platformRoutes.organizations, icon: AppOrganizationsIcon },
+    { link: platformRoutes.accounts, icon: AppAccountsIcon },
+    { link: platformRoutes.recoveries, icon: AppRecoveriesIcon },
+  ],
   breadcrumbRoot: { path: homeOf("platform"), labelKey: "navigation.platform" },
   management: {
     labelKey: "navigation.management", icon: GridIcon,

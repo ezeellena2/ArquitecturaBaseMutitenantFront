@@ -68,7 +68,7 @@
       "id": "marco-administracion-movil",
       "pair": "marco-administracion",
       "group": "plataforma-marco",
-      "state": "v111: marco-administracion: marco real, contenido pendiente T21–T23",
+      "state": "v111: marco-administracion: Más real T20c, contenido pendiente T21–T23",
       "board": "M-Mas-Plat",
       "props": {},
       "boardActions": [],
@@ -77,12 +77,13 @@
         "height": 844
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fmas",
-        "scenario": "marco-administracion: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fmas",
+        "scenario": "marco-administracion: Más real T20c, contenido pendiente T21–T23",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "main",
+        "readyHeading": "Más"
       }
     },
     {
@@ -121,7 +122,7 @@
       "id": "marco-tu-menu-movil",
       "pair": "marco-tu-menu",
       "group": "plataforma-marco",
-      "state": "v111: marco-tu-menu: marco real, contenido pendiente T21–T23",
+      "state": "v111: marco-tu-menu: Más real T20c, contenido pendiente T21–T23",
       "board": "M-Mas-Plat",
       "props": {},
       "boardActions": [],
@@ -130,12 +131,13 @@
         "height": 844
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fmas",
-        "scenario": "marco-tu-menu: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fmas",
+        "scenario": "marco-tu-menu: Más real T20c, contenido pendiente T21–T23",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "main",
+        "readyHeading": "Más"
       }
     },
     {
@@ -205,7 +207,7 @@
       "id": "marco-mas-movil",
       "pair": "marco-mas",
       "group": "plataforma-marco",
-      "state": "v111: marco-mas: marco real, contenido pendiente T21–T23",
+      "state": "v111: marco-mas: Más real T20c, contenido pendiente T21–T23",
       "board": "M-Mas-Plat",
       "props": {},
       "boardActions": [],
@@ -214,12 +216,13 @@
         "height": 844
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fmas",
-        "scenario": "marco-mas: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fmas",
+        "scenario": "marco-mas: Más real T20c, contenido pendiente T21–T23",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "main",
+        "readyHeading": "Más"
       }
     },
     {

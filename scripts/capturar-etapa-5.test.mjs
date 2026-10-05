@@ -125,7 +125,7 @@ test("los tres pasos de Recuperar comprueban su título visible antes de captura
   }
 });
 
-test("Más usa su ruta móvil futura y conserva la referencia Administración desktop", () => {
+test("Más usa su ruta móvil y conserva la referencia Administración desktop", () => {
   const cases = buildCases();
   const phone = cases.find((entry) => entry.id === "marco-mas-movil");
   assert.equal(new URL(phone.app.path, "http://example.test").searchParams.get("route"), "/plataforma/mas");
@@ -136,7 +136,8 @@ test("Más usa su ruta móvil futura y conserva la referencia Administración de
 test("el marco usa la app real aislada y declara el contenido pendiente sin montar features", () => {
   for (const entry of buildCases().filter((item) => item.group === "plataforma-marco")) {
     const params = new URL(entry.app.path, "http://example.test").searchParams;
-    assert.equal(params.get("frame"), "platform", entry.id);
+    const realMore = entry.viewport.width === 390 && params.get("route") === "/plataforma/mas";
+    assert.equal(params.get("frame"), realMore ? null : "platform", entry.id);
     assert.equal(params.get("as"), "visual-operator", entry.id);
     assert.ok(params.get("route").startsWith("/plataforma"), entry.id);
     assert.equal(entry.app.captureMode, "harness");
@@ -145,6 +146,16 @@ test("el marco usa la app real aislada y declara el contenido pendiente sin mont
   }
   const menu = buildCases().find((entry) => entry.id === "marco-tu-menu-escritorio");
   assert.deepEqual(menu.app.actions, [{ type: "click", role: "button", name: "Martín Sosa, Plataforma" }]);
+});
+
+test("Más de Plataforma a 390 usa su ruta real y espera el título, sin marco vacío", () => {
+  for (const entry of buildCases().filter((item) => item.group === "plataforma-marco" && item.viewport.width === 390)) {
+    const params = new URL(entry.app.path, "http://example.test").searchParams;
+    if (params.get("route") !== "/plataforma/mas") continue;
+    assert.equal(params.get("frame"), null, entry.id);
+    assert.equal(entry.app.readyHeading, "Más", entry.id);
+    assert.match(entry.app.scenario, /Más real T20c/);
+  }
 });
 
 test("el manifest escrito es consumible por el recorrido vivo con el id exacto del plan", () => {

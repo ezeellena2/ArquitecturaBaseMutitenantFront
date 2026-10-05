@@ -30,6 +30,7 @@
 - **Lo que aclara un dato va en su segunda línea**, en la computadora y en el teléfono: el correo debajo del nombre, el rol debajo de la empresa. Dos datos sin relación nunca van juntos.
 - **Tamaños:** en la computadora, botón normal de 36 px, chico de 32 y campo de 36; en el teléfono, campos de 48 con letra de 16 y botones de 44 a 50. Ingreso y registro usan botones grandes de 44 y campos de 44 con radio 10 y letra de 15 en cualquier ancho (`FormField variant="auth"`). El tablero manda si este resumen difiere.
 - **Cortes:** los de Tailwind (`md` = 768 y `lg` = 1024), sin cortes propios. `useMediaQuery("(max-width: 767px)")` solo en el marco (`PrivateLayoutFrame`, que cuenta en `AppChrome` si es un teléfono) y en las pantallas fuera del marco; las demás piezas leen `useAppChrome()` o usan clases `max-md:`.
+- **Secciones inferiores:** el manifiesto declara `bottomSections` con referencias a sus rutas e íconos móviles; el marco filtra por permiso y marca también los detalles de la sección. En Plataforma son Organizaciones, Cuentas, Recuperaciones y Más (`/plataforma/mas`); Administración vuelve a Más y lleva su grupo debajo del título. Personal y Empresa siguen con Inicio/Más (`/mas`). Más de Plataforma no lleva Perfiles ni WhatsApp; Consultas llega en E11.
 - **Tableros:** cada pantalla nueva se dibuja en el lienzo **a 1440 y a 390** antes de programarse.
 
 ## Prohibido

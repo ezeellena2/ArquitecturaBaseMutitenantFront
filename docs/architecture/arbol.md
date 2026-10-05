@@ -130,24 +130,24 @@ src/
 │   ├── AppErrorBoundary.tsx                         una pantalla que se rompió al pintarse o no se pudo bajar: la «Pantalla de error» con «Reintentar» (AppErrorPage)
 │   ├── AuthLayout.tsx                               [E3]
 │   ├── AuthLayout.test.tsx                          tests de AuthLayout
-│   ├── PrivateLayoutFrame.tsx                       marco de los tres accesos: en la compu, menú lateral, panel y barra; en el teléfono, la app (`AppChrome`, barra de abajo con «Inicio» y «Más»)
+│   ├── PrivateLayoutFrame.tsx                       marco de los tres accesos: en la compu, menú lateral, panel y barra; en el teléfono, AppChrome y BottomNav con las secciones del manifiesto (sin ellas, Inicio/Más)
 │   ├── PrivateLayoutFrame.test.tsx                  tests de PrivateLayoutFrame
 │   ├── PersonalLayout.tsx                           [E3] acceso B2C: Inicio, Mi cuenta + módulos B2C (sin organizaciones)
 │   ├── BusinessLayout.tsx                           [E3] sidebar + AdminPanel + topbar con la organización; en el teléfono, el marco de app de PrivateLayoutFrame
 │   ├── PlatformLayout.tsx                           [E5] marco de Plataforma: Gestión arriba, Administración al pie, un solo panel abierto
 │   ├── PlatformLayout.test.tsx                      permisos, panel activo y axe del marco desktop
 │   ├── AccountLayout.tsx                            /cuenta y /mas dentro del layout del acceso activo
-│   ├── MorePage.tsx                                 «Más» del teléfono (/mas): quién sos, Perfiles, Administración, Mi cuenta y Salir (M-Mas-Personal, M-WA-Menu); en la compu vuelve al inicio
+│   ├── MorePage.tsx                                 «Más» del teléfono (/mas; /plataforma/mas): identidad, Perfiles sólo en Personal/Empresa, Administración por permiso, Mi cuenta y Salir (M-Mas-Personal, M-WA-Menu, M-Mas-Plat); en la compu vuelve al inicio
 │   ├── MorePage.test.tsx                            tests de MorePage
 │   ├── SiteLayout.tsx                               [E3] portada de la plataforma; en [E7], también el directorio y la página pública del subdominio
 │   ├── SiteLayout.test.tsx                          tests de SiteLayout
 │   ├── navigation/
-│   │   ├── types.ts                                 AppRoute (camino, permiso de organización, empresa o Plataforma, módulo, rótulo e ícono), paneles Gestión/Administración y raíz de las migas
+│   │   ├── types.ts                                 AppRoute (camino, permiso de organización, empresa o Plataforma, módulo, rótulo e ícono), paneles Gestión/Administración, raíz de las migas y bottomSections por referencia al mismo link
 │   │   ├── administration.ts                        la opción más específica del panel de la que sale una ruta: la usan el panel, las migas y el marco
 │   │   ├── administration.test.ts                   Gestión y Administración de Plataforma, incluido el inicio de Organizaciones
 │   │   ├── personal.ts
 │   │   ├── business.ts                              el manifiesto de rutas de la organización (businessRoutes) y el menú que sale de él: arriba Inicio + módulos B2B; abajo «Administración» (AdminPanel): «Gestión de usuarios» ▸ Usuarios, Roles y permisos · Empresas · Configuración · Página pública · Auditoría
-│   │   ├── platform.ts                              Organizaciones (el inicio) · Cuentas · Recuperaciones · Auditoría · Documentos legales · Configuración
+│   │   ├── platform.ts                              Organizaciones (el inicio) · Cuentas · Recuperaciones · Auditoría · Documentos legales · Configuración; barra inferior con Gestión y Más canónico
 │   │   ├── visible.ts                               [E7] el menú que la sesión puede ver (permiso y módulo): lo usan el menú lateral y «Más»; `canOpen`, también las migas
 │   │   ├── visible.test.ts                          [E7] cada enlace es una ruta del manifiesto
 │   │   └── navigation.test.tsx                      los enlaces de cada acceso

@@ -251,13 +251,17 @@ export function buildCases() {
     route: door === "Empresa" ? "/login/empresa" : "/login", readyText: "Recuperá tu cuenta" });
   return cases.map((entry) => {
     if (entry.group === "recuperar") return { ...entry, app: recoveryApp(entry) };
-    if (entry.group === "plataforma-marco") return { ...entry, app: {
-      ...entry.app,
-      path: `/src/test/visualApp.html?as=visual-operator&frame=platform&route=${encodeURIComponent(entry.app.path)}`,
-      captureMode: "harness", userFixture: "visual-operator", readySelector: "main",
-      scenario: `${entry.pair}: marco real, contenido pendiente T21–T23`,
-      actions: entry.pair === "marco-tu-menu" && entry.viewport.width === 1440 ? [click("Martín Sosa, Plataforma")] : [],
-    } };
+    if (entry.group === "plataforma-marco") {
+      const realMore = entry.viewport.width === 390 && entry.app.path === "/plataforma/mas";
+      return { ...entry, app: {
+        ...entry.app,
+        path: `/src/test/visualApp.html?as=visual-operator&${realMore ? "" : "frame=platform&"}route=${encodeURIComponent(entry.app.path)}`,
+        captureMode: "harness", userFixture: "visual-operator", readySelector: "main",
+        scenario: `${entry.pair}: ${realMore ? "Más real T20c" : "marco real"}, contenido pendiente T21–T23`,
+        ...(realMore ? { readyHeading: "Más" } : {}),
+        actions: entry.pair === "marco-tu-menu" && entry.viewport.width === 1440 ? [click("Martín Sosa, Plataforma")] : [],
+      } };
+    }
     return entry;
   });
 }
