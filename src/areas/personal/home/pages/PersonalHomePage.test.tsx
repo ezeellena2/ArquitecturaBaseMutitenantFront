@@ -22,7 +22,7 @@ it("avisa que falta método propio y «Agregar» abre el diálogo en el Inicio",
   expect(await screen.findByText("Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.")).toBeVisible();
   await userEvent.click(screen.getByRole("button", { name: "Agregar" }));
 
-  expect(await screen.findByRole("dialog", { name: "Agregar correo o teléfono" })).toBeVisible();
+  expect(await screen.findByRole("dialog", { name: "Agregar correo" })).toBeVisible();
   expect(router.state.location.pathname).toBe("/");
 });
 

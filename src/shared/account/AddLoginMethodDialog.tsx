@@ -21,6 +21,7 @@ import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, Dia
 import { addLoginEmail, sendLoginMethodCode, verifyLoginMethod } from "./api/loginMethods";
 import { ChangeLoginMethodDialog } from "./ChangeLoginMethodDialog";
 import { loginMethodErrorField } from "./errors";
+import { useHasLoginChannel } from "./useLoginChannels";
 
 interface Props { open: boolean; onOpenChange: (open: boolean) => void; onComplete: () => void; method?: AccountLoginMethod }
 
@@ -39,11 +40,13 @@ type EmailForm = z.infer<ReturnType<typeof emailFormSchema>>;
 type CodeForm = z.infer<ReturnType<typeof codeFormSchema>>;
 
 /// «Agregar correo o teléfono» y «Verificar tu correo» (tableros Cuenta-Agregar, Cuenta-Verificar y sus M-*): el título
-/// dice el paso. «Verificar» no se apaga por un código a medias; lo que falta y el código que el back rechaza van debajo
+/// dice el paso. Sin el módulo de WhatsApp (Cuenta-Agregar, «Sin el módulo de WhatsApp»), «Agregar correo» y sin el control
+/// para elegir qué agregar. «Verificar» no se apaga por un código a medias; lo que falta y el código que el back rechaza van debajo
 /// de los casilleros, en rojo, y un dígito nuevo los saca. Lo demás (vencido, sin conexión) va en la franja.
 export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }: Props) {
   const { t } = useTranslation(["account", "auth", "common", "errors"]);
   const restoreFocus = useRestoreFocusOnClose(open);
+  const whatsApp = useHasLoginChannel("whatsapp");
   const [methodId, setMethodId] = useState<string | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
   const [reauthTicket, setReauthTicket] = useState<string | null>(null);
@@ -99,7 +102,7 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
   return <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent size="sm" onCloseAutoFocus={restoreFocus} aria-describedby={codeStep ? "method-code-hint" : undefined}>
       <form noValidate onSubmit={(event) => { void (codeStep ? codeForm.handleSubmit(confirm) : emailForm.handleSubmit(send))(event); }}>
-        <DialogHeader><DialogTitle>{t(method || codeStep ? "account:verifyTitle" : "account:add")}</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{t(method || codeStep ? "account:verifyTitle" : whatsApp ? "account:add" : "account:addEmail")}</DialogTitle></DialogHeader>
         <DialogBody>
           {codeStep ? <>
             <DialogDescription id="method-code-hint">{t("account:sentHint", { value: emailForm.getValues("email") })}</DialogDescription>
@@ -108,7 +111,7 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
               aria-describedby="method-code-hint"
               onChange={(value) => { code.field.onChange(value); codeForm.clearErrors("code"); setFailure(null); }} />
           </> : <>
-            {!method ? <div role="group" aria-label={t("account:chooseMethod")} className="rounded-lg bg-[var(--s3)] p-1"><button type="button" aria-pressed="true" className="w-full rounded-md bg-[var(--lado-activo)] py-2 text-[13px] font-medium">{t("account:email")}</button></div> : null}
+            {!method && whatsApp ? <div role="group" aria-label={t("account:chooseMethod")} className="rounded-lg bg-[var(--s3)] p-1"><button type="button" aria-pressed="true" className="w-full rounded-md bg-[var(--lado-activo)] py-2 text-[13px] font-medium">{t("account:email")}</button></div> : null}
             <Controller control={emailForm.control} name="email" render={({ field }) => <FormField label={t("account:email")} error={emailForm.formState.errors.email?.message}>
               <EmailField name={field.name} ref={field.ref} value={field.value} onChange={field.onChange} onBlur={field.onBlur} disabled={!!method || busy} />
             </FormField>} />

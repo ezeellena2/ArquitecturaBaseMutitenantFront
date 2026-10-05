@@ -50,6 +50,17 @@ function withCurrentContract(entry) {
   return { ...entry, app: { ...entry.app, responses: next } };
 }
 
+// Mi cuenta sin el módulo de WhatsApp (tanda 6d-5): el back de hoy no lo trae y la app ofrece «Agregar correo», sin el
+// control para elegir qué agregar. Se compara con ese estado de Cuenta («whatsapp») y de Cuenta-Agregar y M-Cuenta-Agregar
+// («Sin el módulo de WhatsApp»); M-Cuenta no lo dibuja. Un caso que pide otro estado lo conserva.
+const withoutWhatsApp = "Sin el módulo de WhatsApp";
+function withoutWhatsAppModule(entry) {
+  const actions = entry.app?.actions?.map((action) => action.name === "Agregar correo o teléfono" ? { ...action, name: "Agregar correo" } : action);
+  const props = entry.board === "Cuenta" ? { whatsapp: withoutWhatsApp, ...entry.props }
+    : /^(M-)?Cuenta-Agregar$/.test(entry.board) && !entry.props?.estado ? { ...entry.props, estado: withoutWhatsApp } : entry.props;
+  return { ...entry, props, ...(actions ? { app: { ...entry.app, actions } } : {}) };
+}
+
 const manifests = new Map();
 function stageCases(root, name) {
   if (!manifests.has(name)) {
@@ -71,7 +82,7 @@ function pairCases(root, { stage, pair, id = pair, group, state, desktop: onDesk
       board: board.board ?? source.board, props: board.props ?? source.props ?? {}, boardActions: board.boardActions ?? source.boardActions ?? [],
       ...(section ? { section } : {}), viewport, app: { ...source.app, ...patch },
     };
-  });
+  }).map(withoutWhatsAppModule);
 }
 
 const click = (selector) => ({ type: "click", selector });

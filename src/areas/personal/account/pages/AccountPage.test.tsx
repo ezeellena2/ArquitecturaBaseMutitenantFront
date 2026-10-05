@@ -14,7 +14,7 @@ import { referenceDataFixture } from "@/test/mocks/handlers";
 beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); });
 
 describe("Mi cuenta", () => {
-  // Tablero M-Cuenta: en el teléfono, grupos sobre gris con el título arriba; «Agregar correo o teléfono» en texto y
+  // Tablero M-Cuenta: en el teléfono, grupos sobre gris con el título arriba; «Agregar correo» en texto y
   // «Dar de baja» en texto rojo, sin ícono.
   it("en el teléfono son grupos sobre gris con las acciones en texto", async () => {
     const restore = asPhone();
@@ -26,7 +26,7 @@ describe("Mi cuenta", () => {
 
       expect(await screen.findByRole("heading", { level: 2, name: "Tus datos" })).toHaveClass("text-[13.5px]");
       const signIn = screen.getByRole("region", { name: "Cómo entrás" });
-      expect(within(signIn).getByRole("button", { name: "Agregar correo o teléfono" })).toHaveClass("text-[var(--marca-tx)]");
+      expect(within(signIn).getByRole("button", { name: "Agregar correo" })).toHaveClass("text-[var(--marca-tx)]");
       const privacy = screen.getByRole("region", { name: "Privacidad" });
       expect(within(privacy).getByRole("button", { name: "Dar de baja" }).parentElement).toHaveClass("max-md:[&>[data-variant=danger]]:text-[var(--peligro)]");
     } finally {
@@ -61,7 +61,7 @@ describe("Mi cuenta", () => {
     renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
 
     const signIn = await screen.findByRole("region", { name: "Cómo entrás" });
-    expect(within(signIn).getByRole("button", { name: "Agregar correo o teléfono" })).toBeVisible();
+    expect(within(signIn).getByRole("button", { name: "Agregar correo" })).toBeVisible();
     expect(await within(signIn).findByRole("list")).toBeEmptyDOMElement();
   });
 
@@ -81,7 +81,7 @@ describe("Mi cuenta", () => {
     await waitFor(() => expect(within(privacy).queryByText(/días para arrepentirte/)).not.toBeInTheDocument());
     expect(screen.getByRole("button", { name: "Descartar cambios" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
-    expect(within(signIn).getByRole("button", { name: "Agregar correo o teléfono" })).toBeVisible();
+    expect(within(signIn).getByRole("button", { name: "Agregar correo" })).toBeVisible();
   });
 
   it("la única Dueña ve «Dar de baja» apagado y el motivo con qué puede hacer (tablero Cuenta)", async () => {
@@ -135,7 +135,7 @@ describe("Mi cuenta", () => {
     }
   });
 
-  it.each(["Agregar correo o teléfono", "Vincular Google"])("pide reautenticación antes de %s", async (label) => {
+  it.each(["Agregar correo", "Vincular Google"])("pide reautenticación antes de %s", async (label) => {
     const user = userEvent.setup();
     let additions = 0;
     let action: unknown;
@@ -304,5 +304,25 @@ describe("Mi cuenta", () => {
 
     await waitFor(() => expect(sent.map((body) => body.version)).toEqual([0, 1]));
     expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
+  });
+});
+
+// Tablero Cuenta («whatsapp»): con el módulo de WhatsApp el back suma su canal a /api/auth/methods y Mi cuenta ofrece
+// «Agregar correo o teléfono»; sin él (el back de hoy), «Agregar correo».
+describe("Mi cuenta y el módulo de WhatsApp", () => {
+  it("con el módulo dice «Agregar correo o teléfono»", async () => {
+    server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "whatsapp", countries: ["AR"] }] })));
+    renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+
+    const signIn = await screen.findByRole("region", { name: "Cómo entrás" });
+    expect(await within(signIn).findByRole("button", { name: "Agregar correo o teléfono" })).toBeVisible();
+  });
+
+  it("sin el módulo dice «Agregar correo»", async () => {
+    renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+
+    const signIn = await screen.findByRole("region", { name: "Cómo entrás" });
+    expect(within(signIn).getByRole("button", { name: "Agregar correo" })).toBeVisible();
+    expect(within(signIn).queryByRole("button", { name: "Agregar correo o teléfono" })).not.toBeInTheDocument();
   });
 });

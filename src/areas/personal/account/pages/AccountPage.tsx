@@ -17,6 +17,7 @@ import { Section } from "@/shared/ui/Section";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import type { AccountLoginMethod } from "@/shared/api/types";
 import { AddLoginMethodDialog } from "@/shared/account/AddLoginMethodDialog";
+import { useHasLoginChannel } from "@/shared/account/useLoginChannels";
 import { VerifyLoginMethodDialog } from "../components/VerifyLoginMethodDialog";
 import { ChangeLoginMethodDialog } from "@/shared/account/ChangeLoginMethodDialog";
 import { useSearchParams } from "react-router";
@@ -36,6 +37,7 @@ export function AccountPage() {
   const methods = useQuery({ queryKey: accountMethodsQueryKey, queryFn: fetchLoginMethods, meta: { silent: true } });
   const queryClient = useQueryClient();
   const [addOpen, setAddOpen] = useState(false);
+  const whatsApp = useHasLoginChannel("whatsapp");
   const [verifyMethod, setVerifyMethod] = useState<AccountLoginMethod | null>(null);
   const [change, setChange] = useState<{ action: "remove" | "primary"; method: AccountLoginMethod } | null>(null);
   const [params, setParams] = useSearchParams();
@@ -69,8 +71,9 @@ export function AccountPage() {
   // «Criterio · Avisos» (Pantalla de error): sin /api/me no hay nada que mostrar (LegalAcceptanceGate lo ve primero).
   if (!data) return <LoadErrorPage onRetry={() => { void refetch(); }} />;
   return <><AccountProfileForm key={data.id} account={data}>
-    {/* Tablero M-Cuenta: en el teléfono, «Agregar correo o teléfono» en texto a la derecha del título. */}
-    <Section title={t("account:methods")} action={{ label: t("account:add"), onClick: () => setAddOpen(true) }}>
+    {/* Tablero M-Cuenta: en el teléfono, «Agregar correo o teléfono» en texto a la derecha del título. Sin el módulo de
+        WhatsApp (tablero Cuenta, «Sin el módulo de WhatsApp»), «Agregar correo». */}
+    <Section title={t("account:methods")} action={{ label: t(whatsApp ? "account:add" : "account:addEmail"), onClick: () => setAddOpen(true) }}>
       {methods.data?.needsPersonalLoginMethod ? <div className="border-b border-[var(--borde)] p-3"><PersonalLoginMethodNotice onAdd={() => setAddOpen(true)} /></div> : null}
       {methods.isPending ? <p className="p-4 text-[13px] text-[var(--t2)]" role="status">{t("states.loading")}</p> : null}
       {methods.error ? <div className="p-4"><FormError message={apiErrorMessage(methods.error, t)} /><Button type="button" onClick={() => { void methods.refetch(); }}>{t("actions.retry")}</Button></div> : null}

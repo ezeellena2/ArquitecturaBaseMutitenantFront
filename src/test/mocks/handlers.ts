@@ -57,6 +57,8 @@ export function referenceDataFixture(culture = "es-AR"): ReferenceData {
 
 export const handlers: RequestHandler[] = [
   http.get("/api/home", () => HttpResponse.json({ organization: null, companies: [], pending: [] })),
+  // Como el back de hoy, sin el módulo de WhatsApp: se entra con correo y con Google.
+  http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "google", countries: [] }] })),
   http.get("/api/me/login-methods", () => HttpResponse.json({ methods: [
     { id: "email-ana", type: "Email", value: "ana@example.test", isVerified: true, isPrimary: true, canRemove: false, canMakePrimary: false },
   ], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] })),

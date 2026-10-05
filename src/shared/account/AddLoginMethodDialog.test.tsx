@@ -9,8 +9,8 @@ import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { AddLoginMethodDialog } from "./AddLoginMethodDialog";
 
 beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); });
-// Tableros Cuenta-Agregar y Cuenta-Verificar (y sus M-*): el título dice el paso, «Agregar correo o teléfono» y después
-// «Verificar tu correo»; el código incorrecto va debajo de los casilleros, en rojo, y no en una franja.
+// Tableros Cuenta-Agregar y Cuenta-Verificar (y sus M-*): el título dice el paso, «Agregar correo» (sin el módulo de
+// WhatsApp) y después «Verificar tu correo»; el código incorrecto va debajo de los casilleros, en rojo, y no en una franja.
 it("suma correo: el título dice el paso, el código incorrecto va debajo de los casilleros y verifica con claves idempotentes", async () => {
   const user = userEvent.setup();
   const complete = vi.fn();
@@ -42,7 +42,9 @@ it("suma correo: el título dice el paso, el código incorrecto va debajo de los
   await user.type(await screen.findByRole("textbox", { name: "Código 1" }), "123456");
   await user.click(screen.getByRole("button", { name: "Verificar" }));
 
-  const add = await screen.findByRole("dialog", { name: "Agregar correo o teléfono" });
+  const add = await screen.findByRole("dialog", { name: "Agregar correo" });
+  // Cuenta-Agregar «Sin el módulo de WhatsApp»: el correo solo, sin el control de un único segmento.
+  expect(within(add).queryByRole("group", { name: "Qué querés agregar" })).not.toBeInTheDocument();
   await user.type(within(add).getByRole("textbox", { name: "Correo" }), "nuevo@example.test");
   await user.click(within(add).getByRole("button", { name: "Enviar código" }));
 
@@ -74,4 +76,22 @@ it("suma correo: el título dice el paso, el código incorrecto va debajo de los
   expect(first).not.toHaveAttribute("aria-invalid");
   await user.click(within(verify).getByRole("button", { name: "Verificar" }));
   await waitFor(() => expect(complete).toHaveBeenCalled());
+});
+
+// Cuenta-Agregar con el módulo de WhatsApp (el back suma el canal «whatsapp» a /api/auth/methods): «Agregar correo o
+// teléfono», con el control para elegir qué agregar.
+it("con el módulo de WhatsApp dice «Agregar correo o teléfono» y deja elegir qué agregar", async () => {
+  const user = userEvent.setup();
+  server.use(
+    http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "whatsapp", countries: ["AR"] }] })),
+    http.post("/api/me/reauth", () => HttpResponse.json({ sourceMethodId: "original", destination: "a***@example.test", resendAfterSeconds: 60 })),
+    http.post("/api/me/reauth/verify", () => HttpResponse.json({ reauthTicket: "opaque-ticket" })),
+  );
+  renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} />);
+
+  expect(await screen.findByRole("dialog", { name: "Agregar correo o teléfono" })).toBeVisible();
+  await user.type(await screen.findByRole("textbox", { name: "Código 1" }), "123456");
+  await user.click(screen.getByRole("button", { name: "Verificar" }));
+  const add = await screen.findByRole("dialog", { name: "Agregar correo o teléfono" });
+  expect(within(add).getByRole("group", { name: "Qué querés agregar" })).toBeVisible();
 });

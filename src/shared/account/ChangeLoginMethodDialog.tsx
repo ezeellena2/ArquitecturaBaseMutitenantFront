@@ -9,6 +9,7 @@ import { OtpInput } from "@/shared/ui/OtpInput";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { makeLoginMethodPrimary, removeLoginMethod } from "./api/loginMethods";
 import { useAccountReauth } from "./useAccountReauth";
+import { useHasLoginChannel } from "./useLoginChannels";
 
 export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, onAuthorized }: {
   action: "remove" | "primary" | "addEmail" | "linkGoogle"; method?: AccountLoginMethod;
@@ -19,8 +20,9 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, o
   const restoreFocus = useRestoreFocusOnClose();
   const [saving, setSaving] = useState(false);
   const adding = action === "addEmail" || action === "linkGoogle";
+  const whatsApp = useHasLoginChannel("whatsapp");
   const google = method?.type === "Google";
-  const title = adding ? action === "addEmail" ? "add" : "linkGoogle" : action === "primary" ? google ? "primaryGoogleTitle" : "primaryEmailTitle" : google ? "removeGoogleTitle" : "removeEmailTitle";
+  const title = adding ? action === "addEmail" ? whatsApp ? "add" : "addEmail" : "linkGoogle" : action === "primary" ? google ? "primaryGoogleTitle" : "primaryEmailTitle" : google ? "removeGoogleTitle" : "removeEmailTitle";
   const label = adding ? "common:code.verify" : action === "primary" ? "makePrimary" : google ? "unlink" : "remove";
   async function confirm() {
     if (!reauth.proof) { await reauth.send(); return; }

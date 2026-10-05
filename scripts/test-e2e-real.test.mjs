@@ -346,7 +346,8 @@ async function openAccount(page, currentProfile = "Personal") {
   await page.getByRole("menuitem", { name: /^(Mi cuenta|My account)$/ }).click();
   try {
     await page.getByRole("heading", { name: /^(Mi cuenta|My account)$/ }).waitFor({ timeout: 10_000 });
-    await page.getByRole("button", { name: /^(Agregar correo o teléfono|Add email or phone)$/ }).waitFor({ timeout: 10_000 });
+    // Sin el módulo de WhatsApp (el back de hoy), «Agregar correo»; con él, «Agregar correo o teléfono».
+    await page.getByRole("button", { name: /^(Agregar correo o teléfono|Agregar correo|Add email or phone|Add email)$/ }).waitFor({ timeout: 10_000 });
   } catch {
     throw new Error(`La cuenta 3b: /cuenta no terminó de cargar (ruta ${new URL(page.url()).pathname}).`);
   }
@@ -357,7 +358,7 @@ async function addPersonalEmail(page, originalEmail, { verify = true, onStage = 
   onStage("abre reautenticación");
   const beforeReauthentication = new Set(await pickupFiles());
   await openReauthDialog(page,
-    () => page.getByRole("button", { name: "Agregar correo o teléfono", exact: true }).click(), "Verificar");
+    () => page.getByRole("button", { name: /^(Agregar correo o teléfono|Agregar correo)$/ }).click(), "Verificar");
   onStage("espera código de reautenticación");
   await enterCode(page, await codeFromPickup(originalEmail, beforeReauthentication));
   onStage("verifica reautenticación");
