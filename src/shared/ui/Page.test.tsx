@@ -1,7 +1,8 @@
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
+import { AppChromeProvider } from "./app/AppChrome";
 import { Page } from "./Page";
 import { UsersIcon } from "./icons";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
@@ -220,5 +221,44 @@ describe("Page", () => {
 
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
     expect(container.querySelector("header [aria-hidden='true'] svg")).not.toBeNull();
+  });
+
+  // «Criterio · Marco», Pestañas (decisión del usuario del 2026-10-05, 6d-4a): una pestaña por grupo de datos cuando hay
+  // dos o más; con uno solo, su contenido va sin la barra de pestañas, en la compu y en el teléfono. Vale para toda ficha.
+  describe("con pestañas", () => {
+    const groups = (withRoles: boolean) => ({
+      label: "Partes de la empresa", value: "members", onValueChange: vi.fn(),
+      items: [
+        { value: "members", label: "Miembros", count: 6, content: <p>{"los miembros"}</p>, className: "flex flex-col gap-3" },
+        { value: "roles", label: "Roles", count: 2, content: <p>{"los roles"}</p>, hidden: !withRoles },
+      ],
+    });
+    const renderPage = (tabs: ReturnType<typeof groups>, phone: boolean) => renderWithProviders(
+      <AppChromeProvider value={{ phone, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+        <MemoryRouter><Page icon={UsersIcon} title="Delta S.A." tabs={tabs} /></MemoryRouter>
+      </AppChromeProvider>,
+    );
+
+    it.each([["la compu", false], ["el teléfono", true]] as const)("con un solo grupo va sin la barra de pestañas, en %s", (_, phone) => {
+      const { container } = renderPage(groups(false), phone);
+
+      expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+      expect(screen.queryByRole("tabpanel")).not.toBeInTheDocument();
+      expect(container.querySelector("[data-slot='page-tabs']")).toBeNull();
+      expect(screen.getByText("los miembros").parentElement).toHaveClass("flex", "flex-col", "gap-3");
+      expect(screen.queryByText("los roles")).not.toBeInTheDocument();
+    });
+
+    it.each([["la compu", false], ["el teléfono", true]] as const)("con dos grupos, la barra abre el contenido y cambia de grupo, en %s", async (_, phone) => {
+      const user = userEvent.setup();
+      const tabs = groups(true);
+      renderPage(tabs, phone);
+
+      const list = screen.getByRole("tablist", { name: "Partes de la empresa" });
+      expect(within(list).getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Miembros 6", "Roles 2"]);
+      expect(screen.getByRole("tabpanel")).toHaveTextContent("los miembros");
+      await user.click(screen.getByRole("tab", { name: /Roles/ }));
+      expect(tabs.onValueChange).toHaveBeenCalledWith("roles");
+    });
   });
 });

@@ -665,7 +665,7 @@ src/
 │       ├── NotFoundPage.tsx                         «No encontramos esta página» (Error-Org, M-Error-Org): una ruta que no existe, un módulo apagado o una ficha que el back no encuentra
 │       ├── OtpInput.tsx                             [E3] ingreso y verificación de códigos
 │       ├── OtpInput.test.tsx                        tests de OtpInput
-│       ├── Page.tsx                                 [E1] banda blanca: ícono o backTo, título de 18 px, segunda línea, pestañas, cartel y acciones (las que sobran, en ⋮); en el teléfono, la pantalla de la app: título en la barra, «+» flotante y botones fijos abajo
+│       ├── Page.tsx                                 [E1] banda blanca: ícono o backTo, título de 18 px, segunda línea, pestañas (una por grupo, con dos o más; con uno solo, sin barra), cartel y acciones (las que sobran, en ⋮); en el teléfono, la pantalla de la app: título en la barra, «+» flotante y botones fijos abajo
 │       ├── Page.test.tsx                            tests de Page
 │       ├── Pagination.tsx                           [E1] "1–10 de 1.234" · "Página 1 de 124" · selector 10/20/50/100; en el teléfono, «Cargar más»
 │       ├── Pagination.test.tsx                      tests de Pagination

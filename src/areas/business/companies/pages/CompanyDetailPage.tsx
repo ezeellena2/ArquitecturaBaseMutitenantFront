@@ -16,7 +16,6 @@ import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { Page } from "@/shared/ui/Page";
-import { TabCount, Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { homeOf } from "@/tenancy/access";
 import { changeCompanyStatus, companiesQueryRoot, companyQueryKey, fetchCompany } from "../api/companies";
 import { companyStatusTones } from "../columns";
@@ -81,7 +80,6 @@ export function CompanyDetailPage() {
   const closeDialog = () => setDialog(null);
 
   return <>
-    <Tabs value={tab} onValueChange={(value) => setTab(value as CompanyTab)} className="contents!">
     <Page icon={Building2} title={data.name} backTo={back}
       phoneBody="flush"
       // Tablero M-Empresa: debajo del título, el CUIT y la zona; crear es un «+» flotante según la pestaña.
@@ -105,17 +103,13 @@ export function CompanyDetailPage() {
         { label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), destructive: data.status === "Active",
           onSelect: (trigger) => { if (data.status === "Active") setDialog({ kind: "deactivate", returnFocusTo: trigger }); else changeCompanyState.mutate(); } },
       ] } : undefined}
-      // Tablero Empresa: las pestañas abren el contenido, debajo de la banda, con la cantidad en gris.
-      tabs={<TabsList aria-label={t("companies:detail.tabsLabel")}>
-        <TabsTrigger value="members">{t("companies:detail.members")}<TabCount>{members.result.data?.totalCount ?? data.memberCount}</TabCount></TabsTrigger>
-        {canReadRoles ? <TabsTrigger value="roles">{t("companies:detail.roles")}<TabCount>{roles.own.length}</TabCount></TabsTrigger> : null}
-      </TabsList>}>
-        <TabsContent value="members" className="flex flex-col gap-3 md:gap-4">
-          <CompanyMembersTab company={data} list={members} roles={roles.assignable} />
-        </TabsContent>
-        {canReadRoles ? <TabsContent value="roles"><CompanyRolesTab roles={roles} /></TabsContent> : null}
-    </Page>
-    </Tabs>
+      // Tablero Empresa: las pestañas abren el contenido, debajo de la banda, con la cantidad en gris. Quien no lee los roles
+      // de la organización (el Administrador de empresa) ve un solo grupo, Miembros, y la ficha va sin la barra (Page).
+      tabs={{ label: t("companies:detail.tabsLabel"), value: tab, onValueChange: (value) => setTab(value as CompanyTab), items: [
+        { value: "members", label: t("companies:detail.members"), count: members.result.data?.totalCount ?? data.memberCount,
+          className: "flex flex-col gap-3 md:gap-4", content: <CompanyMembersTab company={data} list={members} roles={roles.assignable} /> },
+        { value: "roles", label: t("companies:detail.roles"), count: roles.own.length, hidden: !canReadRoles, content: <CompanyRolesTab roles={roles} /> },
+      ] }} />
 
     {/* Cada diálogo se monta solo mientras está abierto, es dueño de su borrador y de su error y devuelve el foco. */}
     {dialog?.kind === "addMember" ? <AddMemberDialog companyId={id} roles={roles.assignable} onClose={closeDialog} /> : null}

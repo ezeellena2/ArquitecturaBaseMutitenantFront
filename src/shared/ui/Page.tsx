@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 import { ChevronLeftIcon, MoreVerticalIcon } from "./icons";
+import { TabCount, Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
 export interface PageOverflowAction {
   label: string;
@@ -22,6 +23,28 @@ export interface PageOverflowAction {
   onSelect: (trigger: HTMLButtonElement | null) => void;
   destructive?: boolean;
   hidden?: boolean;
+}
+
+/** Un grupo de datos de una ficha: su pestaña y su contenido. */
+export interface PageTab {
+  value: string;
+  label: string;
+  /** La cantidad, en gris al lado del nombre. */
+  count?: ReactNode;
+  content: ReactNode;
+  /** Las clases del contenido del grupo. */
+  className?: string;
+  /** Un grupo que quien mira no puede ver (por permiso). */
+  hidden?: boolean;
+}
+
+/** Los grupos de datos de una ficha y el que está abierto. */
+export interface PageTabs {
+  /** El nombre de la barra de pestañas para el lector de pantalla. */
+  label: string;
+  value: string;
+  onValueChange: (value: string) => void;
+  items: readonly PageTab[];
 }
 
 interface PageProps {
@@ -36,9 +59,11 @@ interface PageProps {
   moreActions?: { label: string; items: readonly PageOverflowAction[] };
   /** Un cartel de algo que sigue pasando (tablero «Criterio · Avisos»): debajo de la banda, arriba del contenido. */
   banner?: ReactNode;
-  /** Las pestañas: en la compu abren el contenido, debajo de la banda (tablero Empresa); en el teléfono, en su banda blanca. */
-  tabs?: ReactNode;
-  children: ReactNode;
+  /** Los grupos de datos de una ficha («Criterio · Marco», Pestañas). Con dos o más, una pestaña por grupo: en la compu
+   * abren el contenido, debajo de la banda (tablero Empresa); en el teléfono, en su banda blanca. Con uno solo, su
+   * contenido va sin la barra de pestañas. El contenido de la ficha sale de los grupos y no de `children`. */
+  tabs?: PageTabs;
+  children?: ReactNode;
   bodyClassName?: string;
   /** En el teléfono, lo que dice debajo del título si no es el camino ni la organización (el correo de una persona). */
   phoneSubtitle?: ReactNode;
@@ -96,11 +121,28 @@ export function Page({
     ))}
   </>;
 
+  // «Criterio · Marco», Pestañas (decisión del usuario del 2026-10-05): una pestaña por grupo de datos cuando hay dos o
+  // más; con uno solo (el Administrador de empresa ve solo «Miembros»), su contenido va sin la barra.
+  const groups = tabs?.items.filter((group) => !group.hidden) ?? [];
+  const tabbed = tabs && groups.length > 1 ? tabs : undefined;
+  const openGroup = groups.some((group) => group.value === tabs?.value) ? tabs?.value : groups[0]?.value;
+  const tabList = tabbed ? <TabsList aria-label={tabbed.label}>
+    {groups.map((group) => <TabsTrigger key={group.value} value={group.value}>
+      {group.label}{group.count === undefined ? null : <TabCount>{group.count}</TabCount>}
+    </TabsTrigger>)}
+  </TabsList> : null;
+  const content = tabbed
+    ? groups.map((group) => <TabsContent key={group.value} value={group.value} className={group.className}>{group.content}</TabsContent>)
+    : groups.length === 1 ? <div data-slot="page-group" className={groups[0].className}>{groups[0].content}</div> : children;
+  const withTabs = (page: ReactNode) => tabbed
+    ? <Tabs value={openGroup} onValueChange={tabbed.onValueChange} className="contents!">{page}</Tabs>
+    : page;
+
   // Tableros M-* («Criterio · Marco»): en el teléfono la pantalla es de una app. Arriba, ‹ (si es una ficha o se
   // llega desde «Más») con el título y el camino; el ⋮ en la barra; crear es un «+» flotante y guardar va fijo abajo.
   if (chrome.phone) {
     const back = backTo ?? chrome.parent ?? undefined;
-    return <div className={cn("flex min-h-full flex-col", phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--lado-activo)]")}>
+    return withTabs(<div className={cn("flex min-h-full flex-col", phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--lado-activo)]")}>
       <AppBar title={title} back={back} subtitle={phoneSubtitle ?? status ?? chrome.subtitle ?? undefined}
         actions={<>
           <div ref={setTools} className="flex items-center" />
@@ -112,14 +154,14 @@ export function Page({
             <DropdownMenuContent align="end">{moreMenuItems}</DropdownMenuContent>
           </DropdownMenu> : null}
         </>} />
-      {tabs ? <div data-slot="page-tabs" className="border-b border-[var(--borde)] bg-[var(--lado-activo)]">{tabs}</div> : null}
+      {tabList ? <div data-slot="page-tabs" className="border-b border-[var(--borde)] bg-[var(--lado-activo)]">{tabList}</div> : null}
       {banner}
-      <AppBarToolsProvider value={tools}><div className={phoneBodyClasses[phoneBody]}>{children}</div></AppBarToolsProvider>
+      <AppBarToolsProvider value={tools}><div className={phoneBodyClasses[phoneBody]}>{content}</div></AppBarToolsProvider>
       {fab ? <Fab label={fab.label} onClick={fab.onClick} to={fab.to} /> : actions ? <FixedActions>{actions}</FixedActions> : null}
-    </div>;
+    </div>);
   }
 
-  return (
+  return withTabs(
     <>
       <header className="flex min-h-16 flex-wrap items-center justify-between gap-4 border-b border-[var(--borde)] bg-[var(--lado-activo)] px-4 py-3 md:flex-nowrap md:px-6">
         <div className="flex min-w-0 flex-[1_1_12rem] items-center gap-3 md:flex-1">
@@ -177,10 +219,10 @@ export function Page({
       </header>
       {/* Tableros Empresa, Organizacion y Cuenta-Plat: las pestañas abren el contenido, dentro de su margen, con la línea
           a lo ancho del contenido y 16 hasta lo de abajo. */}
-      <div className={bodyClassName}>{banner}{tabs ? <div className="flex min-w-0 flex-col">
-        <div data-slot="page-tabs" className="border-b border-[var(--borde)] px-1 [&>[role=tablist]]:-mb-px">{tabs}</div>
-        <div className="pt-4">{children}</div>
-      </div> : children}</div>
-    </>
+      <div className={bodyClassName}>{banner}{tabList ? <div className="flex min-w-0 flex-col">
+        <div data-slot="page-tabs" className="border-b border-[var(--borde)] px-1 [&>[role=tablist]]:-mb-px">{tabList}</div>
+        <div className="pt-4">{content}</div>
+      </div> : content}</div>
+    </>,
   );
 }

@@ -1,24 +1,25 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it } from "vitest";
 import { Page } from "./Page";
-import { TabCount, Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
+
+// La ficha con dos grupos: `Page` arma la barra con las piezas de tabs.tsx.
+function CompanyGroups() {
+  const [value, setValue] = useState("members");
+  return <MemoryRouter><Page title="Delta S.A." tabs={{ label: "Secciones de la empresa", value, onValueChange: setValue, items: [
+    { value: "members", label: "Miembros", count: 6, content: "Lista de miembros" },
+    { value: "roles", label: "Roles", count: 3, content: "Lista de roles" },
+  ] }} /></MemoryRouter>;
+}
 
 // Tableros Empresa, Organizacion y Cuenta-Plat: las pestañas abren el contenido de la página, dentro de su margen, con la
 // línea a lo ancho del contenido y 16 hasta lo de abajo; alineadas a la izquierda con 28 de separación y 44 de alto; la
 // elegida en petróleo y subrayada; la cantidad, en gris al lado del nombre, sin etiqueta («Criterio · Marco»).
 describe("Tabs · Criterio · Marco", () => {
   it("abren el contenido, debajo de la banda, subrayadas y con la cantidad en gris", async () => {
-    render(<MemoryRouter><Tabs defaultValue="members" className="contents!">
-      <Page title="Delta S.A." tabs={<TabsList aria-label="Secciones de la empresa">
-        <TabsTrigger value="members">{"Miembros"}<TabCount>{6}</TabCount></TabsTrigger>
-        <TabsTrigger value="roles">{"Roles"}<TabCount>{3}</TabCount></TabsTrigger>
-      </TabsList>}>
-        <TabsContent value="members">{"Lista de miembros"}</TabsContent>
-        <TabsContent value="roles">{"Lista de roles"}</TabsContent>
-      </Page>
-    </Tabs></MemoryRouter>);
+    render(<CompanyGroups />);
 
     const list = screen.getByRole("tablist", { name: "Secciones de la empresa" });
     const strip = list.parentElement!;

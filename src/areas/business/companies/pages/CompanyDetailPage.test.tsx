@@ -252,6 +252,9 @@ describe("CompanyDetailPage", () => {
     // de Usuario, que piden permisos de la organización.
     expect(screen.queryByRole("button", { name: "Editar empresa" })).not.toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: /Roles/ })).not.toBeInTheDocument();
+    // Pestañas (decisión del 2026-10-05, 6d-4a): con un solo grupo, «Miembros», la ficha va sin la barra de pestañas.
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Miembro" })).toBeVisible();
     (await screen.findByRole("button", { name: "Acciones para Lucía Fernández" })).focus();
     await user.keyboard("{Enter}");
     expect(await screen.findByRole("menuitem", { name: "Cambiar roles" })).toBeVisible();
