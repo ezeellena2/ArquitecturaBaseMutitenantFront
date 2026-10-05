@@ -19,7 +19,7 @@ export interface PublicPageCardData {
 }
 
 /// El fondo de la página pública (tableros Pagina-Publica y M-Pagina-Publica): la tarjeta va sobre él.
-export const publicPageBackdropClass = "bg-[var(--fondo)] bg-[radial-gradient(ellipse_at_80%_0%,oklch(0.94_0.028_78),transparent_55%)]";
+export const publicPageBackdropClass = "bg-[var(--fondo)] bg-[radial-gradient(ellipse_at_80%_0%,var(--fondo-brillo),transparent_55%)]";
 
 const filled = (value: string | null | undefined): value is string => Boolean(value?.trim());
 // El sitio web se lee sin «https://» ni la barra del final, como en los tableros («delta.ejemplo.com»).
@@ -54,7 +54,7 @@ export function PublicPageCard({ page, links = false, signInHref }: {
   const signIn = cn(buttonVariants({ size: "lg" }), "mt-[18px] w-full max-md:h-12 max-md:rounded-[12px]");
   const hasContact = filled(address) || filled(contactPhone) || filled(contactEmail) || filled(website);
 
-  return <div className="flex w-full max-w-[560px] flex-col items-center gap-1.5 rounded-[20px] border border-[var(--borde)] bg-[var(--lado-activo)] p-8 text-center text-[15px] leading-[1.6] text-[var(--t1)] shadow-[0_16px_40px_oklch(0.24_0.014_78/0.08)] max-md:rounded-[18px] max-md:px-[18px] max-md:pt-6 max-md:pb-5 max-md:shadow-[0_10px_28px_oklch(0.24_0.014_78/0.08)]">
+  return <div className="flex w-full max-w-[560px] flex-col items-center gap-1.5 rounded-[20px] border border-[var(--borde)] bg-[var(--lado-activo)] p-8 text-center text-[15px] leading-[1.6] text-[var(--t1)] shadow-[var(--sombra-tarjeta)] max-md:rounded-[18px] max-md:px-[18px] max-md:pt-6 max-md:pb-5 max-md:shadow-[var(--sombra-tarjeta-movil)]">
     {/* El logo va decorativo: el nombre está debajo. Sin logo, las iniciales en el petróleo claro. */}
     {filled(logoDataUri)
       ? <img src={logoDataUri} alt="" className="mb-2.5 size-[84px] rounded-[20px] border border-[var(--borde)] object-contain max-md:mb-2 max-md:size-[72px] max-md:rounded-[18px]" />

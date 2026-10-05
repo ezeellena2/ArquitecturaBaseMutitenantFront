@@ -18,4 +18,4 @@ export const menuLineClass = (index: number) => index > 0
 /// La flecha que achica el menú o cierra Administración (lienzo v107, «Criterio · Decisiones» y `.w-plegar` de los
 /// tableros): blanca, redonda, de 28, con borde arena y su sombra, sobre el borde derecho del último panel, a 64 de arriba.
 /// La lleva un solo panel: el de Administración si está abierto y, si no, el menú. Su flecha mide 18.
-export const panelEdgeButtonClass = "absolute -right-3.5 top-16 z-30 flex size-7 items-center justify-center rounded-full border border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t1)] shadow-[0_1px_3px_oklch(0.24_0.012_60/0.15)] hover:text-[var(--marca)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]";
+export const panelEdgeButtonClass = "absolute -right-3.5 top-16 z-30 flex size-7 items-center justify-center rounded-full border border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t1)] shadow-[var(--sombra-flecha)] hover:text-[var(--marca)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]";

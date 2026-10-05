@@ -62,6 +62,7 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 - **Marca:** un cuadrado con degradado de `--marca` a `--marca-2`, sombra `0 2px 6px -1px var(--marca-sombra)` y un cuadrado blanco abierto del lado derecho, rotado −45° como en el lienzo. Lleva el nombre del producto al lado. Lo mismo en el menú lateral y en las pantallas públicas.
 - Los rótulos de grupo del menú van sin mayúsculas ("Administración", no "ADMINISTRACIÓN").
 - **Teléfono:** el «+» flotante lleva `--sombra-fab` (`0 6px 16px oklch(0.3 0.06 195 / 0.3), 0 2px 4px oklch(0.3 0.06 195 / 0.2)`); la hoja que sube desde abajo, `--sombra-hoja` (`0 -8px 24px oklch(0.2 0.014 78 / 0.12)`), y la franja de los avisos, `--sombra-franja` (`0 8px 24px oklch(0.2 0.01 60 / 0.3)`). Los grupos son blancos sobre `--s2`, con radio de 14 px y un borde de 1 px en `--borde`.
+- **Página pública** (tableros Pagina-Publica y M-Pagina-Publica, `shared/ui/PublicPageCard`): la tarjeta blanca de 560 como máximo, con radio de 20 (18 en el teléfono) y `--sombra-tarjeta` (`--sombra-tarjeta-movil` en el teléfono), sobre `--fondo` con el brillo `--fondo-brillo` arriba a la derecha.
 - **Avisos pasajeros en la compu** (tablero Avisos): abajo a la derecha, una tarjeta blanca de 340 con borde, radio de 10 y `--sombra-aviso` (`0 12px 32px oklch(0.24 0.014 78 / 0.16)`); solo el ícono lleva color (`--aviso-ok`, `--peligro`).
 
 ## Menú lateral y panel de Administración
@@ -72,6 +73,8 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 - **La barra de arriba** lleva las migas a la izquierda, todas en `--t2`, y tu menú a la derecha («Criterio · Marco»). Nada
   más: sin ☰ con sesión, también en la organización (lienzo v104). El menú lateral se contrae solo con la flecha redonda de
   28 sobre su borde («Criterio · Menús»); con el panel de Administración abierto se ve solo la flecha del panel, que lo cierra.
+  Es la misma en los dos (`panelEdgeButtonClass`, lienzo v107): blanca, con borde `--borde2`, `--sombra-flecha`, a 64 de
+  arriba y la flecha de 18.
 - **En escritorio**, "Administración" abre un **segundo panel** al lado del menú (`AdminPanel`, 232 px, fondo `--panel`):
   - arriba lleva el título y, sobre su borde derecho, un botón redondo «‹» para cerrarlo;
   - adentro va la misma lista de siempre, con el mismo estilo del menú: el desplegable «Gestión de usuarios» (Usuarios, Roles y permisos), Empresas, Configuración, Página pública y Auditoría;
