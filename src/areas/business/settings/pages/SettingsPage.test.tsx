@@ -52,6 +52,22 @@ describe("SettingsPage", () => {
     }
   });
 
+  // Tableros Configuracion (.o-dom-vacio) y M-Configuracion-Dominio («Sin dominio» en .ap-it.apag): en la compu, 13 en
+  // gris claro con 14 y 16 de relleno; en el teléfono, una fila de la lista de 56, con la letra de 15,5 de sus títulos y
+  // apagada.
+  it("«Sin dominio» tiene el tamaño del tablero: en el teléfono, una fila apagada de la lista", async () => {
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([])),
+    );
+    renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+
+    const empty = await screen.findByText("Sin dominio");
+    expect(empty).toHaveClass("px-4", "py-3.5", "text-[13px]", "text-[var(--t3)]");
+    expect(empty).toHaveClass("max-md:flex", "max-md:min-h-14", "max-md:items-center", "max-md:py-2", "max-md:pr-3.5", "max-md:pl-4",
+      "max-md:text-[15.5px]", "max-md:font-medium", "max-md:text-[var(--t1)]", "max-md:opacity-55");
+  });
+
   // Tablero Configuracion: el dominio verificado dice cuántos correos administra la organización («Verificado · 10 correos
   // administrados por Grupo Delta», con managedEmailCount del back); el pendiente, solo su estado.
   it("el dominio verificado dice cuántos correos administra la organización; el pendiente, solo «Pendiente»", async () => {

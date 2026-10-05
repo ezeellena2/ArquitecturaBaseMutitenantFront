@@ -209,7 +209,8 @@ function SettingsEditor({ settings, loadError, reload }: {
 
         <Section title={t("settings:domains.title")} phone="inset" action={canManage ? { label: t("settings:domains.add"), onClick: () => setAddingDomain(true) } : undefined}>
           {domains.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
-            : activeDomains.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)]">{t("settings:domains.empty")}</p>
+            // Tableros Configuracion (.o-dom-vacio) y M-Configuracion-Dominio (.ap-it.apag): en el teléfono, una fila apagada.
+            : activeDomains.length === 0 ? <p className="px-4 py-3.5 text-[13px] text-[var(--t3)] max-md:flex max-md:min-h-14 max-md:items-center max-md:py-2 max-md:pr-3.5 max-md:pl-4 max-md:text-[15.5px] max-md:font-medium max-md:text-[var(--t1)] max-md:opacity-55">{t("settings:domains.empty")}</p>
               : <List label={t("settings:domains.title")}>{activeDomains.map((domain) => <ListItem key={domain.id} icon={<Globe aria-hidden="true" />} title={domain.domain}
                 detail={<span className="inline-flex items-center gap-1.5 max-md:block max-md:whitespace-normal">
                   {/* Tablero M-Configuracion: en el teléfono el estado lleva su punto, y la línea sigue abajo en lugar de cortarse. */}
