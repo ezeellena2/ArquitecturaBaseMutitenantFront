@@ -66,6 +66,8 @@ describe("UsersPage", () => {
 
       const thisYear = (await screen.findByRole("link", { name: /Sofía Herrera/ })).closest("li")!;
       expect(within(thisYear).getByText("02/10")).toHaveAttribute("datetime", "2026-10-02T12:00:00Z");
+      // Tablero M-Usuarios: después del punto, «vence» en minúscula.
+      expect(thisYear).toHaveTextContent("Invitación pendiente · vence 02/10");
       const nextYear = screen.getByRole("link", { name: /Valentina Ruiz/ }).closest("li")!;
       expect(within(nextYear).getByText("05/01/2027")).toBeInTheDocument();
     } finally {

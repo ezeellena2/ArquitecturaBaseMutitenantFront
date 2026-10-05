@@ -12,6 +12,8 @@
     "expires": "Expires",
     "expiresPrefix": "Expires",
     "expiredPrefix": "Expired",
+    "expiresInline": "expires",
+    "expiredInline": "expired",
     "actions": "Actions",
     "companyAndMore": "{{company}} and {{count}} more"
   },

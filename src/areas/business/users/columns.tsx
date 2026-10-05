@@ -21,7 +21,7 @@ export function userPhoneRow(user: OrganizationUserResponse, t: TFunction, trail
   const company = first ? (others.length > 0 ? t("users:columns.companyAndMore", { company: first.companyName, count: others.length })
     : organizationRoles.length === 0 && first.roles.length > 0 ? `${first.companyName} · ${first.roles.map((role) => role.name).join(", ")}` : first.companyName) : null;
   const details = invitation
-    ? (user.invitationExpiresAtUtc ? [<>{t(user.state === "Expired" ? "users:columns.expiredPrefix" : "users:columns.expiresPrefix")} <DateText value={user.invitationExpiresAtUtc} kind="shortDate" /></>] : [])
+    ? (user.invitationExpiresAtUtc ? [<>{t(user.state === "Expired" ? "users:columns.expiredInline" : "users:columns.expiresInline")} <DateText value={user.invitationExpiresAtUtc} kind="shortDate" /></>] : [])
     : [...organizationRoles, ...(company ? [company] : [])];
   const status = <span className="inline-flex max-w-full items-center gap-1">
     <StatusDot tone={stateTones[user.state]} label={userStateLabel(user.state, t)} className="text-[12.5px] text-[var(--t2)]" />

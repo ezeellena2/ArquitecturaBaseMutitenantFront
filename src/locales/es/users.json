@@ -12,6 +12,8 @@
     "expires": "Vence",
     "expiresPrefix": "Vence",
     "expiredPrefix": "Venció",
+    "expiresInline": "vence",
+    "expiredInline": "venció",
     "actions": "Acciones",
     "companyAndMore": "{{company}} y {{count}} más"
   },
