@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { AppChromeProvider } from "./app/AppChrome";
 import { FormError } from "./FormError";
 
 describe("FormError", () => {
@@ -12,8 +11,8 @@ describe("FormError", () => {
     expect(alert).not.toHaveClass("border");
   });
 
-  // «Criterio · Formularios» (.aviso-mal): en la compu y en las páginas públicas, 13 con interlineado 1,5, padding
-  // 10/12, radio 8, ícono de 16 al medio de la primera línea y el rojo de los avisos.
+  // «Criterio · Formularios» (.aviso-mal): en la compu, 13 con interlineado 1,5, padding 10/12, radio 8, ícono de 16 al
+  // medio de la primera línea y el rojo de los avisos.
   it("en la compu tiene las medidas de la franja del criterio", () => {
     render(<FormError message="Tiene que quedar al menos un Dueño activo." />);
     const alert = screen.getByRole("alert");
@@ -21,16 +20,14 @@ describe("FormError", () => {
     expect(alert.querySelector("svg")).toHaveClass("size-4", "mt-0.5");
   });
 
-  // Lienzo v100 (.aviso-mal.tel): en la app del teléfono, la letra de los avisos del teléfono (14,5 con interlineado
-  // 1,4), padding 12/14, radio 12 y el ícono arriba si el texto ocupa dos líneas.
-  it("en la app del teléfono usa la letra y las medidas de los avisos del teléfono", () => {
-    render(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
-      <FormError message="Tiene que quedar al menos un Dueño activo." />
-    </AppChromeProvider>);
+  // Lienzo v100 (.aviso-mal.tel) y v104 (.msj de M-Ingreso, M-Registro, M-Registro-Empresa y M-Invitacion): en el
+  // teléfono, la letra de los avisos del teléfono (14,5 con interlineado 1,4), padding 12/14, radio 12 y el ícono arriba
+  // si el texto ocupa dos líneas. Vale igual en la app y en las páginas públicas, que no tienen el marco de la app.
+  it("en el teléfono usa la letra y las medidas de los avisos del teléfono, también en las páginas públicas", () => {
+    render(<FormError message="Tiene que quedar al menos un Dueño activo." />);
     const alert = screen.getByRole("alert");
-    expect(alert).toHaveClass("text-[14.5px]", "leading-[1.4]", "px-3.5", "py-3", "rounded-xl", "items-start");
-    expect(alert).not.toHaveClass("text-[13px]");
-    expect(alert.querySelector("svg")).toHaveClass("size-4", "mt-px");
+    expect(alert).toHaveClass("max-md:text-[14.5px]", "max-md:leading-[1.4]", "max-md:px-3.5", "max-md:py-3", "max-md:rounded-xl", "items-start");
+    expect(alert.querySelector("svg")).toHaveClass("size-4", "max-md:mt-px");
   });
 
   it("usa tono de aviso para una espera de reenvío", () => {
