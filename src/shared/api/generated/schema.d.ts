@@ -627,9 +627,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["PlatformAccountActionHttpRequest"];
-                    "text/json": components["schemas"]["PlatformAccountActionHttpRequest"];
-                    "application/*+json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "application/json": components["schemas"]["PlatformAccountReasonHttpRequest"];
+                    "text/json": components["schemas"]["PlatformAccountReasonHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformAccountReasonHttpRequest"];
                 };
             };
             responses: {
@@ -722,9 +722,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["PlatformAccountActionHttpRequest"];
-                    "text/json": components["schemas"]["PlatformAccountActionHttpRequest"];
-                    "application/*+json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "application/json": components["schemas"]["PlatformAccountReasonHttpRequest"];
+                    "text/json": components["schemas"]["PlatformAccountReasonHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformAccountReasonHttpRequest"];
                 };
             };
             responses: {
@@ -817,9 +817,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["PlatformAccountActionHttpRequest"];
-                    "text/json": components["schemas"]["PlatformAccountActionHttpRequest"];
-                    "application/*+json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "application/json": components["schemas"]["PlatformAccountReasonHttpRequest"];
+                    "text/json": components["schemas"]["PlatformAccountReasonHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformAccountReasonHttpRequest"];
                 };
             };
             responses: {
@@ -912,9 +912,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["PlatformAccountActionHttpRequest"];
-                    "text/json": components["schemas"]["PlatformAccountActionHttpRequest"];
-                    "application/*+json": components["schemas"]["PlatformAccountActionHttpRequest"];
+                    "application/json": components["schemas"]["PlatformAccountReasonHttpRequest"];
+                    "text/json": components["schemas"]["PlatformAccountReasonHttpRequest"];
+                    "application/*+json": components["schemas"]["PlatformAccountReasonHttpRequest"];
                 };
             };
             responses: {
@@ -10692,6 +10692,7 @@ export interface components {
             country?: null | string;
             number?: null | string;
         };
+        /** @description Decidir un pedido de recuperación o quitar a un operador: la versión vista de esa fila y el motivo. */
         PlatformAccountActionHttpRequest: {
             /** Format: uint32 */
             version?: null | number;
@@ -10765,6 +10766,10 @@ export interface components {
             tenantStatus: components["schemas"]["TenantStatus"];
             /** Format: date-time */
             endedAtUtc?: null | string;
+        };
+        /** @description Suspender, reactivar, cerrar sesiones y dar de baja una cuenta: solo el motivo, sin versión. */
+        PlatformAccountReasonHttpRequest: {
+            reason?: null | string;
         };
         /**
          * @description Fila del listado: el correo principal completo identifica la cuenta, como en el tablero Cuentas. Una invitación de
