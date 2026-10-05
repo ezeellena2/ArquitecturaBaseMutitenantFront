@@ -161,11 +161,12 @@ describe("BusinessHomePage", () => {
   });
 
   // Tablero M-Inicio-Miembro (v106, «Administra su empresa»): si administra su empresa, debajo de «Tus empresas» va su
-  // «Para resolver», con las filas de M-Inicio-Org.
-  it("tablero M-Inicio-Miembro: si administra su empresa, abajo su «Para resolver»", async () => {
+  // «Para resolver», con las filas de M-Inicio-Org. B4 (ADR 0040): la fila dice la empresa que manda el back y
+  // «Reenviar» lleva a la ficha de esa empresa (decisión 87).
+  it("tablero M-Inicio-Miembro: si administra su empresa, abajo su «Para resolver» con la empresa", async () => {
     phone(true);
     serveHome({ organization: null, companies: [{ companyId: "company-dn", name: "Delta Norte S.A.", roles: ["Administrador"], memberCount: 3 }],
-      pending: [{ area: "users", kind: "invitationExpired", subject: "martin.paz@delta.ejemplo.com", urgent: false, sinceUtc: "2026-09-25T15:00:00Z", dueAtUtc: null, targetId: "member-martin" }] });
+      pending: [expiredInCompany] });
     renderRouteWithProviders("/org", { as: "visual-error-org" });
 
     const companies = await screen.findByRole("region", { name: "Tus empresas" });
@@ -173,8 +174,30 @@ describe("BusinessHomePage", () => {
     const toResolve = screen.getByRole("region", { name: "Para resolver" });
     expect(within(toResolve).getByText("1")).toBeVisible();
     const invitation = within(toResolve).getByText("martin.paz@delta.ejemplo.com").closest("li")!;
-    expect(invitation).toHaveTextContent("Invitación vencida");
-    expect(within(invitation).getByRole("link", { name: "Reenviar" })).toBeVisible();
+    expect(invitation).toHaveTextContent("Invitación vencida · Delta Norte S.A.");
+    expect(within(invitation).getByRole("link", { name: "Reenviar" })).toHaveAttribute("href", "/org/empresas/company-dn");
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
+
+  // Tablero Inicio-Miembro («Administra su empresa»): «Para resolver» lleva la columna Empresa en lugar de Área, con la
+  // empresa de la fila (ADR 0040), y «Reenviar» abre la ficha de esa empresa.
+  it("tablero Inicio-Miembro: si administra su empresa, «Para resolver» con la columna Empresa y «Reenviar» a su ficha", async () => {
+    serveHome({ organization: null, companies: [{ companyId: "company-dn", name: "Delta Norte S.A.", roles: ["Administrador"], memberCount: 3 }],
+      pending: [expiredInCompany] });
+    const { container } = renderRouteWithProviders("/org", { as: "visual-error-org" });
+
+    const toResolve = await screen.findByRole("region", { name: "Para resolver" });
+    expect(within(toResolve).getAllByRole("columnheader").map((header) => header.textContent))
+      .toEqual(["Pendiente", "Empresa", "Estado", "Desde", "Acción"]);
+    const invitation = within(toResolve).getByText("martin.paz@delta.ejemplo.com").closest("tr")!;
+    expect(within(invitation).getByText("Delta Norte S.A.")).toBeVisible();
+    expect(invitation).not.toHaveTextContent("Usuarios");
+    expect(invitation).toHaveTextContent("Vencida");
+    expect(within(invitation).getByRole("link", { name: "Reenviar" })).toHaveAttribute("href", "/org/empresas/company-dn");
+    expect(await axe(container)).toHaveNoViolations();
+  });
 });
+
+// La invitación vencida de una empresa que administra (B4, decisión 86): el back la manda con la empresa.
+const expiredInCompany: HomeResponse["pending"][number] = { area: "users", kind: "invitationExpired", subject: "martin.paz@delta.ejemplo.com",
+  urgent: false, sinceUtc: "2026-09-25T15:00:00Z", dueAtUtc: null, targetId: "member-martin", companyId: "company-dn", companyName: "Delta Norte S.A." };

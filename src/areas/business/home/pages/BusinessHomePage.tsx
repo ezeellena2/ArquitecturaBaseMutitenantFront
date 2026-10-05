@@ -41,7 +41,7 @@ export function BusinessHomePage() {
     {home.data && !organization ? <>
       <h2 className="mb-[-6px] mt-1 text-[15px] font-semibold text-[var(--t1)]">{t("home:yourCompanies")}</h2>
       <CompanyCards companies={home.data.companies} />
-      {rows.length > 0 ? <ToResolve rows={rows} /> : null}
+      {rows.length > 0 ? <ToResolve rows={rows} byCompany /> : null}
     </> : null}
   </Page>;
 }

@@ -120,7 +120,8 @@ function ToResolveRows({ rows }: { rows: readonly PendingRow[] }) {
             <span aria-hidden="true" className={`inline-flex size-10 shrink-0 items-center justify-center rounded-full ${toneCircle[tone(row)]}`}><Icon className="size-5" /></span>
             <span className="flex min-w-0 flex-1 flex-col gap-0.5">
               <span className="truncate text-[15px] font-semibold text-[var(--t1)]">{row.title}</span>
-              <span className="truncate text-[13px] text-[var(--t3)]"><span className={`font-medium ${toneText[tone(row)]}`}>{row.phoneState}</span>{` · ${row.areaLabel}`}</span>
+              {/* M-Inicio-Miembro: la fila de una empresa dice la empresa («· Delta Norte S.A.»); la de la organización, el área. */}
+              <span className="truncate text-[13px] text-[var(--t3)]"><span className={`font-medium ${toneText[tone(row)]}`}>{row.phoneState}</span>{` · ${row.company ?? row.areaLabel}`}</span>
             </span>
             <Link to={row.to} className="inline-flex h-[34px] shrink-0 items-center rounded-[17px] bg-[var(--marca-t)] px-3.5 text-[14px] font-semibold text-[var(--marca-tx)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">{row.action}</Link>
           </li>;

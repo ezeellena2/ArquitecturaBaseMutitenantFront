@@ -27,6 +27,8 @@ export interface PendingRow {
   action: string;
   to: string;
   since: string | null;
+  /** La empresa del pendiente, como la manda el back (B4): la de quien administra una empresa sin roles de la organización. */
+  company: string | null;
 }
 
 /** Arma el texto de una fila de «Para resolver» (ADR 0040). Un tipo que el front no conoce no se muestra. */
@@ -38,13 +40,16 @@ export function describePending(item: PendingItem, index: number, t: TFunction,
       key: `${index}-${kind}`, area, areaLabel: t(`home:cards.${area}.title`), state,
       phoneState: kind === "invitationExpired" ? t("home:pending.invitationExpired.phoneState") : state,
       tone: item.urgent ? "danger" : "warning", action: t(`home:pending.${kind}.action`), since: item.sinceUtc ?? null,
+      company: item.companyName ?? null,
       ...fields,
     };
   };
   switch (item.kind) {
     case "invitationExpired":
+      // Decisión 87: la invitación vencida de una empresa se resuelve desde la ficha de esa empresa (tableros
+      // Inicio-Miembro y M-Inicio-Miembro); la de la organización, desde Usuarios.
       return base("users", item.kind, { title: item.subject ?? "", detail: t("home:pending.invitationExpired.detail"),
-        to: "/org/usuarios?state=Expired" });
+        to: item.companyId ? `/org/empresas/${encodeURIComponent(item.companyId)}` : "/org/usuarios?state=Expired" });
     case "deletionRequested":
       return base("users", item.kind, { title: item.subject ?? "",
         detail: item.dueAtUtc ? t("home:pending.deletionRequested.detail", { date: formatDate(item.dueAtUtc) }) : undefined,

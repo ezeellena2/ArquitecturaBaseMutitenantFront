@@ -6,14 +6,19 @@ import { StatusDot } from "@/shared/ui/StatusDot";
 import { Surface } from "@/shared/ui/Surface";
 import { type PendingRow } from "./pendingItems";
 
-/** «Para resolver» en la compu (tableros Inicio-Org e Inicio-Miembro): Pendiente, Área, Estado, Desde y la acción. */
-export function ToResolve({ rows }: { rows: readonly PendingRow[] }) {
+/**
+ * «Para resolver» en la compu (tableros Inicio-Org e Inicio-Miembro): Pendiente, Área, Estado, Desde y la acción. En
+ * Inicio-Miembro (`byCompany`), la segunda columna es la Empresa de cada fila, como la manda el back (ADR 0040).
+ */
+export function ToResolve({ rows, byCompany = false }: { rows: readonly PendingRow[]; byCompany?: boolean }) {
   const { t } = useTranslation("home");
   const titleId = useId();
   const columns: Column<PendingRow>[] = [
     { id: "title", header: t("toResolve.pending"), type: "custom", mobile: "primary", className: "w-[37%]",
       cell: (row) => <span className="block truncate text-[var(--t1)]">{row.title}</span>, detail: (row) => row.detail },
-    { id: "area", header: t("toResolve.area"), type: "text", className: "w-[19%]", value: (row) => row.areaLabel },
+    byCompany
+      ? { id: "company", header: t("toResolve.company"), type: "text", className: "w-[19%]", value: (row) => row.company }
+      : { id: "area", header: t("toResolve.area"), type: "text", className: "w-[19%]", value: (row) => row.areaLabel },
     { id: "state", header: t("toResolve.state"), type: "custom", cell: (row) =>
       <StatusDot tone={row.tone} label={row.state} /> },
     { id: "since", header: t("toResolve.since"), type: "date", className: "w-[122px]", value: (row) => row.since },

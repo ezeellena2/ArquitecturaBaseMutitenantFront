@@ -49,6 +49,7 @@
     "empty": "Nothing to resolve",
     "pending": "Pending",
     "area": "Area",
+    "company": "Company",
     "state": "Status",
     "since": "Since",
     "action": "Action"
