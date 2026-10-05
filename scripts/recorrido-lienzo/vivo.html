@@ -83,7 +83,11 @@
   function findByName(doc, role, name) {
     const native = { button: "button", link: "a", checkbox: "input[type=checkbox]", textbox: "input,textarea" }[role];
     const candidates = doc.querySelectorAll(`[role="${role}"]${native ? `,${native}` : ""}`);
-    return [...candidates].find((node) => (node.getAttribute("aria-label") ?? node.textContent ?? "").trim() === name);
+    return [...candidates].find((node) => {
+      const label = node.getAttribute("aria-label") ?? (node.labels?.length
+        ? [...node.labels].map((item) => item.textContent.trim()).join(" ") : node.textContent);
+      return (label ?? "").trim() === name;
+    });
   }
 
   // Escribir en un campo del tablero como lo haría una persona: los campos son de React, así que además de cambiar el valor
