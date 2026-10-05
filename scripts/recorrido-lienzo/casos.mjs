@@ -5,6 +5,14 @@ import path from "node:path";
 // de los tableros vigentes.
 const outdated = new Set(["etapa-3b"]);
 
+// Las rutas que cambiaron de nombre después de sacar la foto de una etapa, como en el catálogo del relevamiento: crear
+// un rol es /org/roles/nuevo (frontend.md §3). Los manifiestos no se reescriben; la ruta se traduce al abrirla.
+const renamedRoutes = [["route=%2Forg%2Froles%2Fnew", "route=%2Forg%2Froles%2Fnuevo"]];
+
+function currentRoute(appPath) {
+  return renamedRoutes.reduce((result, [before, now]) => result.replace(before, now), appPath);
+}
+
 /// Los manifiestos de capturas: uno por etapa (`etapa-6`) y uno por tanda de la consolidación (`consolidacion/f7`).
 function manifests(capturesDir) {
   const found = [];
@@ -29,7 +37,7 @@ export function loadCases(capturesDir, lienzoDir) {
         id: `${etapa}/${entry.id}`, etapa, pair: entry.pair ?? entry.id, device: entry.viewport.width <= 500 ? "Teléfono" : "Compu",
         board: entry.board, props: entry.props ?? {}, boardActions: entry.boardActions ?? [],
         boardViewport: entry.boardViewport ?? entry.viewport, viewport: entry.viewport,
-        app: { path: entry.app.path, responses: entry.app.responses ?? [], userFixture: entry.app.userFixture, actions: entry.app.actions ?? [] },
+        app: { path: currentRoute(entry.app.path), responses: entry.app.responses ?? [], userFixture: entry.app.userFixture, actions: entry.app.actions ?? [] },
       });
     }
   }

@@ -36,6 +36,14 @@ test("también lee las tandas de la consolidación, cada una con su manifiesto",
   assert.equal(item.etapa, "consolidacion/f9");
 });
 
+test("las rutas que cambiaron de nombre se abren con el nombre de hoy, sin tocar los manifiestos", () => {
+  // Crear un rol pasó de /org/roles/new a /org/roles/nuevo (frontend.md §3); los manifiestos son la foto de su etapa.
+  const created = loadCases(captures, lienzo).filter((item) => item.pair === "rol-crear");
+  assert.ok(created.length > 0);
+  assert.ok(created.every((item) => item.app.path.includes("route=%2Forg%2Froles%2Fnuevo")));
+  assert.ok(!loadCases(captures, lienzo).some((item) => item.app.path.includes("route=%2Forg%2Froles%2Fnew")));
+});
+
 test("una pantalla nueva, sin caso todavía, se abre con su tablero y la ruta", () => {
   const item = adHocCase({ board: "Directorio", route: "/empresas", as: "visual-owner", phone: true });
   assert.equal(item.device, "Teléfono");
