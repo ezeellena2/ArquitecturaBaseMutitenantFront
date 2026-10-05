@@ -111,7 +111,7 @@ export function FilterBar({
     <Surface
       role="search"
       aria-label={label}
-      className={cn("flex flex-col items-stretch gap-2 p-2.5 md:flex-row md:flex-wrap md:items-center md:p-3", className)}
+      className={cn("flex flex-col items-stretch gap-2 p-2.5 md:flex-row md:flex-wrap md:items-center md:px-3 md:py-2.5", className)}
     >
       <div className="relative w-full md:w-[360px]">
         <SearchIcon

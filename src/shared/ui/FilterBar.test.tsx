@@ -31,6 +31,9 @@ describe("FilterBar", () => {
     const filterTrigger = screen.getByRole("button", { name: "Todos" });
 
     expect(bar).toHaveClass("flex-col", "md:flex-row");
+    // La caja de los filtros (.fb) lleva 10 arriba y abajo y 12 a los costados: con el buscador de 36 mide 58.
+    expect(bar).toHaveClass("md:px-3", "md:py-2.5");
+    expect(bar).not.toHaveClass("md:p-3");
     // Lienzo v104 (tableros Usuarios, Roles, Empresas, Empresa y Auditoría): el buscador de 36 × 360, con el borde claro, la
     // lupa de 16 a 12 del borde, el texto a 36 y letra de 13; los filtros, de 32 y sin negrita.
     expect(searchContainer).toHaveClass("w-full", "md:w-[360px]");
