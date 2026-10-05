@@ -16,6 +16,7 @@ import { FilterBar } from "@/shared/ui/FilterBar";
 import { LoadMore } from "@/shared/ui/LoadMore";
 import { Page } from "@/shared/ui/Page";
 import { ListRow } from "@/shared/ui/app/ListRow";
+import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Surface } from "@/shared/ui/Surface";
 import { DateText } from "@/shared/ui/format/DateText";
 import type { OrganizationAuditEntryResponse } from "@/shared/api/types";
@@ -47,6 +48,7 @@ export function AuditPage() {
     meta: { silent: true },
   });
   const [selected, setSelected] = useState<OrganizationAuditEntryResponse | null>(null);
+  const { phone } = useAppChrome();
 
   const columns: Column<OrganizationAuditEntryResponse>[] = [
     { id: "occurredAtUtc", header: t("audit:columns.when"), type: "custom", mobile: "status", className: "w-[162px] max-md:w-[25%]", cell: (row) => <div className="whitespace-normal text-left"><DateText value={row.occurredAtUtc} kind="dateTime" className="whitespace-normal" /></div> },
@@ -134,12 +136,13 @@ export function AuditPage() {
     </Page>
     <Dialog open={selected !== null} onOpenChange={(open) => { if (!open) setSelected(null); }}>
       {/* «Criterio · Diálogos»: el diálogo normal, de 560, como Auditoria-Org. Qué pasó; Quién (nombre · correo), Dónde y
-          cada cambio «antes → después». */}
+          cada cambio «antes → después». En el teléfono, la hoja de M-Auditoria-Org (`AuditPhoneDetail`). */}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{selected?.actionText ?? t("audit:details")}</DialogTitle>
         </DialogHeader>
-        {selected ? <div className="px-5 pb-5 pt-4"><dl className="grid grid-cols-[170px_minmax(0,1fr)] overflow-hidden rounded-[10px] border border-[var(--borde)] text-[13.5px] leading-[1.45] text-[var(--t1)] [&>:nth-child(-n+2)]:border-t-0">
+        {selected && phone ? <AuditPhoneDetail entry={selected} /> : null}
+        {selected && !phone ? <div className="px-5 pb-5 pt-4"><dl className="grid grid-cols-[170px_minmax(0,1fr)] overflow-hidden rounded-[10px] border border-[var(--borde)] text-[13.5px] leading-[1.45] text-[var(--t1)] [&>:nth-child(-n+2)]:border-t-0">
           <dt className="border-r border-t border-[var(--borde)] bg-[var(--s2)] px-3.5 py-2.5 font-medium text-[var(--t2)]">{t("audit:columns.who")}</dt>
           <dd className="min-w-0 break-words border-t border-[var(--borde)] px-3.5 py-2.5">{[selected.actorDisplayName ?? selected.actorText, selected.actorEmail].filter(Boolean).join(" · ")}</dd>
           <dt className="border-r border-t border-[var(--borde)] bg-[var(--s2)] px-3.5 py-2.5 font-medium text-[var(--t2)]">{t("audit:columns.where")}</dt>
@@ -153,4 +156,23 @@ export function AuditPage() {
       </DialogContent>
     </Dialog>
   </>;
+}
+
+/// Tablero M-Auditoria-Org (v108, «Detalle de un cambio», .ap-det): en el teléfono cada dato va debajo de su nombre, con una
+/// línea entre uno y otro; primero la fecha y la hora completas, que la lista muestra cortas. El correo de quién va en su
+/// propia línea, así no se corta a mitad de palabra.
+function AuditPhoneDetail({ entry }: { entry: OrganizationAuditEntryResponse }) {
+  const { t } = useTranslation(["audit"]);
+  const row = "flex flex-col gap-0.5 border-t border-[var(--borde)] py-2.5 first:border-t-0";
+  const term = "text-[13px] text-[var(--t3)]";
+  const value = "min-w-0 text-[15.5px] font-medium text-[var(--t1)]";
+  return <dl className="flex flex-col px-5 pt-2 pb-4">
+    <div className={row}><dt className={term}>{t("audit:columns.when")}</dt><dd className={value}><DateText value={entry.occurredAtUtc} kind="dateTime" /></dd></div>
+    <div className={row}><dt className={term}>{t("audit:columns.who")}</dt><dd className={value}>{entry.actorDisplayName ?? entry.actorText}
+      {entry.actorEmail ? <span className="block break-words text-[14px] font-normal text-[var(--t2)]">{entry.actorEmail}</span> : null}</dd></div>
+    <div className={row}><dt className={term}>{t("audit:columns.where")}</dt><dd className={value}>{entry.whereText}</dd></div>
+    {entry.changes.map((change) => <div key={change.field} className={row}><dt className={term}>{change.field}</dt>
+      <dd className={value}>{change.oldValue ? <><span className="text-[var(--t3)] line-through">{change.oldValue}</span>{" → "}</> : null}{change.newValue ?? t("audit:noValue")}</dd>
+    </div>)}
+  </dl>;
 }

@@ -210,4 +210,45 @@ describe("AuditPage", () => {
       vi.useRealTimers();
     }
   });
+
+  // Tablero M-Auditoria-Org (v108, «Detalle de un cambio»): en el teléfono, cada dato va debajo de su nombre, con una línea
+  // entre ellos: la fecha y la hora completas, quién (con el correo en su propia línea, sin cortarlo a mitad de palabra),
+  // dónde y cada cambio «antes → después»; abajo, «Cerrar».
+  it("en el teléfono, el detalle de un cambio lleva cada dato debajo de su nombre y el correo en su línea", async () => {
+    const restore = asPhone();
+    try {
+      server.use(
+        http.get("/api/organization/audit", () => HttpResponse.json({ items: [{
+          id: "audit-1", occurredAtUtc: "2026-09-27T13:42:00Z", action: "MemberRolesChanged",
+          actionText: "Cambió los roles de Tomás Acosta", entityType: "Member", entityText: "Usuario",
+          affectedDisplayName: "Tomás Acosta", whereText: "Delta S.A.",
+          actorKind: "User", actorText: "Persona", actorId: "actor-1", actorDisplayName: "Lucía Fernández", actorEmail: "lucia.fernandez@delta.ejemplo.com",
+          changes: [{ field: "Roles en la empresa", oldValue: "Sin roles", newValue: "Solo lectura" }],
+        }], nextCursor: null, hasMore: false })),
+        http.get("/api/organization/audit/actors", () => HttpResponse.json([])),
+      );
+      renderRouteWithProviders("/org/auditoria", { as: "business-e6-admin" });
+      const user = userEvent.setup();
+      await user.click(await screen.findByText("Cambió los roles de Tomás Acosta"));
+
+      const detail = await screen.findByRole("dialog", { name: "Cambió los roles de Tomás Acosta" });
+      expect(detail).toHaveClass("bottom-0", "rounded-t-[20px]");
+      const terms = within(detail).getAllByRole("term");
+      const values = within(detail).getAllByRole("definition");
+      expect(terms.map((term) => term.textContent)).toEqual(["Fecha y hora", "Quién", "Dónde", "Roles en la empresa"]);
+      expect(values[0]).toHaveTextContent("27/09/2026 10:42");
+      expect(within(values[1]).getByText("Lucía Fernández")).toBeVisible();
+      expect(within(values[1]).getByText("lucia.fernandez@delta.ejemplo.com")).toHaveClass("block", "break-words");
+      expect(values[1]).not.toHaveTextContent("·");
+      expect(values[2]).toHaveTextContent("Delta S.A.");
+      expect(values[3]).toHaveTextContent("Sin roles → Solo lectura");
+      expect(within(values[3]).getByText("Sin roles")).toHaveClass("line-through");
+      // Cada dato debajo de su nombre, con una línea entre uno y otro.
+      expect(terms[1].parentElement).toHaveClass("flex-col", "border-t");
+      expect(terms[1].parentElement).toBe(values[1].parentElement);
+      expect(within(detail).getAllByRole("button", { name: "Cerrar" }).at(-1)).toBeVisible();
+    } finally {
+      restore();
+    }
+  });
 });
