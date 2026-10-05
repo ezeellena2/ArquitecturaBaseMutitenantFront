@@ -85,6 +85,7 @@
     "state": "Status"
   },
   "back": "Back to Companies",
+  "backHome": "Back to home",
   "detail": {
     "title": "Company",
     "loading": "Loading company",

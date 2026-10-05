@@ -47,6 +47,8 @@ export function CompanyDetailPage() {
   const { phone } = useAppChrome();
   const queryClient = useQueryClient();
   const canManageCompany = can("companies.manage");
+  // B4: quien administra solo esta empresa no abre Empresas (`companies.read`); vuelve al Inicio, de donde llegó.
+  const back = can("companies.read") ? { to: "/org/empresas", label: t("companies:back") } : { to: homeOf("business"), label: t("companies:backHome") };
   const canReadMembers = canInCompany(id, "company.members.read");
   const canManageMembers = canInCompany(id, "company.members.manage");
   const canReadRoles = can("roles.read");
@@ -71,8 +73,8 @@ export function CompanyDetailPage() {
   // «Criterio · Avisos» (Pantalla de error): la ficha no cargó y no hay nada que mostrar; si no existe (404),
   // «No encontramos esta página» (errores.md).
   if (!company.data) return isNotFoundError(company.error)
-    ? <NotFoundPage homePath={homeOf("business")} screen={t("companies:detail.title")} back={{ to: "/org/empresas", label: t("companies:back") }} />
-    : <LoadErrorPage onRetry={() => { void company.refetch(); }} screen={t("companies:detail.title")} back={{ to: "/org/empresas", label: t("companies:back") }} />;
+    ? <NotFoundPage homePath={homeOf("business")} screen={t("companies:detail.title")} back={back} />
+    : <LoadErrorPage onRetry={() => { void company.refetch(); }} screen={t("companies:detail.title")} back={back} />;
   const data = company.data;
   const canAdd = canManageMembers && data.status === "Active";
   const createRolePath = `/org/roles/nuevo?scope=SpecificCompany&companyId=${encodeURIComponent(id)}`;
@@ -80,7 +82,7 @@ export function CompanyDetailPage() {
 
   return <>
     <Tabs value={tab} onValueChange={(value) => setTab(value as CompanyTab)} className="contents!">
-    <Page icon={Building2} title={data.name} backTo={{ to: "/org/empresas", label: t("companies:back") }}
+    <Page icon={Building2} title={data.name} backTo={back}
       phoneBody="flush"
       // Tablero M-Empresa: debajo del título, el CUIT y la zona; crear es un «+» flotante según la pestaña.
       phoneSubtitle={<>{data.taxId ? <><TaxIdText value={data.taxId} withType />{" · "}</> : null}<TimeZoneText value={data.timeZoneId} /></>}

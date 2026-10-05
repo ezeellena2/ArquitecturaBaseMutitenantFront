@@ -2,7 +2,8 @@ import type { Permission } from "@/auth/usePermissions";
 import type { MeResponse } from "@/shared/api/types";
 
 /// Como /api/me: los permisos de la organización van en `effectivePermissions` y `permissions` los repite. El mapa por
-/// empresa llega vacío hasta que el back lo llene.
+/// empresa va vacío: una empresa que no figura usa los de la organización (`canInCompany`), como los roles de toda la
+/// organización en el back. Quien solo administra una empresa la tiene en el mapa (`businessCompanyAdmin`).
 function withPermissions(user: MeResponse, organization: readonly Permission[]): MeResponse {
   return { ...user, permissions: [...organization], effectivePermissions: { organization: [...organization], companies: {} } };
 }
@@ -47,6 +48,13 @@ const ownerPermissions: readonly Permission[] = ["users.read", "users.invite", "
 
 export const businessE6Admin: MeResponse = withPermissions(businessUser, ownerPermissions);
 
+/// B4: un Administrador de empresa sin roles de la organización. /api/me trae sus permisos en el mapa de su empresa
+/// (decisión 13), y la organización, vacía.
+export const businessCompanyAdmin: MeResponse = {
+  ...businessUser, permissions: [],
+  effectivePermissions: { organization: [], companies: { "company-1": ["company.members.read", "company.members.manage"] } },
+};
+
 /** Solo ve Configuración: los datos se leen como texto, sin campos grises. */
 export const businessSettingsReader: MeResponse = withPermissions(businessUser, ["settings.read"]);
 
@@ -90,6 +98,13 @@ export const visualErrorOrganization: MeResponse = {
   email: "valentina.ruiz@gmail.com",
 };
 
+/// Valentina como Administradora de Delta S.A. (B4): sin roles de la organización y con los de su empresa en el mapa de
+/// /api/me. La ficha de su empresa, en las capturas.
+export const visualCompanyAdmin: MeResponse = {
+  ...visualErrorOrganization,
+  effectivePermissions: { organization: [], companies: { "company-1": ["company.members.read", "company.members.manage"] } },
+};
+
 export const visualUnavailableSuspended: MeResponse = {
   ...visualBusiness,
   activeTenantId: "beta",
@@ -121,12 +136,14 @@ export const currentUsers = {
   "business-settings-reader": businessSettingsReader,
   "business-role-manager": businessRoleManager,
   "business-no-permissions": businessWithoutPermissions,
+  "business-company-admin": businessCompanyAdmin,
   "platform-operator": platformOperator,
   "visual-personal": visualPersonal,
   "visual-business": visualBusiness,
   "visual-owner": visualOwner,
   "visual-role-manager": visualRoleManager,
   "visual-error-org": visualErrorOrganization,
+  "visual-company-admin": visualCompanyAdmin,
   "visual-unavailable-suspended": visualUnavailableSuspended,
   "visual-unavailable-pending": visualUnavailablePending,
   "visual-unavailable-closed": visualUnavailableClosed,

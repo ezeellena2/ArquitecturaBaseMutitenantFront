@@ -224,6 +224,49 @@ describe("CompanyDetailPage", () => {
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
   });
 
+  // B4 (decisiones 13 y 87): quien administra una empresa sin roles de la organización entra a la ficha de su empresa
+  // con el permiso de esa empresa (`/api/me`, mapa por empresa) y ve sus miembros, sus roles y los filtros. Los roles
+  // salen de la ruta de la empresa, no de `/api/roles/paged`, que pide `roles.read`.
+  it("B4: un Administrador de empresa sin roles de la organización ve los miembros, los roles y los filtros de su empresa", async () => {
+    const user = userEvent.setup();
+    let organizationRoles = 0;
+    detailApi([{ ...member, roles: [companyAdmin] }]);
+    server.use(http.get("/api/roles/paged", () => { organizationRoles += 1; return HttpResponse.json({ code: "Authorization.Forbidden" }, { status: 403 }); }));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-company-admin" });
+
+    expect(await screen.findByRole("heading", { level: 1, name: "Delta S.A." })).toBeVisible();
+    const row = (await screen.findByText("Lucía Fernández")).closest("tr")!;
+    expect(within(row).getByText("Administrador")).toBeVisible();
+    expect(within(row).getByText("Activo")).toBeVisible();
+    // Los menús de Radix se abren con el teclado: un clic en jsdom, después de otra prueba con clics, no siempre llega.
+    screen.getByRole("button", { name: "Rol: todos" }).focus();
+    await user.keyboard("{Enter}");
+    expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent)).toEqual(["Todos", "Sin roles", "Administrador", "Solo lectura"]);
+    await user.keyboard("{Escape}");
+    screen.getByRole("button", { name: "Estado: todos" }).focus();
+    await user.keyboard("{Enter}");
+    expect(await screen.findByRole("menuitemradio", { name: /^Baja pedida/ })).toBeVisible();
+    await user.keyboard("{Escape}");
+    expect(organizationRoles).toBe(0);
+    // Lo de la organización no se ofrece: editar la empresa, la pestaña Roles (que lleva al editor de roles) ni la ficha
+    // de Usuario, que piden permisos de la organización.
+    expect(screen.queryByRole("button", { name: "Editar empresa" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: /Roles/ })).not.toBeInTheDocument();
+    (await screen.findByRole("button", { name: "Acciones para Lucía Fernández" })).focus();
+    await user.keyboard("{Enter}");
+    expect(await screen.findByRole("menuitem", { name: "Cambiar roles" })).toBeVisible();
+    expect(screen.queryByRole("menuitem", { name: "Ver usuario" })).not.toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    // Vuelve al Inicio, de donde llegó («Tus empresas» o «Para resolver»): Empresas pide `companies.read`.
+    expect(screen.getByRole("link", { name: "Volver al inicio" })).toHaveAttribute("href", "/org");
+  });
+
+  it("B4: con otra empresa, el Administrador de empresa ve «No tenés permiso»", async () => {
+    renderRouteWithProviders("/org/empresas/company-2", { as: "business-company-admin" });
+
+    expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
+  });
+
   // «Criterio · Botones»: «Guardar cambios» de «Editar empresa» no se apaga con el CUIT mal; no manda nada y el campo dice
   // qué corregir.
   it("con el CUIT mal, «Guardar cambios» de «Editar empresa» sigue activo y no manda nada", async () => {

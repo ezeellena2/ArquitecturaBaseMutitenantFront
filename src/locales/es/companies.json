@@ -85,6 +85,7 @@
     "state": "Estado"
   },
   "back": "Volver a Empresas",
+  "backHome": "Volver al inicio",
   "detail": {
     "title": "Empresa",
     "loading": "Cargando empresa",

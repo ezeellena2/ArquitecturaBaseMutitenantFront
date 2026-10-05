@@ -45,9 +45,11 @@ export function CompanyMembersTab({ company, list, roles }: {
   const { t } = useTranslation(["companies", "common"]);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { canInCompany } = usePermissions();
+  const { can, canInCompany } = usePermissions();
   const canReadMembers = canInCompany(company.id, "company.members.read");
   const canManageMembers = canInCompany(company.id, "company.members.manage");
+  // La ficha de Usuario pide `users.read` de la organización: sin ese permiso, «Ver usuario» no se ofrece (B4).
+  const canViewUsers = can("users.read");
   const { filters, pagination, query, result: members, paginationProps } = list;
   const { state, roleId, withoutRoles } = query;
   const search = query.search ?? undefined;
@@ -74,7 +76,7 @@ export function CompanyMembersTab({ company, list, roles }: {
     return <RowActions label={t("companies:memberActions", { name: member.displayName })} actions={[
       { label: t("companies:actions.changeRoles"), accessibleName: t("companies:actions.changeRoles"), icon: ShieldCheck, onSelect: (trigger) => setRolesTarget({ member, trigger }),
         hidden: !canManageMembers || member.state !== "Active" || member.membershipStatus !== "Active" || !editable },
-      { label: t("companies:actions.viewUser"), accessibleName: t("companies:actions.viewUser"), icon: UserRound, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); } },
+      { label: t("companies:actions.viewUser"), accessibleName: t("companies:actions.viewUser"), icon: UserRound, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); }, hidden: !canViewUsers },
       // Tablero Empresa: «Quitar de la empresa» (también con la baja pedida) pide confirmación; «Volver a sumar» es directo.
       { label: t(removing ? "companies:actions.removeMember" : "companies:actions.restoreMember"), accessibleName: t(removing ? "companies:actions.removeMember" : "companies:actions.restoreMember"),
         icon: Power, destructive: removing, hidden: !canManageMembers || !editable,

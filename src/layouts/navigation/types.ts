@@ -1,11 +1,16 @@
 import type { LucideIcon } from "lucide-react";
-import type { OrganizationPermission } from "@/auth/usePermissions";
+import type { CompanyPermission, OrganizationPermission } from "@/auth/usePermissions";
 
 /// Una ruta del manifiesto de un área: su camino, el permiso y el módulo que pide para abrirse y, si va en el menú, su
 /// rótulo y su ícono. De acá salen `app/routes.tsx` (con `RequirePermission`) y el menú: nada se declara dos veces.
 export interface AppRoute {
   path: string;
   permission?: OrganizationPermission;
+  /**
+   * La alternativa de una ruta de una empresa (`:companyId`): también se abre con este permiso en esa empresa, como
+   * `[HasCompanyPermission(…, organizationPermission: …)]` del back (B4, decisión 88).
+   */
+  companyPermission?: CompanyPermission;
   /** El módulo (`features` de /api/me): apagado, el enlace no aparece y la ruta no existe. */
   feature?: string;
   labelKey?: string;

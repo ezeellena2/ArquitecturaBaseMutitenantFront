@@ -41,7 +41,7 @@ const businessPages: Record<Exclude<keyof typeof businessRoutes, "home">, LazyRo
 
 const businessPageRoutes: RouteObject[] = (Object.keys(businessPages) as (keyof typeof businessPages)[]).map((name) => {
   const route: AppRoute = businessRoutes[name];
-  return { element: <RequirePermission permission={route.permission} feature={route.feature} />, children: [
+  return { element: <RequirePermission permission={route.permission} companyPermission={route.companyPermission} feature={route.feature} />, children: [
     { path: route.path, lazy: businessPages[name], errorElement: <AppErrorPage /> },
   ] };
 });

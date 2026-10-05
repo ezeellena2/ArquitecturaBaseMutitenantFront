@@ -13,7 +13,8 @@ export const businessRoutes = {
   newRole: { path: "/org/roles/nuevo", permission: "roles.manage" },
   role: { path: "/org/roles/:roleId", permission: "roles.read" },
   companies: { path: "/org/empresas", permission: "companies.read", labelKey: "navigation.companies", icon: Building2 },
-  company: { path: "/org/empresas/:companyId", permission: "companies.read" },
+  // B4: la ficha de una empresa también la abre quien ve los miembros de esa empresa (el Administrador de empresa).
+  company: { path: "/org/empresas/:companyId", permission: "companies.read", companyPermission: "company.members.read" },
   settings: { path: "/org/configuracion", permission: "settings.read", labelKey: "navigation.settings", icon: SlidersHorizontal },
   publicPage: { path: "/org/pagina", permission: "publicpage.manage", labelKey: "navigation.publicPage", icon: Globe },
   audit: { path: "/org/auditoria", permission: "audit.read", labelKey: "navigation.audit", icon: ClipboardList },
