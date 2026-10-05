@@ -2,8 +2,7 @@ import { useMemo } from "react";
 import type { MeResponse } from "@/shared/api/types";
 import { useCurrentUser } from "./useCurrentUser";
 
-/// Los permisos del catálogo del back (`Domain/Authorization/Permissions.cs`) que valen en toda la organización. Los
-/// de la plataforma se suman con su backoffice (E9).
+/// Los permisos del catálogo del back (`Domain/Authorization/Permissions.cs`) que valen en toda la organización.
 export const organizationPermissions = [
   "users.read", "users.invite", "users.manage",
   "roles.read", "roles.manage", "roles.assign",
@@ -16,11 +15,22 @@ export const organizationPermissions = [
 /// Los que valen en una empresa del grupo.
 export const companyPermissions = ["company.members.read", "company.members.manage"] as const;
 
+/// Los permisos individuales del operador, del catálogo `Domain/Authorization/PlatformPermissions.cs`.
+export const platformPermissions = [
+  "platform.tenants.read", "platform.tenants.manage",
+  "platform.accounts.read", "platform.accounts.manage",
+  "platform.recoveries.manage", "platform.legal.manage", "platform.operators.manage",
+  "platform.audit.read", "platform.settings.manage",
+] as const;
+
 export type OrganizationPermission = (typeof organizationPermissions)[number];
 export type CompanyPermission = (typeof companyPermissions)[number];
+export type PlatformPermission = (typeof platformPermissions)[number];
 export type Permission = OrganizationPermission | CompanyPermission;
 
 export interface Permissions {
+  /** Si el operador tiene el permiso individual de Plataforma. */
+  canPlatform: (permission: PlatformPermission) => boolean;
   /** Si la sesión tiene el permiso en la organización activa. */
   can: (permission: OrganizationPermission) => boolean;
   /** Si lo tiene en esa empresa: los de los roles de la organización y los de sus roles en la empresa. */
@@ -34,9 +44,11 @@ export interface Permissions {
 /// permisos del front son solo experiencia de uso: decide el back.
 export function permissionsOf(me: Pick<MeResponse, "effectivePermissions" | "features"> | undefined): Permissions {
   const organization: readonly string[] = me?.effectivePermissions.organization ?? [];
+  const platform: readonly string[] = me?.effectivePermissions.platform ?? [];
   const companies = me?.effectivePermissions.companies ?? {};
   const features: readonly string[] = me?.features ?? [];
   return {
+    canPlatform: (permission) => platform.includes(permission),
     can: (permission) => organization.includes(permission),
     canInCompany: (companyId, permission) => (companies[companyId] ?? organization).includes(permission),
     hasFeature: (feature) => features.includes(feature),

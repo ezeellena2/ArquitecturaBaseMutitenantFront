@@ -1,18 +1,19 @@
 import { render, screen } from "@testing-library/react";
 import { RouterProvider, createMemoryRouter } from "react-router";
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { RequirePermission } from "./RequirePermission";
 
-const session = vi.hoisted(() => ({ organization: [] as string[], features: [] as string[], companies: {} as Record<string, string[]> }));
+const session = vi.hoisted(() => ({ access: "business", platform: [] as string[], organization: [] as string[], features: [] as string[], companies: {} as Record<string, string[]> }));
 vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: {
-  access: "business", features: session.features, effectivePermissions: { platform: [], organization: session.organization, companies: session.companies },
+  access: session.access, features: session.features, effectivePermissions: { platform: session.platform, organization: session.organization, companies: session.companies },
 } }) }));
 
 beforeAll(async () => {
   await configureI18n(referenceDataFixture().cultures);
 });
+afterEach(() => { session.access = "business"; session.platform = []; });
 
 function open(path: string) {
   const router = createMemoryRouter([
@@ -35,6 +36,18 @@ function openCompany(path: string) {
 }
 
 describe("RequirePermission", () => {
+  it("el permiso de Plataforma se exige sin aceptar el mismo código de organización", () => {
+    session.access = "platform";
+    session.platform = [];
+    session.organization = ["platform.accounts.read"];
+    const router = createMemoryRouter([{ element: <RequirePermission platformPermission="platform.accounts.read" />, children: [
+      { path: "/plataforma/cuentas", element: <h1>{"Cuentas"}</h1> },
+    ] }], { initialEntries: ["/plataforma/cuentas"] });
+    render(<RouterProvider router={router} />);
+    expect(screen.getByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/plataforma");
+    session.access = "business";
+  });
   it("abre la pantalla con el módulo prendido y el permiso", async () => {
     session.features = ["reportes"];
     session.organization = ["audit.read"];

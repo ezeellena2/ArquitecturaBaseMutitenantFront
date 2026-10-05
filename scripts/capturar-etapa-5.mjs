@@ -249,7 +249,17 @@ export function buildCases() {
   for (const door of ["Persona", "Empresa"]) both({ group: "recuperar", pair: `recuperar-enlace-${slug(door)}`,
     board: "Ingreso", mobileBoard: "M-Ingreso", props: { estado: "Correo", puerta: door },
     route: door === "Empresa" ? "/login/empresa" : "/login", readyText: "Recuperá tu cuenta" });
-  return cases.map((entry) => entry.group === "recuperar" ? { ...entry, app: recoveryApp(entry) } : entry);
+  return cases.map((entry) => {
+    if (entry.group === "recuperar") return { ...entry, app: recoveryApp(entry) };
+    if (entry.group === "plataforma-marco") return { ...entry, app: {
+      ...entry.app,
+      path: `/src/test/visualApp.html?as=visual-operator&frame=platform&route=${encodeURIComponent(entry.app.path)}`,
+      captureMode: "harness", userFixture: "visual-operator", readySelector: "main",
+      scenario: `${entry.pair}: marco real, contenido pendiente T21–T23`,
+      actions: entry.pair === "marco-tu-menu" && entry.viewport.width === 1440 ? [click("Martín Sosa, Plataforma")] : [],
+    } };
+    return entry;
+  });
 }
 
 export async function writeManifest() {

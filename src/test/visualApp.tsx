@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { AppProviders } from "@/app/providers";
+import { PlatformLayout } from "@/layouts/PlatformLayout";
 import { routes } from "@/app/routes";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { DeletionRequestedPage } from "@/areas/personal/account/components/DeletionRequestedPage";
@@ -45,8 +46,12 @@ const sessionPages = {
 };
 const sessionPage = session ? sessionPages[session as keyof typeof sessionPages] : undefined;
 if (session && !sessionPage) throw new Error("Estado visual de sesión inválido");
+const frame = params.get("frame");
+if (frame && (frame !== "platform" || currentUsers[as].access !== "platform" || session)) throw new Error("Marco visual inválido");
+// T20b compara el marco real mientras las páginas de T21–T23 todavía no se montan. No agrega contenido de prueba.
 const router = sessionPage
   ? createMemoryRouter([{ path: "*", element: sessionPage }], { initialEntries: [session === "cancelled" ? route : "/"] })
+  : frame === "platform" ? createMemoryRouter([{ path: "*", element: <PlatformLayout /> }], { initialEntries: [route] })
   : createMemoryRouter(routes, { initialEntries: [route] });
 // El cliente de la app, con sus avisos globales (red, 5xx y 429) y sus opciones: la captura muestra lo que ve la persona.
 const client = createQueryClient();

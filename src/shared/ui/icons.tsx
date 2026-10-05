@@ -89,6 +89,26 @@ export function UsersIcon(props: IconProps) {
   );
 }
 
+/// «Gestión» de Plataforma (tableros Organizaciones y Config-Plat): cuatro cuadrados.
+export function GridIcon(props: IconProps) {
+  return <Icon {...props}>
+    <rect x="3" y="3" width="7" height="7" rx="1.5" />
+    <rect x="14" y="3" width="7" height="7" rx="1.5" />
+    <rect x="3" y="14" width="7" height="7" rx="1.5" />
+    <rect x="14" y="14" width="7" height="7" rx="1.5" />
+  </Icon>;
+}
+
+/// «Documentos legales» de Plataforma (tablero Legales): una hoja con la esquina doblada.
+export function DocumentIcon(props: IconProps) {
+  return <Icon {...props}>
+    <path d="M14 3.5H7a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7.5z" />
+    <path d="M14 3.5v4h4" />
+    <path d="M9 12h6" />
+    <path d="M9 16h6" />
+  </Icon>;
+}
+
 /// «Roles y permisos» en el menú y en los inicios: la llave.
 export function KeyIcon(props: IconProps) {
   return (

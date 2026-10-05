@@ -127,8 +127,24 @@ test("los tres pasos de Recuperar comprueban su título visible antes de captura
 
 test("Más usa su ruta móvil futura y conserva la referencia Administración desktop", () => {
   const cases = buildCases();
-  assert.equal(cases.find((entry) => entry.id === "marco-mas-movil").app.path, "/plataforma/mas");
-  assert.equal(cases.find((entry) => entry.id === "marco-mas-escritorio").app.path, "/plataforma/configuracion");
+  const phone = cases.find((entry) => entry.id === "marco-mas-movil");
+  assert.equal(new URL(phone.app.path, "http://example.test").searchParams.get("route"), "/plataforma/mas");
+  const desktop = cases.find((entry) => entry.id === "marco-mas-escritorio");
+  assert.equal(new URL(desktop.app.path, "http://example.test").searchParams.get("route"), "/plataforma/configuracion");
+});
+
+test("el marco usa la app real aislada y declara el contenido pendiente sin montar features", () => {
+  for (const entry of buildCases().filter((item) => item.group === "plataforma-marco")) {
+    const params = new URL(entry.app.path, "http://example.test").searchParams;
+    assert.equal(params.get("frame"), "platform", entry.id);
+    assert.equal(params.get("as"), "visual-operator", entry.id);
+    assert.ok(params.get("route").startsWith("/plataforma"), entry.id);
+    assert.equal(entry.app.captureMode, "harness");
+    assert.match(entry.app.scenario, /contenido pendiente T21–T23/);
+    assert.equal(entry.app.readySelector, "main");
+  }
+  const menu = buildCases().find((entry) => entry.id === "marco-tu-menu-escritorio");
+  assert.deepEqual(menu.app.actions, [{ type: "click", role: "button", name: "Martín Sosa, Plataforma" }]);
 });
 
 test("el manifest escrito es consumible por el recorrido vivo con el id exacto del plan", () => {

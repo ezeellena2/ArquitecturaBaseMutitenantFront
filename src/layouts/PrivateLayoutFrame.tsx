@@ -14,14 +14,14 @@ import { AdminPanel } from "./components/AdminPanel";
 import { Breadcrumbs } from "./components/Breadcrumbs";
 import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
-import { findAdministrationEntry } from "./navigation/administration";
+import { findNavigationPanelEntry, type NavigationPanelKey } from "./navigation/administration";
 import type { NavigationConfig } from "./navigation/types";
 import { visibleNavigation } from "./navigation/visible";
 import { activeOrganization } from "@/tenancy/access";
 
 interface PrivateLayoutFrameProps {
   navigation: NavigationConfig;
-  scope?: "personal" | "business";
+  scope?: "personal" | "business" | "platform";
   children?: ReactNode;
 }
 
@@ -33,14 +33,15 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   const permissions = usePermissions();
   const shownNavigation = useMemo(() => visibleNavigation(navigation, permissions), [navigation, permissions]);
   const [collapsed, setCollapsed] = useLocalStorage("sidebarCollapsed", false);
-  // En una pantalla de Administración el panel arranca abierto, también al recargar; en las demás, cerrado. Lo que
+  // En una pantalla de un panel este arranca abierto, también al recargar; en las demás, cerrado. Lo que
   // la persona abre o cierra vale hasta que cambia de pantalla. Se mira la navegación completa y no la visible,
   // que espera a los permisos: si no, al recargar el panel quedaría cerrado.
   const { pathname } = useLocation();
-  const administrationEntry = findAdministrationEntry(navigation.administration, pathname);
-  const onAdministrationRoute = administrationEntry !== null;
-  const [toggledAdministration, setToggledAdministration] = useState<{ pathname: string; open: boolean } | null>(null);
-  const administrationOpen = toggledAdministration?.pathname === pathname ? toggledAdministration.open : onAdministrationRoute;
+  const panelEntry = findNavigationPanelEntry(navigation, pathname);
+  const [toggledPanel, setToggledPanel] = useState<{ pathname: string; panel: NavigationPanelKey | null } | null>(null);
+  const selectedPanel = toggledPanel?.pathname === pathname ? toggledPanel.panel : panelEntry?.panel ?? null;
+  const openPanel = selectedPanel && shownNavigation[selectedPanel] ? selectedPanel : null;
+  const togglePanel = (panel: NavigationPanelKey) => setToggledPanel({ pathname, panel: openPanel === panel ? null : panel });
   const [bottomNavHidden, setBottomNavHidden] = useState(false);
   const hideBottomNav = useCallback((hidden: boolean) => setBottomNavHidden(hidden), []);
   const [activeSectionHidden, setActiveSectionHidden] = useState(false);
@@ -52,7 +53,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   const organization = activeOrganization(user);
   const context = scope === "personal" ? { title: t("accessMenu.personal"), detail: t("accessMenu.personalDetail") }
     : scope === "business" && organization ? { title: organization.name, detail: t("layout.sidebar.organization") }
-      : null;
+      : scope === "platform" ? { title: t("navigation.platform"), detail: t("layout.sidebar.platformDetail") } : null;
 
   // Tableros M-* («Criterio · Marco»): en el teléfono, Inicio y «Más» abajo; las demás pantallas se abren desde
   // «Más» y vuelven a él con ‹. Debajo del título va el camino («Administración») o la organización.
@@ -60,16 +61,17 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   // Una pantalla que vuelve al Inicio con ‹ (la ficha de la empresa de quien la administra sola) también es del Inicio.
   const onHome = home?.path === pathname || homeMarked;
   const onMore = navigation.moreTo === pathname;
+  const routePanel = panelEntry ? navigation[panelEntry.panel] : null;
   const chrome = useMemo<AppChrome>(() => ({
     phone: isMobile,
     parent: isMobile && navigation.moreTo && !onHome && !onMore ? { to: navigation.moreTo, label: t("layout.app.backToMore") } : null,
-    subtitle: administrationEntry && navigation.administration ? t(navigation.administration.labelKey) : context?.title ?? null,
-    title: administrationEntry ? t(administrationEntry.link.labelKey) : null,
+    subtitle: routePanel ? t(routePanel.labelKey) : context?.title ?? null,
+    title: panelEntry ? t(panelEntry.link.labelKey) : null,
     hideBottomNav,
     hideActiveSection,
     homePath: home?.path ?? null,
     markHome,
-  }), [isMobile, navigation.moreTo, navigation.administration, onHome, onMore, administrationEntry, context?.title, hideBottomNav, hideActiveSection, home?.path, markHome, t]);
+  }), [isMobile, navigation.moreTo, routePanel, onHome, onMore, panelEntry, context?.title, hideBottomNav, hideActiveSection, home?.path, markHome, t]);
 
   if (isSigningOut) return <SessionStatusPage status="closing" />;
 
@@ -90,11 +92,15 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
         account={account}
         context={context}
         collapsed={collapsed}
-        administrationOpen={administrationOpen}
-        onToggleAdministration={() => setToggledAdministration({ pathname, open: !administrationOpen })}
+        managementOpen={openPanel === "management"}
+        onToggleManagement={() => togglePanel("management")}
+        administrationOpen={openPanel === "administration"}
+        onToggleAdministration={() => togglePanel("administration")}
         onToggleCollapsed={() => setCollapsed((value) => !value)}
       />
-      <AdminPanel panel={shownNavigation.administration} open={administrationOpen} onClose={() => setToggledAdministration({ pathname, open: false })} />
+      <AdminPanel panel={openPanel ? shownNavigation[openPanel] ?? null : null} open={openPanel !== null}
+        currentLink={panelEntry?.panel === openPanel ? panelEntry.link : null}
+        onClose={() => setToggledPanel({ pathname, panel: null })} />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <Topbar breadcrumbs={<Breadcrumbs navigation={navigation} permissions={permissions} />} />
         <main className="relative min-h-0 flex-1 scroll-pt-14 overflow-y-auto bg-[var(--fondo)] print:overflow-visible">{children ?? <Outlet />}</main>

@@ -2,6 +2,227 @@
   "version": 1,
   "cases": [
     {
+      "id": "marco-gestion-escritorio",
+      "pair": "marco-gestion",
+      "group": "plataforma-marco",
+      "state": "v111: marco-gestion: marco real, contenido pendiente T21–T23",
+      "board": "Organizaciones",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
+        "scenario": "marco-gestion: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "marco-gestion-movil",
+      "pair": "marco-gestion",
+      "group": "plataforma-marco",
+      "state": "v111: marco-gestion: marco real, contenido pendiente T21–T23",
+      "board": "M-Organizaciones",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
+        "scenario": "marco-gestion: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "marco-administracion-escritorio",
+      "pair": "marco-administracion",
+      "group": "plataforma-marco",
+      "state": "v111: marco-administracion: marco real, contenido pendiente T21–T23",
+      "board": "Config-Plat",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "marco-administracion: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "marco-administracion-movil",
+      "pair": "marco-administracion",
+      "group": "plataforma-marco",
+      "state": "v111: marco-administracion: marco real, contenido pendiente T21–T23",
+      "board": "M-Mas-Plat",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fmas",
+        "scenario": "marco-administracion: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "marco-tu-menu-escritorio",
+      "pair": "marco-tu-menu",
+      "group": "plataforma-marco",
+      "state": "v111: marco-tu-menu: marco real, contenido pendiente T21–T23",
+      "board": "Organizaciones",
+      "props": {},
+      "boardActions": [
+        {
+          "type": "click",
+          "selector": "button.um-btn"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
+        "scenario": "marco-tu-menu: marco real, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Martín Sosa, Plataforma"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "marco-tu-menu-movil",
+      "pair": "marco-tu-menu",
+      "group": "plataforma-marco",
+      "state": "v111: marco-tu-menu: marco real, contenido pendiente T21–T23",
+      "board": "M-Mas-Plat",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fmas",
+        "scenario": "marco-tu-menu: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "marco-barra-inferior-escritorio",
+      "pair": "marco-barra-inferior",
+      "group": "plataforma-marco",
+      "state": "v111: marco-barra-inferior: marco real, contenido pendiente T21–T23",
+      "board": "Organizaciones",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
+        "scenario": "marco-barra-inferior: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "marco-barra-inferior-movil",
+      "pair": "marco-barra-inferior",
+      "group": "plataforma-marco",
+      "state": "v111: marco-barra-inferior: marco real, contenido pendiente T21–T23",
+      "board": "M-Organizaciones",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
+        "scenario": "marco-barra-inferior: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "marco-mas-escritorio",
+      "pair": "marco-mas",
+      "group": "plataforma-marco",
+      "state": "v111: marco-mas: marco real, contenido pendiente T21–T23",
+      "board": "Config-Plat",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "marco-mas: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "marco-mas-movil",
+      "pair": "marco-mas",
+      "group": "plataforma-marco",
+      "state": "v111: marco-mas: marco real, contenido pendiente T21–T23",
+      "board": "M-Mas-Plat",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fmas",
+        "scenario": "marco-mas: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
+      }
+    },
+    {
       "id": "recuperar-paso-1-escritorio",
       "pair": "recuperar-paso-1",
       "group": "recuperar",

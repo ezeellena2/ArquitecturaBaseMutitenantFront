@@ -10,7 +10,7 @@ import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { cancelSignOut } from "@/auth/signOutStatus";
 import { configureI18n } from "@/shared/i18n";
 import type { MeResponse } from "@/shared/api/types";
-import { businessUser, consumerWithoutOrganizations, platformOperator } from "@/test/mocks/currentUsers";
+import { businessUser, consumerWithoutOrganizations, platformOperator, visualOperator } from "@/test/mocks/currentUsers";
 import { AccessMenu } from "./AccessMenu";
 
 const switchAccess = vi.fn<({ access, tenantId }: { access: string; tenantId?: string }) => Promise<void>>();
@@ -37,6 +37,22 @@ function setup(account: MeResponse) {
 }
 
 describe("AccessMenu", () => {
+  it("en Plataforma muestra el contexto bajo el nombre y sólo Mi cuenta y Salir", async () => {
+    const { user } = setup(visualOperator);
+    const trigger = screen.getByRole("button", { name: "Martín Sosa, Plataforma" });
+    expect(within(trigger).getByText("Plataforma")).toBeVisible();
+    trigger.focus();
+    await user.keyboard("{Enter}");
+    const menu = await screen.findByRole("menu");
+    expect(within(menu).getByText("martin.sosa@arquitecturabase.ejemplo.com")).toBeVisible();
+    expect(within(menu).queryByText("Perfiles")).not.toBeInTheDocument();
+    expect(within(menu).queryByRole("menuitemradio")).not.toBeInTheDocument();
+    expect(within(menu).getByRole("menuitem", { name: "Mi cuenta" })).toHaveAttribute("href", "/cuenta");
+    expect(within(menu).getByRole("menuitem", { name: "Salir" })).toBeVisible();
+    expect(await axe(document.body, { rules: { region: { enabled: false } } })).toHaveNoViolations();
+    await user.click(within(menu).getByRole("menuitem", { name: "Salir" }));
+    expect(signoutRedirect).toHaveBeenCalledOnce();
+  });
   it("muestra perfiles reales, marca el activo y cambia a otra organización", async () => {
     const { user } = setup({
       ...businessUser,
@@ -46,7 +62,8 @@ describe("AccessMenu", () => {
       ],
     });
 
-    await user.click(screen.getByRole("button", { name: "Ana, Empresa A" }));
+    screen.getByRole("button", { name: "Ana, Empresa A" }).focus();
+    await user.keyboard("{Enter}");
     const menu = screen.getByRole("menu", { name: "Ana, Empresa A" });
     expect(within(menu).getByText("Perfiles")).toBeVisible();
     expect(within(menu).getByText("Tu perfil personal")).toBeVisible();

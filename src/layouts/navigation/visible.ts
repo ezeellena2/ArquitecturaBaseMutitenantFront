@@ -1,22 +1,27 @@
 import type { Permissions } from "@/auth/usePermissions";
-import type { AppRoute, NavigationConfig } from "./types";
+import type { AppRoute, NavigationConfig, NavigationPanel } from "./types";
 
 /// Si la sesión abre una ruta del menú: su módulo prendido y su permiso. Sin eso, el menú no la muestra y las migas la
 /// dejan sin enlace.
 export function canOpen(route: AppRoute, permissions: Permissions): boolean {
-  return (!route.feature || permissions.hasFeature(route.feature)) && (!route.permission || permissions.can(route.permission));
+  return (!route.feature || permissions.hasFeature(route.feature))
+    && (!route.permission || permissions.can(route.permission))
+    && (!route.platformPermission || permissions.canPlatform(route.platformPermission));
 }
 
 /// El menú que la sesión puede ver: sin los enlaces de módulos apagados ni sin permiso, sin las secciones que quedan
-/// vacías y sin el panel de Administración si no queda nada. Lo usan el menú lateral y «Más».
+/// vacías y sin los paneles de Gestión o Administración si no queda nada. Lo usan el menú lateral y «Más».
 export function visibleNavigation(navigation: NavigationConfig, permissions: Permissions): NavigationConfig {
   const visible = (route: AppRoute) => canOpen(route, permissions);
-  const source = navigation.administration;
-  const sections = source?.sections?.map((section) => ({ ...section, links: section.links.filter(visible) }))
-    .filter((section) => section.links.length > 0);
-  const panelLinks = source?.links.filter(visible) ?? [];
-  const administration = source && (panelLinks.length > 0 || (sections?.length ?? 0) > 0)
-    ? { ...source, links: panelLinks, ...(sections ? { sections } : {}) }
-    : null;
-  return { ...navigation, links: navigation.links.filter(visible), administration };
+  const panel = (source: NavigationPanel | null | undefined): NavigationPanel | null => {
+    const sections = source?.sections?.map((section) => ({ ...section, links: section.links.filter(visible) }))
+      .filter((section) => section.links.length > 0);
+    const links = source?.links.filter(visible) ?? [];
+    return source && (links.length > 0 || (sections?.length ?? 0) > 0)
+      ? { ...source, links, ...(sections ? { sections } : {}) } : null;
+  };
+  return { ...navigation, links: navigation.links.filter(visible),
+    ...(navigation.management !== undefined ? { management: panel(navigation.management) } : {}),
+    administration: panel(navigation.administration),
+  };
 }

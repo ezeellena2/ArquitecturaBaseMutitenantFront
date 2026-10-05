@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import type { LazyRouteFunction, RouteObject } from "react-router";
+import { Outlet } from "react-router";
 import { SessionRecovery } from "@/auth/SessionRecovery";
 import { ProtectedRoute } from "@/auth/ProtectedRoute";
 import { LegalAcceptanceGate } from "@/auth/LegalAcceptanceGate";
@@ -14,8 +15,9 @@ import { SiteLayout } from "@/layouts/SiteLayout";
 import { AppErrorPage } from "@/layouts/AppErrorBoundary";
 import { AppShell } from "@/layouts/AppShell";
 import { businessRoutes } from "@/layouts/navigation/business";
+import { platformNavigation, platformRoutes } from "@/layouts/navigation/platform";
 import type { AppRoute } from "@/layouts/navigation/types";
-import { ForbiddenRoute, HomeRoute, NotFoundRoute } from "./RouteViews";
+import { ForbiddenRoute, HomeRoute, NotFoundRoute, PlatformHomeRoute } from "./RouteViews";
 import { RequirePermission } from "./RequirePermission";
 import { homeOf, loginPathOf } from "@/tenancy/access";
 
@@ -45,6 +47,31 @@ const businessPageRoutes: RouteObject[] = (Object.keys(businessPages) as (keyof 
     { path: route.path, lazy: businessPages[name], errorElement: <AppErrorPage /> },
   ] };
 });
+
+export type PlatformPages = Partial<Record<keyof typeof platformRoutes, LazyRouteFunction<RouteObject>>>;
+
+// Las páginas se suman en T21–T23: una entrada del manifiesto sola no monta una pantalla futura.
+export const platformPages: PlatformPages = {};
+
+/// Monta sólo las páginas disponibles, con el permiso del manifiesto. El inicio elige Gestión y luego Administración.
+export function createPlatformPageRoutes(pages: PlatformPages): RouteObject[] {
+  const names = (Object.keys(pages) as (keyof typeof platformRoutes)[]).filter((name) => pages[name]);
+  const availablePaths = new Set(names.map((name) => platformRoutes[name].path));
+  const availableRoutes = [...(platformNavigation.management?.links ?? []), ...(platformNavigation.administration?.links ?? [])]
+    .filter((route) => names.length === 0 || availablePaths.has(route.path));
+  const pageRoutes = names.filter((name) => name !== "organizations").map((name): RouteObject => {
+    const route = platformRoutes[name];
+    return { element: <RequirePermission platformPermission={route.platformPermission} />, children: [
+      { path: route.path, lazy: pages[name], errorElement: <AppErrorPage /> },
+    ] };
+  });
+  return [
+    { element: <PlatformHomeRoute availableRoutes={availableRoutes} pendingPages={names.length === 0} />, children: [
+      { index: true, ...(pages.organizations ? { lazy: pages.organizations } : { element: <Outlet /> }), errorElement: <AppErrorPage /> },
+    ] },
+    ...pageRoutes,
+  ];
+}
 
 export const routes: RouteObject[] = [
   { element: <AppShell />, errorElement: <AppErrorPage />, children: [
@@ -79,7 +106,7 @@ export const routes: RouteObject[] = [
         ] },
       ] },
       { element: <AccessRoute access="platform" />, children: [
-        { path: homeOf("platform"), element: <PlatformLayout /> },
+        { path: homeOf("platform"), element: <PlatformLayout />, children: createPlatformPageRoutes(platformPages) },
       ] },
       ] },
     ] },

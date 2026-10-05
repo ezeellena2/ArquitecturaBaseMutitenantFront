@@ -77,7 +77,7 @@ src/
 │   ├── routes.tsx                                   rutas por acceso dentro del AppShell; las pantallas de la organización salen del manifiesto de layouts/navigation/business.ts, con lazyPage y RequirePermission;
 │   │                                                [E7] árbol por host (dominio principal o subdominio de organización)
 │   ├── routes.test.tsx                              [E3] acceso de cada ruta; cada ruta del manifiesto pide su permiso
-│   ├── RouteViews.tsx                               HomeRoute (el inicio de cada acceso), ForbiddenRoute y NotFoundRoute
+│   ├── RouteViews.tsx                               HomeRoute, PlatformHomeRoute (primera pantalla permitida disponible), ForbiddenRoute y NotFoundRoute
 │   ├── RequirePermission.tsx                        [E7] la guarda de una ruta del manifiesto: módulo apagado → 404; sin permiso → «No tenés permiso», dentro del marco; con companyPermission, también ese permiso en la empresa de la ruta (B4)
 │   ├── RequirePermission.test.tsx                   [E7]
 │   ├── navigationStatus.test.tsx                    la navegación OIDC transitoria («Iniciando sesión…», «Cerrando sesión…»)
@@ -109,7 +109,7 @@ src/
 │   ├── LegalAcceptanceGate.test.tsx                 tests de LegalAcceptanceGate
 │   ├── useCurrentUser.ts                            GET /api/me, key ["current-user"]
 │   ├── useCurrentUser.test.tsx                      tests de useCurrentUser
-│   ├── usePermissions.ts                            [E7] can, canInCompany y hasFeature (P8) sobre effectivePermissions y features de /api/me; los códigos tipados del catálogo del back
+│   ├── usePermissions.ts                            can, canInCompany, canPlatform y hasFeature (P8) sobre effectivePermissions y features de /api/me; los códigos tipados de los catálogos del back
 │   └── usePermissions.test.ts                       [E7]
 │
 ├── tenancy/                                         [E3] accesos (B2C / B2B / plataforma)
@@ -134,15 +134,17 @@ src/
 │   ├── PrivateLayoutFrame.test.tsx                  tests de PrivateLayoutFrame
 │   ├── PersonalLayout.tsx                           [E3] acceso B2C: Inicio, Mi cuenta + módulos B2C (sin organizaciones)
 │   ├── BusinessLayout.tsx                           [E3] sidebar + AdminPanel + topbar con la organización; en el teléfono, el marco de app de PrivateLayoutFrame
-│   ├── PlatformLayout.tsx                           [E3]
+│   ├── PlatformLayout.tsx                           [E5] marco de Plataforma: Gestión arriba, Administración al pie, un solo panel abierto
+│   ├── PlatformLayout.test.tsx                      permisos, panel activo y axe del marco desktop
 │   ├── AccountLayout.tsx                            /cuenta y /mas dentro del layout del acceso activo
 │   ├── MorePage.tsx                                 «Más» del teléfono (/mas): quién sos, Perfiles, Administración, Mi cuenta y Salir (M-Mas-Personal, M-WA-Menu); en la compu vuelve al inicio
 │   ├── MorePage.test.tsx                            tests de MorePage
 │   ├── SiteLayout.tsx                               [E3] portada de la plataforma; en [E7], también el directorio y la página pública del subdominio
 │   ├── SiteLayout.test.tsx                          tests de SiteLayout
 │   ├── navigation/
-│   │   ├── types.ts                                 AppRoute (camino, permiso, permiso de empresa, módulo, rótulo e ícono), grupos y ramas del menú
-│   │   ├── administration.ts                        la opción del panel de la que sale una ruta: la usan el panel, las migas y el marco
+│   │   ├── types.ts                                 AppRoute (camino, permiso de organización, empresa o Plataforma, módulo, rótulo e ícono), paneles Gestión/Administración y raíz de las migas
+│   │   ├── administration.ts                        la opción más específica del panel de la que sale una ruta: la usan el panel, las migas y el marco
+│   │   ├── administration.test.ts                   Gestión y Administración de Plataforma, incluido el inicio de Organizaciones
 │   │   ├── personal.ts
 │   │   ├── business.ts                              el manifiesto de rutas de la organización (businessRoutes) y el menú que sale de él: arriba Inicio + módulos B2B; abajo «Administración» (AdminPanel): «Gestión de usuarios» ▸ Usuarios, Roles y permisos · Empresas · Configuración · Página pública · Auditoría
 │   │   ├── platform.ts                              Organizaciones (el inicio) · Cuentas · Recuperaciones · Auditoría · Documentos legales · Configuración

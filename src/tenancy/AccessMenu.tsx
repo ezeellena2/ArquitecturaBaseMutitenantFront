@@ -42,7 +42,8 @@ export function AccessMenu() {
 
   if (!account) return null;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
-  const activeName = access === "consumer" ? t("accessMenu.personal") : activeOrganization(account)?.name ?? "";
+  const activeName = access === "platform" ? t("navigation.platform")
+    : access === "consumer" ? t("accessMenu.personal") : activeOrganization(account)?.name ?? "";
   // Mi cuenta y Salir van cada uno en su grupo, separados por una línea con aire, como en el tablero.
   const itemClass = "flex w-full min-h-9 items-center gap-2.5 rounded-[6px] border-t-0 px-2.5 py-0 text-[13px] text-[var(--t1)] hover:bg-[var(--s2)]";
   const separator = <div className="my-1 h-px bg-[var(--borde)]" aria-hidden="true" />;
@@ -67,11 +68,13 @@ export function AccessMenu() {
         </span>
       </div>
       {separator}
-      <div className="px-2.5 pt-2 pb-1 text-[12.5px] leading-[normal] font-semibold text-[var(--t3)]">{t("accessMenu.profiles")}</div>
-      <DropdownMenuGroup>
-        {profiles.map((profile) => <ProfileRow key={profile.key} profile={profile} onClose={() => setOpen(false)} />)}
-      </DropdownMenuGroup>
-      {separator}
+      {access !== "platform" ? <>
+        <div className="px-2.5 pt-2 pb-1 text-[12.5px] leading-[normal] font-semibold text-[var(--t3)]">{t("accessMenu.profiles")}</div>
+        <DropdownMenuGroup>
+          {profiles.map((profile) => <ProfileRow key={profile.key} profile={profile} onClose={() => setOpen(false)} />)}
+        </DropdownMenuGroup>
+        {separator}
+      </> : null}
       {/* «Criterio · Menús»: el ícono de una opción va gris claro (--t3), a la izquierda. */}
       <DropdownMenuItem asChild className={itemClass}><Link to="/cuenta" onClick={() => setOpen(false)}><UserIcon className="size-4 text-[var(--t3)]" />{t("accessMenu.myAccount")}</Link></DropdownMenuItem>
       {separator}

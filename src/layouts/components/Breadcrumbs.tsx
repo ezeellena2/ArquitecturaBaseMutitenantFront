@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
 import type { Permissions } from "@/auth/usePermissions";
 import { useCurrentBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
-import { findAdministrationEntry } from "../navigation/administration";
+import { findNavigationPanelEntry } from "../navigation/administration";
 import type { NavigationConfig } from "../navigation/types";
 import { canOpen } from "../navigation/visible";
 
@@ -14,11 +14,11 @@ export function Breadcrumbs({ navigation, permissions }: { navigation: Navigatio
   const { t } = useTranslation();
   const pathname = useLocation().pathname.replace(/\/+$/, "") || "/";
   const leaf = useCurrentBreadcrumbLeaf();
-  const home = navigation.links.at(0);
+  const home = navigation.breadcrumbRoot ?? navigation.links.at(0);
   if (!home) return null;
 
   const crumbs: { label: string; to?: string; current?: boolean }[] = [];
-  const administration = findAdministrationEntry(navigation.administration, pathname);
+  const administration = findNavigationPanelEntry(navigation, pathname);
   if (administration) {
     const { link, section } = administration;
     const onLink = pathname === link.path;
@@ -35,7 +35,7 @@ export function Breadcrumbs({ navigation, permissions }: { navigation: Navigatio
   return <nav aria-label={t("layout.breadcrumbs.label")} className="min-w-0 text-[13px] text-[var(--t2)]">
     {/* «Criterio · Marco» (.tb): «Inicio / Gestión de usuarios / Usuarios», con un espacio a cada lado de la barra. */}
     <ol className="flex min-w-0 items-center gap-[0.28em] truncate">
-      <li className="truncate" aria-current={pathname === home.path ? "page" : undefined}>
+      <li className="truncate" aria-current={pathname === home.path && crumbs.length === 0 ? "page" : undefined}>
         {pathname === home.path ? t(home.labelKey) : <Link to={home.path} className="hover:underline">{t(home.labelKey)}</Link>}
       </li>
       {crumbs.map((crumb) => [

@@ -1,4 +1,4 @@
-import type { Permission } from "@/auth/usePermissions";
+import type { Permission, PlatformPermission } from "@/auth/usePermissions";
 import type { MeResponse } from "@/shared/api/types";
 
 /// Como /api/me: los permisos de la organización van en `effectivePermissions` y `permissions` los repite. El mapa por
@@ -58,10 +58,29 @@ export const businessCompanyAdmin: MeResponse = {
 /** Solo ve Configuración: los datos se leen como texto, sin campos grises. */
 export const businessSettingsReader: MeResponse = withPermissions(businessUser, ["settings.read"]);
 
-/// Operador sin permisos asignados; T20b suma las variantes para el marco de Plataforma.
+/// Operador exclusivo de Plataforma: sin perfiles, con los nueve permisos individuales.
+const operatorPermissions: readonly PlatformPermission[] = [
+  "platform.tenants.read", "platform.tenants.manage", "platform.accounts.read", "platform.accounts.manage",
+  "platform.recoveries.manage", "platform.legal.manage", "platform.operators.manage", "platform.audit.read", "platform.settings.manage",
+];
+
 export const platformOperator: MeResponse = {
   ...consumerWithoutOrganizations,
   access: "platform",
+  hasPersonalSpace: false,
+  effectivePermissions: { platform: [...operatorPermissions], organization: [], companies: {} },
+};
+
+export const platformOperatorReader: MeResponse = {
+  ...platformOperator,
+  effectivePermissions: { platform: ["platform.tenants.read", "platform.accounts.read"], organization: [], companies: {} },
+};
+
+export const visualOperator: MeResponse = {
+  ...platformOperator,
+  id: "martin-sosa",
+  displayName: "Martín Sosa",
+  email: "martin.sosa@arquitecturabase.ejemplo.com",
 };
 
 const visualOrganizations: MeResponse["organizations"] = [
@@ -140,6 +159,8 @@ export const currentUsers = {
   "business-no-permissions": businessWithoutPermissions,
   "business-company-admin": businessCompanyAdmin,
   "platform-operator": platformOperator,
+  "platform-operator-reader": platformOperatorReader,
+  "visual-operator": visualOperator,
   "visual-personal": visualPersonal,
   "visual-business": visualBusiness,
   "visual-owner": visualOwner,

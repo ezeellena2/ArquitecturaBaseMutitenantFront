@@ -6,6 +6,7 @@ import { axe } from "vitest-axe";
 import { configureI18n } from "@/shared/i18n";
 import { businessNavigation } from "../navigation/business";
 import { personalNavigation } from "../navigation/personal";
+import { platformNavigation } from "../navigation/platform";
 import { Sidebar } from "./Sidebar";
 
 beforeAll(async () => {
@@ -13,6 +14,26 @@ beforeAll(async () => {
 });
 
 describe("Sidebar", () => {
+  it("en Plataforma Gestión queda arriba y Administración al pie, sin WhatsApp", async () => {
+    const toggle = vi.fn();
+    render(<MemoryRouter><Sidebar navigation={platformNavigation} account={null} context={null} collapsed={false}
+      managementOpen onToggleManagement={toggle} administrationOpen={false} onToggleAdministration={vi.fn()} onToggleCollapsed={vi.fn()} /></MemoryRouter>);
+    const management = screen.getByRole("button", { name: "Gestión" });
+    const administration = screen.getByRole("button", { name: "Administración" });
+    expect(management).toHaveAttribute("aria-expanded", "true");
+    expect(management.querySelector(".lucide-chevron-right")).not.toBeNull();
+    expect(administration.parentElement).toHaveClass("mt-auto");
+    expect(screen.queryByText("WhatsApp")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Contraer menú" })).not.toBeInTheDocument();
+    await userEvent.click(management);
+    expect(toggle).toHaveBeenCalledOnce();
+  });
+
+  it("la flecha de Administración de Plataforma sigue a derecha aunque no pueda ver Gestión", () => {
+    render(<MemoryRouter><Sidebar navigation={{ ...platformNavigation, management: null }} account={null} context={null} collapsed={false}
+      administrationOpen onToggleAdministration={vi.fn()} onToggleCollapsed={vi.fn()} /></MemoryRouter>);
+    expect(screen.getByRole("button", { name: "Administración" }).querySelector(".lucide-chevron-right")).not.toBeNull();
+  });
   it("muestra Inicio, Administración aprobada, el ámbito y la identidad", async () => {
     const onToggleAdministration = vi.fn();
     const onToggleCollapsed = vi.fn();

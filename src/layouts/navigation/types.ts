@@ -1,11 +1,12 @@
 import type { IconComponent } from "@/shared/ui/icons";
-import type { CompanyPermission, OrganizationPermission } from "@/auth/usePermissions";
+import type { CompanyPermission, OrganizationPermission, PlatformPermission } from "@/auth/usePermissions";
 
 /// Una ruta del manifiesto de un área: su camino, el permiso y el módulo que pide para abrirse y, si va en el menú, su
 /// rótulo y su ícono. De acá salen `app/routes.tsx` (con `RequirePermission`) y el menú: nada se declara dos veces.
 export interface AppRoute {
   path: string;
   permission?: OrganizationPermission;
+  platformPermission?: PlatformPermission;
   /**
    * La alternativa de una ruta de una empresa (`:companyId`): también se abre con este permiso en esa empresa, como
    * `[HasCompanyPermission(…, organizationPermission: …)]` del back (B4, decisión 88).
@@ -40,7 +41,11 @@ export interface NavigationSection {
 
 export interface NavigationConfig {
   links: readonly NavigationLink[];
+  /** Un panel de uso diario, arriba: Gestión en Plataforma. Comparte el segundo panel con Administración. */
+  management?: NavigationPanel | null;
   administration: NavigationPanel | null;
+  /** La raíz de las migas cuando el inicio es una opción de un panel, como Organizaciones en Plataforma. */
+  breadcrumbRoot?: { path: string; labelKey: string };
   /** En el teléfono, la pantalla «Más» de la barra de abajo: perfiles, Administración, Mi cuenta y Salir. */
   moreTo?: string;
 }

@@ -3,5 +3,5 @@ import { PrivateLayoutFrame } from "./PrivateLayoutFrame";
 import { platformNavigation } from "./navigation/platform";
 
 export function PlatformLayout({ children }: { children?: ReactNode }) {
-  return <PrivateLayoutFrame navigation={platformNavigation}>{children}</PrivateLayoutFrame>;
+  return <PrivateLayoutFrame navigation={platformNavigation} scope="platform">{children}</PrivateLayoutFrame>;
 }

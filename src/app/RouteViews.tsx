@@ -1,5 +1,5 @@
 import { useAuth } from "react-oidc-context";
-import { Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import { useIsRecoveringSession } from "@/auth/sessionRecoveryStatus";
 import { useIsSigningOut } from "@/auth/signOutStatus";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
@@ -9,6 +9,9 @@ import { LandingPage } from "@/areas/public/site/pages/LandingPage";
 import { BusinessLayout } from "@/layouts/BusinessLayout";
 import { SiteLayout } from "@/layouts/SiteLayout";
 import { useCurrentUser } from "@/auth/useCurrentUser";
+import { usePermissions } from "@/auth/usePermissions";
+import type { AppRoute } from "@/layouts/navigation/types";
+import { canOpen } from "@/layouts/navigation/visible";
 import { activeOrganization, homeOf, parseAccess } from "@/tenancy/access";
 
 export function HomeRoute() {
@@ -19,6 +22,17 @@ export function HomeRoute() {
   if ((recovering || auth.isLoading) && !auth.user) return <SessionStatusPage status="starting" />;
   if (!auth.isAuthenticated) return <SiteLayout><LandingPage /></SiteLayout>;
   return <Outlet />;
+}
+
+/// Organizaciones es el inicio; un operador sin ese permiso entra a la primera pantalla permitida disponible.
+export function PlatformHomeRoute({ availableRoutes, pendingPages }: { availableRoutes: readonly AppRoute[]; pendingPages: boolean }) {
+  const { data: me } = useCurrentUser();
+  const permissions = usePermissions();
+  if (!me) return null;
+  const first = availableRoutes.find((route) => canOpen(route, permissions));
+  if (!first) return <ForbiddenPage homePath={homeOf("platform")} />;
+  // Antes de T21–T23 sólo existe el marco: se conserva su Outlet, sin navegar a una pantalla aún inexistente.
+  return pendingPages || first.path === homeOf("platform") ? <Outlet /> : <Navigate to={first.path} replace />;
 }
 
 export function ForbiddenRoute() {

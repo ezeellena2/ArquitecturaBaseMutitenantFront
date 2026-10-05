@@ -55,7 +55,7 @@ describe("navegación por acceso en 3a", () => {
     expect(screen.getByRole("link", { name: "Auditoría" })).toHaveAttribute("href", "/org/auditoria");
   });
 
-  it("Plataforma oculta los destinos de E9 hasta que existan sus rutas", () => {
+  it("Plataforma oculta ambos paneles si el operador no tiene permisos", () => {
     expect(platformNavigation.links).toEqual([]);
     render(<MemoryRouter><PlatformLayout><h1>{"Plataforma"}</h1></PlatformLayout></MemoryRouter>);
     expect(screen.getByRole("main")).toContainElement(screen.getByRole("heading", { name: "Plataforma" }));

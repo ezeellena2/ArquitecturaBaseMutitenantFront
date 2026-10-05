@@ -19,9 +19,12 @@
       },
       "boardReadyText": "Organizaciones",
       "app": {
-        "path": "/plataforma",
-        "scenario": "marco-gestion",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
+        "scenario": "marco-gestion: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
       }
     },
     {
@@ -40,9 +43,12 @@
         "note": "M-Organizaciones v111 solo dibuja la referencia base; no existe panel lateral de Gestión. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma",
-        "scenario": "marco-gestion",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
+        "scenario": "marco-gestion: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
       }
     },
     {
@@ -61,9 +67,12 @@
       },
       "boardReadyText": "Administración",
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "marco-administracion",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "marco-administracion: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
       }
     },
     {
@@ -82,9 +91,12 @@
       },
       "boardReadyText": "Administración",
       "app": {
-        "path": "/plataforma/mas",
-        "scenario": "marco-administracion",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fmas",
+        "scenario": "marco-administracion: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
       }
     },
     {
@@ -108,9 +120,18 @@
       },
       "boardReadyText": "Mi cuenta",
       "app": {
-        "path": "/plataforma",
-        "scenario": "marco-tu-menu",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
+        "scenario": "marco-tu-menu: marco real, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Martín Sosa, Plataforma"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
       }
     },
     {
@@ -129,9 +150,12 @@
         "note": "M-Mas-Plat dibuja las opciones del operador en Más; no un menú desplegable de usuario."
       },
       "app": {
-        "path": "/plataforma/mas",
-        "scenario": "marco-tu-menu",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fmas",
+        "scenario": "marco-tu-menu: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
       }
     },
     {
@@ -150,9 +174,12 @@
         "note": "Organizaciones es la referencia desktop del marco; la barra inferior es exclusiva del tablero móvil."
       },
       "app": {
-        "path": "/plataforma",
-        "scenario": "marco-barra-inferior",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
+        "scenario": "marco-barra-inferior: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
       }
     },
     {
@@ -171,9 +198,12 @@
       },
       "boardReadyText": "Organizaciones",
       "app": {
-        "path": "/plataforma",
-        "scenario": "marco-barra-inferior",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
+        "scenario": "marco-barra-inferior: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
       }
     },
     {
@@ -192,9 +222,12 @@
         "note": "Config-Plat aporta el panel Administración desktop; Más solo está dibujado para móvil."
       },
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "marco-mas",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "marco-mas: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
       }
     },
     {
@@ -213,9 +246,12 @@
       },
       "boardReadyText": "Más",
       "app": {
-        "path": "/plataforma/mas",
-        "scenario": "marco-mas",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fmas",
+        "scenario": "marco-mas: marco real, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "main"
       }
     },
     {

@@ -3,30 +3,31 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
 import { findAdministrationEntry } from "../navigation/administration";
-import type { NavigationPanel } from "../navigation/types";
+import type { NavigationLink, NavigationPanel } from "../navigation/types";
 import { menuGroupClass, menuLineClass, menuRowClass, panelEdgeButtonClass } from "./menuRow";
 
 // «Criterio · Menús» (lienzo v102): las mismas opciones del menú lateral, con la sección en la que estás en blanco. Un
 // grupo («Gestión de usuarios») arranca abierto solo si estás en una de sus pantallas, con sus opciones a 18 de sangría;
 // si no, va cerrado, con la flechita a la derecha, y lleva a su primera opción. Lo que la persona abre o cierra a mano
 // vale mientras está en esa pantalla, como el panel mismo.
-export function AdminPanel({ panel, open, onClose }: { panel: NavigationPanel | null; open: boolean; onClose: () => void }) {
+export function AdminPanel({ panel, open, onClose, currentLink }: { panel: NavigationPanel | null; open: boolean; onClose: () => void; currentLink?: NavigationLink | null }) {
   const { t } = useTranslation();
   const pathname = useLocation().pathname;
   const [toggled, setToggled] = useState<{ pathname: string; sections: Record<string, boolean> }>({ pathname, sections: {} });
   if (!panel || !open) return null;
-  const activeLink = findAdministrationEntry(panel, pathname)?.link;
+  // El marco resuelve la opción sobre ambos paneles: al abrir otro a mano, ninguna opción de ese panel está activa.
+  const activeLink = currentLink === undefined ? findAdministrationEntry(panel, pathname)?.link : currentLink;
   const sections = panel.sections ?? [];
   const byHand = toggled.pathname === pathname ? toggled.sections : {};
 
   return <nav aria-label={t(panel.labelKey)} className="relative flex h-full w-[232px] shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--panel)]">
     <div className="flex h-[52px] items-center border-b border-[var(--lado-borde)] px-3.5 text-[14px] font-bold text-[var(--t1)]">{t(panel.labelKey)}</div>
-    <button type="button" aria-label={t("layout.sidebar.closeAdministration")} onClick={onClose} className={panelEdgeButtonClass}>
+    <button type="button" aria-label={t("layout.sidebar.closePanel", { name: t(panel.labelKey) })} onClick={onClose} className={panelEdgeButtonClass}>
       <ChevronLeft size={18} strokeWidth={1.75} aria-hidden="true" />
     </button>
     <ul className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-2.5">
       {sections.map((section, index) => {
-        const here = activeLink !== undefined && section.links.includes(activeLink);
+        const here = activeLink != null && section.links.includes(activeLink);
         const expanded = here && (byHand[section.labelKey] ?? true);
         const label = <><section.icon className="size-[18px] shrink-0" /><span className="flex-1">{t(section.labelKey)}</span>
           <ChevronDown size={14} aria-hidden="true" className={`text-[var(--t3)] ${expanded ? "" : "-rotate-90"}`} /></>;

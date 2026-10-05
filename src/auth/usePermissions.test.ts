@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import type { MeResponse } from "@/shared/api/types";
-import { companyPermissions, organizationPermissions, permissionsOf } from "./usePermissions";
+import { companyPermissions, organizationPermissions, platformPermissions, permissionsOf } from "./usePermissions";
 
 type Session = Pick<MeResponse, "effectivePermissions" | "features" | "permissions">;
 
@@ -12,6 +12,16 @@ const owner: Session = {
 };
 
 describe("permissionsOf", () => {
+  it("canPlatform lee sólo el mapa de Plataforma, separado de la organización y de la lista plana", () => {
+    const account: Session = { ...owner, permissions: ["platform.accounts.read"], effectivePermissions: {
+      platform: ["platform.tenants.read"], organization: ["platform.accounts.read", "audit.read"], companies: {},
+    } };
+    const permissions = permissionsOf(account);
+    expect(permissions.canPlatform("platform.tenants.read")).toBe(true);
+    expect(permissions.canPlatform("platform.accounts.read")).toBe(false);
+    expect(permissions.canPlatform("platform.audit.read")).toBe(false);
+    expect(permissionsOf(undefined).canPlatform("platform.tenants.read")).toBe(false);
+  });
   it("can mira los permisos de la organización de effectivePermissions, no la lista plana", () => {
     const withFlatList: Session = { ...owner, permissions: ["audit.read"] };
     const permissions = permissionsOf(withFlatList);
@@ -61,6 +71,12 @@ if (!available) {
 }
 
 describe("códigos de permiso", () => {
+  it.skipIf(!available)("los nueve de Plataforma son los del catálogo del back", () => {
+    const source = readFileSync(path.join(path.dirname(catalog), "PlatformPermissions.cs"), "utf8");
+    const codes = [...source.matchAll(/const string \w+ = "([^"]+)";/g)].map((match) => match[1]);
+    expect(platformPermissions).toHaveLength(9);
+    expect([...platformPermissions].sort()).toEqual(codes.sort());
+  });
   it.skipIf(!available)("son los mismos que el catálogo de organización y empresa del back", () => {
     const source = readFileSync(catalog, "utf8");
     const codes = [...source.matchAll(/const string (?!ClaimType\b)\w+ = "([^"]+)";/g)].map((match) => match[1]);

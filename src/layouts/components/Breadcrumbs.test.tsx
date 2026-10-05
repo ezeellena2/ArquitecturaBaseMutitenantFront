@@ -6,6 +6,7 @@ import { configureI18n } from "@/shared/i18n";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { businessNavigation } from "../navigation/business";
 import { personalNavigation } from "../navigation/personal";
+import { platformNavigation } from "../navigation/platform";
 import { Breadcrumbs } from "./Breadcrumbs";
 
 beforeAll(async () => {
@@ -25,6 +26,17 @@ function crumbs(path: string, leaf?: string, permissions: Permissions = owner) {
 }
 
 describe("Breadcrumbs", () => {
+  it.each([
+    ["/plataforma", undefined, "Plataforma/Organizaciones"],
+    ["/plataforma/organizaciones/delta", "Grupo Delta", "Plataforma/Organizaciones/Grupo Delta"],
+    ["/plataforma/cuentas/ana", "Ana", "Plataforma/Cuentas/Ana"],
+    ["/plataforma/configuracion", undefined, "Plataforma/Configuración"],
+  ])("en %s muestra el camino de Plataforma", (path, leaf, text) => {
+    const permissions = permissionsOf({ features: [], effectivePermissions: { platform: ["platform.tenants.read", "platform.accounts.read"], organization: [], companies: {} } });
+    render(<MemoryRouter initialEntries={[path]}><Breadcrumbs navigation={platformNavigation} permissions={permissions} />{leaf ? <Leaf label={leaf} /> : null}</MemoryRouter>);
+    expect(screen.getByRole("navigation", { name: "Migas de pan" })).toHaveTextContent(text);
+    if (leaf) expect(screen.getByRole("link", { name: path.includes("cuentas") ? "Cuentas" : "Organizaciones" })).toBeVisible();
+  });
   it("ubica Inicio en el acceso activo sin una ruta ficticia", () => {
     const navigation = crumbs("/org");
     expect(navigation).toHaveTextContent("Inicio");

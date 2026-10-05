@@ -5,6 +5,7 @@ import { Shield } from "lucide-react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { configureI18n } from "@/shared/i18n";
 import { businessNavigation } from "../navigation/business";
+import { platformNavigation } from "../navigation/platform";
 import type { NavigationPanel } from "../navigation/types";
 import { AdminPanel } from "./AdminPanel";
 
@@ -15,6 +16,15 @@ beforeAll(async () => {
 });
 
 describe("AdminPanel", () => {
+  it("el panel Gestión tiene su propio cierre y marca Cuentas al abrir su ficha", async () => {
+    const onClose = vi.fn();
+    render(<MemoryRouter initialEntries={["/plataforma/cuentas/ana"]}><AdminPanel panel={platformNavigation.management ?? null} open onClose={onClose} /></MemoryRouter>);
+    const panel = screen.getByRole("navigation", { name: "Gestión" });
+    expect(within(panel).getByRole("link", { name: "Cuentas" })).toHaveAttribute("aria-current", "page");
+    expect(within(panel).getByRole("link", { name: "Organizaciones" })).not.toHaveAttribute("aria-current");
+    await userEvent.click(screen.getByRole("button", { name: "Cerrar Gestión" }));
+    expect(onClose).toHaveBeenCalledOnce();
+  });
   it("con un panel configurado abre y cierra con ‹", async () => {
     const onClose = vi.fn();
     render(<MemoryRouter><AdminPanel panel={futurePanel} open onClose={onClose} /></MemoryRouter>);

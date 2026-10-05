@@ -11,13 +11,15 @@ export interface SidebarProps {
   account: { name: string; email: string | null } | null;
   context: { title: string; detail: string } | null;
   collapsed: boolean;
+  managementOpen?: boolean;
+  onToggleManagement?: () => void;
   administrationOpen: boolean;
   onToggleAdministration: () => void;
   onToggleCollapsed: () => void;
 }
 
 /// El menú lateral de la compu. En el teléfono no existe: la app lleva la barra de abajo y «Más» (tableros M-*).
-export function Sidebar({ navigation, account, context, collapsed, administrationOpen, onToggleAdministration, onToggleCollapsed }: SidebarProps) {
+export function Sidebar({ navigation, account, context, collapsed, managementOpen = false, onToggleManagement, administrationOpen, onToggleAdministration, onToggleCollapsed }: SidebarProps) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const showLabels = !collapsed;
@@ -34,16 +36,23 @@ export function Sidebar({ navigation, account, context, collapsed, administratio
       <span className="mt-px text-[12.5px] text-[var(--t3)]">{context.detail}</span>
     </div> : null}
     {/* La flecha va en el borde del último panel: acá, solo si Administración está cerrada (lienzo v107). */}
-    {!administrationOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className={panelEdgeButtonClass}>
+    {!administrationOpen && !managementOpen ? <button type="button" aria-label={t(collapsed ? "layout.sidebar.expand" : "layout.sidebar.collapse")} onClick={onToggleCollapsed} className={panelEdgeButtonClass}>
       {collapsed ? <ChevronRight size={18} strokeWidth={1.75} aria-hidden="true" /> : <ChevronLeft size={18} strokeWidth={1.75} aria-hidden="true" />}
     </button> : null}
     <nav aria-label={t("navigation.general")} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1">
       <ul className="flex flex-col gap-0.5">
+        {navigation.management ? <li>
+          <button type="button" aria-expanded={managementOpen} aria-label={t(navigation.management.labelKey)} onClick={onToggleManagement} className={`${menuRowClass(managementOpen)} w-full text-left`}>
+            <navigation.management.icon className="size-[18px] shrink-0" />
+            <span className={showLabels ? "flex-1" : "sr-only"}>{t(navigation.management.labelKey)}</span>
+            {showLabels ? <ChevronRight size={16} aria-hidden="true" /> : null}
+          </button>
+        </li> : null}
         {navigation.links.map((entry, index) => {
           const Icon = entry.icon;
           const active = entry.path === pathname;
           const content = <><Icon className="size-[18px] shrink-0" /><span className={showLabels ? "" : "sr-only"}>{t(entry.labelKey)}</span></>;
-          return <li key={entry.labelKey} className={menuLineClass(index)}>
+          return <li key={entry.labelKey} className={menuLineClass(index + (navigation.management ? 1 : 0))}>
             <Link to={entry.path} aria-current={active ? "page" : undefined} className={menuRowClass(active)}>{content}</Link>
           </li>;
         })}
@@ -53,7 +62,7 @@ export function Sidebar({ navigation, account, context, collapsed, administratio
         <button type="button" aria-expanded={administrationOpen} aria-label={t(navigation.administration.labelKey)} onClick={onToggleAdministration} className={`${menuRowClass(administrationOpen)} w-full text-left`}>
           <navigation.administration.icon className="size-[18px] shrink-0" />
           <span className={showLabels ? "flex-1" : "sr-only"}>{t(navigation.administration.labelKey)}</span>
-          {!showLabels ? null : administrationOpen ? <ChevronLeft size={16} aria-hidden="true" /> : <ChevronRight size={16} aria-hidden="true" />}
+          {!showLabels ? null : administrationOpen && navigation.management === undefined ? <ChevronLeft size={16} aria-hidden="true" /> : <ChevronRight size={16} aria-hidden="true" />}
         </button>
       </div> : null}
     </nav>
