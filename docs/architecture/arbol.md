@@ -338,6 +338,7 @@ src/
 │   │   │       ├── CompaniesPage.tsx                /org/empresas: filtros, tabla con el CUIT o «Sin CUIT» en la segunda línea y «Crear empresa»
 │   │   │       ├── CompaniesPage.test.tsx           tests de CompaniesPage
 │   │   │       ├── CompanyDetailPage.tsx            /org/empresas/:companyId: banda con los datos en una línea; pestañas debajo; la acción de la pestaña va en la banda
+│   │   │       ├── CompanyDetailInvitations.test.tsx tests de las invitaciones de la empresa, sus candidatos y la hoja del teléfono (6e)
 │   │   │       └── CompanyDetailPage.test.tsx       tests de CompanyDetailPage
 │   │   ├── settings/                                [E6] /org/configuracion
 │   │   │   ├── api/settings.ts                      /api/organization/settings y /api/organization/settings/domains: los datos de la organización y sus dominios de correo (agregar, verificar y quitar)
