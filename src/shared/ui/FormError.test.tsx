@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { FormError } from "./FormError";
+import { ClockIcon } from "./icons";
 
 describe("FormError", () => {
   it("muestra el mensaje de error del lienzo con ícono y sin borde", () => {
@@ -33,5 +34,20 @@ describe("FormError", () => {
   it("usa tono de aviso para una espera de reenvío", () => {
     render(<FormError message="Esperá un momento" tone="warning" />);
     expect(screen.getByRole("alert")).toHaveClass("bg-[var(--alerta-t)]", "text-[var(--alerta-tx)]");
+  });
+});
+
+// Tableros Ingreso y M-Ingreso («Tu sesión venció», .msj.info): la misma franja en el petróleo de la información. Es algo
+// que pasó y no algo para corregir: el lector de pantalla lo anuncia sin interrumpir. La pantalla elige el ícono.
+describe("FormError con tono de información", () => {
+  it("usa el petróleo de la información, se anuncia sin interrumpir y lleva el ícono que le pasan", () => {
+    render(<FormError tone="info" icon={ClockIcon} message="Tu sesión venció. Ingresá de nuevo." />);
+
+    const notice = screen.getByRole("status");
+    expect(notice).toHaveTextContent("Tu sesión venció. Ingresá de nuevo.");
+    expect(notice).toHaveClass("bg-[var(--marca-t)]", "text-[var(--marca-tx)]", "text-[13px]", "max-md:text-[14.5px]");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(notice.querySelector("svg circle")).toHaveAttribute("r", "8.5");
+    expect(notice.querySelector("svg")).toHaveClass("size-4");
   });
 });

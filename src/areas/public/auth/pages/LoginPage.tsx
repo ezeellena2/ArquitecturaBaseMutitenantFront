@@ -9,8 +9,8 @@ import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useCountdown } from "@/shared/hooks/useCountdown";
-import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
+import { FormError } from "@/shared/ui/FormError";
 import { AlertTriangleIcon, ClockIcon, LockIcon } from "@/shared/ui/icons";
 import { requestLoginCode, verifyLoginCode } from "../api/loginCode";
 import { AuthStatus, type AuthStatusProps } from "../components/AuthStatus";
@@ -183,8 +183,8 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
             actions={<Button asChild size="lg"><Link to="/login">{t("login.enterAsPerson")}</Link></Button>} />
             : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{access === "business" ? t("login.businessTitle") : t("login.personalTitle")}</h1>
-      {/* «Criterio · Avisos»: algo que pasó y que conviene saber, en el cartel de información. */}
-      {sessionExpired ? <Banner tone="info">{t("login.sessionExpired")}</Banner> : null}
+      {/* Tableros Ingreso y M-Ingreso («Tu sesión venció», .msj.info): la franja de los mensajes, en petróleo y con el reloj. */}
+      {sessionExpired ? <FormError tone="info" icon={ClockIcon} message={t("login.sessionExpired")} /> : null}
       <GoogleButton mode="login" access={access} returnUrl={returnUrl!} />
       <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
       <EmailCodeForm onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? { text: t("login.googleError"), details: [t("login.googleErrorHelp")] } : undefined} />

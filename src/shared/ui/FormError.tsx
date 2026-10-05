@@ -1,22 +1,36 @@
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, ComponentType, ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
-import { AlertCircleIcon, AlertTriangleIcon } from "./icons";
+import { AlertCircleIcon, AlertTriangleIcon, InfoIcon } from "./icons";
+
+type Tone = "danger" | "warning" | "info";
 
 export interface FormErrorProps extends Omit<ComponentProps<"div">, "children"> {
   message: ReactNode;
-  tone?: "danger" | "warning";
+  /** La de error (por defecto) es roja; la de atención, ámbar; la de información, petróleo («Tu sesión venció»). */
+  tone?: Tone;
+  /** Otro ícono que el del tono: el reloj de «Tu sesión venció» (tableros Ingreso y M-Ingreso). */
+  icon?: ComponentType<{ className?: string }>;
 }
 
-export function FormError({ message, tone = "danger", className, ...props }: FormErrorProps) {
+// El texto y el ícono, en el color de los avisos (.aviso-mal, .msj.alerta y .msj.info).
+const tones: Record<Tone, { icon: ComponentType<{ className?: string }>; box: string }> = {
+  danger: { icon: AlertCircleIcon, box: "bg-[var(--peligro-t)] text-[var(--peligro-tx)]" },
+  warning: { icon: AlertTriangleIcon, box: "bg-[var(--alerta-t)] text-[var(--alerta-tx)]" },
+  info: { icon: InfoIcon, box: "bg-[var(--marca-t)] text-[var(--marca-tx)]" },
+};
+
+export function FormError({ message, tone = "danger", icon, role, className, ...props }: FormErrorProps) {
   if (!message) {
     return null;
   }
 
-  const Icon = tone === "warning" ? AlertTriangleIcon : AlertCircleIcon;
+  const Icon = icon ?? tones[tone].icon;
 
   return (
     <div
-      role="alert"
+      // Un error o una atención interrumpen al lector de pantalla; la información es algo que pasó y se anuncia sin
+      // interrumpir (.msj.info de Ingreso, role="status").
+      role={role ?? (tone === "info" ? "status" : "alert")}
       className={cn(
         // El ícono va con el primer renglón: si el texto ocupa dos líneas, queda arriba.
         "flex items-start gap-2.5",
@@ -25,8 +39,7 @@ export function FormError({ message, tone = "danger", className, ...props }: For
         // M-Registro-Empresa y M-Invitacion), la letra de sus avisos: 14,5 con interlineado 1,4, padding 12/14 y radio 12.
         // Va por el ancho de la pantalla y no por el marco de la app: las páginas públicas no lo tienen.
         "rounded-[8px] px-3 py-2.5 text-[13px] leading-normal max-md:rounded-xl max-md:px-3.5 max-md:py-3 max-md:text-[14.5px] max-md:leading-[1.4]",
-        // El texto y el ícono, en el color de los avisos (.aviso-mal, .msj.alerta).
-        tone === "warning" ? "bg-[var(--alerta-t)] text-[var(--alerta-tx)]" : "bg-[var(--peligro-t)] text-[var(--peligro-tx)]",
+        tones[tone].box,
         className,
       )}
       {...props}

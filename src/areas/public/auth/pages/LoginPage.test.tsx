@@ -166,8 +166,11 @@ describe("LoginPage", () => {
     sessionStorage.setItem("arquitecturabasemt.sessionExpired", "1");
     show("consumer", loginUrl);
     expect(screen.getByRole("status")).toHaveTextContent("Tu sesión venció. Ingresá de nuevo.");
-    // «Criterio · Avisos»: el cartel de información (Banner), en petróleo.
-    expect(screen.getByRole("status")).toHaveClass("min-h-11", "rounded-[10px]", "bg-[var(--marca-t)]", "text-[var(--marca-tx)]");
+    // Tableros Ingreso y M-Ingreso («Tu sesión venció», .msj.info): la franja de los mensajes del ingreso, en petróleo,
+    // con el reloj; no el cartel de los avisos.
+    expect(screen.getByRole("status")).toHaveClass("rounded-[8px]", "px-3", "py-2.5", "max-md:text-[14.5px]", "bg-[var(--marca-t)]", "text-[var(--marca-tx)]");
+    expect(screen.getByRole("status")).not.toHaveClass("min-h-11");
+    expect(screen.getByRole("status").querySelector("svg circle")).toHaveAttribute("r", "8.5");
     expect(sessionStorage.getItem("arquitecturabasemt.sessionExpired")).toBeNull();
   });
 
