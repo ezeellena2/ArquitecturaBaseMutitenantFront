@@ -64,9 +64,35 @@ test("cada estado se compara con ese estado del tablero, si el tablero lo dibuja
     "pagina-publica-error-al-guardar-movil": { estado: "Error al guardar" },
     "pagina-publica-vista-previa-escritorio": { estado: "Borrador: vista previa" },
     "pagina-publica-vista-previa-movil": { estado: "Borrador: vista previa" },
+    // Tanda 6d-4b (lienzo v108): la ficha de Empresa de su Administrador, la hoja de una invitación, «Quitar dominio» con
+    // 10, 1 y 0 correos y el detalle de Auditoría en el teléfono.
+    "empresa-administrador-invitaciones-escritorio": { pestana: "Miembros", quien: "Administra solo la empresa" },
+    "empresa-administrador-invitaciones-movil": { estado: "Administra solo la empresa" },
+    "empresa-invitacion-acciones-escritorio": { pestana: "Miembros", quien: "Administra la organización" },
+    "empresa-invitacion-acciones-movil": { estado: "Invitación: acciones" },
+    "empresa-administrador-agregar-miembro-escritorio": { pestana: "Miembros", quien: "Administra solo la empresa" },
+    "configuracion-quitar-dominio-10-escritorio": { estado: "10 correos administrados" },
+    "configuracion-quitar-dominio-10-movil": { estado: "10 correos administrados" },
+    "configuracion-quitar-dominio-1-escritorio": { estado: "1 correo administrado" },
+    "configuracion-quitar-dominio-1-movil": { estado: "1 correo administrado" },
+    "configuracion-quitar-dominio-0-escritorio": { estado: "Ningún correo administrado" },
+    "configuracion-quitar-dominio-0-movil": { estado: "Ningún correo administrado" },
+    "auditoria-detalle-telefono-movil": { estado: "Detalle de un cambio" },
+    "rol-dueno-casillas-fijas-movil": { estado: "Ver el rol Dueño" },
+    "pagina-publica-vista-previa-hoja-movil": { estado: "Borrador: vista previa" },
   };
   for (const [id, props] of Object.entries(expected)) assert.deepEqual(cases.get(id)?.props, props, id);
   assert.equal(cases.get("pagina-publica-error-al-guardar-escritorio")?.board, "Pagina-Org");
+  assert.equal(cases.get("configuracion-quitar-dominio-1-movil")?.board, "M-Configuracion-Quitar");
+  assert.equal(cases.get("auditoria-detalle-telefono-movil")?.board, "M-Auditoria-Org");
+  // La invitación de Sofía vence el 02/10: la app se fotografía con la hora del tablero, cuando todavía no venció.
+  assert.equal(cases.get("empresa-invitacion-acciones-movil")?.app.now, "2026-10-01T12:00:00Z");
+  // «Agregar miembro» pide los candidatos de la empresa (decisión 96), no Usuarios.
+  for (const id of ["empresa-agregar-miembro-escritorio", "empresa-administrador-agregar-miembro-movil"]) {
+    const paths = cases.get(id)?.app.responses.map((item) => item.path) ?? [];
+    assert.ok(paths.includes("/api/companies/company-1/candidates/paged"), `${id}: candidatos`);
+    assert.ok(!paths.includes("/api/users/paged"), `${id}: sin Usuarios`);
+  }
 });
 
 test("con --out, el manifest de la tanda suma los casos de cada corrida en el orden del catálogo, sin repetirlos", () => {

@@ -318,17 +318,15 @@ function extraCases(root) {
   ];
 }
 
-// «Agregar miembro» pide además todos los miembros de la empresa (de a 100) para no ofrecer a quien ya está, y las
-// personas de la organización: las que no están en la empresa son las del tablero Empresa (Julieta, Carolina y Sofía).
+// «Agregar miembro» pide los candidatos de la empresa (decisión 96, tanda 6d-4b): las personas de la organización que no
+// están en ella, con el correo tapado, también para la Dueña. Son las del tablero Empresa (v108): Julieta y Carolina.
+const candidatesResponse = (companyId, candidates) => api("GET", `/api/companies/${companyId}/candidates/paged`, {
+  items: candidates.map(([id, displayName, maskedEmailAddress]) => ({ memberId: `member-${id}`, displayName, maskedEmailAddress })),
+  page: 1, pageSize: 100, totalCount: candidates.length, totalPages: 1, hasPrevious: false, hasNext: false });
 function addMemberResponses(root, width) {
   const { responses } = stageCases(root, "etapa-6").find((entry) => entry.pair === "empresa-miembros" && entry.viewport.width === width).app;
-  const members = responses.find((item) => item.path === "/api/companies/company-1/members/paged");
-  const users = responses.find((item) => item.path === "/api/users/paged");
-  const [template] = users.body.items;
-  const candidate = (id, displayName, email) => ({ ...template, memberId: `member-${id}`, userId: `user-${id}`, displayName, email, roles: [], companies: [] });
-  const candidates = [candidate("julieta", "Julieta Sosa", "julieta.sosa@delta.ejemplo.com"), candidate("carolina", "Carolina Vega", "carolina.vega@delta.ejemplo.com"),
-    candidate("sofia", "Sofía Herrera", "sofia.herrera@delta.ejemplo.com")];
-  return [{ ...members, query: { page: "1", pageSize: "100" } }, { ...users, body: { ...users.body, items: candidates, totalCount: candidates.length } }, ...responses];
+  return [candidatesResponse("company-1", [["julieta", "Julieta Sosa", "ju•••@delta.ejemplo.com"], ["carolina", "Carolina Vega", "ca•••@delta.ejemplo.com"]]),
+    ...responses.filter((item) => item.path !== "/api/users/paged")];
 }
 
 // Alineación R2c (errores, botones y tests): el 404 de una ficha, los errores arriba de los botones, los botones que ya
@@ -755,6 +753,110 @@ function b6d4aCases(root) {
   ];
 }
 
+// Tanda 6d-4b (decisiones del usuario del 2026-10-05, lienzo v108, y del back 96 a 99): la ficha de Empresa como la ve
+// su Administrador («Administra solo la empresa»: Delta Norte S.A., con la invitación vencida de Martín Paz), la hoja de
+// una invitación (la de Sofía Herrera, como la abre la Dueña en M-Empresa), «Agregar miembro» con los candidatos de la
+// empresa, «Quitar dominio» con 10, 1 y 0 correos administrados, el detalle de Auditoría en el teléfono, las casillas
+// fijas del rol Dueño y la vista previa del teléfono. La app se fotografía con la hora del tablero (`now`, 01/10/2026):
+// la invitación de Sofía vence el 02/10 y la de Martín venció el 29/09.
+function b6d4bCases(root) {
+  const stageApp = (stage, pair, width) => stageCases(root, stage).find((entry) => entry.pair === pair && entry.viewport.width === width).app;
+  const now = "2026-10-01T12:00:00Z";
+  const page = (items, pageSize = 10) => ({ items, page: 1, pageSize, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
+  const role = (id, name, extra = {}) => ({ id, name, description: roleDescriptions.get(name) ?? null, scope: "AnyCompany", companyId: null, isSystemRole: true,
+    userCount: 2, permissions: ["company.members.read", "company.members.manage"], version: 1, createdAtUtc: "2026-10-02T12:00:00Z", ...extra });
+  const administrator = role("role-company-admin", "Administrador");
+  const reader = role("role-reader", "Solo lectura", { scope: "SpecificCompany", companyId: "company-1", isSystemRole: false, userCount: 4, permissions: ["company.members.read"] });
+  const member = (id, displayName, email, roles, extra = {}) => ({ memberId: `member-${id}`, userId: `user-${id}`, displayName, email, state: "Active",
+    membershipStatus: "Active", roles: roles.map(({ id: roleId, name, isSystemRole, scope, companyId }) => ({ id: roleId, name, isSystemRole, scope, companyId })),
+    version: 8, createdAtUtc: "2026-10-02T12:00:00Z", invitationId: null, invitationExpiresAtUtc: null, ...extra });
+  const invited = (invitationId, invitationExpiresAtUtc) => ({ state: "Invited", invitationId, invitationExpiresAtUtc });
+  const companyResponses = (company, members, candidates) => [
+    api("GET", "/api/companies/company-1", company),
+    api("GET", "/api/companies/company-1/members/paged", page(members)),
+    api("GET", "/api/companies/company-1/members/filter-counts", { all: members.length,
+      active: members.filter((item) => item.state === "Active" && item.membershipStatus === "Active").length,
+      pendingDeletion: members.filter((item) => item.state === "PendingDeletion").length,
+      inactive: members.filter((item) => item.membershipStatus === "Inactive").length, invited: members.filter((item) => item.state === "Invited").length }),
+    api("GET", "/api/companies/company-1/roles/paged", page([administrator, reader], 100)),
+    candidatesResponse("company-1", candidates),
+  ];
+  // Delta Norte S.A. como la ve Valentina Ruiz, que la administra sin roles de la organización (tablero Empresa,
+  // «Administra solo la empresa»): sin CUIT; la invitación de Martín Paz venció el 29/09.
+  const deltaNorte = { id: "company-1", name: "Delta Norte S.A.", taxId: null, timeZoneId: "America/Argentina/Buenos_Aires", status: "Active",
+    memberCount: 4, version: 3, createdAtUtc: "2026-10-02T12:00:00Z" };
+  const northMembers = [member("valentina", "Valentina Ruiz", "valentina.ruiz@gmail.com", [administrator]),
+    member("paula", "Paula Méndez", "paula.mendez@delta.ejemplo.com", [reader]), member("carolina", "Carolina Vega", "carolina.vega@delta.ejemplo.com", [reader]),
+    member("martin", "Martín Paz", "martin.paz@delta.ejemplo.com", [reader], invited("invitation-martin", "2026-09-29T15:00:00Z"))];
+  const northCandidates = [["lucia", "Lucía Fernández", "lu•••@delta.ejemplo.com"], ["tomas", "Tomás Acosta", "to•••@delta.ejemplo.com"],
+    ["julieta", "Julieta Sosa", "ju•••@delta.ejemplo.com"]];
+  const companyAdmin = { path: "/src/test/visualApp.html?as=visual-company-admin&route=%2Forg%2Fempresas%2Fcompany-1", captureMode: "harness",
+    userFixture: "visual-company-admin", now, readySelector: "main", readyText: "Martín Paz", responses: companyResponses(deltaNorte, northMembers, northCandidates) };
+  // Delta S.A. como la ve la Dueña (tablero Empresa, «Administra la organización»): con Sofía Herrera invitada hasta el 02/10.
+  const delta = { id: "company-1", name: "Delta S.A.", taxId: { country: "AR", type: "AR-CUIT", number: "30712345671" }, timeZoneId: "America/Argentina/Buenos_Aires",
+    status: "Active", memberCount: 7, version: 3, createdAtUtc: "2026-10-02T12:00:00Z" };
+  const deltaMembers = [member("lucia", "Lucía Fernández", "lucia.fernandez@delta.ejemplo.com", [administrator]),
+    member("tomas", "Tomás Acosta", "tomas.acosta@delta.ejemplo.com", [reader]),
+    member("diego", "Diego Ríos", "diego.rios@delta.ejemplo.com", [reader], { state: "PendingDeletion" }),
+    member("paula", "Paula Méndez", "paula.mendez@delta.ejemplo.com", [reader]), member("martin", "Martín Paz", "martin.paz@delta.ejemplo.com", [reader]),
+    member("marcos", "Marcos Giménez", "marcos.gimenez@delta.ejemplo.com", [], { state: "Inactive", membershipStatus: "Inactive" }),
+    member("sofia", "Sofía Herrera", "sofia.herrera@delta.ejemplo.com", [reader], invited("invitation-sofia", "2026-10-02T15:00:00Z"))];
+  // M-Empresa («Invitación: acciones») dibuja a Sofía antes que a Marcos; Empresa, después.
+  const phoneOrder = [...deltaMembers.filter((item) => item.memberId !== "member-marcos"), deltaMembers.find((item) => item.memberId === "member-marcos")];
+  const ownerInvitation = (members, readySelector) => ({ path: "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Fempresas%2Fcompany-1", captureMode: "harness",
+    userFixture: "visual-owner", now, readySelector,
+    responses: [...companyResponses(delta, members, [["julieta", "Julieta Sosa", "ju•••@delta.ejemplo.com"], ["carolina", "Carolina Vega", "ca•••@delta.ejemplo.com"]]),
+      ...stageApp("etapa-6", "empresa-miembros", 1440).responses.filter((item) => item.path.startsWith("/api/roles/"))],
+    actions: [{ ...appClick("button", "Acciones para Sofía Herrera"), waitFor: "Sofía Herrera" }] });
+  // El desplegable de Radix guarda también un <select> escondido con los nombres: se espera el correo tapado, que se ve.
+  const addMember = { ...companyAdmin, actions: [{ ...appClick("button", "Agregar miembro"), waitFor: "Martín Paz" }, appClick("combobox", "Usuario")],
+    readySelector: '[role="listbox"]', readyText: "ju•••@delta.ejemplo.com" };
+  const withDomainCount = (width, managedEmailCount) => ({ responses: stageApp("etapa-6", "configuracion-quitar-dominio", width).responses
+    .map((item) => item.method === "GET" && item.path === "/api/organization/settings/domains" ? { ...item, body: item.body.map((domain) => ({ ...domain, managedEmailCount })) } : item) });
+  const auditDetail = { actions: [appClick("button", "Ver el detalle de Cambió los roles de Tomás Acosta")], ...dialog };
+  const auditDetailPhone = { actions: [appClick("button", "Cambió los roles de Tomás Acosta")], ...dialog };
+  const preview = { actions: [appClick("button", "Vista previa")], ...dialog };
+  const domainCases = [[10, "10 correos administrados"], [1, "1 correo administrado"], [0, "Ningún correo administrado"]].flatMap(([count, estado]) =>
+    pairCases(root, { stage: "etapa-6", pair: "configuracion-quitar-dominio", id: `configuracion-quitar-dominio-${count}`, group: "configuracion",
+      state: `«Quitar dominio» con ${estado}: el texto dice qué pasa con los que ya administra la organización`,
+      desktop: { board: "Configuracion-Quitar", props: { estado } }, phone: { board: "M-Configuracion-Quitar", props: { estado } },
+      app: withDomainCount(1440, count), phoneApp: withDomainCount(390, count) }));
+  return [
+    ...custom({ id: "empresa-administrador-invitaciones", group: "empresas",
+      state: "Empresa como la ve su Administrador: sin lo de la organización, con la invitación vencida de Martín y «Venció 29/09/2026»",
+      desktop: { board: "Empresa", props: { pestana: "Miembros", quien: "Administra solo la empresa" } },
+      phone: { board: "M-Empresa", props: { estado: "Administra solo la empresa" },
+        state: "Empresa en el teléfono como la ve su Administrador: «venció 29/09» y la barra de abajo del miembro, con Inicio marcado" },
+      app: companyAdmin }),
+    ...custom({ id: "empresa-invitacion-acciones", group: "empresas",
+      state: "Empresa: el ⋮ de la invitación de Sofía, con «Reenviar invitación» y «Revocar invitación»",
+      desktop: { board: "Empresa", props: { pestana: "Miembros", quien: "Administra la organización" }, boardActions: [click('button[aria-label="Acciones de Sofía Herrera"]')] },
+      phone: { board: "M-Empresa", props: { estado: "Invitación: acciones" }, state: "Empresa en el teléfono: la hoja «Invitación: acciones» de Sofía" },
+      app: ownerInvitation(deltaMembers, '[role="menu"]'), phoneApp: ownerInvitation(phoneOrder, '[role="dialog"]') }),
+    ...custom({ id: "empresa-administrador-agregar-miembro", group: "empresas",
+      state: "«Agregar miembro» del Administrador de empresa: los candidatos de la empresa, con el nombre y el correo tapado",
+      desktop: { board: "Empresa", props: { pestana: "Miembros", quien: "Administra solo la empresa" },
+        boardActions: [click("text=Agregar miembro"), click('button.in2[aria-labelledby="et-Usuario"]')] },
+      phone: { board: "M-Empresa", props: { estado: "Administra solo la empresa" },
+        state: "«Agregar miembro» en el teléfono: los candidatos con el correo tapado (M-Empresa no dibuja esa hoja)" },
+      app: addMember }),
+    ...domainCases,
+    ...pairCases(root, { stage: "etapa-6", pair: "auditoria-lista", id: "auditoria-detalle-telefono", group: "auditoria",
+      state: "Auditoría: el detalle de un cambio (en el teléfono, cada dato debajo de su nombre y el correo en su línea)",
+      desktop: { boardActions: [click('button.o-link:has-text("Cambió los roles de Tomás Acosta")')] },
+      phone: { board: "M-Auditoria-Org", props: { estado: "Detalle de un cambio" },
+        state: "Auditoría en el teléfono: «Detalle de un cambio», con la fecha y la hora, quién con su correo, dónde y el cambio" },
+      app: auditDetail, phoneApp: auditDetailPhone }),
+    ...pairCases(root, { stage: "etapa-4", pair: "rol-dueno", id: "rol-dueno-casillas-fijas", group: "roles",
+      state: "Rol Dueño (de sistema): las casillas fijas, grises también en el teléfono",
+      phone: { props: { estado: "Ver el rol Dueño" }, state: "Rol Dueño en el teléfono: las casillas fijas en gris (M-Rol, v108)" } }),
+    ...pairCases(root, { stage: "etapa-6", pair: "pagina-publica-borrador", id: "pagina-publica-vista-previa-hoja", group: "pagina-publica",
+      state: "Página pública: la vista previa (en el teléfono, la hoja arranca debajo de la barra de estado y se desplaza el cuerpo)",
+      desktop: { props: { estado: "Borrador: vista previa" } }, phone: { board: "M-Pagina-Org", props: { estado: "Borrador: vista previa" } },
+      app: preview, phoneApp: preview }),
+  ];
+}
+
 export function catalog(root) {
   const rename ={ board: "Cuenta", boardActions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
@@ -783,5 +885,6 @@ export function catalog(root) {
     ...b6d3Cases(root),
     ...b6d3bCases(root),
     ...b6d4aCases(root),
+    ...b6d4bCases(root),
   ];
 }

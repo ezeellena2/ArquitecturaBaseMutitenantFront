@@ -96,6 +96,8 @@ export async function openApp(context, appUrl, entry) {
     const hang = typeof app.hang === "string" ? { path: app.hang } : app.hang;
     await context.route(`**${hang.path}`, (route) => !hang.method || route.request().method() === hang.method ? new Promise(() => {}) : route.fallback());
   }
+  // `now`: la hora de la app, la del tablero (una invitación que el tablero dibuja pendiente no tiene que haber vencido hoy).
+  if (app.now) await context.clock.setFixedTime(new Date(app.now));
   const page = await context.newPage();
   await page.goto(new URL(app.path, appUrl).href, { waitUntil: "domcontentloaded" });
   // Un paso puede pedir `waitFor`: esperar un texto antes de hacerlo (por ejemplo, que la dirección figure disponible).
