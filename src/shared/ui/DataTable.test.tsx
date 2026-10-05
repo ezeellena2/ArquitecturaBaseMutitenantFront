@@ -102,11 +102,11 @@ describe("DataTable", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Cargando…");
 
     rerender(<DataTable columns={columns} rows={[]} rowKey={(row) => row.id} emptyTitle="Sin usuarios" emptyAction={<button type="button">{"Limpiar"}</button>} />);
-    expect(screen.getByRole("heading", { name: "Sin usuarios" })).toBeInTheDocument();
+    expect(screen.getByText("Sin usuarios")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Limpiar" })).toBeInTheDocument();
 
     rerender(<DataTable columns={columns} rows={[]} rowKey={(row) => row.id} error="No se pudo cargar" errorDescription="Código 123" onRetry={onRetry} />);
-    expect(screen.getByRole("heading", { name: "No se pudo cargar" })).toBeInTheDocument();
+    expect(screen.getByText("No se pudo cargar")).toBeInTheDocument();
     expect(screen.getByText("Código 123")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Reintentar" }));
     expect(onRetry).toHaveBeenCalledOnce();

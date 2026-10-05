@@ -27,7 +27,8 @@ export function EmptyState({
         className,
       )}
     >
-      <h3 className="text-[14px] font-semibold">{title}</h3>
+      {/* Tableros de listas (.vacio strong): texto en negrita, no un encabezado; la pantalla ya tiene el suyo (axe). */}
+      <p className="text-[14px] font-semibold">{title}</p>
       {description ? (
         <p className={cn("text-[13px] text-[var(--t2)]", descriptionClassName)}>{description}</p>
       ) : null}

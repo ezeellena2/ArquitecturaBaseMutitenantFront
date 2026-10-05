@@ -44,7 +44,7 @@
     "type": "Type",
     "users": "Users",
     "permissions": "Permissions",
-    "actions": ""
+    "actions": "Actions"
   },
   "filters": {
     "label": "Filter roles",

@@ -2,11 +2,13 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it } from "vitest";
+import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import type { RoleResponse } from "@/shared/api/types";
 import { server } from "@/test/mocks/server";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { asPhone } from "@/test/utils/phone";
 
 const owner: RoleResponse = {
   id: "role-owner",
@@ -74,7 +76,7 @@ describe("RolesPage", () => {
       });
     }));
 
-    const { router } = renderRouteWithProviders("/org/roles", { as: "business-e6-admin" });
+    const { router, container } = renderRouteWithProviders("/org/roles", { as: "business-e6-admin" });
 
     expect(await screen.findByRole("heading", { level: 1, name: "Roles y permisos" })).toBeVisible();
     expect(await screen.findByRole("link", { name: "Dueño" })).toHaveAttribute("href", "/org/roles/role-owner");
@@ -96,6 +98,7 @@ describe("RolesPage", () => {
     expect(screen.getByRole("search").parentElement).toHaveClass("md:gap-3.5");
     // «Vale en» de un rol de una empresa es el nombre de la empresa.
     expect(await screen.findByRole("cell", { name: "Delta S.A." })).toBeVisible();
+    expect(await axe(container)).toHaveNoViolations();
 
     await user.type(screen.getByRole("searchbox", { name: "Buscar por nombre o descripción" }), "Solo lectura");
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("search")).toBe("Solo lectura"), { timeout: 3_000 });
@@ -184,8 +187,9 @@ describe("RolesPage", () => {
       http.get("/api/companies/paged", () => HttpResponse.json(companies)),
       http.get("/api/roles/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
     );
-    const { router } = renderRouteWithProviders("/org/roles?search=zzz", { as: "business-e6-admin" });
+    const { router, container } = renderRouteWithProviders("/org/roles?search=zzz", { as: "business-e6-admin" });
     expect(await screen.findByText("Ningún rol coincide con los filtros")).toBeVisible();
+    expect(await axe(container)).toHaveNoViolations();
     await user.click(screen.getByRole("button", { name: "Limpiar filtros" }));
     await waitFor(() => expect(router.state.location.search).not.toContain("search="));
   });
@@ -199,5 +203,31 @@ describe("RolesPage", () => {
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
     expect(screen.queryByRole("button", { name: "Administración" })).not.toBeInTheDocument();
     expect(roleRequests).toBe(0);
+  });
+
+  // Tablero M-Roles: en el teléfono cada rol es una fila con cuántos lo tienen a la derecha, dónde vale (y si es de
+  // sistema) y cuántos permisos tiene; los filtros van en un ícono de la barra y crear es el «+» flotante.
+  it("en el teléfono es una lista con «+» para crear un rol", async () => {
+    const restore = asPhone();
+    try {
+      server.use(
+        http.get("/api/companies/paged", () => HttpResponse.json(companies)),
+        http.get("/api/roles/paged", () => HttpResponse.json({ items: [owner, companyReader], page: 1, pageSize: 10, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+      );
+      const { container } = renderRouteWithProviders("/org/roles", { as: "business-e6-admin" });
+
+      const row = await screen.findByRole("link", { name: /Dueño/ });
+      expect(row).toHaveAttribute("href", "/org/roles/role-owner");
+      expect(row).toHaveTextContent("1 usuario");
+      expect(row).toHaveTextContent("De sistema · Toda la organización");
+      expect(row).toHaveTextContent("2 permisos");
+      expect(await screen.findByRole("link", { name: /Solo lectura/ })).toHaveTextContent("Delta S.A.");
+      expect(screen.queryByRole("table")).not.toBeInTheDocument();
+      expect(screen.getByRole("link", { name: "Crear rol" })).toHaveClass("fixed", "size-14");
+      expect(screen.getByRole("link", { name: "Crear rol" })).toHaveAttribute("href", "/org/roles/nuevo");
+      expect(await axe(container)).toHaveNoViolations();
+    } finally {
+      restore();
+    }
   });
 });
