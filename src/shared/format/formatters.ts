@@ -167,14 +167,17 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
     return translate(`format:relative.${key}`, { count });
   }
 
-  /** «hoy, 10:42», «ayer, 20:30» en la zona de la persona; si no, fecha y hora. */
+  /**
+   * «hoy, 10:42», «ayer, 20:30» en la zona de la persona; si no, la fecha sola: en la tarjeta del Inicio (tablero
+   * Inicio-Org, «Último cambio hoy, 10:42»), la fecha y la hora de otro día no entraban y la hora se cortaba.
+   */
   function formatCalendar(value: string): string {
     const day = formatDate(value);
     const today = clock();
     if (day === formatDate(today.toISOString())) return `${translate("format:calendar.today")}, ${formatTime(value)}`;
     const yesterday = new Date(today.getTime() - 24 * 3600 * 1000);
     if (day === formatDate(yesterday.toISOString())) return `${translate("format:calendar.yesterday")}, ${formatTime(value)}`;
-    return formatDateTime(value);
+    return day;
   }
 
   function formatDateRange(value: DateRangeValue): string {

@@ -49,6 +49,18 @@ afterEach(() => {
 });
 
 describe("BusinessHomePage", () => {
+  // Relevamiento de la consolidación (N17): con un cambio de otro día, «Último cambio 01/10/2026 10:42» no entraba en la
+  // tarjeta y la hora se cortaba. Hoy y ayer llevan la hora; otro día, la fecha sola.
+  it("la tarjeta Auditoría dice la fecha sola si el último cambio no es de hoy ni de ayer", async () => {
+    serveHome({ organization: { ...organization, audit: { lastChangeAtUtc: "2026-10-01T13:42:00Z" } }, companies: [], pending });
+    renderRouteWithProviders("/org", { as: "visual-owner" });
+
+    const areas = await screen.findByRole("navigation", { name: "Áreas de la organización" });
+    const audit = within(areas).getByRole("link", { name: /^Auditoría/ });
+    expect(audit).toHaveTextContent("Último cambio 01/10/2026");
+    expect(audit).not.toHaveTextContent("10:42");
+  });
+
   it("tablero Inicio-Org: cada área con su dato real y «Para resolver» con el enlace que lo resuelve", async () => {
     serveHome({ organization, companies: [], pending });
     const { container } = renderRouteWithProviders("/org", { as: "visual-owner" });

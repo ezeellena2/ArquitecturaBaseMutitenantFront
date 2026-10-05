@@ -43,6 +43,7 @@ Cada tipo de dato tiene **un** formateador y **un** componente. Los ejemplos cor
 | Hora | instante o `TimeOnly` | `kind="time"` | `14:35` | `2:35 PM` | |
 | Fecha larga | instante o `DateOnly` | `kind="long"` | `27 de septiembre de 2026` | `September 27, 2026` | Títulos, correos, documentos |
 | Relativa | instante UTC | `kind="relative"` | `hace 5 minutos` | `5 minutes ago` | **Solo** en feeds de actividad y "último ingreso", y solo si pasaron menos de 7 días; si no, fecha. Siempre con tooltip absoluto |
+| Calendario | instante UTC | `formatCalendar` | `hoy, 14:35`, `ayer, 14:35`, `25/09/2026` | `today, 2:35 PM`, `yesterday, 2:35 PM`, `09/25/2026` | **Solo** en la tarjeta Auditoría del Inicio («Último cambio hoy, 10:42»). Hoy y ayer llevan la hora; otro día, la fecha sola, porque la hora no entra en la tarjeta |
 | Rango | dos fechas | `<DateRangeText>` | `27/09/2026 – 03/10/2026` | `09/27/2026 – 10/03/2026` | Guion largo con espacios |
 | Entero | número | `<NumberText>` / `formatInteger` | `1.234.567` | `1,234,567` | |
 | Decimal | número | `<NumberText kind="decimal" digits={2}>` | `1.234,50` | `1,234.50` | Decimales **fijos** según el dato, declarados en la columna |
