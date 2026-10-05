@@ -129,6 +129,23 @@ describe("BusinessSignupPage", () => {
     expect(signinRedirect).not.toHaveBeenCalled();
   });
 
+  // Tablero Registro-Empresa: el código incorrecto dice los intentos que quedan, como el ingreso y el registro de personas.
+  it("con el código incorrecto dice los intentos que quedan", async () => {
+    server.use(
+      http.post("/api/auth/business-signup/code", () => HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 })),
+      http.post("/api/auth/business-signup/verify", () => HttpResponse.json({ code: "Auth.LoginCode.Invalid", attemptsLeft: 4 }, { status: 400 })),
+    );
+    show();
+    fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Tu correo electrónico" }), { target: { value: "ana@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
+    fireEvent.paste(await screen.findByRole("textbox", { name: "Código 1" }), { clipboardData: { getData: () => "482193" } });
+    fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("El código no es válido.Te quedan 4 intentos.");
+    expect(screen.getByRole("textbox", { name: "Código 1" })).toHaveAttribute("aria-invalid", "true");
+  });
+
   it("después de Google, «Recibimos el pedido» dice el correo al que avisamos, en negrita como el tablero", async () => {
     server.use(
       http.get("/api/public-site/slug-availability", () => HttpResponse.json({ slug: "acme", availability: "Available" })),

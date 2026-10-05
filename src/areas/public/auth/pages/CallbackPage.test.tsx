@@ -60,6 +60,9 @@ describe("CallbackPage", () => {
 
     expect(screen.getByRole("heading", { name: "Tu cuenta no está en ninguna empresa todavía" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Ingresá como persona" })).toHaveAttribute("href", "/login");
+    // Tablero Ingreso: el mismo estado que cuando lo dice el código, con «Registrá tu empresa» primero.
+    expect(screen.getByRole("link", { name: "Registrá tu empresa" })).toHaveAttribute("data-variant", "default");
+    expect(screen.getByRole("link", { name: "Ingresá como persona" })).toHaveAttribute("data-variant", "outline");
   });
 
   it("muestra la organización del acceso deshabilitado que vuelve de authorize", () => {
@@ -69,5 +72,6 @@ describe("CallbackPage", () => {
 
     expect(screen.getByRole("heading", { name: "Tu acceso a Grupo Delta está deshabilitado" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Ingresá como persona" })).toHaveAttribute("href", "/login");
+    expect(screen.getByRole("link", { name: "Registrá tu empresa" })).toHaveAttribute("data-variant", "outline");
   });
 });

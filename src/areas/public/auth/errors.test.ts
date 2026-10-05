@@ -1,6 +1,7 @@
+import type { TFunction } from "i18next";
 import { describe, expect, it } from "vitest";
 import { ApiError } from "@/shared/api/ApiError";
-import { loginCodeErrorKey } from "./errors";
+import { loginCodeErrorKey, loginCodeMessage } from "./errors";
 
 describe("errores del código de ingreso", () => {
   it.each([
@@ -19,5 +20,21 @@ describe("errores del código de ingreso", () => {
   it("distingue red y error desconocido sin depender del mensaje", () => {
     expect(loginCodeErrorKey(ApiError.network())).toBe("errors:network");
     expect(loginCodeErrorKey(new ApiError(500, { code: "Other.Failure", detail: "unknown" }))).toBe("errors:server");
+  });
+});
+
+// El mensaje de la franja del paso del código, igual en el ingreso y en los dos registros (tablero Ingreso): el texto
+// del código y, debajo, lo que queda o lo que se puede hacer.
+describe("mensaje del código", () => {
+  const t = ((key: string, options?: Record<string, unknown>) => options?.count === undefined ? key : `${key}:${String(options.count)}`) as unknown as TFunction;
+
+  it.each([
+    ["Auth.LoginCode.Invalid", { attemptsLeft: 3 }, "login.codeInvalid", ["auth:login.attemptsLeft:3"]],
+    ["Auth.LoginCode.Expired", {}, "login.codeExpired", []],
+    ["Auth.LoginCode.TooManyAttempts", {}, "login.tooManyAttempts", ["auth:login.requestNewCode"]],
+    ["Identity.Account.LockedOut", {}, "login.accountLocked", ["auth:login.tryLater"]],
+    ["Identity.Account.Suspended", {}, "login.accountSuspended", ["auth:login.contactSupport"]],
+  ])("%s dice su texto y sus líneas de abajo", (code, extra, text, details) => {
+    expect(loginCodeMessage(new ApiError(400, { code, ...extra }), t)).toEqual({ text, details });
   });
 });

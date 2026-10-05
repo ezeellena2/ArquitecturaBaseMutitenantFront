@@ -1,4 +1,6 @@
+import type { TFunction } from "i18next";
 import { ApiError } from "@/shared/api/ApiError";
+import type { AuthMessageContent } from "./components/AuthMessage";
 
 const errorKeys: Record<string, string> = {
   "Auth.LoginCode.Invalid": "login.codeInvalid",
@@ -16,4 +18,15 @@ const errorKeys: Record<string, string> = {
 export function loginCodeErrorKey(error: ApiError): string {
   if (error.isNetworkError) return "errors:network";
   return (error.code && errorKeys[error.code]) || "errors:server";
+}
+
+/// La franja del paso del código, igual en el ingreso y en los dos registros (tablero Ingreso): el texto del código y,
+/// debajo, los intentos que quedan o lo que se puede hacer.
+export function loginCodeMessage(error: ApiError, t: TFunction): AuthMessageContent {
+  const details: string[] = [];
+  if (typeof error.problem.attemptsLeft === "number") details.push(t("auth:login.attemptsLeft", { count: error.problem.attemptsLeft }));
+  if (error.code === "Auth.LoginCode.TooManyAttempts") details.push(t("auth:login.requestNewCode"));
+  if (error.code === "Identity.Account.LockedOut") details.push(t("auth:login.tryLater"));
+  if (error.code === "Identity.Account.Suspended") details.push(t("auth:login.contactSupport"));
+  return { text: t(loginCodeErrorKey(error)), details };
 }

@@ -141,10 +141,14 @@ src/
 │   │   │   │   ├── invitations.ts                   POST /api/invitations/preview (el token en el cuerpo, nunca en la URL) y POST /api/invitations/accept
 │   │   │   │   └── deletionCancel.ts                POST /api/auth/deletion/cancel con el cancelTicket
 │   │   │   ├── components/
+│   │   │   │   ├── AuthStatus.tsx                   la pantalla de estado del ingreso, los registros y la invitación: círculo de 52, título de 24, bajada y botones de 44
+│   │   │   │   ├── AuthCodeStep.tsx                 el paso del código del ingreso y de los dos registros: «Usar otro correo», los casilleros, la franja, «Verificar» y «Reenviar código»
+│   │   │   │   ├── AuthMessage.tsx                  la franja de sus mensajes (FormError) con las líneas que los completan («Te quedan 3 intentos.»)
+│   │   │   │   ├── BusinessAccessResult.tsx         la puerta de empresa que no deja entrar (sin empresa o deshabilitado), desde el código o desde authorize
 │   │   │   │   ├── EmailCodeForm.tsx
 │   │   │   │   ├── WhatsAppCodeForm.tsx             [E8]
 │   │   │   │   ├── GoogleButton.tsx                 [E3]
-│   │   │   │   └── PendingDeletionNotice.tsx        "Tu cuenta tiene la baja pedida · Se elimina el dd/mm/aaaa", con «Cancelar la baja y entrar» y «Salir»
+│   │   │   │   └── PendingDeletionPanel.tsx         "Tu cuenta tiene la baja pedida · Se elimina el dd/mm/aaaa", con «Cancelar la baja y entrar» y «Salir»
 │   │   │   ├── lib/
 │   │   │   │   ├── returnUrl.ts
 │   │   │   │   └── loginCodeState.ts                estado del paso del código: destino enmascarado, canal y segundos para reenviar

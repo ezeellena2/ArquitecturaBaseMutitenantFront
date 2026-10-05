@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
-import { Check, ChevronLeft, CircleAlert, Clock3, LockKeyhole } from "lucide-react";
+import { Check, CircleAlert, Clock3, LockKeyhole } from "lucide-react";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { ApiError } from "@/shared/api/ApiError";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -16,7 +16,6 @@ import { FormField } from "@/shared/ui/FormField";
 import { EmailField } from "@/shared/ui/fields/EmailField";
 import { Input } from "@/shared/ui/input";
 import { isValidTaxId } from "@/shared/ui/fields/TaxIdField";
-import { OtpInput } from "@/shared/ui/OtpInput";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { effectiveCulture } from "@/shared/i18n";
 import { browserTimeZone } from "@/shared/time/browserTimeZone";
@@ -27,8 +26,10 @@ import {
   requestBusinessSignupCode,
   verifyBusinessSignupCode,
 } from "../api/businessSignup";
+import { AuthStatus } from "../components/AuthStatus";
+import { AuthCodeStep } from "../components/AuthCodeStep";
 import { GoogleButton } from "../components/GoogleButton";
-import { loginCodeErrorKey } from "../errors";
+import { loginCodeErrorKey, loginCodeMessage } from "../errors";
 import { homeOf, loginPathOf } from "@/tenancy/access";
 
 type Step = "email" | "code" | "details" | "success" | "approval" | "closed";
@@ -46,8 +47,6 @@ export function BusinessSignupPage() {
   const [code, setCode] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [requestError, setRequestError] = useState<ApiError | null>(null);
-  // «Criterio · Botones»: «Verificar» no se apaga; si falta el código, la franja dice qué falta.
-  const [incomplete, setIncomplete] = useState(false);
   const [organizationName, setOrganizationName] = useState("");
   const [firstCompanyName, setFirstCompanyName] = useState("");
   const [slug, setSlug] = useState("");
@@ -147,7 +146,6 @@ export function BusinessSignupPage() {
   }
 
   async function confirmCode() {
-    if (code.length !== 6) { setIncomplete(true); return; }
     setRequestError(null);
     try {
       await verifyCode.mutateAsync({ email, code });
@@ -161,7 +159,6 @@ export function BusinessSignupPage() {
 
   async function resendCode() {
     setRequestError(null);
-    setIncomplete(false);
     try {
       const response = await requestCode.mutateAsync(email);
       setCode("");
@@ -222,17 +219,20 @@ export function BusinessSignupPage() {
     ? requestError.code?.startsWith("Auth.LoginCode.") ? t(loginCodeErrorKey(requestError))
       : t("businessSignup.serverError")
     : null;
+  // El paso del código dice lo mismo que el del ingreso: el texto y los intentos que quedan.
+  const codeMessage = requestError
+    ? requestError.code?.startsWith("Auth.LoginCode.") ? loginCodeMessage(requestError, t) : { text: t("businessSignup.serverError") }
+    : null;
 
   return <AuthLayout access="business" panelIntro={t("businessSignup.panelIntro")}>
-    {step === "closed" ? <StatusPanel icon="lock" title={t("businessSignup.closedTitle")}
-      detail={t("businessSignup.closedDetail")} action={t("businessSignup.backHome")} href="/" />
-      : step === "success" ? <StatusPanel icon="success"
-        title={t("businessSignup.doneTitle", { organization: organizationName.trim() })}
-        detail={t("businessSignup.doneDetail")} action={t("businessSignup.openOrganization", { organization: organizationName.trim() })}
-        onAction={() => void enterOrganization()} />
-        : step === "approval" ? <StatusPanel icon="approval" title={t("businessSignup.approvalTitle")}
+    {step === "closed" ? <AuthStatus icon={LockKeyhole} title={t("businessSignup.closedTitle")} detail={t("businessSignup.closedDetail")}
+      actions={<Button asChild variant="outline" size="lg"><Link to="/">{t("businessSignup.backHome")}</Link></Button>} />
+      : step === "success" ? <AuthStatus icon={Check} tone="ok" title={t("businessSignup.doneTitle", { organization: organizationName.trim() })}
+        detail={t("businessSignup.doneDetail")}
+        actions={<Button type="button" size="lg" onClick={() => void enterOrganization()}>{t("businessSignup.openOrganization", { organization: organizationName.trim() })}</Button>} />
+        : step === "approval" ? <AuthStatus icon={Clock3} tone="warning" title={t("businessSignup.approvalTitle")}
           detail={<Trans ns="auth" i18nKey="businessSignup.approvalDetail" values={{ organization: organizationName.trim(), email: notificationEmail }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />}
-          action={t("businessSignup.backHome")} href="/" />
+          actions={<Button asChild variant="outline" size="lg"><Link to="/">{t("businessSignup.backHome")}</Link></Button>} />
           : step === "email" ? <section className="flex flex-col gap-[22px]">
             <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.title")}</h1>
             <label className="flex items-center gap-2.5 text-[14px] text-[var(--t1)]">
@@ -251,26 +251,13 @@ export function BusinessSignupPage() {
               onClick={() => { if (acceptedTerms) void sendCode(); else setTermsError(true); }}>{retry.label ?? t("businessSignup.continue")}</Button>
             <div className="text-center text-[13px] text-[var(--t2)]">{t("businessSignup.alreadyRegistered")} <Link to={loginPathOf("business")} className="font-semibold text-[var(--marca)] hover:underline">{t("businessSignup.loginBusiness")}</Link></div>
           </section>
-            : step === "code" ? <section className="flex flex-col gap-[22px]">
-              <button type="button" onClick={() => { setStep("email"); setCode(""); setRequestError(null); setIncomplete(false); }}
-                className="inline-flex items-center gap-1 self-start text-sm font-semibold text-[var(--marca)] hover:underline"><ChevronLeft size={16} aria-hidden="true" />{t("businessSignup.changeEmail")}</button>
-              <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.codeTitle")}</h1>
-                <p id="business-signup-code-hint" className="mt-2 text-sm text-[var(--t2)]"><Trans ns="auth" i18nKey="businessSignup.sentCode" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p></div>
-              <OtpInput length={6} value={code} variant="auth" onChange={(next) => { setCode(next); setRequestError(null); setIncomplete(false); }}
-                label={t("businessSignup.codeLabel")} invalid={requestError?.code === "Auth.LoginCode.Invalid"}
-                disabled={verifyCode.isPending} aria-describedby="business-signup-code-hint" />
-              <FormError message={incomplete ? t("common:code.incomplete") : requestErrorText} />
-              <div className="flex flex-col gap-2.5">
-                <Button type="button" size="lg" onClick={() => void confirmCode()} disabled={verifyCode.isPending}>{t("businessSignup.verify")}</Button>
-                <Button type="button" size="lg" variant="outline"
-                  onClick={() => void resendCode()} disabled={resend.isRunning || retry.isRunning || requestCode.isPending}>
-                  {retry.label ?? (resend.isRunning ? t("businessSignup.resendIn", { seconds: resend.seconds }) : t("businessSignup.resend"))}
-                </Button>
-              </div>
-            </section>
+            : step === "code" ? <AuthCodeStep destination={email} code={code} onBack={() => { setStep("email"); setCode(""); setRequestError(null); }}
+              onCodeChange={(next) => { setCode(next); setRequestError(null); }} onVerify={() => void confirmCode()} onResend={() => void resendCode()}
+              invalid={requestError?.code === "Auth.LoginCode.Invalid"} locked={verifyCode.isPending} message={codeMessage}
+              verifyDisabled={verifyCode.isPending} resendSeconds={resend.seconds} resendRetryLabel={retry.label} resendDisabled={requestCode.isPending} />
               : <section className="flex flex-col gap-[22px]">
                 <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.organizationTitle")}</h1>
-                  <p className="mt-2 text-[14px] text-[var(--t2)]">{t("businessSignup.ownerNote")}</p></div>
+                  <p className="mt-1.5 text-sm leading-normal text-[var(--t2)]">{t("businessSignup.ownerNote")}</p></div>
                 {limitReached ? <div role="alert" className="flex items-start gap-2.5 rounded-[10px] bg-[var(--peligro-t)] px-3 py-2.5 text-[13px] leading-normal text-[var(--peligro)]">
                   <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
                   <span><span className="block">{limitCount === null ? t("businessSignup.limitTitleNoCount") : t("businessSignup.limitTitle", { count: limitCount })}</span>
@@ -308,20 +295,6 @@ export function BusinessSignupPage() {
               </section>}
   </AuthLayout>;
 
-  function StatusPanel({ icon, title, detail, action, href, onAction }: {
-    icon: "lock" | "success" | "approval"; title: string; detail: ReactNode; action: string; href?: string;
-    onAction?: () => void;
-  }) {
-    const Icon = icon === "lock" ? LockKeyhole : icon === "success" ? Check : Clock3;
-    const tone = icon === "success" ? "bg-[var(--ok-t)] text-[var(--ok)]"
-      : icon === "approval" ? "bg-[var(--alerta-t)] text-[var(--alerta)]" : "bg-[var(--s3)] text-[var(--t2)]";
-    return <section className="flex flex-col items-center gap-[22px] text-center">
-      <div aria-hidden="true" className={`flex size-[52px] items-center justify-center rounded-full ${tone}`}><Icon size={20} /></div>
-      <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{title}</h1><p className="mt-2 text-sm text-[var(--t2)]">{detail}</p></div>
-      {onAction ? <Button type="button" size="lg" className="w-full" onClick={onAction}>{action}</Button>
-        : <Button asChild variant="outline" size="lg" className="w-full"><Link to={href ?? "/"}>{action}</Link></Button>}
-    </section>;
-  }
 }
 
 // Tablero Registro-Empresa: el dominio va en una caja gris aparte, pegada al campo, con la letra del campo (15).

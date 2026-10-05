@@ -2,22 +2,26 @@ import { Ban, Building2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { Button } from "@/shared/ui/button";
+import { AuthStatus } from "./AuthStatus";
 
 export type BusinessAccessResultProps =
   | { status: "noBusiness"; organizationName?: never }
   | { status: "inactive"; organizationName: string };
 
+/// La puerta de empresa que no deja entrar (tablero Ingreso, «Empresa: …»), igual si lo dice el código o si vuelve de
+/// authorize: la cuenta no está en ninguna empresa, o su acceso a la organización está deshabilitado.
 export function BusinessAccessResult(props: BusinessAccessResultProps) {
   const { t } = useTranslation("auth");
+  const register = <Link to="/registro/empresa">{t("login.registerBusiness")}</Link>;
+  const enterAsPerson = <Link to="/login">{t("login.enterAsPerson")}</Link>;
 
-  return props.status === "noBusiness" ? <div className="flex flex-col gap-[22px] text-center">
-    <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><Building2 size={20} strokeWidth={1.75} /></span>
-    <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.noBusiness")}</h1>
-    <Button asChild variant="outline" size="lg"><Link to="/login">{t("login.enterAsPerson")}</Link></Button>
-  </div> : <div className="flex flex-col gap-[22px] text-center">
-    <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><Ban size={20} strokeWidth={1.75} /></span>
-    <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.inactiveBusiness", { organizationName: props.organizationName })}</h1>
-    <p className="text-sm text-[var(--t2)]">{t("login.askOwner")}</p>
-    <Button asChild size="lg"><Link to="/login">{t("login.enterAsPerson")}</Link></Button>
-  </div>;
+  return props.status === "noBusiness"
+    ? <AuthStatus icon={Building2} title={t("login.noBusiness")} actions={<>
+      <Button asChild size="lg">{register}</Button>
+      <Button asChild variant="outline" size="lg">{enterAsPerson}</Button>
+    </>} />
+    : <AuthStatus icon={Ban} title={t("login.inactiveBusiness", { organizationName: props.organizationName })} detail={t("login.askOwner")} actions={<>
+      <Button asChild size="lg">{enterAsPerson}</Button>
+      <Button asChild variant="outline" size="lg">{register}</Button>
+    </>} />;
 }

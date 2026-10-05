@@ -2,10 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 import { z } from "zod";
-import { ChevronLeft, LockKeyhole } from "lucide-react";
+import { LockKeyhole } from "lucide-react";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { ApiError } from "@/shared/api/ApiError";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
@@ -16,10 +16,11 @@ import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { EmailField } from "@/shared/ui/fields/EmailField";
-import { OtpInput } from "@/shared/ui/OtpInput";
 import { requestSignup, verifySignup } from "../api/signup";
+import { AuthStatus } from "../components/AuthStatus";
+import { AuthCodeStep } from "../components/AuthCodeStep";
 import { GoogleButton } from "../components/GoogleButton";
-import { loginCodeErrorKey } from "../errors";
+import { loginCodeErrorKey, loginCodeMessage } from "../errors";
 import { safeReturnUrl } from "../lib/returnUrl";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { effectiveCulture } from "@/shared/i18n";
@@ -39,8 +40,6 @@ export function SignupPage() {
   const [closed, setClosed] = useState(searchParams.get("error") === "Auth.Signup.Closed");
   const [code, setCode] = useState("");
   const [error, setError] = useState<ApiError | null>(null);
-  // «Criterio · Botones»: el botón no se apaga; si falta el código, la franja dice qué falta.
-  const [incomplete, setIncomplete] = useState(false);
   const { control, register, handleSubmit, setError: setFieldError, clearErrors, formState: { errors } } = useForm<SignupFields>({
     resolver: zodResolver(schema),
     defaultValues: { email: "", acceptedTerms: false as true },
@@ -79,7 +78,6 @@ export function SignupPage() {
 
   async function verifyCode() {
     if (!step) return;
-    if (code.length !== 6) { setIncomplete(true); return; }
     setError(null);
     try {
       await verify.mutateAsync({ email: step.email, code, acceptedTerms: true });
@@ -93,7 +91,6 @@ export function SignupPage() {
   async function resendCode() {
     if (!step) return;
     setError(null);
-    setIncomplete(false);
     try {
       const response = await request.mutateAsync(step.email);
       setCode("");
@@ -105,18 +102,12 @@ export function SignupPage() {
     }
   }
 
-  const attemptsLeft = typeof error?.problem.attemptsLeft === "number" ? error.problem.attemptsLeft : null;
-
   if (googleComplete) return <SessionStatusPage status="starting" />;
 
   return <AuthLayout access="consumer">
-    {closed ? <div className="flex flex-col items-center gap-[22px] text-center">
-      <div aria-hidden="true" className="flex size-[52px] items-center justify-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><LockKeyhole size={18} /></div>
-      <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("signup.closedTitle")}</h1>
-        <p className="mt-2 text-sm text-[var(--t2)]">{t("signup.closedDetail")}</p>
-      </div>
-      <Button asChild size="lg" className="w-full"><Link to="/login">{t("signup.backToLogin")}</Link></Button>
-    </div> : step === null ? <div className="flex flex-col gap-[22px]">
+    {closed ? <AuthStatus icon={LockKeyhole} title={t("signup.closedTitle")} detail={t("signup.closedDetail")}
+      actions={<Button asChild size="lg"><Link to="/login">{t("signup.backToLogin")}</Link></Button>} />
+      : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("signup.title")}</h1>
       <form noValidate onSubmit={(event) => {
         if (!acceptedTerms) { event.preventDefault(); requireTerms(); return; }
@@ -140,19 +131,11 @@ export function SignupPage() {
         <div>{t("signup.haveAccount")} <Link to="/login" className="font-semibold text-[var(--marca)] hover:underline">{t("signup.login")}</Link></div>
         <div>{t("login.haveBusiness")} <Link to="/registro/empresa" className="font-semibold text-[var(--marca)] hover:underline">{t("login.registerIt")}</Link></div>
       </div>
-    </div> : <div className="flex flex-col gap-[22px]">
-      <button type="button" onClick={() => { setStep(null); setCode(""); setError(null); setIncomplete(false); }} className="inline-flex items-center gap-1 self-start text-sm font-semibold text-[var(--marca)] hover:underline"><ChevronLeft size={16} aria-hidden="true" />{t("login.otherEmail")}</button>
-      <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.checkEmail")}</h1>
-        <p id="signup-code-hint" className="mt-2 text-sm text-[var(--t2)]"><Trans ns="auth" i18nKey="login.sentCode" values={{ email: step.email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
-      </div>
-      <OtpInput length={6} value={code} variant="auth" onChange={(next) => { setCode(next); setIncomplete(false); if (error?.code === "Auth.LoginCode.Invalid") setError(null); }} label={t("login.codeLabel")} invalid={error?.code === "Auth.LoginCode.Invalid"} disabled={verify.isPending} aria-describedby="signup-code-hint" />
-      <FormError message={incomplete ? t("common:code.incomplete") : error ? <>{t(loginCodeErrorKey(error))}{attemptsLeft !== null ? <span className="block">{t("login.attemptsLeft", { count: attemptsLeft })}</span> : null}</> : null} />
-      <div className="flex flex-col gap-2.5">
-        <Button type="button" size="lg" onClick={() => void verifyCode()} disabled={verify.isPending}>{t("signup.verify")}</Button>
-        <Button type="button" size="lg" variant="outline" onClick={() => void resendCode()} disabled={resend.isRunning || retry.isRunning || request.isPending}>
-          {retry.label ?? (resend.isRunning ? t("login.resendIn", { seconds: resend.seconds }) : t("login.resendCode"))}
-        </Button>
-      </div>
-    </div>}
+    </div> : <AuthCodeStep destination={step.email} code={code} onBack={() => { setStep(null); setCode(""); setError(null); }}
+      onCodeChange={(next) => { setCode(next); if (error?.code === "Auth.LoginCode.Invalid") setError(null); }}
+      onVerify={() => void verifyCode()} onResend={() => void resendCode()}
+      invalid={error?.code === "Auth.LoginCode.Invalid"} locked={verify.isPending} message={error ? loginCodeMessage(error, t) : null}
+      verifyLabel={t("signup.verify")} verifyDisabled={verify.isPending}
+      resendSeconds={resend.seconds} resendRetryLabel={retry.label} resendDisabled={request.isPending} />}
   </AuthLayout>;
 }

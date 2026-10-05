@@ -10,6 +10,7 @@ import { invitationAntiforgeryQueryKey, invitationPaths, invitationPreviewQueryK
 import type { AcceptInvitationRequest, AcceptInvitationResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { AuthLayout } from "@/layouts/AuthLayout";
+import { AuthStatus } from "../components/AuthStatus";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
@@ -150,28 +151,20 @@ function InvitationFlow() {
         <Button type="button" variant="outline" size="lg" onClick={retry}>{t("retry")}</Button>
       </div>
         : invitation ? entering && !actionError ? <div role="status" aria-busy="true" className="flex min-h-36 items-center justify-center text-sm text-[var(--t2)]">{t("accepted.entering", { organization: organizationName })}</div>
-          : acceptedView ? <div className="flex flex-col gap-[22px]">
-          <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--ok-t)] text-[var(--ok)]"><Check size={22} strokeWidth={2} /></span>
-          <div className="text-center">
-            <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("accepted.title", { organization: organizationName })}</h1>
-            <p className="mt-1.5 break-all text-sm text-[var(--t2)]"><Trans ns="invitations" i18nKey="accepted.email" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
-          </div>
-          {needsPersonalMethod ? <Banner tone="warning">{t("accepted.personalMethodNotice")}</Banner> : null}
-          <div className="flex flex-col gap-2.5">
-            {needsPersonalMethod ? <>
+          : acceptedView ? <AuthStatus icon={Check} tone="ok" largeIcon title={t("accepted.title", { organization: organizationName })}
+            detail={<Trans ns="invitations" i18nKey="accepted.email" values={{ email }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />}
+            actions={needsPersonalMethod ? <>
               <Button type="button" size="lg" onClick={() => void enterAsBusiness(accountPagePaths.account)}>{t("accepted.addNow")}</Button>
               <Button type="button" variant="outline" size="lg" onClick={() => void enterAsBusiness(homeOf("business"))}>{t("accepted.later")}</Button>
-            </> : <Button type="button" size="lg" onClick={() => void enterAsBusiness(homeOf("business"))}>{t("accepted.openOrganization")}</Button>}
-          </div>
-          <FormError message={actionError} />
-        </div> : invitation.state === "Expired" || invitation.state === "Invalid" || invitation.state === "OrganizationSuspended" ? <div className="flex flex-col gap-[22px]">
-          <span aria-hidden="true" className={`flex size-[52px] items-center justify-center self-center rounded-full ${invitation.state === "Invalid" ? "bg-[var(--s3)] text-[var(--t2)]" : "bg-[var(--alerta-t)] text-[var(--alerta)]"}`}><Clock size={20} strokeWidth={1.75} /></span>
-          <div className="text-center">
-            <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t(`states.${invitation.state}.title`, { organization: organizationName, inviter })}</h1>
-            <p className="mt-1.5 text-sm text-[var(--t2)]">{t(`states.${invitation.state}.description`, { organization: organizationName, inviter })}</p>
-          </div>
-          <Button asChild variant="outline" size="lg"><Link to="/login">{t("backToSignIn")}</Link></Button>
-        </div> : <div className="flex flex-col gap-5">
+            </> : <Button type="button" size="lg" onClick={() => void enterAsBusiness(homeOf("business"))}>{t("accepted.openOrganization")}</Button>}>
+            {needsPersonalMethod ? <Banner tone="warning">{t("accepted.personalMethodNotice")}</Banner> : null}
+            <FormError message={actionError} />
+          </AuthStatus> : invitation.state === "Expired" || invitation.state === "Invalid" || invitation.state === "OrganizationSuspended"
+            ? <AuthStatus icon={Clock} tone={invitation.state === "Invalid" ? "neutral" : "warning"}
+              title={t(`states.${invitation.state}.title`, { organization: organizationName, inviter })}
+              detail={t(`states.${invitation.state}.description`, { organization: organizationName, inviter })}
+              actions={<Button asChild variant="outline" size="lg"><Link to="/login">{t("backToSignIn")}</Link></Button>} />
+            : <div className="flex flex-col gap-5">
           <span aria-hidden="true" className="flex size-14 items-center justify-center rounded-[14px] bg-[linear-gradient(135deg,var(--marca),var(--auth-panel-mid))] text-xl font-bold text-[var(--lado-activo)]">{initials(organizationName, "O")}</span>
           <div>
             <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("join.title", { organization: organizationName })}</h1>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "react-oidc-context";
-import { Trans, useTranslation } from "react-i18next";
-import { Ban, Building2, ChevronLeft, Clock3, LockKeyhole, TriangleAlert } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Clock3, LockKeyhole, TriangleAlert } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { takeExpiredSessionNotice } from "@/auth/sessionExpiredNotice";
@@ -11,12 +11,13 @@ import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useCountdown } from "@/shared/hooks/useCountdown";
 import { Button } from "@/shared/ui/button";
-import { FormError } from "@/shared/ui/FormError";
-import { OtpInput } from "@/shared/ui/OtpInput";
 import { requestLoginCode, verifyLoginCode } from "../api/loginCode";
+import { AuthStatus, type AuthStatusProps } from "../components/AuthStatus";
+import { BusinessAccessResult } from "../components/BusinessAccessResult";
+import { AuthCodeStep } from "../components/AuthCodeStep";
 import { EmailCodeForm } from "../components/EmailCodeForm";
 import { GoogleButton } from "../components/GoogleButton";
-import { loginCodeErrorKey } from "../errors";
+import { loginCodeMessage } from "../errors";
 import { carriedLoginRedirectError, carryLoginRedirectError, forgetLoginRedirectError } from "../lib/loginRedirectError";
 import type { CodeStep } from "../lib/loginCodeState";
 import { loginReturnUrl, safeReturnUrl } from "../lib/returnUrl";
@@ -35,10 +36,11 @@ export interface LoginPageProps {
 
 const followAuthorize = (url: string) => globalThis.location.assign(url);
 
-const unavailableResults: Record<UnavailableCode, { title: string; description: string; Icon: typeof TriangleAlert; tone: string }> = {
-  "Tenancy.Tenant.Suspended": { title: "suspendedTitle", description: "suspendedDescription", Icon: TriangleAlert, tone: "bg-[var(--alerta-t)] text-[var(--alerta)]" },
-  "Tenancy.Tenant.PendingApproval": { title: "pendingTitle", description: "pendingDescription", Icon: Clock3, tone: "bg-[var(--marca-t)] text-[var(--marca-tx)]" },
-  "Tenancy.Tenant.Closed": { title: "closedTitle", description: "closedDescription", Icon: LockKeyhole, tone: "bg-[var(--s3)] text-[var(--t2)]" },
+// La organización suspendida, en revisión o cerrada: los textos de la organización no disponible, con el círculo de su estado.
+const unavailableResults: Record<UnavailableCode, { title: string; description: string; icon: AuthStatusProps["icon"]; tone: AuthStatusProps["tone"] }> = {
+  "Tenancy.Tenant.Suspended": { title: "suspendedTitle", description: "suspendedDescription", icon: TriangleAlert, tone: "warning" },
+  "Tenancy.Tenant.PendingApproval": { title: "pendingTitle", description: "pendingDescription", icon: Clock3, tone: "brand" },
+  "Tenancy.Tenant.Closed": { title: "closedTitle", description: "closedDescription", icon: LockKeyhole, tone: "neutral" },
 };
 
 export function LoginPage({ access, completeLogin = followAuthorize }: LoginPageProps) {
@@ -57,8 +59,6 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const [step, setStep] = useState<CodeStep | null>(null);
   const [code, setCode] = useState("");
   const [error, setError] = useState<ApiError | null>(null);
-  // «Criterio · Botones»: «Verificar» no se apaga; si falta el código, la franja dice qué falta.
-  const [incomplete, setIncomplete] = useState(false);
   const [result, setResult] = useState<"noBusiness" | "inactive" | UnavailableCode | null>(null);
   const resend = useIdempotentMutation((email: string, key) => requestLoginCode(email, key), { meta: { handlesError: true } });
   const verify = useIdempotentMutation((input: { email: string; code: string; returnUrl: string }, key) => verifyLoginCode(input, key), { meta: { handlesError: true } });
@@ -116,7 +116,6 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     setStep(next);
     setCode("");
     setError(null);
-    setIncomplete(false);
     resendTimer.restart(60);
   }
 
@@ -126,14 +125,12 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     setStep(null);
     setCode("");
     setError(null);
-    setIncomplete(false);
     setResult(null);
     resendTimer.restart(0);
   }
 
   async function submitCode() {
     if (!step || !returnUrl) return;
-    if (code.length !== 6) { setIncomplete(true); return; }
     setError(null);
     try {
       const response = await verify.mutateAsync({ email: step.destination, code, returnUrl });
@@ -157,7 +154,6 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   async function resendCode() {
     if (!step) return;
     setError(null);
-    setIncomplete(false);
     try {
       const response = await resend.mutateAsync(step.destination);
       setCode("");
@@ -169,8 +165,6 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     }
   }
 
-  const errorKey = error ? loginCodeErrorKey(error) : null;
-  const attemptsLeft = typeof error?.problem.attemptsLeft === "number" ? error.problem.attemptsLeft : null;
   const wrongCode = error?.code === "Auth.LoginCode.Invalid" || error?.code === "Auth.LoginCode.TooManyAttempts";
   const codeSpent = error?.code === "Auth.LoginCode.TooManyAttempts" || error?.code === "Identity.Account.LockedOut";
   const accountClosed = error?.code === "Identity.Account.Suspended";
@@ -178,29 +172,14 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const unavailable = isUnavailableCode(result) ? unavailableResults[result] : null;
 
   return <AuthLayout access={access}>
-    {pending ? <PendingDeletionPanel pending={pending} onCancel={() => { void cancelDeletion(); }} busy={cancel.isPending} failure={cancelFailure} /> : result === "noBusiness" ? <div className="flex flex-col gap-[22px] text-center">
-      <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><Building2 size={20} strokeWidth={1.75} /></span>
-      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.noBusiness")}</h1>
-      <div className="flex flex-col gap-2.5">
-        <Button asChild size="lg"><Link to="/registro/empresa">{t("login.registerBusiness")}</Link></Button>
-        <Button asChild variant="outline" size="lg"><Link to="/login">{t("login.enterAsPerson")}</Link></Button>
-      </div>
-    </div> : result === "inactive" ? <div className="flex flex-col gap-[22px] text-center">
-      <span aria-hidden="true" className="flex size-[52px] items-center justify-center self-center rounded-full bg-[var(--s3)] text-[var(--t2)]"><Ban size={20} strokeWidth={1.75} /></span>
-      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.inactiveBusiness", { organizationName })}</h1>
-      <p className="text-sm text-[var(--t2)]">{t("login.askOwner")}</p>
-      <div className="flex flex-col gap-2.5">
-        <Button asChild size="lg"><Link to="/login">{t("login.enterAsPerson")}</Link></Button>
-        <Button asChild variant="outline" size="lg"><Link to="/registro/empresa">{t("login.registerBusiness")}</Link></Button>
-      </div>
-    </div> : unavailable ? <div className="flex flex-col gap-[22px] text-center">
-      <span aria-hidden="true" className={`flex size-[52px] items-center justify-center self-center rounded-full ${unavailable.tone}`}><unavailable.Icon size={20} strokeWidth={1.75} /></span>
-      <div>
-        <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t(`errors:errorPage.unavailable.${unavailable.title}`, { organizationName })}</h1>
-        <p className="mt-2 text-sm text-[var(--t2)]">{t(`errors:errorPage.unavailable.${unavailable.description}`)}</p>
-      </div>
-      <Button asChild size="lg"><Link to="/login">{t("login.enterAsPerson")}</Link></Button>
-    </div> : step === null ? <div className="flex flex-col gap-[22px]">
+    {pending ? <PendingDeletionPanel pending={pending} onCancel={() => { void cancelDeletion(); }} busy={cancel.isPending} failure={cancelFailure} />
+      : result === "noBusiness" ? <BusinessAccessResult status="noBusiness" />
+        : result === "inactive" ? <BusinessAccessResult status="inactive" organizationName={organizationName} />
+          : unavailable ? <AuthStatus icon={unavailable.icon} tone={unavailable.tone}
+            title={t(`errors:errorPage.unavailable.${unavailable.title}`, { organizationName })}
+            detail={t(`errors:errorPage.unavailable.${unavailable.description}`)}
+            actions={<Button asChild size="lg"><Link to="/login">{t("login.enterAsPerson")}</Link></Button>} />
+            : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{access === "business" ? t("login.businessTitle") : t("login.personalTitle")}</h1>
       {sessionExpired ? <div role="status" className="flex items-start gap-2.5 rounded-xl bg-[var(--marca-t)] px-3.5 py-3 text-sm leading-normal text-[var(--marca-tx)]"><Clock3 aria-hidden="true" className="mt-0.5 shrink-0" size={18} strokeWidth={2} /><span>{t("login.sessionExpired")}</span></div> : null}
       <GoogleButton mode="login" access={access} returnUrl={returnUrl!} />
@@ -215,20 +194,14 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
           <div>{t("login.enterAsPersonQuestion")} <Link to="/login" className="font-semibold text-[var(--marca)] hover:underline">{t("login.enterHere")}</Link></div>
         </>}
       </div>
-    </div> : <div className="flex flex-col gap-[22px]">
-      <button type="button" onClick={backToEmail} className="inline-flex items-center gap-1 self-start text-sm font-semibold text-[var(--marca)] hover:underline"><ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />{t("login.otherEmail")}</button>
-      <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.checkEmail")}</h1>
-        <p id="login-code-hint" className="mt-2 text-sm text-[var(--t2)]"><Trans ns="auth" i18nKey="login.sentCode" values={{ email: step.destination }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} /></p>
-      </div>
-      <OtpInput length={6} value={code} variant="auth" onChange={(next) => { setCode(next); setIncomplete(false); if (wrongCode) setError(null); }} label={t("login.codeLabel")} invalid={wrongCode} disabled={verify.isPending || codeSpent || accountClosed} aria-describedby="login-code-hint" />
-      <FormError message={incomplete ? t("common:code.incomplete") : errorKey ? <>{t(errorKey)}{attemptsLeft !== null ? <span className="block">{t("login.attemptsLeft", { count: attemptsLeft })}</span> : null}{codeSpent && error?.code === "Auth.LoginCode.TooManyAttempts" ? <span className="block">{t("login.requestNewCode")}</span> : null}{error?.code === "Identity.Account.LockedOut" ? <span className="block">{t("login.tryLater")}</span> : null}{accountClosed ? <span className="block">{t("login.contactSupport")}</span> : null}</> : null} />
-      <div className="flex flex-col gap-2.5">
-        <Button type="button" size="lg" onClick={() => void submitCode()} disabled={verify.isPending || verifyRetry.isRunning || codeSpent || accountClosed}>{verifyRetry.label ?? t("login.verify")}</Button>
-        <Button type="button" size="lg" variant="outline" onClick={() => void resendCode()} disabled={resendTimer.isRunning || resendRetry.isRunning || resend.isPending || accountClosed}>
-          {accountClosed ? t("login.resendCode") : resendRetry.label ?? (resendTimer.isRunning ? t("login.resendIn", { seconds: resendTimer.seconds }) : t("login.resendCode"))}
-        </Button>
-      </div>
-      {accountClosed ? <button type="button" onClick={backToEmail} className="self-center text-[13px] font-semibold text-[var(--marca)]">{t("login.backToLogin")}</button> : null}
-    </div>}
+    </div> : <AuthCodeStep destination={step.destination} code={code} onBack={backToEmail}
+      onCodeChange={(next) => { setCode(next); if (wrongCode) setError(null); }}
+      onVerify={() => void submitCode()} onResend={() => void resendCode()}
+      invalid={wrongCode} locked={verify.isPending || codeSpent || accountClosed}
+      message={error ? loginCodeMessage(error, t) : null}
+      verifyLabel={verifyRetry.label ?? undefined} verifyDisabled={verify.isPending || verifyRetry.isRunning || codeSpent || accountClosed}
+      resendSeconds={accountClosed ? 0 : resendTimer.seconds} resendRetryLabel={accountClosed ? null : resendRetry.label}
+      resendDisabled={resend.isPending || accountClosed}
+      footer={accountClosed ? <button type="button" onClick={backToEmail} className="self-center text-[13px] font-semibold text-[var(--marca)]">{t("login.backToLogin")}</button> : null} />}
   </AuthLayout>;
 }
