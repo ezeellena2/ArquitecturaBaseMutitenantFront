@@ -1,0 +1,6092 @@
+{
+  "version": 1,
+  "lienzoVersion": 111,
+  "captureScope": "tableros",
+  "cases": [
+    {
+      "id": "marco-gestion-escritorio",
+      "pair": "marco-gestion",
+      "group": "plataforma-marco",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Organizaciones",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "marco-gestion",
+        "actions": []
+      }
+    },
+    {
+      "id": "marco-gestion-movil",
+      "pair": "marco-gestion",
+      "group": "plataforma-marco",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 solo dibuja la referencia base; no existe panel lateral de Gestión. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "marco-gestion",
+        "actions": []
+      }
+    },
+    {
+      "id": "marco-administracion-escritorio",
+      "pair": "marco-administracion",
+      "group": "plataforma-marco",
+      "board": "Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Administración",
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "marco-administracion",
+        "actions": []
+      }
+    },
+    {
+      "id": "marco-administracion-movil",
+      "pair": "marco-administracion",
+      "group": "plataforma-marco",
+      "board": "M-Mas-Plat",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Administración",
+      "app": {
+        "path": "/plataforma/mas",
+        "scenario": "marco-administracion",
+        "actions": []
+      }
+    },
+    {
+      "id": "marco-tu-menu-escritorio",
+      "pair": "marco-tu-menu",
+      "group": "plataforma-marco",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "selector": "button.um-btn"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Mi cuenta",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "marco-tu-menu",
+        "actions": []
+      }
+    },
+    {
+      "id": "marco-tu-menu-movil",
+      "pair": "marco-tu-menu",
+      "group": "plataforma-marco",
+      "board": "M-Mas-Plat",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Mas-Plat dibuja las opciones del operador en Más; no un menú desplegable de usuario."
+      },
+      "app": {
+        "path": "/plataforma/mas",
+        "scenario": "marco-tu-menu",
+        "actions": []
+      }
+    },
+    {
+      "id": "marco-barra-inferior-escritorio",
+      "pair": "marco-barra-inferior",
+      "group": "plataforma-marco",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "Organizaciones es la referencia desktop del marco; la barra inferior es exclusiva del tablero móvil."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "marco-barra-inferior",
+        "actions": []
+      }
+    },
+    {
+      "id": "marco-barra-inferior-movil",
+      "pair": "marco-barra-inferior",
+      "group": "plataforma-marco",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Organizaciones",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "marco-barra-inferior",
+        "actions": []
+      }
+    },
+    {
+      "id": "marco-mas-escritorio",
+      "pair": "marco-mas",
+      "group": "plataforma-marco",
+      "board": "Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "Config-Plat aporta el panel Administración desktop; Más solo está dibujado para móvil."
+      },
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "marco-mas",
+        "actions": []
+      }
+    },
+    {
+      "id": "marco-mas-movil",
+      "pair": "marco-mas",
+      "group": "plataforma-marco",
+      "board": "M-Mas-Plat",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Más",
+      "app": {
+        "path": "/plataforma/mas",
+        "scenario": "marco-mas",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-lista-escritorio",
+      "pair": "organizaciones-lista",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Organizaciones",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-lista",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-lista-movil",
+      "pair": "organizaciones-lista",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Organizaciones",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-lista",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-50-filas-escritorio",
+      "pair": "organizaciones-50-filas",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "10 por página"
+        },
+        {
+          "type": "click",
+          "role": "option",
+          "name": "50 por página"
+        }
+      ],
+      "boardReference": {
+        "kind": "base",
+        "note": "El selector permite 50 por página, pero el tablero contiene solo las 7 organizaciones originales; no dibuja una lista de 50 filas."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-50-filas",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-50-filas-movil",
+      "pair": "organizaciones-50-filas",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones contiene sus filas originales y no dibuja 50 filas ni selector de tamaño."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-50-filas",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-sin-coincidencias-escritorio",
+      "pair": "organizaciones-sin-coincidencias",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "searchbox",
+          "name": "Buscar por nombre o correo",
+          "value": "sin coincidencias"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ninguna organización coincide con los filtros",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-sin-coincidencias",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-sin-coincidencias-movil",
+      "pair": "organizaciones-sin-coincidencias",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-sin-coincidencias",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-menu-espera-aprobacion-escritorio",
+      "pair": "organizaciones-menu-espera-aprobacion",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Gamma S.A."
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-menu-espera-aprobacion",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-menu-espera-aprobacion-movil",
+      "pair": "organizaciones-menu-espera-aprobacion",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-menu-espera-aprobacion",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-menu-activa-escritorio",
+      "pair": "organizaciones-menu-activa",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Grupo Delta"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-menu-activa",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-menu-activa-movil",
+      "pair": "organizaciones-menu-activa",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-menu-activa",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-menu-suspendida-escritorio",
+      "pair": "organizaciones-menu-suspendida",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Beta S.R.L."
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-menu-suspendida",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-menu-suspendida-movil",
+      "pair": "organizaciones-menu-suspendida",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-menu-suspendida",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-menu-fallo-alta-escritorio",
+      "pair": "organizaciones-menu-fallo-alta",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Sigma S.A."
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-menu-fallo-alta",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-menu-fallo-alta-movil",
+      "pair": "organizaciones-menu-fallo-alta",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-menu-fallo-alta",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-menu-cerrada-escritorio",
+      "pair": "organizaciones-menu-cerrada",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Kappa S.R.L."
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-menu-cerrada",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-menu-cerrada-movil",
+      "pair": "organizaciones-menu-cerrada",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-menu-cerrada",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-crear-escritorio",
+      "pair": "organizaciones-crear",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Crear organización"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"dialog\"]",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-crear",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-crear-movil",
+      "pair": "organizaciones-crear",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-crear",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-crear-errores-escritorio",
+      "pair": "organizaciones-crear-errores",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Crear organización"
+        },
+        {
+          "type": "click",
+          "selector": "[role=\"dialog\"] button.b-pri"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Escribí el nombre de la organización.",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-crear-errores",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-crear-errores-movil",
+      "pair": "organizaciones-crear-errores",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-crear-errores",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-crear-correo-invalido-escritorio",
+      "pair": "organizaciones-crear-correo-invalido",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Crear organización"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo del Dueño",
+          "value": "lucia"
+        },
+        {
+          "type": "click",
+          "selector": "[role=\"dialog\"] button.b-pri"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Revisá el correo: no parece válido.",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-crear-correo-invalido",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-crear-correo-invalido-movil",
+      "pair": "organizaciones-crear-correo-invalido",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-crear-correo-invalido",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-confirmacion-motivo-escritorio",
+      "pair": "organizaciones-confirmacion-motivo",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Grupo Delta"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Suspender"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Motivo",
+          "value": "Dos meses sin pago."
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Suspender Grupo Delta?",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-confirmacion-motivo",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-confirmacion-motivo-movil",
+      "pair": "organizaciones-confirmacion-motivo",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-confirmacion-motivo",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-confirmacion-error-escritorio",
+      "pair": "organizaciones-confirmacion-error",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Grupo Delta"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Suspender"
+        },
+        {
+          "type": "click",
+          "selector": "[role=\"alertdialog\"] button.b-pel"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Escribí el motivo.",
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-confirmacion-error",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-confirmacion-error-movil",
+      "pair": "organizaciones-confirmacion-error",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "organizaciones-confirmacion-error",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-409-escritorio",
+      "pair": "organizaciones-409",
+      "group": "plataforma-organizaciones",
+      "board": "Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "Organizaciones v111 no simula conflicto de versión 409; se conserva la lista real para comparar la app cuando exista."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "Conflicto 409 al confirmar una acción con versión anterior, según T19/T24.",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizaciones-409-movil",
+      "pair": "organizaciones-409",
+      "group": "plataforma-organizaciones",
+      "board": "M-Organizaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizaciones v111 no dibuja el 409; conserva la lista de referencia."
+      },
+      "app": {
+        "path": "/plataforma",
+        "scenario": "Conflicto 409 al confirmar una acción con versión anterior, según T19/T24.",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-estado-activa-escritorio",
+      "pair": "organizacion-estado-activa",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Activa",
+        "pestana": "Historial"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Activa",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-estado-activa",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-estado-activa-movil",
+      "pair": "organizacion-estado-activa",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Grupo Delta",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-estado-activa",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-estado-espera-aprobacion-escritorio",
+      "pair": "organizacion-estado-espera-aprobacion",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Espera aprobación",
+        "pestana": "Historial"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Espera aprobación",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-estado-espera-aprobacion",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-estado-espera-aprobacion-movil",
+      "pair": "organizacion-estado-espera-aprobacion",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-estado-espera-aprobacion",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-estado-fallo-el-alta-escritorio",
+      "pair": "organizacion-estado-fallo-el-alta",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Falló el alta",
+        "pestana": "Historial"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Falló el alta",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-estado-fallo-el-alta",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-estado-fallo-el-alta-movil",
+      "pair": "organizacion-estado-fallo-el-alta",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Falló el alta"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Falló el alta",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-estado-fallo-el-alta",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-estado-suspendida-escritorio",
+      "pair": "organizacion-estado-suspendida",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Suspendida",
+        "pestana": "Historial"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Suspendida",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-estado-suspendida",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-estado-suspendida-movil",
+      "pair": "organizacion-estado-suspendida",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-estado-suspendida",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-estado-cerrada-escritorio",
+      "pair": "organizacion-estado-cerrada",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Cerrada",
+        "pestana": "Historial"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Cerrada",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-estado-cerrada",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-estado-cerrada-movil",
+      "pair": "organizacion-estado-cerrada",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-estado-cerrada",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pestana-historial-escritorio",
+      "pair": "organizacion-pestana-historial",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Activa",
+        "pestana": "Historial"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Reactivó la organización",
+      "boardReadySelector": "[role=\"tab\"][aria-selected=\"true\"]",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pestana-historial",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pestana-historial-movil",
+      "pair": "organizacion-pestana-historial",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Reactivó la organización",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pestana-historial",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pestana-duenos-escritorio",
+      "pair": "organizacion-pestana-duenos",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Activa",
+        "pestana": "Dueños"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"tab\"][aria-selected=\"true\"]",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pestana-duenos",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pestana-duenos-movil",
+      "pair": "organizacion-pestana-duenos",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Dueños"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pestana-duenos",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pestana-modulos-escritorio",
+      "pair": "organizacion-pestana-modulos",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Activa",
+        "pestana": "Módulos"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"tab\"][aria-selected=\"true\"]",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pestana-modulos",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pestana-modulos-movil",
+      "pair": "organizacion-pestana-modulos",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pestana-modulos",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pestana-dominio-verificado-escritorio",
+      "pair": "organizacion-pestana-dominio-verificado",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Activa",
+        "pestana": "Dominio verificado"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"tab\"][aria-selected=\"true\"]",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pestana-dominio-verificado",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pestana-dominio-verificado-movil",
+      "pair": "organizacion-pestana-dominio-verificado",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pestana-dominio-verificado",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pestana-pagina-publica-escritorio",
+      "pair": "organizacion-pestana-pagina-publica",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Activa",
+        "pestana": "Página pública"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"tab\"][aria-selected=\"true\"]",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pestana-pagina-publica",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pestana-pagina-publica-movil",
+      "pair": "organizacion-pestana-pagina-publica",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pestana-pagina-publica",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pagina-publicada-escritorio",
+      "pair": "organizacion-pagina-publicada",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Página pública",
+        "pagina": "Publicada"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Publicada",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pagina-publicada",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pagina-publicada-movil",
+      "pair": "organizacion-pagina-publicada",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pagina-publicada",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pagina-borrador-escritorio",
+      "pair": "organizacion-pagina-borrador",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Página pública",
+        "pagina": "Borrador"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Borrador",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pagina-borrador",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pagina-borrador-movil",
+      "pair": "organizacion-pagina-borrador",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pagina-borrador",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pagina-despublicada-por-la-plataforma-escritorio",
+      "pair": "organizacion-pagina-despublicada-por-la-plataforma",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Página pública",
+        "pagina": "Despublicada por la plataforma"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Despublicada por la plataforma",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pagina-despublicada-por-la-plataforma",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pagina-despublicada-por-la-plataforma-movil",
+      "pair": "organizacion-pagina-despublicada-por-la-plataforma",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pagina-despublicada-por-la-plataforma",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-dominio-verificado-escritorio",
+      "pair": "organizacion-dominio-verificado",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Dominio verificado",
+        "dominio": "Verificado"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Verificado",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-dominio-verificado",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-dominio-verificado-movil",
+      "pair": "organizacion-dominio-verificado",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-dominio-verificado",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-dominio-pendiente-escritorio",
+      "pair": "organizacion-dominio-pendiente",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Dominio verificado",
+        "dominio": "Pendiente"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Pendiente",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-dominio-pendiente",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-dominio-pendiente-movil",
+      "pair": "organizacion-dominio-pendiente",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-dominio-pendiente",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-duenos-con-su-dueno-escritorio",
+      "pair": "organizacion-duenos-con-su-dueno",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Dueños",
+        "duenos": "Con su Dueño"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Activo",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-duenos-con-su-dueno",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-duenos-con-su-dueno-movil",
+      "pair": "organizacion-duenos-con-su-dueno",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Dueños"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Activo",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-duenos-con-su-dueno",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-duenos-sin-dueno-todavia-escritorio",
+      "pair": "organizacion-duenos-sin-dueno-todavia",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Dueños",
+        "duenos": "Sin Dueño todavía"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Invitación pendiente",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-duenos-sin-dueno-todavia",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-duenos-sin-dueno-todavia-movil",
+      "pair": "organizacion-duenos-sin-dueno-todavia",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Dueños: sin Dueño todavía"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Invitación pendiente",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-duenos-sin-dueno-todavia",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-duenos-con-el-dueno-suspendido-escritorio",
+      "pair": "organizacion-duenos-con-el-dueno-suspendido",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Dueños",
+        "duenos": "Con el Dueño suspendido"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Suspendido",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-duenos-con-el-dueno-suspendido",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-duenos-con-el-dueno-suspendido-movil",
+      "pair": "organizacion-duenos-con-el-dueno-suspendido",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Dueños: Dueño suspendido"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Suspendido",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-duenos-con-el-dueno-suspendido",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-confirmar-aprobar-escritorio",
+      "pair": "organizacion-confirmar-aprobar",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Espera aprobación"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Aprobar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Aprobar Grupo Delta?",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-confirmar-aprobar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-confirmar-aprobar-movil",
+      "pair": "organizacion-confirmar-aprobar",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-confirmar-aprobar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-confirmar-rechazar-escritorio",
+      "pair": "organizacion-confirmar-rechazar",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Espera aprobación"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Rechazar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Rechazar Grupo Delta?",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-confirmar-rechazar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-confirmar-rechazar-movil",
+      "pair": "organizacion-confirmar-rechazar",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-confirmar-rechazar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-confirmar-suspender-escritorio",
+      "pair": "organizacion-confirmar-suspender",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Activa"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Suspender"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Suspender Grupo Delta?",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-confirmar-suspender",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-confirmar-suspender-movil",
+      "pair": "organizacion-confirmar-suspender",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-confirmar-suspender",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-confirmar-reactivar-escritorio",
+      "pair": "organizacion-confirmar-reactivar",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Suspendida"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Reactivar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Reactivar Grupo Delta?",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-confirmar-reactivar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-confirmar-reactivar-movil",
+      "pair": "organizacion-confirmar-reactivar",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-confirmar-reactivar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-confirmar-cerrar-escritorio",
+      "pair": "organizacion-confirmar-cerrar",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Suspendida"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Cerrar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Cerrar Grupo Delta?",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-confirmar-cerrar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-confirmar-cerrar-movil",
+      "pair": "organizacion-confirmar-cerrar",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-confirmar-cerrar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-confirmacion-error-escritorio",
+      "pair": "organizacion-confirmacion-error",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Activa"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Suspender"
+        },
+        {
+          "type": "click",
+          "selector": "[role=\"alertdialog\"] button.b-pel"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Escribí el motivo.",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-confirmacion-error",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-confirmacion-error-movil",
+      "pair": "organizacion-confirmacion-error",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-confirmacion-error",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pagina-despublicar-escritorio",
+      "pair": "organizacion-pagina-despublicar",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Página pública",
+        "pagina": "Publicada"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de delta.plataforma.com"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Despublicar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Despublicar delta.plataforma.com?",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pagina-despublicar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pagina-despublicar-movil",
+      "pair": "organizacion-pagina-despublicar",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pagina-despublicar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pagina-permitir-publicar-escritorio",
+      "pair": "organizacion-pagina-permitir-publicar",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Página pública",
+        "pagina": "Despublicada por la plataforma"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de delta.plataforma.com"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Permitir publicar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Permitir publicar delta.plataforma.com?",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pagina-permitir-publicar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-pagina-permitir-publicar-movil",
+      "pair": "organizacion-pagina-permitir-publicar",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-pagina-permitir-publicar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-dominio-quitar-escritorio",
+      "pair": "organizacion-dominio-quitar",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Dominio verificado",
+        "dominio": "Verificado"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de delta.ejemplo.com"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Quitar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Quitar delta.ejemplo.com?",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-dominio-quitar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-dominio-quitar-movil",
+      "pair": "organizacion-dominio-quitar",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-dominio-quitar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-dominio-verificar-escritorio",
+      "pair": "organizacion-dominio-verificar",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Dominio verificado",
+        "dominio": "Pendiente"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de delta.ejemplo.com"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Verificar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Verificamos delta.ejemplo.com.",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-dominio-verificar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-dominio-verificar-movil",
+      "pair": "organizacion-dominio-verificar",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-dominio-verificar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-modulo-apagar-escritorio",
+      "pair": "organizacion-modulo-apagar",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Módulos"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de WhatsApp"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Apagar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Apagar WhatsApp?",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-modulo-apagar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-modulo-apagar-movil",
+      "pair": "organizacion-modulo-apagar",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-modulo-apagar",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-modulo-prender-escritorio",
+      "pair": "organizacion-modulo-prender",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Módulos"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Módulo B"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Prender"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Prender Módulo B?",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-modulo-prender",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-modulo-prender-movil",
+      "pair": "organizacion-modulo-prender",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-modulo-prender",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-modulo-extender-prueba-escritorio",
+      "pair": "organizacion-modulo-extender-prueba",
+      "group": "plataforma-organizacion",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Módulos"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Módulo B"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Extender prueba"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Extender la prueba de Módulo B?",
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-modulo-extender-prueba",
+        "actions": []
+      }
+    },
+    {
+      "id": "organizacion-modulo-extender-prueba-movil",
+      "pair": "organizacion-modulo-extender-prueba",
+      "group": "plataforma-organizacion",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/organizaciones/tenant-1",
+        "scenario": "organizacion-modulo-extender-prueba",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-lista-escritorio",
+      "pair": "cuentas-lista",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Cuentas",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-lista",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-lista-movil",
+      "pair": "cuentas-lista",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Cuentas",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-lista",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-lucia-fernandez-escritorio",
+      "pair": "cuentas-menu-lucia-fernandez",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Lucía Fernández"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-lucia-fernandez",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-lucia-fernandez-movil",
+      "pair": "cuentas-menu-lucia-fernandez",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-lucia-fernandez",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-beto-ramirez-escritorio",
+      "pair": "cuentas-menu-beto-ramirez",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Beto Ramírez"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-beto-ramirez",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-beto-ramirez-movil",
+      "pair": "cuentas-menu-beto-ramirez",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-beto-ramirez",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-ana-gomez-escritorio",
+      "pair": "cuentas-menu-ana-gomez",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Ana Gómez"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-ana-gomez",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-ana-gomez-movil",
+      "pair": "cuentas-menu-ana-gomez",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-ana-gomez",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-mariana-lopez-gmail-com-escritorio",
+      "pair": "cuentas-menu-mariana-lopez-gmail-com",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de mariana.lopez@gmail.com"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-mariana-lopez-gmail-com",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-mariana-lopez-gmail-com-movil",
+      "pair": "cuentas-menu-mariana-lopez-gmail-com",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-mariana-lopez-gmail-com",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-julio-perez-escritorio",
+      "pair": "cuentas-menu-julio-perez",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Julio Pérez"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-julio-perez",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-julio-perez-movil",
+      "pair": "cuentas-menu-julio-perez",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-julio-perez",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-pablo-ortiz-escritorio",
+      "pair": "cuentas-menu-pablo-ortiz",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Pablo Ortiz"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-pablo-ortiz",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-pablo-ortiz-movil",
+      "pair": "cuentas-menu-pablo-ortiz",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-pablo-ortiz",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-martin-sosa-escritorio",
+      "pair": "cuentas-menu-martin-sosa",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Martín Sosa"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-martin-sosa",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-martin-sosa-movil",
+      "pair": "cuentas-menu-martin-sosa",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-martin-sosa",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-laura-diaz-escritorio",
+      "pair": "cuentas-menu-laura-diaz",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Laura Díaz"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-laura-diaz",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-laura-diaz-movil",
+      "pair": "cuentas-menu-laura-diaz",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-laura-diaz",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-julieta-molina-arquitecturabase-ejemplo-com-escritorio",
+      "pair": "cuentas-menu-julieta-molina-arquitecturabase-ejemplo-com",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Página siguiente"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de julieta.molina@arquitecturabase.ejemplo.com"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-julieta-molina-arquitecturabase-ejemplo-com",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-menu-julieta-molina-arquitecturabase-ejemplo-com-movil",
+      "pair": "cuentas-menu-julieta-molina-arquitecturabase-ejemplo-com",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-menu-julieta-molina-arquitecturabase-ejemplo-com",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-invitar-operador-escritorio",
+      "pair": "cuentas-invitar-operador",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Invitar operador"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"dialog\"]",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-invitar-operador",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-invitar-operador-movil",
+      "pair": "cuentas-invitar-operador",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-invitar-operador",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-invitar-con-permisos-escritorio",
+      "pair": "cuentas-invitar-con-permisos",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Invitar operador"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo",
+          "value": "julieta.molina@arquitecturabase.ejemplo.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Permisos de plataforma"
+        },
+        {
+          "type": "click",
+          "selector": "label.op2:first-child input"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ver organizaciones",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-invitar-con-permisos",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-invitar-con-permisos-movil",
+      "pair": "cuentas-invitar-con-permisos",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-invitar-con-permisos",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-invitar-error-vacio-escritorio",
+      "pair": "cuentas-invitar-error-vacio",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Invitar operador"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo",
+          "value": ""
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Invitar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Escribí el correo.",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-invitar-error-vacio",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-invitar-error-vacio-movil",
+      "pair": "cuentas-invitar-error-vacio",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-invitar-error-vacio",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-invitar-error-invalido-escritorio",
+      "pair": "cuentas-invitar-error-invalido",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Invitar operador"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo",
+          "value": "lucia"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Invitar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Revisá el correo: no parece válido.",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-invitar-error-invalido",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-invitar-error-invalido-movil",
+      "pair": "cuentas-invitar-error-invalido",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-invitar-error-invalido",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-invitar-error-invitacion-existente-escritorio",
+      "pair": "cuentas-invitar-error-invitacion-existente",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Invitar operador"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo",
+          "value": "julieta.molina@arquitecturabase.ejemplo.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Invitar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ese correo ya tiene una invitación. Reenviala desde la lista.",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-invitar-error-invitacion-existente",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-invitar-error-invitacion-existente-movil",
+      "pair": "cuentas-invitar-error-invitacion-existente",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-invitar-error-invitacion-existente",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-invitar-error-cuenta-existente-escritorio",
+      "pair": "cuentas-invitar-error-cuenta-existente",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Invitar operador"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo",
+          "value": "lucia.fernandez@delta.ejemplo.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Invitar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ese correo ya tiene una cuenta. Un operador no puede tener perfiles de persona.",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-invitar-error-cuenta-existente",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-invitar-error-cuenta-existente-movil",
+      "pair": "cuentas-invitar-error-cuenta-existente",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-invitar-error-cuenta-existente",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-baja-bloqueada-escritorio",
+      "pair": "cuentas-baja-bloqueada",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Lucía Fernández"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Dar de baja"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Es el único Dueño de Grupo Delta.",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-baja-bloqueada",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-baja-bloqueada-movil",
+      "pair": "cuentas-baja-bloqueada",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-baja-bloqueada",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-baja-permitida-escritorio",
+      "pair": "cuentas-baja-permitida",
+      "group": "plataforma-cuentas",
+      "board": "Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Beto Ramírez"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Dar de baja"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Dar de baja la cuenta de Beto Ramírez?",
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-baja-permitida",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuentas-baja-permitida-movil",
+      "pair": "cuentas-baja-permitida",
+      "group": "plataforma-cuentas",
+      "board": "M-Cuentas",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas",
+        "scenario": "cuentas-baja-permitida",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-estado-activa-escritorio",
+      "pair": "cuenta-estado-activa",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "estado": "Activa"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Activa",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-estado-activa",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-estado-activa-movil",
+      "pair": "cuenta-estado-activa",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Lucía Fernández",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-estado-activa",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-estado-suspendida-escritorio",
+      "pair": "cuenta-estado-suspendida",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "estado": "Suspendida"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Suspendida",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-estado-suspendida",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-estado-suspendida-movil",
+      "pair": "cuenta-estado-suspendida",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuenta-Plat v111 solo dibuja la referencia base; Persona solo muestra la ficha activa y métodos de ingreso. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-estado-suspendida",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-estado-necesita-recuperacion-escritorio",
+      "pair": "cuenta-estado-necesita-recuperacion",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "estado": "Necesita recuperación"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Necesita recuperación",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-estado-necesita-recuperacion",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-estado-necesita-recuperacion-movil",
+      "pair": "cuenta-estado-necesita-recuperacion",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuenta-Plat v111 solo dibuja la referencia base; Persona solo muestra la ficha activa y métodos de ingreso. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-estado-necesita-recuperacion",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-estado-baja-pedida-escritorio",
+      "pair": "cuenta-estado-baja-pedida",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "estado": "Baja pedida"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Baja pedida",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-estado-baja-pedida",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-estado-baja-pedida-movil",
+      "pair": "cuenta-estado-baja-pedida",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuenta-Plat v111 solo dibuja la referencia base; Persona solo muestra la ficha activa y métodos de ingreso. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-estado-baja-pedida",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-estado-baja-iniciada-por-la-plataforma-escritorio",
+      "pair": "cuenta-estado-baja-iniciada-por-la-plataforma",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "estado": "Baja iniciada por la plataforma"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "La plataforma inició la baja el",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-estado-baja-iniciada-por-la-plataforma",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-estado-baja-iniciada-por-la-plataforma-movil",
+      "pair": "cuenta-estado-baja-iniciada-por-la-plataforma",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuenta-Plat v111 solo dibuja la referencia base; Persona solo muestra la ficha activa y métodos de ingreso. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-estado-baja-iniciada-por-la-plataforma",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-estado-eliminada-escritorio",
+      "pair": "cuenta-estado-eliminada",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "estado": "Eliminada"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Eliminada",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-estado-eliminada",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-estado-eliminada-movil",
+      "pair": "cuenta-estado-eliminada",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuenta-Plat v111 solo dibuja la referencia base; Persona solo muestra la ficha activa y métodos de ingreso. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-estado-eliminada",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-pestana-metodos-de-ingreso-escritorio",
+      "pair": "cuenta-pestana-metodos-de-ingreso",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "pestana": "Métodos de ingreso"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"tab\"][aria-selected=\"true\"]",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-pestana-metodos-de-ingreso",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-pestana-metodos-de-ingreso-movil",
+      "pair": "cuenta-pestana-metodos-de-ingreso",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-pestana-metodos-de-ingreso",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-pestana-organizaciones-escritorio",
+      "pair": "cuenta-pestana-organizaciones",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "pestana": "Organizaciones"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"tab\"][aria-selected=\"true\"]",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-pestana-organizaciones",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-pestana-organizaciones-movil",
+      "pair": "cuenta-pestana-organizaciones",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuenta-Plat v111 solo dibuja la referencia base; Persona solo muestra la ficha activa y métodos de ingreso. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-pestana-organizaciones",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-pestana-historial-de-seguridad-escritorio",
+      "pair": "cuenta-pestana-historial-de-seguridad",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "pestana": "Historial de seguridad"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadySelector": "[role=\"tab\"][aria-selected=\"true\"]",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-pestana-historial-de-seguridad",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-pestana-historial-de-seguridad-movil",
+      "pair": "cuenta-pestana-historial-de-seguridad",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Cuenta-Plat v111 solo dibuja la referencia base; Persona solo muestra la ficha activa y métodos de ingreso. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-pestana-historial-de-seguridad",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-persona-escritorio",
+      "pair": "cuenta-tipo-persona",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Lucía Fernández",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-persona",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-persona-movil",
+      "pair": "cuenta-tipo-persona",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Lucía Fernández",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-persona",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-escritorio",
+      "pair": "cuenta-tipo-operador",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Operador"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Laura Díaz",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-operador",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-movil",
+      "pair": "cuenta-tipo-operador",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Operador"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Laura Díaz",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-operador",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-acciones-escritorio",
+      "pair": "cuenta-tipo-operador-acciones",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Operador: acciones"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Laura Díaz",
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-operador-acciones",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-acciones-movil",
+      "pair": "cuenta-tipo-operador-acciones",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Operador: acciones"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Laura Díaz",
+      "boardReadySelector": "[role=\"menu\"]",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-operador-acciones",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-cambiar-permisos-escritorio",
+      "pair": "cuenta-tipo-operador-cambiar-permisos",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Operador: cambiar permisos"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Cambiar permisos",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-operador-cambiar-permisos",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-cambiar-permisos-movil",
+      "pair": "cuenta-tipo-operador-cambiar-permisos",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Operador: cambiar permisos"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Cambiar permisos",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-operador-cambiar-permisos",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-quitar-operador-escritorio",
+      "pair": "cuenta-tipo-operador-quitar-operador",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Operador: quitar operador"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Quitar a Laura Díaz como operador?",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-operador-quitar-operador",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-quitar-operador-movil",
+      "pair": "cuenta-tipo-operador-quitar-operador",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Operador: quitar operador"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Quitar a Laura Díaz como operador?",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-operador-quitar-operador",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-invitacion-de-operador-pendiente-escritorio",
+      "pair": "cuenta-tipo-invitacion-de-operador-pendiente",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Invitación de operador pendiente"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Invitación pendiente",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-invitacion-de-operador-pendiente",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-invitacion-de-operador-pendiente-movil",
+      "pair": "cuenta-tipo-invitacion-de-operador-pendiente",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Invitación de operador pendiente"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Invitación pendiente",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-invitacion-de-operador-pendiente",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-invitacion-de-operador-vencida-escritorio",
+      "pair": "cuenta-tipo-invitacion-de-operador-vencida",
+      "group": "plataforma-cuenta",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Invitación de operador vencida"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Invitación vencida",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-invitacion-de-operador-vencida",
+        "actions": []
+      }
+    },
+    {
+      "id": "cuenta-tipo-invitacion-de-operador-vencida-movil",
+      "pair": "cuenta-tipo-invitacion-de-operador-vencida",
+      "group": "plataforma-cuenta",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Invitación de operador vencida"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Invitación vencida",
+      "app": {
+        "path": "/plataforma/cuentas/account-lucia",
+        "scenario": "cuenta-tipo-invitacion-de-operador-vencida",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-pedidos-escritorio",
+      "pair": "recuperaciones-pedidos",
+      "group": "plataforma-recuperaciones",
+      "board": "Recuperaciones",
+      "props": {
+        "caso": "Pedidos"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Pedidos",
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-pedidos",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-pedidos-movil",
+      "pair": "recuperaciones-pedidos",
+      "group": "plataforma-recuperaciones",
+      "board": "M-Recuperaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Recuperaciones",
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-pedidos",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-revisar-un-pedido-escritorio",
+      "pair": "recuperaciones-revisar-un-pedido",
+      "group": "plataforma-recuperaciones",
+      "board": "Recuperaciones",
+      "props": {
+        "caso": "Revisar un pedido"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Revisar el pedido",
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-revisar-un-pedido",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-revisar-un-pedido-movil",
+      "pair": "recuperaciones-revisar-un-pedido",
+      "group": "plataforma-recuperaciones",
+      "board": "M-Recuperaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-revisar-un-pedido",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-sin-pedidos-escritorio",
+      "pair": "recuperaciones-sin-pedidos",
+      "group": "plataforma-recuperaciones",
+      "board": "Recuperaciones",
+      "props": {
+        "caso": "Sin pedidos"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Sin pedidos",
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-sin-pedidos",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-sin-pedidos-movil",
+      "pair": "recuperaciones-sin-pedidos",
+      "group": "plataforma-recuperaciones",
+      "board": "M-Recuperaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-sin-pedidos",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-resuelto-aprobado-escritorio",
+      "pair": "recuperaciones-resuelto-aprobado",
+      "group": "plataforma-recuperaciones",
+      "board": "Recuperaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de el pedido del 22/09/2026 09:40"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Ver detalle"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Confirmó sus datos por videollamada.",
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-resuelto-aprobado",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-resuelto-aprobado-movil",
+      "pair": "recuperaciones-resuelto-aprobado",
+      "group": "plataforma-recuperaciones",
+      "board": "M-Recuperaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-resuelto-aprobado",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-resuelto-rechazado-escritorio",
+      "pair": "recuperaciones-resuelto-rechazado",
+      "group": "plataforma-recuperaciones",
+      "board": "Recuperaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de el pedido del 15/09/2026 13:12"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Ver detalle"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "No pudo confirmar que la cuenta es suya.",
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-resuelto-rechazado",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-resuelto-rechazado-movil",
+      "pair": "recuperaciones-resuelto-rechazado",
+      "group": "plataforma-recuperaciones",
+      "board": "M-Recuperaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-resuelto-rechazado",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-sin-cuenta-escritorio",
+      "pair": "recuperaciones-sin-cuenta",
+      "group": "plataforma-recuperaciones",
+      "board": "Recuperaciones",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de el pedido del 26/09/2026 18:05"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Revisar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ninguna",
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-sin-cuenta",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-sin-cuenta-movil",
+      "pair": "recuperaciones-sin-cuenta",
+      "group": "plataforma-recuperaciones",
+      "board": "M-Recuperaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-sin-cuenta",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-error-aprobar-escritorio",
+      "pair": "recuperaciones-error-aprobar",
+      "group": "plataforma-recuperaciones",
+      "board": "Recuperaciones",
+      "props": {
+        "caso": "Revisar un pedido"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Aprobar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Escribí el motivo.",
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-error-aprobar",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-error-aprobar-movil",
+      "pair": "recuperaciones-error-aprobar",
+      "group": "plataforma-recuperaciones",
+      "board": "M-Recuperaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-error-aprobar",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-error-rechazar-escritorio",
+      "pair": "recuperaciones-error-rechazar",
+      "group": "plataforma-recuperaciones",
+      "board": "Recuperaciones",
+      "props": {
+        "caso": "Revisar un pedido"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Rechazar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Escribí el motivo.",
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-error-rechazar",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperaciones-error-rechazar-movil",
+      "pair": "recuperaciones-error-rechazar",
+      "group": "plataforma-recuperaciones",
+      "board": "M-Recuperaciones",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/recuperaciones",
+        "scenario": "recuperaciones-error-rechazar",
+        "actions": []
+      }
+    },
+    {
+      "id": "legales-documentos-escritorio",
+      "pair": "legales-documentos",
+      "group": "plataforma-legales",
+      "board": "Legales",
+      "props": {
+        "pantalla": "Documentos"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Documentos legales",
+      "app": {
+        "path": "/plataforma/legales",
+        "scenario": "legales-documentos",
+        "actions": []
+      }
+    },
+    {
+      "id": "legales-documentos-movil",
+      "pair": "legales-documentos",
+      "group": "plataforma-legales",
+      "board": "M-Legales",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Documentos legales",
+      "app": {
+        "path": "/plataforma/legales",
+        "scenario": "legales-documentos",
+        "actions": []
+      }
+    },
+    {
+      "id": "legales-publicar-version-nueva-escritorio",
+      "pair": "legales-publicar-version-nueva",
+      "group": "plataforma-legales",
+      "board": "Legales",
+      "props": {
+        "pantalla": "Publicar versión nueva"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Publicar versión nueva",
+      "app": {
+        "path": "/plataforma/legales",
+        "scenario": "legales-publicar-version-nueva",
+        "actions": []
+      }
+    },
+    {
+      "id": "legales-publicar-version-nueva-movil",
+      "pair": "legales-publicar-version-nueva",
+      "group": "plataforma-legales",
+      "board": "M-Legales",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Legales v111 solo dibuja la referencia base; solo dibuja los documentos, sin formulario, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/legales",
+        "scenario": "legales-publicar-version-nueva",
+        "actions": []
+      }
+    },
+    {
+      "id": "legales-errores-escritorio",
+      "pair": "legales-errores",
+      "group": "plataforma-legales",
+      "board": "Legales",
+      "props": {
+        "pantalla": "Publicar versión nueva"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Publicar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Escribí la fecha de vigencia.",
+      "app": {
+        "path": "/plataforma/legales",
+        "scenario": "legales-errores",
+        "actions": []
+      }
+    },
+    {
+      "id": "legales-errores-movil",
+      "pair": "legales-errores",
+      "group": "plataforma-legales",
+      "board": "M-Legales",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Legales v111 solo dibuja la referencia base; solo dibuja los documentos, sin formulario, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/legales",
+        "scenario": "legales-errores",
+        "actions": []
+      }
+    },
+    {
+      "id": "legales-fecha-invalida-escritorio",
+      "pair": "legales-fecha-invalida",
+      "group": "plataforma-legales",
+      "board": "Legales",
+      "props": {
+        "pantalla": "Publicar versión nueva"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Vigente desde",
+          "value": "01/11"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Publicar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Escribí la fecha como dd/mm/aaaa.",
+      "app": {
+        "path": "/plataforma/legales",
+        "scenario": "legales-fecha-invalida",
+        "actions": []
+      }
+    },
+    {
+      "id": "legales-fecha-invalida-movil",
+      "pair": "legales-fecha-invalida",
+      "group": "plataforma-legales",
+      "board": "M-Legales",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Legales v111 solo dibuja la referencia base; solo dibuja los documentos, sin formulario, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/legales",
+        "scenario": "legales-fecha-invalida",
+        "actions": []
+      }
+    },
+    {
+      "id": "legales-confirmacion-escritorio",
+      "pair": "legales-confirmacion",
+      "group": "plataforma-legales",
+      "board": "Legales",
+      "props": {
+        "pantalla": "Publicar versión nueva"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Vigente desde",
+          "value": "01/11/2026"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "En español",
+          "value": "En español"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "En inglés",
+          "value": "En inglés"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Publicar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Publicar la versión 3 de Términos y condiciones?",
+      "app": {
+        "path": "/plataforma/legales",
+        "scenario": "legales-confirmacion",
+        "actions": []
+      }
+    },
+    {
+      "id": "legales-confirmacion-movil",
+      "pair": "legales-confirmacion",
+      "group": "plataforma-legales",
+      "board": "M-Legales",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Legales v111 solo dibuja la referencia base; solo dibuja los documentos, sin formulario, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/legales",
+        "scenario": "legales-confirmacion",
+        "actions": []
+      }
+    },
+    {
+      "id": "auditoria-lista-escritorio",
+      "pair": "auditoria-lista",
+      "group": "plataforma-auditoria",
+      "board": "Auditoria-Plat",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Auditoría",
+      "app": {
+        "path": "/plataforma/auditoria",
+        "scenario": "auditoria-lista",
+        "actions": []
+      }
+    },
+    {
+      "id": "auditoria-lista-movil",
+      "pair": "auditoria-lista",
+      "group": "plataforma-auditoria",
+      "board": "M-Auditoria-Plat",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Auditoría",
+      "app": {
+        "path": "/plataforma/auditoria",
+        "scenario": "auditoria-lista",
+        "actions": []
+      }
+    },
+    {
+      "id": "auditoria-filtrada-escritorio",
+      "pair": "auditoria-filtrada",
+      "group": "plataforma-auditoria",
+      "board": "Auditoria-Plat",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "searchbox",
+          "name": "Buscar en la auditoría",
+          "value": "Grupo Delta"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Reactivó la organización",
+      "app": {
+        "path": "/plataforma/auditoria",
+        "scenario": "auditoria-filtrada",
+        "actions": []
+      }
+    },
+    {
+      "id": "auditoria-filtrada-movil",
+      "pair": "auditoria-filtrada",
+      "group": "plataforma-auditoria",
+      "board": "M-Auditoria-Plat",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Auditoria-Plat v111 solo dibuja la referencia base; no simula filtros. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/auditoria",
+        "scenario": "auditoria-filtrada",
+        "actions": []
+      }
+    },
+    {
+      "id": "auditoria-detalle-escritorio",
+      "pair": "auditoria-detalle",
+      "group": "plataforma-auditoria",
+      "board": "Auditoria-Plat",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Ver el detalle: Suspendió la cuenta"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Dirección IP",
+      "app": {
+        "path": "/plataforma/auditoria",
+        "scenario": "auditoria-detalle",
+        "actions": []
+      }
+    },
+    {
+      "id": "auditoria-detalle-movil",
+      "pair": "auditoria-detalle",
+      "group": "plataforma-auditoria",
+      "board": "M-Auditoria-Plat-Detalle",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Dirección IP",
+      "app": {
+        "path": "/plataforma/auditoria",
+        "scenario": "auditoria-detalle",
+        "actions": []
+      }
+    },
+    {
+      "id": "configuracion-sin-cambios-escritorio",
+      "pair": "configuracion-sin-cambios",
+      "group": "plataforma-configuracion",
+      "board": "Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Configuración",
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "configuracion-sin-cambios",
+        "actions": []
+      }
+    },
+    {
+      "id": "configuracion-sin-cambios-movil",
+      "pair": "configuracion-sin-cambios",
+      "group": "plataforma-configuracion",
+      "board": "M-Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Configuración",
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "configuracion-sin-cambios",
+        "actions": []
+      }
+    },
+    {
+      "id": "configuracion-con-cambios-escritorio",
+      "pair": "configuracion-con-cambios",
+      "group": "plataforma-configuracion",
+      "board": "Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "spinbutton",
+          "name": "Organizaciones propias por persona",
+          "value": "4"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Cambios sin guardar",
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "configuracion-con-cambios",
+        "actions": []
+      }
+    },
+    {
+      "id": "configuracion-con-cambios-movil",
+      "pair": "configuracion-con-cambios",
+      "group": "plataforma-configuracion",
+      "board": "M-Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Config-Plat v111 solo dibuja la referencia base; sus campos y botones son estáticos; no dibuja cambios, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "configuracion-con-cambios",
+        "actions": []
+      }
+    },
+    {
+      "id": "configuracion-errores-escritorio",
+      "pair": "configuracion-errores",
+      "group": "plataforma-configuracion",
+      "board": "Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "spinbutton",
+          "name": "Organizaciones propias por persona",
+          "value": "0"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo de ventas",
+          "value": "ventas"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo de soporte",
+          "value": "soporte"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Guardar cambios"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Usá un número de 1 a 50.",
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "configuracion-errores",
+        "actions": []
+      }
+    },
+    {
+      "id": "configuracion-errores-movil",
+      "pair": "configuracion-errores",
+      "group": "plataforma-configuracion",
+      "board": "M-Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Config-Plat v111 solo dibuja la referencia base; sus campos y botones son estáticos; no dibuja cambios, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "configuracion-errores",
+        "actions": []
+      }
+    },
+    {
+      "id": "configuracion-confirmacion-escritorio",
+      "pair": "configuracion-confirmacion",
+      "group": "plataforma-configuracion",
+      "board": "Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "spinbutton",
+          "name": "Organizaciones propias por persona",
+          "value": "4"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Guardar cambios"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Guardar la configuración?",
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "configuracion-confirmacion",
+        "actions": []
+      }
+    },
+    {
+      "id": "configuracion-confirmacion-movil",
+      "pair": "configuracion-confirmacion",
+      "group": "plataforma-configuracion",
+      "board": "M-Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Config-Plat v111 solo dibuja la referencia base; sus campos y botones son estáticos; no dibuja cambios, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "configuracion-confirmacion",
+        "actions": []
+      }
+    },
+    {
+      "id": "configuracion-confirmacion-error-escritorio",
+      "pair": "configuracion-confirmacion-error",
+      "group": "plataforma-configuracion",
+      "board": "Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "spinbutton",
+          "name": "Organizaciones propias por persona",
+          "value": "4"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Guardar cambios"
+        },
+        {
+          "type": "click",
+          "selector": "[role=\"alertdialog\"] button.b-pri"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Escribí el motivo.",
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "configuracion-confirmacion-error",
+        "actions": []
+      }
+    },
+    {
+      "id": "configuracion-confirmacion-error-movil",
+      "pair": "configuracion-confirmacion-error",
+      "group": "plataforma-configuracion",
+      "board": "M-Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Config-Plat v111 solo dibuja la referencia base; sus campos y botones son estáticos; no dibuja cambios, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "configuracion-confirmacion-error",
+        "actions": []
+      }
+    },
+    {
+      "id": "configuracion-409-escritorio",
+      "pair": "configuracion-409",
+      "group": "plataforma-configuracion",
+      "board": "Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "Config-Plat v111 no simula conflicto 409; se conserva la configuración real para la captura futura de app."
+      },
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "Conflicto 409 al guardar con versión anterior, conservando cambios y ofreciendo volver a cargar, según T23/T24.",
+        "actions": []
+      }
+    },
+    {
+      "id": "configuracion-409-movil",
+      "pair": "configuracion-409",
+      "group": "plataforma-configuracion",
+      "board": "M-Config-Plat",
+      "props": {},
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "base",
+        "note": "M-Config-Plat v111 solo dibuja la referencia base; sus campos y botones son estáticos; no dibuja cambios, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
+      },
+      "app": {
+        "path": "/plataforma/configuracion",
+        "scenario": "Conflicto 409 al guardar con versión anterior, conservando cambios y ofreciendo volver a cargar, según T23/T24.",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-paso-1-escritorio",
+      "pair": "recuperar-paso-1",
+      "group": "recuperar",
+      "board": "Recuperar",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Recuperar mi cuenta",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-paso-1",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-paso-1-movil",
+      "pair": "recuperar-paso-1",
+      "group": "recuperar",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Recuperar mi cuenta",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-paso-1",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-paso-2-escritorio",
+      "pair": "recuperar-paso-2",
+      "group": "recuperar",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Dónde te escribimos?",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-paso-2",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-paso-2-movil",
+      "pair": "recuperar-paso-2",
+      "group": "recuperar",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "¿Dónde te escribimos?",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-paso-2",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-paso-3-escritorio",
+      "pair": "recuperar-paso-3",
+      "group": "recuperar",
+      "board": "Recuperar",
+      "props": {
+        "paso": "3. Pedido recibido",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Recibimos tu pedido",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-paso-3",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-paso-3-movil",
+      "pair": "recuperar-paso-3",
+      "group": "recuperar",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "3. Pedido recibido",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Recibimos tu pedido",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-paso-3",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-correo-anterior-vacio-escritorio",
+      "pair": "recuperar-correo-anterior-vacio",
+      "group": "recuperar",
+      "board": "Recuperar",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Seguir"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ingresá un correo electrónico válido.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-correo-anterior-vacio",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-correo-anterior-vacio-movil",
+      "pair": "recuperar-correo-anterior-vacio",
+      "group": "recuperar",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Seguir"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ingresá un correo electrónico válido.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-correo-anterior-vacio",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-correo-anterior-invalido-escritorio",
+      "pair": "recuperar-correo-anterior-invalido",
+      "group": "recuperar",
+      "board": "Recuperar",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico",
+          "value": "lucia"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Seguir"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ingresá un correo electrónico válido.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-correo-anterior-invalido",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-correo-anterior-invalido-movil",
+      "pair": "recuperar-correo-anterior-invalido",
+      "group": "recuperar",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico",
+          "value": "lucia"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Seguir"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ingresá un correo electrónico válido.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-correo-anterior-invalido",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-correo-nuevo-vacio-escritorio",
+      "pair": "recuperar-correo-nuevo-vacio",
+      "group": "recuperar",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ingresá un correo electrónico válido.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-correo-nuevo-vacio",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-correo-nuevo-vacio-movil",
+      "pair": "recuperar-correo-nuevo-vacio",
+      "group": "recuperar",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ingresá un correo electrónico válido.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-correo-nuevo-vacio",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-correo-nuevo-invalido-escritorio",
+      "pair": "recuperar-correo-nuevo-invalido",
+      "group": "recuperar",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ingresá un correo electrónico válido.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-correo-nuevo-invalido",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-correo-nuevo-invalido-movil",
+      "pair": "recuperar-correo-nuevo-invalido",
+      "group": "recuperar",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Ingresá un correo electrónico válido.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-correo-nuevo-invalido",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-correo-nuevo-igual-escritorio",
+      "pair": "recuperar-correo-nuevo-igual",
+      "group": "recuperar",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fernandez@delta.ejemplo.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Tiene que ser un correo distinto del de antes.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-correo-nuevo-igual",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-correo-nuevo-igual-movil",
+      "pair": "recuperar-correo-nuevo-igual",
+      "group": "recuperar",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fernandez@delta.ejemplo.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Tiene que ser un correo distinto del de antes.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-correo-nuevo-igual",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-codigo-escritorio",
+      "pair": "recuperar-codigo",
+      "group": "recuperar",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fer@gmail.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Revisá tu correo",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-codigo",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-codigo-movil",
+      "pair": "recuperar-codigo",
+      "group": "recuperar",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fer@gmail.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Revisá tu correo",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-codigo",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-codigo-incompleto-escritorio",
+      "pair": "recuperar-codigo-incompleto",
+      "group": "recuperar",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fer@gmail.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Código 1",
+          "value": "1"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Verificar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Escribí los 6 números del código.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-codigo-incompleto",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-codigo-incompleto-movil",
+      "pair": "recuperar-codigo-incompleto",
+      "group": "recuperar",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fer@gmail.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Código 1",
+          "value": "1"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Verificar"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Escribí los 6 números del código.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-codigo-incompleto",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-codigo-reenviado-escritorio",
+      "pair": "recuperar-codigo-reenviado",
+      "group": "recuperar",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fer@gmail.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Reenviar código"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Te mandamos un código nuevo.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-codigo-reenviado",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-codigo-reenviado-movil",
+      "pair": "recuperar-codigo-reenviado",
+      "group": "recuperar",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fer@gmail.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Reenviar código"
+        }
+      ],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Te mandamos un código nuevo.",
+      "app": {
+        "path": "/recuperar",
+        "scenario": "recuperar-codigo-reenviado",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-enlace-persona-escritorio",
+      "pair": "recuperar-enlace-persona",
+      "group": "recuperar",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Recuperá tu cuenta",
+      "app": {
+        "path": "/login",
+        "scenario": "recuperar-enlace-persona",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-enlace-persona-movil",
+      "pair": "recuperar-enlace-persona",
+      "group": "recuperar",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Recuperá tu cuenta",
+      "app": {
+        "path": "/login",
+        "scenario": "recuperar-enlace-persona",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-enlace-empresa-escritorio",
+      "pair": "recuperar-enlace-empresa",
+      "group": "recuperar",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Empresa"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Recuperá tu cuenta",
+      "app": {
+        "path": "/login/empresa",
+        "scenario": "recuperar-enlace-empresa",
+        "actions": []
+      }
+    },
+    {
+      "id": "recuperar-enlace-empresa-movil",
+      "pair": "recuperar-enlace-empresa",
+      "group": "recuperar",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Empresa"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "boardActions": [],
+      "boardReference": {
+        "kind": "drawn"
+      },
+      "boardReadyText": "Recuperá tu cuenta",
+      "app": {
+        "path": "/login/empresa",
+        "scenario": "recuperar-enlace-empresa",
+        "actions": []
+      }
+    }
+  ]
+}

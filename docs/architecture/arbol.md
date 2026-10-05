@@ -32,6 +32,8 @@ ArquitecturaBaseMutitenantFront/
 │   ├── capturar-etapa-3c.mjs                        capturas de la 3c (invitación y registro de empresa)
 │   ├── capturar-etapa-4.mjs                         capturas de la Etapa 4 (Roles y Mi cuenta)
 │   ├── capturar-etapa-4.test.mjs                    tests de capturar-etapa-4
+│   ├── capturar-etapa-5.mjs                         [E5] tableros de Plataforma y Recuperar: 1440 y 390
+│   ├── capturar-etapa-5.test.mjs                    [E5] tests de capturar-etapa-5
 │   ├── capturar-etapa-6.mjs                         capturas de la Etapa 6 (Usuarios, Empresas, Configuración, Auditoría y Página pública); sus datos los reusa capturar-f7
 │   ├── capturar-f7.mjs                              capturas de F7 (edición, «¿Salir sin guardar?», el 409 y el error de guardado): --tableros o --app-url
 │   ├── capturar-relevamiento.mjs                    relevamiento de las etapas 1 a 6 contra el lienzo vigente, a 1440 y a 390
