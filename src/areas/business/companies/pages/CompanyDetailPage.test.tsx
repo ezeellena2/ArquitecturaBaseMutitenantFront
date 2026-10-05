@@ -454,6 +454,22 @@ describe("CompanyDetailPage", () => {
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
   });
 
+  // formularios.md y errores.md: lo que el back rechaza de un dato va debajo de ese dato, con el texto del back
+  // (`errors.ts`): un rol que ya no existe va debajo de «Roles en la empresa», no en la franja.
+  it("un rol que el back ya no encuentra va debajo de «Roles en la empresa»", async () => {
+    const user = userEvent.setup();
+    rolesApi(() => HttpResponse.json({ status: 404, code: "Roles.Role.NotFound", title: "No encontrado",
+      detail: "No encontramos el rol." }, { status: 404 }));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    const dialog = await openRolesDialog(user);
+    await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+
+    const roles = within(dialog).getByRole("button", { name: "Roles en la empresa" });
+    await waitFor(() => expect(roles).toHaveAccessibleDescription("No encontramos el rol."));
+    expect(roles).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
+  });
+
   // Después de un 409 en un diálogo, la ficha quedó vieja: al cerrarlo (Cancelar, ✕ o Escape) se vuelve a leer. La ficha
   // de Empresa no tiene cambios sin guardar propios: siempre se relee.
   it("al cerrar el diálogo después de un 409, la ficha se vuelve a leer", async () => {
@@ -539,6 +555,53 @@ describe("CompanyDetailPage", () => {
 
     await waitFor(() => expect(requestBody).toEqual({ memberId: "member-2", roleIds: [] }));
     expect(idempotencyKey).toMatch(/^[0-9a-f-]{36}$/i);
+  });
+
+  // formularios.md y errores.md: lo que el back rechaza de un dato va debajo de ese dato, con el texto del back
+  // (`errors.ts`): si otra persona ya la sumó, lo dice «Usuario», no la franja.
+  it("«Agregar miembro»: la persona que ya está en la empresa va debajo de «Usuario»", async () => {
+    server.use(
+      http.get("/api/companies/company-1", () => HttpResponse.json(company)),
+      http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: 0, active: 0, pendingDeletion: 0, inactive: 0, invited: 0 })),
+      http.get("/api/companies/company-1/roles/paged", () => HttpResponse.json({ items: [companyAdmin], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [{
+        memberId: "member-2", userId: "user-2", displayName: "Tomás Acosta", email: "tomas@example.com", state: "Active",
+        hasManagedEmail: false, roles: [], companies: [], invitationId: null, invitationIssuedAtUtc: null, invitationExpiresAtUtc: null,
+        version: 1, createdAtUtc: "2026-09-27T12:00:00Z",
+      }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.post("/api/companies/company-1/members", () => HttpResponse.json({ status: 409, code: "Companies.Membership.AlreadyExists",
+        title: "Conflicto", detail: "Esta persona ya pertenece a la empresa." }, { status: 409 })),
+    );
+
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Agregar miembro" }));
+    const dialog = await screen.findByRole("dialog", { name: "Agregar miembro" });
+    const member = within(dialog).getByRole("combobox", { name: "Usuario" });
+    await user.click(member);
+    await user.click(await screen.findByRole("option", { name: /Tomás Acosta/ }));
+    await user.click(within(dialog).getByRole("button", { name: "Agregar miembro" }));
+
+    await waitFor(() => expect(member).toHaveAccessibleDescription("Esta persona ya pertenece a la empresa."));
+    expect(member).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
+  });
+
+  // formularios.md: los errores de validación del back van a su campo (`applyApiErrorToForm`).
+  it("«Editar empresa»: lo que el back no acepta del nombre va debajo del nombre", async () => {
+    detailApi([member]);
+    server.use(http.put("/api/companies/company-1", () => HttpResponse.json({ status: 400, code: "Validation.Failed", title: "Datos inválidos",
+      detail: "Revisá los datos.", errors: { name: ["El nombre de la empresa es demasiado largo."] } }, { status: 400 })));
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Editar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar empresa" });
+    await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+
+    const name = within(dialog).getByRole("textbox", { name: "Nombre" });
+    await waitFor(() => expect(name).toHaveAccessibleDescription("El nombre de la empresa es demasiado largo."));
+    expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
   });
 
   // accesibilidad.md: un diálogo le devuelve el foco a lo que lo abrió. Los de la banda, al botón; los del ⋮ de una fila,

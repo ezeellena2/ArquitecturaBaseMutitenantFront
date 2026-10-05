@@ -321,11 +321,14 @@ src/
 │   │   │   │   ├── companies.ts                     empresas, sus miembros y sus roles (la ruta de la empresa con company.members.read, o /api/roles/paged, B4)
 │   │   │   │   └── companies.test.ts                tests de companies
 │   │   │   ├── columns.tsx                          las columnas de Empresas y de Miembros (createCompanyColumns, createCompanyMemberColumns), sus filas del teléfono y los tonos de sus estados
+│   │   │   ├── errors.ts                            el campo donde va lo que el back rechaza de un dato de la empresa o del miembro (el CUIT repetido, en la franja)
+│   │   │   ├── errors.test.ts                       tests de errors
 │   │   │   ├── components/
-│   │   │   │   ├── CompanyFields.tsx                Nombre, CUIT y «Zona de negocio»; useCompanyValidation
-│   │   │   │   ├── CompanyDialog.tsx                crear y editar (Empresas y la ficha): dueño de su borrador, su guardado y su error
-│   │   │   │   ├── AddMemberDialog.tsx              «Agregar miembro»: la persona y sus roles en la empresa
-│   │   │   │   ├── MemberRolesDialog.tsx            «Roles de …»: los roles de un miembro en la empresa
+│   │   │   │   ├── CompanyFields.tsx                Nombre, CUIT y «Zona de negocio», atados al formulario de CompanyDialog
+│   │   │   │   ├── CompanyDialog.tsx                crear y editar (Empresas y la ficha): React Hook Form con zod; dueño de lo escrito, su guardado y su error
+│   │   │   │   ├── AddMemberDialog.tsx              «Agregar miembro»: la persona y sus roles en la empresa; React Hook Form con zod
+│   │   │   │   ├── MemberRolesDialog.tsx            «Roles de …»: los roles de un miembro en la empresa; React Hook Form con zod
+│   │   │   │   ├── useCuitType.ts                   el tipo CUIT del catálogo, para revisar el CUIT
 │   │   │   │   └── useDialogFailure.ts              el error del diálogo; después de un 409, relee al cerrar
 │   │   │   ├── tabs/
 │   │   │   │   ├── CompanyMembersTab.tsx            Miembros: filtros, tabla, ⋮ y sus diálogos

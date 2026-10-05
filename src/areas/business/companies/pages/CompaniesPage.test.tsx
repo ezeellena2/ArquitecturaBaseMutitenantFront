@@ -214,6 +214,31 @@ describe("CompaniesPage", () => {
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
   });
 
+  // formularios.md y errores.md: lo que el back rechaza de un dato va debajo de ese dato, con el texto del back
+  // (`errors.ts`); la franja queda para lo demás, como el CUIT repetido de la prueba anterior (tablero Empresas).
+  it("el CUIT que rechaza el back va debajo del CUIT, con el texto del back", async () => {
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/filter-counts", () => HttpResponse.json({ all: 0, active: 0, inactive: 0 })),
+      http.post("/api/companies", () => HttpResponse.json({ status: 400, code: "TaxIds.TaxId.Invalid", title: "Datos inválidos",
+        detail: "Ingresá una identificación fiscal válida." }, { status: 400 })),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Crear empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Crear empresa" });
+    await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
+    await user.paste("Delta Norte S.A.");
+    const cuit = within(dialog).getByRole("textbox", { name: "CUIT" });
+    await user.click(cuit);
+    await user.paste("30712345671");
+    await user.click(within(dialog).getByRole("button", { name: "Crear empresa" }));
+
+    await waitFor(() => expect(cuit).toHaveAccessibleDescription("Ingresá una identificación fiscal válida."));
+    expect(cuit).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
+  });
+
   it("inactiva una empresa con su versión y confirmación", async () => {
     let requestBody: unknown;
     server.use(

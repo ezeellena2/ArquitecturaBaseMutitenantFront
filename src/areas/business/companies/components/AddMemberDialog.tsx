@@ -1,8 +1,14 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, type FormEvent } from "react";
+import type { TFunction } from "i18next";
+import { useMemo } from "react";
+import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { z } from "zod";
+import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
+import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { AddCompanyMemberRequest, RoleResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
@@ -13,12 +19,23 @@ import { FormField } from "@/shared/ui/FormField";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { addCompanyMember, companiesQueryRoot, fetchCompanyMemberIds, fetchOrganizationMembers } from "../api/companies";
+import { memberErrorField } from "../errors";
 import { useDialogFailure } from "./useDialogFailure";
+
+/// Lo que se valida antes de mandar: la persona es obligatoria; sus roles en la empresa, no.
+function addMemberFormSchema(t: TFunction) {
+  return z.object({ memberId: z.string().min(1, t("companies:addMember.userRequired")), roleIds: z.array(z.string()) });
+}
+
+type AddMemberForm = z.infer<ReturnType<typeof addMemberFormSchema>>;
+
+// Los errores de validación del back, en camelCase, a su campo.
+const serverFields: Record<string, keyof AddMemberForm> = { memberId: "memberId", roleIds: "roleIds" };
 
 /**
  * «Agregar miembro» (tablero Empresa, v100): el diálogo chico, sin bajada debajo del título («Criterio · Diálogos»); la
- * empresa ya se ve atrás. Es dueño de lo elegido, del alta y de su error. Se monta solo mientras está abierto y, al
- * cerrar, le devuelve el foco al botón que lo abrió.
+ * empresa ya se ve atrás. Con React Hook Form y zod, como Roles: es dueño de lo elegido, del alta y de su error. Se monta
+ * solo mientras está abierto y, al cerrar, le devuelve el foco al botón que lo abrió.
  */
 export function AddMemberDialog({ companyId, roles, onClose }: {
   companyId: string;
@@ -29,46 +46,53 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
   const { t } = useTranslation(["companies", "common"]);
   const queryClient = useQueryClient();
   const restoreFocus = useRestoreFocusOnClose();
-  const [selectedMemberId, setSelectedMemberId] = useState("");
-  // Tocó «Agregar miembro» sin elegir a nadie: el campo queda en rojo hasta que elige (tablero Empresa).
-  const [missingMember, setMissingMember] = useState(false);
-  const [roleIds, setRoleIds] = useState<string[]>([]);
+  const schema = useMemo(() => addMemberFormSchema(t), [t]);
+  const form = useForm<AddMemberForm>({ resolver: zodResolver(schema), defaultValues: { memberId: "", roleIds: [] } });
+  const member = useController({ control: form.control, name: "memberId" });
+  const roleIds = useController({ control: form.control, name: "roleIds" });
   const { failure, fail, close } = useDialogFailure(onClose);
   const existingMemberIds = useQuery({ queryKey: ["companies", companyId, "all-member-ids"], queryFn: () => fetchCompanyMemberIds(companyId), meta: { silent: true } });
   const alreadyAssigned = new Set(existingMemberIds.data ?? []);
   const candidateQuery = useQuery({ queryKey: ["organization-members", "company-candidates"], queryFn: fetchOrganizationMembers, meta: { silent: true } });
-  const candidates = (candidateQuery.data?.items ?? []).filter((member) => !alreadyAssigned.has(member.memberId));
+  const candidates = (candidateQuery.data?.items ?? []).filter((candidate) => !alreadyAssigned.has(candidate.memberId));
   const addMember = useIdempotentMutation((request: AddCompanyMemberRequest, key) => addCompanyMember(companyId, request, key));
   const loading = candidateQuery.isPending || existingMemberIds.isPending;
 
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    // «Criterio · Botones»: «Agregar miembro» no se apaga; sin usuario, el campo dice qué falta.
-    if (!selectedMemberId) { setMissingMember(true); return; }
-    const name = candidates.find((member) => member.memberId === selectedMemberId)?.displayName ?? "";
-    addMember.mutate({ memberId: selectedMemberId, roleIds }, {
+  // Lo que el back rechaza de la persona o de los roles va debajo de ese campo (`errors.ts`); lo demás, en la franja.
+  function rejected(error: unknown) {
+    if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, serverFields)) return;
+    const field = memberErrorField(error);
+    if (field && error instanceof ApiError) form.setError(field, { type: "server", message: error.detail ?? "" });
+    else fail(error);
+  }
+
+  // «Criterio · Botones»: «Agregar miembro» no se apaga; sin usuario, el campo dice qué falta (tablero Empresa) hasta que
+  // elige uno. Lo que sigue al alta va en sus callbacks: «Reintentar» (sin conexión) los vuelve a correr.
+  const submit = form.handleSubmit((values) => {
+    const name = candidates.find((candidate) => candidate.memberId === values.memberId)?.displayName ?? "";
+    addMember.mutate({ memberId: values.memberId, roleIds: values.roleIds }, {
       onSuccess: async () => {
         toast.success(t("companies:messages.memberAdded", { name }));
         onClose();
         await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
       },
-      onError: fail,
+      onError: rejected,
     });
-  }
+  });
 
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}>
     <DialogContent size="sm" aria-describedby={undefined} onCloseAutoFocus={restoreFocus}>
       <DialogHeader><DialogTitle>{t("companies:addMember.title")}</DialogTitle></DialogHeader>
-      <form onSubmit={submit} className="flex min-h-0 flex-col">
+      <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
-          <FormField label={t("companies:addMember.user")} required error={missingMember ? t("companies:addMember.userRequired") : undefined}>
-            <Select value={selectedMemberId} onValueChange={(value) => { setSelectedMemberId(value); setMissingMember(false); }} disabled={loading || candidates.length === 0}>
+          <FormField label={t("companies:addMember.user")} required error={form.formState.errors.memberId?.message}>
+            <Select value={member.field.value} onValueChange={member.field.onChange} disabled={loading || candidates.length === 0}>
               <SelectTrigger className="w-full" aria-label={t("companies:addMember.user")}><SelectValue placeholder={loading ? t("common:states.loading") : t("companies:addMember.chooseUser")} /></SelectTrigger>
-              <SelectContent>{candidates.map((member) => <SelectItem key={member.memberId} value={member.memberId}>{member.displayName}{" · "}{member.email ?? t("companies:addMember.withoutEmail")}</SelectItem>)}</SelectContent>
+              <SelectContent>{candidates.map((candidate) => <SelectItem key={candidate.memberId} value={candidate.memberId}>{candidate.displayName}{" · "}{candidate.email ?? t("companies:addMember.withoutEmail")}</SelectItem>)}</SelectContent>
             </Select>
           </FormField>
-          <FormField label={t("companies:addMember.roles")}>
-            <MultiSelect options={roles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds} onChange={setRoleIds} placeholder={t("companies:addMember.noRoles")} />
+          <FormField label={t("companies:addMember.roles")} error={form.formState.errors.roleIds?.message}>
+            <MultiSelect options={roles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value} onChange={roleIds.field.onChange} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
           {candidateQuery.isError ? <FormError message={apiErrorMessage(candidateQuery.error, t)} /> : null}

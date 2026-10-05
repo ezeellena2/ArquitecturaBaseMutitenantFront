@@ -17,7 +17,7 @@ Mismo stack y mismas versiones que ArquitecturaBaseFront. **El `node_modules` vi
 | Router | `react-router` 8, `createBrowserRouter` y `lazy` por página |
 | Datos | `@tanstack/react-query` 5. Sin Redux ni Zustand: el estado del servidor va en Query y el de la UI en la URL y en `useState` |
 | Auth | `oidc-client-ts` + `react-oidc-context`, Authorization Code + PKCE, tokens solo en memoria |
-| Formularios | `react-hook-form` + `zod` en todo formulario, en una pantalla o en un diálogo ([formularios](../rules/formularios.md)); los diálogos de Empresas todavía arman su borrador con `useState` |
+| Formularios | `react-hook-form` + `zod` en todo formulario, en una pantalla o en un diálogo ([formularios](../rules/formularios.md)) |
 | UI | shadcn/ui (new-york) + `radix-ui` + Tailwind 4 (CSS-first, los tokens de [tema.md](tema.md) en `index.css`; las variables de shadcn, solo como alias), `sonner`, Inter Variable |
 | i18n | `i18next` + `react-i18next` + `i18next-resources-to-backend`, un namespace por módulo |
 | Formatos | `shared/format`: `Intl` con patrones de `Cultures` (`GET /api/reference-data`), más `libphonenumber-js`. Sin perfiles fijos en código ni librería de fechas |

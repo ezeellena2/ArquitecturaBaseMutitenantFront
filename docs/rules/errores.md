@@ -33,7 +33,7 @@
 - `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4: el 409 y el error de guardado con `useEditPage`; el alta con `mutate(variables, { onSuccess, onError })`; el rechazo de un dato en su campo con `errors.ts`) · `src/areas/business/roles/pages/RolesPage.tsx` (E4: acciones de fila con `toastActionError`) · `src/areas/personal/account/components/AccountDeletionDialog.tsx` (E4: el error de un diálogo arriba de sus botones) · `src/shared/api/formErrors.ts` (E1) · `src/shared/api/errorMessage.ts`
 
 ## Lo verifica
-- Tests de pantalla: cada `code` que traduce la feature tiene un test (tests.md). `errors.test.ts` (E7), de Roles: cada rechazo del back va en su campo; el de `shared/account`: el código incorrecto va debajo de los casilleros; el de `public/auth`: la dirección y el CUIT que rechaza el registro de empresas van en su campo.
+- Tests de pantalla: cada `code` que traduce la feature tiene un test (tests.md). `errors.test.ts` (E7), de Roles: cada rechazo del back va en su campo; el de `shared/account`: el código incorrecto va debajo de los casilleros; el de `public/auth`: la dirección y el CUIT que rechaza el registro de empresas van en su campo; el de Empresas: lo que el back rechaza de la empresa o del miembro va en su campo, y el CUIT repetido y el último administrador, en la franja.
 - `formErrors.test.ts` (E1), `queryClient.test.ts` (E1; el 403 de la consulta principal, de una secundaria y de los términos nuevos).
 - `CompanyDetailPage.test.tsx` (E7): el 403 de los roles (secundaria) no reemplaza la ficha; el de la ficha, sí.
 - `UserDetailPage.test.tsx` (E7): si la última Dueña sale de la organización, lo dice la franja de la ficha y no el aviso de abajo.
