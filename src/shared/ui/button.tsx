@@ -10,8 +10,9 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Principal: la acción que hace avanzar; una sola por pantalla o diálogo, la última a la derecha.
-        default: "bg-[linear-gradient(180deg,var(--marca)_0%,var(--marca-h)_100%)] text-[var(--lado-activo)] shadow-[0_1px_2px_var(--marca-sombra),inset_0_1px_0_var(--brillo)] hover:brightness-105",
+        // Principal: la acción que hace avanzar; una sola por pantalla o diálogo, la última a la derecha. Petróleo plano y,
+        // con el mouse encima, un tono más oscuro (.cb-pri del criterio).
+        default: "bg-[var(--marca)] text-[var(--lado-activo)] hover:bg-[var(--marca-h)]",
         // Secundario: todas las demás acciones.
         outline: "border-[var(--borde2)] bg-[var(--lado-activo)] text-[var(--t1)] hover:bg-[var(--s2)]",
         // Peligro: con borde en la pantalla.
