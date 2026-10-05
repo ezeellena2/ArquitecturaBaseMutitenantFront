@@ -166,7 +166,7 @@ function AuditPhoneDetail({ entry }: { entry: OrganizationAuditEntryResponse }) 
   const row = "flex flex-col gap-0.5 border-t border-[var(--borde)] py-2.5 first:border-t-0";
   const term = "text-[13px] text-[var(--t3)]";
   const value = "min-w-0 text-[15.5px] font-medium text-[var(--t1)]";
-  return <dl className="flex flex-col px-5 pt-2 pb-4">
+  return <dl className="flex flex-col px-5 pt-2 pb-4 leading-[normal]">
     <div className={row}><dt className={term}>{t("audit:columns.when")}</dt><dd className={value}><DateText value={entry.occurredAtUtc} kind="dateTime" /></dd></div>
     <div className={row}><dt className={term}>{t("audit:columns.who")}</dt><dd className={value}>{entry.actorDisplayName ?? entry.actorText}
       {entry.actorEmail ? <span className="block break-words text-[14px] font-normal text-[var(--t2)]">{entry.actorEmail}</span> : null}</dd></div>

@@ -243,8 +243,9 @@ describe("AuditPage", () => {
       expect(values[2]).toHaveTextContent("Delta S.A.");
       expect(values[3]).toHaveTextContent("Sin roles → Solo lectura");
       expect(within(values[3]).getByText("Sin roles")).toHaveClass("line-through");
-      // Cada dato debajo de su nombre, con una línea entre uno y otro.
+      // Cada dato debajo de su nombre, con una línea entre uno y otro y la altura normal de la letra (.ap-det).
       expect(terms[1].parentElement).toHaveClass("flex-col", "border-t");
+      expect(terms[1].closest("dl")).toHaveClass("leading-[normal]");
       expect(terms[1].parentElement).toBe(values[1].parentElement);
       expect(within(detail).getAllByRole("button", { name: "Cerrar" }).at(-1)).toBeVisible();
     } finally {
