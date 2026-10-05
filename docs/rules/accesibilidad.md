@@ -36,7 +36,7 @@
 ## Lo verifica
 - `vitest-axe` (E0) en cada test de pantalla (`toHaveNoViolations`); `harness.test.ts` (E7) falla si un `pages/*Page.test.tsx` no corre axe.
 - `FormField.test.tsx` (E7): con un `Select` adentro, el desplegable se rotula, es obligatorio y lleva su error.
-- `CompanyDetailPage.test.tsx` y `CompaniesPage.test.tsx` (E7): cada diálogo le devuelve el foco a lo que lo abrió, al botón o al ⋮ de la fila.
+- `CompanyDetailPage.test.tsx` y `CompaniesPage.test.tsx` (E7): cada diálogo le devuelve el foco a lo que lo abrió, al botón o al ⋮ de la fila. `UserDetailPage.test.tsx` (E7): «Cambiar roles» del ⋮ de una empresa le devuelve el foco a ese ⋮.
 - Antes de cerrar una etapa: una pasada de axe en el navegador real, a 1440 y a 390, que cubre el contraste y no se puede hacer en jsdom.
 
 ## Detalle
