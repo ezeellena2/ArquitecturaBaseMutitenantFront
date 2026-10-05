@@ -89,9 +89,9 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
           <FormField label={t("companies:addMember.user")} required error={form.formState.errors.memberId?.message}>
             <Select value={member.field.value} onValueChange={(memberId) => { member.field.onChange(memberId); clear(); }} disabled={loading || candidates.length === 0}>
               <SelectTrigger className="w-full" aria-label={t("companies:addMember.user")}><SelectValue placeholder={loading ? t("common:states.loading") : t("companies:addMember.chooseUser")} /></SelectTrigger>
-              {/* Tablero Empresa: cada candidato con su nombre y, debajo, el correo tapado; sin nombre, el nombre ya es el
-                  correo tapado y no se repite. */}
-              <SelectContent>{candidates.map((candidate) => <SelectItem key={candidate.memberId} value={candidate.memberId}
+              {/* Tablero Empresa: cada candidato con su nombre y, debajo, el correo tapado en gris medio (.op2 .opd); sin
+                  nombre, el nombre ya es el correo tapado y no se repite. */}
+              <SelectContent>{candidates.map((candidate) => <SelectItem key={candidate.memberId} value={candidate.memberId} descriptionClassName="text-[var(--t2)]"
                 description={candidate.maskedEmailAddress === candidate.displayName ? undefined : candidate.maskedEmailAddress ?? t("companies:addMember.withoutEmail")}>
                 {candidate.displayName}</SelectItem>)}</SelectContent>
             </Select>

@@ -129,8 +129,13 @@ function SelectItem({
   className,
   children,
   description,
+  descriptionClassName,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Item> & { description?: string }) {
+}: React.ComponentProps<typeof SelectPrimitive.Item> & {
+  description?: string
+  /** Otra letra para la explicación, si la lista del tablero es otra (Empresa, .op2 .opd: en gris medio). */
+  descriptionClassName?: string
+}) {
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
@@ -148,11 +153,11 @@ function SelectItem({
           <CheckIcon className="size-4" />
         </SelectPrimitive.ItemIndicator>
       </span>
-      {/* Tablero Usuario (.o-lst .op .n2 y .d): el nombre y su explicación con interlineado 1,35; la explicación en 12,
-          gris claro y de 300 como mucho (la de «Deshabilitado» va en dos líneas). */}
+      {/* Tableros Usuario y Rol (.o-lst .op .n2 y .d): el nombre y su explicación con interlineado 1,35; la explicación en
+          12, gris claro y de 300 como mucho (la de «Deshabilitado» va en dos líneas). */}
       {description ? <div className="flex flex-col leading-[1.35]">
         <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-        <span className="max-w-[300px] text-[12px] whitespace-normal text-[var(--t3)]">{description}</span>
+        <span className={cn("max-w-[300px] text-[12px] whitespace-normal text-[var(--t3)]", descriptionClassName)}>{description}</span>
       </div> : <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>}
     </SelectPrimitive.Item>
   )
