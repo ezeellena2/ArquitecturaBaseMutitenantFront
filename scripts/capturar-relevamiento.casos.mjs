@@ -643,6 +643,38 @@ function b6d2Cases(root) {
   ];
 }
 
+// Tanda 6d-3a (el pulido final): el CUIT repetido va debajo del CUIT, con el borde rojo y el texto del back, en «Crear
+// empresa» y en «Editar empresa» (lo decidió Diseño siguiendo formularios.md). M-Empresas v107 todavía lo dibuja en la
+// franja; Empresas lo pone con su tweak «dialogo» solo al montarse (el constructor), así que la compu abre el diálogo con
+// los mismos datos y sin el error. Empresa y M-Empresa dibujan «Editar empresa» sin el error. El CUIT repetido es el de
+// otra empresa de los datos de prueba: Delta S.A. al crear y Delta Sur S.R.L. al editar Delta S.A.
+function b6d3Cases(root) {
+  const stageApp = (pair, width) => stageCases(root, "etapa-6").find((entry) => entry.pair === pair && entry.viewport.width === width).app;
+  const repeatedCuit = (method, apiPath) => api(method, apiPath, { status: 409, code: "Tenancy.Company.TaxIdAlreadyUsed", title: "Conflicto",
+    detail: "Ya hay una empresa con esa identificación fiscal." }, 409);
+  const fieldError = { readySelector: '[role="dialog"] [role="alert"]' };
+  const createRepeated = (width) => ({ ...fieldError,
+    responses: [repeatedCuit("POST", "/api/companies"), ...stageApp("empresas-crear", width).responses],
+    actions: [appClick("button", "Crear empresa"), appFill("Nombre", "Delta Oeste S.A."), appFill("CUIT", "30712345671"), appClick("button", "Crear empresa")] });
+  const editRepeated = (width) => ({ ...fieldError,
+    responses: [repeatedCuit("PUT", "/api/companies/company-1"), ...stageApp("empresa-editar", width).responses],
+    actions: [...stageApp("empresa-editar", width).actions, appFill("CUIT", "30715554441"), appClick("button", "Guardar cambios")] });
+  return [
+    ...pairCases(root, { stage: "etapa-6", pair: "empresas-crear", id: "empresas-crear-cuit-repetido", group: "empresas",
+      state: "«Crear empresa»: el CUIT repetido va debajo del CUIT, con el borde rojo y el texto del back (el tablero, con los mismos datos y sin el error: su tweak lo pone en la franja solo al montarse)",
+      desktop: { board: "Empresas", props: {}, boardActions: [click("button.b-pri"), fill("Nombre", "Delta Oeste S.A."), fill("CUIT", "30712345671")] },
+      phone: { board: "M-Empresas", props: { estado: "Crear empresa: ya hay una con ese CUIT" }, boardActions: [],
+        state: "«Crear empresa» en el teléfono: el CUIT repetido va debajo del CUIT (M-Empresas v107 todavía lo dibuja en la franja)" },
+      app: createRepeated(1440), phoneApp: createRepeated(390) }),
+    ...pairCases(root, { stage: "etapa-6", pair: "empresa-editar", id: "empresa-editar-cuit-repetido", group: "empresas",
+      state: "«Editar empresa» desde la ficha: el CUIT repetido va debajo del CUIT, con el texto del back (el tablero Empresa dibuja el diálogo sin el error)",
+      desktop: { board: "Empresa", props: { pestana: "Miembros" }, boardActions: [click("text=Editar empresa")] },
+      phone: { board: "M-Empresa", props: { estado: "Editar empresa" }, boardActions: [],
+        state: "«Editar empresa» en el teléfono: el CUIT repetido va debajo del CUIT (M-Empresa dibuja la hoja sin el error)" },
+      app: editRepeated(1440), phoneApp: editRepeated(390) }),
+  ];
+}
+
 export function catalog(root) {
   const rename ={ board: "Cuenta", boardActions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
@@ -668,5 +700,6 @@ export function catalog(root) {
     ...b6bCases(root),
     ...b6cCases(root),
     ...b6d2Cases(root),
+    ...b6d3Cases(root),
   ];
 }
