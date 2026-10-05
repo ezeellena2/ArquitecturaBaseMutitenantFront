@@ -1,13 +1,13 @@
 import type { TFunction } from "i18next";
-import { Building2, ClipboardList, Globe, Key, SlidersHorizontal, Users, type LucideIcon } from "lucide-react";
+import { BuildingIcon, ClipboardIcon, GlobeIcon, KeyIcon, SlidersHorizontalIcon, UsersIcon, type IconComponent } from "@/shared/ui/icons";
 import type { PendingItem } from "@/shared/api/types";
 import type { StatusTone } from "@/shared/ui/StatusDot";
 
 export type HomeArea = "users" | "roles" | "companies" | "publicPage" | "settings" | "audit";
 
 // Íconos y destinos del tablero Inicio-Org (llave para Roles y globo para la Página, como el tablero).
-export const areaIcons: Record<HomeArea, LucideIcon> = {
-  users: Users, roles: Key, companies: Building2, publicPage: Globe, settings: SlidersHorizontal, audit: ClipboardList,
+export const areaIcons: Record<HomeArea, IconComponent> = {
+  users: UsersIcon, roles: KeyIcon, companies: BuildingIcon, publicPage: GlobeIcon, settings: SlidersHorizontalIcon, audit: ClipboardIcon,
 };
 
 export const areaPaths: Record<HomeArea, string> = {

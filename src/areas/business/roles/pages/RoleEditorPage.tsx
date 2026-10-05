@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import { Shield } from "lucide-react";
+import { ShieldIcon } from "@/shared/ui/icons";
 import { useMemo, useState } from "react";
 import { useController, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -95,7 +95,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   useBreadcrumbLeaf(mode === "create" ? t("roles:createTitle") : role.data ? displayRoleName(role.data, t) : undefined);
 
   if (mode === "create") return <RoleEditor />;
-  if (role.isPending) return <Page icon={Shield} title={t("roles:editorTitle")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (role.isPending) return <Page icon={ShieldIcon} title={t("roles:editorTitle")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   // «Criterio · Avisos» (Pantalla de error): el rol no cargó y no hay nada que mostrar; si no existe (404),
   // «No encontramos esta página» (errores.md).
   if (!role.data) return isNotFoundError(role.error)
@@ -215,7 +215,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
 
   return <>
     <Page banner={edit.banner}
-      icon={Shield}
+      icon={ShieldIcon}
       title={title}
       backTo={{ to: "/org/roles", label: t("roles:backToList") }}
       summary={summary}

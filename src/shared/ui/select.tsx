@@ -1,6 +1,7 @@
 import * as React from "react"
 import { cn } from "cn"
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react"
+import { CheckIcon, ChevronDownIcon as ScrollDownIcon, ChevronUpIcon } from "lucide-react"
+import { ChevronDownIcon } from "./icons"
 import { Select as SelectPrimitive } from "radix-ui"
 
 /// Lo que FormField le pasa a su control (rótulo, obligatorio, error): el Select de Radix no es un elemento, así que lo
@@ -64,7 +65,7 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="size-4 opacity-50" />
+        <ChevronDownIcon strokeWidth={2} className="size-3.5 opacity-50" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )
@@ -195,7 +196,7 @@ function SelectScrollDownButton({
       )}
       {...props}
     >
-      <ChevronDownIcon className="size-4" />
+      <ScrollDownIcon className="size-4" />
     </SelectPrimitive.ScrollDownButton>
   )
 }

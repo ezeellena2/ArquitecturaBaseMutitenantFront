@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
-import { ChevronDownIcon, ListFilter, SearchIcon } from "lucide-react";
+import { ListFilter } from "lucide-react";
+import { ChevronDownIcon, SearchIcon } from "./icons";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import {
@@ -75,7 +76,7 @@ export function FilterBar({
     </AppBarTools>
     {searchOpen && phoneTools === "search-and-filter" ? <div className="px-4 pt-1 pb-2">
       <label className="flex h-[46px] items-center gap-2.5 rounded-[12px] bg-[var(--s3)] px-3.5 text-[var(--t3)]">
-        <SearchIcon aria-hidden="true" className="size-[18px] shrink-0" />
+        <SearchIcon className="size-[18px] shrink-0" />
         <input type="search" autoFocus value={searchValue} onChange={(event) => onSearchChange(event.target.value)} aria-label={searchLabel} placeholder={searchLabel}
           className="min-w-0 flex-1 bg-transparent text-[15.5px] text-[var(--t1)] outline-none placeholder:text-[var(--t3)]" />
       </label>
@@ -115,7 +116,6 @@ export function FilterBar({
     >
       <div className="relative w-full md:w-[360px]">
         <SearchIcon
-          aria-hidden="true"
           className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[var(--t3)]"
         />
         <Input
@@ -150,7 +150,7 @@ export function FilterBar({
                 {filter.count === undefined ? null : (
                   <span className="text-xs text-[var(--t2)]">{filter.count}</span>
                 )}
-                <ChevronDownIcon aria-hidden="true" className="size-3.5" />
+                <ChevronDownIcon strokeWidth={2} className="size-3.5" />
               </Button>
             </DropdownMenuTrigger>
             {/* Tablero Usuarios (filtro abierto, .menu): 4 de relleno alrededor de las opciones y 200 de ancho mínimo. */}

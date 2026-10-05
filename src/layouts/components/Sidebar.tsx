@@ -42,7 +42,7 @@ export function Sidebar({ navigation, account, context, collapsed, administratio
         {navigation.links.map((entry, index) => {
           const Icon = entry.icon;
           const active = entry.path === pathname;
-          const content = <><Icon size={18} strokeWidth={1.75} aria-hidden="true" /><span className={showLabels ? "" : "sr-only"}>{t(entry.labelKey)}</span></>;
+          const content = <><Icon className="size-[18px] shrink-0" /><span className={showLabels ? "" : "sr-only"}>{t(entry.labelKey)}</span></>;
           return <li key={entry.labelKey} className={menuLineClass(index)}>
             <Link to={entry.path} aria-current={active ? "page" : undefined} className={menuRowClass(active)}>{content}</Link>
           </li>;
@@ -51,7 +51,7 @@ export function Sidebar({ navigation, account, context, collapsed, administratio
       {/* Abajo de todo, con una línea a todo el ancho del menú y 8 de aire arriba y abajo. */}
       {navigation.administration ? <div className="-mx-2 mt-auto border-t border-[var(--lado-borde)] p-2">
         <button type="button" aria-expanded={administrationOpen} aria-label={t(navigation.administration.labelKey)} onClick={onToggleAdministration} className={`${menuRowClass(administrationOpen)} w-full text-left`}>
-          <navigation.administration.icon size={18} strokeWidth={1.75} aria-hidden="true" />
+          <navigation.administration.icon className="size-[18px] shrink-0" />
           <span className={showLabels ? "flex-1" : "sr-only"}>{t(navigation.administration.labelKey)}</span>
           {!showLabels ? null : administrationOpen ? <ChevronLeft size={16} aria-hidden="true" /> : <ChevronRight size={16} aria-hidden="true" />}
         </button>

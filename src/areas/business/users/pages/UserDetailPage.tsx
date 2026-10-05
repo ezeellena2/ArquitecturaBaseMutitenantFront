@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
-import { Building2, Settings2, Trash2, UserRound } from "lucide-react";
+import { Building2, Settings2, Trash2 } from "lucide-react";
+import { UserIcon } from "@/shared/ui/icons";
 import { useRef, useState } from "react";
 import { useController } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
@@ -278,7 +279,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   </>;
 
   return <>
-    <Page banner={edit.banner} icon={UserRound} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
+    <Page banner={edit.banner} icon={UserIcon} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
       // En el teléfono, con cambios, la barra dice «Cambios sin guardar» en lugar del correo, como Configuración (M-Avisos).
       phoneSubtitle={edit.unsaved ?? member.email ?? undefined} phoneBody="gray"
       moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [

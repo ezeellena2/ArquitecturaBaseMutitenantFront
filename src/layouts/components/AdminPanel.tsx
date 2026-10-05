@@ -28,7 +28,7 @@ export function AdminPanel({ panel, open, onClose }: { panel: NavigationPanel | 
       {sections.map((section, index) => {
         const here = activeLink !== undefined && section.links.includes(activeLink);
         const expanded = here && (byHand[section.labelKey] ?? true);
-        const label = <><section.icon size={18} strokeWidth={1.75} aria-hidden="true" /><span className="flex-1">{t(section.labelKey)}</span>
+        const label = <><section.icon className="size-[18px] shrink-0" /><span className="flex-1">{t(section.labelKey)}</span>
           <ChevronDown size={14} aria-hidden="true" className={`text-[var(--t3)] ${expanded ? "" : "-rotate-90"}`} /></>;
         const first = section.links.at(0);
         return <li key={section.labelKey} className={menuLineClass(index)}>
@@ -44,7 +44,7 @@ export function AdminPanel({ panel, open, onClose }: { panel: NavigationPanel | 
       })}
       {panel.links.map((entry, index) => <li key={entry.labelKey} className={menuLineClass(sections.length + index)}>
         <Link to={entry.path} aria-current={entry === activeLink ? "page" : undefined} className={menuRowClass(entry === activeLink)}>
-          <entry.icon size={18} strokeWidth={1.75} aria-hidden="true" />{t(entry.labelKey)}
+          <entry.icon className="size-[18px] shrink-0" />{t(entry.labelKey)}
         </Link>
       </li>)}
     </ul>

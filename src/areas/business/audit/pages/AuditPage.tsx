@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ClipboardList } from "lucide-react";
+import { ClipboardIcon } from "@/shared/ui/icons";
 import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCursorList } from "@/shared/hooks/useCursorList";
@@ -67,7 +67,7 @@ export function AuditPage() {
   return <>
     {/* Tablero M-Auditoria-Org y lienzo v99: en el teléfono, debajo del título va el camino («Administración»), como en
         toda pantalla interna; el período elegido se ve en el filtro. */}
-    <Page icon={ClipboardList} title={t("audit:title")} phoneBody="flush">
+    <Page icon={ClipboardIcon} title={t("audit:title")} phoneBody="flush">
       <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar phoneTools="filter"
           label={t("audit:filters.label")}

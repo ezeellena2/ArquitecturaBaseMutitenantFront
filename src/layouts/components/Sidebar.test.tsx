@@ -47,7 +47,8 @@ describe("Sidebar", () => {
 
     rerender(<MemoryRouter initialEntries={["/org"]}><Sidebar {...props} navigation={businessNavigation} administrationOpen={false} /></MemoryRouter>);
     const closed = screen.getByRole("button", { name: "Administración" });
-    expect(closed.querySelector(".lucide-shield-check")).not.toBeNull();
+    // El escudo con la tilde del tablero (ShieldCheckIcon), no el de lucide.
+    expect(closed.querySelector('path[d="M12 3.5 5 6v5.5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6Z"]')).not.toBeNull();
     expect(closed.querySelector(".lucide-chevron-right")).not.toBeNull();
     // Las opciones que no están activas van en el gris del marco (--lado-t2), como en el lienzo.
     expect(closed).toHaveClass("min-h-[32px]", "text-[var(--lado-t2)]");

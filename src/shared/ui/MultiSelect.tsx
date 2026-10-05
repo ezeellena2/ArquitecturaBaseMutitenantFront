@@ -1,5 +1,5 @@
 import { useId, type ComponentProps, type ReactNode } from "react";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon } from "./icons";
 import { cn } from "@/shared/lib/utils";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "./dropdown-menu";
 
@@ -61,7 +61,7 @@ export function MultiSelect({
         <span className="truncate">
           {picked.length > 0 ? picked.map((option) => option.label).join(", ") : placeholder}
         </span>
-        <ChevronDownIcon aria-hidden="true" className="size-3.5 shrink-0 text-[var(--t2)]" />
+        <ChevronDownIcon strokeWidth={2} className="size-3.5 shrink-0 text-[var(--t2)]" />
       </DropdownMenuTrigger>
       {/* Tablero Usuario (.o-lst): la lista mide lo mismo que el campo, con 4 de margen adentro; cada opción, el nombre y
           debajo su descripción, en gris de 12 (.n2 y .d). */}

@@ -53,7 +53,7 @@ export function Section({ title, action, meta, phone = "card", children }: Secti
       <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde)] bg-[var(--cab)] px-4 text-[13px] font-semibold text-[var(--t1)]">
         <h2 id={id}>{title}</h2>
         {meta ? <span className="text-[12px] font-normal text-[var(--t3)]">{meta}</span> : null}
-        {action ? <Button type="button" variant="outline" size="sm" onClick={action.onClick} disabled={action.disabled}><Plus aria-hidden="true" className="size-4" />{action.label}</Button> : null}
+        {action ? <Button type="button" variant="outline" size="sm" onClick={action.onClick} disabled={action.disabled}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{action.label}</Button> : null}
       </header>
       {body}
     </section>

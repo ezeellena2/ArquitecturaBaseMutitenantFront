@@ -1,5 +1,6 @@
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Plus, Power, RotateCw, Trash2, Users } from "lucide-react";
+import { Pencil, Plus, Power, RotateCw, Trash2 } from "lucide-react";
+import { UsersIcon } from "@/shared/ui/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -124,9 +125,9 @@ export function UsersPage() {
   const currentState = state ?? "";
 
   return <>
-    <Page icon={Users} title={t("users:title")} summary={listSummary} phoneBody="flush"
+    <Page icon={UsersIcon} title={t("users:title")} summary={listSummary} phoneBody="flush"
       fab={canInvite ? { label: t("users:invite.open"), onClick: () => setInviteOpen(true) } : undefined}
-      actions={canInvite ? <Button type="button" onClick={() => setInviteOpen(true)}><Plus aria-hidden="true" className="size-4" />{t("users:invite.open")}</Button> : undefined}>
+      actions={canInvite ? <Button type="button" onClick={() => setInviteOpen(true)}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("users:invite.open")}</Button> : undefined}>
       <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar
           label={t("users:filters.label")}

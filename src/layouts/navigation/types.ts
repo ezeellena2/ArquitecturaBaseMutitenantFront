@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import type { IconComponent } from "@/shared/ui/icons";
 import type { CompanyPermission, OrganizationPermission } from "@/auth/usePermissions";
 
 /// Una ruta del manifiesto de un área: su camino, el permiso y el módulo que pide para abrirse y, si va en el menú, su
@@ -16,25 +16,25 @@ export interface AppRoute {
   labelKey?: string;
   /** En «Más» del teléfono, si el tablero la nombra más corto (M-WA-Menu: «Roles»). */
   phoneLabelKey?: string;
-  icon?: LucideIcon;
+  icon?: IconComponent;
 }
 
 /// Una ruta del manifiesto que va en el menú.
 export interface NavigationLink extends AppRoute {
   labelKey: string;
-  icon: LucideIcon;
+  icon: IconComponent;
 }
 
 export interface NavigationPanel {
   labelKey: string;
-  icon: LucideIcon;
+  icon: IconComponent;
   links: readonly NavigationLink[];
   sections?: readonly NavigationSection[];
 }
 
 export interface NavigationSection {
   labelKey: string;
-  icon: LucideIcon;
+  icon: IconComponent;
   links: readonly NavigationLink[];
 }
 

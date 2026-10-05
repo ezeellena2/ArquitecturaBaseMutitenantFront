@@ -60,3 +60,34 @@ describe("los íconos de las pantallas de estado", () => {
     expect(clock.querySelector("path")).toHaveAttribute("d", "M12 7.5V12l3 2");
   });
 });
+
+// Tableros Inicio-Org, Usuarios, Roles, Empresas, Cuenta y sus M-* (.ab-sidebar__link, .ini-ico, .banda-pag .ico): el marco,
+// el título y los atajos de los inicios dibujan las áreas con los íconos del lienzo, no con los de lucide, que llenan más
+// la caja (2 a 4 px más grandes a 18 y a 24 px).
+describe("los íconos de las áreas", () => {
+  const paths = (Icono: Icono) => [...render(<Icono />).container.querySelectorAll("svg > *")].map((element) =>
+    element.tagName === "circle" ? `circle ${element.getAttribute("cx")} ${element.getAttribute("cy")} ${element.getAttribute("r")}` : element.getAttribute("d"));
+
+  it("dibujan los del marco del tablero", () => {
+    expect(paths(icons.HomeIcon)).toEqual(["M3 11 12 4l9 7", "M5 10v10h14V10", "M10 20v-6h4v6"]);
+    expect(paths(icons.UsersIcon)).toEqual([
+      "M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20", "circle 10 8 3.5", "M20 20v-1.5a3.5 3.5 0 0 0-2.6-3.4", "M15.5 4.7a3.5 3.5 0 0 1 0 6.6",
+    ]);
+    expect(paths(icons.KeyIcon)).toEqual(["circle 8 15 4", "m10.8 12.2 8.2-8.2", "m17 6 2 2", "m14 9 2 2"]);
+    expect(paths(icons.SlidersHorizontalIcon)).toEqual(["M4 6h10", "circle 16 6 2", "M4 12h4", "M12 12h8", "circle 10 12 2", "M4 18h12", "circle 18 18 2"]);
+    expect(paths(icons.ClipboardIcon)).toEqual(["M9 3.5h6v3H9z", "M15 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3", "M9 12h6", "M9 16h4"]);
+    expect(paths(icons.ShieldCheckIcon)).toEqual(["M12 3.5 5 6v5.5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6Z", "m9.5 12 1.8 1.8 3.4-3.6"]);
+    expect(paths(icons.ShieldIcon)).toEqual(["M12 3 5 6v5.5c0 4.2 2.9 7.8 7 9.5 4.1-1.7 7-5.3 7-9.5V6z"]);
+    expect(paths(icons.UserIcon)).toEqual(["circle 12 8 3.75", "M5 20a7 7 0 0 1 14 0"]);
+  });
+});
+
+// Los controles de los tableros (.fb-sel, .sel, .pag, el menú de la cuenta): la flecha del desplegable es la chica del
+// lienzo y las flechas de los controles van con trazo 2.
+describe("las flechas de los controles", () => {
+  it("dibujan la del tablero y aceptan su trazo", () => {
+    const chevron = render(<icons.ChevronDownIcon strokeWidth={2} />).container.querySelector("svg")!;
+    expect(chevron.querySelector("path")).toHaveAttribute("d", "m7 10 5 5 5-5");
+    expect(chevron).toHaveAttribute("stroke-width", "2");
+  });
+});

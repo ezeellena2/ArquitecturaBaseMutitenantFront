@@ -6,6 +6,7 @@ import { queryClient } from "@/shared/api/queryClient";
 import { FormatProvider } from "@/shared/format/useFormat";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { Toaster } from "@/shared/ui/sonner";
+import { IconDefaults } from "@/shared/ui/IconDefaults";
 import { Button } from "@/shared/ui/button";
 import { AppAuthProvider } from "@/auth/AuthProvider";
 import { AuthContext, type AuthContextProps } from "react-oidc-context";
@@ -47,9 +48,11 @@ export function AppProviders({ children, client = queryClient, authContext }: { 
 
   return (
     <I18nextProvider i18n={i18n}>
-      <AppAuthProvider>
-        {authContext ? <AuthContext.Provider value={authContext}>{content}</AuthContext.Provider> : content}
-      </AppAuthProvider>
+      <IconDefaults>
+        <AppAuthProvider>
+          {authContext ? <AuthContext.Provider value={authContext}>{content}</AuthContext.Provider> : content}
+        </AppAuthProvider>
+      </IconDefaults>
     </I18nextProvider>
   );
 }

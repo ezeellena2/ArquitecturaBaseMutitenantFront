@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { House } from "lucide-react";
+import { HomeIcon } from "@/shared/ui/icons";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useFormat } from "@/shared/format/useFormat";
@@ -33,7 +33,7 @@ export function BusinessHomePage() {
     return <PhoneHome organization={organization ?? null} companies={home.data.companies} rows={rows} organizationName={organizationName}
       firstName={currentUser?.displayName?.trim().split(/\s+/)[0] ?? ""} />;
   }
-  return <Page icon={House} title={t("common:home.title")} summary={organizationName}>
+  return <Page icon={HomeIcon} title={t("common:home.title")} summary={organizationName}>
     {organization ? <>
       <AreaCards organization={organization} />
       <ToResolve rows={rows} />

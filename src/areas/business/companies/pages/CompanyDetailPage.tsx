@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Building2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { BuildingIcon } from "@/shared/ui/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
@@ -68,7 +69,7 @@ export function CompanyDetailPage() {
     onError: (error) => toastActionError(error, t),
   });
 
-  if (company.isPending) return <Page icon={Building2} title={t("companies:detail.loading")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (company.isPending) return <Page icon={BuildingIcon} title={t("companies:detail.loading")}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   // «Criterio · Avisos» (Pantalla de error): la ficha no cargó y no hay nada que mostrar; si no existe (404),
   // «No encontramos esta página» (errores.md).
   if (!company.data) return isNotFoundError(company.error)
@@ -80,7 +81,7 @@ export function CompanyDetailPage() {
   const closeDialog = () => setDialog(null);
 
   return <>
-    <Page icon={Building2} title={data.name} backTo={back}
+    <Page icon={BuildingIcon} title={data.name} backTo={back}
       phoneBody="flush"
       // Tablero M-Empresa: debajo del título, el CUIT y la zona; crear es un «+» flotante según la pestaña.
       phoneSubtitle={<>{data.taxId ? <><TaxIdText value={data.taxId} withType />{" · "}</> : null}<TimeZoneText value={data.timeZoneId} /></>}
@@ -95,8 +96,8 @@ export function CompanyDetailPage() {
       </>}
       actions={<>
         {canManageCompany ? <Button type="button" variant="outline" onClick={() => setDialog({ kind: "edit" })}>{t("companies:actions.editCompany")}</Button> : null}
-        {canAdd && tab === "members" ? <Button type="button" onClick={() => setDialog({ kind: "addMember" })}><Plus aria-hidden="true" className="size-4" />{t("companies:actions.addMember")}</Button> : null}
-        {canManageRoles && tab === "roles" ? <Button asChild><Link to={createRolePath}><Plus aria-hidden="true" className="size-4" />{t("companies:detail.createRole")}</Link></Button> : null}
+        {canAdd && tab === "members" ? <Button type="button" onClick={() => setDialog({ kind: "addMember" })}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("companies:actions.addMember")}</Button> : null}
+        {canManageRoles && tab === "roles" ? <Button asChild><Link to={createRolePath}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("companies:detail.createRole")}</Link></Button> : null}
       </>}
       moreActions={canManageCompany ? { label: t("companies:actions.more"), items: [
         { label: t("companies:actions.editCompany"), onSelect: (trigger) => setDialog({ kind: "edit", returnFocusTo: trigger }), hidden: !phone },

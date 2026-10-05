@@ -15,6 +15,10 @@ describe("Section", () => {
 
     const region = screen.getByRole("region", { name: "Dominio de correo" });
     expect(screen.getByRole("heading", { name: "Dominio de correo" }).parentElement).toHaveClass("min-h-10", "bg-[var(--cab)]");
+    // El «+» de los botones de los tableros (.b svg): 14 px con trazo 2.25.
+    const plus = screen.getByRole("button", { name: "Agregar dominio" }).querySelector("svg");
+    expect(plus).toHaveClass("size-3.5");
+    expect(plus).toHaveAttribute("stroke-width", "2.25");
     await userEvent.click(screen.getByRole("button", { name: "Agregar dominio" }));
     expect(onClick).toHaveBeenCalledOnce();
     expect(region).toContainElement(screen.getByText("delta.ejemplo.com"));

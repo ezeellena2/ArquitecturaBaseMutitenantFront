@@ -48,6 +48,17 @@ describe("FilterBar", () => {
 
   // Tableros de listas (.fb-limpiar: Usuarios, Roles, Empresas, Auditoría y «Criterio · Tablas»): «Limpiar» va en gris de
   // 14 y se oscurece con el mouse, sin el petróleo de un enlace.
+  // Tableros Usuarios, Roles y Empresas (.fb-bus, .fb-sel): la lupa y la flecha del filtro son las del lienzo.
+  it("dibuja la lupa y la flecha del tablero", () => {
+    render(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={vi.fn()}
+      filters={[{ key: "status", label: "Estado", menuLabel: "Filtrar por estado", value: "all", active: false, options: [{ value: "all", label: "Todos" }], onChange: vi.fn() }]} />);
+
+    expect(screen.getByRole("searchbox", { name: "Buscar" }).parentElement?.querySelector("svg circle")).toHaveAttribute("r", "6.5");
+    const chevron = screen.getByRole("button", { name: "Todos" }).querySelector("svg");
+    expect(chevron?.querySelector("path")).toHaveAttribute("d", "m7 10 5 5 5-5");
+    expect(chevron).toHaveAttribute("stroke-width", "2");
+  });
+
   it("«Limpiar» va en gris de 14, como los tableros", () => {
     render(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="zzz" onSearchChange={vi.fn()} filters={[]} clearLabel="Limpiar" onClear={vi.fn()} />);
 

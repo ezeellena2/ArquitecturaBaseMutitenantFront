@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Globe } from "lucide-react";
+import { GlobeIcon } from "@/shared/ui/icons";
 import { useId, useState } from "react";
 import { useController, useWatch } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
@@ -110,7 +110,7 @@ export function PublicPagePage() {
 
   // «Criterio · Avisos» (Pantalla de error): la página no cargó y no hay nada que mostrar.
   if (page.isError && !page.data) return <LoadErrorPage onRetry={() => { void page.refetch(); }} />;
-  if (!page.data) return <Page icon={Globe} title={t("publicPage:title")}><p role="status" className="text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  if (!page.data) return <Page icon={GlobeIcon} title={t("publicPage:title")}><p role="status" className="text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   return <PublicPageEditor page={page.data} loadError={page.error} reload={async () => (await page.refetch()).data} />;
 }
 
@@ -218,7 +218,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
 
   return <>
     <Page
-      icon={Globe}
+      icon={GlobeIcon}
       title={t("publicPage:title")}
       banner={edit.banner}
       summary={summary}
@@ -239,7 +239,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
         {edit.formError}
         <Section title={t("publicPage:publicationTitle")}>
           <div className="flex items-center gap-3 px-4 py-3 md:px-5 max-md:min-h-14 max-md:py-2 max-md:pr-3.5">
-            <Globe aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)] max-md:hidden" />
+            <GlobeIcon className="size-4 shrink-0 text-[var(--t3)] max-md:hidden" />
             <span id={visibleId} className="min-w-0 truncate text-[13px] font-medium text-[var(--t1)] max-md:text-[15.5px]">{t("publicPage:visibleAt", { host: `${savedSlug}${PUBLIC_DOMAIN}` })}</span>
             {blocked ? <InfoButton label={t("publicPage:blockedInfo")} onClick={() => setBlockedInfoOpen(true)} /> : null}
             <Switch className="ml-auto" aria-labelledby={visibleId} checked={page.isPublished} disabled={blocked || !savedSlug || publication.isPending}

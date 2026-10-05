@@ -1,4 +1,4 @@
-import { House } from "lucide-react";
+import { HomeIcon } from "@/shared/ui/icons";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { Page } from "@/shared/ui/Page";
@@ -8,7 +8,7 @@ import { PersonalLoginMethodNotice } from "@/shared/account/PersonalLoginMethodN
 export function PersonalHomePage() {
   const { t } = useTranslation();
   const { data } = useCurrentUser();
-  return <Page icon={House} title={t("home.title")} phoneBody="flush">
+  return <Page icon={HomeIcon} title={t("home.title")} phoneBody="flush">
     {data?.needsPersonalLoginMethod ? <PersonalLoginMethodNotice className="mx-4 mt-2" /> : null}
   </Page>;
 }

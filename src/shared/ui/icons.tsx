@@ -1,19 +1,24 @@
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 
 interface IconProps {
   className?: string;
+  /** El trazo, si el tablero dibuja ese ícono con otro: las flechas de los controles van en 2. */
+  strokeWidth?: number;
 }
+
+/// Un ícono del set (o uno de lucide): lo que pide el menú, el título de una página y los atajos de los inicios.
+export type IconComponent = ComponentType<IconProps>;
 
 /// Íconos propios en SVG inline para el layout (sección 7.2): mismo trazo para todo el set, sin depender de
 /// un paquete de íconos. Son decorativos (aria-hidden): el texto accesible lo pone quien los usa (el label
 /// del ítem de navegación, el aria-label del botón).
-function Icon({ className, children }: IconProps & { children: ReactNode }) {
+function Icon({ className, strokeWidth = 1.75, children }: IconProps & { children: ReactNode }) {
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.75}
+      strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -24,12 +29,14 @@ function Icon({ className, children }: IconProps & { children: ReactNode }) {
   );
 }
 
+/// Las áreas, como las dibujan el marco, el título y los atajos de los tableros (Inicio-Org, Usuarios, Roles, Empresas, Cuenta
+/// y sus M-*). «Inicio»: el techo, las paredes y la puerta.
 export function HomeIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M3.75 10.5 12 3.75l8.25 6.75" />
-      <path d="M5.25 9v10.5h13.5V9" />
-      <path d="M9.75 19.5V13.5h4.5v6" />
+      <path d="M3 11 12 4l9 7" />
+      <path d="M5 10v10h14V10" />
+      <path d="M10 20v-6h4v6" />
     </Icon>
   );
 }
@@ -70,22 +77,72 @@ export function BuildingIcon(props: IconProps) {
   );
 }
 
+/// «Usuarios» y «Gestión de usuarios»: dos personas.
 export function UsersIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <circle cx="9" cy="8" r="3" />
-      <path d="M3.5 19.5a5.5 5.5 0 0 1 11 0" />
-      <path d="M16 8.25a2.75 2.75 0 1 1 0 5.5" />
-      <path d="M14.75 14.75c2.7.2 4.75 2.1 5.25 4.75" />
+      <path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20" />
+      <circle cx="10" cy="8" r="3.5" />
+      <path d="M20 20v-1.5a3.5 3.5 0 0 0-2.6-3.4" />
+      <path d="M15.5 4.7a3.5 3.5 0 0 1 0 6.6" />
     </Icon>
   );
 }
 
+/// «Roles y permisos» en el menú y en los inicios: la llave.
+export function KeyIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="8" cy="15" r="4" />
+      <path d="m10.8 12.2 8.2-8.2" />
+      <path d="m17 6 2 2" />
+      <path d="m14 9 2 2" />
+    </Icon>
+  );
+}
+
+/// «Configuración» en el menú y en los inicios: tres reguladores con su perilla.
+export function SlidersHorizontalIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 6h10" />
+      <circle cx="16" cy="6" r="2" />
+      <path d="M4 12h4" />
+      <path d="M12 12h8" />
+      <circle cx="10" cy="12" r="2" />
+      <path d="M4 18h12" />
+      <circle cx="18" cy="18" r="2" />
+    </Icon>
+  );
+}
+
+/// «Auditoría»: el portapapeles con sus renglones.
+export function ClipboardIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M9 3.5h6v3H9z" />
+      <path d="M15 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3" />
+      <path d="M9 12h6" />
+      <path d="M9 16h4" />
+    </Icon>
+  );
+}
+
+/// «Administración», en el pie del menú: el escudo con la tilde.
+export function ShieldCheckIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 3.5 5 6v5.5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6Z" />
+      <path d="m9.5 12 1.8 1.8 3.4-3.6" />
+    </Icon>
+  );
+}
+
+/// El título de «Roles y permisos» (tablero Roles): el escudo solo.
 export function ShieldIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M12 3.5 5 6v5.5C5 16 8 19.5 12 20.5c4-1 7-4.5 7-9V6l-7-2.5Z" />
-      <path d="m9.25 12 2 2 3.5-4" />
+      <path d="M12 3 5 6v5.5c0 4.2 2.9 7.8 7 9.5 4.1-1.7 7-5.3 7-9.5V6z" />
     </Icon>
   );
 }
@@ -127,10 +184,11 @@ export function ChevronRightIcon(props: IconProps) {
   );
 }
 
+/// La flecha de los desplegables (tableros: .fb-sel, .sel, el menú de la cuenta): chica, con trazo 2 a 14 px.
 export function ChevronDownIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M5.5 8.5 12 15l6.5-6.5" />
+      <path d="m7 10 5 5 5-5" />
     </Icon>
   );
 }
@@ -232,11 +290,12 @@ export function SearchIcon(props: IconProps) {
   );
 }
 
+/// «Mi cuenta» (tableros Cuenta e Inicio-Personal): la persona.
 export function UserIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <circle cx="12" cy="8" r="3.5" />
-      <path d="M5.5 19.5a6.5 6.5 0 0 1 13 0" />
+      <circle cx="12" cy="8" r="3.75" />
+      <path d="M5 20a7 7 0 0 1 14 0" />
     </Icon>
   );
 }

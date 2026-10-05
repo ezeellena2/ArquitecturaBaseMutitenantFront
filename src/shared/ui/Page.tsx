@@ -172,7 +172,7 @@ export function Page({
               title={backTo.label}
               className="inline-flex size-7 shrink-0 items-center justify-center rounded-[7px] border border-[var(--borde)] text-[var(--t2)] hover:bg-[var(--s2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
             >
-              <ChevronLeftIcon className="size-4" />
+              <ChevronLeftIcon strokeWidth={2} className="size-4" />
             </Link>
           ) : Icon ? (
             <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--marca-t)] text-[var(--marca-tx)]">

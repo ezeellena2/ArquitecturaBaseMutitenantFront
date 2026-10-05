@@ -1,4 +1,4 @@
-import { Check, ChevronDown, UserRound } from "lucide-react";
+import { Check } from "lucide-react";
 import { Link } from "react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,7 +8,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
 import { Avatar } from "@/shared/ui/Avatar";
-import { LogOutIcon } from "@/shared/ui/icons";
+import { ChevronDownIcon, LogOutIcon, UserIcon } from "@/shared/ui/icons";
 
 // «Criterio · Menús» y tableros Inicio-Personal y Cuenta (.w-mn): filas de 44 con el ícono del perfil de 28, el nombre
 // en 13 y el rol o el estado en gris de 12,5; el perfil activo, en petróleo sobre petróleo claro y con tilde.
@@ -53,7 +53,7 @@ export function AccessMenu() {
       <button type="button" aria-label={`${name}, ${activeName}`} className="inline-flex h-10 items-center gap-2.5 rounded-[10px] border border-transparent bg-transparent py-0 pl-1 pr-2 text-left hover:border-[var(--borde)] hover:bg-[var(--lado-activo)] data-[state=open]:border-[var(--borde)] data-[state=open]:bg-[var(--lado-activo)]">
         <Avatar initials={initials(name).slice(0, 1)} />
         <span className="flex flex-col leading-[1.25]"><span className="text-[13px] font-bold text-[var(--t1)]">{name}</span><span className="text-[12px] text-[var(--t2)]">{activeName}</span></span>
-        <ChevronDown size={14} strokeWidth={2} className="text-[var(--t3)]" aria-hidden="true" />
+        <ChevronDownIcon strokeWidth={2} className="size-3.5 text-[var(--t3)]" />
       </button>
     </DropdownMenuTrigger>
     {/* Las filas miden 320, como en «Criterio · Menús» y en el tablero Inicio-Personal; la caja suma su margen de 4 y el
@@ -72,7 +72,7 @@ export function AccessMenu() {
         {profiles.map((profile) => <ProfileRow key={profile.key} profile={profile} onClose={() => setOpen(false)} />)}
       </DropdownMenuGroup>
       {separator}
-      <DropdownMenuItem asChild className={itemClass}><Link to="/cuenta" onClick={() => setOpen(false)}><UserRound size={16} aria-hidden="true" />{t("accessMenu.myAccount")}</Link></DropdownMenuItem>
+      <DropdownMenuItem asChild className={itemClass}><Link to="/cuenta" onClick={() => setOpen(false)}><UserIcon className="size-4" />{t("accessMenu.myAccount")}</Link></DropdownMenuItem>
       {separator}
       <DropdownMenuItem onSelect={() => { setOpen(false); void signOut(); }} className={itemClass}><LogOutIcon className="size-4" />{t("accessMenu.signOut")}</DropdownMenuItem>
     </DropdownMenuContent>

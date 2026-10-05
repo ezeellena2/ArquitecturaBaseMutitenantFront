@@ -1,4 +1,5 @@
-import { CheckIcon, ChevronDownIcon, SearchIcon } from "lucide-react";
+import { CheckIcon } from "lucide-react";
+import { ChevronDownIcon, SearchIcon } from "./icons";
 import { Popover as PopoverPrimitive } from "radix-ui";
 import { useEffect, useId, useRef, useState, type ComponentProps, type KeyboardEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -139,11 +140,11 @@ export function SearchSelect({
       {selected?.icon && !renderValue ? selected.icon : null}
       <span className="truncate">{shown ?? placeholder}</span>
     </span>
-    <ChevronDownIcon aria-hidden="true" className="size-4 shrink-0 text-[var(--t2)]" />
+    <ChevronDownIcon strokeWidth={2} className="size-3.5 shrink-0 text-[var(--t2)]" />
   </button>;
 
   const search = withSearch ? <div className={phone ? "relative px-5 pt-1 pb-2" : "relative border-b border-[var(--borde)] p-2"}>
-    <SearchIcon aria-hidden="true" className={cn("pointer-events-none absolute top-1/2 -translate-y-1/2 text-[var(--t3)]", phone ? "left-8.5 size-5" : "left-4.5 size-4")} />
+    <SearchIcon className={cn("pointer-events-none absolute top-1/2 -translate-y-1/2 text-[var(--t3)]", phone ? "left-8.5 size-5" : "left-4.5 size-4")} />
     <input
       type="search"
       aria-label={searchLabel}

@@ -62,3 +62,21 @@ describe("navegación por acceso en 3a", () => {
     expect(screen.queryByText("Organizaciones")).not.toBeInTheDocument();
   });
 });
+
+describe("los íconos del menú", () => {
+  it("son los del tablero, a 18 px, en el marco y en el panel de Administración", async () => {
+    const icons = await import("@/shared/ui/icons");
+    expect(personalNavigation.links.map((entry) => entry.icon)).toEqual([icons.HomeIcon, icons.UserIcon]);
+    expect(businessNavigation.links.map((entry) => entry.icon)).toEqual([icons.HomeIcon]);
+    expect(businessNavigation.administration?.icon).toBe(icons.ShieldCheckIcon);
+    expect(businessNavigation.administration?.sections?.[0].icon).toBe(icons.UsersIcon);
+    expect(businessNavigation.administration?.sections?.[0].links.map((entry) => entry.icon)).toEqual([icons.UsersIcon, icons.KeyIcon]);
+    expect(businessNavigation.administration?.links.map((entry) => entry.icon)).toEqual([
+      icons.BuildingIcon, icons.SlidersHorizontalIcon, icons.GlobeIcon, icons.ClipboardIcon,
+    ]);
+
+    render(<MemoryRouter initialEntries={["/org/empresas"]}><BusinessLayout><h1>{"Empresas"}</h1></BusinessLayout></MemoryRouter>);
+    expect(within(screen.getByRole("complementary", { name: "Navegación principal" })).getByRole("link", { name: "Inicio" }).querySelector("svg")).toHaveClass("size-[18px]");
+    expect(screen.getByRole("link", { name: "Empresas" }).querySelector("svg")).toHaveClass("size-[18px]");
+  });
+});

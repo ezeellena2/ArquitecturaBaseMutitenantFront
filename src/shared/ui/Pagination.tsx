@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
 import { useTranslation } from "react-i18next";
 import type { PagedResult } from "@/shared/api/pagedResult";
 import { pageSizes } from "@/shared/api/pageSizes";
@@ -71,7 +71,7 @@ export function Pagination({
           onClick={() => onPageChange(page - 1)}
           className="text-[var(--t2)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)]"
         >
-          <ChevronLeftIcon aria-hidden="true" className="size-4" />
+          <ChevronLeftIcon strokeWidth={2} className="size-4" />
         </Button>
         <Button
           type="button"
@@ -82,7 +82,7 @@ export function Pagination({
           onClick={() => onPageChange(page + 1)}
           className="text-[var(--t2)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)]"
         >
-          <ChevronRightIcon aria-hidden="true" className="size-4" />
+          <ChevronRightIcon strokeWidth={2} className="size-4" />
         </Button>
       </div>
     </nav>

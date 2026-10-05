@@ -51,6 +51,11 @@ describe("Pagination", () => {
     expect(screen.getByRole("combobox", { name: "Filas por página" })).toHaveClass("h-7", "text-[12px]");
     expect(screen.getByRole("combobox", { name: "Filas por página" })).not.toHaveClass("lg:h-8", "lg:text-[13px]");
 
+    // Las flechas del tablero (.pag), con trazo 2; y la del tamaño de página, la chica de los desplegables.
+    expect(previous.querySelector("svg")).toHaveAttribute("stroke-width", "2");
+    expect(previous.querySelector("path")).toHaveAttribute("d", "M14.5 5.5 8 12l6.5 6.5");
+    expect(screen.getByRole("combobox", { name: "Filas por página" }).querySelector("path")).toHaveAttribute("d", "m7 10 5 5 5-5");
+
     await userEvent.click(screen.getByRole("button", { name: "Página siguiente" }));
     expect(onPageChange).toHaveBeenCalledWith(2);
     expect(screen.getByRole("button", { name: "Página siguiente" })).not.toHaveClass("min-h-11");

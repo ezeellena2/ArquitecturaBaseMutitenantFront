@@ -1,5 +1,6 @@
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Eye, Pencil, Plus, Shield, Trash2 } from "lucide-react";
+import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
+import { ShieldIcon } from "@/shared/ui/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
@@ -114,12 +115,12 @@ export function RolesPage() {
 
   return <>
     <Page
-      icon={Shield}
+      icon={ShieldIcon}
       title={t("roles:title")}
       summary={listSummary}
       phoneBody="flush"
       fab={canManage ? { label: t("roles:create"), to: "/org/roles/nuevo" } : undefined}
-      actions={canManage ? <Button asChild><Link to="/org/roles/nuevo"><Plus aria-hidden="true" className="size-4" />{t("roles:create")}</Link></Button> : undefined}
+      actions={canManage ? <Button asChild><Link to="/org/roles/nuevo"><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("roles:create")}</Link></Button> : undefined}
     >
       <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar phoneTools="filter"
