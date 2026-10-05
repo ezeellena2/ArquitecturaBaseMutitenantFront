@@ -137,15 +137,16 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const refresh = () => Promise.all([client.invalidateQueries({ queryKey: userQueryKey(memberId) }), client.invalidateQueries({ queryKey: usersQueryRoot })]);
   const save = useMutation({
     mutationFn: ({ request }: SaveVariables) => updateUser(memberId, request),
-    // Lo guardado (el acceso, o las empresas sin tocar lo que se está editando) pasa a ser la base con la relectura.
-    onSuccess: async (_result, { request, message, access }) => {
+    // Lo guardado (el acceso, o las empresas sin tocar lo que se está editando) pasa a ser la base, con la versión que
+    // respondió el guardado.
+    onSuccess: async (result, { request, message, access }) => {
       setFailure(undefined);
       setDialogFailure(undefined);
       if (access) form.reset(access);
       setCompanyDialog(null);
       toast.success(sentence(message));
       await refresh();
-      if (request.version != null) wrote(request.version, client.getQueryData<OrganizationUserResponse>(userQueryKey(memberId)));
+      if (request.version != null) wrote(request.version, result.version, client.getQueryData<OrganizationUserResponse>(userQueryKey(memberId)));
     },
     onError: (error, { origin }) => {
       if (origin !== "dialog") { setFailure({ error, action: "save" }); return; }

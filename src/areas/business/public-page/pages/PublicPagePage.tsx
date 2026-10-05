@@ -155,17 +155,18 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
   const [unpublishOpen, setUnpublishOpen] = useState(false);
   const update = useMutation({ mutationFn: updatePublicPage });
   // Tablero Pagina-Org: el interruptor de «Publicación» se aplica al momento, sin esperar a «Guardar cambios», sobre la
-  // última lectura; si partió de lo que se está editando, su relectura pasa a ser la base y lo escrito se conserva.
+  // última lectura; si partió de lo que se está editando, la versión que respondió pasa a ser la base y lo escrito se
+  // conserva.
   const publication = useMutation({
     mutationFn: async (published: boolean) => {
-      const sentVersion = page.version;
-      await setPublicPagePublished(published, { version: sentVersion });
-      return sentVersion;
+      const sent = page.version;
+      const { version: saved } = await setPublicPagePublished(published, { version: sent });
+      return { sent, saved };
     },
-    onSuccess: async (sentVersion, published) => {
+    onSuccess: async ({ sent, saved }, published) => {
       toast.success(t(published ? "publicPage:published" : "publicPage:unpublished"));
       await client.invalidateQueries({ queryKey: publicPageQueryKey });
-      wrote(sentVersion, client.getQueryData<PublicPageResponse>(publicPageQueryKey));
+      wrote(sent, saved, client.getQueryData<PublicPageResponse>(publicPageQueryKey));
     },
     onError: (error) => toastActionError(error, t),
   });
@@ -192,18 +193,18 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
     setFailure(error);
   }
 
-  // La ficha queda limpia con lo guardado y, con la relectura, esa es la nueva base (`useEditForm`).
-  async function saved(values: PageForm, sentVersion: number) {
+  // La ficha queda limpia con lo guardado y la base es la versión que respondió el guardado (`useEditForm`).
+  async function saved(values: PageForm, sentVersion: number, savedVersion: number) {
     setFailure(undefined);
     form.reset(values);
     toast.success(t("publicPage:saved"));
     await client.invalidateQueries({ queryKey: publicPageQueryKey });
-    wrote(sentVersion, client.getQueryData<PublicPageResponse>(publicPageQueryKey));
+    wrote(sentVersion, savedVersion, client.getQueryData<PublicPageResponse>(publicPageQueryKey));
   }
 
   const submit = form.handleSubmit((values) => {
     setFailure(undefined);
-    update.mutate(pageRequest(values, version), { onSuccess: () => { void saved(values, version); }, onError: rejected });
+    update.mutate(pageRequest(values, version), { onSuccess: (result) => { void saved(values, version, result.version); }, onError: rejected });
   });
 
   // «Descartar cambios» vuelve a la última lectura de lo guardado, con su versión.

@@ -70,13 +70,15 @@ describe("useEditForm", () => {
     expect(onSave).toHaveBeenCalledWith({ name: "Grupo Delta Sur", note: "Lo cambió otra persona.", version: 2 });
   });
 
-  it("después de una escritura propia que partió de la base, su relectura es la base y lo que se sigue escribiendo queda", async () => {
+  // Después de guardar, la base es la versión que respondió el guardado (concurrencia.md). Si la relectura trae esa misma
+  // versión, es lo que quedó guardado: sus valores pasan a ser lo guardado y lo que la persona siga escribiendo queda.
+  it("después de una escritura propia que partió de la base, la base es la versión que respondió y la relectura con esa versión es lo guardado", async () => {
     const user = userEvent.setup();
     const { onSave, edit } = renderEditor();
     await user.clear(screen.getByRole("textbox", { name: "Nombre" }));
     await user.type(screen.getByRole("textbox", { name: "Nombre" }), "Borrador");
 
-    act(() => edit().wrote(1, { ...first, note: "Lo que dejó la escritura", version: 2 }));
+    act(() => edit().wrote(1, 2, { ...first, note: "Lo que dejó la escritura", version: 2 }));
     expect(screen.getByRole("textbox", { name: "Nombre" })).toHaveValue("Borrador");
     expect(screen.getByRole("textbox", { name: "Nota" })).toHaveValue("Lo que dejó la escritura");
     expect(screen.getByTestId("estado")).toHaveTextContent("Cambios sin guardar");
@@ -85,11 +87,37 @@ describe("useEditForm", () => {
     expect(onSave).toHaveBeenCalledWith({ name: "Borrador", note: "Lo que dejó la escritura", version: 2 });
   });
 
+  // Una relectura con otra versión que la que respondió el guardado trae el cambio de otra persona: no pasa a ser la base
+  // ni pisa lo que se ve. El próximo guardado manda la versión que respondió el guardado, el back da 409 y la persona
+  // elige con «Ver lo nuevo».
+  it("después de guardar, una relectura con otra versión no es la base: el próximo guardado manda la que respondió el guardado", async () => {
+    const user = userEvent.setup();
+    const { onSave, edit } = renderEditor();
+
+    act(() => edit().wrote(1, 2, { name: "Grupo Delta Sur", note: "Lo cambió otra persona", version: 3 }));
+    expect(screen.getByRole("textbox", { name: "Nombre" })).toHaveValue("Grupo Delta");
+    await user.type(screen.getByRole("textbox", { name: "Nota" }), ".");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(onSave).toHaveBeenCalledWith({ name: "Grupo Delta", note: "Lo guardado.", version: 2 });
+  });
+
+  it("si la relectura no llega, la base igual es la versión que respondió el guardado", async () => {
+    const user = userEvent.setup();
+    const { onSave, edit } = renderEditor();
+
+    act(() => edit().wrote(1, 2, undefined));
+    await user.type(screen.getByRole("textbox", { name: "Nota" }), ".");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(onSave).toHaveBeenCalledWith({ name: "Grupo Delta", note: "Lo guardado.", version: 2 });
+  });
+
   it("una escritura que partió de otra versión no mueve la base: el próximo guardado da 409", async () => {
     const user = userEvent.setup();
     const { onSave, edit } = renderEditor();
 
-    act(() => edit().wrote(7, { ...first, note: "Lo de otra persona", version: 8 }));
+    act(() => edit().wrote(7, 8, { ...first, note: "Lo de otra persona", version: 8 }));
     await user.type(screen.getByRole("textbox", { name: "Nota" }), ".");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 

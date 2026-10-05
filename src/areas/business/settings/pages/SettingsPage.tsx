@@ -125,19 +125,19 @@ function SettingsEditor({ settings, loadError, reload }: {
     setFailure(error);
   }
 
-  // Después de guardar, la ficha queda limpia con lo guardado, aunque la relectura todavía no lo traiga; con la relectura,
-  // esa es la nueva base (`useEditForm`).
-  async function saved(values: SettingsForm, sentVersion: number) {
+  // Después de guardar, la ficha queda limpia con lo guardado, aunque la relectura todavía no lo traiga, y la base es la
+  // versión que respondió el guardado (`useEditForm`).
+  async function saved(values: SettingsForm, sentVersion: number, savedVersion: number) {
     setFailure(undefined);
     form.reset(values);
     toast.success(t("settings:saved"));
     await client.invalidateQueries({ queryKey: organizationSettingsKey });
-    wrote(sentVersion, client.getQueryData<OrganizationSettingsResponse>(organizationSettingsKey));
+    wrote(sentVersion, savedVersion, client.getQueryData<OrganizationSettingsResponse>(organizationSettingsKey));
   }
 
   const submit = form.handleSubmit((values) => {
     setFailure(undefined);
-    save.mutate({ ...values, version }, { onSuccess: () => { void saved(values, version); }, onError: rejected });
+    save.mutate({ ...values, version }, { onSuccess: (result) => { void saved(values, version, result.version); }, onError: rejected });
   });
 
   // «Descartar cambios» vuelve a la última lectura de lo guardado, con su versión.

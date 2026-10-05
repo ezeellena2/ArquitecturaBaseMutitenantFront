@@ -54,7 +54,7 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
 
   // La relectura va por TanStack Query y, como /api/me, en silencio: si falla, lo dice la franja (también sin conexión,
   // con apiErrorMessage, porque es una consulta y el MutationCache no la avisó), una sola vez. `adopt` le pasa la lectura
-  // al formulario: «Ver lo nuevo» reinicia con ella y, después de guardar, es la nueva base.
+  // al formulario: «Ver lo nuevo» reinicia con ella y, después de guardar, es lo guardado si trae la versión que respondió.
   async function reload(adopt: (fresh: MeResponse) => void) {
     try {
       const fresh = await queryClient.fetchQuery({ queryKey: currentUserQueryKey, queryFn: fetchCurrentUser, staleTime: 0, meta: { silent: true, blocksView: true } });
@@ -69,12 +69,14 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   const edit = useEditPage({ isDirty, error: failure, onSeeNew: () => { void reload(resetTo); }, onContinueEditing: () => setFailure(undefined) });
   // Por TanStack Query, como toda escritura: los términos nuevos (403) abren la aceptación también desde acá, y la
   // relectura va en onSuccess para que «Reintentar» (sin conexión) termine igual que un guardado al primer intento. La
-  // ficha queda limpia con lo guardado y, con la relectura, esa es la nueva base.
+  // ficha queda limpia con lo guardado y la base es la versión que respondió el guardado, también si la relectura falla.
   const update = useMutation({
     mutationFn: (request: ProfileForm & { version: number | undefined }) => updateMe({ ...request, displayName: request.displayName.trim() || null }),
-    onSuccess: async (_result, { version: sentVersion, ...values }) => {
+    onSuccess: async (result, { version: sentVersion, ...values }) => {
       form.reset(values);
-      if (await reload((fresh) => { if (sentVersion !== undefined) wrote(sentVersion, fresh); })) toast.success(t("saved"));
+      const adopt = (fresh?: MeResponse) => { if (sentVersion !== undefined) wrote(sentVersion, result.version, fresh); };
+      if (await reload(adopt)) toast.success(t("saved"));
+      else adopt();
     },
   });
 

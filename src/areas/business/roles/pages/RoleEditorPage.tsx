@@ -157,8 +157,8 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
     else setFailure(error);
   }
 
-  // Al editar, la ficha queda limpia con lo guardado y, con la relectura, esa es la nueva base (`useEditForm`).
-  async function saved(id: string, values: RoleFormValues, sentVersion?: number) {
+  // Al editar, la ficha queda limpia con lo guardado y la base es la versión que respondió el guardado (`useEditForm`).
+  async function saved(id: string, values: RoleFormValues, write?: { sent: number; saved: number }) {
     setFailure(undefined);
     toast.success(t(role ? "roles:updated" : "roles:created", { name: values.name }));
     if (role) form.reset(values);
@@ -167,7 +167,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
       void navigate(`/org/roles/${encodeURIComponent(id)}`, { replace: true });
     }
     await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
-    if (sentVersion !== undefined) wrote(sentVersion, queryClient.getQueryData<RoleResponse>(roleQueryKey(id)));
+    if (write) wrote(write.sent, write.saved, queryClient.getQueryData<RoleResponse>(roleQueryKey(id)));
   }
 
   const submit = form.handleSubmit((values) => {
@@ -180,7 +180,13 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
       permissions: values.permissions,
     };
     // Con un rol, el editor arrancó con su lectura: `version` es la de esa lectura.
-    if (role) update.mutate({ id: role.id, request: { ...request, version: version! } }, { onSuccess: () => { void saved(role.id, values, version); }, onError: rejected });
+    if (role) {
+      const sent = version!;
+      update.mutate({ id: role.id, request: { ...request, version: sent } }, {
+        onSuccess: (result) => { void saved(role.id, values, { sent, saved: result.version }); },
+        onError: rejected,
+      });
+    }
     else create.mutate(request, { onSuccess: (id) => { void saved(id, values); }, onError: rejected });
   });
 
