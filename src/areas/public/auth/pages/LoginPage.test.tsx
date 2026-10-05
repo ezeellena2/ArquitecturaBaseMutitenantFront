@@ -123,7 +123,8 @@ describe("LoginPage", () => {
     expect(email.compareDocumentPosition(send) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     const signupLink = within(main).getByRole("link", { name: "Creá una" });
     expect(signupLink).toHaveAttribute("href", "/registro");
-    expect(signupLink.parentElement?.parentElement).toHaveClass("text-center");
+    // .fila-links del tablero: el renglón centrado, con 6 entre el texto y el enlace (AuthLinkRow).
+    expect(signupLink.parentElement).toHaveClass("flex", "justify-center", "gap-1.5");
     // Los enlaces de texto son la variante link de Button, en --marca-tx (como .lnk del tablero).
     expect(signupLink).toHaveAttribute("data-variant", "link");
     expect(signupLink).toHaveClass("text-[var(--marca-tx)]");
@@ -146,7 +147,7 @@ describe("LoginPage", () => {
       const personalLink = within(main).getByRole("link", { name: "Ingresá acá" });
       expect(personalLink).toHaveAttribute("href", "/login");
       expect(registerLink.compareDocumentPosition(personalLink) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-      expect(personalLink.parentElement?.parentElement).toHaveClass("text-center");
+      expect(personalLink.parentElement).toHaveClass("flex", "justify-center", "gap-1.5");
       expect(await axe(container)).toHaveNoViolations();
     } finally {
       Object.defineProperty(window, "innerWidth", { configurable: true, value: originalWidth });

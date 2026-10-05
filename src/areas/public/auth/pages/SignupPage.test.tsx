@@ -91,7 +91,9 @@ describe("SignupPage", () => {
       const login = screen.getByRole("link", { name: "Ingresá" });
       const registerBusiness = screen.getByRole("link", { name: "Registrala" });
       expect(registerBusiness).toHaveAttribute("href", "/registro/empresa");
-      expect(registerBusiness.parentElement).toHaveTextContent("¿Tenés una empresa? Registrala");
+      // .fila-links del tablero: el texto y el enlace a 6, sin depender del espacio (AuthLinkRow).
+      expect(registerBusiness.parentElement).toHaveTextContent(/^¿Tenés una empresa\?Registrala$/);
+      expect(registerBusiness.parentElement).toHaveClass("gap-1.5");
       expect(login.compareDocumentPosition(registerBusiness) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       const acceptance = screen.getByRole("checkbox", { name: /Acepto los Términos/ }).closest("label")!;
       expect(within(acceptance).getByRole("link", { name: "Términos" })).toHaveAttribute("href", "/terminos");

@@ -30,7 +30,7 @@ import {
 } from "../api/businessSignup";
 import { AuthStatus } from "../components/AuthStatus";
 import { AuthCodeStep } from "../components/AuthCodeStep";
-import { AuthLink } from "../components/AuthLink";
+import { AuthLink, AuthLinkRow } from "../components/AuthLink";
 import { AuthMessage } from "../components/AuthMessage";
 import { GoogleButton } from "../components/GoogleButton";
 import { loginCodeErrorKey, loginCodeMessage } from "../errors";
@@ -253,7 +253,7 @@ export function BusinessSignupPage() {
             <FormError message={requestErrorText} />
             <Button type="button" size="lg" className="w-full" disabled={retry.isRunning} pending={requestCode.isPending} pendingLabel={t("common:code.sending")}
               onClick={() => { if (acceptedTerms) void sendCode(); else setTermsError(true); }}>{retry.label ?? t("businessSignup.continue")}</Button>
-            <div className="text-center text-[13px] text-[var(--t2)]">{t("businessSignup.alreadyRegistered")} <AuthLink to={loginPathOf("business")}>{t("businessSignup.loginBusiness")}</AuthLink></div>
+            <AuthLinkRow>{t("businessSignup.alreadyRegistered")}<AuthLink to={loginPathOf("business")}>{t("businessSignup.loginBusiness")}</AuthLink></AuthLinkRow>
           </section>
             : step === "code" ? <AuthCodeStep destination={email} code={code} onBack={() => { setStep("email"); setCode(""); setRequestError(null); }}
               onCodeChange={(next) => { setCode(next); setRequestError(null); }} onVerify={() => void confirmCode()} onResend={() => void resendCode()}

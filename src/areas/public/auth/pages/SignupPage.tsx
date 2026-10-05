@@ -19,7 +19,7 @@ import { EmailField } from "@/shared/ui/fields/EmailField";
 import { requestSignup, verifySignup } from "../api/signup";
 import { AuthStatus } from "../components/AuthStatus";
 import { AuthCodeStep } from "../components/AuthCodeStep";
-import { AuthLink } from "../components/AuthLink";
+import { AuthLink, AuthLinkRow } from "../components/AuthLink";
 import { GoogleButton } from "../components/GoogleButton";
 import { loginCodeErrorKey, loginCodeMessage } from "../errors";
 import { safeReturnUrl } from "../lib/returnUrl";
@@ -128,9 +128,9 @@ export function SignupPage() {
         <Button type="submit" size="lg" className="w-full" disabled={retry.isRunning} pending={request.isPending} pendingLabel={t("common:code.sending")}>{retry.label ?? t("signup.create")}</Button>
       </form>
       {/* Tablero Registro: los dos enlaces a 22 entre sí, como el resto de la columna (en Ingreso van a 8). */}
-      <div className="flex flex-col gap-[22px] text-center text-[13px] text-[var(--t2)]">
-        <div>{t("signup.haveAccount")} <AuthLink to="/login">{t("signup.login")}</AuthLink></div>
-        <div>{t("login.haveBusiness")} <AuthLink to="/registro/empresa">{t("login.registerIt")}</AuthLink></div>
+      <div className="flex flex-col gap-[22px]">
+        <AuthLinkRow>{t("signup.haveAccount")}<AuthLink to="/login">{t("signup.login")}</AuthLink></AuthLinkRow>
+        <AuthLinkRow>{t("login.haveBusiness")}<AuthLink to="/registro/empresa">{t("login.registerIt")}</AuthLink></AuthLinkRow>
       </div>
     </div> : <AuthCodeStep destination={step.email} code={code} onBack={() => { setStep(null); setCode(""); setError(null); }}
       onCodeChange={(next) => { setCode(next); if (error?.code === "Auth.LoginCode.Invalid") setError(null); }}

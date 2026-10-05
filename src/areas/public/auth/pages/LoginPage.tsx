@@ -16,7 +16,7 @@ import { requestLoginCode, verifyLoginCode } from "../api/loginCode";
 import { AuthStatus, type AuthStatusProps } from "../components/AuthStatus";
 import { BusinessAccessResult } from "../components/BusinessAccessResult";
 import { AuthCodeStep } from "../components/AuthCodeStep";
-import { AuthLink } from "../components/AuthLink";
+import { AuthLink, AuthLinkRow } from "../components/AuthLink";
 import { EmailCodeForm } from "../components/EmailCodeForm";
 import { GoogleButton } from "../components/GoogleButton";
 import { loginCodeMessage } from "../errors";
@@ -188,13 +188,13 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <GoogleButton mode="login" access={access} returnUrl={returnUrl!} />
       <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
       <EmailCodeForm onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? { text: t("login.googleError"), details: [t("login.googleErrorHelp")] } : undefined} />
-      <div className="flex flex-col gap-2 text-center text-[13px] text-[var(--t2)]">
+      <div className="flex flex-col gap-2">
         {access === "consumer" ? <>
-          <div>{t("login.noAccount")} <AuthLink to="/registro">{t("login.createOne")}</AuthLink></div>
-          <div>{t("login.haveBusiness")} <AuthLink to={loginPathOf("business")}>{t("login.enterAsBusiness")}</AuthLink></div>
+          <AuthLinkRow>{t("login.noAccount")}<AuthLink to="/registro">{t("login.createOne")}</AuthLink></AuthLinkRow>
+          <AuthLinkRow>{t("login.haveBusiness")}<AuthLink to={loginPathOf("business")}>{t("login.enterAsBusiness")}</AuthLink></AuthLinkRow>
         </> : <>
-          <div>{t("login.businessNotRegistered")} <AuthLink to="/registro/empresa">{t("login.registerIt")}</AuthLink></div>
-          <div>{t("login.enterAsPersonQuestion")} <AuthLink to="/login">{t("login.enterHere")}</AuthLink></div>
+          <AuthLinkRow>{t("login.businessNotRegistered")}<AuthLink to="/registro/empresa">{t("login.registerIt")}</AuthLink></AuthLinkRow>
+          <AuthLinkRow>{t("login.enterAsPersonQuestion")}<AuthLink to="/login">{t("login.enterHere")}</AuthLink></AuthLinkRow>
         </>}
       </div>
     </div> : <AuthCodeStep destination={step.destination} code={code} onBack={backToEmail}
