@@ -41,6 +41,7 @@
     "save": "Guardar cambios",
     "taxIdPlaceholder": "30-12345678-1",
     "taxIdInvalid": "Revisá el CUIT: son 11 números.",
+    "nameRequired": "Escribí el nombre de la empresa.",
     "organizationTimeZone": "La de la organización"
   },
   "validation": {

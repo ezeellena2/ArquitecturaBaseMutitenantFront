@@ -213,11 +213,20 @@ describe("CompanyDetailPage", () => {
     const dialog = await screen.findByRole("dialog", { name: "Editar empresa" });
     await user.click(within(dialog).getByRole("textbox", { name: "CUIT" }));
     await user.paste("307");
+    // «Criterio · Formularios»: se revisa al tocar Guardar, no mientras se escribe.
+    expect(within(dialog).queryByText("Revisá el CUIT: son 11 números.")).not.toBeInTheDocument();
 
     const save = within(dialog).getByRole("button", { name: "Guardar cambios" });
     expect(save).toBeEnabled();
     await user.click(save);
     expect(within(dialog).getByRole("textbox", { name: "CUIT" })).toHaveAccessibleDescription("Revisá el CUIT: son 11 números.");
+    expect(puts).toBe(0);
+
+    // Sin nombre: el campo dice qué falta, con el mensaje propio y no el del navegador.
+    const name = within(dialog).getByRole("textbox", { name: "Nombre" });
+    await user.clear(name);
+    await user.click(save);
+    expect(name).toHaveAccessibleDescription("Escribí el nombre de la empresa.");
     expect(puts).toBe(0);
   });
 

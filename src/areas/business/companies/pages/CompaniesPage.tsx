@@ -32,7 +32,7 @@ import {
   type CompaniesQuery,
 } from "../api/companies";
 import { createCompanyColumns, companyPhoneRow } from "../columns";
-import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyTaxIdValid, type CompanyDraft } from "../components/CompanyFields";
+import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyValidation, type CompanyDraft } from "../components/CompanyFields";
 
 const statusValues = [undefined, "Active", "Inactive"] as const;
 const companyFilterKeys = ["status"] as const;
@@ -66,7 +66,8 @@ export function CompaniesPage() {
   const [editingCompany, setEditingCompany] = useState<CompanyResponse | null>(null);
   const [draft, setDraft] = useState<CompanyDraft>(emptyCompanyDraft);
   const [failure, setFailure] = useState<unknown>();
-  const { cuitType, taxIdValid } = useCompanyTaxIdValid(draft);
+  const validation = useCompanyValidation(draft);
+  const { cuitType } = validation;
   const [statusTarget, setStatusTarget] = useState<CompanyResponse | null>(null);
 
   const invalidate = async () => {
@@ -100,6 +101,7 @@ export function CompaniesPage() {
     setEditingCompany(null);
     setDraft(emptyCompanyDraft);
     setFailure(undefined);
+    validation.reset();
     setDialogOpen(true);
   }
 
@@ -107,12 +109,14 @@ export function CompaniesPage() {
     setEditingCompany(company);
     setDraft(draftFromCompany(company));
     setFailure(undefined);
+    validation.reset();
     setDialogOpen(true);
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (draft.name.trim() === "" || !taxIdValid) return;
+    // «Criterio · Formularios»: el nombre y el CUIT se revisan al tocar el botón; lo que falta lo dice el campo.
+    if (!validation.validate()) return;
     setFailure(undefined);
     const request: CreateCompanyRequest = companyPayload(draft, cuitType?.code);
     if (editingCompany) update.mutate(editingCompany);
@@ -179,7 +183,7 @@ export function CompaniesPage() {
         <DialogHeader><DialogTitle>{t(editingCompany ? "companies:editTitle" : "companies:createTitle")}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="flex min-h-0 flex-col">
           <DialogBody>
-            <CompanyFields draft={draft} onChange={(next) => { setDraft(next); setFailure(undefined); }} taxIdValid={taxIdValid} />
+            <CompanyFields draft={draft} onChange={(next) => { setDraft(next); setFailure(undefined); }} errors={validation.errors} />
             {/* «Criterio · Diálogos»: el error general, en la franja arriba de los botones. */}
             <FormError message={actionErrorMessage(failure, t)} />
           </DialogBody>

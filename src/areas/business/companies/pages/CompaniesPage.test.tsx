@@ -121,12 +121,44 @@ describe("CompaniesPage", () => {
     await user.paste("Delta Norte S.A.");
     await user.click(within(again).getByRole("textbox", { name: "CUIT" }));
     await user.paste("30-12345678-9");
+    // «Criterio · Formularios»: el CUIT se revisa al tocar «Crear empresa», no mientras se escribe.
+    expect(within(again).queryByText("Revisá el CUIT: son 11 números.")).not.toBeInTheDocument();
+    await user.click(within(again).getByRole("button", { name: "Crear empresa" }));
     expect(await within(again).findByText("Revisá el CUIT: son 11 números.")).toBeVisible();
+    expect(bodies).toHaveLength(1);
+    // Después del primer error, se corrige mientras escribís.
     await user.clear(within(again).getByRole("textbox", { name: "CUIT" }));
     await user.click(within(again).getByRole("textbox", { name: "CUIT" }));
     await user.paste("30712345671");
+    expect(within(again).queryByText("Revisá el CUIT: son 11 números.")).not.toBeInTheDocument();
     await user.click(within(again).getByRole("button", { name: "Crear empresa" }));
     await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Delta Norte S.A.", taxIdType: "AR-CUIT", taxIdNumber: "30712345671", timeZoneId: null }));
+  });
+
+  // Tableros Empresas y M-Empresas, «Criterio · Formularios»: sin nombre, «Crear empresa» no lo frena el navegador; al
+  // tocarlo, el campo queda en rojo con «Escribí el nombre de la empresa.», no se manda nada y el error se va al escribir.
+  it("«Crear empresa» sin nombre marca el campo con «Escribí el nombre de la empresa.»", async () => {
+    let posts = 0;
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/filter-counts", () => HttpResponse.json({ all: 0, active: 0, inactive: 0 })),
+      http.post("/api/companies", () => { posts += 1; return HttpResponse.json("company-created", { status: 201 }); }),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Crear empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Crear empresa" });
+    const name = within(dialog).getByRole("textbox", { name: "Nombre" });
+    expect(name).not.toHaveAttribute("required");
+    expect(name).toHaveAttribute("aria-required", "true");
+
+    await user.click(within(dialog).getByRole("button", { name: "Crear empresa" }));
+    expect(name).toHaveAttribute("aria-invalid", "true");
+    expect(name).toHaveAccessibleDescription("Escribí el nombre de la empresa.");
+    expect(posts).toBe(0);
+
+    await user.type(name, "D");
+    expect(within(dialog).queryByText("Escribí el nombre de la empresa.")).not.toBeInTheDocument();
   });
 
   // «Criterio · Botones»: «Crear empresa» no se apaga con el CUIT mal; no manda nada y el campo dice qué corregir.

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { CompanyResponse } from "@/shared/api/types";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
@@ -40,18 +40,26 @@ export function companyPayload(draft: CompanyDraft, cuitCode: string | undefined
   };
 }
 
-export function CompanyFields({ draft, onChange, taxIdValid }: {
+/// Lo que el campo tiene que decir después de tocar Guardar: el nombre que falta o el CUIT que no es válido.
+export interface CompanyFieldErrors {
+  name: boolean;
+  taxId: boolean;
+}
+
+export function CompanyFields({ draft, onChange, errors }: {
   draft: CompanyDraft;
   onChange: (draft: CompanyDraft) => void;
-  taxIdValid: boolean;
+  errors: CompanyFieldErrors;
 }) {
   const { t } = useTranslation("companies");
   return <>
     <div className="grid gap-3.5 md:grid-cols-2">
-      <FormField label={t("form.name")} required>
-        <Input required maxLength={120} autoComplete="organization" value={draft.name} onChange={(event) => onChange({ ...draft, name: event.target.value })} />
+      {/* Tableros Empresas y Empresa: el nombre que falta lo dice el campo, con el texto del tablero, y no el aviso del
+          navegador (el control no lleva `required`; FormField le pone `aria-required`). */}
+      <FormField label={t("form.name")} required error={errors.name ? t("form.nameRequired") : undefined}>
+        <Input maxLength={120} autoComplete="organization" value={draft.name} onChange={(event) => onChange({ ...draft, name: event.target.value })} />
       </FormField>
-      <FormField label={t("form.taxId")} error={taxIdValid ? undefined : t("form.taxIdInvalid")}>
+      <FormField label={t("form.taxId")} error={errors.taxId ? t("form.taxIdInvalid") : undefined}>
         <Input inputMode="numeric" autoComplete="off" placeholder={t("form.taxIdPlaceholder")} value={draft.taxNumber}
           onChange={(event) => onChange({ ...draft, taxNumber: event.target.value.replace(/\D/g, "").slice(0, 11) })} />
       </FormField>
@@ -64,7 +72,18 @@ export function CompanyFields({ draft, onChange, taxIdValid }: {
   </>;
 }
 
-export function useCompanyTaxIdValid(draft: CompanyDraft) {
+/// «Criterio · Formularios»: el nombre y el CUIT se revisan al tocar Guardar, no mientras se escribe; después del primer
+/// error, se corrigen mientras escribís. `reset` vuelve a empezar al abrir el diálogo.
+export function useCompanyValidation(draft: CompanyDraft) {
   const cuitType = useCuitType();
-  return { cuitType, taxIdValid: draft.taxNumber === "" || isValidTaxId(cuitType, draft.taxNumber) };
+  const [checked, setChecked] = useState(false);
+  const nameMissing = draft.name.trim() === "";
+  const taxIdInvalid = draft.taxNumber !== "" && !isValidTaxId(cuitType, draft.taxNumber);
+  return {
+    cuitType,
+    errors: { name: checked && nameMissing, taxId: checked && taxIdInvalid } satisfies CompanyFieldErrors,
+    /** Al tocar Guardar: marca lo que hay que corregir y dice si se puede mandar. */
+    validate: () => { setChecked(true); return !nameMissing && !taxIdInvalid; },
+    reset: () => setChecked(false),
+  };
 }

@@ -54,7 +54,7 @@ import { ListRow } from "@/shared/ui/app/ListRow";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { homeOf } from "@/tenancy/access";
-import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyTaxIdValid, type CompanyDraft } from "../components/CompanyFields";
+import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyValidation, type CompanyDraft } from "../components/CompanyFields";
 
 type CompanyTab = "members" | "roles";
 // Orden del filtro «Estado» del tablero Empresa.
@@ -109,7 +109,8 @@ export function CompanyDetailPage() {
   const [companyStatusConfirm, setCompanyStatusConfirm] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editDraft, setEditDraft] = useState<CompanyDraft>(emptyCompanyDraft);
-  const { cuitType, taxIdValid } = useCompanyTaxIdValid(editDraft);
+  const editValidation = useCompanyValidation(editDraft);
+  const { cuitType } = editValidation;
   const [editFailure, setEditFailure] = useState<unknown>();
   // Un 409 de concurrencia en un diálogo deja la ficha vieja: al cerrarlo se vuelve a leer (la ficha no tiene cambios
   // sin guardar propios). Va aparte del error, que se borra al cambiar algo en el diálogo.
@@ -166,6 +167,7 @@ export function CompanyDetailPage() {
   function openEdit() {
     setEditDraft(draftFromCompany(data));
     setEditFailure(undefined);
+    editValidation.reset();
     setEditOpen(true);
   }
 
@@ -181,7 +183,8 @@ export function CompanyDetailPage() {
 
   function submitEdit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!editDraft.name.trim() || !taxIdValid) return;
+    // «Criterio · Formularios»: el nombre y el CUIT se revisan al tocar el botón; lo que falta lo dice el campo.
+    if (!editValidation.validate()) return;
     saveCompany.mutate();
   }
 
@@ -340,7 +343,7 @@ export function CompanyDetailPage() {
         <DialogHeader><DialogTitle>{t("companies:editTitle")}</DialogTitle></DialogHeader>
         <form onSubmit={submitEdit} className="flex min-h-0 flex-col">
           <DialogBody>
-            <CompanyFields draft={editDraft} onChange={setEditDraft} taxIdValid={taxIdValid} />
+            <CompanyFields draft={editDraft} onChange={setEditDraft} errors={editValidation.errors} />
             <FormError message={actionErrorMessage(editFailure, t)} />
           </DialogBody>
           <DialogFooter>
