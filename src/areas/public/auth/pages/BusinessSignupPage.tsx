@@ -23,7 +23,7 @@ import { cn } from "@/shared/lib/utils";
 import { Input } from "@/shared/ui/input";
 import { isValidTaxId } from "@/shared/ui/fields/TaxIdField";
 import type { TaxIdTypeReference } from "@/shared/referenceData/referenceData";
-import { useReferenceData } from "@/shared/referenceData/useReferenceData";
+import { useCuitType } from "@/shared/referenceData/useCuitType";
 import { effectiveCulture } from "@/shared/i18n";
 import { browserTimeZone } from "@/shared/time/browserTimeZone";
 import { getGoogleSignupAntiforgery, googleSignupAntiforgeryQueryKey } from "../api/googleSignup";
@@ -79,16 +79,11 @@ export function BusinessSignupPage() {
   const [limitReached, setLimitReached] = useState(false);
   // El tope llega en el 409 (limit) para decir «Llegaste al límite de N organizaciones propias».
   const [limitCount, setLimitCount] = useState<number | null>(null);
-  const { data: referenceData } = useReferenceData();
   const resend = useCountdown(0);
   const retry = useRetryAfterCountdown();
   const googleComplete = searchParams.get("google") === "complete";
   const closedByCallback = searchParams.get("error") === "Auth.BusinessSignup.Closed";
-  const cuitType = useMemo(() => referenceData?.taxIdTypes
-    .filter((type) => type.isEnabled && type.validatorKey === "ar-cuit-mod11"
-      && type.countryCode === "AR" && (type.appliesTo === "Company" || type.appliesTo === "Both"))
-    .sort((left, right) => (left.sortOrder ?? Number.MAX_SAFE_INTEGER) - (right.sortOrder ?? Number.MAX_SAFE_INTEGER))[0],
-  [referenceData]);
+  const cuitType = useCuitType();
   const emailSchema = useMemo(() => emailFormSchema(t), [t]);
   const organizationSchema = useMemo(() => organizationFormSchema(t, cuitType), [t, cuitType]);
   const emailForm = useForm<EmailForm, unknown, EmailValues>({ resolver: zodResolver(emailSchema), defaultValues: { email: "", acceptedTerms: auth.isAuthenticated } });

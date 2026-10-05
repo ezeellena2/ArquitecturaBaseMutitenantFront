@@ -13,6 +13,7 @@ import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import type { TaxIdTypeReference } from "@/shared/referenceData/referenceData";
+import { useCuitType } from "@/shared/referenceData/useCuitType";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { isValidTaxId } from "@/shared/ui/fields/TaxIdField";
@@ -20,7 +21,6 @@ import { FormError } from "@/shared/ui/FormError";
 import { companiesQueryRoot, createCompany, updateCompany } from "../api/companies";
 import { companyErrorField } from "../errors";
 import { CompanyFields } from "./CompanyFields";
-import { useCuitType } from "./useCuitType";
 import { useDialogFailure } from "./useDialogFailure";
 
 // «Delta S.A.» + «. Quedaste…» no repite el punto final del nombre.

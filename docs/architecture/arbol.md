@@ -328,7 +328,6 @@ src/
 │   │   │   │   ├── CompanyDialog.tsx                crear y editar (Empresas y la ficha): React Hook Form con zod y useEditForm (la versión de cuando se abrió); dueño de lo escrito, su guardado y su error
 │   │   │   │   ├── AddMemberDialog.tsx              «Agregar miembro»: la persona y sus roles en la empresa; React Hook Form con zod
 │   │   │   │   ├── MemberRolesDialog.tsx            «Roles de …»: los roles de un miembro en la empresa; React Hook Form con zod
-│   │   │   │   ├── useCuitType.ts                   el tipo CUIT del catálogo, para revisar el CUIT
 │   │   │   │   └── useDialogFailure.ts              el error del diálogo; después de un 409, relee al cerrar
 │   │   │   ├── tabs/
 │   │   │   │   ├── CompanyMembersTab.tsx            Miembros: filtros, tabla, ⋮ y sus diálogos
@@ -492,6 +491,7 @@ src/
 │   ├── referenceData/                               [E1] cinco catálogos de GET /api/reference-data
 │   │   ├── referenceData.ts                         cliente tipado; opciones habilitadas y traducidas, ETag
 │   │   ├── useReferenceData.ts                      TanStack Query, staleTime: Infinity; en la cultura efectiva, una carga por cultura
+│   │   ├── useCuitType.ts                           el tipo CUIT del catálogo, para revisar el CUIT de una empresa: el registro de empresa y Empresas
 │   │   └── referenceData.test.ts                    catálogos, ausencia de listas fijas y estado de carga
 │   ├── account/                                     [E3] lo de la cuenta que usan varias áreas (ADR 0033)
 │   │   ├── api/
