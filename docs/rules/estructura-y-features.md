@@ -16,7 +16,7 @@
 ```
 Las carpetas que la feature no necesita no se crean (`settings/` puede tener solo `api/` y `pages/`).
 - Una ruta nueva se declara una vez en el manifiesto de su área (`layouts/navigation/<área>.ts`: camino, permiso, módulo y, si va en el menú, rótulo e ícono); `app/routes.tsx` le suma su pantalla con `lazyPage`.
-- Si dos features necesitan lo mismo, se mueve a `shared/` (por ejemplo `shared/api/roles.ts`); no se importa de la otra feature.
+- Si dos features necesitan lo mismo, se mueve a `shared/` (por ejemplo `shared/account/`, que usan Mi cuenta y el Inicio personal); no se importa de la otra feature.
 - Imports con alias `@/`. `import type` para los tipos.
 
 ## Prohibido

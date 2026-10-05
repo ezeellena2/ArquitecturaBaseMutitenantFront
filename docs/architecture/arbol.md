@@ -25,6 +25,10 @@ ArquitecturaBaseMutitenantFront/
 │   └── favicon.svg                                 [E0]
 ├── scripts/
 │   ├── generate-contracts.mjs                       [E1] openapi.json del back → src/shared/api/generated/schema.d.ts
+│   ├── test-e2e-real.test.mjs                       tests de test-e2e-real
+│   ├── capturar-relevamiento.test.mjs               tests de capturar-relevamiento
+│   ├── capturar-etapa-4.test.mjs                    tests de capturar-etapa-4
+│   ├── capturar-etapa-3a.test.mjs                   tests de capturar-etapa-3a
 │   └── check-contracts.mjs                          [E1] falla si generated/ no coincide con el contrato
 ├── src/                                             ver abajo
 ├── .gitignore
@@ -64,6 +68,7 @@ src/
 │   ├── routes.test.tsx                              [E3] acceso de cada ruta; cada ruta del manifiesto pide su permiso
 │   ├── RequirePermission.tsx                        [E7] la guarda de una ruta del manifiesto: módulo apagado → 404; sin permiso → «No tenés permiso», dentro del marco
 │   ├── RequirePermission.test.tsx                   [E7]
+│   ├── navigationStatus.test.tsx                    tests de navigationStatus
 │   └── routes-by-host.test.ts                       [E7] un subdominio no monta /org, /cuenta ni /plataforma
 │
 ├── auth/                                            [E3]
@@ -82,6 +87,13 @@ src/
 │   ├── AccessRoute.test.tsx
 │   ├── useCurrentUser.ts                            GET /api/me, key ["current-user"]
 │   ├── usePermissions.ts                            [E7] can, canInCompany y hasFeature (P8) sobre effectivePermissions y features de /api/me; los códigos tipados del catálogo del back
+│   ├── useCurrentUser.test.tsx                      tests de useCurrentUser
+│   ├── silentRenew.test.ts                          tests de silentRenew
+│   ├── signOutStatus.test.tsx                       tests de signOutStatus
+│   ├── SessionStatusPage.test.tsx                   tests de SessionStatusPage
+│   ├── recoveryAccess.ts                            Preferencia para pedir una sesión nueva
+│   ├── LegalAcceptanceGate.test.tsx                 tests de LegalAcceptanceGate
+│   ├── AuthProvider.test.tsx                        tests de AuthProvider
 │   └── usePermissions.test.ts                       [E7]
 │
 ├── tenancy/                                         [E3] accesos (B2C / B2B / plataforma)
@@ -94,6 +106,8 @@ src/
 │   ├── AccessMenu.test.tsx                          en B2C nunca aparece «Registrá tu empresa»
 │   ├── useProfiles.tsx                              perfiles, cambio de acceso y «Salir»: lo comparten AccessMenu y «Más»
 │   ├── usePublicSite.ts                             [E7] slug y datos públicos del subdominio
+│   ├── useSwitchAccess.test.tsx                     tests de useSwitchAccess
+│   ├── useAccess.test.tsx                           tests de useAccess
 │   └── useCompanyParam.ts                           [E6] companyId de la URL
 │
 ├── layouts/
@@ -114,7 +128,12 @@ src/
 │   │   ├── platform.ts                              Organizaciones (el inicio) · Cuentas · Recuperaciones · Auditoría · Documentos legales · Configuración
 │   │   ├── visible.ts                               [E7] el menú que la sesión puede ver (permiso y módulo): lo usan el menú lateral y «Más»
 │   │   ├── visible.test.ts                          [E7] cada enlace es una ruta del manifiesto
+│   │   ├── navigation.test.tsx                      tests de navigation
 │   │   └── navigation.test.ts                       los enlaces de cada acceso
+│   ├── SiteLayout.test.tsx                          tests de SiteLayout
+│   ├── PrivateLayoutFrame.test.tsx                  tests de PrivateLayoutFrame
+│   ├── MorePage.test.tsx                            tests de MorePage
+│   ├── AuthLayout.test.tsx                          tests de AuthLayout
 │   └── components/
 │       ├── Sidebar.tsx                              solo en la compu: colapsable, con una línea fina entre opciones; «Administración» abre el AdminPanel. En el teléfono no se monta
 │       ├── Sidebar.test.tsx
@@ -124,6 +143,9 @@ src/
 │       ├── Breadcrumbs.tsx
 │       ├── Breadcrumbs.test.tsx
 │       ├── OfflineBanner.tsx                        [E1] cartel «Sin conexión» (navigator.onLine + eventos online/offline): arriba en la compu; en el teléfono, banda roja clara debajo de la barra (AppNotices)
+│       ├── Topbar.test.tsx                          tests de Topbar
+│       ├── OfflineBanner.test.tsx                   tests de OfflineBanner
+│       ├── NewVersionBanner.test.tsx                tests de NewVersionBanner
 │       └── NewVersionBanner.tsx                     [E1] cartel «Hay una versión nueva» · «Actualizar» recarga la página; nunca se recarga sola; en el teléfono, banda debajo de la barra
 │
 ├── areas/
@@ -131,6 +153,7 @@ src/
 │   │   ├── site/                                    [E3] portada de la plataforma (dominio principal, sin sesión)
 │   │   │   └── pages/
 │   │   │       ├── LandingPage.tsx                  / sin sesión: portada con «Para personas» y «Para empresas» (tablero Landing)
+│   │   │       ├── LandingPage.test.tsx             tests de LandingPage
 │   │   │       └── DirectoryPage.tsx                [E7] directorio de empresas publicadas (tablero Directorio)
 │   │   ├── auth/                                    [E3]
 │   │   │   ├── api/
@@ -139,6 +162,9 @@ src/
 │   │   │   │   ├── signup.ts                        registro de personas
 │   │   │   │   ├── businessSignup.ts                [E6] «Registrá tu empresa» + disponibilidad del slug
 │   │   │   │   ├── invitations.ts                   POST /api/invitations/preview (el token en el cuerpo, nunca en la URL) y POST /api/invitations/accept
+│   │   │   │   ├── signup.test.ts                   tests de signup
+│   │   │   │   ├── loginCode.test.ts                tests de loginCode
+│   │   │   │   ├── businessSignup.test.ts           tests de businessSignup
 │   │   │   │   └── deletionCancel.ts                POST /api/auth/deletion/cancel con el cancelTicket
 │   │   │   ├── components/
 │   │   │   │   ├── AuthStatus.tsx                   la pantalla de estado del ingreso, los registros y la invitación: círculo de 52, título de 24, bajada y botones de 44
@@ -148,11 +174,20 @@ src/
 │   │   │   │   ├── EmailCodeForm.tsx
 │   │   │   │   ├── WhatsAppCodeForm.tsx             [E8]
 │   │   │   │   ├── GoogleButton.tsx                 [E3]
+│   │   │   │   ├── GoogleButton.test.tsx            tests de GoogleButton
+│   │   │   │   ├── EmailCodeForm.test.tsx           tests de EmailCodeForm
+│   │   │   │   ├── AuthStatus.test.tsx              tests de AuthStatus
+│   │   │   │   ├── AuthMessage.test.tsx             tests de AuthMessage
+│   │   │   │   ├── AuthLink.test.tsx                tests de AuthLink
+│   │   │   │   ├── AuthCodeStep.test.tsx            tests de AuthCodeStep
 │   │   │   │   └── PendingDeletionPanel.tsx         "Tu cuenta tiene la baja pedida · Se elimina el dd/mm/aaaa", con «Cancelar la baja y entrar» y «Salir»
 │   │   │   ├── lib/
 │   │   │   │   ├── returnUrl.ts
+│   │   │   │   ├── returnUrl.test.ts                tests de returnUrl
+│   │   │   │   ├── loginCodeState.test.ts           tests de loginCodeState
 │   │   │   │   └── loginCodeState.ts                estado del paso del código: destino enmascarado, canal y segundos para reenviar
 │   │   │   ├── errors.ts                            códigos Auth.* → texto o campo; Identity.Account.PendingDeletion pasa LoginPage al estado de baja pedida
+│   │   │   ├── errors.test.ts                       tests de errors
 │   │   │   └── pages/
 │   │   │       ├── LoginPage.tsx                    /login (persona) y /login/empresa (empresa): misma pantalla, otra puerta; el código es un paso de la pantalla (no hay /login/codigo); estados del tablero Ingreso, salvo los de WhatsApp [E8] y los de operador [E9]
 │   │   │       ├── LoginLinkPage.tsx                [E8] /login/enlace: enlace del bot (tablero Enlace)
@@ -160,16 +195,26 @@ src/
 │   │   │       ├── BusinessSignupPage.tsx           [E6] /registro/empresa: «Registrá tu empresa», con slug obligatorio y disponibilidad
 │   │   │       ├── RecoverAccountPage.tsx           [E5] «Recuperar mi cuenta» (ADR 0033)
 │   │   │       ├── CallbackPage.tsx
+│   │   │       ├── SignupPage.test.tsx              tests de SignupPage
+│   │   │       ├── LoginPage.test.tsx               tests de LoginPage
+│   │   │       ├── InvitationPage.test.tsx          tests de InvitationPage
+│   │   │       ├── CallbackPage.test.tsx            tests de CallbackPage
+│   │   │       ├── BusinessSignupPage.test.tsx      tests de BusinessSignupPage
 │   │   │       └── AcceptInvitationPage.tsx
 │   │   ├── legal/                                   [E3] P7
 │   │   │   ├── api/legal.ts                         GET /api/legal/current, POST /api/legal/accept
 │   │   │   └── pages/
 │   │   │       ├── LegalDocumentPage.tsx            /terminos y /privacidad: el documento vigente en el idioma de la persona
+│   │   │       ├── LegalDocumentPage.test.tsx       tests de LegalDocumentPage
+│   │   │       ├── AcceptTermsPage.test.tsx         tests de AcceptTermsPage
 │   │   │       └── AcceptTermsPage.tsx              pantalla bloqueante de términos nuevos (Legal.AcceptanceRequired)
 │   │   └── errors/                                  [E3]
 │   │       └── pages/
 │   │           ├── ForbiddenPage.tsx
 │   │           ├── NotFoundPage.tsx
+│   │           ├── OrganizationUnavailablePage.test.tsx tests de OrganizationUnavailablePage
+│   │           ├── NotFoundPage.test.tsx            tests de NotFoundPage
+│   │           ├── ForbiddenPage.test.tsx           tests de ForbiddenPage
 │   │           └── OrganizationUnavailablePage.tsx  [E3] 403 Tenancy.Tenant.Suspended, PendingApproval o Closed: Suspendida, Espera aprobación o Cerrada (tablero Perfil-Suspendido); «Elegí otro perfil»
 │   │
 │   ├── storefront/                                  [E7] SUBDOMINIO de una organización: su página pública
@@ -183,6 +228,7 @@ src/
 │   │   │   ├── api/
 │   │   │   │   ├── account.ts
 │   │   │   │   ├── deletion.ts                      POST /api/me/deletion: motivo + ReauthTicket, con useIdempotentMutation
+│   │   │   │   ├── account.test.ts                  tests de account
 │   │   │   │   └── dataExport.ts                    [E10] POST /api/me/data-export, con useIdempotentMutation
 │   │   │   ├── components/
 │   │   │   │   ├── AccountForm.tsx                  nombre, idioma y región, zona
@@ -192,6 +238,8 @@ src/
 │   │   │   │   ├── ConfirmLoginMethodChangeDialog.tsx quitar un método (o desvincular Google) o hacerlo principal, con código en otro método verificado (ReauthTicket de 5 min)
 │   │   │   │   ├── PrivacySection.tsx               Privacidad: «Dar de baja mi cuenta» y, en [E10], «Exportar mis datos»
 │   │   │   │   ├── DeleteAccountDialog.tsx          «Dar de baja mi cuenta»: motivo + código al método principal (ReauthTicket); errores de la política (único Dueño, operador, módulos); al confirmar, sesión cerrada y "Tu cuenta se elimina el dd/mm/aaaa"; la sugerencia de exportar antes se suma en [E10]
+│   │   │   │   ├── LoginMethodsTable.test.tsx       tests de LoginMethodsTable
+│   │   │   │   ├── AccountDeletionDialog.test.tsx   tests de AccountDeletionDialog
 │   │   │   │   └── ExportDataDialog.tsx             [E10] «Exportar mis datos»: te llega por correo
 │   │   │   ├── errors.ts                            también Legal.AccountDeletion.* (ReauthRequired, PlatformOperator, AlreadyPending, Blocked; LastAdmin con sus organizaciones, desde [E4])
 │   │   │   └── pages/AccountPage.tsx                /cuenta: datos, métodos de ingreso y Privacidad
@@ -206,10 +254,13 @@ src/
 │   │   │   ├── errors.ts
 │   │   │   ├── lib/
 │   │   │   │   ├── permissionPicker.ts
+│   │   │   │   ├── systemRoles.test.ts           tests de systemRoles
+│   │   │   │   ├── permissionPicker.test.ts      tests de permissionPicker
 │   │   │   │   └── systemRoles.ts
 │   │   │   ├── components/
 │   │   │   │   ├── PermissionPicker.tsx             grupos por área que se abren y se cierran, con su casilla de todos y la cuenta («3 de 3»); al entrar, abiertos los que tienen algo marcado
 │   │   │   │   └── RoleScopeField.tsx               «Vale en»: Toda la organización o una empresa por nombre (sin «Cada empresa», que queda para la API)
+│   │   │   ├── errors.test.ts                       tests de errors
 │   │   │   └── pages/
 │   │   │       ├── RolesPage.tsx
 │   │   │       ├── RolesPage.test.tsx
@@ -223,14 +274,19 @@ src/
 │   │   │   ├── components/
 │   │   │   │   ├── UsersFilterBar.tsx
 │   │   │   │   ├── InviteUserDialog.tsx
+│   │   │   │   ├── RolesField.test.tsx              tests de RolesField
+│   │   │   │   ├── AccessSheets.tsx                 «Listo»
 │   │   │   │   └── UserCompaniesField.tsx           filas empresa + roles, con «Sumar otra empresa»
 │   │   │   └── pages/
 │   │   │       ├── UsersPage.tsx
 │   │   │       ├── UsersPage.test.tsx
+│   │   │       ├── UserDetailPage.test.tsx          tests de UserDetailPage
+│   │   │       ├── UserDetailCompanyAssignments.test.tsx tests de UserDetailCompanyAssignments
 │   │   │       └── UserPage.tsx                     editar el acceso: estado, roles de la organización y empresas; «Cambios sin guardar»
 │   │   ├── companies/                               [E6]
 │   │   │   ├── api/
 │   │   │   │   ├── companies.ts
+│   │   │   │   ├── companies.test.ts             tests de companies
 │   │   │   │   └── companyMembers.ts
 │   │   │   ├── columns.tsx
 │   │   │   ├── memberColumns.tsx
@@ -248,6 +304,8 @@ src/
 │   │   │   │   └── useCompanyRoles.ts               los roles asignables y los propios, en una consulta (B4: por la ruta de la empresa)
 │   │   │   └── pages/
 │   │   │       ├── CompaniesPage.tsx
+│   │   │       ├── CompanyDetailPage.test.tsx       tests de CompanyDetailPage
+│   │   │       ├── CompaniesPage.test.tsx           tests de CompaniesPage
 │   │   │       └── CompanyDetailPage.tsx            banda con los datos en una línea; pestañas debajo; la acción de la pestaña va en la banda
 │   │   ├── settings/                                [E6] /org/configuracion
 │   │   │   ├── api/settings.ts
@@ -335,6 +393,7 @@ src/
 │   │   ├── personal.json                            [E3]
 │   │   └── storefront.json                          [E7] página pública del subdominio
 │   ├── en/                                          mismos archivos
+│   ├── keys.test.ts                                 tests de keys
 │   └── parity.test.ts                               [E1]
 │
 ├── shared/
@@ -354,6 +413,12 @@ src/
 │   │   ├── useIdempotentMutation.ts                 P6 Idempotency-Key al montar, repetida en los reintentos
 │   │   ├── useIdempotentMutation.test.ts
 │   │   ├── types.ts                                 [E1] alias legibles escritos a mano; reexporta tipos de generated/schema.d.ts
+│   │   ├── useRetryAfterCountdown.test.tsx          tests de useRetryAfterCountdown
+│   │   ├── pageSizes.ts                             Una sola lista visible
+│   │   ├── pageSizes.test.ts                        tests de pageSizes
+│   │   ├── httpClient.auth.test.ts                  tests de httpClient.auth
+│   │   ├── contracts.test.ts                        tests de contracts
+│   │   ├── accountContract.ts                       Solo la metadata de una prueba válida permite mostrar la…
 │   │   └── generated/                               NO SE EDITA A MANO
 │   │       └── schema.d.ts                          [E1] única salida de openapi-typescript
 │   ├── i18n/                                        [E1]
@@ -371,8 +436,16 @@ src/
 │   │   ├── statusTones.ts                           estado → tono visual (success, warning, danger, neutral, pending); colores en tema.md
 │   │   ├── formatters.test.ts                       recorre ../ArquitecturaBaseMutitenant/docs/contracts/format-cases.json
 │   │   ├── parsers.test.ts
+│   │   ├── useFormat.test.tsx                       tests de useFormat
+│   │   ├── useFormat.account.test.tsx               tests de useFormat.account
+│   │   ├── useDateInTimeZone.ts                     Una prueba anónima de cuenta trae su zona
+│   │   ├── statusTones.test.ts                      tests de statusTones
+│   │   ├── decimalScale.ts                          Mueve la coma decimal sin introducir un error binario de…
+│   │   ├── culturePreview.ts                        Ejemplo fijo del lienzo
 │   │   └── format-usage.test.ts                     falla si se formatea fuera de shared/format y shared/time o se fijan catálogos en código
 │   ├── time/                                        [E3] zona efectiva de cuenta/empresa/organización
+│   │   ├── useEffectiveTimeZone.test.tsx            tests de useEffectiveTimeZone
+│   │   ├── browserTimeZone.ts                       Zona IANA informada por el navegador
 │   │   └── useEffectiveTimeZone.ts                  cuenta → empresa → organización (en B2B)
 │   ├── referenceData/                               [E1] cinco catálogos de GET /api/reference-data
 │   │   ├── referenceData.ts                         cliente tipado; opciones habilitadas y traducidas, ETag
@@ -381,6 +454,9 @@ src/
 │   ├── account/                                     [E3] lo de la cuenta que usan varias áreas (ADR 0033)
 │   │   ├── PersonalMethodBanner.tsx                 [E3] parte 3b: avisa que falta un método propio y lleva a /cuenta; ofrece correo; WhatsApp aparece si el canal llega en GET /api/auth/methods desde [E8]
 │   │   ├── needsPersonalMethod.ts                   true mientras la cuenta no tenga un método de ingreso propio verificado
+│   │   ├── useAccountReauth.ts                      La prueba queda en memoria y se reutiliza si la…
+│   │   ├── ChangeLoginMethodDialog.test.tsx         tests de ChangeLoginMethodDialog
+│   │   ├── AddLoginMethodDialog.test.tsx            tests de AddLoginMethodDialog
 │   │   └── needsPersonalMethod.test.ts
 │   ├── hooks/                                       [E0] de la base solo los hooks sin dependencias de etapas posteriores; cada uno con su test
 │   │   ├── usePagination.ts                         [E0] de la base; página, tamaño, orden y búsqueda en la URL; vuelve a la 1 al cambiar
@@ -397,12 +473,26 @@ src/
 │   │   ├── useRestoreFocusOnClose.ts                [E0] de la base
 │   │   ├── useLocalStorage.ts                       [E0] de la base; prefijo arquitecturabasemt.
 │   │   ├── useMediaQuery.ts                         [E0] de la base
+│   │   ├── useUnsavedChangesGuard.test.tsx          tests de useUnsavedChangesGuard
+│   │   ├── useFilters.test.tsx                      tests de useFilters
+│   │   ├── useEditPage.tsx                          Lo escrito difiere de lo guardado
+│   │   ├── useEditPage.test.tsx                     tests de useEditPage
+│   │   ├── useDebouncedValue.test.tsx               tests de useDebouncedValue
+│   │   ├── useCursorList.test.tsx                   tests de useCursorList
+│   │   ├── useBreadcrumbLeaf.test.tsx               tests de useBreadcrumbLeaf
+│   │   ├── safeStorage.ts                           El navegador puede negar el almacenamiento local incluso durante el…
+│   │   ├── safeStorage.test.ts                      tests de safeStorage
 │   │   └── useCountdown.ts                          [E0] de la base
 │   ├── lib/                                         [E0]
+│   │   ├── initials.ts                              Inicial de las dos primeras palabras, en mayúscula
+│   │   ├── initials.test.ts                         tests de initials
 │   │   └── utils.ts                                 [E0] de la base; cn; shared/lib/dateTime.ts no se copia (shared/format nace en [E1])
 │   ├── phone/                                       [E1] interpretación telefónica; países desde shared/referenceData
 │   │   ├── countries.ts                             ordena/filtra Countries del catálogo; libphonenumber valida prefijos
 │   │   ├── CountryFlag.tsx                          bandera SVG (country-flag-icons), carga diferida; nunca emoji
+│   │   ├── phoneInput.ts                            Adaptador de entrada
+│   │   ├── phoneInput.test.ts                       tests de phoneInput
+│   │   ├── CountryFlag.failure.test.tsx             tests de CountryFlag.failure
 │   │   └── countries.test.ts
 │   └── ui/                                          [E0] solo primitivas shadcn independientes de la base y piezas nuevas sin dependencias posteriores; al copiarlas, --color-* pasa a los tokens de tema.md
 │       ├── format/                                  [E1] cómo se VE cada dato (siempre por acá)
@@ -420,6 +510,17 @@ src/
 │       │   ├── EnumText.tsx                         enums.<Enum>.<Valor>
 │       │   ├── StatusBadge.tsx                      texto + tono desde statusTones
 │       │   ├── BooleanText.tsx                      Sí / No
+│       │   ├── TimeZoneText.test.tsx                tests de TimeZoneText
+│       │   ├── TaxIdText.test.tsx                   tests de TaxIdText
+│       │   ├── StatusBadge.test.tsx                 tests de StatusBadge
+│       │   ├── PhoneText.test.tsx                   tests de PhoneText
+│       │   ├── PercentText.test.tsx                 tests de PercentText
+│       │   ├── NumberText.test.tsx                  tests de NumberText
+│       │   ├── MoneyText.test.tsx                   tests de MoneyText
+│       │   ├── EnumText.test.tsx                    tests de EnumText
+│       │   ├── EmptyValue.test.tsx                  tests de EmptyValue
+│       │   ├── DateText.test.tsx                    tests de DateText
+│       │   ├── CurrencyText.tsx                     Una moneda por su nombre y código, «Peso argentino (ARS)»,…
 │       │   └── EmptyValue.tsx                       — con aria-label "Sin dato"
 │       ├── fields/                                  [E1] cómo se CARGA cada dato (parsea la cultura y emite el contrato)
 │       │   ├── DateField.tsx                        DateOnly sin zona
@@ -434,8 +535,18 @@ src/
 │       │   ├── CurrencySelect.tsx                   monedas habilitadas, ordenadas por SortOrder y nombre
 │       │   ├── CountrySelect.tsx                    países habilitados; bandera, nombre traducido y CallingCode
 │       │   ├── TimeZoneSelect.tsx                   zonas habilitadas; SortOrder, offset actual y ciudad
+│       │   ├── TimeZoneSelect.test.tsx              tests de TimeZoneSelect
+│       │   ├── TaxIdField.test.tsx                  tests de TaxIdField
+│       │   ├── PhoneField.test.tsx                  tests de PhoneField
+│       │   ├── PercentField.test.tsx                tests de PercentField
+│       │   ├── MoneyField.test.tsx                  tests de MoneyField
+│       │   ├── EmailField.test.tsx                  tests de EmailField
+│       │   ├── DateTimeField.test.tsx               tests de DateTimeField
+│       │   ├── DateField.test.tsx                   tests de DateField
+│       │   ├── CurrencySelect.test.tsx              tests de CurrencySelect
+│       │   ├── CultureSelect.test.tsx               tests de CultureSelect
+│       │   ├── CountrySelect.test.tsx               tests de CountrySelect
 │       │   └── CultureSelect.tsx                    culturas habilitadas, cada una en su propia lengua
-│       ├── badge.tsx                                [E0] primitiva shadcn (minúscula, `npx shadcn@4.21.0 add`)
 │       ├── button.tsx
 │       ├── checkbox.tsx
 │       ├── dialog.tsx                               420 o 560 («Criterio · Diálogos»); la única excepción, la vista previa de la Página pública, de 640 (`size="preview"`)
@@ -488,8 +599,46 @@ src/
 │       ├── Spinner.tsx                              [E1] de la base, adaptado a los tokens
 │       ├── StatusDot.tsx                            [E0] pieza nueva
 │       ├── Surface.tsx                              [E0] pieza nueva
-│       ├── VerificationBadge.tsx                   [E1] de la base, adaptado a los tokens
 │       ├── icons.tsx                                [E1] SVG propios, trazo 1.75
+│       ├── textarea.test.tsx                        tests de textarea
+│       ├── tabs.test.tsx                            tests de tabs
+│       ├── StatusDot.test.tsx                       tests de StatusDot
+│       ├── Spinner.test.tsx                         tests de Spinner
+│       ├── sonner.test.tsx                          tests de sonner
+│       ├── Sheet.test.tsx                           tests de Sheet
+│       ├── select.test.tsx                          tests de select
+│       ├── SegmentedControl.test.tsx                tests de SegmentedControl
+│       ├── Section.test.tsx                         tests de Section
+│       ├── SearchSelect.test.tsx                    tests de SearchSelect
+│       ├── RowActions.test.tsx                      tests de RowActions
+│       ├── RadioGroupField.test.tsx                 tests de RadioGroupField
+│       ├── PublicPageCard.test.tsx                  tests de PublicPageCard
+│       ├── Pagination.test.tsx                      tests de Pagination
+│       ├── Page.test.tsx                            tests de Page
+│       ├── OtpInput.test.tsx                        tests de OtpInput
+│       ├── NotFoundPage.tsx                         En el teléfono, a dónde vuelve ‹ (una ficha, a…
+│       ├── MultiSelect.test.tsx                     tests de MultiSelect
+│       ├── LoadMore.test.tsx                        tests de LoadMore
+│       ├── LoadErrorPage.test.tsx                   tests de LoadErrorPage
+│       ├── List.test.tsx                            tests de List
+│       ├── ImportantNotice.test.tsx                 tests de ImportantNotice
+│       ├── icons.test.tsx                           tests de icons
+│       ├── IconButton.test.tsx                      tests de IconButton
+│       ├── FormField.test.tsx                       tests de FormField
+│       ├── FormError.test.tsx                       tests de FormError
+│       ├── FilterBar.test.tsx                       tests de FilterBar
+│       ├── ErrorPageFrame.tsx                       En el teléfono, a dónde vuelve ‹ si no es…
+│       ├── EmptyState.test.tsx                      tests de EmptyState
+│       ├── dropdown-menu.test.tsx                   tests de dropdown-menu
+│       ├── dialog.test.tsx                          tests de dialog
+│       ├── dialog.mobile.test.tsx                   tests de dialog.mobile
+│       ├── ConfirmDialog.test.tsx                   tests de ConfirmDialog
+│       ├── ConcurrencyBanner.test.tsx               tests de ConcurrencyBanner
+│       ├── CheckboxField.test.tsx                   tests de CheckboxField
+│       ├── checkbox.test.tsx                        tests de checkbox
+│       ├── button.test.tsx                          tests de button
+│       ├── BrandMark.test.tsx                       tests de BrandMark
+│       ├── Banner.test.tsx                          tests de Banner
 │       └── app/                                     el marco de app del teléfono (tableros M-*, «Criterio · Marco y pantallas»)
 │           ├── AppChrome.tsx                        si es un teléfono, a dónde vuelve «‹», qué va debajo del título y si se esconde la barra de abajo
 │           ├── AppBar.tsx                           barra con el título grande o «‹» y el título; debajo, los avisos que siguen pasando
@@ -499,6 +648,8 @@ src/
 │           ├── Fab.tsx                              el «+» flotante para crear
 │           ├── FixedActions.tsx                     botones fijos abajo; esconde la barra de abajo
 │           ├── ListRow.tsx                          fila de lista de borde a borde, hasta tres líneas
+│           ├── lists.test.tsx                       tests de lists
+│           ├── app.test.tsx                         tests de app
 │           └── SettingsGroup.tsx                    título de grupo, grupo blanco sobre gris y filas con «›»
 │
 └── test/                                            [E0]
@@ -509,8 +660,20 @@ src/
     ├── mocks/                                       [E1] no se copia en E0
     │   ├── server.ts                                [E1] MSW con onUnhandledRequest: error
     │   ├── handlers.ts                              [E1] handlers genéricos; /api/me y auth se suman en [E3]
+    │   ├── mocks.test.ts                            tests de mocks
+    │   ├── currentUsers.test.tsx                    tests de currentUsers
     │   └── currentUsers.ts                          [E3] fixtures: persona sin/con organizaciones, empresa admin/sin permisos y operador
+    ├── roles-contract.test.ts                       tests de roles-contract
+    ├── proxy-prefixes.test.ts                       tests de proxy-prefixes
+    ├── platform-contract.test.ts                    tests de platform-contract
+    ├── organization-audit-contract.test.ts          tests de organization-audit-contract
+    ├── invitation-contract.test.ts                  tests de invitation-contract
+    ├── business-signup-contract.test.ts             tests de business-signup-contract
+    ├── account-contract.test.ts                     tests de account-contract
+    ├── access-paths.test.ts                         tests de access-paths
     └── utils/
+        ├── renderWithProviders.test.tsx             tests de renderWithProviders
+        ├── isolation.test.tsx                       tests de isolation
         └── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]
 ```
 
