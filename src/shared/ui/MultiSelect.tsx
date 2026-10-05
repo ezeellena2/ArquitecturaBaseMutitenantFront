@@ -63,9 +63,9 @@ export function MultiSelect({
         </span>
         <ChevronDownIcon strokeWidth={2} className="size-3.5 shrink-0 text-[var(--t2)]" />
       </DropdownMenuTrigger>
-      {/* Tablero Usuario (.o-lst): la lista mide lo mismo que el campo, con 4 de margen adentro; cada opción, el nombre y
-          debajo su descripción, en gris de 12 (.n2 y .d). */}
-      <DropdownMenuContent align="start" className="w-(--radix-dropdown-menu-trigger-width) max-w-none min-w-48 p-1">
+      {/* Tablero Usuario (.o-lst) y «Criterio · Formularios», Desplegable: la lista se abre debajo del campo y mide lo mismo
+          que él, con 4 de margen adentro; cada opción, el nombre y debajo su descripción, en gris de 12 (.n2 y .d). */}
+      <DropdownMenuContent side="bottom" align="start" className="w-(--radix-dropdown-menu-trigger-width) max-w-none min-w-0 p-1">
         {options.map((option, index) => (
           // El nombre de la opción es el rol; la descripción la acompaña como descripción, no como parte del nombre.
           <DropdownMenuCheckboxItem

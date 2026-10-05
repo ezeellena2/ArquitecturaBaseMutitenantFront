@@ -76,6 +76,11 @@ describe("SearchSelect · Criterio · Formularios", () => {
 
     const list = await screen.findByRole("listbox");
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+    // «Criterio · Formularios», Desplegable (2026-10-05): debajo del campo, alineada a su izquierda y de su mismo ancho.
+    const popover = list.closest("[data-side]");
+    expect(popover).toHaveAttribute("data-side", "bottom");
+    expect(popover).toHaveAttribute("data-align", "start");
+    expect(popover).toHaveClass("w-(--radix-popover-trigger-width)", "min-w-0");
     expect(within(list).getByRole("option", { name: /^Español \(Argentina\)/ })).toHaveAttribute("aria-selected", "true");
     // Tableros (.op): 10 px entre el ícono, el nombre y lo que va a la derecha.
     expect(within(list).getByRole("option", { name: /^Español \(Argentina\)/ })).toHaveClass("gap-2.5");

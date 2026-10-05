@@ -65,7 +65,10 @@ describe("MultiSelect", () => {
     // El nombre es el del rol; la descripción, su descripción accesible.
     const admin = await screen.findByRole("menuitemcheckbox", { name: "Admin" });
     expect(admin).toHaveAccessibleDescription("Puede hacer todo.");
-    expect(screen.getByRole("menu")).toHaveClass("w-(--radix-dropdown-menu-trigger-width)", "max-w-none", "p-1");
+    // «Criterio · Formularios», Desplegable (2026-10-05): debajo del campo, alineada a su izquierda y de su mismo ancho.
+    expect(screen.getByRole("menu")).toHaveClass("w-(--radix-dropdown-menu-trigger-width)", "max-w-none", "min-w-0", "p-1");
+    expect(screen.getByRole("menu")).toHaveAttribute("data-side", "bottom");
+    expect(screen.getByRole("menu")).toHaveAttribute("data-align", "start");
     // Abierto, el campo lleva el borde petróleo y el halo (.o-dd > button.ct[aria-expanded="true"]).
     const trigger = screen.getByRole("button", { name: "Roles", hidden: true });
     expect(trigger).toHaveAttribute("aria-expanded", "true");
