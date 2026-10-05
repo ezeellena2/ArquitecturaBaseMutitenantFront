@@ -39,4 +39,21 @@ describe("SiteLayout", () => {
     expect(screen.getByRole("link", { name: "Privacidad" })).toBeVisible();
     expect(screen.queryByText("Ayuda")).not.toBeInTheDocument();
   });
+
+  // Tablero M-Legal (.pp.m): en el teléfono, la cabecera de 60 más su raya; «Empresas» y «Ingresar» son botones chicos
+  // de 32 con 12 a los costados, a 10 entre sí, e «Ingresar» lleva el degradé y la sombra del principal. El pie, con 16
+  // arriba y abajo, renglones de 1,6 y 16 entre los enlaces.
+  it("en el teléfono, la cabecera y el pie de los legales van como el tablero", () => {
+    render(<MemoryRouter><SiteLayout variant="legal"><h1>{"Términos y condiciones"}</h1></SiteLayout></MemoryRouter>);
+
+    expect(screen.getByRole("banner")).toHaveClass("h-[61px]", "md:h-[72px]");
+    const business = screen.getByRole("link", { name: "Ingresá como empresa" });
+    const login = screen.getByRole("link", { name: "Ingresar" });
+    expect(business.parentElement).toHaveClass("gap-2.5", "md:gap-2");
+    for (const link of [business, login]) expect(link).toHaveClass("h-8", "border", "border-transparent", "px-3", "md:h-10", "md:border-0");
+    expect(login).toHaveClass("bg-[linear-gradient(180deg,var(--marca)_0%,var(--marca-h)_100%)]", "shadow-[0_1px_2px_var(--marca-sombra),inset_0_1px_0_var(--brillo)]",
+      "md:bg-none", "md:shadow-none");
+    expect(screen.getByRole("contentinfo")).toHaveClass("py-4", "max-md:leading-[1.6]", "md:py-6");
+    expect(screen.getByRole("link", { name: "Privacidad" }).parentElement).toHaveClass("gap-4", "md:gap-5");
+  });
 });

@@ -18,7 +18,8 @@ export function LegalDocumentPage({ kind }: { kind: LegalKind }) {
   if (!data) return null;
 
   const title = t(`documents.${kind}`);
-  return <div className="py-7 md:py-11">
+  // M-Legal (.pp.m .leg): 24 arriba y abajo en el teléfono.
+  return <div className="py-6 md:py-11">
     <div className="mx-auto flex max-w-[840px] flex-col px-4 md:px-10">
       <h1 className="text-[22px] leading-[1.2] font-bold tracking-[-0.02em] md:text-[28px]">{title}</h1>
       <p className="mt-2 text-[13px] text-[var(--t2)] md:text-sm"><Trans i18nKey="meta" ns="legal" components={{ version: <NumberText value={data.version} />, date: <DateText value={data.effectiveAtUtc} /> }} /></p>
