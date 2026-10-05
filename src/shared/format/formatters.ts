@@ -90,6 +90,11 @@ function applyDatePattern(pattern: string, parts: CivilParts, profile: CultureRe
     quoted === undefined ? tokens[token]() : quoted);
 }
 
+/** El patrón de la cultura sin el año ni el separador que lo acompaña: «dd/MM/yyyy HH:mm» → «dd/MM HH:mm». */
+function withoutYear(pattern: string): string {
+  return /[^A-Za-z']yyyy/.test(pattern) ? pattern.replace(/[^A-Za-z']+yyyy/, "") : pattern.replace(/yyyy[^A-Za-z']*/, "");
+}
+
 function formatNumber(value: number, minimumDigits: number, maximumDigits: number,
   decimalSeparator: string, groupSeparator: string, culture: string): string {
   if (!Number.isFinite(value) || minimumDigits < 0 || maximumDigits > 20 || minimumDigits > maximumDigits) {
@@ -138,6 +143,15 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   function formatDateTime(value: string): string { return date(value, profile.dateTimePattern); }
   function formatTime(value: string): string { return date(value, profile.timePattern); }
   function formatDateLong(value: string): string { return date(value, profile.longDatePattern); }
+
+  /** «Fecha corta» (lienzo v99): sin el año si es del año en curso en la zona de la persona; si no, completa. */
+  function short(value: string, pattern: string): string {
+    const parts = parseCivil(value, timeZone, culture);
+    const thisYear = parseCivil(clock().toISOString(), timeZone, culture).year;
+    return applyDatePattern(parts.year === thisYear ? withoutYear(pattern) : pattern, parts, profile);
+  }
+  function formatShortDate(value: string): string { return short(value, profile.datePattern); }
+  function formatShortDateTime(value: string): string { return short(value, profile.dateTimePattern); }
 
   function formatRelative(value: string): string {
     if (!value.endsWith("Z")) throw new Error("Un instante relativo debe terminar en Z.");
@@ -304,7 +318,8 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   function formatText(value: string): string { return value; }
 
   return {
-    formatDate, formatDateTime, formatTime, formatDateLong, formatRelative, formatCalendar, formatDateRange,
+    formatDate, formatDateTime, formatShortDate, formatShortDateTime, formatTime, formatDateLong, formatRelative,
+    formatCalendar, formatDateRange,
     formatInteger, formatDecimal, formatQuantity, formatPercent, formatMoney, formatCompact,
     formatFileSize, formatDuration, formatPhone, formatTimeZone, formatCulture, formatTaxId,
     formatEmail, formatEnum, formatBoolean, formatEmpty, formatText,

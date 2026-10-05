@@ -1,12 +1,13 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { asPhone } from "@/test/utils/phone";
 
 beforeEach(async () => {
   await configureI18n(referenceDataFixture().cultures);
@@ -77,5 +78,33 @@ describe("AuditPage", () => {
     expect(detail).toHaveTextContent("EstadoInactivo → Activo");
     await user.click(within(detail).getAllByRole("button", { name: "Cerrar" }).at(-1)!);
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
+  // Tablero M-Auditoria-Org y lienzo v99 («Fecha corta»): en el teléfono, cuándo va sin el año si es del año en curso
+  // («02/10 09:00»); el de otro año va completo.
+  it("en el teléfono, el movimiento del año en curso va sin el año y el de otro año, completo", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-10-03T15:00:00Z"));
+    const restore = asPhone();
+    try {
+      const entry = { action: "MemberEnabled", entityType: "Member", entityText: "Usuario", affectedDisplayName: "Tomás Acosta", whereText: "Delta S.A.",
+        actorKind: "User", actorText: "Persona", actorId: "actor-1", actorDisplayName: "Lucía", actorEmail: "lucia@example.com", changes: [] };
+      server.use(
+        http.get("/api/organization/audit", () => HttpResponse.json({ items: [
+          { ...entry, id: "audit-1", occurredAtUtc: "2026-10-02T12:00:00Z", actionText: "Habilitó a Tomás Acosta" },
+          { ...entry, id: "audit-2", occurredAtUtc: "2025-12-30T12:00:00Z", actionText: "Deshabilitó a Tomás Acosta" },
+        ], nextCursor: null, hasMore: false })),
+        http.get("/api/organization/audit/actors", () => HttpResponse.json([])),
+      );
+      renderRouteWithProviders("/org/auditoria", { as: "business-e6-admin" });
+
+      const thisYear = (await screen.findByText("Habilitó a Tomás Acosta")).closest("li")!;
+      expect(within(thisYear).getByText("02/10 09:00")).toHaveAttribute("datetime", "2026-10-02T12:00:00Z");
+      const lastYear = screen.getByText("Deshabilitó a Tomás Acosta").closest("li")!;
+      expect(within(lastYear).getByText("30/12/2025 09:00")).toBeInTheDocument();
+    } finally {
+      restore();
+      vi.useRealTimers();
+    }
   });
 });

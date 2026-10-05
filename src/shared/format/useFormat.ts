@@ -31,6 +31,8 @@ const emptyText = (): string => "";
 const unavailableFormatters: Formatters = {
   formatDate: emptyText,
   formatDateTime: emptyText,
+  formatShortDate: emptyText,
+  formatShortDateTime: emptyText,
   formatTime: emptyText,
   formatDateLong: emptyText,
   formatRelative: emptyText,

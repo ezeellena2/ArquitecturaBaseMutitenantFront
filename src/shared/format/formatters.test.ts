@@ -199,6 +199,41 @@ describe.skipIf(!backendPresent)("reloj del formateador", () => {
     expect(formatter.formatCalendar("2026-09-30T13:42:00Z")).toBe(formatter.formatDateTime("2026-09-30T13:42:00Z"));
   });
 
+  // Lienzo v99 («Fecha corta», formatos.md): sin el año solo para el año en curso, en la zona de la persona; la de otro año
+  // va completa. Las listas del teléfono la usan: «27/09» y «27/09 10:42»; en en-US, «09/27».
+  it("la fecha corta va sin el año solo en el año en curso, en es-AR", () => {
+    const formatter = createFormatters({
+      referenceData: sourceCatalog("es-AR"), culture: "es-AR", timeZone: "America/Argentina/Buenos_Aires",
+      now: "2026-10-03T18:00:00Z", translate: translator("es-AR"),
+    });
+    expect(formatter.formatShortDate("2026-09-27T13:42:00Z")).toBe("27/09");
+    expect(formatter.formatShortDateTime("2026-09-27T13:42:00Z")).toBe("27/09 10:42");
+    expect(formatter.formatShortDate("2026-09-27")).toBe("27/09");
+    expect(formatter.formatShortDate("2025-09-27T13:42:00Z")).toBe("27/09/2025");
+    expect(formatter.formatShortDateTime("2025-09-27T13:42:00Z")).toBe("27/09/2025 10:42");
+    expect(formatter.formatShortDate("2027-01-02")).toBe("02/01/2027");
+  });
+
+  it("la fecha corta va sin el año solo en el año en curso, en en-US", () => {
+    const formatter = createFormatters({
+      referenceData: sourceCatalog("en-US"), culture: "en-US", timeZone: "America/New_York",
+      now: "2026-10-03T18:00:00Z", translate: translator("en-US"),
+    });
+    expect(formatter.formatShortDate("2026-09-27T13:42:00Z")).toBe("09/27");
+    expect(formatter.formatShortDateTime("2026-09-27T13:42:00Z")).toBe(formatter.formatDateTime("2026-09-27T13:42:00Z").replace("/2026", ""));
+    expect(formatter.formatShortDate("2025-09-27T13:42:00Z")).toBe("09/27/2025");
+    expect(formatter.formatShortDateTime("2025-09-27T13:42:00Z")).toBe(formatter.formatDateTime("2025-09-27T13:42:00Z"));
+  });
+
+  it("el año en curso es el de la zona de la persona: el 31/12 a la noche todavía no cambió", () => {
+    const formatter = createFormatters({
+      referenceData: sourceCatalog("es-AR"), culture: "es-AR", timeZone: "America/Argentina/Buenos_Aires",
+      now: "2027-01-01T01:00:00Z", translate: translator("es-AR"),
+    });
+    expect(formatter.formatShortDate("2026-12-30T15:00:00Z")).toBe("30/12");
+    expect(formatter.formatShortDate("2027-01-01T12:00:00Z")).toBe("01/01/2027");
+  });
+
   it("actualiza también los textos relativos cuando no se fijó now", () => {
     vi.useFakeTimers();
     try {

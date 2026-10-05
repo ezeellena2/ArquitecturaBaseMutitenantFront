@@ -39,6 +39,7 @@ Cada tipo de dato tiene **un** formateador y **un** componente. Los ejemplos cor
 |---|---|---|---|---|---|
 | Fecha | instante UTC o `DateOnly` | `<DateText kind="date">` / `formatDate` | `27/09/2026` | `09/27/2026` | Los listados usan fecha; el tooltip muestra fecha y hora |
 | Fecha y hora | instante UTC | `kind="dateTime"` | `27/09/2026 14:35` | `09/27/2026 2:35 PM` | Fichas, auditoría, detalles |
+| Fecha corta | instante UTC o `DateOnly` | `kind="shortDate"` / `formatShortDate`; con hora, `kind="shortDateTime"` / `formatShortDateTime` | `27/09`, `27/09 14:35` | `09/27`, `09/27 2:35 PM` | **Solo** en las listas del teléfono y solo para el año en curso, en la zona de la persona; la de otro año va completa (`27/09/2025`). En la compu, siempre con el año. Sale del patrón de la cultura sin el año (lienzo v99) |
 | Hora | instante o `TimeOnly` | `kind="time"` | `14:35` | `2:35 PM` | |
 | Fecha larga | instante o `DateOnly` | `kind="long"` | `27 de septiembre de 2026` | `September 27, 2026` | Títulos, correos, documentos |
 | Relativa | instante UTC | `kind="relative"` | `hace 5 minutos` | `5 minutes ago` | **Solo** en feeds de actividad y "último ingreso", y solo si pasaron menos de 7 días; si no, fecha. Siempre con tooltip absoluto |
@@ -85,7 +86,7 @@ Cada tipo de dato tiene **un** formateador y **un** componente. Los ejemplos cor
 ```
 src/shared/format/
 ├── cultureProfiles.ts         adapta los patrones de Cultures; sin perfiles fijos en código
-├── formatters.ts              formatDate, formatDateTime, formatTime, formatDateLong, formatRelative, formatDateRange,
+├── formatters.ts              formatDate, formatDateTime, formatShortDate, formatShortDateTime, formatTime, formatDateLong, formatRelative, formatDateRange,
 │                              formatInteger, formatDecimal, formatQuantity, formatPercent, formatMoney, formatCompact,
 │                              formatFileSize, formatDuration, formatPhone, formatTaxId, formatTimeZone, formatCulture, EMPTY
 │                              (formatTimeZone toma la ciudad traducida del catálogo y calcula con Intl el desfase de hoy:

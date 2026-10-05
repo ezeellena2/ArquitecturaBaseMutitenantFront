@@ -1,7 +1,7 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -44,6 +44,33 @@ describe("UsersPage", () => {
       expect(screen.getByRole("link", { name: "Volver a Más" })).toHaveAttribute("href", "/mas");
     } finally {
       restore();
+    }
+  });
+
+  // Lienzo v99 («Fecha corta»): en la lista del teléfono, cuándo vence va sin el año si es del año en curso; si no, completa.
+  it("en el teléfono, la invitación del año en curso vence sin el año y la de otro año, con el año", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-10-01T15:00:00Z"));
+    const restore = asPhone();
+    try {
+      const invitation = { ...member, userId: null, roles: [], state: "Invited" as const, invitationId: "invitation-1", invitationIssuedAtUtc: "2026-09-25T12:00:00Z" };
+      server.use(
+        http.get("/api/users/paged", () => HttpResponse.json({ items: [
+          { ...invitation, memberId: "member-2", displayName: "Sofía Herrera", email: "sofia@example.com", invitationExpiresAtUtc: "2026-10-02T12:00:00Z" },
+          { ...invitation, memberId: "member-3", displayName: "Valentina Ruiz", email: "valentina@example.com", invitationExpiresAtUtc: "2027-01-05T12:00:00Z" },
+        ], page: 1, pageSize: 10, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+        http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 2, active: 0, pendingDeletion: 0, invited: 2, expired: 0, inactive: 0 })),
+        http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      );
+      renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+
+      const thisYear = (await screen.findByRole("link", { name: /Sofía Herrera/ })).closest("li")!;
+      expect(within(thisYear).getByText("02/10")).toHaveAttribute("datetime", "2026-10-02T12:00:00Z");
+      const nextYear = screen.getByRole("link", { name: /Valentina Ruiz/ }).closest("li")!;
+      expect(within(nextYear).getByText("05/01/2027")).toBeInTheDocument();
+    } finally {
+      restore();
+      vi.useRealTimers();
     }
   });
 

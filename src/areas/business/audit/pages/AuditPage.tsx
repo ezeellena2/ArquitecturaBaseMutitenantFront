@@ -106,9 +106,10 @@ export function AuditPage() {
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable
             columns={columns}
-            // Tablero M-Auditoria-Org: qué pasó (en dos renglones si hace falta), cuándo a la derecha, y dónde y quién abajo.
+            // Tablero M-Auditoria-Org: qué pasó (en dos renglones si hace falta), cuándo a la derecha (la fecha corta, sin el año
+            // si es del año en curso), y dónde y quién abajo.
             mobileRow={(row) => <ListRow key={row.id} wrapTitle title={row.actionText} onClick={() => setSelected(row)}
-              meta={<DateText value={row.occurredAtUtc} kind="dateTime" />}
+              meta={<DateText value={row.occurredAtUtc} kind="shortDateTime" />}
               lines={[[row.whereText, row.actorDisplayName ?? row.actorText].filter(Boolean).join(" · ")]} />}
             rows={rows}
             rowKey={(row) => row.id}
