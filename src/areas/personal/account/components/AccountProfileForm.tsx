@@ -1,48 +1,60 @@
-import { useState, type ReactNode } from "react";
-import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UserRound } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { useController, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { z } from "zod";
 import { currentUserQueryKey, fetchCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { MeResponse } from "@/shared/api/types";
-import { changeCulture } from "@/shared/i18n";
 import { useEditPage } from "@/shared/hooks/useEditPage";
-import { Page } from "@/shared/ui/Page";
-import { Section, SectionFields } from "@/shared/ui/Section";
-import { FormError } from "@/shared/ui/FormError";
-import { FormField } from "@/shared/ui/FormField";
-import { Input } from "@/shared/ui/input";
+import { changeCulture } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
 import { CultureSelect } from "@/shared/ui/fields/CultureSelect";
 import { TimeZoneSelect } from "@/shared/ui/fields/TimeZoneSelect";
+import { FormError } from "@/shared/ui/FormError";
+import { FormField } from "@/shared/ui/FormField";
+import { Input } from "@/shared/ui/input";
+import { Page } from "@/shared/ui/Page";
+import { Section, SectionFields } from "@/shared/ui/Section";
 import { updateMe } from "../api/account";
 
-const schema = z.object({ displayName: z.string(), culture: z.string(), timeZoneId: z.string(), version: z.number() });
-type Draft = z.infer<typeof schema>;
-function draft(account: MeResponse): Draft {
+/// «Tus datos» no tiene datos obligatorios: el nombre vacío se guarda como «sin nombre». La versión es la de lo que se
+/// cargó y se conserva hasta guardar o descartar: después de un 409, el próximo guardado vuelve a dar 409.
+const profileFormSchema = z.object({ displayName: z.string(), culture: z.string(), timeZoneId: z.string(), version: z.number() });
+type ProfileForm = z.infer<typeof profileFormSchema>;
+
+// Los errores de validación del back, en PascalCase o en camelCase, a su campo.
+const serverFields: Record<string, keyof ProfileForm> = {
+  DisplayName: "displayName", displayName: "displayName", Culture: "culture", culture: "culture", TimeZoneId: "timeZoneId", timeZoneId: "timeZoneId",
+};
+
+function valuesFromAccount(account: MeResponse): ProfileForm {
   return { displayName: account.displayName ?? "", culture: account.culture, timeZoneId: account.timeZoneId, version: account.version ?? 0 };
 }
 
+/// «Tus datos» de Mi cuenta (tableros Cuenta y M-Cuenta), como el editor de Roles: React Hook Form con zod, y el 409,
+/// «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`.
 export function AccountProfileForm({ account, children }: { account: MeResponse; children?: ReactNode }) {
   const { t } = useTranslation("account");
   const queryClient = useQueryClient();
+  const form = useForm<ProfileForm>({ resolver: zodResolver(profileFormSchema), defaultValues: valuesFromAccount(account) });
+  const { errors, isDirty } = form.formState;
+  const culture = useController({ control: form.control, name: "culture" });
+  const timeZone = useController({ control: form.control, name: "timeZoneId" });
   const [failure, setFailure] = useState<unknown>();
   const [reloadFailure, setReloadFailure] = useState<unknown>();
-  const form = useForm<Draft>({ resolver: zodResolver(schema), defaultValues: draft(account) });
-  const { isDirty, isSubmitting } = form.formState;
 
   // La relectura va por TanStack Query y, como /api/me, en silencio: si falla, lo dice la franja (también sin conexión,
   // con apiErrorMessage, porque es una consulta y el MutationCache no la avisó), una sola vez.
   async function reload() {
     try {
       const fresh = await queryClient.fetchQuery({ queryKey: currentUserQueryKey, queryFn: fetchCurrentUser, staleTime: 0, meta: { silent: true, blocksView: true } });
-      form.reset(draft(fresh));
+      form.reset(valuesFromAccount(fresh));
       setFailure(undefined);
       setReloadFailure(undefined);
       await changeCulture(fresh.culture);
@@ -54,34 +66,42 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   // Por TanStack Query, como toda escritura: los términos nuevos (403) abren la aceptación también desde acá, y la
   // relectura va en onSuccess para que «Reintentar» (sin conexión) termine igual que un guardado al primer intento.
   const update = useMutation({
-    mutationFn: (values: Draft) => updateMe({ ...values, displayName: values.displayName.trim() || null }),
+    mutationFn: (values: ProfileForm) => updateMe({ ...values, displayName: values.displayName.trim() || null }),
     onSuccess: async () => { if (await reload()) toast.success(t("saved")); },
   });
-  async function save(values: Draft) {
+
+  function rejected(error: unknown) {
+    if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, serverFields)) return;
+    setFailure(error);
+  }
+
+  const submit = form.handleSubmit((values) => {
     setFailure(undefined);
     setReloadFailure(undefined);
-    try {
-      await update.mutateAsync(values);
-    } catch (error) {
-      if (!(error instanceof ApiError) || !applyApiErrorToForm(error, form.setError, { DisplayName: "displayName", displayName: "displayName", Culture: "culture", culture: "culture", TimeZoneId: "timeZoneId", timeZoneId: "timeZoneId" })) setFailure(error);
-    }
+    update.mutate(values, { onError: rejected });
+  });
+
+  function discard() {
+    form.reset();
+    setFailure(undefined);
+    setReloadFailure(undefined);
   }
-  function discard() { form.reset(); setFailure(undefined); setReloadFailure(undefined); }
+
   const formError = edit.formError ?? (reloadFailure ? <FormError message={apiErrorMessage(reloadFailure, t)} /> : null);
   const actions = <>
-    <Button type="button" variant="outline" onClick={discard} disabled={isSubmitting}>{t("discard")}</Button>
-    <Button type="submit" form="account-profile" disabled={!isDirty} pending={isSubmitting}>{t("save")}</Button>
+    <Button type="button" variant="outline" onClick={discard}>{t("discard")}</Button>
+    <Button type="submit" form="account-profile" disabled={!isDirty} pending={update.isPending}>{t("save")}</Button>
   </>;
   return <>
     <Page title={t("title")} icon={UserRound} status={edit.unsaved} actions={actions} phoneBody="gray" banner={edit.banner}>
       {formError ? <div className="mb-3">{formError}</div> : null}
-      <form id="account-profile" aria-label={t("title")} onSubmit={form.handleSubmit(save)}>
+      <form id="account-profile" noValidate aria-label={t("title")} onSubmit={(event) => { void submit(event); }}>
         <Section title={t("data")}>
           {/* Tablero Cuenta: nombre, idioma y zona en tres columnas iguales, al ancho de la tarjeta. */}
           <SectionFields className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 max-md:gap-3.5">
-            <div className="min-w-0"><FormField label={t("name")} error={form.formState.errors.displayName?.message}><Input {...form.register("displayName")} autoComplete="name" /></FormField></div>
-            <div className="min-w-0"><Controller control={form.control} name="culture" render={({ field }) => <FormField label={t("culture")} error={form.formState.errors.culture?.message}><CultureSelect value={field.value} onChange={field.onChange} placeholder={t("culture")} /></FormField>} /></div>
-            <div className="min-w-0"><Controller control={form.control} name="timeZoneId" render={({ field }) => <FormField label={t("timeZone")} error={form.formState.errors.timeZoneId?.message}><TimeZoneSelect value={field.value} onChange={field.onChange} placeholder={t("timeZone")} /></FormField>} /></div>
+            <div className="min-w-0"><FormField label={t("name")} error={errors.displayName?.message}><Input {...form.register("displayName")} autoComplete="name" /></FormField></div>
+            <div className="min-w-0"><FormField label={t("culture")} error={errors.culture?.message}><CultureSelect value={culture.field.value} onChange={culture.field.onChange} placeholder={t("culture")} /></FormField></div>
+            <div className="min-w-0"><FormField label={t("timeZone")} error={errors.timeZoneId?.message}><TimeZoneSelect value={timeZone.field.value} onChange={timeZone.field.onChange} placeholder={t("timeZone")} /></FormField></div>
           </SectionFields>
         </Section>
       </form>
