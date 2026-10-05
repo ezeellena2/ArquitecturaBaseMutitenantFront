@@ -1245,12 +1245,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -2329,12 +2333,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -2424,12 +2432,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -2677,12 +2689,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -2772,12 +2788,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -3109,12 +3129,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -3204,12 +3228,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -3534,12 +3562,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -3629,12 +3661,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -3724,12 +3760,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -3819,12 +3859,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -10727,8 +10771,6 @@ export interface components {
             operatorPermissions?: null | string[];
             /** Format: uint32 */
             operatorVersion?: null | number;
-            /** Format: uint32 */
-            version: number;
         };
         PlatformAccountFilterCounts: {
             /** Format: int32 */
@@ -10790,8 +10832,6 @@ export interface components {
             lastSignInMethod?: null | components["schemas"]["LoginAuditMethod"];
             /** Format: date-time */
             invitationExpiresAtUtc?: null | string;
-            /** Format: uint32 */
-            version: number;
         };
         /**
          * @description Estado que ve Plataforma. NeedsRecovery se deriva: cuenta Active sin ningún método que sirva para ingresar;
