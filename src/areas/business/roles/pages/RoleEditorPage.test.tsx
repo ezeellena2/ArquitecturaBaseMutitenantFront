@@ -314,12 +314,13 @@ describe("RoleEditorPage", () => {
     expect(screen.getByText("Ver roles")).toBeVisible();
     expect(screen.queryByText("Los roles y sus permisos.")).not.toBeInTheDocument();
     expect(screen.getByText("2 de 2 elegidos")).toBeVisible();
-    // Tablero Rol: las casillas de un rol de sistema, bloqueadas y grises. En el teléfono, M-Rol (v107, «Ver el rol Dueño»,
-    // .ap-chk.on.fijo): las marcadas en petróleo a 0,55.
+    // Tablero Rol: las casillas de un rol de sistema, bloqueadas y grises. En el teléfono, M-Rol (v108, «Ver el rol Dueño»,
+    // .ap-chk.on.fijo): también grises, las marcadas en `--casilla-fija` y sin transparencia.
     const locked = screen.getByRole("checkbox", { name: "Ver roles" });
     expect(locked).toBeDisabled();
     expect(locked).toHaveClass("disabled:data-[state=checked]:bg-[var(--borde2)]", "max-md:enabled:data-[state=checked]:border-[var(--marca)]!");
-    expect(locked).toHaveClass("max-md:disabled:data-[state=checked]:bg-[var(--marca)]!", "max-md:disabled:data-[state=checked]:border-[var(--marca)]!", "max-md:disabled:opacity-55!");
+    expect(locked).toHaveClass("max-md:disabled:data-[state=checked]:bg-[var(--casilla-fija)]!", "max-md:disabled:data-[state=checked]:border-[var(--casilla-fija)]!", "max-md:disabled:opacity-100!");
+    expect(locked).not.toHaveClass("max-md:disabled:data-[state=checked]:bg-[var(--marca)]!", "max-md:disabled:opacity-55!");
     expect(screen.getByRole("checkbox", { name: "Todos los permisos de Roles" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Abrir o cerrar Roles" }));
     expect(screen.queryByText("Ver roles")).not.toBeInTheDocument();

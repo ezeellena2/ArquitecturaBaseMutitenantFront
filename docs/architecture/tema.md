@@ -38,6 +38,7 @@ Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena
 | `--peligro` / `--peligro-t` | `oklch(0.568 0.2 25)` / `oklch(0.97 0.02 25)` | peligro (errores, acciones destructivas): texto y fondo tenue |
 | `--peligro-tx` / `--peligro-borde` | `oklch(0.45 0.17 25)` / `oklch(0.57 0.2 25 / 0.4)` | texto rojo de los avisos sobre fondo tenue (la franja de error, el cartel de problema, la banda «Sin conexión» del teléfono y el motivo del aviso importante) y borde del botón de peligro |
 | `--punto-ok` / `--punto-alerta` / `--punto-apagado` | `oklch(0.6 0.13 155)` / `oklch(0.72 0.15 70)` / `oklch(0.75 0.01 78)` | punto de estado: activo, atención y apagado |
+| `--casilla-fija` | `oklch(0.78 0.006 78)` | casilla marcada y fija de un rol de sistema en el teléfono (M-Rol, v108) |
 | `--franja` / `--franja-ok` / `--franja-mal` / `--franja-accion` | `oklch(0.27 0.012 60)` / `oklch(0.78 0.14 155)` / `oklch(0.75 0.15 25)` / `oklch(0.82 0.08 195)` | franja oscura de los avisos pasajeros del teléfono: fondo, ícono de lo que salió bien, ícono de lo que falló y acción («Copiar código») |
 | `--aviso-ok` | `oklch(0.55 0.13 155)` | ícono de lo que salió bien en el aviso pasajero de la compu (tarjeta blanca, abajo a la derecha) |
 | `--foco` | `var(--marca)` | anillo de foco |

@@ -63,6 +63,8 @@
   --punto-ok: oklch(0.6 0.13 155);
   --punto-alerta: oklch(0.72 0.15 70);
   --punto-apagado: oklch(0.75 0.01 78);
+  /* La casilla marcada y fija de un rol de sistema en el teléfono (tablero M-Rol, .ap-chk.on.fijo, v108). */
+  --casilla-fija: oklch(0.78 0.006 78);
   /* Teléfono (tableros M-*): sombra del «+» flotante y de la hoja que sube desde abajo. */
   --sombra-fab: 0 6px 16px oklch(0.3 0.06 195 / 0.3), 0 2px 4px oklch(0.3 0.06 195 / 0.2);
   --sombra-hoja: 0 -8px 24px oklch(0.2 0.014 78 / 0.12);
