@@ -571,6 +571,35 @@ function b6bCases(root) {
   ];
 }
 
+// Tanda 6c (los formularios como Roles): los diálogos de verificar de Mi cuenta (Cuenta-Verificar y M-Cuenta-Verificar,
+// v107). Al agregar un correo, el título pasa a «Verificar tu correo» al pedir el código; el código incorrecto va debajo
+// de los casilleros, en rojo, y no en una franja.
+function b6cCases(root) {
+  const stageApp = (pair, width) => stageCases(root, "etapa-4").find((entry) => entry.pair === pair && entry.viewport.width === width).app;
+  const sentCode = (width) => ({
+    responses: [...stageApp("agregar-correo", width).responses, api("POST", "/api/me/login-methods", { methodId: "nuevo", resendAfterSeconds: 60 }, 202)],
+    actions: [...stageApp("agregar-correo", width).actions, appFill("Correo", "lucia.trabajo@gmail.com"), appClick("button", "Enviar código")],
+    readySelector: undefined, readyText: "Te mandamos un código a lucia.trabajo@gmail.com.",
+  });
+  const wrongCode = (width) => ({
+    responses: [...stageApp("verificar-correo", width).responses,
+      api("POST", "/api/me/login-methods/4/verify", { status: 400, code: "Auth.LoginCode.Invalid", title: "Código", detail: "El código no es válido." }, 400)],
+    actions: [appClick("button", "Verificar"), { type: "otp", value: "482910" }, appClick("button", "Verificar")],
+    readySelector: '[role="dialog"] [role="alert"]',
+  });
+  const wrongCodeBoard = { props: { estado: "Correo: código incorrecto" } };
+  return [
+    ...pairCases(root, { stage: "etapa-4", pair: "agregar-correo", id: "agregar-correo-codigo", group: "cuenta",
+      state: "Mi cuenta: al agregar un correo, después de «Enviar código» el diálogo dice «Verificar tu correo»",
+      desktop: { board: "Cuenta-Verificar", props: {} }, phone: { board: "M-Cuenta-Verificar", props: {} },
+      app: sentCode(1440), phoneApp: sentCode(390) }),
+    ...pairCases(root, { stage: "etapa-4", pair: "verificar-correo", id: "verificar-correo-codigo-incorrecto", group: "cuenta",
+      state: "Mi cuenta: el código incorrecto, debajo de los casilleros y en rojo",
+      desktop: { board: "Cuenta-Verificar", ...wrongCodeBoard }, phone: { board: "M-Cuenta-Verificar", ...wrongCodeBoard },
+      app: wrongCode(1440), phoneApp: wrongCode(390) }),
+  ];
+}
+
 export function catalog(root) {
   const rename ={ board: "Cuenta", boardActions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
@@ -594,5 +623,6 @@ export function catalog(root) {
     ...r3cCases(root),
     ...b6aCases(root),
     ...b6bCases(root),
+    ...b6cCases(root),
   ];
 }
