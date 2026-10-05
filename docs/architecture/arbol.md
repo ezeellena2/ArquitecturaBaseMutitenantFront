@@ -198,8 +198,8 @@ src/
 │   │   └── <módulo B2C del producto>/               misma forma que business/roles: api · columns · errors · components · pages
 │   │
 │   ├── business/                                    ACCESO B2B (la organización)
-│   │   ├── home/                                    [E3]
-│   │   │   └── pages/BusinessHomePage.tsx           /org: inicio vacío del tablero en [E3]; la administración se suma en [E6]
+│   │   ├── home/                                    [E3] inicio de la organización (ADR 0040): api/home.ts, components/ (las tarjetas, «Para resolver» y la billetera del teléfono) y pages/
+│   │   │   └── pages/BusinessHomePage.tsx           /org: lo que la API decide para cada persona (Inicio-Org o Inicio-Miembro) y, debajo, «Para resolver» (R18, lienzo v93): solo estados que quien mira puede resolver, con su acción
 │   │   ├── roles/                                   [E4] ← FEATURE DE REFERENCIA
 │   │   │   ├── api/roles.ts                         query keys + funciones tipadas con generated/
 │   │   │   ├── columns.tsx                          incluye "Vale en"
