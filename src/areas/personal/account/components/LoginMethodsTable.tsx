@@ -1,4 +1,5 @@
 import { Star, Trash2 } from "lucide-react";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import googleMark from "@/assets/google-mark.svg";
 import type { AccountLoginMethod } from "@/shared/api/types";
@@ -6,6 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { MailIcon, MoreVerticalIcon } from "@/shared/ui/icons";
 import { List, ListItem } from "@/shared/ui/List";
+import { StatusDotMark } from "@/shared/ui/StatusDot";
 import { AccountGoogleButton } from "./AccountGoogleButton";
 
 export type MethodAction = "verify" | "remove" | "primary";
@@ -22,8 +24,10 @@ function MethodIcon({ method }: { method: AccountLoginMethod }) {
 /// Tableros Cuenta y Cuenta-Metodo: debajo del dato, «Principal» y «Administrado por…» (las dos, si son las dos), «Sin
 /// verificar» o nada; un método verificado no lo dice («el estado solo si pide atención», Criterio · Decisiones). Google va
 /// por su nombre y lleva debajo su correo. Toda fila mide 56, diga algo debajo o no.
-function methodDetail(method: AccountLoginMethod, t: (key: string, options?: Record<string, unknown>) => string): string | undefined {
-  if (!method.isVerified) return t("pending");
+function methodDetail(method: AccountLoginMethod, t: (key: string, options?: Record<string, unknown>) => string): ReactNode {
+  // M-Cuenta (.w-est.amb): en el teléfono, «Sin verificar» lleva el punto ámbar de un estado que pide atención; en la
+  // compu (Cuenta), la palabra sola.
+  if (!method.isVerified) return <span className="inline-flex items-center gap-1.5"><StatusDotMark tone="warning" className="hidden max-md:block" />{t("pending")}</span>;
   const parts = [
     method.type === "Google" ? method.value : null,
     method.isPrimary ? t("primary") : null,
@@ -55,7 +59,8 @@ export function LoginMethodsTable({ methods, canLinkGoogle = false, onAction }: 
   const visible = methods.filter((method) => method.type !== "Phone");
   return <List label={t("methods")}>
     {visible.map((method) => <ListItem key={method.id} className="min-h-14" icon={<MethodIcon method={method} />} title={method.type === "Google" ? t("google") : method.value} detail={methodDetail(method, t)}>
-      {!method.isVerified ? <Button type="button" variant="link" size="sm" className="px-1 text-[13px]" onClick={() => onAction("verify", method)}>{t("verify")}</Button> : null}
+      {/* Cuenta (.cb-enl de 13) y M-Cuenta (.acc-t de 15, como «Vincular»). */}
+      {!method.isVerified ? <Button type="button" variant="link" size="sm" className="px-1 text-[13px] max-md:text-[15px]" onClick={() => onAction("verify", method)}>{t("verify")}</Button> : null}
       {method.canMakePrimary || method.canRemove ? <MethodMenu method={method} onAction={onAction} /> : null}
     </ListItem>)}
     {canLinkGoogle ? <ListItem icon={<img src={googleMark} width="16" height="16" alt="" aria-hidden="true" />} title={t("google")} detail={t("unlinked")}>

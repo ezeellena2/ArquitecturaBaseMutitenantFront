@@ -68,6 +68,10 @@ describe("métodos de cuenta", () => {
     renderWithProviders(<LoginMethodsTable methods={[pending]} onAction={onAction} />);
     expect(screen.getByText("Sin verificar")).toBeVisible();
     const row = screen.getByRole("listitem");
+    // M-Cuenta (.w-est.amb y .acc-t): en el teléfono, «Sin verificar» lleva el punto ámbar y «Verificar» va en 15, como
+    // «Vincular»; en la compu (Cuenta), sin punto y en 13.
+    expect(screen.getByText("Sin verificar").querySelector("[data-slot='status-dot']")).toHaveClass("bg-[var(--punto-alerta)]", "hidden", "max-md:block");
+    expect(within(row).getByRole("button", { name: "Verificar" })).toHaveClass("text-[13px]", "max-md:text-[15px]");
     await user.click(within(row).getByRole("button", { name: "Verificar" }));
     expect(onAction).toHaveBeenCalledWith("verify", pending);
   });
