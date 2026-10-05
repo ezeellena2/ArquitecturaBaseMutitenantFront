@@ -169,11 +169,12 @@ const stage4Account = [
 ];
 
 // Roles: etapa 4 (las cuatro formas del editor); la lista y la edición de Recursos humanos de la etapa 6 son los mismos estados.
+// Desde v107, M-Rol dibuja las cuatro: el teléfono se compara con la suya (tanda 6a).
 const stage4Roles = [
-  ["rol-crear", "roles", "Rol: crear un rol"],
-  ["rol-recursos-humanos", "roles", "Rol: editar Recursos humanos (de la organización)"],
-  ["rol-solo-lectura", "roles", "Rol: editar Solo lectura (de una empresa)"],
-  ["rol-dueno", "roles", "Rol: ver el rol Dueño (de sistema)"],
+  ["rol-crear", "roles", "Rol: crear un rol", "Crear un rol"],
+  ["rol-recursos-humanos", "roles", "Rol: editar Recursos humanos (de la organización)", "Editar el rol Recursos humanos"],
+  ["rol-solo-lectura", "roles", "Rol: editar Solo lectura (de una empresa)", "Editar el rol Solo lectura"],
+  ["rol-dueno", "roles", "Rol: ver el rol Dueño (de sistema)", "Ver el rol Dueño"],
 ];
 
 // Etapa 6: Organización. Cada teléfono se compara con su `M-*` del lienzo vigente (la etapa 6 usaba el de la compu donde no había).
@@ -518,6 +519,36 @@ function r3fCases(root) {
     app: preview, phoneApp: preview });
 }
 
+// B6a · Roles como referencia (lienzo v107): el editor con un cambio sin guardar, «Crear rol» tocado sin datos («Criterio ·
+// Botones»: no se apaga, cada campo dice qué falta) y la lista sin coincidencias. M-Rol y M-Roles no dibujan esos estados:
+// el teléfono se compara con la forma del editor o con la lista.
+function b6aCases(root) {
+  const renamed = "Solo lectura y más";
+  const rename = { actions: [appFill("Nombre", renamed)] };
+  const emptyCreate = { actions: [appClick("button", "Crear rol")], readyText: "Escribí el nombre del rol." };
+  const rolesList = (width) => stageCases(root, "etapa-6").find((entry) => entry.pair === "roles-lista" && entry.viewport.width === width).app;
+  const noMatches = (width) => ({ ...rolesList(width), path: "/src/test/visualApp.html?as=visual-owner&route=%2Forg%2Froles%3Fsearch%3Dzzz",
+    responses: [api("GET", "/api/roles/paged", { items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false }, 200, { search: "zzz" }), ...rolesList(width).responses],
+    readyText: "Ningún rol coincide con los filtros" });
+  return [
+    ...pairCases(root, { stage: "etapa-4", pair: "rol-solo-lectura", id: "rol-cambios-sin-guardar", group: "roles",
+      state: "Rol: Solo lectura con el nombre cambiado: «Cambios sin guardar» en la banda y «Guardar cambios» activo",
+      desktop: { boardActions: [fill("Nombre", renamed)] },
+      phone: { props: { estado: "Editar el rol Solo lectura" }, state: "Rol en el teléfono con el nombre cambiado (M-Rol no dibuja «Cambios sin guardar»)" },
+      app: rename, phoneApp: rename }),
+    ...pairCases(root, { stage: "etapa-4", pair: "rol-crear", id: "rol-crear-sin-datos", group: "roles",
+      state: "Crear un rol: «Crear rol» tocado sin datos; cada campo dice qué falta",
+      desktop: { boardActions: [fill("Nombre", " "), click("button.cb.cb-pri")], state: "Crear un rol: «Crear rol» tocado sin datos (el tablero apaga el botón con el formulario vacío; se escribe un espacio para tocarlo)" },
+      phone: { props: { estado: "Crear un rol" }, state: "Crear un rol en el teléfono, tocado sin datos (M-Rol no dibuja los errores)" },
+      app: emptyCreate, phoneApp: emptyCreate }),
+    ...pairCases(root, { stage: "etapa-6", pair: "roles-lista", id: "roles-sin-coincidencias", group: "roles",
+      state: "Roles y permisos: ningún rol coincide con la búsqueda, con «Limpiar filtros»",
+      desktop: { boardActions: [{ type: "fill", selector: 'input[type="search"]', value: "zzz" }] },
+      phone: { state: "Roles y permisos en el teléfono: ningún rol coincide (M-Roles no dibuja la lista vacía)" },
+      app: noMatches(1440), phoneApp: noMatches(390) }),
+  ];
+}
+
 export function catalog(root) {
   const rename ={ board: "Cuenta", boardActions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
@@ -530,7 +561,7 @@ export function catalog(root) {
     ...stage4Account.flatMap(([pair, group, state, onPhone]) => pairCases(root, { stage: "etapa-4", pair, group, state, phone: onPhone })),
     ...pairCases(root, { stage: "etapa-4", pair: "cuenta", id: "cuenta-cambios-sin-guardar", group: "cuenta", state: "Mi cuenta con el nombre cambiado: «Cambios sin guardar»",
       desktop: rename, phone: renamePhone, app: renameApp, phoneApp: renameApp }),
-    ...stage4Roles.flatMap(([pair, group, state]) => pairCases(root, { stage: "etapa-4", pair, group, state })),
+    ...stage4Roles.flatMap(([pair, group, state, estado]) => pairCases(root, { stage: "etapa-4", pair, group, state, phone: { props: { estado } } })),
     ...stage6.flatMap(([pair, group, state, onPhone]) => pairCases(root, { stage: "etapa-6", pair, group, state, phone: onPhone })),
     ...stageF7.flatMap(([pair, group, onPhone]) => pairCases(root, { stage: "consolidacion/f7", pair, group, phone: onPhone })),
     ...signupCases(root),
@@ -539,5 +570,6 @@ export function catalog(root) {
     ...r3eCases(root),
     ...r3fCases(root),
     ...r3cCases(root),
+    ...b6aCases(root),
   ];
 }

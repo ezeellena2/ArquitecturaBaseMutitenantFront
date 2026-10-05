@@ -48,11 +48,12 @@ export function writeManifest() {
 const codeMask = 'input[inputmode="numeric"][aria-label^="Código"] { -webkit-text-security: disc; }';
 const fontFace = '@font-face { font-family: Inter; src: url("/_fonts/inter-latin-wght-normal.woff2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }';
 
-// Las acciones de la vista en vivo (un clic por selector CSS o `text=`) más escribir en un campo y marcar una opción.
+// Las acciones de la vista en vivo (un clic por selector CSS o `text=`) más escribir en un campo (por su nombre o, si no
+// es un textbox, como un buscador, por su selector) y marcar una opción.
 export async function runBoardActions(page, actions = []) {
   for (const action of actions) {
     if (action.type === "fill") {
-      const field = page.getByRole("textbox", { name: action.name });
+      const field = action.selector ? page.locator(action.selector).first() : page.getByRole("textbox", { name: action.name });
       await field.fill(action.value);
       await field.blur();
     } else if (action.type === "click" && action.selector?.startsWith("text=")) {
