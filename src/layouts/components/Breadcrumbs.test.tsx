@@ -17,7 +17,7 @@ function Leaf({ label }: { label: string }) {
   return null;
 }
 
-const owner = permissionsOf({ features: [], effectivePermissions: { organization: [...organizationPermissions], companies: {} } });
+const owner = permissionsOf({ features: [], effectivePermissions: { platform: [], organization: [...organizationPermissions], companies: {} } });
 
 function crumbs(path: string, leaf?: string, permissions: Permissions = owner) {
   render(<MemoryRouter initialEntries={[path]}><Breadcrumbs navigation={businessNavigation} permissions={permissions} />{leaf ? <Leaf label={leaf} /> : null}</MemoryRouter>);
@@ -66,7 +66,7 @@ describe("Breadcrumbs", () => {
   // B4: quien administra solo su empresa no abre Empresas (`companies.read`). La opción va como texto, sin enlace, como
   // «‹», que lo devuelve al Inicio; con enlace, lo llevaría a «No tenés permiso».
   it("una opción que la sesión no puede abrir va sin enlace", () => {
-    const companyAdmin = permissionsOf({ features: [], effectivePermissions: { organization: [], companies: { abc: ["company.members.read"] } } });
+    const companyAdmin = permissionsOf({ features: [], effectivePermissions: { platform: [], organization: [], companies: { abc: ["company.members.read"] } } });
     const navigation = crumbs("/org/empresas/abc", "Delta S.A.", companyAdmin);
 
     expect(navigation).toHaveTextContent("Inicio/Empresas/Delta S.A.");

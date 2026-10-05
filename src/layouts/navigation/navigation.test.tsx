@@ -13,7 +13,7 @@ vi.mock("@/tenancy/AccessMenu", () => ({ AccessMenu: () => <button type="button"
 vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: {
   displayName: "Ana", email: "ana@example.com", activeTenantId: "empresa-a",
   organizations: [{ id: "empresa-a", name: "Empresa A" }], features: [],
-  effectivePermissions: { organization: ["users.read", "roles.read", "companies.read", "settings.read", "publicpage.manage", "audit.read"], companies: {} },
+  effectivePermissions: { platform: [], organization: ["users.read", "roles.read", "companies.read", "settings.read", "publicpage.manage", "audit.read"], companies: {} },
 } }) }));
 
 beforeAll(async () => {

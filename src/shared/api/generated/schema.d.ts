@@ -10234,12 +10234,13 @@ export interface components {
             /** Format: uint32 */
             version?: null | number;
         };
-        /** @description Permisos efectivos del acceso activo; los permisos por empresa se completan en E6. */
+        /** @description Permisos efectivos del acceso activo, separados entre organización, empresas y Plataforma. */
         EffectivePermissions: {
             organization: string[];
             companies: {
                 [key: string]: string[];
             };
+            platform: string[];
         };
         /** @description Correo normalizado para comparar y enviar; el dominio IDN se guarda en ASCII. */
         Email: null | string;

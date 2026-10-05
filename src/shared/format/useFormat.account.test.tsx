@@ -63,7 +63,7 @@ describe("formato con perfil de cuenta", () => {
       }),
       http.get("/api/me", () => HttpResponse.json({
         id: "ana", access: "consumer", hasPersonalSpace: true, organizations: [],
-        effectivePermissions: { organization: [], companies: {} }, features: [],
+        effectivePermissions: { platform: [], organization: [], companies: {} }, features: [],
         culture: "en-US", timeZoneId: "America/Argentina/Buenos_Aires", currencyCode: "ARS",
       })),
       http.get("/api/culture-probe", ({ request }) => {
@@ -97,7 +97,7 @@ describe("formato con perfil de cuenta", () => {
     })));
     server.use(http.get("/api/me", () => HttpResponse.json({
       id: "ana", access: "consumer", hasPersonalSpace: true,
-      organizations: [], effectivePermissions: { organization: [], companies: {} }, features: [],
+      organizations: [], effectivePermissions: { platform: [], organization: [], companies: {} }, features: [],
       culture: "en-US", timeZoneId: "UTC", currencyCode: null,
     })));
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });

@@ -13,7 +13,7 @@ import { PrivateLayoutFrame } from "./PrivateLayoutFrame";
 const viewport = vi.hoisted(() => ({ mobile: false }));
 const session = vi.hoisted(() => ({ permissions: [] as string[] }));
 vi.mock("@/shared/hooks/useMediaQuery", () => ({ useMediaQuery: () => viewport.mobile }));
-vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: { displayName: "Ana", email: "ana@example.com", activeTenantId: "empresa-a", organizations: [{ id: "empresa-a", name: "Empresa A" }], features: [], effectivePermissions: { organization: session.permissions, companies: {} } } }) }));
+vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: { displayName: "Ana", email: "ana@example.com", activeTenantId: "empresa-a", organizations: [{ id: "empresa-a", name: "Empresa A" }], features: [], effectivePermissions: { platform: [], organization: session.permissions, companies: {} } } }) }));
 vi.mock("@/tenancy/AccessMenu", () => ({ AccessMenu: () => <button type="button">{"Cuenta"}</button> }));
 
 beforeAll(async () => {

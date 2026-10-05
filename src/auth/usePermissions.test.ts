@@ -7,7 +7,7 @@ import { companyPermissions, organizationPermissions, permissionsOf } from "./us
 type Session = Pick<MeResponse, "effectivePermissions" | "features" | "permissions">;
 
 const owner: Session = {
-  effectivePermissions: { organization: ["users.read", "company.members.read", "company.members.manage"], companies: {} },
+  effectivePermissions: { platform: [], organization: ["users.read", "company.members.read", "company.members.manage"], companies: {} },
   features: [],
 };
 
@@ -25,13 +25,13 @@ describe("permissionsOf", () => {
     const permissions = permissionsOf(owner);
 
     expect(permissions.canInCompany("delta", "company.members.manage")).toBe(true);
-    expect(permissionsOf({ ...owner, effectivePermissions: { organization: ["users.read"], companies: {} } })
+    expect(permissionsOf({ ...owner, effectivePermissions: { platform: [], organization: ["users.read"], companies: {} } })
       .canInCompany("delta", "company.members.read")).toBe(false);
   });
 
   it("canInCompany usa los de la empresa cuando el mapa la trae", () => {
     // Un Administrador de empresa sin roles de la organización (B4): solo en su empresa.
-    const companyAdmin = permissionsOf({ features: [], effectivePermissions: {
+    const companyAdmin = permissionsOf({ features: [], effectivePermissions: { platform: [],
       organization: [], companies: { delta: ["company.members.read", "company.members.manage"], sur: [] },
     } });
 

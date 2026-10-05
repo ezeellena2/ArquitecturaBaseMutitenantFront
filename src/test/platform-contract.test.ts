@@ -34,6 +34,15 @@ function generatedRoute(route: string): string {
 }
 
 describe("contratos de Plataforma entre back y front", () => {
+  it("los permisos de Plataforma viajan en effectivePermissions de /api/me (E5)", () => {
+    const permissions = openApi.components.schemas.EffectivePermissions.properties;
+    expect(Object.keys(permissions).sort()).toEqual(["companies", "organization", "platform"]);
+    expect(permissions.platform).toMatchObject({ type: "array", items: { type: "string" } });
+    const body = generated.match(/        EffectivePermissions: \{([\s\S]*?)\n        \};/u)?.[1];
+    expect(body).toContain("platform: string[];");
+    expect(openApi.paths["/api/me"].get.responses["200"].content?.["application/json"].schema?.$ref).toBe("#/components/schemas/MeResponse");
+  });
+
   it.each([
     ["/api/platform/tenants/paged", "get", 200, null, "PagedResultOfPlatformTenantResponse"],
     ["/api/platform/tenants/filter-counts", "get", 200, null, "PlatformTenantFilterCounts"],

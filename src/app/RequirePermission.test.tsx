@@ -7,7 +7,7 @@ import { RequirePermission } from "./RequirePermission";
 
 const session = vi.hoisted(() => ({ organization: [] as string[], features: [] as string[], companies: {} as Record<string, string[]> }));
 vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: {
-  access: "business", features: session.features, effectivePermissions: { organization: session.organization, companies: session.companies },
+  access: "business", features: session.features, effectivePermissions: { platform: [], organization: session.organization, companies: session.companies },
 } }) }));
 
 beforeAll(async () => {

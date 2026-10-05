@@ -14,7 +14,7 @@ const navigation: NavigationConfig = {
 };
 
 function session(organization: string[], features: string[] = []) {
-  return permissionsOf({ features, effectivePermissions: { organization, companies: {} } });
+  return permissionsOf({ features, effectivePermissions: { platform: [], organization, companies: {} } });
 }
 
 describe("visibleNavigation", () => {

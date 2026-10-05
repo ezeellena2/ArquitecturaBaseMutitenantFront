@@ -5,7 +5,7 @@ import type { MeResponse } from "@/shared/api/types";
 /// empresa va vacío: una empresa que no figura usa los de la organización (`canInCompany`), como los roles de toda la
 /// organización en el back. Quien solo administra una empresa la tiene en el mapa (`businessCompanyAdmin`).
 function withPermissions(user: MeResponse, organization: readonly Permission[]): MeResponse {
-  return { ...user, permissions: [...organization], effectivePermissions: { organization: [...organization], companies: {} } };
+  return { ...user, permissions: [...organization], effectivePermissions: { platform: [], organization: [...organization], companies: {} } };
 }
 
 export const consumerWithoutOrganizations: MeResponse = {
@@ -16,7 +16,7 @@ export const consumerWithoutOrganizations: MeResponse = {
   activeTenantId: null,
   hasPersonalSpace: true,
   organizations: [],
-  effectivePermissions: { organization: [], companies: {} },
+  effectivePermissions: { platform: [], organization: [], companies: {} },
   features: [],
   permissions: [],
   culture: "es-AR",
@@ -52,13 +52,13 @@ export const businessE6Admin: MeResponse = withPermissions(businessUser, ownerPe
 /// (decisión 13), y la organización, vacía.
 export const businessCompanyAdmin: MeResponse = {
   ...businessUser, permissions: [],
-  effectivePermissions: { organization: [], companies: { "company-1": ["company.members.read", "company.members.manage"] } },
+  effectivePermissions: { platform: [], organization: [], companies: { "company-1": ["company.members.read", "company.members.manage"] } },
 };
 
 /** Solo ve Configuración: los datos se leen como texto, sin campos grises. */
 export const businessSettingsReader: MeResponse = withPermissions(businessUser, ["settings.read"]);
 
-/// Como el back: los permisos de la plataforma no viajan en /api/me hasta su backoffice (E9).
+/// Operador sin permisos asignados; T20b suma las variantes para el marco de Plataforma.
 export const platformOperator: MeResponse = {
   ...consumerWithoutOrganizations,
   access: "platform",
@@ -102,7 +102,7 @@ export const visualErrorOrganization: MeResponse = {
 /// /api/me. La ficha de su empresa, en las capturas.
 export const visualCompanyAdmin: MeResponse = {
   ...visualErrorOrganization,
-  effectivePermissions: { organization: [], companies: { "company-1": ["company.members.read", "company.members.manage"] } },
+  effectivePermissions: { platform: [], organization: [], companies: { "company-1": ["company.members.read", "company.members.manage"] } },
 };
 
 export const visualUnavailableSuspended: MeResponse = {
