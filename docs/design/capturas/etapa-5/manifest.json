@@ -5283,9 +5283,32 @@
       },
       "boardReadyText": "Recuperar mi cuenta",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-paso-1",
-        "actions": []
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "Recuperar mi cuenta"
       }
     },
     {
@@ -5307,9 +5330,32 @@
       },
       "boardReadyText": "Recuperar mi cuenta",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-paso-1",
-        "actions": []
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "Recuperar mi cuenta"
       }
     },
     {
@@ -5331,9 +5377,44 @@
       },
       "boardReadyText": "¿Dónde te escribimos?",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-paso-2",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "¿Dónde te escribimos?"
       }
     },
     {
@@ -5355,9 +5436,44 @@
       },
       "boardReadyText": "¿Dónde te escribimos?",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-paso-2",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "¿Dónde te escribimos?"
       }
     },
     {
@@ -5379,9 +5495,64 @@
       },
       "boardReadyText": "Recibimos tu pedido",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-paso-3",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "Recibimos tu pedido"
       }
     },
     {
@@ -5403,9 +5574,64 @@
       },
       "boardReadyText": "Recibimos tu pedido",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-paso-3",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "Recibimos tu pedido"
       }
     },
     {
@@ -5433,9 +5659,38 @@
       },
       "boardReadyText": "Ingresá un correo electrónico válido.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-correo-anterior-vacio",
-        "actions": []
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
       }
     },
     {
@@ -5463,9 +5718,38 @@
       },
       "boardReadyText": "Ingresá un correo electrónico válido.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-correo-anterior-vacio",
-        "actions": []
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
       }
     },
     {
@@ -5499,9 +5783,44 @@
       },
       "boardReadyText": "Ingresá un correo electrónico válido.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-correo-anterior-invalido",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
       }
     },
     {
@@ -5535,9 +5854,44 @@
       },
       "boardReadyText": "Ingresá un correo electrónico válido.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-correo-anterior-invalido",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
       }
     },
     {
@@ -5565,9 +5919,49 @@
       },
       "boardReadyText": "Ingresá un correo electrónico válido.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-correo-nuevo-vacio",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
       }
     },
     {
@@ -5595,9 +5989,49 @@
       },
       "boardReadyText": "Ingresá un correo electrónico válido.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-correo-nuevo-vacio",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
       }
     },
     {
@@ -5631,9 +6065,55 @@
       },
       "boardReadyText": "Ingresá un correo electrónico válido.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-correo-nuevo-invalido",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
       }
     },
     {
@@ -5667,9 +6147,55 @@
       },
       "boardReadyText": "Ingresá un correo electrónico válido.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-correo-nuevo-invalido",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
       }
     },
     {
@@ -5703,9 +6229,55 @@
       },
       "boardReadyText": "Tiene que ser un correo distinto del de antes.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-correo-nuevo-igual",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Tiene que ser un correo distinto del de antes."
       }
     },
     {
@@ -5739,9 +6311,55 @@
       },
       "boardReadyText": "Tiene que ser un correo distinto del de antes.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-correo-nuevo-igual",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Tiene que ser un correo distinto del de antes."
       }
     },
     {
@@ -5775,9 +6393,55 @@
       },
       "boardReadyText": "Revisá tu correo",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-codigo",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "Revisá tu correo"
       }
     },
     {
@@ -5811,9 +6475,55 @@
       },
       "boardReadyText": "Revisá tu correo",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-codigo",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "Revisá tu correo"
       }
     },
     {
@@ -5858,9 +6568,64 @@
       },
       "boardReadyText": "Escribí los 6 números del código.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-codigo-incompleto",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "1"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Escribí los 6 números del código."
       }
     },
     {
@@ -5905,9 +6670,64 @@
       },
       "boardReadyText": "Escribí los 6 números del código.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-codigo-incompleto",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "1"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Escribí los 6 números del código."
       }
     },
     {
@@ -5946,9 +6766,60 @@
       },
       "boardReadyText": "Te mandamos un código nuevo.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-codigo-reenviado",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Reenviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Te mandamos un código nuevo."
       }
     },
     {
@@ -5987,9 +6858,60 @@
       },
       "boardReadyText": "Te mandamos un código nuevo.",
       "app": {
-        "path": "/recuperar",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
         "scenario": "recuperar-codigo-reenviado",
-        "actions": []
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Reenviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Te mandamos un código nuevo."
       }
     },
     {
@@ -6011,9 +6933,32 @@
       },
       "boardReadyText": "Recuperá tu cuenta",
       "app": {
-        "path": "/login",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fcapture%253D1",
         "scenario": "recuperar-enlace-persona",
-        "actions": []
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Recuperá tu cuenta"
       }
     },
     {
@@ -6035,9 +6980,32 @@
       },
       "boardReadyText": "Recuperá tu cuenta",
       "app": {
-        "path": "/login",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fcapture%253D1",
         "scenario": "recuperar-enlace-persona",
-        "actions": []
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Recuperá tu cuenta"
       }
     },
     {
@@ -6059,9 +7027,32 @@
       },
       "boardReadyText": "Recuperá tu cuenta",
       "app": {
-        "path": "/login/empresa",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Flogin%2Fempresa%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fcapture%253D1",
         "scenario": "recuperar-enlace-empresa",
-        "actions": []
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Recuperá tu cuenta"
       }
     },
     {
@@ -6083,9 +7074,32 @@
       },
       "boardReadyText": "Recuperá tu cuenta",
       "app": {
-        "path": "/login/empresa",
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Flogin%2Fempresa%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fcapture%253D1",
         "scenario": "recuperar-enlace-empresa",
-        "actions": []
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Recuperá tu cuenta"
       }
     }
   ]

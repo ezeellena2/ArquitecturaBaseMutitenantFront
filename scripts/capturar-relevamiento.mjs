@@ -52,6 +52,15 @@ const fontFace = '@font-face { font-family: Inter; src: url("/_fonts/inter-latin
 // es un textbox, como un buscador, por su selector) y marcar una opción.
 export async function runBoardActions(page, actions = []) {
   for (const action of actions) {
+    if (action.role && (action.type === "fill" || action.type === "click")) {
+      const target = page.getByRole(action.role, { name: action.name, exact: true });
+      if (action.type === "fill") {
+        await target.fill(action.value);
+        await target.blur();
+      } else await target.click({ force: action.force ?? false });
+      await page.waitForTimeout(150);
+      continue;
+    }
     if (action.type === "fill") {
       const field = action.selector ? page.locator(action.selector).first() : page.getByRole("textbox", { name: action.name });
       await field.fill(action.value);
@@ -79,6 +88,7 @@ export async function openBoard(context, canvasUrl, entry) {
   await page.locator("[data-sc-name]").first().waitFor();
   await page.waitForTimeout(200);
   await runBoardActions(page, entry.boardActions);
+  await page.mouse.move(0, 0);
   await page.addStyleTag({ content: fontFace });
   await page.evaluate(() => document.fonts.load("700 54px Inter"));
   await page.evaluate(() => document.fonts.ready);
@@ -108,6 +118,7 @@ export async function openApp(context, appUrl, entry) {
   await page.locator(app.readySelector ?? "main").first().waitFor();
   if (app.readyHeading) await page.getByRole("heading", { name: app.readyHeading }).first().waitFor();
   if (app.readyText) await page.getByText(app.readyText, { exact: false }).first().waitFor();
+  await page.mouse.move(0, 0);
   await page.waitForTimeout(app.readyText && /^(Guardamos|Agregamos|Quitamos|Desde ahora|Vinculamos|Desvinculamos|Cancelamos)/.test(app.readyText) ? 800 : 300);
   await waitForAppFont(page);
   await page.addStyleTag({ content: codeMask });

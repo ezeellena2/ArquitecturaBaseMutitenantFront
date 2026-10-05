@@ -3,8 +3,41 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { validateManifest } from "./capturar-etapa-3a.mjs";
-import { buildCases, canvas, mergeManifest } from "./capturar-relevamiento.mjs";
+import { chromium } from "playwright";
+import { startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
+import { buildCases, canvas, mergeManifest, runBoardActions } from "./capturar-relevamiento.mjs";
+
+test("incluye los trece pares aprobados de Recuperar v111 para comparar la app de T19", () => {
+  const cases = buildCases().filter((entry) => entry.group === "recuperar");
+  assert.equal(cases.length, 26);
+  assert.ok(cases.every((entry) => entry.state && entry.app.captureMode === "harness"));
+  assert.ok(cases.some((entry) => entry.id === "recuperar-paso-3-movil"));
+});
+
+test("el relevamiento ejecuta las acciones por rol del tablero de Recuperar v111", async () => {
+  const server = await startCanvasServer(canvas);
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+    for (const width of [1440, 390]) {
+      const entry = buildCases().find((item) => item.pair === "recuperar-codigo" && item.viewport.width === width);
+      const page = await browser.newPage({ viewport: entry.viewport });
+      page.setDefaultTimeout(2000);
+      // El comportamiento del tablero no depende de la descarga de una fuente externa.
+      await page.route("https://fonts.googleapis.com/**", (route) => route.abort());
+      await page.route("https://fonts.gstatic.com/**", (route) => route.abort());
+      await page.goto(`${server.url}/${entry.board}.dc.html`, { waitUntil: "domcontentloaded" });
+      await page.waitForFunction(() => Boolean(window.__dcRootName?.()));
+      await page.evaluate((props) => window.__dcSetProps(window.__dcRootName(), props), entry.props);
+      await runBoardActions(page, entry.boardActions);
+      assert.equal(await page.getByRole("heading", { name: "Revisá tu correo", exact: true }).count(), 1);
+      await page.close();
+    }
+  } finally {
+    await browser?.close();
+    await server.close();
+  }
+});
 
 test("el relevamiento tiene cada estado a 1440 y a 390, contra tableros vigentes y con sus datos de prueba", () => {
   const cases = buildCases();

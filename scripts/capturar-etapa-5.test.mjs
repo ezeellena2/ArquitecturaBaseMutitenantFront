@@ -51,6 +51,30 @@ test("Recuperar captura los pasos, código y errores reales sin WhatsApp", () =>
   }
 });
 
+test("Recuperar reproduce la app por su recorrido con los tres contratos públicos", () => {
+  const cases = buildCases().filter((entry) => entry.group === "recuperar");
+  for (const entry of cases) {
+    assert.match(entry.app.path, /^\/src\/test\/visualApp\.html\?/);
+    assert.equal(entry.app.captureMode, "harness");
+    assert.ok(entry.app.readyText || entry.app.readyHeading, entry.id);
+  }
+  const received = cases.find((entry) => entry.id === "recuperar-paso-3-escritorio");
+  assert.deepEqual(received.app.responses.map((response) => [response.method, response.path, response.status]), [
+    ["POST", "/api/account-recovery/code", 202], ["POST", "/api/account-recovery/verify", 204], ["POST", "/api/account-recovery", 202],
+  ]);
+  assert.ok(received.app.actions.some((action) => action.type === "otp"));
+  const code = cases.find((entry) => entry.id === "recuperar-codigo-escritorio");
+  assert.equal(code.app.readyHeading, "Revisá tu correo");
+  assert.deepEqual(code.app.actions.slice(0, 2), [
+    { type: "fill", role: "textbox", name: "Correo electrónico", value: "lucia.fernandez@delta.ejemplo.com" },
+    { type: "click", role: "button", name: "Seguir" },
+  ]);
+  for (const entry of cases.filter((item) => item.pair.startsWith("recuperar-enlace-"))) {
+    const route = new URL(entry.app.path, "http://example.test").searchParams.get("route");
+    assert.ok(route.includes("returnUrl="), entry.id);
+  }
+});
+
 test("mantiene 50 filas y 409 como casos futuros con referencia real y limitación explícita", () => {
   const cases = buildCases();
   for (const pair of ["organizaciones-50-filas", "organizaciones-409", "configuracion-409"]) {
@@ -116,5 +140,5 @@ test("el manifest escrito es consumible por el recorrido vivo con el id exacto d
   try { readFileSync(manifest, "utf8"); } catch (error) { if (error.code === "ENOENT") return; throw error; }
   const loaded = loadCases(capturesDir, canvas).find((entry) => entry.id === "etapa-5/recuperar-paso-1-escritorio");
   assert.ok(loaded);
-  assert.equal(loaded.app.path, "/recuperar");
+  assert.equal(new URL(loaded.app.path, "http://example.test").searchParams.get("route"), "/recuperar");
 });

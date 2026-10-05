@@ -1,0 +1,1765 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "recuperar-paso-1-escritorio",
+      "pair": "recuperar-paso-1",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-paso-1",
+      "board": "Recuperar",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-paso-1",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "Recuperar mi cuenta"
+      }
+    },
+    {
+      "id": "recuperar-paso-1-movil",
+      "pair": "recuperar-paso-1",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-paso-1",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-paso-1",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "Recuperar mi cuenta"
+      }
+    },
+    {
+      "id": "recuperar-paso-2-escritorio",
+      "pair": "recuperar-paso-2",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-paso-2",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-paso-2",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "¿Dónde te escribimos?"
+      }
+    },
+    {
+      "id": "recuperar-paso-2-movil",
+      "pair": "recuperar-paso-2",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-paso-2",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-paso-2",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "¿Dónde te escribimos?"
+      }
+    },
+    {
+      "id": "recuperar-paso-3-escritorio",
+      "pair": "recuperar-paso-3",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-paso-3",
+      "board": "Recuperar",
+      "props": {
+        "paso": "3. Pedido recibido",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-paso-3",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "Recibimos tu pedido"
+      }
+    },
+    {
+      "id": "recuperar-paso-3-movil",
+      "pair": "recuperar-paso-3",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-paso-3",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "3. Pedido recibido",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-paso-3",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "Recibimos tu pedido"
+      }
+    },
+    {
+      "id": "recuperar-correo-anterior-vacio-escritorio",
+      "pair": "recuperar-correo-anterior-vacio",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-correo-anterior-vacio",
+      "board": "Recuperar",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Seguir"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-correo-anterior-vacio",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "recuperar-correo-anterior-vacio-movil",
+      "pair": "recuperar-correo-anterior-vacio",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-correo-anterior-vacio",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Seguir"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-correo-anterior-vacio",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "recuperar-correo-anterior-invalido-escritorio",
+      "pair": "recuperar-correo-anterior-invalido",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-correo-anterior-invalido",
+      "board": "Recuperar",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico",
+          "value": "lucia"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Seguir"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-correo-anterior-invalido",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "recuperar-correo-anterior-invalido-movil",
+      "pair": "recuperar-correo-anterior-invalido",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-correo-anterior-invalido",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "1. El correo o teléfono de antes",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico",
+          "value": "lucia"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Seguir"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-correo-anterior-invalido",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "recuperar-correo-nuevo-vacio-escritorio",
+      "pair": "recuperar-correo-nuevo-vacio",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-correo-nuevo-vacio",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-correo-nuevo-vacio",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "recuperar-correo-nuevo-vacio-movil",
+      "pair": "recuperar-correo-nuevo-vacio",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-correo-nuevo-vacio",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-correo-nuevo-vacio",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "recuperar-correo-nuevo-invalido-escritorio",
+      "pair": "recuperar-correo-nuevo-invalido",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-correo-nuevo-invalido",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-correo-nuevo-invalido",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "recuperar-correo-nuevo-invalido-movil",
+      "pair": "recuperar-correo-nuevo-invalido",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-correo-nuevo-invalido",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-correo-nuevo-invalido",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "recuperar-correo-nuevo-igual-escritorio",
+      "pair": "recuperar-correo-nuevo-igual",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-correo-nuevo-igual",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fernandez@delta.ejemplo.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-correo-nuevo-igual",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Tiene que ser un correo distinto del de antes."
+      }
+    },
+    {
+      "id": "recuperar-correo-nuevo-igual-movil",
+      "pair": "recuperar-correo-nuevo-igual",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-correo-nuevo-igual",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fernandez@delta.ejemplo.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-correo-nuevo-igual",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Tiene que ser un correo distinto del de antes."
+      }
+    },
+    {
+      "id": "recuperar-codigo-escritorio",
+      "pair": "recuperar-codigo",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-codigo",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fer@gmail.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-codigo",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "Revisá tu correo"
+      }
+    },
+    {
+      "id": "recuperar-codigo-movil",
+      "pair": "recuperar-codigo",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-codigo",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fer@gmail.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-codigo",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyHeading": "Revisá tu correo"
+      }
+    },
+    {
+      "id": "recuperar-codigo-incompleto-escritorio",
+      "pair": "recuperar-codigo-incompleto",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-codigo-incompleto",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fer@gmail.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Código 1",
+          "value": "1"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Verificar"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-codigo-incompleto",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "1"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Escribí los 6 números del código."
+      }
+    },
+    {
+      "id": "recuperar-codigo-incompleto-movil",
+      "pair": "recuperar-codigo-incompleto",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-codigo-incompleto",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fer@gmail.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Código 1",
+          "value": "1"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Verificar"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-codigo-incompleto",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "1"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Escribí los 6 números del código."
+      }
+    },
+    {
+      "id": "recuperar-codigo-reenviado-escritorio",
+      "pair": "recuperar-codigo-reenviado",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-codigo-reenviado",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fer@gmail.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Reenviar código"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-codigo-reenviado",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Reenviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Te mandamos un código nuevo."
+      }
+    },
+    {
+      "id": "recuperar-codigo-reenviado-movil",
+      "pair": "recuperar-codigo-reenviado",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-codigo-reenviado",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. Un correo o WhatsApp nuevo",
+        "whatsapp": "Sin WhatsApp (hasta la Etapa 8)"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Correo electrónico nuevo",
+          "value": "lucia.fer@gmail.com"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Enviar código"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Reenviar código"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "scenario": "recuperar-codigo-reenviado",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "lucia.fer@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Reenviar código"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Te mandamos un código nuevo."
+      }
+    },
+    {
+      "id": "recuperar-enlace-persona-escritorio",
+      "pair": "recuperar-enlace-persona",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-enlace-persona",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fcapture%253D1",
+        "scenario": "recuperar-enlace-persona",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Recuperá tu cuenta"
+      }
+    },
+    {
+      "id": "recuperar-enlace-persona-movil",
+      "pair": "recuperar-enlace-persona",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-enlace-persona",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Flogin%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fcapture%253D1",
+        "scenario": "recuperar-enlace-persona",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Recuperá tu cuenta"
+      }
+    },
+    {
+      "id": "recuperar-enlace-empresa-escritorio",
+      "pair": "recuperar-enlace-empresa",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-enlace-empresa",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Flogin%2Fempresa%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fcapture%253D1",
+        "scenario": "recuperar-enlace-empresa",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Recuperá tu cuenta"
+      }
+    },
+    {
+      "id": "recuperar-enlace-empresa-movil",
+      "pair": "recuperar-enlace-empresa",
+      "group": "recuperar",
+      "state": "Recuperar v111: recuperar-enlace-empresa",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Flogin%2Fempresa%3FreturnUrl%3D%252Fconnect%252Fauthorize%253Fcapture%253D1",
+        "scenario": "recuperar-enlace-empresa",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 0
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/verify",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery",
+            "status": 202
+          }
+        ],
+        "readyText": "Recuperá tu cuenta"
+      }
+    }
+  ]
+}

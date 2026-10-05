@@ -17,6 +17,49 @@ const slug = (value) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").t
 const base = (note) => ({ kind: "base", note });
 const drawn = { kind: "drawn" };
 
+function recoveryApp(entry) {
+  const oldEmail = "lucia.fernandez@delta.ejemplo.com";
+  const newEmail = "lucia.fer@gmail.com";
+  const previous = [fill("Correo electrónico", oldEmail), click("Seguir")];
+  const send = [...previous, fill("Correo electrónico nuevo", newEmail), click("Enviar código")];
+  const pair = entry.pair;
+  let actions = [];
+  let readyHeading;
+  let readyText;
+  let route = "/recuperar";
+  // El tablero dibuja el reenvío disponible. La espera real de 60 s se prueba en la pantalla; estos casos fotografían ese estado.
+  const responses = [
+    { method: "POST", path: "/api/account-recovery/code", status: 202, body: { resendAfterSeconds: 0 } },
+    { method: "POST", path: "/api/account-recovery/verify", status: 204 },
+    { method: "POST", path: "/api/account-recovery", status: 202 },
+  ];
+  switch (pair) {
+    case "recuperar-paso-1": readyHeading = "Recuperar mi cuenta"; break;
+    case "recuperar-paso-2": actions = previous; readyHeading = "¿Dónde te escribimos?"; break;
+    case "recuperar-paso-3":
+      actions = [...send, { type: "otp", value: "123456" }, click("Verificar")];
+      readyHeading = "Recibimos tu pedido";
+      break;
+    case "recuperar-correo-anterior-vacio": actions = [click("Seguir")]; readyText = entry.boardReadyText; break;
+    case "recuperar-correo-anterior-invalido": actions = [fill("Correo electrónico", "lucia"), click("Seguir")]; readyText = entry.boardReadyText; break;
+    case "recuperar-correo-nuevo-vacio": actions = [...previous, click("Enviar código")]; readyText = entry.boardReadyText; break;
+    case "recuperar-correo-nuevo-invalido": actions = [...previous, fill("Correo electrónico nuevo", "lucia"), click("Enviar código")]; readyText = entry.boardReadyText; break;
+    case "recuperar-correo-nuevo-igual": actions = [...previous, fill("Correo electrónico nuevo", oldEmail), click("Enviar código")]; readyText = entry.boardReadyText; break;
+    case "recuperar-codigo": actions = send; readyHeading = "Revisá tu correo"; break;
+    case "recuperar-codigo-incompleto": actions = [...send, { type: "otp", value: "1" }, click("Verificar")]; readyText = entry.boardReadyText; break;
+    case "recuperar-codigo-reenviado": actions = [...send, click("Reenviar código")]; readyText = entry.boardReadyText; break;
+    case "recuperar-enlace-persona":
+    case "recuperar-enlace-empresa":
+      route = `${pair.endsWith("empresa") ? "/login/empresa" : "/login"}?returnUrl=%2Fconnect%2Fauthorize%3Fcapture%3D1`;
+      readyText = "Recuperá tu cuenta";
+      break;
+    default: throw new Error(`Recuperar: falta el recorrido de ${pair}.`);
+  }
+  return { ...entry.app, path: `/src/test/visualApp.html?as=visual-personal&route=${encodeURIComponent(route)}`,
+    captureMode: "harness", userFixture: "visual-personal", responses, actions,
+    ...(readyHeading ? { readyHeading } : {}), ...(readyText ? { readyText } : {}) };
+}
+
 export function buildCases() {
   const cases = [];
   // Igual que E6, cada caso tiene su tablero móvil propio. Una referencia base nunca dice representar un estado ausente.
@@ -206,7 +249,7 @@ export function buildCases() {
   for (const door of ["Persona", "Empresa"]) both({ group: "recuperar", pair: `recuperar-enlace-${slug(door)}`,
     board: "Ingreso", mobileBoard: "M-Ingreso", props: { estado: "Correo", puerta: door },
     route: door === "Empresa" ? "/login/empresa" : "/login", readyText: "Recuperá tu cuenta" });
-  return cases;
+  return cases.map((entry) => entry.group === "recuperar" ? { ...entry, app: recoveryApp(entry) } : entry);
 }
 
 export async function writeManifest() {

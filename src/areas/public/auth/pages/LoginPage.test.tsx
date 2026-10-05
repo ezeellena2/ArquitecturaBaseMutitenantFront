@@ -56,6 +56,12 @@ function show(access: "consumer" | "business", url: string, completeLogin = vi.f
 }
 
 describe("LoginPage", () => {
+  it.each(["consumer", "business"] as const)("ofrece recuperar la cuenta desde la puerta %s", async (access) => {
+    show(access, loginUrl);
+    expect(await screen.findByText("¿No podés entrar?")).toBeVisible();
+    expect(screen.getByRole("link", { name: "Recuperá tu cuenta" })).toHaveAttribute("href", "/recuperar");
+  });
+
   it("prueba el correo pendiente sin iniciar sesión y cancela antes de continuar", async () => {
     const completeLogin = vi.fn();
     let finishCancellation!: () => void;
@@ -129,7 +135,9 @@ describe("LoginPage", () => {
     expect(signupLink).toHaveAttribute("data-variant", "link");
     expect(signupLink).toHaveClass("text-[var(--marca-tx)]");
     expect(within(main).getByRole("link", { name: "Ingresá como empresa" })).toHaveAttribute("href", "/login/empresa");
-    expect(within(main).queryByText("Recuperá tu cuenta")).not.toBeInTheDocument();
+    const recoverLink = within(main).getByRole("link", { name: "Recuperá tu cuenta" });
+    expect(recoverLink).toHaveAttribute("href", "/recuperar");
+    expect(within(main).getByRole("link", { name: "Ingresá como empresa" }).compareDocumentPosition(recoverLink) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(within(main).queryByText("Registrala")).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });

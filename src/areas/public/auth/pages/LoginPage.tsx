@@ -197,6 +197,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
           <AuthLinkRow>{t("login.enterAsPersonQuestion")}<AuthLink to="/login">{t("login.enterHere")}</AuthLink></AuthLinkRow>
         </>}
       </div>
+      <AuthLinkRow>{t("recovery.cannotSignIn")}<AuthLink to="/recuperar">{t("recovery.link")}</AuthLink></AuthLinkRow>
     </div> : <AuthCodeStep destination={step.destination} code={code} onBack={backToEmail}
       onCodeChange={(next) => { setCode(next); if (wrongCode) setError(null); }}
       onVerify={() => void submitCode()} onResend={() => void resendCode()}

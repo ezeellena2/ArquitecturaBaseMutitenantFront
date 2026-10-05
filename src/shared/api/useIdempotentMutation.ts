@@ -22,13 +22,15 @@ function waitForRetry(seconds: number, signal: AbortSignal): Promise<void> {
 // El callback usa la clave con httpClient, por ejemplo:
 // (body, key) => api.post(path, body, { headers: { "Idempotency-Key": key } }).
 // La clave pertenece al formulario montado: red y 5xx la conservan; 4xx definitivos la renuevan.
+// `sameOperation` permite distinguir envíos con datos corregidos o un recorrido nuevo mediante variables completas.
 // `meta` va al manejo global de errores; por ejemplo, `{ handlesError: true }` si la pantalla muestra también red,
 // 5xx y 429 en su lugar.
 export function useIdempotentMutation<TData, TVariables>(
   fn: (variables: TVariables, idempotencyKey: string) => Promise<TData>,
-  options?: { meta?: MutationMeta },
+  options?: { meta?: MutationMeta; sameOperation?: (previous: TVariables, next: TVariables) => boolean },
 ) {
   const keyRef = useRef<string | null>(null);
+  const operationRef = useRef<{ variables: TVariables } | null>(null);
   const lifetimeRef = useRef<AbortController | null>(null);
   keyRef.current ??= globalThis.crypto.randomUUID();
 
@@ -42,6 +44,12 @@ export function useIdempotentMutation<TData, TVariables>(
     retry: false,
     meta: options?.meta,
     mutationFn: async (variables) => {
+      if (options?.sameOperation) {
+        if (operationRef.current && !options.sameOperation(operationRef.current.variables, variables)) {
+          keyRef.current = globalThis.crypto.randomUUID();
+        }
+        operationRef.current = { variables };
+      }
       // Capturamos la clave por envío: otro pedido que termine mientras esperamos no la cambia.
       const key = keyRef.current!;
       const signal = lifetimeRef.current?.signal;
@@ -52,7 +60,10 @@ export function useIdempotentMutation<TData, TVariables>(
         try {
           const result = await fn(variables, key);
           signal.throwIfAborted();
-          if (keyRef.current === key) keyRef.current = globalThis.crypto.randomUUID();
+          if (keyRef.current === key) {
+            keyRef.current = globalThis.crypto.randomUUID();
+            operationRef.current = null;
+          }
           return result;
         } catch (error) {
           if (error instanceof ApiError && error.code === "Request.InProgress") {
@@ -64,6 +75,7 @@ export function useIdempotentMutation<TData, TVariables>(
           if (error instanceof ApiError && error.status >= 400 && error.status < 500
             && keyRef.current === key && !signal.aborted) {
             keyRef.current = globalThis.crypto.randomUUID();
+            operationRef.current = null;
           }
           throw error;
         }

@@ -8,12 +8,12 @@ import { ApiError } from "./ApiError";
 import { api, resetHttpClient } from "./httpClient";
 import { useIdempotentMutation } from "./useIdempotentMutation";
 
-function renderMutation<TData, TVariables>(fn: (variables: TVariables, key: string) => Promise<TData>) {
+function renderMutation<TData, TVariables>(fn: (variables: TVariables, key: string) => Promise<TData>, sameOperation?: (previous: TVariables, next: TVariables) => boolean) {
   const client = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
   function Wrapper({ children }: { children: ReactNode }) {
     return createElement(QueryClientProvider, { client }, children);
   }
-  const hook = renderHook(() => useIdempotentMutation(fn), { wrapper: Wrapper });
+  const hook = renderHook(() => useIdempotentMutation(fn, { sameOperation }), { wrapper: Wrapper });
   return { ...hook, client };
 }
 
@@ -24,6 +24,49 @@ afterEach(() => {
 });
 
 describe("useIdempotentMutation", () => {
+  it.each(["network", "server"] as const)("sameOperation conserva la clave para %s y la renueva al corregir el cuerpo", async (failure) => {
+    const keys: string[] = [];
+    const { result, client } = renderMutation(async (_body: { email: string }, key) => {
+      keys.push(key);
+      throw failure === "network" ? ApiError.network() : new ApiError(503, { code: "General.Unavailable" });
+    }, (previous, next) => previous.email === next.email);
+    for (const email of ["first@example.test", "first@example.test", "second@example.test", "second@example.test"]) {
+      await act(async () => { await result.current.mutateAsync({ email }).catch(() => undefined); });
+    }
+    expect(keys).toHaveLength(4);
+    expect(keys[1]).toBe(keys[0]);
+    expect(keys[2]).not.toBe(keys[0]);
+    expect(keys[3]).toBe(keys[2]);
+    client.clear();
+  });
+
+  it("sameOperation puede separar un recorrido abandonado aunque el cuerpo sea igual", async () => {
+    const keys: string[] = [];
+    const { result, client } = renderMutation(async (_operation: { email: string; revision: number }, key) => {
+      keys.push(key);
+      throw ApiError.network();
+    }, (previous, next) => previous.email === next.email && previous.revision === next.revision);
+    await act(async () => { await result.current.mutateAsync({ email: "first@example.test", revision: 0 }).catch(() => undefined); });
+    await act(async () => { await result.current.mutateAsync({ email: "first@example.test", revision: 1 }).catch(() => undefined); });
+    expect(keys[1]).not.toBe(keys[0]);
+    client.clear();
+  });
+
+  it.each([200, 400, 422])("sameOperation renueva la clave tras una respuesta definitiva %i aun con el mismo cuerpo", async (status) => {
+    const keys: string[] = [];
+    const { result, client } = renderMutation(async (_body: { email: string }, key) => {
+      keys.push(key);
+      if (status !== 200) throw new ApiError(status, { code: "Validation.Failed" });
+      return { id: "created" };
+    }, (previous, next) => previous.email === next.email);
+    for (let attempt = 0; attempt < 2; attempt++) {
+      await act(async () => { await result.current.mutateAsync({ email: "first@example.test" }).catch(() => undefined); });
+    }
+    expect(keys).toHaveLength(2);
+    expect(keys[1]).not.toBe(keys[0]);
+    client.clear();
+  });
+
   it("mantiene la misma clave tras una falla y un reintento manual", async () => {
     const keys: string[] = [];
     let attempt = 0;
@@ -84,7 +127,7 @@ describe("useIdempotentMutation", () => {
     client.clear();
   });
 
-  it("espera y reintenta Request.InProgress con la misma clave", async () => {
+  it.each([false, true])("espera y reintenta Request.InProgress con la misma clave (sameOperation=%s)", async (compareOperation) => {
     vi.useFakeTimers();
     const keys: string[] = [];
     const fn = vi.fn(async (_body: { name: string }, key: string) => {
@@ -92,7 +135,7 @@ describe("useIdempotentMutation", () => {
       if (keys.length === 1) throw new ApiError(409, { code: "Request.InProgress" });
       return { id: "created" };
     });
-    const { result, client } = renderMutation(fn);
+    const { result, client } = renderMutation(fn, compareOperation ? (previous, next) => previous.name === next.name : undefined);
 
     let request: Promise<{ id: string }> | undefined;
     act(() => { request = result.current.mutateAsync({ name: "Acme" }); });
@@ -129,13 +172,13 @@ describe("useIdempotentMutation", () => {
     client.clear();
   });
 
-  it("cancela la espera y no reintenta después de desmontar el formulario", async () => {
+  it.each([false, true])("cancela la espera y no reintenta después de desmontar el formulario (sameOperation=%s)", async (compareOperation) => {
     vi.useFakeTimers();
     const fn = vi.fn(async () => {
       if (fn.mock.calls.length === 1) throw new ApiError(409, { code: "Request.InProgress", retryAfter: 1 });
       return { id: "unexpected" };
     });
-    const hook = renderMutation(fn);
+    const hook = renderMutation(fn, compareOperation ? () => true : undefined);
     let request: Promise<{ id: string }> | undefined;
     act(() => { request = hook.result.current.mutateAsync({ name: "Acme" }); });
     const outcome = request!.then(() => "resolved", (error: unknown) =>
