@@ -293,11 +293,14 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
     <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
       {/* Tableros Pagina-Org y M-Pagina-Org («Borrador: vista previa», v107): el diálogo de 640 (la excepción de «Criterio ·
           Diálogos») con la tarjeta de la página pública tal cual, sobre su fondo, y «Cerrar»; en el teléfono, la hoja
-          desde abajo. Muestra lo que está escrito, aunque todavía no esté guardado. */}
-      <DialogContent size="preview">
+          desde abajo. Muestra lo que está escrito, aunque todavía no esté guardado. En el teléfono (v108) la hoja arranca
+          debajo de la barra de estado, a 52 de arriba, y se desplaza solo el cuerpo: el título y «Cerrar» quedan quietos. */}
+      <DialogContent size="preview" className="max-md:top-[52px] max-md:flex max-md:flex-col max-md:overflow-hidden">
         <DialogHeader><DialogTitle>{t("publicPage:preview")}</DialogTitle><DialogDescription className="sr-only">{t("publicPage:previewDescription")}</DialogDescription></DialogHeader>
-        <div className={cn(publicPageBackdropClass, "flex justify-center px-10 py-6 max-md:mt-2 max-md:mb-4 max-md:p-4")}>
-          <PublicPageCard page={{ name, description, contactEmail, address, website, logoDataUri: logo.dataUri, contactPhone: phoneE164FromDraft(contactPhone) }} />
+        <div data-slot="preview-body" className="max-md:min-h-0 max-md:flex-1 max-md:overflow-y-auto max-md:pt-2 max-md:pb-4">
+          <div className={cn(publicPageBackdropClass, "flex justify-center px-10 py-6 max-md:p-4")}>
+            <PublicPageCard page={{ name, description, contactEmail, address, website, logoDataUri: logo.dataUri, contactPhone: phoneE164FromDraft(contactPhone) }} />
+          </div>
         </div>
         <DialogFooter><Button type="button" onClick={() => setPreviewOpen(false)}>{t("common:actions.close")}</Button></DialogFooter>
       </DialogContent>

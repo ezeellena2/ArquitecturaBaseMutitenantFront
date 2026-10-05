@@ -184,6 +184,11 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
       await user.click(within(bar).getByRole("button", { name: "Vista previa" }));
       const sheet = await screen.findByRole("dialog", { name: "Vista previa" });
       expect(sheet).toHaveClass("bottom-0", "rounded-t-[20px]");
+      // M-Pagina-Org (v108): la hoja arranca debajo de la barra de estado, a 52 de arriba, y lo que se desplaza es el cuerpo
+      // con la tarjeta; el título y «Cerrar» quedan quietos.
+      expect(sheet).toHaveClass("max-md:top-[52px]", "max-md:flex", "max-md:flex-col", "max-md:overflow-hidden");
+      const body = within(sheet).getByRole("heading", { level: 1, name: "Grupo Delta" }).closest("[data-slot='preview-body']");
+      expect(body).toHaveClass("max-md:min-h-0", "max-md:flex-1", "max-md:overflow-y-auto");
       expect(within(sheet).getByRole("heading", { level: 1, name: "Grupo Delta" })).toHaveClass("max-md:text-[26px]");
       expect(within(sheet).getAllByRole("listitem").map((row) => row.textContent)).toEqual(["Correocontacto@example.test"]);
       const footer = sheet.querySelector<HTMLElement>("[data-slot='dialog-footer']")!;
