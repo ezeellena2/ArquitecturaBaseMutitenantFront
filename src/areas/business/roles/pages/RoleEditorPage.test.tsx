@@ -1,7 +1,8 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it } from "vitest";
+import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import type { RoleResponse } from "@/shared/api/types";
 import { server } from "@/test/mocks/server";
@@ -59,10 +60,11 @@ describe("RoleEditorPage", () => {
       http.get("/api/roles/role-created", () => HttpResponse.json(created)),
     );
 
-    renderRouteWithProviders("/org/roles/new", { as: "business-role-manager" });
+    const { container } = renderRouteWithProviders("/org/roles/nuevo", { as: "business-role-manager" });
 
     const name = await screen.findByRole("textbox", { name: "Nombre" });
     expect(name).toHaveAttribute("maxlength", "60");
+    expect(await axe(container)).toHaveNoViolations();
     await user.type(name, "Operaciones");
     await user.type(screen.getByRole("textbox", { name: "Descripción" }), "Consulta los roles.");
     await user.click(screen.getByRole("combobox", { name: "Vale en" }));
@@ -93,7 +95,7 @@ describe("RoleEditorPage", () => {
       http.get("/api/roles/role-created", () => HttpResponse.json(created)),
     );
 
-    renderRouteWithProviders("/org/roles/new", { as: "business-role-manager" });
+    renderRouteWithProviders("/org/roles/nuevo", { as: "business-role-manager" });
 
     const name = await screen.findByRole("textbox", { name: "Nombre" });
     await user.type(name, "Operaciones");
@@ -103,8 +105,13 @@ describe("RoleEditorPage", () => {
     await user.click(await screen.findByRole("checkbox", { name: "Ver roles" }));
     await user.click(screen.getAllByRole("button", { name: "Crear rol" })[0]);
 
+    // Tablero Rol: el nombre repetido se dice debajo del nombre, con el texto del back, y no en la franja de arriba.
     expect(await screen.findByText("Ya existe un rol con ese nombre.")).toBeVisible();
+    expect(name).toHaveAttribute("aria-invalid", "true");
+    expect(name).toHaveAccessibleDescription("Ya existe un rol con ese nombre.");
+    expect(screen.getAllByText("Ya existe un rol con ese nombre.")).toHaveLength(1);
     await user.type(name, " Sur");
+    expect(screen.queryByText("Ya existe un rol con ese nombre.")).not.toBeInTheDocument();
     await user.click(screen.getAllByRole("button", { name: "Crear rol" })[0]);
 
     expect(await screen.findByRole("heading", { name: "Operaciones Sur" })).toBeVisible();
@@ -129,7 +136,7 @@ describe("RoleEditorPage", () => {
       http.get("/api/roles/role-company", () => HttpResponse.json(created)),
     );
 
-    renderRouteWithProviders("/org/roles/new?scope=SpecificCompany&companyId=company-1", { as: "business-e6-admin" });
+    renderRouteWithProviders("/org/roles/nuevo?scope=SpecificCompany&companyId=company-1", { as: "business-e6-admin" });
     await user.type(await screen.findByRole("textbox", { name: "Nombre" }), "Administración Delta");
     // Desde una empresa llega elegida; sin un campo «Empresa» aparte.
     const valeEn = screen.getByRole("combobox", { name: "Vale en" });
@@ -233,6 +240,7 @@ describe("RoleEditorPage", () => {
     renderRouteWithProviders("/org/roles/role-owner", { as: "business-role-manager" });
 
     expect(await screen.findByRole("heading", { name: "Dueño" })).toBeVisible();
+    expect(await screen.findByText("Ver roles")).toBeVisible();
     expect(screen.queryByRole("textbox", { name: "Nombre" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Guardar cambios" })).not.toBeInTheDocument();
     expect(screen.getByText("Ver roles")).toBeVisible();
@@ -244,13 +252,14 @@ describe("RoleEditorPage", () => {
     expect(locked).toBeDisabled();
     expect(locked).toHaveClass("disabled:data-[state=checked]:bg-[var(--borde2)]", "max-md:enabled:data-[state=checked]:border-[var(--marca)]!");
     expect(locked).not.toHaveClass("max-md:data-[state=checked]:border-[var(--marca)]!");
+    expect(screen.getByRole("checkbox", { name: "Todos los permisos de Roles" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Abrir o cerrar Roles" }));
     expect(screen.queryByText("Ver roles")).not.toBeInTheDocument();
     expect(screen.queryByText("Ver miembros")).not.toBeInTheDocument();
   });
 
   it("oculta la creación si solo tiene permiso para leer roles", async () => {
-    renderRouteWithProviders("/org/roles/new", { as: "business-admin" });
+    renderRouteWithProviders("/org/roles/nuevo", { as: "business-admin" });
 
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
   });
@@ -317,21 +326,35 @@ describe("RoleEditorPage", () => {
     );
     renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
 
-    const area = await screen.findByRole("checkbox", { name: "Roles" });
-    const row = area.closest("[data-slot='permission-area']")!;
+    const area = await screen.findByRole("checkbox", { name: "Todos los permisos de Roles" });
+    const row = area.closest<HTMLElement>("[data-slot='permission-area']")!;
     expect(row).toHaveClass("min-h-10", "border-b");
     expect(row).toHaveTextContent("1 de 2");
+    // «1 de 2» a la derecha de su banda.
+    expect(within(row).getByText("1 de 2")).toHaveClass("ml-auto");
     const permission = screen.getByRole("checkbox", { name: "Ver roles" }).closest("label")!;
     expect(permission).toHaveClass("min-h-10", "pl-[52px]");
     expect(screen.queryByText("Los roles y sus permisos.")).not.toBeInTheDocument();
+    // Tablero Rol (.o-gnom): el nombre del área también la cierra y la abre.
+    const user = userEvent.setup();
+    await user.click(within(row).getByRole("button", { name: "Roles" }));
+    expect(screen.queryByRole("checkbox", { name: "Ver roles" })).not.toBeInTheDocument();
+    await user.click(within(row).getByRole("button", { name: "Roles" }));
+    expect(screen.getByRole("checkbox", { name: "Ver roles" })).toBeChecked();
   });
 
-  it("al crear, la acción de salida es «Cancelar»", async () => {
+  // Tablero Rol (v87 y v96): al crear, «Cancelar»; «Vale en» sin asterisco y «Descripción» a todo el ancho de la caja.
+  it("al crear, la acción de salida es «Cancelar», «Vale en» no lleva asterisco y la descripción ocupa las dos columnas", async () => {
     server.use(http.get("/api/permissions", () => HttpResponse.json(permissionGroups)));
-    renderRouteWithProviders("/org/roles/new", { as: "business-role-manager" });
+    renderRouteWithProviders("/org/roles/nuevo", { as: "business-role-manager" });
 
     expect(await screen.findByRole("button", { name: "Cancelar" })).toBeVisible();
     expect(screen.queryByRole("button", { name: "Descartar cambios" })).not.toBeInTheDocument();
+    const valeEn = screen.getByRole("combobox", { name: "Vale en" });
+    expect(valeEn).not.toHaveAttribute("aria-required");
+    expect(document.querySelector(`label[for="${valeEn.id}"]`)).toHaveTextContent(/^Vale en$/);
+    expect(screen.getByRole("textbox", { name: "Nombre" })).toHaveAttribute("aria-required", "true");
+    expect(screen.getByRole("textbox", { name: "Descripción" }).closest("[data-slot='role-description']")).toHaveClass("lg:col-span-2");
     // Tablero Rol: la caja de «Descripción» crece con el texto y no tiene el tirador para cambiarle el tamaño.
     const description = screen.getByRole("textbox", { name: "Descripción" });
     expect(description).toHaveClass("resize-none");
@@ -347,9 +370,13 @@ describe("RoleEditorPage", () => {
         http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
         http.get("/api/roles/role-custom", () => HttpResponse.json(role)),
       );
-      renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+      const { container } = renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
 
       await screen.findByRole("textbox", { name: "Nombre" });
+      // Tablero M-Rol: «Vale en» se lee como texto, de 16 debajo de su rótulo de 13,5.
+      expect(screen.getByText("Toda la organización")).toHaveClass("max-md:text-[16px]");
+      expect(screen.getByText("Vale en")).toHaveClass("max-md:text-[13.5px]");
+      expect(await axe(container)).toHaveNoViolations();
       expect(screen.getByRole("heading", { level: 1, name: "Solo lectura" }).closest("header")).toHaveTextContent("Vale en toda la organización · 0 usuarios lo tienen");
       expect(screen.getByRole("heading", { name: "Datos del rol" })).toHaveClass("sr-only");
       expect(screen.getByRole("heading", { level: 2, name: "Permisos" })).toHaveClass("text-[13.5px]");
@@ -360,5 +387,81 @@ describe("RoleEditorPage", () => {
     } finally {
       restore();
     }
+  });
+
+  // «Criterio · Botones»: un botón no se apaga porque falta algo. Al tocarlo, cada dato que falta lo dice debajo, no se
+  // manda nada, y el error se va al completarlo.
+  // Límite de 10 s: escribe con user-event y corre axe; con toda la suite tarda unos 3 s.
+  it("«Crear rol» no se apaga: sin datos, cada campo dice qué falta y no manda nada", async () => {
+    const user = userEvent.setup();
+    let posts = 0;
+    server.use(
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.post("/api/roles", () => { posts++; return HttpResponse.json("role-x", { status: 201 }); }),
+    );
+    const { container } = renderRouteWithProviders("/org/roles/nuevo", { as: "business-role-manager" });
+
+    const create = (await screen.findAllByRole("button", { name: "Crear rol" }))[0];
+    expect(create).toBeEnabled();
+    await user.click(create);
+
+    const name = screen.getByRole("textbox", { name: "Nombre" });
+    expect(await screen.findByText("Escribí el nombre del rol.")).toBeVisible();
+    expect(name).toHaveAccessibleDescription("Escribí el nombre del rol.");
+    expect(screen.getByRole("combobox", { name: "Vale en" })).toHaveAccessibleDescription("Elegí dónde vale el rol.");
+    expect(screen.getByText("Elegí al menos un permiso.")).toBeVisible();
+    expect(posts).toBe(0);
+    expect(await axe(container)).toHaveNoViolations();
+
+    await user.type(name, "Operaciones");
+    expect(screen.queryByText("Escribí el nombre del rol.")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("combobox", { name: "Vale en" }));
+    await user.click(await screen.findByRole("option", { name: "Toda la organización" }));
+    expect(screen.queryByText("Elegí dónde vale el rol.")).not.toBeInTheDocument();
+    await user.click(await screen.findByRole("checkbox", { name: "Todos los permisos de Roles" }));
+    expect(screen.queryByText("Elegí al menos un permiso.")).not.toBeInTheDocument();
+  }, 10_000);
+
+  // Enmienda de las ADR 0012 y 0034: «Cada empresa» queda para la API; el editor no crea esos roles, aunque lo pida la URL.
+  it("no ofrece «Cada empresa», aunque la URL lo pida", async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json(companies)),
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+    );
+    renderRouteWithProviders("/org/roles/nuevo?scope=AnyCompany", { as: "business-e6-admin" });
+
+    const valeEn = await screen.findByRole("combobox", { name: "Vale en" });
+    expect(valeEn).toHaveTextContent("Elegí dónde vale");
+    expect(screen.getByText("Elegí dónde vale el rol para ver sus permisos.")).toBeVisible();
+    // accesibilidad.md: los desplegables se abren con el teclado. Las empresas pueden llegar después de abrirlo.
+    valeEn.focus();
+    await user.keyboard("{Enter}");
+    await screen.findByRole("option", { name: "Delta S.A." }, { timeout: 3_000 });
+    expect(screen.queryByRole("option", { name: /Cada empresa/ })).not.toBeInTheDocument();
+  });
+
+  // Tableros Rol y Avisos: con cambios, «Cambios sin guardar» en la banda; al irse, «¿Salir sin guardar?» con los textos
+  // de todas las fichas (useEditPage).
+  it("con cambios dice «Cambios sin guardar» y pregunta antes de salir", async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.get("/api/roles/role-custom", () => HttpResponse.json(role)),
+    );
+    const { router } = renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
+    const band = screen.getByRole("heading", { level: 1, name: "Solo lectura" }).parentElement!;
+    expect(band).not.toHaveTextContent("Cambios sin guardar");
+    await user.type(name, " y algo más");
+    expect(band).toHaveTextContent("Cambios sin guardar·Vale en toda la organización · 0 usuarios lo tienen");
+
+    await user.click(screen.getByRole("link", { name: "Volver a Roles y permisos" }));
+    const leave = await screen.findByRole("dialog", { name: "¿Salir sin guardar?" });
+    expect(leave).toHaveTextContent("Se pierde lo que cambiaste acá.");
+    await user.click(within(leave).getByRole("button", { name: "Seguir editando" }));
+    expect(name).toHaveValue("Solo lectura y algo más");
+    expect(router.state.location.pathname).toBe("/org/roles/role-custom");
   });
 });

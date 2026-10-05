@@ -138,7 +138,7 @@ export function buildCases() {
 
   const roleScenarios = [
     { pair: "roles-lista", board: "Roles", mobileBoard: "M-Roles", path: "/org/roles", responses: [...roleListResponses, companyOptions], readyText: "Dueño" },
-    { pair: "rol-crear", board: "Rol", mobileBoard: "M-Rol", path: "/org/roles/new", boardMode: "Crear un rol", responses: [api("GET", "/api/permissions", permissionGroups), companyOptions], readyText: "Elegí dónde vale el rol para ver sus permisos." },
+    { pair: "rol-crear", board: "Rol", mobileBoard: "M-Rol", path: "/org/roles/nuevo", boardMode: "Crear un rol", responses: [api("GET", "/api/permissions", permissionGroups), companyOptions], readyText: "Elegí dónde vale el rol para ver sus permisos." },
     { pair: "rol-recursos-humanos", board: "Rol", mobileBoard: "M-Rol", path: `/org/roles/${humanResourcesRole.id}`, boardMode: "Editar el rol Recursos humanos", role: humanResourcesRole, responses: editorResponses(humanResourcesRole) },
     { pair: "rol-solo-lectura", board: "Rol", mobileBoard: "M-Rol", path: `/org/roles/${companyReaderRole.id}`, boardMode: "Editar el rol Solo lectura", role: companyReaderRole, responses: editorResponses(companyReaderRole) },
     { pair: "rol-dueno", board: "Rol", mobileBoard: "M-Rol", path: `/org/roles/${ownerRole.id}`, boardMode: "Ver el rol Dueño", role: ownerRole, responses: editorResponses(ownerRole) },

@@ -83,10 +83,6 @@
     "companyRequired": "Elegí una empresa.",
     "permissionsRequired": "Elegí al menos un permiso."
   },
-  "unsavedTitle": "¿Salir sin guardar?",
-  "unsavedDescription": "Los cambios que hiciste se van a perder.",
-  "leaveWithoutSaving": "Salir sin guardar",
-  "continueEditing": "Seguir editando",
   "errors": {
     "hasUsers_one": "No se puede inactivar: {{count}} usuario tiene el rol {{name}}. Quitáselo primero.",
     "hasUsers_other": "No se puede inactivar: {{count}} usuarios tienen el rol {{name}}. Quitáselo primero."

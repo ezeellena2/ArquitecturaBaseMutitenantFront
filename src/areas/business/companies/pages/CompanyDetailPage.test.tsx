@@ -95,7 +95,7 @@ describe("CompanyDetailPage", () => {
     expect(screen.getByRole("button", { name: "Estado: todos" })).toBeVisible();
 
     await user.click(screen.getByRole("tab", { name: /Roles/ }));
-    expect(await screen.findByRole("link", { name: "Crear rol" })).toHaveAttribute("href", "/org/roles/new?scope=SpecificCompany&companyId=company-1");
+    expect(await screen.findByRole("link", { name: "Crear rol" })).toHaveAttribute("href", "/org/roles/nuevo?scope=SpecificCompany&companyId=company-1");
     expect(screen.queryByRole("button", { name: "Agregar miembro" })).not.toBeInTheDocument();
     const roles = screen.getByRole("tabpanel");
     for (const name of ["Rol", "Usuarios", "Permisos"]) expect(within(roles).getByRole("columnheader", { name })).toBeVisible();

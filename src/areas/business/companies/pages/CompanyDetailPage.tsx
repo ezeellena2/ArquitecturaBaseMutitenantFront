@@ -233,7 +233,7 @@ export function CompanyDetailPage() {
       phoneSubtitle={<>{data.taxId ? <><TaxIdText value={data.taxId} withType />{" · "}</> : null}<TimeZoneText value={data.timeZoneId} /></>}
       fab={tab === "members"
         ? canAdd ? { label: t("companies:actions.addMember"), onClick: () => { setMutationError(undefined); setAddOpen(true); } } : undefined
-        : canManageRoles ? { label: t("companies:detail.createRole"), to: `/org/roles/new?scope=SpecificCompany&companyId=${encodeURIComponent(id)}` } : undefined}
+        : canManageRoles ? { label: t("companies:detail.createRole"), to: `/org/roles/nuevo?scope=SpecificCompany&companyId=${encodeURIComponent(id)}` } : undefined}
       // Tablero Empresa: el estado primero, con punto y palabra; después el CUIT y la zona, formateados.
       summary={<>
         <span className="inline-flex items-center gap-1.5 text-[var(--t1)]"><span aria-hidden="true" className={`size-2 rounded-full ${data.status === "Active" ? "bg-[var(--punto-ok)]" : "bg-[var(--punto-apagado)]"}`} />{t(`companies:status.${data.status}`)}</span>
@@ -243,7 +243,7 @@ export function CompanyDetailPage() {
       actions={<>
         {canManageCompany ? <Button type="button" variant="outline" onClick={openEdit}>{t("companies:actions.editCompany")}</Button> : null}
         {canAdd && tab === "members" ? <Button type="button" onClick={() => { setMutationError(undefined); setAddOpen(true); }}><Plus aria-hidden="true" className="size-4" />{t("companies:actions.addMember")}</Button> : null}
-        {canManageRoles && tab === "roles" ? <Button asChild><Link to={`/org/roles/new?scope=SpecificCompany&companyId=${encodeURIComponent(id)}`}><Plus aria-hidden="true" className="size-4" />{t("companies:detail.createRole")}</Link></Button> : null}
+        {canManageRoles && tab === "roles" ? <Button asChild><Link to={`/org/roles/nuevo?scope=SpecificCompany&companyId=${encodeURIComponent(id)}`}><Plus aria-hidden="true" className="size-4" />{t("companies:detail.createRole")}</Link></Button> : null}
       </>}
       moreActions={canManageCompany ? { label: t("companies:actions.more"), items: [{ label: t("companies:actions.editCompany"), onSelect: openEdit, hidden: !phone }, { label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), onSelect: () => { if (data.status === "Active") setCompanyStatusConfirm(true); else changeCompanyState.mutate(); }, destructive: data.status === "Active" }] } : undefined}
       // Tablero Empresa: las pestañas abren el contenido, debajo de la banda, con la cantidad en gris.

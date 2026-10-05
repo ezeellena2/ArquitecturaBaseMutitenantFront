@@ -22,11 +22,13 @@ import {
   deleteRole,
   fetchRoles,
   fetchCompanyOptions,
+  roleCompanyOptionsQueryKey,
   rolesQueryKey,
   rolesQueryKeyRoot,
   type RolesQuery,
 } from "../api/roles";
-import { createRoleColumns, displayRoleName, rolePhoneRow } from "../columns";
+import { createRoleColumns, rolePhoneRow } from "../columns";
+import { displayRoleName } from "../lib/systemRoles";
 
 // «Vale en» (tablero Roles): toda la organización o una empresa por nombre, en un solo filtro.
 const roleFilterKeys = ["vale"] as const;
@@ -51,7 +53,7 @@ export function RolesPage() {
   const vale = filters.values.vale;
   const debouncedSearch = query.search ?? undefined;
   const companies = useQuery({
-    queryKey: ["role-company-options"],
+    queryKey: roleCompanyOptionsQueryKey,
     queryFn: fetchCompanyOptions,
     enabled: can("companies.read"),
     meta: { silent: true },
@@ -112,8 +114,8 @@ export function RolesPage() {
       title={t("roles:title")}
       summary={listSummary}
       phoneBody="flush"
-      fab={canManage ? { label: t("roles:create"), to: "/org/roles/new" } : undefined}
-      actions={canManage ? <Button asChild><Link to="/org/roles/new"><Plus aria-hidden="true" className="size-4" />{t("roles:create")}</Link></Button> : undefined}
+      fab={canManage ? { label: t("roles:create"), to: "/org/roles/nuevo" } : undefined}
+      actions={canManage ? <Button asChild><Link to="/org/roles/nuevo"><Plus aria-hidden="true" className="size-4" />{t("roles:create")}</Link></Button> : undefined}
     >
       <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar phoneTools="filter"

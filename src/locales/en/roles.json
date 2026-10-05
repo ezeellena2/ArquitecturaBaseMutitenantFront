@@ -83,10 +83,6 @@
     "companyRequired": "Choose a company.",
     "permissionsRequired": "Choose at least one permission."
   },
-  "unsavedTitle": "Leave without saving?",
-  "unsavedDescription": "Your changes will be lost.",
-  "leaveWithoutSaving": "Leave without saving",
-  "continueEditing": "Continue editing",
   "errors": {
     "hasUsers_one": "Cannot deactivate: {{count}} user has the role {{name}}. Remove it first.",
     "hasUsers_other": "Cannot deactivate: {{count}} users have the role {{name}}. Remove it from them first."

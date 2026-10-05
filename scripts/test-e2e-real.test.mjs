@@ -701,7 +701,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
 
           setStage("crea un segundo rol desde la pantalla real y envía la versión idempotente");
           const uiRoleName = `Rol UI E2E ${randomUUID()}`;
-          await rolesPage.goto(new URL("/org/roles/new", baseUrl).href);
+          await rolesPage.goto(new URL("/org/roles/nuevo", baseUrl).href);
           await rolesPage.getByRole("textbox", { name: "Nombre" }).fill(uiRoleName);
           await rolesPage.getByRole("textbox", { name: "Descripción" }).fill("Creado por el recorrido real del front.");
           setStage("elige que el rol aplica a toda la organización");

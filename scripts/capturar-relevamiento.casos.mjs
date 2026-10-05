@@ -19,7 +19,15 @@ const withBoardCuits = (text) => boardCuits.reduce((result, [before, now]) => re
 //   «Plataforma». Los datos son los del generador de la etapa 6, al día con el tablero Auditoria-Org (v107).
 // - Cada dominio, con `managedEmailCount` («Verificado · 10 correos administrados por …» del tablero Configuracion).
 // - La ficha de una empresa, con la ruta de sus roles (B4): los de cualquier empresa y los suyos, filtrados como el back.
+// - Las rutas que cambiaron de nombre: crear un rol es /org/roles/nuevo (frontend.md §3, tanda 6a).
 const currentAudit = new Map(auditResponses().map((item) => [item.path, item]));
+const renamedRoutes = [["route=%2Forg%2Froles%2Fnew", "route=%2Forg%2Froles%2Fnuevo"]];
+function withCurrentRoute(entry) {
+  const path = entry.app?.path;
+  if (typeof path !== "string") return entry;
+  const next = renamedRoutes.reduce((result, [before, now]) => result.replace(before, now), path);
+  return next === path ? entry : { ...entry, app: { ...entry.app, path: next } };
+}
 function withCurrentContract(entry) {
   const responses = entry.app?.responses;
   if (!responses) return entry;
@@ -43,7 +51,7 @@ function withCurrentContract(entry) {
 const manifests = new Map();
 function stageCases(root, name) {
   if (!manifests.has(name)) {
-    manifests.set(name, JSON.parse(withBoardCuits(readFileSync(path.join(root, "docs/design/capturas", name, "manifest.json"), "utf8"))).cases.map(withCurrentContract));
+    manifests.set(name, JSON.parse(withBoardCuits(readFileSync(path.join(root, "docs/design/capturas", name, "manifest.json"), "utf8"))).cases.map(withCurrentContract).map(withCurrentRoute));
   }
   return manifests.get(name);
 }

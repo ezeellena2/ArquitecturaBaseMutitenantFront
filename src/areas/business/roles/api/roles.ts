@@ -16,6 +16,8 @@ export const rolesQueryKeyRoot = ["roles"] as const;
 export const rolesQueryKey = (query: RolesQuery) => [...rolesQueryKeyRoot, query] as const;
 export const roleQueryKey = (roleId: string) => [...rolesQueryKeyRoot, "detail", roleId] as const;
 export const permissionGroupsQueryKey = ["permissions"] as const;
+/// Las empresas para «Vale en»: el filtro de la lista y el editor.
+export const roleCompanyOptionsQueryKey = ["role-company-options"] as const;
 
 function toSearch(query: RolesQuery): string {
   const params = new URLSearchParams();

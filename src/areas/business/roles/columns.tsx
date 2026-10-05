@@ -3,6 +3,8 @@ import type { RoleResponse, RoleScope } from "@/shared/api/types";
 import { Link } from "react-router";
 import type { ReactNode } from "react";
 import { ListRow } from "@/shared/ui/app/ListRow";
+import { permissionCountInScope } from "./lib/permissionPicker";
+import { displayRoleName } from "./lib/systemRoles";
 
 type TranslateRole = (key: string) => string;
 
@@ -15,7 +17,8 @@ const roleColumnDefinitions = {
 
 export const roleColumns: Column<RoleResponse>[] = Object.values(roleColumnDefinitions);
 
-function scopeLabel(scope: RoleScope, t: TranslateRole, companyName?: string): string {
+/// «Vale en»: toda la organización, cada empresa (los roles que ya valen así) o el nombre de la empresa.
+export function roleScopeLabel(scope: RoleScope, t: TranslateRole, companyName?: string): string {
   switch (scope) {
     case "Organization": return t("roles:scope.organization");
     case "AnyCompany": return t("roles:scope.company");
@@ -23,25 +26,7 @@ function scopeLabel(scope: RoleScope, t: TranslateRole, companyName?: string): s
   }
 }
 
-export function displayRoleName(role: RoleResponse, t: TranslateRole): string {
-  if (!role.isSystemRole) return role.name;
-  if (role.name === "TenantAdmin") return t("roles:systemRoles.owner");
-  if (role.name === "CompanyAdmin") return t("roles:systemRoles.companyAdmin");
-  return role.name;
-}
-
-export function displayRoleDescription(role: RoleResponse, t: TranslateRole): string | null {
-  if (role.description) return role.description;
-  if (role.name === "TenantAdmin") return t("roles:systemRoles.ownerDescription");
-  if (role.name === "CompanyAdmin") return t("roles:systemRoles.companyAdminDescription");
-  return null;
-}
-
-function visiblePermissionCount(role: RoleResponse): number {
-  return role.permissions.filter((code) => role.scope === "Organization"
-    ? !code.startsWith("company.")
-    : code.startsWith("company.")).length;
-}
+const visiblePermissionCount = (role: RoleResponse) => permissionCountInScope(role.permissions, role.scope);
 
 export function createRoleColumns(t: TranslateRole, companyNames: ReadonlyMap<string, string> = new Map()): Column<RoleResponse>[] {
   return [
@@ -55,7 +40,7 @@ export function createRoleColumns(t: TranslateRole, companyNames: ReadonlyMap<st
       cell: (role) => <Link className="block truncate font-medium text-[var(--t1)] hover:underline" to={`/org/roles/${encodeURIComponent(role.id)}`}>{displayRoleName(role, t)}</Link>,
       detail: (role) => role.isSystemRole ? t("roles:system") : null,
     },
-    { ...roleColumnDefinitions.scope, header: t("roles:columns.scope"), type: "custom", cell: (role) => <span>{scopeLabel(role.scope, t, role.companyId ? companyNames.get(role.companyId) : undefined)}</span> },
+    { ...roleColumnDefinitions.scope, header: t("roles:columns.scope"), type: "custom", cell: (role) => <span>{roleScopeLabel(role.scope, t, role.companyId ? companyNames.get(role.companyId) : undefined)}</span> },
     { ...roleColumnDefinitions.userCount, header: t("roles:columns.users"), className: "w-[112px]" },
     { ...roleColumnDefinitions.permissions, header: t("roles:columns.permissions"), className: "w-[112px]", value: visiblePermissionCount },
   ];
@@ -64,7 +49,7 @@ export function createRoleColumns(t: TranslateRole, companyNames: ReadonlyMap<st
 /// Tablero M-Roles: en el teléfono cada rol es una fila con cuántos lo tienen a la derecha, dónde vale (y si es de
 /// sistema) y cuántos permisos tiene.
 export function rolePhoneRow(role: RoleResponse, t: TranslateRole & ((key: string, options: { count: number }) => string), companyNames: ReadonlyMap<string, string>, trailing: ReactNode): ReactNode {
-  const scope = scopeLabel(role.scope, t, role.companyId ? companyNames.get(role.companyId) : undefined);
+  const scope = roleScopeLabel(role.scope, t, role.companyId ? companyNames.get(role.companyId) : undefined);
   return <ListRow key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={displayRoleName(role, t)} meta={t("roles:phone.users", { count: role.userCount })}
     lines={[role.isSystemRole ? `${t("roles:system")} · ${scope}` : scope, t("roles:phone.permissions", { count: visiblePermissionCount(role) })]} trailing={trailing} />;
 }

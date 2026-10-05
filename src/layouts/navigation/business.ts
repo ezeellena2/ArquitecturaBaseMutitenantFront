@@ -10,7 +10,7 @@ export const businessRoutes = {
   users: { path: "/org/usuarios", permission: "users.read", labelKey: "navigation.users", icon: Users },
   user: { path: "/org/usuarios/:memberId", permission: "users.read" },
   roles: { path: "/org/roles", permission: "roles.read", labelKey: "navigation.roles", phoneLabelKey: "navigation.rolesShort", icon: Key },
-  newRole: { path: "/org/roles/new", permission: "roles.manage" },
+  newRole: { path: "/org/roles/nuevo", permission: "roles.manage" },
   role: { path: "/org/roles/:roleId", permission: "roles.read" },
   companies: { path: "/org/empresas", permission: "companies.read", labelKey: "navigation.companies", icon: Building2 },
   company: { path: "/org/empresas/:companyId", permission: "companies.read" },

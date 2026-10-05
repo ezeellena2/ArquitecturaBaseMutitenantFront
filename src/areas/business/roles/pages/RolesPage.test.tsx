@@ -78,7 +78,7 @@ describe("RolesPage", () => {
 
     expect(await screen.findByRole("heading", { level: 1, name: "Roles y permisos" })).toBeVisible();
     expect(await screen.findByRole("link", { name: "Dueño" })).toHaveAttribute("href", "/org/roles/role-owner");
-    expect(screen.getByRole("link", { name: "Crear rol" })).toHaveAttribute("href", "/org/roles/new");
+    expect(screen.getByRole("link", { name: "Crear rol" })).toHaveAttribute("href", "/org/roles/nuevo");
     expect(screen.getByRole("columnheader", { name: "Rol" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Vale en" })).toBeVisible();
     // Tablero Roles: el nombre en el color del texto, «Vale en» a la izquierda y los números en columnas angostas.
