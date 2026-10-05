@@ -1,7 +1,7 @@
 import type { TFunction } from "i18next";
 import { describe, expect, it } from "vitest";
 import { ApiError } from "@/shared/api/ApiError";
-import { loginCodeErrorKey, loginCodeMessage } from "./errors";
+import { businessSignupErrorField, loginCodeErrorKey, loginCodeMessage } from "./errors";
 
 describe("errores del código de ingreso", () => {
   it.each([
@@ -37,5 +37,24 @@ describe("mensaje del código", () => {
     ["Identity.Account.Suspended", {}, "login.accountSuspended", ["auth:login.contactSupport"]],
   ])("%s dice su texto y sus líneas de abajo", (code, extra, text, details) => {
     expect(loginCodeMessage(new ApiError(400, { code, ...extra }), t)).toEqual({ text, details });
+  });
+});
+
+// Tablero Registro-Empresa: lo que el back rechaza de la dirección o del CUIT va debajo de ese campo, con el texto del
+// tablero; lo demás (el límite, el registro cerrado), en su lugar.
+describe("rechazos del registro de empresas", () => {
+  it.each([
+    ["Tenancy.TenantSlug.Reserved", "slug", "businessSignup.slugReserved"],
+    ["Tenancy.TenantSlug.Taken", "slug", "businessSignup.slugTaken"],
+    ["Tenancy.TenantSlug.Invalid", "slug", "businessSignup.slugInvalid"],
+    ["TaxIds.TaxId.Invalid", "taxNumber", "businessSignup.taxIdInvalid"],
+  ])("%s va en el campo %s", (code, field, key) => {
+    expect(businessSignupErrorField(new ApiError(409, { code }))).toEqual({ field, key });
+  });
+
+  it("el límite, el registro cerrado y lo que no es del back no tienen campo", () => {
+    expect(businessSignupErrorField(new ApiError(409, { code: "Tenancy.Organization.LimitReached" }))).toBeNull();
+    expect(businessSignupErrorField(new ApiError(403, { code: "Auth.BusinessSignup.Closed" }))).toBeNull();
+    expect(businessSignupErrorField(new Error("bug"))).toBeNull();
   });
 });

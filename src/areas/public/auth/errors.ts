@@ -30,3 +30,19 @@ export function loginCodeMessage(error: ApiError, t: TFunction): AuthMessageCont
   if (error.code === "Identity.Account.Suspended") details.push(t("auth:login.contactSupport"));
   return { text: t(loginCodeErrorKey(error)), details };
 }
+
+/// Los datos de «Tu organización» que pueden llevar un error debajo.
+export type BusinessSignupField = "slug" | "taxNumber";
+
+const businessSignupFields: Readonly<Record<string, { field: BusinessSignupField; key: string }>> = {
+  "Tenancy.TenantSlug.Reserved": { field: "slug", key: "businessSignup.slugReserved" },
+  "Tenancy.TenantSlug.Taken": { field: "slug", key: "businessSignup.slugTaken" },
+  "Tenancy.TenantSlug.Invalid": { field: "slug", key: "businessSignup.slugInvalid" },
+  "TaxIds.TaxId.Invalid": { field: "taxNumber", key: "businessSignup.taxIdInvalid" },
+};
+
+/// Tablero Registro-Empresa: lo que el back rechaza de la dirección o del CUIT va debajo de ese campo, con el texto del
+/// tablero; lo demás (el límite, el registro cerrado) lo resuelve la pantalla.
+export function businessSignupErrorField(error: unknown): { field: BusinessSignupField; key: string } | null {
+  return error instanceof ApiError && error.code ? businessSignupFields[error.code] ?? null : null;
+}
