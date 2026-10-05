@@ -475,7 +475,6 @@ src/
 │       ├── ImportantNotice.tsx                      aviso importante: motivo en caja roja suave, «Qué podés hacer» y «Entendido»
 │       ├── ReadOnlyField.tsx                        lo que no se edita, como texto (nunca un campo gris)
 │       ├── SearchSelect.tsx                         desplegable de una opción; con más de 10, suma un buscador
-│       ├── SearchInput.tsx                          [E1] de la base, adaptado a los tokens
 │       ├── SegmentedControl.tsx                     [E1] de la base, adaptado a los tokens
 │       ├── Sheet.tsx                                [E1] P10 hoja desde abajo en el teléfono, con manija y botones de 48 a lo ancho: la forma del Dialog y de la hoja de filtros
 │       ├── Spinner.tsx                              [E1] de la base, adaptado a los tokens
