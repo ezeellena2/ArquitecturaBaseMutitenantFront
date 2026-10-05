@@ -594,7 +594,8 @@ function b6cCases(root) {
   const sentCode = (width) => ({
     responses: [...stageApp("agregar-correo", width).responses, api("POST", "/api/me/login-methods", { methodId: "nuevo", resendAfterSeconds: 60 }, 202)],
     actions: [...stageApp("agregar-correo", width).actions, appFill("Correo", "lucia.trabajo@gmail.com"), appClick("button", "Enviar código")],
-    readySelector: undefined, readyText: "Te mandamos un código a lucia.trabajo@gmail.com.",
+    // Tanda 6d-5: el correo va tapado, como en Cuenta-Verificar.
+    readySelector: undefined, readyText: "Te mandamos un código a lu•••@gmail.com.",
   });
   const wrongCode = (width) => ({
     responses: [...stageApp("verificar-correo", width).responses,
