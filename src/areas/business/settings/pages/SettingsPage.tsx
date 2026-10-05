@@ -217,7 +217,7 @@ function SettingsEditor({ settings, loadError, reload }: {
                   <StatusMark tones={domainStatusTones} value={domain.status} className="hidden max-md:mr-1.5 max-md:inline-block max-md:align-middle" />
                   {/* Tableros Configuracion y M-Configuracion: el verificado dice cuántos correos administra la organización
                       («Verificado · 10 correos administrados por Grupo Delta», con managedEmailCount del back). */}
-                  <span><span>{t(`settings:domains.status.${domain.status}`)}</span>{domain.status === "Verified"
+                  <span><span>{t(`settings:domains.status.${domain.status}`)}</span>{domain.status === "Verified" && domain.managedEmailCount > 0
                     ? ` · ${t("settings:domains.managedEmails", { count: domain.managedEmailCount, organization: organizationName })}` : null}</span>
                 </span>}>
                 {domain.status === "Pending" && canManage && domain.txtRecordValue ? <Button type="button" variant="outline" size="sm" onClick={() => openVerify(domain)}>{t("settings:domains.verify")}</Button> : null}
@@ -264,7 +264,10 @@ function SettingsEditor({ settings, loadError, reload }: {
       open={domainToRemove !== null}
       onOpenChange={(open) => { if (!open) setDomainToRemove(null); }}
       title={t("settings:domains.removeTitle", { domain: domainToRemove?.domain ?? "" })}
-      description={t("settings:domains.removeDescription", { domain: domainToRemove?.domain ?? "", organization: organizationName })}
+      // Tableros Configuracion-Quitar y M-Configuracion-Quitar (v108): con correos administrados, qué pasa con ellos («Los
+      // 10 que ya lo están siguen igual.», «El que ya lo está sigue igual.»); sin ninguno, solo lo de los correos nuevos.
+      description={[t("settings:domains.removeDescription", { domain: domainToRemove?.domain ?? "", organization: organizationName }),
+        ...(domainToRemove && domainToRemove.managedEmailCount > 0 ? [t("settings:domains.removeKept", { count: domainToRemove.managedEmailCount })] : [])].join(" ")}
       confirmLabel={t("settings:domains.remove")}
       destructive
       onConfirm={() => { if (domainToRemove) removeDomain.mutate(domainToRemove); }}

@@ -77,12 +77,17 @@ describe("SettingsPage", () => {
         { ...verified, managedEmailCount: 10 },
         { ...verified, id: "domain-2", domain: "delta-norte.example.test", managedEmailCount: 1 },
         { ...pending, id: "domain-3", domain: "delta-sur.example.test", managedEmailCount: 0 },
+        { ...verified, id: "domain-4", domain: "delta-oeste.example.test", managedEmailCount: 0 },
       ])),
     );
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
     expect((await screen.findByText("delta.example.test")).closest("li")).toHaveTextContent("Verificado · 10 correos administrados por Empresa A");
     expect(screen.getByText("delta-norte.example.test").closest("li")).toHaveTextContent("Verificado · 1 correo administrado por Empresa A");
+    // Configuracion-Quitar (v108, «Ningún correo administrado»): sin correos administrados, «Verificado» va sin la cantidad.
+    const unused = screen.getByText("delta-oeste.example.test").closest("li")!;
+    expect(unused).toHaveTextContent("Verificado");
+    expect(unused).not.toHaveTextContent("administrad");
     const pendingRow = screen.getByText("delta-sur.example.test").closest("li")!;
     expect(pendingRow).toHaveTextContent("Pendiente");
     expect(pendingRow).not.toHaveTextContent("administrad");
@@ -167,11 +172,17 @@ describe("SettingsPage", () => {
     expect(await screen.findByText("Guardamos la configuración.")).toBeVisible();
   });
 
-  it("quita un dominio con su versión y el texto del tablero", async () => {
+  // Tableros Configuracion-Quitar y M-Configuracion-Quitar (v108): el texto dice qué pasa con los correos que ya administra
+  // la organización, para 10, para 1 y, sin ninguno, sin esa frase.
+  it.each([
+    [10, "Los correos nuevos de delta.example.test ya no quedan administrados por Empresa A. Los 10 que ya lo están siguen igual."],
+    [1, "Los correos nuevos de delta.example.test ya no quedan administrados por Empresa A. El que ya lo está sigue igual."],
+    [0, "Los correos nuevos de delta.example.test ya no quedan administrados por Empresa A."],
+  ])("quita un dominio con %i correos administrados, con su versión y el texto del tablero", async (managedEmailCount, text) => {
     let removeUrl: URL | undefined;
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
-      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([{ ...verified, managedEmailCount }])),
       http.delete("/api/organization/settings/domains/:domainId", ({ request }) => { removeUrl = new URL(request.url); return new HttpResponse(null, { status: 204 }); }),
     );
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
@@ -180,10 +191,8 @@ describe("SettingsPage", () => {
     (await screen.findByRole("button", { name: "Acciones de delta.example.test" })).focus();
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("menuitem", { name: "Quitar" }));
-    // Tablero Configuracion-Quitar. La API ya manda la cantidad (managedEmailCount), pero el tablero dibuja solo «Los 10 que
-    // ya lo están siguen igual.»: el texto para uno y para ninguno queda para Diseño, y mientras tanto va sin el número.
     const dialog = await screen.findByRole("dialog", { name: "¿Quitar delta.example.test?" });
-    expect(dialog).toHaveTextContent("Los correos nuevos de delta.example.test ya no quedan administrados por Empresa A. Los que ya lo están siguen igual.");
+    expect(within(dialog).getByText(/^Los correos nuevos/).textContent).toBe(text);
     await user.click(within(dialog).getByRole("button", { name: "Quitar" }));
     await waitFor(() => expect(removeUrl?.searchParams.get("version")).toBe("4"));
   });
