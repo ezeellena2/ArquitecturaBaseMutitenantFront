@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import type { CompanyResponse, RoleResponse } from "@/shared/api/types";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
+import { orderLike } from "@/shared/lib/orderLike";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
@@ -23,7 +24,8 @@ type CompanyForm = z.infer<ReturnType<typeof companyFormSchema>>;
 
 /// «Sumar empresa» y «Cambiar roles» de la ficha de Usuario (tablero Usuario, v100 y v104; M-Usuario-Empresa en el
 /// teléfono). Se monta solo mientras está abierto. «Sumar» no se apaga («Criterio · Botones»): sin empresa, el campo dice
-/// qué falta. «Roles en la empresa» aparece al elegir la empresa y es opcional. Guarda al momento, con el guardado de la
+/// qué falta. «Guardar» de «Cambiar roles» se apaga sin cambios: sacar un rol y volver a ponerlo no cuenta (`orderLike`).
+/// «Roles en la empresa» aparece al elegir la empresa y es opcional. Guarda al momento, con el guardado de la
 /// ficha; su error, también el 409, va arriba de sus botones y se va al cambiar algo.
 export function UserCompanyDialog({ mode, assignment, companyName, companies, roles, pending, error, returnFocusTo, onEdit, onSave, onClose }: {
   mode: "add" | "roles";
@@ -66,13 +68,15 @@ export function UserCompanyDialog({ mode, assignment, companyName, companies, ro
           </FormField> : null}
           {company.field.value ? <RolesField label={t("users:invite.companyRoles")} allLabel={t("users:detail.allRoles")}
             options={companyRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value}
-            onChange={(next) => { roleIds.field.onChange(next); onEdit(); }} placeholder={t("users:detail.noRoles")} /> : null}
+            onChange={(next) => { roleIds.field.onChange(orderLike(form.formState.defaultValues?.roleIds, next)); onEdit(); }} placeholder={t("users:detail.noRoles")} /> : null}
           {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
           {error ? <FormError message={error} /> : null}
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" disabled={pending} onClick={onClose}>{t("common:actions.cancel")}</Button>
-          <Button type="submit" pending={pending}>{mode === "add" ? t("users:detail.addCompanyConfirm") : t("users:detail.saveCompanyRoles")}</Button>
+          <Button type="submit" disabled={mode === "roles" && !form.formState.isDirty} pending={pending}>
+            {mode === "add" ? t("users:detail.addCompanyConfirm") : t("users:detail.saveCompanyRoles")}
+          </Button>
         </DialogFooter>
       </form>
     </DialogContent>

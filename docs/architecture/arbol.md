@@ -302,7 +302,7 @@ src/
 │   │   │   ├── columns.tsx                          las columnas (el correo debajo del nombre, la empresa con su rol, «Vence…» debajo del estado), la fila del teléfono y los tonos de los estados
 │   │   │   ├── errors.ts                            el texto de un error de la ficha (la última Dueña según el caso, decisión 29)
 │   │   │   ├── lib/
-│   │   │   │   ├── access.ts                        los roles de la organización de una persona, lo elegido en el orden de lo guardado, las empresas que se pueden cambiar y las oraciones de los avisos
+│   │   │   │   ├── access.ts                        los roles de la organización de una persona, las empresas que se pueden cambiar y las oraciones de los avisos
 │   │   │   │   └── access.test.ts                   tests de access
 │   │   │   ├── components/
 │   │   │   │   ├── RolesField.tsx                   roles con «Todos» como casilla junto al rótulo (tablero Usuario)
@@ -535,6 +535,8 @@ src/
 │   ├── lib/                                         [E0]
 │   │   ├── initials.ts                              las iniciales de las dos primeras palabras, en mayúscula (Avatar)
 │   │   ├── initials.test.ts                         tests de initials
+│   │   ├── orderLike.ts                             lo elegido en el orden de lo guardado: sacar un rol y volver a ponerlo no es un cambio (Usuario, «Roles en …» y «Roles de …»)
+│   │   ├── orderLike.test.ts                        tests de orderLike
 │   │   └── utils.ts                                 [E0] de la base; cn; shared/lib/dateTime.ts no se copia (shared/format nace en [E1])
 │   ├── phone/                                       [E1] interpretación telefónica; países desde shared/referenceData
 │   │   ├── countries.ts                             ordena/filtra Countries del catálogo; libphonenumber valida prefijos
@@ -714,6 +716,7 @@ src/
     ├── visualApp.tsx                                el arnés visual de las capturas: la app con un fixture de /api/me (?as=) y createQueryClient
     ├── access-paths.test.ts                         ningún literal «/org» ni «/login/empresa» fuera de tenancy/access.ts
     ├── proxy-prefixes.test.ts                       los prefijos del proxy de Vite son los del back
+    ├── submit-buttons.test.ts                       ningún botón de envío se apaga porque falta algo o porque algo está mal; solo «Guardar cambios» sin cambios y lo que espera (formularios.md)
     ├── roles-contract.test.ts                       el contrato de Roles entre back y front
     ├── platform-contract.test.ts                    los contratos de Plataforma entre back y front
     ├── organization-audit-contract.test.ts          el contrato de la auditoría de la organización entre back y front

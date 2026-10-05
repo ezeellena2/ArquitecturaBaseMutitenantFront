@@ -16,6 +16,7 @@ import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
+import { orderLike } from "@/shared/lib/orderLike";
 import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
@@ -40,7 +41,7 @@ import { ChoiceSheet, CheckRow, RadioRow } from "../components/AccessSheets";
 import { RolesField } from "../components/RolesField";
 import { UserCompanyDialog } from "../components/UserCompanyDialog";
 import { userErrorMessage, type UserAction } from "../errors";
-import { companyAssignments, orderLike, organizationRoleIds, sentence, type CompanyAssignment } from "../lib/access";
+import { companyAssignments, organizationRoleIds, sentence, type CompanyAssignment } from "../lib/access";
 
 /// El acceso a la organización no tiene reglas propias en la pantalla: lo que el back rechaza va en la franja.
 const accessFormSchema = z.object({ isActive: z.boolean(), roleIds: z.array(z.string()) });
@@ -289,7 +290,8 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
         ? <Button type="button" variant="danger" onClick={() => setConfirmAction("remove")}>{t("users:actions.remove")}</Button>
         : <>
           <Button type="button" variant="outline" onClick={discard}>{t("users:detail.discard")}</Button>
-          <Button type="submit" form="user-access" disabled={!isDirty || !roles[0].data || !roles[1].data || !companies.data} pending={save.isPending}>
+          {/* «Criterio · Botones»: se apaga solo sin cambios; no espera a los roles ni a las empresas. */}
+          <Button type="submit" form="user-access" disabled={!isDirty} pending={save.isPending}>
             {t("users:detail.save")}
           </Button>
         </> : undefined}>

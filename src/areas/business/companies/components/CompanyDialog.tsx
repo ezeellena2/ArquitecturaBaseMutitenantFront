@@ -99,6 +99,7 @@ export function CompanyDialog({ company, inDetail = false, onClose, returnFocusT
   }
 
   // «Criterio · Botones»: el botón no se apaga con el nombre o el CUIT mal; el campo dice qué corregir y no se manda nada.
+  // Al editar, «Guardar cambios» se apaga sin cambios; «Crear empresa» nunca.
   // Lo que sigue al guardado va en sus callbacks: «Reintentar» (sin conexión) los vuelve a correr.
   const submit = form.handleSubmit((values) => {
     clear();
@@ -124,7 +125,9 @@ export function CompanyDialog({ company, inDetail = false, onClose, returnFocusT
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={close}>{t("common:actions.cancel")}</Button>
-          <Button type="submit" pending={create.isPending || update.isPending}>{t(company ? "companies:form.save" : "companies:form.create")}</Button>
+          <Button type="submit" disabled={Boolean(company) && !form.formState.isDirty} pending={create.isPending || update.isPending}>
+            {t(company ? "companies:form.save" : "companies:form.create")}
+          </Button>
         </DialogFooter>
       </form>
     </DialogContent>

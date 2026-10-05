@@ -314,7 +314,9 @@ export function BusinessSignupPage() {
                     inputMode="numeric" autoComplete="off" placeholder="30-12345678-1" maxLength={11} />
                 </FormField>
                 <FormError message={requestErrorText} />
-                <Button type="submit" size="lg" className="w-full" disabled={!canCreate} pending={createMutation.isPending} pendingLabel={t("businessSignup.creating")}>{t("businessSignup.create")}</Button>
+                {/* «Criterio · Botones»: no se apaga por lo escrito (los términos ya se aceptaron en el primer paso); solo
+                    mientras carga la protección del envío. */}
+                <Button type="submit" size="lg" className="w-full" disabled={!antiforgery.data?.requestToken} pending={createMutation.isPending} pendingLabel={t("businessSignup.creating")}>{t("businessSignup.create")}</Button>
               </form>}
   </AuthLayout>;
 

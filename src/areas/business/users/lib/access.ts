@@ -11,13 +11,6 @@ export function organizationRoleIds(user: Pick<OrganizationUserResponse, "roles"
   return user.roles.filter((role) => role.scope === "Organization").map((role) => role.id);
 }
 
-/// Lo elegido, en el orden de lo guardado: lo que ya estaba conserva su lugar y lo nuevo va al final, en el orden en que
-/// se eligió. Así, sacar un rol y volver a ponerlo no cuenta como un cambio.
-export function orderLike(saved: readonly (string | undefined)[] | undefined, chosen: readonly string[]): string[] {
-  const kept = (saved ?? []).filter((id): id is string => id !== undefined && chosen.includes(id));
-  return [...kept, ...chosen.filter((id) => !kept.includes(id))];
-}
-
 /// Las empresas de la persona que se pueden cambiar desde la ficha: una inactiva, en la ficha o en el registro de
 /// empresas, se conserva como está (tablero Usuario).
 export function companyAssignments(

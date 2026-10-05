@@ -1,6 +1,6 @@
 import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
@@ -441,6 +441,44 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await user.keyboard("{Escape}");
     expect(subline("Lucía Fernández")).not.toHaveTextContent(/Cambios sin guardar/);
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
+  });
+
+  // «Criterio · Botones» (6d-4a): «Guardar cambios» se apaga solo sin cambios. No espera a las empresas: con un cambio
+  // se prende aunque todavía no hayan llegado.
+  it("«Guardar cambios» se prende con un cambio aunque las empresas no hayan llegado", async () => {
+    const user = userEvent.setup();
+    api(member);
+    server.use(http.get("/api/companies/paged", async () => { await delay("infinite"); return HttpResponse.json(page([company])); }));
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+
+    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
+  });
+
+  // «Criterio · Botones» (6d-4a): «Roles en …» de una empresa edita y su «Guardar» se apaga sin cambios; sacar un rol y
+  // volver a ponerlo no cuenta como un cambio. «Sumar» de «Sumar empresa» crea y no se apaga.
+  it("«Roles en …» de una empresa: «Guardar» apagado sin cambios; sacar un rol y volver a ponerlo no cuenta", async () => {
+    const user = userEvent.setup();
+    const manager = { ...ownerRole, id: "role-company-manager", name: "Administrador", isSystemRole: false };
+    const seller = { ...manager, id: "role-seller", name: "Vendedor" };
+    versionedApi({ ...member, companies: [{ companyId: company.id, companyName: company.name, status: "Active", roles: [manager, seller] }] });
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+    await open(user, within(screen.getByRole("region", { name: "Empresas" })).getByRole("button", { name: "Acciones de Delta S.A." }));
+    await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
+    const dialog = await screen.findByRole("dialog", { name: "Roles en Delta S.A." });
+
+    const save = within(dialog).getByRole("button", { name: "Guardar" });
+    expect(save).toBeDisabled();
+    await open(user, within(dialog).getByRole("button", { name: "Roles en la empresa" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
+    expect(save).toBeEnabled();
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Administrador" }));
+    await user.keyboard("{Escape}");
+    expect(save).toBeDisabled();
   });
 
   it("muestra en la franja el error del último Dueño y el conflicto de concurrencia", async () => {

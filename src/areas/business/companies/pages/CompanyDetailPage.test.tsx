@@ -308,6 +308,47 @@ describe("CompanyDetailPage", () => {
     expect(puts).toBe(0);
   });
 
+  // «Criterio · Botones» (6d-4a): como en Configuración, Usuario, Mi cuenta y Roles, «Guardar cambios» de «Editar
+  // empresa» se apaga sin cambios. Un cambio lo prende y volver a lo guardado lo apaga.
+  it("«Editar empresa» sin cambios: «Guardar cambios» apagado; un cambio lo prende y volver a lo guardado lo apaga", async () => {
+    detailApi([member]);
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Editar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar empresa" });
+
+    const save = within(dialog).getByRole("button", { name: "Guardar cambios" });
+    expect(save).toBeDisabled();
+    const name = within(dialog).getByRole("textbox", { name: "Nombre" });
+    await user.type(name, " Norte");
+    expect(save).toBeEnabled();
+    await user.clear(name);
+    await user.type(name, "Delta S.A.");
+    expect(save).toBeDisabled();
+  });
+
+  // «Criterio · Botones» (6d-4a): «Roles de …» edita los roles de un miembro y su «Guardar cambios» se apaga sin cambios.
+  // Sacar un rol y volver a ponerlo no cuenta como un cambio, como en la ficha de Usuario.
+  it("«Roles de …» sin cambios: «Guardar cambios» apagado; sacar un rol y volver a ponerlo no cuenta", async () => {
+    const user = userEvent.setup();
+    detailApi([{ ...member, roles: [companyAdmin, ownRole] }]);
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    expect(await screen.findByText("Lucía Fernández")).toBeVisible();
+    (await screen.findByRole("button", { name: "Acciones para Lucía Fernández" })).focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
+    const dialog = await screen.findByRole("dialog", { name: "Roles de Lucía Fernández" });
+
+    const save = within(dialog).getByRole("button", { name: "Guardar cambios" });
+    expect(save).toBeDisabled();
+    await user.click(within(dialog).getByRole("button", { name: "Roles en la empresa" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
+    expect(save).toBeEnabled();
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Administrador" }));
+    await user.keyboard("{Escape}");
+    expect(save).toBeDisabled();
+  });
+
   // errores.md: un 404 en una ficha (también un id de otra organización) es «No encontramos esta página», como Error-Org.
   it("si la empresa no existe, dice que no encontramos la página y lleva al inicio", async () => {
     detailApi([member]);
@@ -637,9 +678,10 @@ describe("CompanyDetailPage", () => {
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Editar empresa" }));
     const dialog = await screen.findByRole("dialog", { name: "Editar empresa" });
+    const name = within(dialog).getByRole("textbox", { name: "Nombre" });
+    await user.type(name, " Norte");
     await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
 
-    const name = within(dialog).getByRole("textbox", { name: "Nombre" });
     await waitFor(() => expect(name).toHaveAccessibleDescription("El nombre de la empresa es demasiado largo."));
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
   });

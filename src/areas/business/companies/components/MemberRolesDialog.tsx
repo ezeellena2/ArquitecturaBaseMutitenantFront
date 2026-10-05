@@ -9,6 +9,7 @@ import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { CompanyMemberResponse, RoleResponse, UpdateCompanyMemberRolesRequest } from "@/shared/api/types";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
+import { orderLike } from "@/shared/lib/orderLike";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
@@ -29,6 +30,7 @@ const serverFields: Record<string, keyof MemberRolesForm> = { roleIds: "roleIds"
 /**
  * «Roles de …» (tablero Empresa, v100): el diálogo chico, sin bajada debajo del título («Criterio · Diálogos»). Con React
  * Hook Form y zod, como Roles: es dueño de los roles elegidos, del guardado con la versión de la membresía y de su error.
+ * «Guardar cambios» se apaga sin cambios («Criterio · Botones»): sacar un rol y volver a ponerlo no cuenta (`orderLike`).
  * Se monta solo mientras está abierto y, al cerrar, le devuelve el foco al ⋮ de la fila (`returnFocusTo`), porque la
  * opción se fue con el menú.
  */
@@ -75,14 +77,14 @@ export function MemberRolesDialog({ companyId, member, roles, onClose, returnFoc
         <DialogBody>
           <FormField label={t("companies:editMemberRoles.roles")} error={form.formState.errors.roleIds?.message}>
             <MultiSelect options={roles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value}
-              onChange={(next) => { roleIds.field.onChange(next); clear(); }} placeholder={t("companies:addMember.noRoles")} />
+              onChange={(next) => { roleIds.field.onChange(orderLike(form.formState.defaultValues?.roleIds, next)); clear(); }} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* Tablero Empresa (v97): el error, una sola vez, en la franja con su ícono arriba de los botones. */}
           <FormError message={actionErrorMessage(failure, t)} />
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={close}>{t("common:actions.cancel")}</Button>
-          <Button type="submit" pending={save.isPending}>{t("companies:editMemberRoles.save")}</Button>
+          <Button type="submit" disabled={!form.formState.isDirty} pending={save.isPending}>{t("companies:editMemberRoles.save")}</Button>
         </DialogFooter>
       </form>
     </DialogContent>
