@@ -1,32 +1,26 @@
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, Pencil, Plus, Power, RotateCw, Trash2, Users } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { Pencil, Plus, Power, RotateCw, Trash2, Users } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useFormat } from "@/shared/format/useFormat";
 import { useNavigate } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
-import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
+import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
-import type { InviteOrganizationUserRequest, OrganizationUserFilterCountsResponse, OrganizationUserResponse, OrganizationUserState, RoleResponse } from "@/shared/api/types";
+import type { OrganizationUserFilterCountsResponse, OrganizationUserResponse, OrganizationUserState } from "@/shared/api/types";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
-import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FilterBar } from "@/shared/ui/FilterBar";
-import { FormError } from "@/shared/ui/FormError";
-import { FormField } from "@/shared/ui/FormField";
-import { MultiSelect } from "@/shared/ui/MultiSelect";
-import { Input } from "@/shared/ui/input";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Surface } from "@/shared/ui/Surface";
 import { toast } from "sonner";
-import { changeUserStatus, fetchAssignableRoles, fetchCompanyOptions, fetchUserCounts, fetchUsers, inviteUser, removeUser, resendUserInvitation, revokeUserInvitation, userCompaniesQueryKey, userCountsQueryKey, userRolesQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
+import { changeUserStatus, fetchCompanyOptions, fetchUserCounts, fetchUsers, removeUser, resendUserInvitation, revokeUserInvitation, userCompaniesQueryKey, userCountsQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
 import { createUserColumns, userPhoneRow } from "../columns";
+import { InviteUserDialog } from "../components/InviteUserDialog";
 import { activeOrganization } from "@/tenancy/access";
 
 const userFilterKeys = ["state", "companyId"] as const;
@@ -44,12 +38,8 @@ function countFor(counts: OrganizationUserFilterCountsResponse | undefined, stat
           : state === "Expired" ? counts.expired : counts.inactive;
 }
 
-// «Ninguna» en el desplegable de Empresa del tablero Usuarios (Invitar).
-const noCompany = "none";
-
 export function UsersPage() {
   const { t } = useTranslation(["users", "common"]);
-  const format = useFormat();
   const { data: currentUser } = useCurrentUser();
   const { can } = usePermissions();
   const canInvite = can("users.invite");
@@ -90,23 +80,10 @@ export function UsersPage() {
     return { queryKey: userCountsQueryKey(targetQuery), queryFn: () => fetchUserCounts(targetQuery), enabled: canFilterByCompany, meta: { silent: true } };
   }) });
   const [inviteOpen, setInviteOpen] = useState(false);
-  const roleQueries = useQueries({ queries: (["Organization", "Company"] as const).map((scope) => ({
-    queryKey: userRolesQueryKey(scope), queryFn: () => fetchAssignableRoles(scope), enabled: canInvite && inviteOpen,
-    meta: { silent: true },
-  })) });
-  const organizationRoles = roleQueries[0].data?.items ?? [];
-  const companyRoles = roleQueries[1].data?.items ?? [];
   const activeCompanies = (companies.data?.items ?? []).filter((company) => company.status === "Active");
-  const [email, setEmail] = useState("");
-  const [organizationRoleIds, setOrganizationRoleIds] = useState<string[]>([]);
-  // Decisión 4 del usuario: como el tablero, se invita a una sola empresa; desde la ficha se suman más.
-  const [inviteCompanyId, setInviteCompanyId] = useState("");
-  const [inviteCompanyRoleIds, setInviteCompanyRoleIds] = useState<string[]>([]);
-  const [inviteError, setInviteError] = useState<string>();
   const [target, setTarget] = useState<OrganizationUserResponse | null>(null);
   const [confirmAction, setConfirmAction] = useState<"revoke" | "disable" | "remove" | null>(null);
 
-  const invite = useIdempotentMutation((request: InviteOrganizationUserRequest, key) => inviteUser(request, key));
   const resend = useIdempotentMutation((invitationId: string, key) => resendUserInvitation(invitationId, key));
   const invalidate = async () => client.invalidateQueries({ queryKey: usersQueryRoot });
   const revoke = useMutation({
@@ -145,30 +122,6 @@ export function UsersPage() {
   const listSummary = counts.data ? <span className="max-md:text-[12px]">{t("users:summary", { total: counts.data.all, active: counts.data.active, invited: counts.data.invited + counts.data.expired })}</span> : undefined;
   // Sin filtro el botón dice «Estado: todos» o «Empresa: todas» y el menú ofrece «Todos» o «Todas», como el tablero.
   const currentState = state ?? "";
-
-  // Los pasos que siguen al envío van en sus callbacks: «Reintentar» (sin conexión) los vuelve a correr.
-  function submitInvite(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setInviteError(undefined);
-    const payload: InviteOrganizationUserRequest = {
-      email: email.trim(),
-      roleIds: organizationRoleIds,
-      companies: inviteCompanyId ? [{ companyId: inviteCompanyId, roleIds: inviteCompanyRoleIds }] : [],
-    };
-    invite.mutate(payload, {
-      onSuccess: async (issued) => {
-        toast.success(t("users:messages.invited", { email: payload.email, date: format.formatDate(issued.expiresAtUtc) }));
-        setInviteOpen(false);
-        setEmail("");
-        setOrganizationRoleIds([]);
-        setInviteCompanyId("");
-        setInviteCompanyRoleIds([]);
-        await invalidate();
-      },
-      onError: (error) => setInviteError(actionErrorMessage(error, t) ?? undefined),
-    });
-  }
-
 
   return <>
     <Page icon={Users} title={t("users:title")} summary={listSummary} phoneBody="flush"
@@ -209,42 +162,7 @@ export function UsersPage() {
       </div>
     </Page>
 
-    {/* Tablero M-Usuarios-Invitar: en el teléfono, una hoja de alto justo, abajo, con el cuerpo de los diálogos. */}
-    <Dialog open={inviteOpen} onOpenChange={(open) => { setInviteOpen(open); if (!open) setInviteError(undefined); }}>
-      <DialogContent>
-        <DialogHeader><DialogTitle>{t("users:invite.title")}</DialogTitle></DialogHeader>
-        <form onSubmit={submitInvite} className="flex min-h-0 flex-col">
-          <DialogBody>
-            <FormField label={t("users:invite.email")} required><Input autoComplete="email" type="email" required maxLength={254} placeholder={t("users:invite.emailPlaceholder")} value={email} onChange={(event) => setEmail(event.target.value)} /></FormField>
-            <FormField label={t("users:invite.organizationRoles")}>
-              <MultiSelect options={organizationRoles.map((role: RoleResponse) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={organizationRoleIds} onChange={setOrganizationRoleIds} placeholder={t("users:invite.noRoles")} />
-            </FormField>
-            <div className="grid gap-3.5 md:grid-cols-2">
-              <FormField label={t("users:invite.company")}>
-                <Select value={inviteCompanyId || noCompany} onValueChange={(value) => { setInviteCompanyId(value === noCompany ? "" : value); setInviteCompanyRoleIds([]); }}>
-                  <SelectTrigger className="w-full" aria-label={t("users:invite.company")}><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={noCompany}>{t("users:invite.noCompany")}</SelectItem>
-                    {activeCompanies.map((company) => <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </FormField>
-              <FormField label={t("users:invite.companyRoles")}>
-                {inviteCompanyId
-                  ? <MultiSelect options={companyRoles.filter((role) => role.scope === "AnyCompany" || role.companyId === inviteCompanyId).map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={inviteCompanyRoleIds} onChange={setInviteCompanyRoleIds} placeholder={t("users:invite.noRoles")} />
-                  : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[8px] border border-[var(--borde2)] bg-[var(--s2)] px-3 text-left text-[13px] text-[var(--t3)] max-md:h-12 max-md:rounded-[12px] max-md:text-[16px]">{t("users:invite.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" /></button>}
-              </FormField>
-            </div>
-            {/* «Criterio · Diálogos»: el error general, en la franja arriba de los botones. */}
-            {inviteError ? <FormError message={inviteError} /> : null}
-          </DialogBody>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setInviteOpen(false)}>{t("common:actions.cancel")}</Button>
-            <Button type="submit" pending={invite.isPending} pendingLabel={t("users:invite.sending")}>{t("users:invite.send")}</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    {inviteOpen ? <InviteUserDialog companies={activeCompanies} onClose={() => setInviteOpen(false)} onInvited={invalidate} /> : null}
 
     <ConfirmDialog open={confirmAction !== null} onOpenChange={(open) => { if (!open) { setConfirmAction(null); setTarget(null); } }} destructive={confirmAction !== null}
       title={target ? t(`users:confirm.${confirmAction}`, { name: target.displayName || target.email || "", email: target.email ?? "", organization: organizationName }) : ""}

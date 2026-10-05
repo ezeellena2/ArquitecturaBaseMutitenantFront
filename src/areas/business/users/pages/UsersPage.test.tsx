@@ -292,6 +292,43 @@ describe("UsersPage", () => {
     expect(following(alert, within(dialog).getByRole("button", { name: "Cancelar" }))).toBe(true);
   }, 10_000);
 
+  // «Criterio · Botones»: «Invitar» no se apaga; sin correo, el campo dice qué corregir (no el aviso del navegador) y no se
+  // manda nada. formularios.md (Diálogo): se monta al abrirse, así que al cerrarlo lo escrito se va con él.
+  it("«Invitar» sin correo marca el campo y no manda nada; al cerrarlo, lo escrito se va", async () => {
+    let posts = 0;
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 1, pendingDeletion: 0, invited: 0, expired: 0, inactive: 0 })),
+      http.get("/api/roles/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.post("/api/users/invitations", () => { posts += 1; return HttpResponse.json({ invitationId: "invitation-1", expiresAtUtc: "2026-10-10T15:00:00Z" }, { status: 201 }); }),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    const open = await screen.findByRole("button", { name: "Invitar usuario" });
+    await user.click(open);
+    const dialog = await screen.findByRole("dialog", { name: "Invitar usuario" });
+    const invite = within(dialog).getByRole("button", { name: "Invitar" });
+    expect(invite).toBeEnabled();
+    await user.click(invite);
+
+    const email = within(dialog).getByRole("textbox", { name: "Correo" });
+    expect(email).toHaveAttribute("aria-invalid", "true");
+    expect(email).toHaveAccessibleDescription("Ingresá un correo electrónico válido.");
+    expect(posts).toBe(0);
+    await user.type(email, "nueva@example.com");
+    expect(within(dialog).queryByText("Ingresá un correo electrónico válido.")).not.toBeInTheDocument();
+
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Invitar usuario" })).not.toBeInTheDocument());
+    // En jsdom, después de cerrar un diálogo, Radix a veces ignora el clic del puntero: se abre con foco y Enter.
+    open.focus();
+    await user.keyboard("{Enter}");
+    const again = await screen.findByRole("dialog", { name: "Invitar usuario" });
+    expect(within(again).getByRole("textbox", { name: "Correo" })).toHaveValue("");
+    expect(posts).toBe(0);
+  }, 10_000);
+
   it("pagina una organización con 50 usuarios sin cargar más de una página", async () => {
     const items = Array.from({ length: 10 }, (_item, index) => ({
       ...member,
