@@ -132,6 +132,21 @@ describe("CompanyDetailPage: las invitaciones de la empresa (6e)", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
+  // Tablero Empresa, «Administra solo la empresa» (v108): sin Administración en el menú, sin barra de pestañas y sin ⋮ ni
+  // «Editar empresa» en la banda. La Dueña («Administra la organización») ve todo eso.
+  it.each([[companyAdmin, false], [owner, true]])("%s: Administración, pestañas, ⋮ y «Editar empresa» solo para quien administra la organización", async (as, organization) => {
+    companyApi([valentina]);
+    renderRouteWithProviders("/org/empresas/company-1", { as });
+
+    expect(await screen.findByText("Valentina Ruiz")).toBeVisible();
+    expect(screen.getByRole("heading", { level: 1, name: "Delta S.A." })).toBeVisible();
+    for (const element of [screen.queryByRole("button", { name: "Administración" }), screen.queryByRole("tablist"),
+      screen.queryByRole("button", { name: "Más acciones" }), screen.queryByRole("button", { name: "Editar empresa" })]) {
+      expect(element !== null).toBe(organization);
+    }
+    expect(screen.getByRole("button", { name: "Agregar miembro" })).toBeVisible();
+  });
+
   // El back manda `invitationId` solo para la invitación que se resuelve desde esta empresa; sin él, la fila dice el estado
   // y hasta cuándo vale, pero no lleva el ⋮ de la invitación.
   it("una invitación sin `invitationId` va sin el ⋮", async () => {
