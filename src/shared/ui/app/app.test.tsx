@@ -38,7 +38,9 @@ describe("marco de app del teléfono", () => {
     expect(nav).toHaveStyle({ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" });
     expect(screen.getByRole("link", { name: "Más" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByRole("link", { name: "Más" })).toHaveClass("text-[var(--marca-tx)]", "font-semibold");
-    expect(screen.getByText("L")).toHaveClass("size-[26px]", "rounded-full", "bg-[var(--marca)]");
+    // Lienzo v104: la inicial va en el círculo con el degradé de la marca, como en la compu.
+    expect(screen.getByText("L")).toHaveAttribute("data-slot", "avatar");
+    expect(screen.getByText("L")).toHaveClass("size-[26px]", "rounded-full", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
     expect(screen.getByRole("link", { name: "Inicio" })).not.toHaveAttribute("aria-current");
   });
 

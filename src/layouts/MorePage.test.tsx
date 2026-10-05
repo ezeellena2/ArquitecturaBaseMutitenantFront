@@ -25,6 +25,10 @@ describe("Más en el teléfono", () => {
     expect(screen.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("href", "/cuenta");
     expect(screen.getByRole("button", { name: "Salir" })).toBeVisible();
     expect(within(screen.getByRole("navigation", { name: "Secciones" })).getByRole("link", { name: "Más" })).toHaveAttribute("aria-current", "page");
+    // Lienzo v104 (.ap-yo .w-av): tu inicial, de 56, con el degradé de la marca, como en la barra de abajo y en la compu.
+    const [you, tab] = container.querySelectorAll("[data-slot='avatar']");
+    expect(you).toHaveClass("size-14", "text-[20px]", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
+    expect(tab).toHaveClass("size-[26px]", "bg-linear-to-br");
     expect(await axe(container)).toHaveNoViolations();
   });
 

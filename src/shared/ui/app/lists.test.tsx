@@ -30,7 +30,18 @@ describe("listas en el teléfono", () => {
 
     expect(screen.getByRole("link", { name: /Tomás Acosta/ })).toHaveAttribute("href", "/org/usuarios/1");
     expect(screen.getByText("1 usuario")).toHaveClass("text-[12.5px]", "text-[var(--t3)]");
-    expect(screen.getByText("T")).toHaveClass("size-11", "rounded-full", "bg-[var(--marca)]");
+    // Lienzo v104: el círculo de una persona lleva el degradé de la marca, como en la compu.
+    expect(screen.getByText("T")).toHaveAttribute("data-slot", "avatar");
+    expect(screen.getByText("T")).toHaveClass("size-11", "rounded-full", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
+  });
+
+  // Tablero M-Usuarios (.w-av.g): una invitación sin nombre lleva «@» en gris, sin el degradé.
+  it("una invitación sin nombre lleva «@» en gris", () => {
+    render(<RowAvatar name="" invitation />);
+
+    expect(screen.getByText("@")).toHaveAttribute("data-slot", "avatar");
+    expect(screen.getByText("@")).toHaveClass("size-11", "bg-[var(--s3)]", "text-[var(--t2)]");
+    expect(screen.getByText("@")).not.toHaveClass("bg-linear-to-br");
   });
 
   // Tableros M-* (.ap-fila y .w-conv): las líneas con la altura normal de la letra, 80 px por fila de tres líneas. Con el

@@ -7,6 +7,7 @@ import { usePermissions } from "@/auth/usePermissions";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { cn } from "@/shared/lib/utils";
 import { AppBar } from "@/shared/ui/app/AppBar";
+import { Avatar } from "@/shared/ui/Avatar";
 import { GroupTitle, SettingsGroup, SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { initials, useProfiles } from "@/tenancy/useProfiles";
 import { businessNavigation } from "./navigation/business";
@@ -32,7 +33,7 @@ export function MorePage() {
   return <div className="flex min-h-full flex-col bg-[var(--s2)]">
     <AppBar title={t("navigation.more")} subtitle={subtitle} />
     <div className="flex items-center gap-3.5 px-5 pt-2 pb-1">
-      <span aria-hidden="true" className="inline-flex size-14 shrink-0 items-center justify-center rounded-full bg-[var(--marca)] text-[20px] font-semibold text-[var(--lado-activo)]">{name.charAt(0).toUpperCase()}</span>
+      <Avatar size="profile" initials={name.charAt(0).toUpperCase()} />
       <span className="flex min-w-0 flex-col">
         <span className="truncate text-[18px] font-semibold text-[var(--t1)]">{name}</span>
         {email ? <span className="truncate text-[13.5px] text-[var(--t3)]">{email}</span> : null}

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
+import { Avatar } from "../Avatar";
 
 // Tableros M-* (.ap-fila): filas de borde a borde con hasta tres líneas, con la altura normal de la letra; la línea fina
 // de abajo arranca donde empieza el texto si hay un círculo a la izquierda. A la derecha del nombre, un dato chico
@@ -39,10 +40,7 @@ export function ListRow({ leading, title, meta, lines = [], trailing, to, onClic
   </li>;
 }
 
-/// El círculo de una persona en una fila: la inicial sobre petróleo; una invitación sin nombre lleva «@» en gris.
+/// El círculo de una persona en una fila (`Avatar`, con el degradé de la marca); una invitación sin nombre lleva «@» en gris.
 export function RowAvatar({ name, invitation }: { name: string; invitation?: boolean }) {
-  return <span aria-hidden="true" className={cn("inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[15px] font-semibold",
-    invitation ? "bg-[var(--s3)] text-[var(--t2)]" : "bg-[var(--marca)] text-[var(--lado-activo)]")}>
-    {invitation ? "@" : name.trim().charAt(0).toUpperCase()}
-  </span>;
+  return <Avatar size="row" muted={invitation} initials={invitation ? "@" : name.trim().charAt(0).toUpperCase()} />;
 }
