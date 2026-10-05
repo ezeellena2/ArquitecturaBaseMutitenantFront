@@ -66,6 +66,10 @@ describe("MultiSelect", () => {
     const admin = await screen.findByRole("menuitemcheckbox", { name: "Admin" });
     expect(admin).toHaveAccessibleDescription("Puede hacer todo.");
     expect(screen.getByRole("menu")).toHaveClass("w-(--radix-dropdown-menu-trigger-width)", "max-w-none", "p-1");
+    // Abierto, el campo lleva el borde petróleo y el halo (.o-dd > button.ct[aria-expanded="true"]).
+    const trigger = screen.getByRole("button", { name: "Roles", hidden: true });
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(trigger).toHaveClass("aria-expanded:border-[var(--marca)]", "aria-expanded:ring-[3px]", "aria-expanded:ring-[var(--foco-halo)]");
     expect(admin).toHaveClass("min-h-9", "gap-2.5", "rounded-[6px]", "px-2.5", "py-1");
     expect(admin).not.toHaveClass("border-t");
     // La casilla, como la de «Todos»: borde gris y, marcada, petróleo.
