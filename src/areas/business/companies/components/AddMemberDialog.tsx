@@ -34,8 +34,9 @@ const serverFields: Record<string, keyof AddMemberForm> = { memberId: "memberId"
 
 /**
  * «Agregar miembro» (tablero Empresa, v100): el diálogo chico, sin bajada debajo del título («Criterio · Diálogos»); la
- * empresa ya se ve atrás. Con React Hook Form y zod, como Roles: es dueño de lo elegido, del alta y de su error. Se monta
- * solo mientras está abierto y, al cerrar, le devuelve el foco al botón que lo abrió.
+ * empresa ya se ve atrás. Con React Hook Form y zod, como Roles: es dueño de lo elegido, del alta y de su error, que se va
+ * al cambiar la persona o sus roles, como en los otros diálogos de Empresa. Se monta solo mientras está abierto y, al
+ * cerrar, le devuelve el foco al botón que lo abrió.
  */
 export function AddMemberDialog({ companyId, roles, onClose }: {
   companyId: string;
@@ -50,7 +51,7 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
   const form = useForm<AddMemberForm>({ resolver: zodResolver(schema), defaultValues: { memberId: "", roleIds: [] } });
   const member = useController({ control: form.control, name: "memberId" });
   const roleIds = useController({ control: form.control, name: "roleIds" });
-  const { failure, fail, close } = useDialogFailure(onClose);
+  const { failure, clear, fail, close } = useDialogFailure(onClose);
   const existingMemberIds = useQuery({ queryKey: ["companies", companyId, "all-member-ids"], queryFn: () => fetchCompanyMemberIds(companyId), meta: { silent: true } });
   const alreadyAssigned = new Set(existingMemberIds.data ?? []);
   const candidateQuery = useQuery({ queryKey: ["organization-members", "company-candidates"], queryFn: fetchOrganizationMembers, meta: { silent: true } });
@@ -86,13 +87,13 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
           <FormField label={t("companies:addMember.user")} required error={form.formState.errors.memberId?.message}>
-            <Select value={member.field.value} onValueChange={member.field.onChange} disabled={loading || candidates.length === 0}>
+            <Select value={member.field.value} onValueChange={(memberId) => { member.field.onChange(memberId); clear(); }} disabled={loading || candidates.length === 0}>
               <SelectTrigger className="w-full" aria-label={t("companies:addMember.user")}><SelectValue placeholder={loading ? t("common:states.loading") : t("companies:addMember.chooseUser")} /></SelectTrigger>
               <SelectContent>{candidates.map((candidate) => <SelectItem key={candidate.memberId} value={candidate.memberId}>{candidate.displayName}{" · "}{candidate.email ?? t("companies:addMember.withoutEmail")}</SelectItem>)}</SelectContent>
             </Select>
           </FormField>
           <FormField label={t("companies:addMember.roles")} error={form.formState.errors.roleIds?.message}>
-            <MultiSelect options={roles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value} onChange={roleIds.field.onChange} placeholder={t("companies:addMember.noRoles")} />
+            <MultiSelect options={roles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value} onChange={(next) => { roleIds.field.onChange(next); clear(); }} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
           {candidateQuery.isError ? <FormError message={apiErrorMessage(candidateQuery.error, t)} /> : null}
