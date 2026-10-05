@@ -56,7 +56,7 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
   const code = useController({ control: codeForm.control, name: "code" });
   const codeError = codeForm.formState.errors.code?.message;
   const retry = useRetryAfterCountdown();
-  const request = useIdempotentMutation((value: string, key) => method ? sendLoginMethodCode(method.id, key) : addLoginEmail({ email: value, reauthTicket }, key), { meta: { handlesError: true } });
+  const request = useIdempotentMutation((email: string, key) => method ? sendLoginMethodCode(method.id, key) : addLoginEmail({ email, reauthTicket }, key), { meta: { handlesError: true } });
   const verify = useIdempotentMutation((value: string, key) => verifyLoginMethod(methodId!, { code: value }, key), { meta: { handlesError: true } });
   const busy = request.isPending || verify.isPending;
   const started = useRef(false);
