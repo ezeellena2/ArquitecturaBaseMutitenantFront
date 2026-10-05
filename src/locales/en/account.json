@@ -39,8 +39,6 @@
   "deletionBlockedStep1": "Add another Owner in {{organizations}}",
   "deletionBlockedStep2": "Or ask the platform to close the organization",
   "cancel": "Cancel",
-  "sendCode": "Send code",
-  "code": "Code",
   "reauthHint": "To confirm, enter the code we sent to {{backup}}.",
   "chooseMethod": "What do you want to add",
   "verifyTitle": "Verify your email",

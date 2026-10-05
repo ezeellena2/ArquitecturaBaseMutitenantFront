@@ -69,13 +69,13 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
         <DialogHeader><DialogTitle>{t(method ? "verifyTitle" : "add")}</DialogTitle></DialogHeader>
         <DialogBody>
         {methodId ? <DialogDescription id="method-code-hint">{t("sentHint", { value: form.getValues("email") })}</DialogDescription> : null}
-        {methodId ? <OtpInput length={6} value={code} onChange={(value) => { setCode(value); setFailure(null); }} label={t("code")} autoFocus disabled={busy} aria-describedby="method-code-hint" /> : <>
+        {methodId ? <OtpInput length={6} value={code} onChange={(value) => { setCode(value); setFailure(null); }} label={t("common:code.label")} autoFocus disabled={busy} aria-describedby="method-code-hint" /> : <>
           {!method ? <div role="group" aria-label={t("chooseMethod")} className="rounded-lg bg-[var(--s3)] p-1"><button type="button" aria-pressed="true" className="w-full rounded-md bg-[var(--lado-activo)] py-2 text-[13px] font-medium">{t("email")}</button></div> : null}
           <Controller control={form.control} name="email" render={({ field }) => <FormField label={t("email")} error={form.formState.errors.email?.type === "server" ? form.formState.errors.email.message : form.formState.errors.email ? auth("login.emailInvalid") : undefined}><EmailField name={field.name} ref={field.ref} value={field.value} onChange={field.onChange} onBlur={field.onBlur} disabled={!!method || busy} /></FormField>} />
         </>}
         <FormError message={failure} />
         </DialogBody>
-        <DialogFooter><Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("cancel")}</Button><Button type="submit" disabled={retry.isRunning} pending={busy} pendingLabel={t(methodId ? "common:code.verifying" : "common:code.sending")}>{retry.label ?? t(methodId ? "verify" : "sendCode")}</Button></DialogFooter>
+        <DialogFooter><Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("cancel")}</Button><Button type="submit" disabled={retry.isRunning} pending={busy} pendingLabel={t(methodId ? "common:code.verifying" : "common:code.sending")}>{retry.label ?? t(methodId ? "common:code.verify" : "common:code.send")}</Button></DialogFooter>
       </form>
     </DialogContent>
   </Dialog>;

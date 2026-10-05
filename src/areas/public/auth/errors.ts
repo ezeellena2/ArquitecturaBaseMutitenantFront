@@ -24,7 +24,7 @@ export function loginCodeErrorKey(error: ApiError): string {
 /// debajo, los intentos que quedan o lo que se puede hacer.
 export function loginCodeMessage(error: ApiError, t: TFunction): AuthMessageContent {
   const details: string[] = [];
-  if (typeof error.problem.attemptsLeft === "number") details.push(t("auth:login.attemptsLeft", { count: error.problem.attemptsLeft }));
+  if (typeof error.problem.attemptsLeft === "number") details.push(t("common:code.attemptsLeft", { count: error.problem.attemptsLeft }));
   if (error.code === "Auth.LoginCode.TooManyAttempts") details.push(t("auth:login.requestNewCode"));
   if (error.code === "Identity.Account.LockedOut") details.push(t("auth:login.tryLater"));
   if (error.code === "Identity.Account.Suspended") details.push(t("auth:login.contactSupport"));

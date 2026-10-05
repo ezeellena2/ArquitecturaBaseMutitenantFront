@@ -39,8 +39,6 @@
   "deletionBlockedStep1": "Sumá otro Dueño en {{organizations}}",
   "deletionBlockedStep2": "O pedí a la plataforma que cierre la organización",
   "cancel": "Cancelar",
-  "sendCode": "Enviar código",
-  "code": "Código",
   "reauthHint": "Para confirmar, escribí el código que te mandamos a {{backup}}.",
   "chooseMethod": "Qué querés agregar",
   "verifyTitle": "Verificar tu correo",

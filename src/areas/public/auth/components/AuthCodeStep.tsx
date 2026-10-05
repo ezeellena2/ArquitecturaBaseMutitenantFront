@@ -57,22 +57,22 @@ export function AuthCodeStep({ destination, code, onCodeChange, onBack, onVerify
   return <div className="flex flex-col gap-[22px]">
     {/* .lnk del tablero: un enlace de texto con su flecha, a 4. */}
     <Button type="button" variant="link" onClick={onBack} className="gap-1 self-start">
-      <ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />{t("login.otherEmail")}
+      <ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />{t("common:code.otherEmail")}
     </Button>
     <div>
-      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("login.checkEmail")}</h1>
+      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("common:code.checkEmail")}</h1>
       <p id={hintId} className="mt-1.5 text-sm leading-normal text-[var(--t2)] wrap-anywhere">
-        <Trans ns="auth" i18nKey="login.sentCode" values={{ email: destination }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />
+        <Trans i18nKey="common:code.sentToEmail" values={{ email: destination }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />
       </p>
     </div>
-    <OtpInput length={codeLength} value={code} variant="auth" label={t("login.codeLabel")} invalid={invalid} disabled={locked} aria-describedby={hintId}
+    <OtpInput length={codeLength} value={code} variant="auth" label={t("common:code.label")} invalid={invalid} disabled={locked} aria-describedby={hintId}
       onChange={(next) => { setIncomplete(false); onCodeChange(next); }} />
     <AuthMessage message={incomplete ? { text: t("common:code.incomplete") } : message} />
     <div className="flex flex-col gap-2.5">
-      <Button type="button" size="lg" onClick={verify} disabled={verifyDisabled} pending={verifyPending} pendingLabel={t("common:code.verifying")}>{verifyLabel ?? t("login.verify")}</Button>
+      <Button type="button" size="lg" onClick={verify} disabled={verifyDisabled} pending={verifyPending} pendingLabel={t("common:code.verifying")}>{verifyLabel ?? t("common:code.verify")}</Button>
       <Button type="button" size="lg" variant="outline" onClick={() => { setIncomplete(false); onResend(); }} disabled={waiting || resendDisabled}
         pending={resendPending} pendingLabel={t("common:code.sending")}>
-        {resendRetryLabel ?? (resendSeconds > 0 ? t("login.resendIn", { seconds: resendSeconds }) : t("login.resendCode"))}
+        {resendRetryLabel ?? (resendSeconds > 0 ? t("common:code.resendIn", { seconds: resendSeconds }) : t("common:code.resend"))}
       </Button>
     </div>
     {footer}

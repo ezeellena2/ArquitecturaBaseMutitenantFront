@@ -4,6 +4,7 @@
 
 ## Cómo se hace
 - Un namespace por módulo (`useTranslation("roles")`). Lo compartido va en `common:` y los enums en `enums:<Enum>.<Valor>`.
+- Un texto que dicen dos áreas va una sola vez en `common:`. Los del paso del código («Revisá tu correo», «Te mandamos un código a…», «Código», «Verificar», «Reenviar código», «Te quedan N intentos.», «Enviando…») están en `common:code`: los usan el ingreso, los dos registros y los diálogos de Mi cuenta.
 - Plurales con `_one` / `_other`; interpolación con `{{count}}`.
 - Vocabulario: "Organización" (nunca tenant), "Dueño" (TenantAdmin; nunca "Administrador general"), "Administrador" (CompanyAdmin), "Personal" (el lado B2C, su espacio personal), "lado" (persona o empresa), "Empresa" (Company), "Usuario" (en Gestión de usuarios de la organización), "Miembro" (de una empresa), "Ingresá" (`/login`, la puerta de persona), "Ingresá como empresa" (`/login/empresa`, la puerta B2B), "Registrá tu empresa" (el alta B2B).
 - Acciones sobre usuarios: "Deshabilitar" / "Habilitar" (nunca "Activar"), "Revocar invitación". El estado de quien pidió la baja de su cuenta es "Baja pedida".
@@ -26,6 +27,7 @@
 ## Lo verifica
 - `parity.test.ts` (E1): mismas claves en todos los idiomas habilitados del catálogo (es y en al inicio).
 - `keys.test.ts` (E5): cada clave escrita en el código existe en los textos; una clave inexistente se vería cruda en pantalla.
+- `errors.test.ts` (E7): el mensaje del paso del código toma «Te quedan N intentos.» de `common:code`.
 - `referenceData.test.ts` (E1): nombres traducidos provenientes del catálogo.
 - `i18n.test.tsx` (E7): la precedencia de la cultura efectiva (`resolveCulture`); `useFormat.account.test.tsx` (E7): con la cultura de la cuenta distinta de la de este navegador, la usan los textos, los formatos, el catálogo y `Accept-Language`.
 - `oxlint` con la regla de literales en JSX (E0, `react/jsx-no-literals`).

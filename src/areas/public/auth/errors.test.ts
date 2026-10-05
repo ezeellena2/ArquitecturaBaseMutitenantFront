@@ -24,12 +24,13 @@ describe("errores del código de ingreso", () => {
 });
 
 // El mensaje de la franja del paso del código, igual en el ingreso y en los dos registros (tablero Ingreso): el texto
-// del código y, debajo, lo que queda o lo que se puede hacer.
+// del código y, debajo, lo que queda o lo que se puede hacer. Los textos del paso del código están en un solo lugar,
+// common:code, que comparten el ingreso, los registros y los diálogos de Mi cuenta.
 describe("mensaje del código", () => {
   const t = ((key: string, options?: Record<string, unknown>) => options?.count === undefined ? key : `${key}:${String(options.count)}`) as unknown as TFunction;
 
   it.each([
-    ["Auth.LoginCode.Invalid", { attemptsLeft: 3 }, "login.codeInvalid", ["auth:login.attemptsLeft:3"]],
+    ["Auth.LoginCode.Invalid", { attemptsLeft: 3 }, "login.codeInvalid", ["common:code.attemptsLeft:3"]],
     ["Auth.LoginCode.Expired", {}, "login.codeExpired", []],
     ["Auth.LoginCode.TooManyAttempts", {}, "login.tooManyAttempts", ["auth:login.requestNewCode"]],
     ["Identity.Account.LockedOut", {}, "login.accountLocked", ["auth:login.tryLater"]],

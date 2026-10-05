@@ -21,7 +21,7 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, o
   const adding = action === "addEmail" || action === "linkGoogle";
   const google = method?.type === "Google";
   const title = adding ? action === "addEmail" ? "add" : "linkGoogle" : action === "primary" ? google ? "primaryGoogleTitle" : "primaryEmailTitle" : google ? "removeGoogleTitle" : "removeEmailTitle";
-  const label = adding ? "verify" : action === "primary" ? "makePrimary" : google ? "unlink" : "remove";
+  const label = adding ? "common:code.verify" : action === "primary" ? "makePrimary" : google ? "unlink" : "remove";
   async function confirm() {
     if (!reauth.proof) { await reauth.send(); return; }
     if (reauth.code.length !== 6) { reauth.setFailure(t("common:code.incomplete")); return; }
@@ -44,7 +44,7 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, o
       <DialogHeader><DialogTitle>{t(title)}</DialogTitle></DialogHeader>
       <DialogBody>
       <DialogDescription>{reauth.proof ? t(adding ? "reauthHint" : action === "primary" ? "primaryHint" : "removeHint", { value: method?.value, backup: reauth.proof.destination }) : null}</DialogDescription>
-      {reauth.proof ? <OtpInput length={6} value={reauth.code} onChange={(value) => { reauth.setCode(value); reauth.setFailure(null); }} label={t("code")} autoFocus disabled={busy} /> : null}
+      {reauth.proof ? <OtpInput length={6} value={reauth.code} onChange={(value) => { reauth.setCode(value); reauth.setFailure(null); }} label={t("common:code.label")} autoFocus disabled={busy} /> : null}
       <FormError message={reauth.failure} />
       </DialogBody>
       <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("cancel")}</Button><Button type="submit" variant={action === "remove" ? "destructive" : "default"} disabled={reauth.retry.isRunning || (!reauth.proof && !reauth.failure)} pending={busy} pendingLabel={pendingLabel}>{reauth.retry.label ?? t(label)}</Button></DialogFooter>

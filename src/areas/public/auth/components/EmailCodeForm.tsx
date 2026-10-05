@@ -62,7 +62,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart }: EmailC
       )} />
       <AuthMessage message={formError ?? notice} />
       <Button type="submit" size="lg" className="w-full" disabled={retry.isRunning} pending={request.isPending} pendingLabel={t("common:code.sending")}>
-        {retry.label ?? t("login.sendCode")}
+        {retry.label ?? t("common:code.send")}
       </Button>
     </form>
   );
