@@ -39,4 +39,15 @@ describe("statusTones", () => {
 
     expect(loose).toEqual([]);
   });
+
+  // Plan de consolidación, 6d-3b (E7): un estado se registra una sola vez. El de la Página pública lo muestran su ficha y
+  // su tarjeta del Inicio: va en `shared` (publicPageStateTones) y las dos lo importan.
+  it("cada enum de estado se registra una sola vez", () => {
+    const registrations = sourceFiles(srcRoot).flatMap((file) =>
+      [...readFileSync(file, "utf8").matchAll(/defineStatusTones\(\s*"(\w+)"/g)].map((match) => match[1]));
+    const repeated = registrations.filter((name, index) => registrations.indexOf(name) !== index);
+
+    expect(registrations).toContain("HomePublicPageState");
+    expect(repeated).toEqual([]);
+  });
 });

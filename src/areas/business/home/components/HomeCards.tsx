@@ -3,16 +3,12 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import type { HomeCompanyCard, HomeOrganizationSummary } from "@/shared/api/types";
-import { defineStatusTones } from "@/shared/format/statusTones";
+import { publicPageStateTones } from "@/shared/format/statusTones";
 import { useFormat } from "@/shared/format/useFormat";
 import { initials } from "@/shared/lib/initials";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { companyDetail } from "./companyDetail";
 import { areaIcons, areaPaths, type HomeArea } from "./pendingItems";
-
-/// Tablero Inicio-Org, como la Página pública: publicada en verde, borrador en gris y despublicada por la plataforma en
-/// rojo. La palabra sale de `enums.HomePublicPageState` (formatos.md).
-const publicPageStateTones = defineStatusTones("HomePublicPageState", { Published: "success", Draft: "neutral", Blocked: "danger" });
 
 function Card({ to, icon, title, detail }: { to: string; icon: ReactNode; title: string; detail: ReactNode }) {
   return <Link to={to} style={{ boxShadow: "var(--shadow-card)" }}

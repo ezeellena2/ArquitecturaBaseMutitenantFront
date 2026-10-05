@@ -10,7 +10,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { ApiSchemas, PublicPageResponse, TenantSlugAvailability, UpdatePublicPageRequest } from "@/shared/api/types";
-import { defineStatusTones } from "@/shared/format/statusTones";
+import { publicPageStateTones } from "@/shared/format/statusTones";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
@@ -67,10 +67,6 @@ function valuesFromPage(page: PublicPageResponse): PageForm {
     logo: { dataUri: page.logoDataUri ?? null, base64: null, contentType: null, remove: false },
   };
 }
-
-/// Tableros Pagina-Org y M-Pagina-Org (`.w-est`): publicada en verde, borrador en gris y despublicada por la plataforma en
-/// rojo, con la palabra también en rojo (tema.md).
-const publicPageStateTones = defineStatusTones("HomePublicPageState", { Published: "success", Draft: "neutral", Blocked: "danger" });
 
 function pageRequest(values: PageForm, version: number): UpdatePublicPageRequest {
   return {

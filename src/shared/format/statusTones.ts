@@ -23,3 +23,9 @@ export function defineStatusTones<TEnum extends keyof ContractEnums>(enumName: T
   tones: Readonly<Record<ContractEnums[TEnum], StatusTone>>): StatusTones<ContractEnums[TEnum]> {
   return { enum: enumName, tones };
 }
+
+/// El estado de la Página pública lo muestran dos features, su ficha (tableros Pagina-Org y M-Pagina-Org, `.w-est`) y su
+/// tarjeta del Inicio (Inicio-Org): se registra una sola vez, acá (estructura-y-features.md). Publicada en verde, borrador
+/// en gris y despublicada por la plataforma en rojo, con la palabra también en rojo (tema.md); la palabra sale de
+/// `enums.HomePublicPageState` (formatos.md).
+export const publicPageStateTones = defineStatusTones("HomePublicPageState", { Published: "success", Draft: "neutral", Blocked: "danger" });
