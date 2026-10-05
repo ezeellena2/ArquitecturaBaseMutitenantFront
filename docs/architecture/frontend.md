@@ -126,7 +126,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 - **Página fuera de rango:** si llegan `items` vacíos con `totalCount > 0`, `usePagedQuery` salta solo a la última, con `replace`, sin dejar una entrada en el historial. Lo hace adentro, con la respuesta de esa página, sin exponer `correctPage`.
 - **`Pagination`:** muestra "1–10 de 1.234" y "Página 1 de 124", siempre con `useFormat`, y tiene un selector de 10, 20, 50 o 100 por página (**10 por defecto**; si la URL no trae `pageSize`, no se escribe).
 - **`DataTable`:** una columna es ordenable si declara `sortable`. Su `id` es el campo del contrato. El encabezado lleva `aria-sort` y alterna ascendente → descendente → orden por defecto.
-- **Por cursor** (auditoría y actividad): `useInfiniteQuery` (o `useCursorList`, que lo envuelve sin opciones propias; Auditoría arma el suyo porque pide `placeholderData` y `meta`), con el botón "Cargar más" (`LoadMore`), sin total ni número de página. Los filtros viven en la URL; el cursor no.
+- **Por cursor** (auditoría y actividad): `useCursorList`, la única forma (nada de `useInfiniteQuery` suelto), con el botón "Cargar más" (`LoadMore`), sin total ni número de página. Recibe `meta` como cualquier consulta. Los filtros viven en la URL y en la clave; el cursor, solo en la consulta.
 - Los listados usan `placeholderData: keepPreviousData`: mientras llega la página nueva, la tabla muestra la anterior atenuada y con `aria-busy`.
 
 ### Errores

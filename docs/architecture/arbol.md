@@ -346,7 +346,7 @@ src/
 │   │   ├── audit/                                   [E6]
 │   │   │   ├── api/audit.ts                         GET /api/organization/audit (por cursor) y /api/organization/audit/actors (el filtro «Quién»)
 │   │   │   └── pages/
-│   │   │       ├── AuditPage.tsx                    cuándo, qué pasó, dónde y quién (actorKind: una persona, Sistema o Plataforma); «Cargar más»; el detalle en un diálogo de solo lectura en grilla
+│   │   │       ├── AuditPage.tsx                    cuándo, qué pasó, dónde y quién (actorKind: una persona, Sistema o Plataforma); «Cargar más» con useCursorList; el detalle en un diálogo de solo lectura en grilla
 │   │   │       └── AuditPage.test.tsx               tests de AuditPage
 │   │   ├── public-page/                             [E6] /org/pagina: mi página pública (datos, cambio de slug, publicar)
 │   │   │   ├── api/publicPage.ts                    /api/organization/public-page (leer, guardar, publicar y despublicar) y /api/public-site/slug-availability
@@ -508,7 +508,7 @@ src/
 │   │   ├── usePagination.test.tsx                   [E0] URL y canónico con replace
 │   │   ├── usePagedQuery.ts                         un listado paginado: filtros, página, búsqueda con debounce, consulta, corrección de página y props de Pagination
 │   │   ├── usePagedQuery.test.tsx                   la corrección de una página fuera de rango con items vacíos y totalCount > 0
-│   │   ├── useCursorList.ts                         [E1] useInfiniteQuery con el cursor opaco, para una lista que solo crece sin opciones propias («Cargar más»)
+│   │   ├── useCursorList.ts                         [E1] la única forma de listar por cursor: useInfiniteQuery con el cursor opaco, la lista anterior mientras llega la nueva y su meta («Cargar más»)
 │   │   ├── useCursorList.test.tsx                   tests de useCursorList
 │   │   ├── useDebouncedValue.ts                     [E1] 300 ms para la búsqueda
 │   │   ├── useDebouncedValue.test.tsx               tests de useDebouncedValue

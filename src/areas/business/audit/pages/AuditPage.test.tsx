@@ -90,6 +90,51 @@ describe("AuditPage", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
+  // Por cursor (paginado-y-listados.md, `useCursorList`): la primera tanda va sin cursor; «Cargar más» pide la siguiente
+  // con el cursor opaco del back y con los mismos filtros, y la suma abajo, sin total ni páginas.
+  it("«Cargar más» pide la tanda siguiente con el cursor y la suma abajo", async () => {
+    const user = userEvent.setup();
+    const requests: URLSearchParams[] = [];
+    const entry = (id: string, actionText: string) => ({
+      id, occurredAtUtc: "2026-10-02T12:00:00Z", action: "MemberEnabled", actionText, entityType: "Member", entityText: "Usuario",
+      affectedDisplayName: "Tomás Acosta", whereText: "Delta S.A.", actorKind: "User", actorText: "Persona", actorId: "actor-1",
+      actorDisplayName: "Lucía", actorEmail: "lucia@example.com", changes: [],
+    });
+    server.use(
+      http.get("/api/organization/audit", ({ request }) => {
+        const params = new URL(request.url).searchParams;
+        requests.push(params);
+        return HttpResponse.json(params.get("after") === "cursor-1"
+          ? { items: [entry("audit-2", "Deshabilitó a Tomás Acosta")], nextCursor: null, hasMore: false }
+          : { items: [entry("audit-1", "Habilitó a Tomás Acosta")], nextCursor: "cursor-1", hasMore: true });
+      }),
+      http.get("/api/organization/audit/actors", () => HttpResponse.json([])),
+    );
+    renderRouteWithProviders("/org/auditoria", { as: "business-e6-admin" });
+
+    expect(await screen.findByText("Habilitó a Tomás Acosta")).toBeVisible();
+    expect(requests[0]?.has("after")).toBe(false);
+    await user.click(screen.getByRole("button", { name: "Cargar más" }));
+
+    expect(await screen.findByText("Deshabilitó a Tomás Acosta")).toBeVisible();
+    expect(screen.getByText("Habilitó a Tomás Acosta")).toBeVisible();
+    expect(requests.at(-1)?.get("after")).toBe("cursor-1");
+    expect(requests.at(-1)?.get("period")).toBe("30");
+    expect(screen.queryByRole("button", { name: "Cargar más" })).not.toBeInTheDocument();
+  });
+
+  // El historial es la consulta principal (`meta.blocksView`, errores.md): un 403 reemplaza la pantalla por «No tenés
+  // permiso», como en las demás listas.
+  it("un 403 del historial muestra la pantalla sin permiso", async () => {
+    server.use(
+      http.get("/api/organization/audit", () => HttpResponse.json({ code: "Authorization.Forbidden", detail: "No tenés permiso." }, { status: 403 })),
+      http.get("/api/organization/audit/actors", () => HttpResponse.json([])),
+    );
+    renderRouteWithProviders("/org/auditoria", { as: "business-e6-admin" });
+
+    expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
+  });
+
   // Tablero Auditoria-Org: «Quién» ofrece las personas, «Sistema» y «Plataforma», en el orden del back (decisión 77).
   // Una persona se filtra por su id; el sistema y la plataforma, que no tienen, por su tipo (`actorKind`, decisión 76).
   it("«Quién» ofrece las personas, «Sistema» y «Plataforma», y filtra a cada uno por lo suyo", async () => {

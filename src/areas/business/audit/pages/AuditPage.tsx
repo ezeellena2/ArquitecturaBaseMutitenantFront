@@ -1,7 +1,8 @@
-import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { ClipboardList } from "lucide-react";
 import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useCursorList } from "@/shared/hooks/useCursorList";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useFilters } from "@/shared/hooks/useFilters";
 import { useQueryUpdate } from "@/shared/hooks/useQueryUpdate";
@@ -36,14 +37,10 @@ export function AuditPage() {
   const baseQuery = { period, category, actorId, actorKind, search: search || undefined };
   const updateQuery = useQueryUpdate();
 
-  const audit = useInfiniteQuery({
-    queryKey: [...auditQueryRoot, baseQuery],
-    queryFn: ({ pageParam }) => fetchAudit({ ...baseQuery, after: pageParam, limit: 25 }),
-    initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextCursor ?? undefined : undefined,
-    placeholderData: keepPreviousData,
-    meta: { silent: true, blocksView: true },
-  });
+  // De a 25, con «Cargar más»; los filtros van en la clave y el cursor, solo en la consulta.
+  const audit = useCursorList([...auditQueryRoot, baseQuery],
+    (after) => fetchAudit({ ...baseQuery, after: after ?? undefined, limit: 25 }),
+    { meta: { silent: true, blocksView: true } });
   const actors = useQuery({
     queryKey: [...auditQueryRoot, "actors", { period, category, search: search || undefined }],
     queryFn: () => fetchAuditActors({ period, category, search: search || undefined }),
@@ -51,7 +48,6 @@ export function AuditPage() {
   });
   const [selected, setSelected] = useState<OrganizationAuditEntryResponse | null>(null);
 
-  const rows = audit.data?.pages.flatMap((page) => page.items) ?? [];
   const columns: Column<OrganizationAuditEntryResponse>[] = [
     { id: "occurredAtUtc", header: t("audit:columns.when"), type: "custom", mobile: "status", className: "w-[162px] max-md:w-[25%]", cell: (row) => <div className="whitespace-normal text-left"><DateText value={row.occurredAtUtc} kind="dateTime" className="whitespace-normal" /></div> },
     {
@@ -123,7 +119,7 @@ export function AuditPage() {
             mobileRow={(row) => <ListRow key={row.id} wrapTitle title={row.actionText} onClick={() => setSelected(row)}
               meta={<DateText value={row.occurredAtUtc} kind="shortDateTime" />}
               lines={[[row.whereText, row.actorDisplayName ?? row.actorText].filter(Boolean).join(" · ")]} />}
-            rows={rows}
+            rows={audit.items}
             rowKey={(row) => row.id}
             isLoading={audit.isPending}
             isFetching={audit.isFetching}
