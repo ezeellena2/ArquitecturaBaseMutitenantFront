@@ -91,7 +91,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
       />
       <AdminPanel panel={shownNavigation.administration} open={administrationOpen} onClose={() => setToggledAdministration({ pathname, open: false })} />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <Topbar breadcrumbs={<Breadcrumbs navigation={navigation} />} />
+        <Topbar breadcrumbs={<Breadcrumbs navigation={navigation} permissions={permissions} />} />
         <main className="relative min-h-0 flex-1 scroll-pt-14 overflow-y-auto bg-[var(--fondo)] print:overflow-visible">{children ?? <Outlet />}</main>
       </div>
     </div>

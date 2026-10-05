@@ -144,7 +144,7 @@ src/
 │   │   ├── personal.ts
 │   │   ├── business.ts                              el manifiesto de rutas de la organización (businessRoutes) y el menú que sale de él: arriba Inicio + módulos B2B; abajo «Administración» (AdminPanel): «Gestión de usuarios» ▸ Usuarios, Roles y permisos · Empresas · Configuración · Página pública · Auditoría
 │   │   ├── platform.ts                              Organizaciones (el inicio) · Cuentas · Recuperaciones · Auditoría · Documentos legales · Configuración
-│   │   ├── visible.ts                               [E7] el menú que la sesión puede ver (permiso y módulo): lo usan el menú lateral y «Más»
+│   │   ├── visible.ts                               [E7] el menú que la sesión puede ver (permiso y módulo): lo usan el menú lateral y «Más»; `canOpen`, también las migas
 │   │   ├── visible.test.ts                          [E7] cada enlace es una ruta del manifiesto
 │   │   └── navigation.test.tsx                      los enlaces de cada acceso
 │   └── components/
@@ -155,7 +155,7 @@ src/
 │       ├── AdminPanel.test.tsx                      se abre en una ruta de administración; «‹» lo cierra; en el teléfono no se monta
 │       ├── Topbar.tsx                               solo en la compu: migas + AccessMenu (menú de la cuenta)
 │       ├── Topbar.test.tsx                          tests de Topbar
-│       ├── Breadcrumbs.tsx
+│       ├── Breadcrumbs.tsx                          el camino hasta la pantalla; la opción que la sesión no abre va sin enlace, como «‹» (B4)
 │       ├── Breadcrumbs.test.tsx
 │       ├── OfflineBanner.tsx                        [E1] cartel «Sin conexión» (navigator.onLine + eventos online/offline): arriba en la compu; en el teléfono, banda roja clara debajo de la barra (AppNotices)
 │       ├── OfflineBanner.test.tsx                   tests de OfflineBanner

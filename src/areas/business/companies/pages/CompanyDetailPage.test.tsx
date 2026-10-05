@@ -261,6 +261,18 @@ describe("CompanyDetailPage", () => {
     expect(screen.getByRole("link", { name: "Volver al inicio" })).toHaveAttribute("href", "/org");
   });
 
+  // B4: como «‹», la miga «Empresas» no lleva a Empresas, que pide `companies.read` y le mostraría «No tenés permiso»: va
+  // como texto, sin enlace. Inicio sí es un enlace.
+  it("B4: para el Administrador de empresa, la miga «Empresas» va sin enlace, como «‹»", async () => {
+    detailApi([{ ...member, roles: [companyAdmin] }]);
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-company-admin" });
+
+    const crumbs = await screen.findByRole("navigation", { name: "Migas de pan" });
+    await waitFor(() => expect(crumbs).toHaveTextContent(/^Inicio\/Empresas\/Delta S\.A\.$/));
+    expect(within(crumbs).queryByRole("link", { name: "Empresas" })).not.toBeInTheDocument();
+    expect(within(crumbs).getByRole("link", { name: "Inicio" })).toHaveAttribute("href", "/org");
+  });
+
   it("B4: con otra empresa, el Administrador de empresa ve «No tenés permiso»", async () => {
     renderRouteWithProviders("/org/empresas/company-2", { as: "business-company-admin" });
 
@@ -329,6 +341,8 @@ describe("CompanyDetailPage", () => {
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
 
     await waitFor(() => expect(screen.getByRole("navigation", { name: "Migas de pan" })).toHaveTextContent(/^Inicio\/Empresas\/Delta S\.A\.$/));
+    // Con `companies.read`, «Empresas» lleva a la lista.
+    expect(within(screen.getByRole("navigation", { name: "Migas de pan" })).getByRole("link", { name: "Empresas" })).toHaveAttribute("href", "/org/empresas");
   });
 
   it("quitar pide confirmación (también con la baja pedida); volver a sumar es directo", async () => {

@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { beforeAll, describe, expect, it } from "vitest";
+import { organizationPermissions, permissionsOf, type Permissions } from "@/auth/usePermissions";
 import { configureI18n } from "@/shared/i18n";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { businessNavigation } from "../navigation/business";
@@ -16,8 +17,10 @@ function Leaf({ label }: { label: string }) {
   return null;
 }
 
-function crumbs(path: string, leaf?: string) {
-  render(<MemoryRouter initialEntries={[path]}><Breadcrumbs navigation={businessNavigation} />{leaf ? <Leaf label={leaf} /> : null}</MemoryRouter>);
+const owner = permissionsOf({ features: [], effectivePermissions: { organization: [...organizationPermissions], companies: {} } });
+
+function crumbs(path: string, leaf?: string, permissions: Permissions = owner) {
+  render(<MemoryRouter initialEntries={[path]}><Breadcrumbs navigation={businessNavigation} permissions={permissions} />{leaf ? <Leaf label={leaf} /> : null}</MemoryRouter>);
   return screen.getByRole("navigation", { name: "Migas de pan" });
 }
 
@@ -29,7 +32,7 @@ describe("Breadcrumbs", () => {
   });
 
   it("el lado Personal se queda en su propio inicio", () => {
-    render(<MemoryRouter initialEntries={["/"]}><Breadcrumbs navigation={personalNavigation} /></MemoryRouter>);
+    render(<MemoryRouter initialEntries={["/"]}><Breadcrumbs navigation={personalNavigation} permissions={owner} /></MemoryRouter>);
     expect(screen.getByRole("navigation", { name: "Migas de pan" })).toHaveTextContent("Inicio");
   });
 
@@ -55,5 +58,17 @@ describe("Breadcrumbs", () => {
   it("en una ficha de Gestión de usuarios pasa por la sección y la opción", () => {
     expect(crumbs("/org/usuarios/abc", "Tomás Acosta")).toHaveTextContent("Inicio/Gestión de usuarios/Usuarios/Tomás Acosta");
     expect(screen.getByRole("link", { name: "Usuarios" })).toHaveAttribute("href", "/org/usuarios");
+  });
+
+  // B4: quien administra solo su empresa no abre Empresas (`companies.read`). La opción va como texto, sin enlace, como
+  // «‹», que lo devuelve al Inicio; con enlace, lo llevaría a «No tenés permiso».
+  it("una opción que la sesión no puede abrir va sin enlace", () => {
+    const companyAdmin = permissionsOf({ features: [], effectivePermissions: { organization: [], companies: { abc: ["company.members.read"] } } });
+    const navigation = crumbs("/org/empresas/abc", "Delta S.A.", companyAdmin);
+
+    expect(navigation).toHaveTextContent("Inicio/Empresas/Delta S.A.");
+    expect(within(navigation).queryByRole("link", { name: "Empresas" })).not.toBeInTheDocument();
+    expect(within(navigation).getByText("Empresas")).not.toHaveAttribute("aria-current");
+    expect(within(navigation).getByRole("link", { name: "Inicio" })).toHaveAttribute("href", "/org");
   });
 });
