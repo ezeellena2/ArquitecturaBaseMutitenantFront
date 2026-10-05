@@ -30,7 +30,7 @@
 - Reemplazar el recorrido real por MSW o por el arnés de capturas: esas pruebas tienen objetivos distintos.
 
 ## Copiá de
-- `src/areas/business/roles/pages/RolesPage.test.tsx` (E4)
+- `src/areas/business/roles/pages/RolesPage.test.tsx` y `RoleEditorPage.test.tsx` (E4): cada caso con axe y su caso en el teléfono · `src/areas/business/roles/lib/permissionPicker.test.ts` (E4): la lógica de una feature, sin pantalla
 
 ## Lo verifica
 - El CI (`npm test`) y `harness.test.ts` (E0), que usa `HarnessStage` para exigir solo los tests de etapas cerradas.

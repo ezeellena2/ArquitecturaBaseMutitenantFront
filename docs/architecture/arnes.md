@@ -19,9 +19,9 @@ Para una pantalla, el **«Copiá de» es el [tablero correspondiente del lienzo 
 |---|---|---|---|
 | `src/areas/` | una carpeta por área; ningún área importa de otra | estructura-y-features, accesos-y-permisos | `areas/business/roles/` (E4) |
 | `src/areas/<área>/<feature>/api/` | query keys + funciones tipadas con `generated/`; sin interfaces a mano | datos-y-api, paginado-y-listados | `business/roles/api/roles.ts` (E4) |
-| `src/areas/<área>/<feature>/pages/` | una pantalla = un `Page`; datos con Query; estado del listado en la URL | pantallas-y-ui, paginado-y-listados, errores | tablero correspondiente de `docs/design/lienzo/`; `business/roles/pages/RolesPage.tsx` (E4) para el código |
-| `src/areas/<área>/<feature>/components/` | diálogos y piezas propias de la feature; nada genérico (eso sube a `shared/ui`) | formularios, pantallas-y-ui | `business/users/components/InviteUserDialog.tsx` (E6) |
-| `src/areas/<área>/<feature>/` (raíz) | `columns.tsx` (columnas **tipadas**) y `errors.ts` (switch por `code`) | formatos, errores | `business/roles/columns.tsx`, `errors.ts` (E4) |
+| `src/areas/<área>/<feature>/pages/` | una pantalla = un `Page`; datos con Query; estado del listado en la URL | pantallas-y-ui, paginado-y-listados, errores | tablero correspondiente de `docs/design/lienzo/`; `business/roles/pages/RolesPage.tsx` y `RoleEditorPage.tsx` (E4) para el código |
+| `src/areas/<área>/<feature>/components/` | diálogos y piezas propias de la feature; nada genérico (eso sube a `shared/ui`) | formularios, pantallas-y-ui | `personal/account/components/AccountDeletionDialog.tsx` (E4) para un diálogo; `business/roles/components/PermissionPicker.tsx` (E4) para una pieza |
+| `src/areas/<área>/<feature>/` (raíz) | `columns.tsx` (columnas **tipadas**), `errors.ts` (por `code`, solo si traduce algo) y `lib/` (lógica pura, con sus tests) | formatos, errores, tests | `business/roles/columns.tsx`, `errors.ts` y `lib/` (E4) |
 | `src/shared/format/` | **único** lugar que formatea | formatos | — |
 | `src/shared/referenceData/` | carga los cinco catálogos y patrones de `GET /api/reference-data`; sin opciones fijas en código | datos-y-api, formatos, textos-y-traducciones | `useReferenceData.ts` (E1) |
 | `src/shared/ui/` | piezas genéricas; shadcn en minúscula y propios en PascalCase; sin lógica de negocio | pantallas-y-ui | `DataTable.tsx`, `Page.tsx` (E1) |
@@ -47,7 +47,8 @@ La tabla vive solo en el [`AGENTS.md` raíz](../../AGENTS.md#antes-de-escribir-c
 - una carpeta del mapa que ya existe no tiene `AGENTS.md` y `CLAUDE.md`;
 - hay un enlace roto en un puntero o en una ficha;
 - una ficha no tiene sus secciones;
-- un "Lo verifica" nombra un test cuya etapa `(E#)` ya cerró y que no existe. Los tests de etapas futuras pueden no existir todavía.
+- un "Lo verifica" nombra un test cuya etapa `(E#)` ya cerró y que no existe. Los tests de etapas futuras pueden no existir todavía;
+- un `pages/*Page.test.tsx` no corre axe ([accesibilidad](../rules/accesibilidad.md)).
 
 Hasta que ambos repos estén en GitHub, cada CI usa solo su propio checkout. Los enlaces al repo hermano se verifican cuando ese checkout está presente; el checkout cruzado y su verificación obligatoria se incorporan cuando ambos repos estén en GitHub.
 

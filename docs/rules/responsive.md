@@ -40,7 +40,7 @@
 - Un `DataTable` sin una columna `mobile: "primary"`.
 
 ## Copiá de
-- `src/areas/business/users/pages/UsersPage.tsx` y `users/columns.tsx` (`userPhoneRow`) · `src/shared/ui/Page.tsx` · los tableros M-* del [lienzo vigente](../design/lienzo/README.md).
+- `src/areas/business/roles/pages/RolesPage.tsx` y `roles/columns.tsx` (`rolePhoneRow`) (E4) · `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4: los datos sueltos y los botones fijos abajo de M-Rol) · `src/shared/ui/Page.tsx` · los tableros M-* del [lienzo vigente](../design/lienzo/README.md).
 
 ## Lo verifica
 - `src/shared/ui/app/lists.test.tsx` (E5): la tabla es una lista de filas en el teléfono, los filtros son íconos con su hoja y el paginado es «Cargar más».

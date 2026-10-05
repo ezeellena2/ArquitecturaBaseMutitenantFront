@@ -3,13 +3,12 @@
 **Regla:** se decide por **`error.code`**, nunca por el texto. El `detail` ya viene traducido por el backend. Lo global (red, 5xx y 429) lo maneja `queryClient`, en consultas y mutaciones, y cada feature traduce solo los códigos que merecen un texto o un campo propio. Todo texto de error sale de `shared/api/errorMessage.ts`.
 
 ## Cómo se hace
-- `errors.ts` de la feature:
+- `errors.ts` de la feature, solo si traduce algo (sin envoltorios vacíos): un texto propio (`users/errors.ts`) o el campo donde va el rechazo de un dato, con el texto del back:
   ```ts
-  export function roleErrorMessage(error: ApiError, t: TFunction): string {
-    switch (error.code) {
-      case "Roles.Role.HasUsers": return t("roles:errors.hasUsers", { count: error.problem.userCount });
-      default: return error.detail;
-    }
+  // business/roles/errors.ts
+  const fields: Readonly<Record<string, RoleField>> = { "Roles.Role.AlreadyExists": "name", /* … */ };
+  export function roleErrorField(error: unknown): RoleField | null {
+    return error instanceof ApiError && error.code ? fields[error.code] ?? null : null;
   }
   ```
 - **El texto de un error** sale de `apiErrorMessage(error, t)`: sin conexión, «No pudimos conectarnos. Revisá tu conexión.»; un 5xx, «Algo salió mal. Probá de nuevo en un rato.»; lo demás, el `detail` del back (también el de un 429). Se usa donde la pantalla muestra el error de una consulta (la tabla con «Reintentar») y en los flujos que declaran `meta: { handlesError: true }`.
@@ -31,10 +30,10 @@
 - Reintentar solo un 429 o un 409 `General.ConcurrencyConflict`. (El 409 `Request.InProgress` de un alta idempotente espera y reintenta: lo hace `useIdempotentMutation`.)
 
 ## Copiá de
-- `src/areas/business/users/pages/UserDetailPage.tsx` (E6: conflicto de versión y error de guardado) · `src/areas/business/users/pages/UsersPage.tsx` (alta con `mutate(variables, { onSuccess, onError })` y acciones de fila con `toastActionError`) · `src/shared/api/formErrors.ts` (E1) · `src/shared/api/errorMessage.ts`
+- `src/areas/business/roles/pages/RoleEditorPage.tsx` (E4: el 409 y el error de guardado con `useEditPage`; el alta con `mutate(variables, { onSuccess, onError })`; el rechazo de un dato en su campo con `errors.ts`) · `src/areas/business/roles/pages/RolesPage.tsx` (E4: acciones de fila con `toastActionError`) · `src/areas/personal/account/components/AccountDeletionDialog.tsx` (E4: el error de un diálogo arriba de sus botones) · `src/shared/api/formErrors.ts` (E1) · `src/shared/api/errorMessage.ts`
 
 ## Lo verifica
-- Tests de pantalla: cada `code` que traduce la feature tiene un test (tests.md).
+- Tests de pantalla: cada `code` que traduce la feature tiene un test (tests.md). `errors.test.ts` (E7), de Roles: cada rechazo del back va en su campo.
 - `formErrors.test.ts` (E1), `queryClient.test.ts` (E1; el 403 de la consulta principal, de una secundaria y de los términos nuevos).
 - `CompanyDetailPage.test.tsx` (E7): el 403 de los roles (secundaria) no reemplaza la ficha; el de la ficha, sí.
 - `UserDetailPage.test.tsx` (E7): si la última Dueña sale de la organización, lo dice la franja de la ficha y no el aviso de abajo.

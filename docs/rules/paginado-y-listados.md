@@ -36,7 +36,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 - Armar a mano el texto "1–10 de 1.234": lo hace `Pagination` con `useFormat`.
 
 ## Copiá de
-- `src/areas/business/users/pages/UsersPage.tsx` y `users/columns.tsx` (E6) · `src/areas/business/roles/pages/RolesPage.tsx` (E4)
+- `src/areas/business/roles/pages/RolesPage.tsx` y `roles/columns.tsx` (E4): `usePagedQuery`, `FilterBar`, `DataTable`, `Pagination`, «Ningún rol coincide con los filtros» y la fila del teléfono
 
 ## Lo verifica
 - `usePagination.test.tsx` (E0/E1): conserva el estado en la URL y vuelve a la página 1, canoniza página/tamaño inválidos con `replace`, alterna el orden descendente predeterminado y omite `pageSize=10` en la URL.
