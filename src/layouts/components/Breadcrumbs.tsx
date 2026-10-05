@@ -33,7 +33,8 @@ export function Breadcrumbs({ navigation, permissions }: { navigation: Navigatio
   }
 
   return <nav aria-label={t("layout.breadcrumbs.label")} className="min-w-0 text-[13px] text-[var(--t2)]">
-    <ol className="flex min-w-0 items-center gap-1.5 truncate">
+    {/* «Criterio · Marco» (.tb): «Inicio / Gestión de usuarios / Usuarios», con un espacio a cada lado de la barra. */}
+    <ol className="flex min-w-0 items-center gap-[0.28em] truncate">
       <li className="truncate" aria-current={pathname === home.path ? "page" : undefined}>
         {pathname === home.path ? t(home.labelKey) : <Link to={home.path} className="hover:underline">{t(home.labelKey)}</Link>}
       </li>

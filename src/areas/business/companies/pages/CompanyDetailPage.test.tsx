@@ -430,7 +430,9 @@ describe("CompanyDetailPage", () => {
     const heading = await screen.findByRole("heading", { level: 1, name: "Delta S.A." });
     const subline = heading.parentElement!.querySelector("[data-slot='page-subline']")!;
     // Tablero Empresa: «● Activa · CUIT 30-71234567-1 · Buenos Aires (GMT−3)».
-    await waitFor(() => expect(subline).toHaveTextContent(/^Activa · CUIT 30-71234567-1 · Buenos Aires \(GMT−3\)$/));
+    // El «·» después del estado separa dos datos (6 de cada lado, gris tenue); el de adentro del dato es texto.
+    await waitFor(() => expect(subline).toHaveTextContent(/^Activa·CUIT 30-71234567-1 · Buenos Aires \(GMT−3\)$/));
+    expect(subline.querySelector("[data-slot=subline-separator]")).toHaveClass("mx-1.5", "text-[var(--t3)]");
     expect(subline.querySelector("[aria-hidden='true'].rounded-full")).toHaveClass("bg-[var(--punto-ok)]");
     expect(subline).not.toHaveTextContent("AR-CUIT");
     expect(subline).not.toHaveTextContent("America/Argentina");

@@ -26,7 +26,7 @@ import { FormField } from "@/shared/ui/FormField";
 import { List, ListItem } from "@/shared/ui/List";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
-import { Page } from "@/shared/ui/Page";
+import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Section, SectionFields } from "@/shared/ui/Section";
@@ -273,9 +273,10 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     : <Trans ns="users" i18nKey="detail.since" components={{ date: <DateText value={member.createdAtUtc} kind="date" /> }} />;
   const summary = <>
     <StatusBadge tones={userStateTones} value={shownState} />
-    {edit.unsaved ? <><Separator />{edit.unsaved}</> : null}
-    {member.email ? <><Separator />{member.email}</> : null}
-    <Separator />{detail}
+    {edit.unsaved ? <><SublineSeparator />{edit.unsaved}</> : null}
+    <SublineSeparator />
+    {member.email ? <>{member.email}<Separator /></> : null}
+    {detail}
   </>;
 
   return <>

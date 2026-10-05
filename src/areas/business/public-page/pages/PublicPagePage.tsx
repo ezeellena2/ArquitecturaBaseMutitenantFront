@@ -26,7 +26,7 @@ import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Input } from "@/shared/ui/input";
 import { phoneDraftFromE164, phoneE164FromDraft } from "@/shared/phone/phoneInput";
 import { PhoneField, type PhoneDraft } from "@/shared/ui/fields/PhoneField";
-import { Page } from "@/shared/ui/Page";
+import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { PublicPageCard, publicPageBackdropClass } from "@/shared/ui/PublicPageCard";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { Switch } from "@/shared/ui/switch";
@@ -214,7 +214,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
   const state = <span className={`inline-flex items-center gap-1.5 ${blocked ? "text-[var(--peligro)]" : "text-[var(--t1)] max-md:text-[var(--t3)]"}`}>
     <StatusMark tones={publicPageStateTones} value={pageState} />{stateText}
   </span>;
-  const summary = <>{state}{edit.unsaved ? <><span aria-hidden="true">{" · "}</span>{edit.unsaved}</> : null}</>;
+  const summary = <>{state}{edit.unsaved ? <><SublineSeparator />{edit.unsaved}</> : null}</>;
 
   return <>
     <Page

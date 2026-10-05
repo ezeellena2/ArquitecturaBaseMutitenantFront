@@ -177,7 +177,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     const { container } = renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
 
     expect(await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" })).toBeVisible();
-    await waitFor(() => expect(subline("Lucía Fernández")).toHaveTextContent(/^Activo · lucia@example\.com · desde el 27\/09\/2026$/));
+    await waitFor(() => expect(subline("Lucía Fernández")).toHaveTextContent(/^Activo·lucia@example\.com · desde el 27\/09\/2026$/));
     expect(screen.getByRole("button", { name: "Más acciones" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Descartar cambios" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
@@ -257,7 +257,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
 
     await open(user, screen.getByRole("combobox", { name: "Estado" }));
     await user.click(await screen.findByRole("option", { name: /Deshabilitado/ }));
-    expect(subline("Lucía Fernández")).toHaveTextContent(/^Deshabilitado · Cambios sin guardar · lucia@example\.com/);
+    expect(subline("Lucía Fernández")).toHaveTextContent(/^Deshabilitado·Cambios sin guardar·lucia@example\.com/);
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 
     const dialog = await screen.findByRole("dialog", { name: "¿Deshabilitar a Lucía Fernández?" });
@@ -305,7 +305,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
 
     expect(await screen.findByRole("heading", { level: 1, name: "sofia@example.com" })).toBeVisible();
-    await waitFor(() => expect(subline("sofia@example.com")).toHaveTextContent(/^Invitación pendiente · sofia@example\.com · vence el 02\/10\/2026$/));
+    await waitFor(() => expect(subline("sofia@example.com")).toHaveTextContent(/^Invitación pendiente·sofia@example\.com · vence el 02\/10\/2026$/));
     const access = screen.getByRole("region", { name: "Acceso a la organización" });
     expect(within(access).queryByRole("combobox", { name: "Estado" })).not.toBeInTheDocument();
     expect(within(access).getByText("Invitación pendiente")).toBeVisible();
@@ -580,7 +580,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
     await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
     await user.keyboard("{Escape}");
-    expect(subline("Lucía Fernández")).toHaveTextContent(/^Activo · Cambios sin guardar · lucia@example\.com/);
+    expect(subline("Lucía Fernández")).toHaveTextContent(/^Activo·Cambios sin guardar·lucia@example\.com/);
 
     await user.click(screen.getByRole("link", { name: "Empresas" }));
     expect(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).toBeVisible();

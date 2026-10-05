@@ -259,7 +259,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(subline()).toHaveTextContent(/^Publicada$/);
     await user.clear(name);
     await user.type(name, "Grupo Delta Norte");
-    expect(subline()).toHaveTextContent(/^Publicada · Cambios sin guardar$/);
+    expect(subline()).toHaveTextContent(/^Publicada·Cambios sin guardar$/);
 
     await user.click(screen.getByRole("link", { name: "Empresas" }));
     expect(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).toBeVisible();
@@ -360,7 +360,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
 
     await user.click(screen.getByRole("switch", { name: "Visible en grupo-delta.plataforma.com" }));
     expect(await screen.findByText("Publicamos tu página.")).toBeVisible();
-    await waitFor(() => expect(subline()).toHaveTextContent(/^Publicada · Cambios sin guardar$/));
+    await waitFor(() => expect(subline()).toHaveTextContent(/^Publicada·Cambios sin guardar$/));
     expect(name).toHaveValue("Grupo Delta Norte");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 

@@ -16,7 +16,7 @@ import { TaxIdText } from "@/shared/ui/format/TaxIdText";
 import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
-import { Page } from "@/shared/ui/Page";
+import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { homeOf } from "@/tenancy/access";
 import { changeCompanyStatus, companiesQueryRoot, companyQueryKey, fetchCompany } from "../api/companies";
 import { companyStatusTones } from "../columns";
@@ -90,9 +90,9 @@ export function CompanyDetailPage() {
         : canManageRoles ? { label: t("companies:detail.createRole"), to: createRolePath } : undefined}
       // Tablero Empresa: el estado primero, con punto y palabra; después el CUIT y la zona, formateados.
       summary={<>
-        <StatusBadge tones={companyStatusTones} value={data.status} />
-        {data.taxId ? <><span aria-hidden="true">{" · "}</span><TaxIdText value={data.taxId} withType /></> : null}
-        <span aria-hidden="true">{" · "}</span><TimeZoneText value={data.timeZoneId} />
+        <StatusBadge tones={companyStatusTones} value={data.status} /><SublineSeparator />
+        {data.taxId ? <><TaxIdText value={data.taxId} withType /><span aria-hidden="true">{" · "}</span></> : null}
+        <TimeZoneText value={data.timeZoneId} />
       </>}
       actions={<>
         {canManageCompany ? <Button type="button" variant="outline" onClick={() => setDialog({ kind: "edit" })}>{t("companies:actions.editCompany")}</Button> : null}

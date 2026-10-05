@@ -57,6 +57,9 @@ describe("Breadcrumbs", () => {
 
   it("en una ficha de Gestión de usuarios pasa por la sección y la opción", () => {
     expect(crumbs("/org/usuarios/abc", "Tomás Acosta")).toHaveTextContent("Inicio/Gestión de usuarios/Usuarios/Tomás Acosta");
+    // «Criterio · Marco» (.tb): la barra con un espacio a cada lado (0,28 em), no con 6 px.
+    expect(screen.getByRole("list")).toHaveClass("gap-[0.28em]");
+    expect(screen.getByRole("list")).not.toHaveClass("gap-1.5");
     expect(screen.getByRole("link", { name: "Usuarios" })).toHaveAttribute("href", "/org/usuarios");
   });
 

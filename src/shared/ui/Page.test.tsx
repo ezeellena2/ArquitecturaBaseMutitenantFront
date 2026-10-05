@@ -195,6 +195,8 @@ describe("Page", () => {
     expect(subline?.textContent).toBe("De sistema·Vale en toda la organización · 1 usuario lo tiene");
     // «Criterio · Marco» (.bnd .res): la segunda línea va a 2 del título, y la banda mide 65.
     expect(subline).toHaveClass("mt-0.5");
+    // El «·» entre el estado y el resumen, en el gris tenue y a 6 de cada lado (.bnd .res > * + *::before).
+    expect(subline?.querySelector("[data-slot=subline-separator]")).toHaveClass("mx-1.5", "text-[var(--t3)]");
   });
 
   // Tablero «Criterio · Avisos»: el cartel va arriba del contenido, debajo de la banda, a todo el ancho.

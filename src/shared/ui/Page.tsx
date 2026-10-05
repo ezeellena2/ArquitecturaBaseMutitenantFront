@@ -83,6 +83,13 @@ const phoneBodyClasses = {
 // Tableros M-* (.ap-txt): una acción en texto petróleo a la derecha de la barra.
 const barTextClass = "inline-flex h-10 shrink-0 items-center px-2.5 text-[15.5px] font-semibold text-[var(--marca-tx)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]";
 
+/// «Criterio · Marco» (.bnd .res y .banda-pag .res, > * + *::before): el «·» que separa los datos de la segunda línea de la
+/// banda (el estado, «Cambios sin guardar» y el resumen), en el gris tenue y a 6 de cada lado. Dentro de un mismo dato
+/// («CUIT 30-71234567-1 · Buenos Aires») va « · », como texto.
+export function SublineSeparator(): ReactNode {
+  return <span aria-hidden="true" data-slot="subline-separator" className="mx-1.5 shrink-0 text-[var(--t3)]">{"·"}</span>;
+}
+
 /// Banda de ancho completo y cuerpo con su propio margen. Las acciones adicionales se pasan ya
 /// traducidas y van en el menú ⋮; la principal queda a la derecha.
 export function Page({
@@ -197,8 +204,8 @@ export function Page({
               status ? <p data-slot="page-subline" className="mt-0.5 truncate text-[13px] text-[var(--t2)]">{status}</p> : null
             ) : (
               // Tableros Usuario y Rol: el estado va primero; después, el resumen.
-              <p data-slot="page-subline" className="mt-0.5 flex min-w-0 items-center gap-1 text-[13px] text-[var(--t2)]">
-                {status ? <><span className="shrink-0">{status}</span><span aria-hidden="true">{"·"}</span></> : null}
+              <p data-slot="page-subline" className="mt-0.5 flex min-w-0 items-center text-[13px] text-[var(--t2)]">
+                {status ? <><span className="shrink-0">{status}</span><SublineSeparator /></> : null}
                 <span className="truncate">{summary}</span>
               </p>
             )}
