@@ -7,7 +7,7 @@ import { Avatar } from "../Avatar";
 // de abajo arranca donde empieza el texto si hay un círculo a la izquierda. A la derecha del nombre, un dato chico
 // («1 usuario», «27/09 10:42»). El ⋮ va solo si la fila tiene acciones; tocar la fila abre su ficha. Con el círculo de
 // una persona (M-Usuarios y M-Empresa, .w-conv), el círculo va arriba, el correo en gris claro y la tercera línea en 12,5.
-export function ListRow({ leading, title, meta, lines = [], trailing, to, onClick, wrapTitle, className }: {
+export function ListRow({ leading, title, meta, lines = [], trailing, to, onClick, wrapTitle, wrapLines, className }: {
   leading?: ReactNode;
   title: ReactNode;
   meta?: ReactNode;
@@ -17,6 +17,9 @@ export function ListRow({ leading, title, meta, lines = [], trailing, to, onClic
   onClick?: () => void;
   /** El título puede ocupar dos renglones (un movimiento de la auditoría). */
   wrapTitle?: boolean;
+  /** La última línea sigue en el renglón de abajo en lugar de cortarse con «…» (M-Empresa, .w-conv .l3: los roles, el
+   *  estado y hasta cuándo vale una invitación). */
+  wrapLines?: boolean;
   className?: string;
 }) {
   const person = Boolean(leading);
@@ -28,7 +31,7 @@ export function ListRow({ leading, title, meta, lines = [], trailing, to, onClic
         {meta ? <span className="shrink-0 pt-0.5 text-[12.5px] text-[var(--t3)]">{meta}</span> : null}
       </span>
       {lines[0] ? <span className={cn("truncate text-[14px]", person ? "text-[var(--t3)]" : "text-[var(--t2)]")}>{lines[0]}</span> : null}
-      {lines[1] ? <span className={cn("truncate text-[var(--t3)]", person ? "text-[12.5px]" : "text-[13px]")}>{lines[1]}</span> : null}
+      {lines[1] ? <span className={cn(wrapLines ? "min-w-0" : "truncate", "text-[var(--t3)]", person ? "text-[12.5px]" : "text-[13px]")}>{lines[1]}</span> : null}
     </span>
   </>;
   const bodyClass = cn("flex min-w-0 flex-1 gap-3.5 text-left", person ? "items-start" : "items-center");

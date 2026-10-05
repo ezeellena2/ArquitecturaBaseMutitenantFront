@@ -218,9 +218,14 @@ describe("CompanyDetailPage en el teléfono: las invitaciones de la empresa (M-E
     companyApi([valentina, sofia, martin]);
     renderRouteWithProviders("/org/empresas/company-1", { as: companyAdmin });
 
-    expect((await screen.findByText("Sofía Herrera")).closest("li")).toHaveTextContent("Solo lectura · Invitación pendiente · vence 02/10");
+    const sofiaRow = (await screen.findByText("Sofía Herrera")).closest("li")!;
+    expect(sofiaRow).toHaveTextContent("Solo lectura · Invitación pendiente · vence 02/10");
     expect(screen.getByText("Martín Paz").closest("li")).toHaveTextContent("Solo lectura · Invitación vencida · venció 29/09");
     expect(screen.getByText("Valentina Ruiz").closest("li")).toHaveTextContent("Administrador · Activo");
+    // M-Empresa (.w-conv .l3): la línea del estado no se corta con «…»; si no entra, sigue en el renglón de abajo.
+    const line = within(sofiaRow).getByText(/vence/).parentElement!;
+    expect(line).not.toHaveClass("truncate");
+    expect(within(sofiaRow).getByText(/vence/)).not.toHaveClass("truncate");
   });
 
   // Tablero M-Empresa, «Invitación: acciones»: en el teléfono el ⋮ abre una hoja desde abajo con el nombre de la persona,

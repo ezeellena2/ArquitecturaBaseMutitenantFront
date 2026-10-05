@@ -64,14 +64,14 @@ function invitationExpiry(member: CompanyMember, t: TFunction, phone: boolean): 
 }
 
 /// Tablero M-Empresa: en el teléfono cada miembro es una fila con su círculo, el correo y, abajo, sus roles, el estado y,
-/// si es una invitación, hasta cuándo vale.
+/// si es una invitación, hasta cuándo vale. Esa línea no se corta: si no entra, sigue abajo (.w-conv .l3).
 export function companyMemberPhoneRow(member: CompanyMember, t: TFunction, trailing: ReactNode): ReactNode {
   const roles = member.roles.map((role) => role.name).join(", ");
   const expiry = invitationExpiry(member, t, true);
-  return <ListRow key={member.memberId} leading={<RowAvatar name={member.displayName} />} title={member.displayName}
-    lines={[member.email ?? "", <span key="state" className="inline-flex max-w-full items-center gap-1">{roles ? <span className="truncate">{roles}{" · "}</span> : null}
+  return <ListRow key={member.memberId} leading={<RowAvatar name={member.displayName} />} title={member.displayName} wrapLines
+    lines={[member.email ?? "", <span key="state">{roles ? `${roles} · ` : null}
       <StatusBadge tones={companyMemberStateTones} value={memberState(member)} className="text-[12.5px] text-[var(--t2)]" />
-      {expiry ? <span className="truncate">{" · "}{expiry}</span> : null}</span>]}
+      {expiry ? <>{" · "}{expiry}</> : null}</span>]}
     trailing={trailing} />;
 }
 
