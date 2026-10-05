@@ -108,6 +108,7 @@ describe("DataTable", () => {
     // el cuerpo de la tabla, sin un recuadro punteado propio.
     expect(screen.getByRole("columnheader", { name: "Nombre" })).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: /Sin usuarios/ })).toHaveAttribute("colspan", String(columns.length));
+    expect(screen.getByRole("cell", { name: /Sin usuarios/ }).closest("tr")).toHaveClass("border-b-0");
     expect(screen.getByText("Sin usuarios").parentElement).not.toHaveClass("border-dashed");
 
     rerender(<DataTable columns={columns} rows={[]} rowKey={(row) => row.id} error="No se pudo cargar" errorDescription="Código 123" onRetry={onRetry} />);

@@ -236,7 +236,7 @@ export function DataTable<TRow>({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {notice ? <TableRow className="hover:bg-transparent">
+        {notice ? <TableRow className="border-b-0 hover:bg-transparent">
           <TableCell colSpan={columns.length} className="p-0 whitespace-normal">{notice}</TableCell>
         </TableRow> : rows.map((row, rowIndex) => (
           <TableRow key={rowKey(row)} className={twoLines ? "h-[52px]" : "h-10"}>
