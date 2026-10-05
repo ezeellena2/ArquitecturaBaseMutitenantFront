@@ -1,14 +1,13 @@
 "use client"
 
 import {
-  CircleAlertIcon,
-  CircleCheckIcon,
   InfoIcon,
   Loader2Icon,
   TriangleAlertIcon,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
+import { AlertCircleIcon, CircleCheckIcon } from "@/shared/ui/icons"
 import { Toaster as Sonner, toast, type ToasterProps } from "sonner"
 
 type ToastErrorOptions = Parameters<typeof toast.error>[1]
@@ -43,7 +42,8 @@ const Toaster = ({ toastOptions, ...props }: ToasterProps) => {
         success: <CircleCheckIcon className="size-5" />,
         info: <InfoIcon className="size-5" />,
         warning: <TriangleAlertIcon className="size-5" />,
-        error: <CircleAlertIcon className="size-5" />,
+        // M-Avisos (.f-snack .mal): el signo del error, de 28.
+        error: <AlertCircleIcon className="size-7" />,
         loading: <Loader2Icon className="size-5 animate-spin" />,
       }}
       style={{ "--normal-bg": "var(--franja)", "--normal-text": "var(--lado-activo)", "--normal-border": "transparent", "--border-radius": "14px", fontFamily: "var(--font-sans)" } as React.CSSProperties}
@@ -63,10 +63,11 @@ const Toaster = ({ toastOptions, ...props }: ToasterProps) => {
       toastOptions={{ duration: 4000, closeButton: false, closeButtonAriaLabel: t("notifications.close"), style: { padding: "12px 14px", gap: "10px", borderRadius: "10px", fontSize: "13px", boxShadow: "var(--sombra-aviso)" }, ...toastOptions }}
       className="toaster group"
       icons={{
-        success: <CircleCheckIcon className="size-[18px]" />,
+        // Avisos (.p-aviso): la tilde y el signo del lienzo (círculo de 8,5), de 18 con trazo 2.
+        success: <CircleCheckIcon className="size-[18px]" strokeWidth={2} />,
         info: <InfoIcon className="size-[18px]" />,
         warning: <TriangleAlertIcon className="size-[18px]" />,
-        error: <CircleAlertIcon className="size-[18px]" />,
+        error: <AlertCircleIcon className="size-[18px]" strokeWidth={2} />,
         loading: <Loader2Icon className="size-[18px] animate-spin" />,
       }}
       style={

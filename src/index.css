@@ -187,16 +187,21 @@ body {
 }
 /* En el teléfono, los avisos suben por encima de la acción fija de abajo (tablero M-Avisos). */
 @media (max-width: 767px) {
-  body:has([data-slot="fixed-actions"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 84px; }
+  /* M-Avisos (.f-snack, a 110 del pie con la barra de 97): la franja queda a 13 de la barra de botones, que acá mide 75. */
+  body:has([data-slot="fixed-actions"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 88px; }
   /* Con la barra de abajo, la franja va por encima de ella. */
   body:has([data-slot="bottom-nav"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 84px; }
   [data-sonner-toast][data-type="success"] [data-icon] { color: var(--franja-ok); }
   [data-sonner-toast][data-type="error"] [data-icon], [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--franja-mal); }
-  [data-sonner-toast] [data-icon] { width: 20px; height: 20px; }
-  [data-sonner-toast][data-styled="true"] [data-title] { font-weight: 400; }
+  /* .f-snack: sin borde, con el renglón de 1,4 y el ícono en su caja (20; el del error, 28), sin los márgenes de sonner. */
+  [data-sonner-toaster] [data-sonner-toast][data-styled="true"] { border-width: 0; }
+  [data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-icon] { width: 20px; height: 20px; margin: 0; }
+  [data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-icon] { width: 28px; height: 28px; }
+  [data-sonner-toast][data-styled="true"] [data-title] { font-weight: 400; line-height: inherit; }
   [data-sonner-toast][data-styled="true"] [data-close-button] svg { width: 18px; height: 18px; }
   [data-sonner-toast][data-styled="true"] [data-button] { height: auto; padding: 0; background: transparent; color: var(--franja-accion); font-size: 14.5px; font-weight: 600; }
-  [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 24px; height: 24px; transform: none; border: 0; background: transparent; color: oklch(1 0 0 / 0.7); }
+  /* .f-snack .x: la ✕ de 18, sin caja alrededor. */
+  [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 18px; height: 18px; transform: none; border: 0; background: transparent; color: oklch(1 0 0 / 0.7); }
 }
 /* En la compu (tablero Avisos, .p-aviso): sobre la tarjeta blanca solo el ícono lleva color; el error suma el borde rojo
    suave y la ✕ a la derecha; «Reintentar» y «Copiar código» van en texto petróleo. */
@@ -206,7 +211,8 @@ body {
   [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--alerta); }
   [data-sonner-toast][data-type="info"] [data-icon] { color: var(--marca-tx); }
   [data-sonner-toast][data-type="error"] { border-color: var(--peligro-borde); align-items: flex-start; }
-  [data-sonner-toast] [data-icon] { width: 18px; height: 18px; margin: 0; }
+  /* El ícono en su caja de 18, sin los márgenes de sonner (su regla pesa más que [data-sonner-toast] [data-icon]). */
+  [data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-icon] { width: 18px; height: 18px; margin: 0; }
   [data-sonner-toast][data-styled="true"] [data-title] { font-weight: 400; line-height: normal; }
   [data-sonner-toast][data-styled="true"] [data-button] { height: auto; padding: 0; background: transparent; color: var(--marca-tx); font-size: 13px; font-weight: 600; }
   [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 24px; height: 24px; transform: none; border: 0; background: transparent; color: var(--t2); }

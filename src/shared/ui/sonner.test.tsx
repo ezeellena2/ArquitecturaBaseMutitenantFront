@@ -12,7 +12,7 @@ vi.mock("sonner", async (importOriginal) => {
   const actual = await importOriginal<typeof import("sonner")>();
   return {
     ...actual,
-    Toaster: ({ position, richColors, style, toastOptions }: ToasterProps) => (
+    Toaster: ({ position, richColors, style, toastOptions, icons }: ToasterProps) => (
       <div
         data-testid="sonner-root"
         data-x-position={position?.split("-")[1]}
@@ -24,7 +24,10 @@ vi.mock("sonner", async (importOriginal) => {
         data-toast-font-size={toastOptions?.style?.fontSize}
         data-toast-shadow={toastOptions?.style?.boxShadow}
         style={style}
-      />
+      >
+        <span data-testid="icon-success">{icons?.success}</span>
+        <span data-testid="icon-error">{icons?.error}</span>
+      </div>
     ),
   };
 });
@@ -52,6 +55,13 @@ describe("Toaster · Criterio v65", () => {
     expect((toaster as HTMLElement).style.getPropertyValue("--normal-border")).toBe("var(--borde)");
     expect((toaster as HTMLElement).style.getPropertyValue("--normal-text")).toBe("var(--t1)");
     expect((toaster as HTMLElement).style.getPropertyValue("--success-bg")).toBe("");
+    // Tablero Avisos (.p-aviso): la tilde y el signo dibujados como el lienzo (círculo de 8,5 en 18, con trazo 2).
+    const ok = toaster!.querySelector<SVGElement>("[data-testid='icon-success'] svg")!;
+    expect(ok).toHaveClass("size-[18px]");
+    expect(ok).toHaveAttribute("stroke-width", "2");
+    expect(ok.querySelector("circle")).toHaveAttribute("r", "8.5");
+    expect(ok.querySelector("path")).toHaveAttribute("d", "m8.5 12 2.4 2.4 4.6-4.8");
+    expect(toaster!.querySelector("[data-testid='icon-error'] svg circle")).toHaveAttribute("r", "8.5");
   });
 
   // Tablero M-Avisos: en el teléfono el aviso pasajero es una franja oscura abajo, a lo ancho, con el ícono de color.
@@ -68,6 +78,17 @@ describe("Toaster · Criterio v65", () => {
       expect(toaster).toHaveAttribute("data-toast-font-size", "14.5px");
       expect(toaster.style.getPropertyValue("--normal-bg")).toBe("var(--franja)");
       expect(toaster.style.getPropertyValue("--normal-text")).toBe("var(--lado-activo)");
+      // M-Avisos (.f-snack .ok y .mal): la tilde de 20 y el signo de 28, con el círculo de 8,5 del tablero.
+      const ok = toaster!.querySelector<SVGElement>("[data-testid='icon-success'] svg")!;
+      expect(ok).toHaveClass("size-5");
+      expect(ok.querySelector("circle")).toHaveAttribute("r", "8.5");
+      expect(toaster.querySelector("[data-testid='icon-error'] svg")).toHaveClass("size-7");
+      // index.css: la franja va a 13 de la barra de botones (75 + 13), sin borde, con el renglón de 1,4 y el ícono en su
+      // caja, sin márgenes.
+      expect(css).toContain('body:has([data-slot="fixed-actions"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 88px; }');
+      expect(css).toContain('[data-sonner-toaster] [data-sonner-toast][data-styled="true"] { border-width: 0; }');
+      expect(css).toContain('[data-sonner-toast][data-styled="true"] [data-title] { font-weight: 400; line-height: inherit; }');
+      expect(css).toContain('[data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-icon] { width: 28px; height: 28px; }');
     } finally {
       restore();
     }

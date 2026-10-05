@@ -402,6 +402,16 @@ export function CheckIcon(props: IconProps) {
   );
 }
 
+/// Salió bien: la tilde en su círculo del aviso pasajero (tableros Avisos, .p-aviso, y M-Avisos, .f-snack .ok).
+export function CircleCheckIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="m8.5 12 2.4 2.4 4.6-4.8" />
+    </Icon>
+  );
+}
+
 /// Dos tildes: un mensaje de WhatsApp que llegó ("Entregada") o que se leyó ("Leída"), en la franja de la última
 /// invitación (tablero "Editar usuario · B"). Es la marca que la persona ya conoce de WhatsApp.
 export function CheckCheckIcon(props: IconProps) {
