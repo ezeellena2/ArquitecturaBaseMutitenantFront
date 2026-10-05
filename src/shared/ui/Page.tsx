@@ -1,4 +1,4 @@
-import { useState, type ComponentType, type ReactNode } from "react";
+import { useRef, useState, type ComponentType, type ReactNode } from "react";
 import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
 import { AppBar, AppIconButton } from "./app/AppBar";
@@ -18,7 +18,8 @@ import { ChevronLeftIcon, MoreVerticalIcon } from "./icons";
 
 export interface PageOverflowAction {
   label: string;
-  onSelect: () => void;
+  /** Recibe el ⋮ de la banda: un diálogo que se abre desde acá le devuelve el foco al cerrar (la opción se va con el menú). */
+  onSelect: (trigger: HTMLButtonElement | null) => void;
   destructive?: boolean;
   hidden?: boolean;
 }
@@ -77,18 +78,19 @@ export function Page({
 }: PageProps): ReactNode {
   const chrome = useAppChrome();
   const [tools, setTools] = useState<HTMLDivElement | null>(null);
+  const moreTrigger = useRef<HTMLButtonElement>(null);
   const visibleMoreActions = moreActions?.items.filter((action) => !action.hidden) ?? [];
   const regularActions = visibleMoreActions.filter((action) => !action.destructive);
   const destructiveActions = visibleMoreActions.filter((action) => action.destructive);
   const moreMenuItems = <>
     {regularActions.map((action) => (
-      <DropdownMenuItem key={action.label} onSelect={action.onSelect}>
+      <DropdownMenuItem key={action.label} onSelect={() => action.onSelect(moreTrigger.current)}>
         {action.label}
       </DropdownMenuItem>
     ))}
     {regularActions.length > 0 && destructiveActions.length > 0 ? <DropdownMenuSeparator /> : null}
     {destructiveActions.map((action) => (
-      <DropdownMenuItem key={action.label} variant="destructive" onSelect={action.onSelect}>
+      <DropdownMenuItem key={action.label} variant="destructive" onSelect={() => action.onSelect(moreTrigger.current)}>
         {action.label}
       </DropdownMenuItem>
     ))}
@@ -106,7 +108,7 @@ export function Page({
             ? <a href={barAction.href} target="_blank" rel="noreferrer" className={barTextClass}>{barAction.label}</a>
             : <button type="button" onClick={barAction.onClick} className={barTextClass}>{barAction.label}</button> : null}
           {visibleMoreActions.length > 0 && moreActions ? <DropdownMenu>
-            <DropdownMenuTrigger asChild><AppIconButton label={moreActions.label}><MoreVerticalIcon /></AppIconButton></DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild><AppIconButton ref={moreTrigger} label={moreActions.label}><MoreVerticalIcon /></AppIconButton></DropdownMenuTrigger>
             <DropdownMenuContent align="end">{moreMenuItems}</DropdownMenuContent>
           </DropdownMenu> : null}
         </>} />
@@ -154,6 +156,7 @@ export function Page({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
+                    ref={moreTrigger}
                     type="button"
                     aria-label={moreActions.label}
                     title={moreActions.label}

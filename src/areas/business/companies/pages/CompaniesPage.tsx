@@ -1,18 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Building2, Eye, Pencil, Plus, Power } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { usePermissions } from "@/auth/usePermissions";
-import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
+import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { CompanyResponse } from "@/shared/api/types";
-import type { CreateCompanyRequest } from "@/shared/api/types";
-import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
-import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { Page } from "@/shared/ui/Page";
@@ -25,14 +22,12 @@ import {
   companiesCountQueryKey,
   companiesQueryKey,
   companiesQueryRoot,
-  createCompany,
   fetchCompanies,
   fetchCompanyCounts,
-  updateCompany,
   type CompaniesQuery,
 } from "../api/companies";
 import { createCompanyColumns, companyPhoneRow } from "../columns";
-import { CompanyFields, companyPayload, draftFromCompany, emptyCompanyDraft, useCompanyValidation, type CompanyDraft } from "../components/CompanyFields";
+import { CompanyDialog } from "../components/CompanyDialog";
 
 const statusValues = [undefined, "Active", "Inactive"] as const;
 const companyFilterKeys = ["status"] as const;
@@ -62,30 +57,14 @@ export function CompaniesPage() {
     queryFn: () => fetchCompanyCounts(debouncedSearch),
     meta: { silent: true },
   });
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingCompany, setEditingCompany] = useState<CompanyResponse | null>(null);
-  const [draft, setDraft] = useState<CompanyDraft>(emptyCompanyDraft);
-  const [failure, setFailure] = useState<unknown>();
-  const validation = useCompanyValidation(draft);
-  const [statusTarget, setStatusTarget] = useState<CompanyResponse | null>(null);
+  // «Crear empresa» o «Editar» de una fila: el diálogo se monta solo mientras está abierto y es dueño de su borrador.
+  const [dialog, setDialog] = useState<{ company?: CompanyResponse; returnFocusTo?: HTMLElement | null } | null>(null);
+  // «Inactivar» de una fila: la confirmación le devuelve el foco al ⋮ de esa fila.
+  const [statusTarget, setStatusTarget] = useState<{ company: CompanyResponse; trigger: HTMLButtonElement | null } | null>(null);
 
   const invalidate = async () => {
     await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
   };
-  const finishSave = async (creating: boolean) => {
-    setDialogOpen(false);
-    toast.success(sentence(t(creating ? "companies:messages.created" : "companies:messages.updated", { name: draft.name.trim() })));
-    setEditingCompany(null);
-    setDraft(emptyCompanyDraft);
-    setFailure(undefined);
-    await invalidate();
-  };
-  const create = useIdempotentMutation((request: CreateCompanyRequest, key) => createCompany(request, key));
-  const update = useMutation({
-    mutationFn: (company: CompanyResponse) => updateCompany(company.id, { ...companyPayload(draft), version: company.version }),
-    onSuccess: async () => finishSave(false),
-    onError: (error) => setFailure(error),
-  });
   const updateStatus = useMutation({
     mutationFn: (company: CompanyResponse) => changeCompanyStatus(company.id, { status: company.status === "Active" ? "Inactive" : "Active", version: company.version }),
     onSuccess: async (_result, company) => {
@@ -96,38 +75,14 @@ export function CompaniesPage() {
     onError: (error) => toastActionError(error, t),
   });
 
-  function openCreate() {
-    setEditingCompany(null);
-    setDraft(emptyCompanyDraft);
-    setFailure(undefined);
-    validation.reset();
-    setDialogOpen(true);
-  }
-
-  function openEdit(company: CompanyResponse) {
-    setEditingCompany(company);
-    setDraft(draftFromCompany(company));
-    setFailure(undefined);
-    validation.reset();
-    setDialogOpen(true);
-  }
-
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    // «Criterio · Formularios»: el nombre y el CUIT se revisan al tocar el botón; lo que falta lo dice el campo.
-    if (!validation.validate()) return;
-    setFailure(undefined);
-    const request: CreateCompanyRequest = companyPayload(draft);
-    if (editingCompany) update.mutate(editingCompany);
-    else create.mutate(request, { onSuccess: () => finishSave(true), onError: setFailure });
-  }
+  const openCreate = () => setDialog({});
 
   const rowActions = (company: CompanyResponse) => <RowActions label={t("companies:rowActions", { name: company.name })} actions={[
         // Tablero Empresas: «Ver ficha», «Editar» y, después de la franja, «Inactivar» en rojo; «Activar» es directo.
         { label: t("companies:actions.view"), accessibleName: t("companies:actions.view"), icon: Eye, onSelect: () => { void navigate(`/org/empresas/${encodeURIComponent(company.id)}`); } },
-        { label: t("companies:actions.edit"), accessibleName: t("companies:actions.edit"), icon: Pencil, onSelect: () => openEdit(company), hidden: !canManage },
+        { label: t("companies:actions.edit"), accessibleName: t("companies:actions.edit"), icon: Pencil, onSelect: (trigger) => setDialog({ company, returnFocusTo: trigger }), hidden: !canManage },
         { label: t(company.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), accessibleName: t(company.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), icon: Power, destructive: company.status === "Active",
-          onSelect: () => { if (company.status === "Active") setStatusTarget(company); else updateStatus.mutate(company); }, hidden: !canManage },
+          onSelect: (trigger) => { if (company.status === "Active") setStatusTarget({ company, trigger }); else updateStatus.mutate(company); }, hidden: !canManage },
       ]} />;
   const columns: Column<CompanyResponse>[] = [
     ...createCompanyColumns(t),
@@ -177,31 +132,16 @@ export function CompaniesPage() {
         </Surface>
       </div>
     </Page>
-    <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setFailure(undefined); }}>
-      <DialogContent>
-        <DialogHeader><DialogTitle>{t(editingCompany ? "companies:editTitle" : "companies:createTitle")}</DialogTitle></DialogHeader>
-        <form onSubmit={submit} className="flex min-h-0 flex-col">
-          <DialogBody>
-            <CompanyFields draft={draft} onChange={(next) => { setDraft(next); setFailure(undefined); }} errors={validation.errors} />
-            {/* «Criterio · Diálogos»: el error general, en la franja arriba de los botones. */}
-            <FormError message={actionErrorMessage(failure, t)} />
-          </DialogBody>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>{t("common:actions.cancel")}</Button>
-            {/* «Criterio · Botones»: no se apaga con el CUIT mal; el campo ya dice qué corregir y no se manda nada. */}
-            <Button type="submit" pending={create.isPending || update.isPending}>{t(editingCompany ? "companies:form.save" : "companies:form.create")}</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-    <ConfirmDialog
-      open={statusTarget !== null}
+    {dialog ? <CompanyDialog company={dialog.company} returnFocusTo={dialog.returnFocusTo} onClose={() => setDialog(null)} /> : null}
+    {statusTarget ? <ConfirmDialog
+      open
       onOpenChange={(open) => { if (!open) setStatusTarget(null); }}
-      title={statusTarget ? t("companies:confirm.deactivate", { name: statusTarget.name }) : ""}
+      title={t("companies:confirm.deactivate", { name: statusTarget.company.name })}
       description={t("companies:confirm.deactivateDescription")}
       confirmLabel={t("companies:confirm.deactivateConfirm")}
       destructive
-      onConfirm={() => { if (statusTarget) updateStatus.mutate(statusTarget); }}
-    />
+      returnFocusTo={statusTarget.trigger}
+      onConfirm={() => updateStatus.mutate(statusTarget.company)}
+    /> : null}
   </>;
 }

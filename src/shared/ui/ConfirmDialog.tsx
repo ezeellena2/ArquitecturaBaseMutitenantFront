@@ -14,6 +14,8 @@ interface ConfirmDialogProps {
   cancelLabel?: string;
   destructive?: boolean;
   onConfirm: () => void;
+  /** Adónde vuelve el foco si lo que la abrió se fue (la opción de un menú ⋮): el botón de ese menú. */
+  returnFocusTo?: HTMLElement | null;
 }
 
 /// Diálogo de confirmación para acciones que no se pueden deshacer.
@@ -26,9 +28,10 @@ export function ConfirmDialog({
   cancelLabel,
   destructive,
   onConfirm,
+  returnFocusTo,
 }: ConfirmDialogProps) {
   const { t } = useTranslation();
-  const restoreFocus = useRestoreFocusOnClose(open);
+  const restoreFocus = useRestoreFocusOnClose(open, returnFocusTo);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

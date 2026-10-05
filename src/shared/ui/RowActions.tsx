@@ -1,4 +1,4 @@
-import type { ComponentType, ReactNode } from "react";
+import { useRef, type ComponentType, type ReactNode } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +12,8 @@ export interface RowAction {
   label: string;
   accessibleName: string;
   icon: ComponentType<{ className?: string }>;
-  onSelect: () => void;
+  /** Recibe el ⋮ de la fila: un diálogo que se abre desde acá le devuelve el foco al cerrar (la opción se va con el menú). */
+  onSelect: (trigger: HTMLButtonElement | null) => void;
   destructive?: boolean;
   hidden?: boolean;
 }
@@ -20,6 +21,7 @@ export interface RowAction {
 /// El nombre del disparador incluye el dato de la fila: "Acciones de Tomás Acosta".
 /// Las opciones sin permiso se omiten y las destructivas quedan separadas al final.
 export function RowActions({ label, actions }: { label: string; actions: readonly RowAction[] }): ReactNode {
+  const trigger = useRef<HTMLButtonElement>(null);
   const visible = actions.filter((action) => !action.hidden);
   if (visible.length === 0) return null;
 
@@ -30,6 +32,7 @@ export function RowActions({ label, actions }: { label: string; actions: readonl
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
+          ref={trigger}
           type="button"
           aria-label={label}
           title={label}
@@ -42,7 +45,7 @@ export function RowActions({ label, actions }: { label: string; actions: readonl
         {regular.map((action, index) => {
           const Icon = action.icon;
           return (
-            <DropdownMenuItem key={index} aria-label={action.accessibleName} onSelect={action.onSelect}>
+            <DropdownMenuItem key={index} aria-label={action.accessibleName} onSelect={() => action.onSelect(trigger.current)}>
               <Icon className="size-4" />
               {action.label}
             </DropdownMenuItem>
@@ -52,7 +55,7 @@ export function RowActions({ label, actions }: { label: string; actions: readonl
         {destructive.map((action, index) => {
           const Icon = action.icon;
           return (
-            <DropdownMenuItem key={index} aria-label={action.accessibleName} variant="destructive" onSelect={action.onSelect}>
+            <DropdownMenuItem key={index} aria-label={action.accessibleName} variant="destructive" onSelect={() => action.onSelect(trigger.current)}>
               <Icon className="size-4" />
               {action.label}
             </DropdownMenuItem>

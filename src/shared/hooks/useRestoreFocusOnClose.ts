@@ -11,10 +11,11 @@ import { useLayoutEffect, useRef, type RefObject } from "react";
 /// Devuelve el `onCloseAutoFocus` que hay que pasarle al `DialogContent`. `open` solo hace falta en los
 /// diálogos que se quedan montados cerrados; los que se montan solo mientras están abiertos no lo pasan.
 ///
-/// `fallback` es para cuando lo que hizo el diálogo se lleva el botón que lo abrió: al agregar el correo, la fila
-/// ya no ofrece "Agregar correo". Un elemento que ya no está en la página, o que está deshabilitado, no toma el
-/// foco, y el foco cae en `<body>` igual que sin este hook. Con `fallback`, va ahí.
-export function useRestoreFocusOnClose(open = true, fallback?: RefObject<HTMLElement | null>): (event: Event) => void {
+/// `fallback` (un elemento o una ref) es para cuando lo que abrió el diálogo ya no puede tomar el foco: al agregar el
+/// correo, la fila ya no ofrece "Agregar correo"; y una opción de un menú (el ⋮ de una fila) se va con el menú, así
+/// que el diálogo recibe el botón del menú. Un elemento que ya no está en la página, que está deshabilitado o que es
+/// `<body>` no toma el foco; sin `fallback`, el foco cae en `<body>` igual que sin este hook.
+export function useRestoreFocusOnClose(open = true, fallback?: RefObject<HTMLElement | null> | HTMLElement | null): (event: Event) => void {
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
   useLayoutEffect(() => {
@@ -25,7 +26,8 @@ export function useRestoreFocusOnClose(open = true, fallback?: RefObject<HTMLEle
 
   return (event: Event) => {
     const previous = previouslyFocusedRef.current;
-    const target = previous !== null && !canTakeFocus(previous) && fallback?.current ? fallback.current : previous;
+    const backup = fallback instanceof HTMLElement ? fallback : fallback?.current ?? null;
+    const target = previous !== null && canTakeFocus(previous) ? previous : backup ?? previous;
 
     if (target) {
       event.preventDefault();
@@ -35,5 +37,5 @@ export function useRestoreFocusOnClose(open = true, fallback?: RefObject<HTMLEle
 }
 
 function canTakeFocus(element: HTMLElement): boolean {
-  return element.isConnected && !element.matches(":disabled");
+  return element !== element.ownerDocument.body && element.isConnected && !element.matches(":disabled");
 }

@@ -463,4 +463,62 @@ describe("CompanyDetailPage", () => {
     await waitFor(() => expect(requestBody).toEqual({ memberId: "member-2", roleIds: [] }));
     expect(idempotencyKey).toMatch(/^[0-9a-f-]{36}$/i);
   });
+
+  // accesibilidad.md: un diálogo le devuelve el foco a lo que lo abrió. Los de la banda, al botón; los del ⋮ de una fila,
+  // a ese ⋮, porque la opción se va con el menú.
+  it("cada diálogo de la ficha le devuelve el foco a lo que lo abrió", async () => {
+    const user = userEvent.setup();
+    rolesApi(() => new HttpResponse(null, { status: 204 }));
+    server.use(http.get("/api/users/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    expect(await screen.findByText("Lucía Fernández")).toBeVisible();
+
+    const add = screen.getByRole("button", { name: "Agregar miembro" });
+    await user.click(add);
+    await screen.findByRole("dialog", { name: "Agregar miembro" });
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(add).toHaveFocus());
+
+    const edit = screen.getByRole("button", { name: "Editar empresa" });
+    await user.click(edit);
+    await user.click(within(await screen.findByRole("dialog", { name: "Editar empresa" })).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(edit).toHaveFocus());
+
+    const rowActions = screen.getByRole("button", { name: "Acciones para Lucía Fernández" });
+    rowActions.focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
+    await user.click(within(await screen.findByRole("dialog", { name: "Roles de Lucía Fernández" })).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(rowActions).toHaveFocus());
+
+    rowActions.focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Quitar de la empresa" }));
+    await user.click(within(await screen.findByRole("dialog", { name: "¿Quitar a Lucía Fernández de la empresa?" })).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(rowActions).toHaveFocus());
+  });
+
+  // Cada diálogo se monta solo mientras está abierto y es dueño de su borrador: lo que quedó a medias al cancelar no
+  // vuelve a aparecer.
+  it("al cancelar «Editar empresa», lo escrito se descarta y vuelve a abrir con lo guardado", async () => {
+    const user = userEvent.setup();
+    detailApi([member]);
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+
+    await user.click(await screen.findByRole("button", { name: "Editar empresa" }));
+    const first = await screen.findByRole("dialog", { name: "Editar empresa" });
+    await user.clear(within(first).getByRole("textbox", { name: "Nombre" }));
+    await user.click(within(first).getByRole("button", { name: "Guardar cambios" }));
+    expect(within(first).getByRole("textbox", { name: "Nombre" })).toHaveAccessibleDescription("Escribí el nombre de la empresa.");
+    await user.click(within(first).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Editar empresa" }));
+    const again = await screen.findByRole("dialog", { name: "Editar empresa" });
+    expect(within(again).getByRole("textbox", { name: "Nombre" })).toHaveValue("Delta S.A.");
+    expect(within(again).getByRole("textbox", { name: "Nombre" })).not.toHaveAccessibleDescription("Escribí el nombre de la empresa.");
+  });
 });

@@ -240,4 +240,37 @@ describe("CompaniesPage", () => {
     await waitFor(() => expect(requestBody).toEqual({ status: "Inactive", version: 3 }));
     expect(await screen.findByText("Inactivamos Delta S.A.")).toBeVisible();
   });
+
+  // accesibilidad.md: «Crear empresa» le devuelve el foco a su botón; «Editar» y «Inactivar», al ⋮ de la fila, porque la
+  // opción se va con el menú. El diálogo es el mismo que el de la ficha (CompanyDialog).
+  it("los diálogos de Empresas le devuelven el foco a lo que los abrió", async () => {
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [company], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/filter-counts", () => HttpResponse.json({ all: 1, active: 1, inactive: 0 })),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas", { as: "business-e6-admin" });
+
+    const create = await screen.findByRole("button", { name: "Crear empresa" });
+    await user.click(create);
+    await user.click(within(await screen.findByRole("dialog", { name: "Crear empresa" })).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(create).toHaveFocus());
+
+    const rowActions = await screen.findByRole("button", { name: "Acciones para Delta S.A." });
+    rowActions.focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Editar" }));
+    const edit = await screen.findByRole("dialog", { name: "Editar empresa" });
+    expect(within(edit).getByRole("textbox", { name: "Nombre" })).toHaveValue("Delta S.A.");
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(rowActions).toHaveFocus());
+
+    rowActions.focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Inactivar" }));
+    await user.click(within(await screen.findByRole("dialog", { name: "¿Inactivar Delta S.A.?" })).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(rowActions).toHaveFocus());
+  });
 });
