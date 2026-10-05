@@ -4,9 +4,9 @@ import { Button } from "./button";
 
 // Tablero «Criterio · Botones»: cuatro tipos (principal, secundario, peligro y enlace) y tres tamaños, más el de ícono.
 describe("Button · Criterio · Botones", () => {
-  // «Criterio · Botones» (.cb-pri): el principal es petróleo plano y, con el mouse encima, un tono más oscuro; sin degradé ni
-  // sombra («Otros tamaños, colores, radios o sombras», en Prohibido).
-  it("normal de 36 con texto de 14, chico de 32 con 13 y grande de 44 con 15; el principal plano, como el criterio", () => {
+  // «Criterio · Botones» y «Criterio · Decisiones» (lienzo v107, 04/10/2026): el principal lleva el degradé de la marca en
+  // todas las pantallas, también en el teléfono, con su sombra; con el mouse encima, un poco más claro.
+  it("normal de 36 con texto de 14, chico de 32 con 13 y grande de 44 con 15; el principal con el degradé de la marca", () => {
     render(
       <>
         <Button>{"Guardar cambios"}</Button>
@@ -16,9 +16,8 @@ describe("Button · Criterio · Botones", () => {
     );
 
     const standard = screen.getByRole("button", { name: "Guardar cambios" });
-    expect(standard).toHaveClass("h-9", "text-[14px]", "bg-[var(--marca)]", "hover:bg-[var(--marca-h)]");
-    expect(standard.className).not.toContain("gradient");
-    expect(standard.className).not.toContain("shadow-[");
+    expect(standard).toHaveClass("h-9", "text-[14px]", "bg-[linear-gradient(180deg,var(--marca)_0%,var(--marca-h)_100%)]", "hover:brightness-105");
+    expect(standard).toHaveClass("shadow-[0_1px_2px_var(--marca-sombra),inset_0_1px_0_var(--brillo)]");
     expect(screen.getByRole("button", { name: "Agregar" })).toHaveClass("h-8", "text-[13px]", "border-[var(--borde2)]");
     expect(screen.getByRole("button", { name: "Continuar" })).toHaveClass("h-11", "text-[15px]");
   });
