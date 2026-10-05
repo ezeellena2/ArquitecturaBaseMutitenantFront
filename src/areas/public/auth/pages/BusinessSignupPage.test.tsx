@@ -126,6 +126,13 @@ describe("BusinessSignupPage", () => {
     expect(screen.getByText(".plataforma.com")).toBeVisible();
     // Tablero Registro-Empresa: el dominio en una caja gris aparte, no como texto dentro del campo.
     expect(screen.getByText(".plataforma.com")).toHaveClass("bg-[var(--s2)]", "border-l");
+    // Lienzo v104 (.in-pre): el campo mide 44 con radio 10, en la compu y en el teléfono; el texto ocupa todo su alto,
+    // sin el alto ni el radio de los campos del teléfono.
+    const slugInput = screen.getByRole("textbox", { name: /Dirección de tu página/ });
+    expect(slugInput.parentElement).toHaveClass("h-11", "rounded-[10px]");
+    expect(slugInput.parentElement).not.toHaveClass("max-md:h-12");
+    expect(slugInput).toHaveClass("h-full", "max-md:h-full", "rounded-none", "max-md:rounded-none");
+    expect(slugInput).not.toHaveClass("h-11");
     fireEvent.click(screen.getByRole("button", { name: "Crear organización" }));
 
     expect(await screen.findByRole("heading", { name: "Acme está lista" })).toBeVisible();

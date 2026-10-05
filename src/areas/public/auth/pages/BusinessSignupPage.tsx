@@ -14,6 +14,7 @@ import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { EmailField } from "@/shared/ui/fields/EmailField";
+import { cn } from "@/shared/lib/utils";
 import { Input } from "@/shared/ui/input";
 import { isValidTaxId } from "@/shared/ui/fields/TaxIdField";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
@@ -296,10 +297,12 @@ export function BusinessSignupPage() {
 
 }
 
-// Tablero Registro-Empresa: el dominio va en una caja gris aparte, pegada al campo, con la letra del campo (15).
+// Tablero Registro-Empresa (.in-pre, lienzo v104): 44 de alto con radio 10, en la compu y en el teléfono. El dominio va en
+// una caja gris aparte, pegada al campo, con la letra del campo (15). El texto ocupa todo el alto de la caja, sin el alto
+// ni el radio que `Input` toma en el teléfono.
 function SlugInput({ suffix, className, ...inputProps }: React.ComponentProps<"input"> & { suffix: string }) {
-  return <div className="flex items-stretch overflow-hidden rounded-[10px] border border-[var(--borde2)] bg-[var(--lado-activo)] focus-within:border-[var(--marca)] focus-within:ring-[3px] focus-within:ring-[var(--foco-halo)]">
-    <Input {...inputProps} className={`min-w-0 flex-1 rounded-none border-0 shadow-none focus-visible:ring-0 ${className ?? ""}`} />
+  return <div className="flex h-11 items-stretch overflow-hidden rounded-[10px] border border-[var(--borde2)] bg-[var(--lado-activo)] focus-within:border-[var(--marca)] focus-within:ring-[3px] focus-within:ring-[var(--foco-halo)]">
+    <Input {...inputProps} className={cn(className, "h-full min-w-0 flex-1 rounded-none border-0 shadow-none focus-visible:ring-0 max-md:h-full max-md:rounded-none")} />
     <span data-slug-suffix className="flex shrink-0 items-center border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[15px] text-[var(--t2)]">{suffix}</span>
   </div>;
 }
