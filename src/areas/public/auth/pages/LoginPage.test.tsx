@@ -233,6 +233,8 @@ describe("LoginPage", () => {
 
     expect(await screen.findByText("El código no es válido.")).toBeVisible();
     expect(screen.getByText("Te quedan 3 intentos.")).toBeVisible();
+    // Tablero Ingreso: «Te quedan 3 intentos.» es la segunda línea, más clara.
+    expect(screen.getByText("Te quedan 3 intentos.")).toHaveClass("block", "opacity-85");
     expect(first).toHaveAttribute("aria-invalid", "true");
     fireEvent.click(screen.getByRole("button", { name: "Usar otro correo" }));
     expect(screen.getByRole("heading", { name: "Ingresá a tu cuenta" })).toBeVisible();

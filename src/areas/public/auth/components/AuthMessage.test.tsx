@@ -14,6 +14,14 @@ describe("AuthMessage", () => {
     expect(screen.getByText("Te quedan 3 intentos.")).toHaveClass("block");
   });
 
+  // Tablero Ingreso (.msj .sub2): la línea de abajo, a 2 del texto, en 13 y más clara.
+  it("la segunda línea va debajo, en 13 y más clara", () => {
+    render(<AuthMessage message={{ text: "El código no es válido.", details: ["Te quedan 3 intentos."] }} />);
+
+    expect(screen.getByText("Te quedan 3 intentos.")).toHaveClass("block", "mt-0.5", "text-[13px]", "opacity-85");
+    expect(screen.getByText("El código no es válido.")).not.toHaveClass("opacity-85");
+  });
+
   it("la de atención es ámbar y sin mensaje no hay franja", () => {
     const { rerender } = render(<AuthMessage message={{ tone: "warning", text: "Esperá un momento antes de pedir otro código." }} />);
     expect(screen.getByRole("alert")).toHaveClass("bg-[var(--alerta-t)]", "text-[var(--alerta-tx)]");

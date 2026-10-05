@@ -10,10 +10,11 @@ export interface AuthMessageContent {
 }
 
 /// Un mensaje del ingreso, los registros o la invitación (.msj de los tableros), en la franja común: el texto y, debajo,
-/// las líneas que lo completan.
+/// las líneas que lo completan, más claras.
 export function AuthMessage({ message }: { message?: AuthMessageContent | null }) {
   return <FormError tone={message?.tone} message={message ? <>
     {message.text}
-    {message.details?.map((detail, index) => <span key={index} className="block">{detail}</span>)}
+    {/* .sub2 de los tableros: la línea de abajo, a 2 del texto, en 13 y más clara. */}
+    {message.details?.map((detail, index) => <span key={index} className="mt-0.5 block text-[13px] opacity-85">{detail}</span>)}
   </> : null} />;
 }
