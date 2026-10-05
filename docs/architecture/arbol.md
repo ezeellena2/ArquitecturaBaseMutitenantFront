@@ -517,7 +517,7 @@ src/
 │   │   ├── useDebouncedValue.test.tsx               tests de useDebouncedValue
 │   │   ├── useEditPage.tsx                          lo común de una pantalla que edita algo que ya existe: «Cambios sin guardar», el cartel del 409, la franja del error de guardado y «¿Salir sin guardar?»
 │   │   ├── useEditPage.test.tsx                     tests de useEditPage
-│   │   ├── useEditForm.ts                           el formulario de esa pantalla: arranca con lo guardado y manda la versión de la lectura de la que partió; una relectura de fondo no la cambia
+│   │   ├── useEditForm.ts                           el formulario de esa pantalla: arranca con lo guardado y manda la versión de la lectura de la que partió o, después de guardar, la que respondió; una relectura no la cambia
 │   │   ├── useEditForm.test.tsx                     tests de useEditForm
 │   │   ├── useFilters.ts                            [E0] de la base
 │   │   ├── useFilters.test.tsx                      tests de useFilters
