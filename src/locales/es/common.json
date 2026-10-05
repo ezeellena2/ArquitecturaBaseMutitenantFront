@@ -158,6 +158,12 @@
     },
     "signingOut": "Cerrando sesión…"
   },
+  "reasonDialog": {
+    "reason": "Motivo",
+    "reasonRequired": "Escribí el motivo.",
+    "until": "Hasta",
+    "dateInvalid": "Escribí la fecha como dd/mm/aaaa."
+  },
   "accessMenu": {
     "current": "Perfil actual",
     "personal": "Personal",

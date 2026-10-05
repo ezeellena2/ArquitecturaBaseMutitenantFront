@@ -832,9 +832,20 @@
       },
       "boardReadyText": "¿Suspender Grupo Delta?",
       "app": {
-        "path": "/plataforma",
-        "scenario": "organizaciones-confirmacion-motivo",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizaciones-confirmacion-motivo&route=%2Fplataforma",
+        "scenario": "organizaciones-confirmacion-motivo: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Dos meses sin pago."
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?"
       }
     },
     {
@@ -853,9 +864,20 @@
         "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma",
-        "scenario": "organizaciones-confirmacion-motivo",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizaciones-confirmacion-motivo&route=%2Fplataforma",
+        "scenario": "organizaciones-confirmacion-motivo: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Dos meses sin pago."
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?"
       }
     },
     {
@@ -889,9 +911,20 @@
       },
       "boardReadyText": "Escribí el motivo.",
       "app": {
-        "path": "/plataforma",
-        "scenario": "organizaciones-confirmacion-error",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizaciones-confirmacion-error&route=%2Fplataforma",
+        "scenario": "organizaciones-confirmacion-error: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspender"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?",
+        "readyText": "Escribí el motivo."
       }
     },
     {
@@ -910,9 +943,20 @@
         "note": "M-Organizaciones v111 solo dibuja la referencia base; sus botones no abren menús ni diálogos. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma",
-        "scenario": "organizaciones-confirmacion-error",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizaciones-confirmacion-error&route=%2Fplataforma",
+        "scenario": "organizaciones-confirmacion-error: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspender"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?",
+        "readyText": "Escribí el motivo."
       }
     },
     {
@@ -931,9 +975,26 @@
         "note": "Organizaciones v111 no simula conflicto de versión 409; se conserva la lista real para comparar la app cuando exista."
       },
       "app": {
-        "path": "/plataforma",
-        "scenario": "Conflicto 409 al confirmar una acción con versión anterior, según T19/T24.",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizaciones-409&route=%2Fplataforma",
+        "scenario": "organizaciones-409: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Revisión simultánea."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspender"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?",
+        "readyText": "La organización no puede pasar a ese estado."
       }
     },
     {
@@ -952,9 +1013,26 @@
         "note": "M-Organizaciones v111 no dibuja el 409; conserva la lista de referencia."
       },
       "app": {
-        "path": "/plataforma",
-        "scenario": "Conflicto 409 al confirmar una acción con versión anterior, según T19/T24.",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizaciones-409&route=%2Fplataforma",
+        "scenario": "organizaciones-409: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Revisión simultánea."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspender"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?",
+        "readyText": "La organización no puede pasar a ese estado."
       }
     },
     {
@@ -1827,9 +1905,13 @@
       },
       "boardReadyText": "¿Aprobar Grupo Delta?",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-confirmar-aprobar",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizacion-confirmar-aprobar&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-aprobar: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Aprobar Grupo Delta?"
       }
     },
     {
@@ -1850,9 +1932,13 @@
         "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-confirmar-aprobar",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizacion-confirmar-aprobar&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-aprobar: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Aprobar Grupo Delta?"
       }
     },
     {
@@ -2494,9 +2580,13 @@
       },
       "boardReadyText": "¿Extender la prueba de Módulo B?",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-modulo-extender-prueba",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizacion-modulo-extender-prueba&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-modulo-extender-prueba: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Extender la prueba de Módulo B?"
       }
     },
     {
@@ -2517,9 +2607,13 @@
         "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-modulo-extender-prueba",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizacion-modulo-extender-prueba&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-modulo-extender-prueba: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Extender la prueba de Módulo B?"
       }
     },
     {
@@ -3375,9 +3469,13 @@
       },
       "boardReadyText": "Es el único Dueño de Grupo Delta.",
       "app": {
-        "path": "/plataforma/cuentas",
-        "scenario": "cuentas-baja-bloqueada",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=cuentas-baja-bloqueada&route=%2Fplataforma%2Fcuentas",
+        "scenario": "cuentas-baja-bloqueada: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Dar de baja la cuenta de Lucía Fernández?"
       }
     },
     {
@@ -3396,9 +3494,13 @@
         "note": "M-Cuentas v111 solo dibuja la referencia base; no abre sus menús ni dibuja invitar o confirmar baja. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/cuentas",
-        "scenario": "cuentas-baja-bloqueada",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=cuentas-baja-bloqueada&route=%2Fplataforma%2Fcuentas",
+        "scenario": "cuentas-baja-bloqueada: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Dar de baja la cuenta de Lucía Fernández?"
       }
     },
     {

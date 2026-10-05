@@ -102,3 +102,16 @@ describe("las flechas de los controles", () => {
     expect(chevron).toHaveAttribute("stroke-width", "2");
   });
 });
+
+describe("calendario de Extender prueba (E5)", () => {
+  it("copia el trazo del tablero Organizacion", () => {
+    const svg = render(<icons.CalendarIcon />).container.querySelector("svg")!;
+    expect(svg.querySelector("rect")).toHaveAttribute("x", "4");
+    expect(svg.querySelector("rect")).toHaveAttribute("y", "5");
+    expect(svg.querySelector("rect")).toHaveAttribute("width", "16");
+    expect(svg.querySelector("rect")).toHaveAttribute("height", "15");
+    expect(svg.querySelector("rect")).toHaveAttribute("rx", "2");
+    expect([...svg.querySelectorAll("path")].map((path) => path.getAttribute("d"))).toEqual(["M4 10h16", "M9 3v4", "M15 3v4"]);
+    expect(svg).toHaveAttribute("stroke-width", "1.75");
+  });
+});

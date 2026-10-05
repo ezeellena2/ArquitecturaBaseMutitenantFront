@@ -21,7 +21,7 @@ import { FormError } from "@/shared/ui/FormError";
 import { companiesQueryRoot, createCompany, updateCompany } from "../api/companies";
 import { companyErrorField } from "../errors";
 import { CompanyFields } from "./CompanyFields";
-import { useDialogFailure } from "./useDialogFailure";
+import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
 
 // «Delta S.A.» + «. Quedaste…» no repite el punto final del nombre.
 const sentence = (text: string) => text.replace("..", ".");
@@ -79,7 +79,7 @@ export function CompanyDialog({ company, inDetail = false, onClose, returnFocusT
   const { form, version } = useEditForm<CompanyResponse | undefined, CompanyForm, CompanyFormValues>({
     read: company, toValues: valuesFromCompany, resolver: zodResolver(schema),
   });
-  const { failure, clear, fail, close } = useDialogFailure(onClose);
+  const { failure, clear, fail, close } = useDialogFailure(onClose, companiesQueryRoot);
   const create = useIdempotentMutation((request: CreateCompanyRequest, key) => createCompany(request, key));
   const update = useMutation({ mutationFn: ({ id, request }: { id: string; request: UpdateCompanyRequest }) => updateCompany(id, request) });
 

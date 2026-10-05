@@ -9,6 +9,16 @@ interface IconProps {
 /// Un ícono del set (o uno de lucide): lo que pide el menú, el título de una página y los atajos de los inicios.
 export type IconComponent = ComponentType<IconProps>;
 
+/// «Extender prueba», tablero Organizacion: calendario con sus dos anillas.
+export function CalendarIcon(props: IconProps) {
+  return <Icon {...props}>
+    <rect x="4" y="5" width="16" height="15" rx="2" />
+    <path d="M4 10h16" />
+    <path d="M9 3v4" />
+    <path d="M15 3v4" />
+  </Icon>;
+}
+
 /// Íconos propios en SVG inline para el layout (sección 7.2): mismo trazo para todo el set, sin depender de
 /// un paquete de íconos. Son decorativos (aria-hidden): el texto accesible lo pone quien los usa (el label
 /// del ítem de navegación, el aria-label del botón).

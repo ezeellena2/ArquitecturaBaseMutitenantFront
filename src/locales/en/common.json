@@ -158,6 +158,12 @@
     },
     "signingOut": "Signing you out…"
   },
+  "reasonDialog": {
+    "reason": "Reason",
+    "reasonRequired": "Enter a reason.",
+    "until": "Until",
+    "dateInvalid": "Enter the date as mm/dd/yyyy."
+  },
   "accessMenu": {
     "current": "Current profile",
     "personal": "Personal",

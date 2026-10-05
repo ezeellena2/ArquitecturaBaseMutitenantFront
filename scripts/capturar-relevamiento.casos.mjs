@@ -874,7 +874,7 @@ export function catalog(root) {
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
   const renameApp = { actions: [appFill("Nombre y apellido", "Lucía Fernández Pérez")] };
   return [
-    ...[...new Set(stageCases(root, "etapa-5").filter((entry) => ["recuperar", "plataforma-marco"].includes(entry.group)).map((entry) => entry.pair))]
+    ...[...new Set(stageCases(root, "etapa-5").filter((entry) => entry.app.captureMode === "harness").map((entry) => entry.pair))]
       .flatMap((pair) => {
         const source = stageCases(root, "etapa-5").find((entry) => entry.pair === pair);
         const mobile = stageCases(root, "etapa-5").find((entry) => entry.pair === pair && entry.viewport.width === 390);

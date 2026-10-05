@@ -12,6 +12,8 @@ import { createQueryClient } from "@/shared/api/queryClient";
 import { publishAccessError } from "@/shared/api/accessErrorStore";
 import { currentUsers, type CurrentUserFixture } from "./mocks/currentUsers";
 import { fixtureAuth } from "./mocks/authContext";
+import { platformReasons } from "./mocks/platformReasons";
+import { PlatformReasonCapture } from "./PlatformReasonCapture";
 import "@fontsource-variable/inter";
 import "@/index.css";
 
@@ -48,10 +50,14 @@ const sessionPage = session ? sessionPages[session as keyof typeof sessionPages]
 if (session && !sessionPage) throw new Error("Estado visual de sesión inválido");
 const frame = params.get("frame");
 if (frame && (frame !== "platform" || currentUsers[as].access !== "platform" || session)) throw new Error("Marco visual inválido");
+const reason = params.get("reason");
+if (reason && (frame !== "platform" || !(reason in platformReasons))) throw new Error("Confirmación visual inválida");
 // T20b compara el marco real mientras las páginas de T21–T23 todavía no se montan. No agrega contenido de prueba.
 const router = sessionPage
   ? createMemoryRouter([{ path: "*", element: sessionPage }], { initialEntries: [session === "cancelled" ? route : "/"] })
-  : frame === "platform" ? createMemoryRouter([{ path: "*", element: <PlatformLayout /> }], { initialEntries: [route] })
+  : frame === "platform" ? createMemoryRouter(reason
+    ? [{ element: <PlatformLayout />, children: [{ path: "*", element: <PlatformReasonCapture fixtureKey={reason} /> }] }]
+    : [{ path: "*", element: <PlatformLayout /> }], { initialEntries: [route] })
   : createMemoryRouter(routes, { initialEntries: [route] });
 // El cliente de la app, con sus avisos globales (red, 5xx y 429) y sus opciones: la captura muestra lo que ve la persona.
 const client = createQueryClient();

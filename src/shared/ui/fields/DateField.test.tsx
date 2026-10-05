@@ -42,4 +42,24 @@ describe("DateField", () => {
     expect(onValidityChange).toHaveBeenLastCalledWith(true);
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
+
+  it("admite el mensaje del formulario y cede la alerta a FormField sin perder validez (E5)", async () => {
+    const message = "Escribí la fecha como dd/mm/aaaa.";
+    const { rerender } = render(<AppProviders><FormField label="Hasta"><DateField value={null} onChange={vi.fn()} invalidMessage={message} /></FormField></AppProviders>);
+    const input = await screen.findByRole("textbox", { name: "Hasta" });
+    await waitFor(() => expect(input).toBeEnabled());
+    fireEvent.change(input, { target: { value: "31/02/2026" } });
+    fireEvent.blur(input);
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
+    expect(input).toHaveAccessibleDescription(message);
+    expect((input as HTMLInputElement).checkValidity()).toBe(false);
+
+    rerender(<AppProviders><FormField label="Hasta" error={message}><DateField value={null} onChange={vi.fn()} invalidMessage={null} /></FormField></AppProviders>);
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input).toHaveAccessibleDescription(message);
+    expect((input as HTMLInputElement).checkValidity()).toBe(false);
+    fireEvent.change(input, { target: { value: "18/10/2026" } });
+    expect((input as HTMLInputElement).checkValidity()).toBe(true);
+  });
 });

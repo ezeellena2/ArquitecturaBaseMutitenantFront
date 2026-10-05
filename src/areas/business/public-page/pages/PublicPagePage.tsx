@@ -35,10 +35,8 @@ import { DateText } from "@/shared/ui/format/DateText";
 import { initials } from "@/shared/lib/initials";
 import { cn } from "@/shared/lib/utils";
 import { toastError } from "@/shared/ui/sonner";
+import { publicSiteHost, publicSiteSuffix } from "@/tenancy/publicSite";
 import { checkOrganizationSlug, fetchPublicPage, publicPageQueryKey, setPublicPagePublished, slugAvailabilityQueryKey, updatePublicPage } from "../api/publicPage";
-
-// El dominio público de la plataforma; en desarrollo la URL real se arma con `publicUrl`.
-const PUBLIC_DOMAIN = ".plataforma.com";
 
 /// La página pública no tiene reglas propias en la pantalla: lo que el back rechaza de un dato va debajo de ese dato, y
 /// lo demás (la dirección tomada, el logo), en la franja. El logo es lo que se ve, la imagen nueva o el pedido de quitarlo.
@@ -247,7 +245,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
             {/* Pagina-Org (.o-fila-tit, .o-i): la ⓘ va a 6 de la dirección, en su grupo; con los 12 del interruptor, en el
                 teléfono la dirección se cortaba. */}
             <span className="flex min-w-0 items-center gap-1.5">
-              <span id={visibleId} className="min-w-0 truncate text-[13px] font-medium text-[var(--t1)] max-md:text-[15.5px]">{t("publicPage:visibleAt", { host: `${savedSlug}${PUBLIC_DOMAIN}` })}</span>
+              <span id={visibleId} className="min-w-0 truncate text-[13px] font-medium text-[var(--t1)] max-md:text-[15.5px]">{t("publicPage:visibleAt", { host: publicSiteHost(savedSlug) })}</span>
               {locked ? <InfoButton label={t("publicPage:blockedInfo")} onClick={() => setBlockedInfoOpen(true)} /> : null}
             </span>
             {/* Trabado, el interruptor se ve apagado pero se puede tocar: abre el aviso, como la ⓘ, y no publica. */}
@@ -282,7 +280,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
                   <Input name={slugField.field.name} value={slugField.field.value} onBlur={slugField.field.onBlur} maxLength={63} autoComplete="off" className="pr-[124px] max-md:pr-[140px]"
                     onChange={(event) => slugField.field.onChange(event.target.value.toLowerCase())} />
                 </FormField>
-                <span aria-hidden="true" className="absolute bottom-px right-px flex h-[32px] items-center rounded-r-[7px] border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[13px] text-[var(--t2)] lg:h-[34px] max-md:h-[46px] max-md:rounded-r-[11px] max-md:border-[var(--borde2)] max-md:bg-[var(--s3)] max-md:text-[15px]">{PUBLIC_DOMAIN}</span>
+                <span aria-hidden="true" className="absolute bottom-px right-px flex h-[32px] items-center rounded-r-[7px] border-l border-[var(--borde)] bg-[var(--s2)] px-3 text-[13px] text-[var(--t2)] lg:h-[34px] max-md:h-[46px] max-md:rounded-r-[11px] max-md:border-[var(--borde2)] max-md:bg-[var(--s3)] max-md:text-[15px]">{publicSiteSuffix}</span>
               </div>
               {slugChanged && slugState ? <p className={`text-[13px] ${slugState === "Available" ? "text-[var(--ok)]" : "text-[var(--peligro)]"}`}>{slugStateText(slugState, t)}</p> : null}
             </div>
@@ -328,7 +326,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
         reason={t("publicPage:noAddressReason")} steps={[t("publicPage:noAddressStep1"), t("publicPage:noAddressStep2")]} />}
 
     <ConfirmDialog open={unpublishOpen} onOpenChange={setUnpublishOpen} title={t("publicPage:unpublishTitle")}
-      description={t("publicPage:unpublishDescription", { host: `${savedSlug}${PUBLIC_DOMAIN}` })} confirmLabel={t("publicPage:unpublish")} destructive
+      description={t("publicPage:unpublishDescription", { host: publicSiteHost(savedSlug) })} confirmLabel={t("publicPage:unpublish")} destructive
       onConfirm={() => publication.mutate(false)} />
     {edit.leaveDialog}
   </>;

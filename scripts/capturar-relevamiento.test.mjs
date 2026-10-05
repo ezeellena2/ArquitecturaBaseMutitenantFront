@@ -22,6 +22,19 @@ test("los rótulos de Más real de T20c corresponden al tamaño móvil, sin here
   assert.ok(cases.filter((entry) => entry.viewport.width === 1440).every((entry) => !entry.state.includes("Más real")));
 });
 
+test("el catálogo suma sólo los diálogos implementados T20d y conserva las otras pantallas de Plataforma pendientes", () => {
+  const cases = buildCases();
+  for (const pair of ["organizaciones-confirmacion-motivo", "organizaciones-confirmacion-error", "organizacion-confirmar-aprobar",
+    "organizacion-modulo-extender-prueba", "cuentas-baja-bloqueada", "organizaciones-409"]) {
+    const entries = cases.filter((entry) => entry.pair === pair);
+    assert.equal(entries.length, 2, pair);
+    assert.ok(entries.every((entry) => entry.app.captureMode === "harness" && entry.state.includes("diálogo real T20d")));
+  }
+  const source = JSON.parse(readFileSync(path.join(canvas, "../capturas/etapa-5/manifest.json"), "utf8")).cases;
+  const pending = new Set(source.filter((entry) => entry.group.startsWith("plataforma-") && entry.app.captureMode !== "harness").map((entry) => `${entry.group}/${entry.id}`));
+  assert.ok(!cases.some((entry) => pending.has(`${entry.group}/${entry.id}`)));
+});
+
 test("el relevamiento ejecuta las acciones por rol del tablero de Recuperar v111", async () => {
   const server = await startCanvasServer(canvas);
   let browser;

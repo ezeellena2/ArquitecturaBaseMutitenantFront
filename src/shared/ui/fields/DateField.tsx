@@ -12,12 +12,14 @@ interface DateFieldProps {
   disabled?: boolean;
   required?: boolean;
   placeholder?: string;
+  /** undefined conserva el mensaje común; null deja la alerta y su descripción a FormField. */
+  invalidMessage?: string | null;
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
 }
 
 /** Fecha civil DateOnly: el día escrito no pasa por la zona horaria. */
-export function DateField({ value, onChange, onValidityChange, id, name, disabled, required, placeholder,
+export function DateField({ value, onChange, onValidityChange, id, name, disabled, required, placeholder, invalidMessage,
   "aria-invalid": externalInvalid, "aria-describedby": externalDescription }: DateFieldProps) {
   const format = useFormat();
   const { t } = useTranslation();
@@ -26,6 +28,7 @@ export function DateField({ value, onChange, onValidityChange, id, name, disable
   const [draft, setDraft] = useState<string | null>(null);
   const [invalid, setInvalid] = useState(false);
   const [touched, setTouched] = useState(false);
+  const message = invalidMessage === undefined ? t("fields.invalidDate") : invalidMessage;
   const displayed = !format.isLoading && value !== null ? format.formatDate(value) : "";
   const inputValue = draft ?? displayed;
 
@@ -38,7 +41,7 @@ export function DateField({ value, onChange, onValidityChange, id, name, disable
       onValidityChange?.(true);
       onChange(parsed);
     } catch {
-      inputRef.current?.setCustomValidity(t("fields.invalidDate"));
+      inputRef.current?.setCustomValidity(message ?? t("fields.invalidDate"));
       setInvalid(true);
       onValidityChange?.(false);
       onChange(null);
@@ -46,13 +49,14 @@ export function DateField({ value, onChange, onValidityChange, id, name, disable
   }
 
   const showError = invalid && touched;
-  const description = [externalDescription, showError ? messageId : undefined].filter(Boolean).join(" ") || undefined;
+  const showMessage = showError && message !== null;
+  const description = [externalDescription, showMessage ? messageId : undefined].filter(Boolean).join(" ") || undefined;
   return <>
     <Input ref={inputRef} id={id} name={name} type="text" inputMode="numeric" value={inputValue}
       onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
       onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
       aria-invalid={externalInvalid || showError} aria-describedby={description} />
-    {showError && <p id={messageId} role="alert" className="text-[13px] text-[var(--peligro)]">{t("fields.invalidDate")}</p>}
+    {showMessage ? <p id={messageId} role="alert" className="text-[13px] text-[var(--peligro)]">{message}</p> : null}
   </>;
 }

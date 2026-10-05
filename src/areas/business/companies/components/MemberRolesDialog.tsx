@@ -17,7 +17,7 @@ import { FormField } from "@/shared/ui/FormField";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 import { companiesQueryRoot, updateCompanyMemberRoles } from "../api/companies";
 import { memberErrorField } from "../errors";
-import { useDialogFailure } from "./useDialogFailure";
+import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
 
 /// Sin reglas propias: los roles son opcionales («Sin roles»), pero va con React Hook Form y zod como todo formulario.
 const memberRolesFormSchema = z.object({ roleIds: z.array(z.string()) });
@@ -47,7 +47,7 @@ export function MemberRolesDialog({ companyId, member, roles, onClose, returnFoc
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const form = useForm<MemberRolesForm>({ resolver: zodResolver(memberRolesFormSchema), defaultValues: { roleIds: member.roles.map((role) => role.id) } });
   const roleIds = useController({ control: form.control, name: "roleIds" });
-  const { failure, clear, fail, close } = useDialogFailure(onClose);
+  const { failure, clear, fail, close } = useDialogFailure(onClose, companiesQueryRoot);
   const save = useMutation({ mutationFn: (request: UpdateCompanyMemberRolesRequest) => updateCompanyMemberRoles(companyId, member.memberId, request) });
 
   // Un rol que el back no acepta va debajo de los roles (`errors.ts`); lo demás, también el 409 y el último administrador

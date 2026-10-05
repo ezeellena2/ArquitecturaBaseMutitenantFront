@@ -226,6 +226,392 @@
       }
     },
     {
+      "id": "organizaciones-confirmacion-motivo-escritorio",
+      "pair": "organizaciones-confirmacion-motivo",
+      "group": "plataforma-organizaciones",
+      "state": "v111: organizaciones-confirmacion-motivo: diálogo real T20d, contenido pendiente T21–T23",
+      "board": "Organizaciones",
+      "props": {},
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Grupo Delta"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Suspender"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Motivo",
+          "value": "Dos meses sin pago."
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizaciones-confirmacion-motivo&route=%2Fplataforma",
+        "scenario": "organizaciones-confirmacion-motivo: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Dos meses sin pago."
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?"
+      }
+    },
+    {
+      "id": "organizaciones-confirmacion-motivo-movil",
+      "pair": "organizaciones-confirmacion-motivo",
+      "group": "plataforma-organizaciones",
+      "state": "v111: organizaciones-confirmacion-motivo: diálogo real T20d, contenido pendiente T21–T23",
+      "board": "M-Organizaciones",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizaciones-confirmacion-motivo&route=%2Fplataforma",
+        "scenario": "organizaciones-confirmacion-motivo: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Dos meses sin pago."
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?"
+      }
+    },
+    {
+      "id": "organizaciones-confirmacion-error-escritorio",
+      "pair": "organizaciones-confirmacion-error",
+      "group": "plataforma-organizaciones",
+      "state": "v111: organizaciones-confirmacion-error: diálogo real T20d, contenido pendiente T21–T23",
+      "board": "Organizaciones",
+      "props": {},
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Grupo Delta"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Suspender"
+        },
+        {
+          "type": "click",
+          "selector": "[role=\"alertdialog\"] button.b-pel"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizaciones-confirmacion-error&route=%2Fplataforma",
+        "scenario": "organizaciones-confirmacion-error: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspender"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?",
+        "readyText": "Escribí el motivo."
+      }
+    },
+    {
+      "id": "organizaciones-confirmacion-error-movil",
+      "pair": "organizaciones-confirmacion-error",
+      "group": "plataforma-organizaciones",
+      "state": "v111: organizaciones-confirmacion-error: diálogo real T20d, contenido pendiente T21–T23",
+      "board": "M-Organizaciones",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizaciones-confirmacion-error&route=%2Fplataforma",
+        "scenario": "organizaciones-confirmacion-error: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspender"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?",
+        "readyText": "Escribí el motivo."
+      }
+    },
+    {
+      "id": "organizaciones-409-escritorio",
+      "pair": "organizaciones-409",
+      "group": "plataforma-organizaciones",
+      "state": "v111: organizaciones-409: diálogo real T20d, contenido pendiente T21–T23",
+      "board": "Organizaciones",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizaciones-409&route=%2Fplataforma",
+        "scenario": "organizaciones-409: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Revisión simultánea."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspender"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?",
+        "readyText": "La organización no puede pasar a ese estado."
+      }
+    },
+    {
+      "id": "organizaciones-409-movil",
+      "pair": "organizaciones-409",
+      "group": "plataforma-organizaciones",
+      "state": "v111: organizaciones-409: diálogo real T20d, contenido pendiente T21–T23",
+      "board": "M-Organizaciones",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizaciones-409&route=%2Fplataforma",
+        "scenario": "organizaciones-409: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Revisión simultánea."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspender"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?",
+        "readyText": "La organización no puede pasar a ese estado."
+      }
+    },
+    {
+      "id": "organizacion-confirmar-aprobar-escritorio",
+      "pair": "organizacion-confirmar-aprobar",
+      "group": "plataforma-organizacion",
+      "state": "v111: organizacion-confirmar-aprobar: diálogo real T20d, contenido pendiente T21–T23",
+      "board": "Organizacion",
+      "props": {
+        "estado": "Espera aprobación"
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Aprobar"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizacion-confirmar-aprobar&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-aprobar: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Aprobar Grupo Delta?"
+      }
+    },
+    {
+      "id": "organizacion-confirmar-aprobar-movil",
+      "pair": "organizacion-confirmar-aprobar",
+      "group": "plataforma-organizacion",
+      "state": "v111: organizacion-confirmar-aprobar: diálogo real T20d, contenido pendiente T21–T23",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizacion-confirmar-aprobar&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-aprobar: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Aprobar Grupo Delta?"
+      }
+    },
+    {
+      "id": "organizacion-modulo-extender-prueba-escritorio",
+      "pair": "organizacion-modulo-extender-prueba",
+      "group": "plataforma-organizacion",
+      "state": "v111: organizacion-modulo-extender-prueba: diálogo real T20d, contenido pendiente T21–T23",
+      "board": "Organizacion",
+      "props": {
+        "pestana": "Módulos"
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Módulo B"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Extender prueba"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizacion-modulo-extender-prueba&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-modulo-extender-prueba: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Extender la prueba de Módulo B?"
+      }
+    },
+    {
+      "id": "organizacion-modulo-extender-prueba-movil",
+      "pair": "organizacion-modulo-extender-prueba",
+      "group": "plataforma-organizacion",
+      "state": "v111: organizacion-modulo-extender-prueba: diálogo real T20d, contenido pendiente T21–T23",
+      "board": "M-Organizacion",
+      "props": {
+        "estado": "Historial"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizacion-modulo-extender-prueba&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-modulo-extender-prueba: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Extender la prueba de Módulo B?"
+      }
+    },
+    {
+      "id": "cuentas-baja-bloqueada-escritorio",
+      "pair": "cuentas-baja-bloqueada",
+      "group": "plataforma-cuentas",
+      "state": "v111: cuentas-baja-bloqueada: diálogo real T20d, contenido pendiente T21–T23",
+      "board": "Cuentas",
+      "props": {},
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Acciones de Lucía Fernández"
+        },
+        {
+          "type": "click",
+          "role": "menuitem",
+          "name": "Dar de baja"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=cuentas-baja-bloqueada&route=%2Fplataforma%2Fcuentas",
+        "scenario": "cuentas-baja-bloqueada: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Dar de baja la cuenta de Lucía Fernández?"
+      }
+    },
+    {
+      "id": "cuentas-baja-bloqueada-movil",
+      "pair": "cuentas-baja-bloqueada",
+      "group": "plataforma-cuentas",
+      "state": "v111: cuentas-baja-bloqueada: diálogo real T20d, contenido pendiente T21–T23",
+      "board": "M-Cuentas",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=cuentas-baja-bloqueada&route=%2Fplataforma%2Fcuentas",
+        "scenario": "cuentas-baja-bloqueada: diálogo real T20d, contenido pendiente T21–T23",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Dar de baja la cuenta de Lucía Fernández?"
+      }
+    },
+    {
       "id": "recuperar-paso-1-escritorio",
       "pair": "recuperar-paso-1",
       "group": "recuperar",

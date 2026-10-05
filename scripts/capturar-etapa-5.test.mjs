@@ -9,6 +9,23 @@ import { buildCases, canvas, output } from "./capturar-etapa-5.mjs";
 const groups = ["plataforma-marco", "plataforma-organizaciones", "plataforma-organizacion", "plataforma-cuentas",
   "plataforma-cuenta", "plataforma-recuperaciones", "plataforma-legales", "plataforma-auditoria", "plataforma-configuracion", "recuperar"];
 
+test("T20d compara el diálogo real sobre el marco, sin representar listas futuras como terminadas", () => {
+  const cases = buildCases();
+  for (const pair of ["organizaciones-confirmacion-motivo", "organizaciones-confirmacion-error", "organizacion-confirmar-aprobar",
+    "organizacion-modulo-extender-prueba", "cuentas-baja-bloqueada", "organizaciones-409"]) {
+    const entries = cases.filter((entry) => entry.pair === pair);
+    assert.equal(entries.length, 2);
+    for (const entry of entries) {
+      const params = new URL(entry.app.path, "http://example.test").searchParams;
+      assert.equal(params.get("frame"), "platform", entry.id);
+      assert.equal(params.get("reason"), pair, entry.id);
+      assert.equal(entry.app.captureMode, "harness");
+      assert.equal(entry.app.readySelector, '[role="dialog"]');
+      assert.match(entry.app.scenario, /diálogo real T20d.*contenido pendiente T21–T23/);
+    }
+  }
+});
+
 test("registra cada grupo T24 y cada caso en ambos tamaños nativos", () => {
   const cases = buildCases();
   assert.deepEqual([...new Set(cases.map((entry) => entry.group))].sort(), groups.sort());

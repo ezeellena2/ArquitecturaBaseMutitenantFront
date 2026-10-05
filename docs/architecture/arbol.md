@@ -115,6 +115,8 @@ src/
 ├── tenancy/                                         [E3] accesos (B2C / B2B / plataforma)
 │   ├── access.ts                                    el tipo Access del contrato, homeOf, loginPathOf, accessOfPath, activeOrganization, isSelectable y los estados no disponibles: el único lugar con «/org» y «/login/empresa»
 │   ├── access.test.ts
+│   ├── publicSite.ts                                [E5] publicSiteHost y sufijo público compartidos; E7 los completa desde el issuer
+│   ├── publicSite.test.ts                           tests de publicSite
 │   ├── useAccess.ts                                 acceso activo, organización activa, espacio personal, organizaciones
 │   ├── useAccess.test.tsx                           tests de useAccess
 │   ├── useSwitchAccess.ts                           signinSilent({ access, tenant }) → queryClient.clear() → inicio del acceso
@@ -333,8 +335,7 @@ src/
 │   │   │   │   ├── CompanyFields.tsx                Nombre, CUIT y «Zona de negocio», atados al formulario de CompanyDialog
 │   │   │   │   ├── CompanyDialog.tsx                crear y editar (Empresas y la ficha): React Hook Form con zod y useEditForm (la versión de cuando se abrió); dueño de lo escrito, su guardado y su error
 │   │   │   │   ├── AddMemberDialog.tsx              «Agregar miembro»: la persona y sus roles en la empresa; React Hook Form con zod
-│   │   │   │   ├── MemberRolesDialog.tsx            «Roles de …»: los roles de un miembro en la empresa; React Hook Form con zod
-│   │   │   │   └── useDialogFailure.ts              el error del diálogo; después de un 409, relee al cerrar
+│   │   │   │   └── MemberRolesDialog.tsx            «Roles de …»: los roles de un miembro en la empresa; React Hook Form con zod
 │   │   │   ├── tabs/
 │   │   │   │   ├── CompanyMembersTab.tsx            Miembros: filtros, tabla, ⋮ y sus diálogos
 │   │   │   │   ├── CompanyRolesTab.tsx              Roles que valen solo en esta empresa (alcance SpecificCompany)
@@ -516,6 +517,11 @@ src/
 │   │   ├── useLoginChannels.ts                      si se entra con un canal: sin «whatsapp» (sin el módulo), Mi cuenta ofrece «Agregar correo»
 │   │   ├── errors.ts                                el código que el back rechaza va debajo de los casilleros
 │   │   └── errors.test.ts                           tests de errors
+│   ├── platform/                                    [E5] piezas compartidas por las features de Plataforma
+│   │   ├── AGENTS.md                                puntero a las reglas de formularios, errores, UI y accesibilidad
+│   │   ├── CLAUDE.md                                @AGENTS.md
+│   │   ├── ReasonDialog.tsx                         confirmación con motivo y fecha civil opcional; sin ✕; bloqueo conocido, error y respuesta original
+│   │   └── ReasonDialog.test.tsx                    validación, pendientes, errores, versión, reintento global, teléfono y axe
 │   ├── hooks/                                       [E0] de la base solo los hooks sin dependencias de etapas posteriores; cada uno con su test
 │   │   ├── usePagination.ts                         [E0] de la base; página, tamaño, orden y búsqueda en la URL; vuelve a la 1 al cambiar
 │   │   │                                            búsqueda, filtro, orden o tamaño; canoniza la URL con replace
@@ -530,6 +536,8 @@ src/
 │   │   ├── useEditPage.test.tsx                     tests de useEditPage
 │   │   ├── useEditForm.ts                           el formulario de esa pantalla: arranca con lo guardado y manda la versión de la lectura de la que partió o, después de guardar, la que respondió; una relectura no la cambia
 │   │   ├── useEditForm.test.tsx                     tests de useEditForm
+│   │   ├── useDialogFailure.ts                      [E5] error de un diálogo; después de concurrencia o un 409 de estado declarado, invalida su raíz al cerrar
+│   │   ├── useDialogFailure.test.ts                 tests de useDialogFailure
 │   │   ├── useFilters.ts                            [E0] de la base
 │   │   ├── useFilters.test.tsx                      tests de useFilters
 │   │   ├── useQueryUpdate.ts                        [E0] de la base
@@ -644,6 +652,8 @@ src/
 │       ├── ConcurrencyBanner.test.tsx               tests de ConcurrencyBanner
 │       ├── ConfirmDialog.tsx                        [E1] pieza propia, después de i18n
 │       ├── ConfirmDialog.test.tsx                   tests de ConfirmDialog
+│       ├── DetailGrid.tsx                           [E5] grilla del detalle en compu y teléfono, extraída de Auditoría sin cambiar sus clases
+│       ├── DetailGrid.test.tsx                      grilla, rótulos/valores, teléfono y axe
 │       ├── DataTable.tsx                            [E1] encabezado arena de 40 px; filas de 40, o de 52 con una segunda línea gris que aclara la primera; un tema por columna;
 │       │                                            cada columna declara su type y la tabla usa ui/format (alineación, vacío y tooltip); carga, vacío, error con reintento;
 │       │                                            en el teléfono, la fila de lista de la pantalla (`mobileRow`); sin ella, solo las columnas `mobile` y el ⋮;
@@ -742,7 +752,9 @@ src/
     │   ├── mocks.test.ts                            tests de mocks
     │   ├── authContext.ts                           el contexto de sesión de un fixture, sin OIDC
     │   ├── currentUsers.ts                          [E3] fixtures: persona sin/con organizaciones, empresa admin/sin permisos y operador
-    │   └── currentUsers.test.tsx                    tests de currentUsers
+    │   ├── currentUsers.test.tsx                    tests de currentUsers
+    │   └── platformReasons.ts                       confirmaciones literales v111 para capturar las piezas de Plataforma
+    ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
     └── utils/
         ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]; devuelve el QueryClient, para una relectura de fondo [E7]
         ├── renderWithProviders.test.tsx             tests de renderWithProviders

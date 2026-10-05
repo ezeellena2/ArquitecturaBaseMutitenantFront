@@ -8,10 +8,12 @@ const srcRoot = path.resolve(import.meta.dirname, "..");
 // tocarlo, el campo dice qué corregir. Al editar, «Guardar cambios» se apaga sin cambios; al crear («Crear …»,
 // «Agregar …», «Invitar …», «Sumar …»), nunca. Lo que está guardando lo apaga `pending`, no `disabled`. Fuera de eso, se
 // apaga solo mientras espera algo que no depende de lo escrito. Cada forma permitida, con su motivo:
-const allowed: ReadonlyArray<readonly [RegExp, string]> = [
+const allowed: ReadonlyArray<readonly [RegExp, string, string?]> = [
   [/^!(?:form\.formState\.)?isDirty$/, "«Guardar cambios» sin cambios"],
   [/^(?:Boolean\(\w+\)|mode === "roles") && !(?:form\.formState\.)?isDirty$/, "al editar, sin cambios; al crear, nunca"],
   [/^(?:\w+\.)?retry\.isRunning$/, "la cuenta regresiva de «Reintentá en…»"],
+  [/^step === "new" && sendRetry\.isRunning$/, "la cuenta regresiva de Recuperar sólo en el paso del correo nuevo", "areas/public/auth/pages/RecoverAccountPage.tsx"],
+  [/^blocked$/, "un bloqueo de negocio conocido antes de confirmar, explicado en la franja (ReasonDialog)", "shared/platform/ReasonDialog.tsx"],
   [/^reauth\.retry\.isRunning \|\| \(!reauth\.proof && !reauth\.failure\)$/, "la cuenta regresiva o el código que se pide al abrir"],
   [/^isPending$/, "la sesión que se está leyendo"],
   [/^!(?:csrf|antiforgery\.data)\?\.requestToken$/, "la protección del envío que se está cargando"],
@@ -65,10 +67,10 @@ function disabledOf(tag: string): string | null {
 }
 
 /// Los `disabled` de los botones de envío que no son una de las formas permitidas.
-function violations(source: string): string[] {
+function violations(source: string, file?: string): string[] {
   return buttonTags(source).filter((tag) => /\stype="submit"/.test(tag)).flatMap((tag) => {
     const disabled = disabledOf(tag);
-    return disabled === null || allowed.some(([pattern]) => pattern.test(disabled)) ? [] : [disabled];
+    return disabled === null || allowed.some(([pattern, , onlyFor]) => pattern.test(disabled) && (!onlyFor || file === onlyFor)) ? [] : [disabled];
   });
 }
 
@@ -89,10 +91,19 @@ describe("botones de envío («Criterio · Botones»)", () => {
     expect(violations('<Button type="button" disabled={!ready}>Cancelar</Button>')).toEqual([]);
   });
 
+  it("admite un bloqueo explicado antes de confirmar y la cuenta regresiva de Recuperar (E5)", () => {
+    expect(violations('<Button type="submit" disabled={blocked}>Dar de baja</Button>', "shared/platform/ReasonDialog.tsx")).toEqual([]);
+    expect(violations('<Button type="submit" disabled={step === "new" && sendRetry.isRunning}>Enviar código</Button>', "areas/public/auth/pages/RecoverAccountPage.tsx")).toEqual([]);
+    expect(violations('<Button type="submit" disabled={blocked}>Crear rol</Button>', "areas/business/roles/RoleEditorPage.tsx")).toEqual(["blocked"]);
+    expect(violations('<Button type="submit" disabled={blocked || !reason}>Dar de baja</Button>')).toEqual(["blocked || !reason"]);
+  });
+
   it("ningún botón de envío del código se apaga porque falta algo o porque algo está mal", () => {
     const files = sourceFiles(srcRoot);
-    const problems = files.flatMap((file) => violations(readFileSync(file, "utf8"))
-      .map((disabled) => `${path.relative(srcRoot, file).replaceAll("\\", "/")}: disabled={${disabled}}`));
+    const problems = files.flatMap((file) => {
+      const relative = path.relative(srcRoot, file).replaceAll("\\", "/");
+      return violations(readFileSync(file, "utf8"), relative).map((disabled) => `${relative}: disabled={${disabled}}`);
+    });
     expect(files.some((file) => file.endsWith("CompanyDialog.tsx"))).toBe(true);
     expect(problems).toEqual([]);
   });

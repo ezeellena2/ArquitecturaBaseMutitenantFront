@@ -20,7 +20,7 @@ import { MultiSelect } from "@/shared/ui/MultiSelect";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { addCompanyMember, companiesQueryRoot, companyCandidatesQueryKey, fetchCompanyCandidates } from "../api/companies";
 import { memberErrorField } from "../errors";
-import { useDialogFailure } from "./useDialogFailure";
+import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
 
 /// Lo que se valida antes de mandar: la persona es obligatoria; sus roles en la empresa, no.
 function addMemberFormSchema(t: TFunction) {
@@ -53,7 +53,7 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
   const form = useForm<AddMemberForm>({ resolver: zodResolver(schema), defaultValues: { memberId: "", roleIds: [] } });
   const member = useController({ control: form.control, name: "memberId" });
   const roleIds = useController({ control: form.control, name: "roleIds" });
-  const { failure, clear, fail, close } = useDialogFailure(onClose);
+  const { failure, clear, fail, close } = useDialogFailure(onClose, companiesQueryRoot);
   const candidateQuery = useQuery({ queryKey: companyCandidatesQueryKey(companyId), queryFn: () => fetchCompanyCandidates(companyId), meta: { silent: true } });
   const candidates = candidateQuery.data?.items ?? [];
   const addMember = useIdempotentMutation((request: AddCompanyMemberRequest, key) => addCompanyMember(companyId, request, key));

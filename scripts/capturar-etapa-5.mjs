@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 import { boardChoices, capturePaths, otpMaskStyle, startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
+import { platformReasons } from "../src/test/mocks/platformReasons.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const canvas = path.join(root, "docs/design/lienzo");
@@ -58,6 +59,24 @@ function recoveryApp(entry) {
   return { ...entry.app, path: `/src/test/visualApp.html?as=visual-personal&route=${encodeURIComponent(route)}`,
     captureMode: "harness", userFixture: "visual-personal", responses, actions,
     ...(readyHeading ? { readyHeading } : {}), ...(readyText ? { readyText } : {}) };
+}
+
+function reasonApp(entry) {
+  const fixture = platformReasons[entry.pair];
+  let actions = [];
+  let readyText;
+  if (entry.pair === "organizaciones-confirmacion-motivo") actions = [fill("Motivo", "Dos meses sin pago.")];
+  if (entry.pair === "organizaciones-confirmacion-error") {
+    actions = [click(fixture.confirmLabel)]; readyText = "Escribí el motivo.";
+  }
+  if (fixture.failure) {
+    actions = [fill("Motivo", "Revisión simultánea."), click(fixture.confirmLabel)]; readyText = fixture.failure.detail;
+  }
+  return { ...entry.app,
+    path: `/src/test/visualApp.html?as=visual-operator&frame=platform&reason=${entry.pair}&route=${encodeURIComponent(entry.app.path)}`,
+    captureMode: "harness", userFixture: "visual-operator", readySelector: '[role="dialog"]', readyHeading: fixture.title,
+    scenario: `${entry.pair}: diálogo real T20d, contenido pendiente T21–T23`, actions,
+    ...(readyText ? { readyText } : {}) };
 }
 
 export function buildCases() {
@@ -251,6 +270,7 @@ export function buildCases() {
     route: door === "Empresa" ? "/login/empresa" : "/login", readyText: "Recuperá tu cuenta" });
   return cases.map((entry) => {
     if (entry.group === "recuperar") return { ...entry, app: recoveryApp(entry) };
+    if (entry.pair in platformReasons) return { ...entry, app: reasonApp(entry) };
     if (entry.group === "plataforma-marco") {
       const realMore = entry.viewport.width === 390 && entry.app.path === "/plataforma/mas";
       return { ...entry, app: {
