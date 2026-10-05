@@ -31,11 +31,12 @@ describe("FilterBar", () => {
     const filterTrigger = screen.getByRole("button", { name: "Todos" });
 
     expect(bar).toHaveClass("flex-col", "md:flex-row");
-    expect(searchContainer).toHaveClass("w-full", "md:w-[300px]");
-    // Tableros Usuarios, Roles, Empresas, Empresa y Auditoría: el buscador y los filtros de 32, también en la compu
-    // grande; el buscador con el borde claro y los filtros sin negrita.
-    expect(search).toHaveClass("h-8", "border-[var(--borde)]");
-    expect(search).not.toHaveClass("lg:h-9");
+    // Lienzo v104 (tableros Usuarios, Roles, Empresas, Empresa y Auditoría): el buscador de 36 × 360, con el borde claro, la
+    // lupa de 16 a 12 del borde, el texto a 36 y letra de 13; los filtros, de 32 y sin negrita.
+    expect(searchContainer).toHaveClass("w-full", "md:w-[360px]");
+    expect(search).toHaveClass("h-9", "pl-9", "text-[13px]", "rounded-[8px]", "border-[var(--borde)]");
+    expect(search).not.toHaveClass("h-8", "pl-8");
+    expect(searchContainer?.querySelector("svg")).toHaveClass("left-3", "size-4");
     expect(filterTrigger).toHaveClass("h-8", "font-normal");
     expect(filterTrigger).not.toHaveClass("lg:h-9", "min-h-11");
     expect(bar.firstElementChild).toBe(searchContainer);

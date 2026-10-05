@@ -104,18 +104,19 @@ export function FilterBar({
     </Dialog>
   </>;
 
-  // Tableros Usuarios, Roles, Empresas, Empresa y Auditoría: el buscador de 300 × 32 sobre gris claro con el borde fino,
-  // y los filtros en píldoras de 32 sin negrita; el elegido, en petróleo.
+  // Tableros Usuarios, Roles, Empresas, Empresa y Auditoría (lienzo v104): el buscador de 36 × 360 sobre gris claro con
+  // el borde fino, la lupa de 16 a 12 del borde y el texto a 36, con letra de 13; los filtros en píldoras de 32 sin
+  // negrita; el elegido, en petróleo.
   return (
     <Surface
       role="search"
       aria-label={label}
       className={cn("flex flex-col items-stretch gap-2 p-2.5 md:flex-row md:flex-wrap md:items-center md:p-3", className)}
     >
-      <div className="relative w-full md:w-[300px]">
+      <div className="relative w-full md:w-[360px]">
         <SearchIcon
           aria-hidden="true"
-          className="pointer-events-none absolute top-2 left-2.5 size-4 text-[var(--t3)]"
+          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[var(--t3)]"
         />
         <Input
           type="search"
@@ -123,7 +124,7 @@ export function FilterBar({
           onChange={(event) => onSearchChange(event.target.value)}
           aria-label={searchLabel}
           placeholder={searchLabel}
-          className="h-8 border-[var(--borde)] bg-[var(--s2)] pl-8 text-[13px]"
+          className="h-9 rounded-[8px] border-[var(--borde)] bg-[var(--s2)] pl-9 text-[13px]"
         />
       </div>
       <div data-slot="filter-pills" className="flex flex-wrap items-center gap-2">
