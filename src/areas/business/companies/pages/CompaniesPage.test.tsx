@@ -52,6 +52,8 @@ describe("CompaniesPage", () => {
     expect(screen.getAllByRole("row")[1]).toHaveClass("h-[52px]");
     // Tablero Empresas: «1 empresa · 1 activa» y el filtro «Estado: todas».
     expect(screen.getByText("1 empresa · 1 activa")).toBeVisible();
+    // Tableros de listas (.pagina, compacto): 14 entre la caja de los filtros y la tabla.
+    expect(screen.getByRole("search").parentElement).toHaveClass("md:gap-3.5");
 
     await user.click(screen.getByRole("button", { name: "Estado: todas" }));
     expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent?.replace(/\d+$/, ""))).toEqual(["Todas", "Activas", "Inactivas"]);

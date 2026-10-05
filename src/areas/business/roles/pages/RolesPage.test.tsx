@@ -91,6 +91,8 @@ describe("RolesPage", () => {
     expect(screen.getAllByText("De sistema")).toHaveLength(2);
     // «Criterio · Tablas» (lienzo v92): «De sistema» va en la segunda línea gris, debajo del nombre.
     for (const system of screen.getAllByText("De sistema")) expect(system).toHaveAttribute("data-slot", "cell-detail");
+    // Tableros de listas (.pagina, compacto): 14 entre la caja de los filtros y la tabla.
+    expect(screen.getByRole("search").parentElement).toHaveClass("md:gap-3.5");
     // «Vale en» de un rol de una empresa es el nombre de la empresa.
     expect(await screen.findByRole("cell", { name: "Delta S.A." })).toBeVisible();
 

@@ -102,6 +102,8 @@ describe("UsersPage", () => {
     expect(screen.getByRole("columnheader", { name: "Rol en la organización" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Empresa" })).toBeVisible();
     expect(screen.queryByRole("columnheader", { name: "Correo" })).not.toBeInTheDocument();
+    // Tableros de listas (.pagina, compacto): 14 entre la caja de los filtros y la tabla.
+    expect(screen.getByRole("search").parentElement).toHaveClass("md:gap-3.5");
     expect(screen.getByText("lucia@example.com")).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
 

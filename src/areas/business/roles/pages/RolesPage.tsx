@@ -115,7 +115,7 @@ export function RolesPage() {
       fab={canManage ? { label: t("roles:create"), to: "/org/roles/new" } : undefined}
       actions={canManage ? <Button asChild><Link to="/org/roles/new"><Plus aria-hidden="true" className="size-4" />{t("roles:create")}</Link></Button> : undefined}
     >
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar phoneTools="filter"
           label={t("roles:filters.label")}
           searchLabel={t("roles:filters.search")}

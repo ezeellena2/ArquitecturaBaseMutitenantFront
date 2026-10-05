@@ -174,7 +174,7 @@ export function UsersPage() {
     <Page icon={Users} title={t("users:title")} summary={listSummary} phoneBody="flush"
       fab={canInvite ? { label: t("users:invite.open"), onClick: () => setInviteOpen(true) } : undefined}
       actions={canInvite ? <Button type="button" onClick={() => setInviteOpen(true)}><Plus aria-hidden="true" className="size-4" />{t("users:invite.open")}</Button> : undefined}>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar
           label={t("users:filters.label")}
           searchLabel={t("users:filters.search")}

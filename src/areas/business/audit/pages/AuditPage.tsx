@@ -69,7 +69,7 @@ export function AuditPage() {
     {/* Tablero M-Auditoria-Org y lienzo v99: en el teléfono, debajo del título va el camino («Administración»), como en
         toda pantalla interna; el período elegido se ve en el filtro. */}
     <Page icon={ClipboardList} title={t("audit:title")} phoneBody="flush">
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar phoneTools="filter"
           label={t("audit:filters.label")}
           searchLabel={t("audit:filters.search")}

@@ -59,6 +59,8 @@ describe("AuditPage", () => {
     expect(screen.getByRole("columnheader", { name: "Dónde" })).toHaveClass("w-[23%]");
     expect(screen.getByRole("columnheader", { name: "Quién" })).toHaveClass("w-[20%]");
     expect(screen.getByRole("searchbox", { name: "Buscar en la auditoría" })).toBeVisible();
+    // Tableros de listas (.pagina, compacto): 14 entre la caja de los filtros y la tabla.
+    expect(screen.getByRole("search").parentElement).toHaveClass("md:gap-3.5");
     expect(screen.getByRole("button", { name: "Tema: todos" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Quién: todos" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Ver el detalle de Cambió los roles de Tomás Acosta" }).querySelector("svg")).toBeNull();

@@ -138,7 +138,7 @@ export function CompaniesPage() {
     <Page icon={Building2} title={t("companies:title")} summary={listSummary} phoneBody="flush"
       fab={canManage ? { label: t("companies:create"), onClick: openCreate } : undefined}
       actions={canManage ? <Button type="button" onClick={openCreate}><Plus aria-hidden="true" className="size-4" />{t("companies:create")}</Button> : undefined}>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar phoneTools="filter"
           label={t("companies:filters.label")}
           searchLabel={t("companies:filters.search")}
