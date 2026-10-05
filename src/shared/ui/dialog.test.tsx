@@ -107,6 +107,9 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
     );
     const normal = screen.getByRole("dialog", { name: "Editar empresa" });
     expect(normal).toHaveClass("md:max-w-[560px]");
+    // «Criterio · Diálogos» (.dlg): la sombra larga del tablero, 0 24px 48px, y no la corta de Tailwind.
+    expect(normal).toHaveClass("md:shadow-[var(--sombra-dialogo)]");
+    expect(normal).not.toHaveClass("md:shadow-lg");
     expect(normal).not.toHaveClass("md:max-w-[420px]");
   });
 
