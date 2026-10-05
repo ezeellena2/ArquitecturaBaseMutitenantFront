@@ -5,6 +5,7 @@ import { Link, RouterProvider, createMemoryRouter } from "react-router";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/shared/api/ApiError";
 import { configureI18n } from "@/shared/i18n";
+import { AppChromeProvider } from "@/shared/ui/app/AppChrome";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { useEditPage } from "./useEditPage";
 
@@ -90,6 +91,27 @@ describe("useEditPage", () => {
     expect(alerts).toHaveLength(1);
     expect(alerts[0]).toHaveTextContent("Tiene que quedar al menos un Dueño activo.");
     expect(screen.queryByRole("button", { name: "Ver lo nuevo" })).not.toBeInTheDocument();
+  });
+
+  // Tableros M-Usuario y M-Pagina-Org (v106, «Error al guardar»): en el teléfono el error de guardado, con el texto del
+  // back, va en una banda a todo el ancho debajo de la barra (el lugar de los carteles), no en una caja dentro del cuerpo.
+  it("en el teléfono, el error de guardado va en la banda debajo de la barra, con el texto del back", async () => {
+    function PhoneEditor() {
+      const edit = useEditPage({ isDirty: true, error: lastOwner, onSeeNew: () => {}, onContinueEditing: () => {} });
+      return <>
+        <div data-testid="cartel">{edit.banner}</div>
+        <div data-testid="franja">{edit.formError}</div>
+      </>;
+    }
+    renderWithProviders(<RouterProvider router={createMemoryRouter([{ path: "/", element:
+      <AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}><PhoneEditor /></AppChromeProvider> }])} />);
+
+    const band = await within(await screen.findByTestId("cartel")).findByRole("alert");
+    expect(band).toHaveTextContent("Tiene que quedar al menos un Dueño activo.");
+    expect(band).toHaveClass("px-4", "py-3", "text-[14.5px]", "leading-[1.4]", "bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]");
+    expect(band).not.toHaveClass("rounded-xl");
+    expect(screen.getByTestId("franja")).toBeEmptyDOMElement();
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
   });
 
   it("sin conexión, un 5xx o un 429 no van en la pantalla: los avisa el MutationCache", async () => {

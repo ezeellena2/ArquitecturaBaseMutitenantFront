@@ -399,6 +399,35 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(await screen.findByText(/Otra persona cambió esto mientras lo editabas/)).toBeVisible();
   });
 
+  // Tablero M-Usuario (v106, «Error al guardar»): en el teléfono, el error de guardado, con el texto del back, va en la
+  // banda roja pegada debajo de la barra, y la barra sigue diciendo «Cambios sin guardar».
+  it("en el teléfono, el error al guardar va en la banda debajo de la barra", async () => {
+    const restore = asPhone();
+    try {
+      const user = userEvent.setup();
+      api(member);
+      server.use(http.put("/api/users/member-1", () => HttpResponse.json(
+        { status: 409, code: "Tenancy.Member.LastTenantAdmin", title: "Conflicto", detail: "Tiene que quedar al menos un Dueño activo." }, { status: 409 })));
+      renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+
+      const bar = (await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" })).closest("header")!;
+      await user.click(await screen.findByRole("button", { name: /Roles de la organización/ }));
+      const sheet = await screen.findByRole("dialog", { name: "Roles de la organización" });
+      await user.click(within(sheet).getByRole("checkbox", { name: "Dueño" }));
+      await user.click(within(sheet).getByRole("button", { name: "Listo" }));
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+      await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+      const band = await screen.findByRole("alert");
+      expect(band).toHaveTextContent("Tiene que quedar al menos un Dueño activo.");
+      expect(bar.nextElementSibling).toBe(band);
+      expect(band).not.toHaveClass("rounded-xl");
+      expect(bar).toHaveTextContent("Cambios sin guardar");
+    } finally {
+      restore();
+    }
+  });
+
   // Tablero Usuario («Lucía (vos)»): el back dice lo mismo por cualquier camino (decisión 29); si la última Dueña se
   // saca el rol ella misma, la franja le dice qué hacer.
   it("si la última Dueña se saca el rol, la franja le dice que se lo dé a otra persona antes", async () => {

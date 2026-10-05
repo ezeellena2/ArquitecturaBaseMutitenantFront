@@ -179,8 +179,8 @@ export function PublicPagePage() {
     >
       <div className="flex flex-col gap-4 max-md:gap-0">
         {page.error ? <FormError message={apiErrorMessage(page.error, t)} /> : null}
-        {/* En el teléfono, la franja lleva el margen de las tarjetas. */}
-        {edit.formError ? <div className="max-md:mx-4 max-md:mt-3.5">{edit.formError}</div> : null}
+        {/* La franja del error de guardado; en el teléfono va en la banda debajo de la barra (M-Pagina-Org, v106). */}
+        {edit.formError}
         {page.isPending ? <p role="status" className="text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft && pageData ? <>
           <Section title={t("publicPage:publicationTitle")}>
             <div className="flex items-center gap-3 px-4 py-3 md:px-5 max-md:min-h-14 max-md:py-2 max-md:pr-3.5">

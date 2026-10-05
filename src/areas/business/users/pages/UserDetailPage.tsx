@@ -279,8 +279,9 @@ export function UserDetailPage() {
           </Button>
         </> : undefined}>
       <div className="flex flex-col gap-4 max-md:gap-0">
-        {/* Tablero Usuario: el error de guardado, en una franja debajo de la banda; en el teléfono, con el margen de las tarjetas. */}
-        {edit.formError ? <div className="max-md:mx-4 max-md:mt-3.5">{edit.formError}</div> : null}
+        {/* Tablero Usuario: el error de guardado, en una franja debajo de la banda. En el teléfono va en la banda debajo de
+            la barra (M-Usuario, v106): la pone useEditPage en `banner`. */}
+        {edit.formError}
         {pendingDeletion ? <Banner tone="warning"><Trans ns="users" i18nKey="detail.deletionScheduled" components={{ date: <DateText value={member.deletionScheduledForUtc} kind="date" /> }} /></Banner> : null}
 
         <Section title={t("users:detail.accessTitle")}>

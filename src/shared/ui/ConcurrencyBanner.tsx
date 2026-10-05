@@ -5,6 +5,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { Banner } from "./Banner";
 import { Button } from "./button";
 import { useAppChrome } from "./app/AppChrome";
+import { PhoneBand } from "./app/PhoneBand";
 import { ConfirmDialog } from "./ConfirmDialog";
 
 interface ConcurrencyBannerProps {
@@ -34,8 +35,7 @@ export function ConcurrencyBanner({ error, isDirty, onSeeNew, onContinueEditing 
     <>
       {/* Tablero M-Avisos («Alguien cambió esto»): en el teléfono, una banda ámbar debajo de la barra, con las dos
           salidas en texto debajo del aviso. */}
-      {phone ? <div role="alert" className="flex items-start gap-2.5 bg-[var(--alerta-t)] px-4 py-3 text-[14.5px] leading-[1.4] text-[var(--alerta-tx)]">
-        <TriangleAlertIcon aria-hidden="true" className="mt-px size-[18px] shrink-0" />
+      {phone ? <PhoneBand tone="warning" role="alert" icon={<TriangleAlertIcon aria-hidden="true" className="mt-px size-[18px] shrink-0" />}>
         <span className="flex min-w-0 flex-1 flex-col gap-2">
           {t("concurrency.banner")}
           <span className="flex gap-[18px] font-semibold">
@@ -43,7 +43,7 @@ export function ConcurrencyBanner({ error, isDirty, onSeeNew, onContinueEditing 
             <button type="button" onClick={seeNew}>{t("concurrency.seeNew")}</button>
           </span>
         </span>
-      </div> : null}
+      </PhoneBand> : null}
       {/* Tablero Avisos («Alguien cambió esto»): el cartel de atención de «Criterio · Avisos», en el lugar de Page para
           carteles, con «Seguir editando» en texto y «Ver lo nuevo» como botón chico. */}
       {phone ? null : <Banner tone="warning" role="alert" action={<>
