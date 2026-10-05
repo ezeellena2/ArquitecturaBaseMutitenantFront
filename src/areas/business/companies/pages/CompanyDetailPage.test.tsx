@@ -115,7 +115,7 @@ describe("CompanyDetailPage", () => {
   // debajo del título, y el campo de roles vacío dice «Sin roles»; «Editar empresa», en el normal.
   it("los diálogos de la ficha con el ancho, el encabezado y el campo vacío del tablero", async () => {
     const user = userEvent.setup();
-    rolesApi(() => new HttpResponse(null, { status: 204 }));
+    rolesApi(() => HttpResponse.json({ version: 9 }));
     server.use(http.get("/api/users/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
 
@@ -146,7 +146,7 @@ describe("CompanyDetailPage", () => {
   // desde abajo con su alto, no a pantalla completa, con el cuerpo común de los diálogos.
   it("los diálogos de la ficha usan el cuerpo de los diálogos y en el teléfono suben desde abajo con su alto", async () => {
     const user = userEvent.setup();
-    rolesApi(() => new HttpResponse(null, { status: 204 }));
+    rolesApi(() => HttpResponse.json({ version: 9 }));
     server.use(http.get("/api/users/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
 
@@ -284,7 +284,7 @@ describe("CompanyDetailPage", () => {
   it("con el CUIT mal, «Guardar cambios» de «Editar empresa» sigue activo y no manda nada", async () => {
     let puts = 0;
     detailApi([member]);
-    server.use(http.put("/api/companies/company-1", () => { puts += 1; return new HttpResponse(null, { status: 204 }); }));
+    server.use(http.put("/api/companies/company-1", () => { puts += 1; return HttpResponse.json({ version: 4 }); }));
     const user = userEvent.setup();
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Editar empresa" }));
@@ -351,7 +351,7 @@ describe("CompanyDetailPage", () => {
     const inactive = { ...member, memberId: "member-3", displayName: "Marcos Giménez", email: "marcos@example.com", membershipStatus: "Inactive" as const };
     const statusBodies: unknown[] = [];
     detailApi([member, pending, inactive]);
-    server.use(http.put("/api/companies/company-1/members/:memberId/status", async ({ request }) => { statusBodies.push(await request.json()); return new HttpResponse(null, { status: 204 }); }));
+    server.use(http.put("/api/companies/company-1/members/:memberId/status", async ({ request }) => { statusBodies.push(await request.json()); return HttpResponse.json({ version: 9 }); }));
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     const open = async (name: string) => { const trigger = await screen.findByRole("button", { name }); trigger.focus(); await user.keyboard("{Enter}"); };
 
@@ -401,7 +401,7 @@ describe("CompanyDetailPage", () => {
       http.get("/api/companies/company-1/roles/paged", () => HttpResponse.json({ items: [companyAdmin], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
       http.put("/api/companies/company-1/members/member-1/roles", async ({ request }) => {
         requestBody = await request.json();
-        return new HttpResponse(null, { status: 204 });
+        return HttpResponse.json({ version: 9 });
       }),
     );
 
@@ -668,7 +668,7 @@ describe("CompanyDetailPage", () => {
   // a ese ⋮, porque la opción se va con el menú.
   it("cada diálogo de la ficha le devuelve el foco a lo que lo abrió", async () => {
     const user = userEvent.setup();
-    rolesApi(() => new HttpResponse(null, { status: 204 }));
+    rolesApi(() => HttpResponse.json({ version: 9 }));
     server.use(http.get("/api/users/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     expect(await screen.findByText("Lucía Fernández")).toBeVisible();
@@ -735,7 +735,7 @@ describe("CompanyDetailPage", () => {
       http.put("/api/companies/company-1", async ({ request }) => {
         const body = await request.json() as { version: number };
         sent.push(body);
-        return body.version === current.version ? new HttpResponse(null, { status: 204 })
+        return body.version === current.version ? HttpResponse.json({ version: current.version + 1 })
           : HttpResponse.json({ status: 409, code: "General.ConcurrencyConflict", title: "Conflicto",
             detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar." }, { status: 409 });
       }),

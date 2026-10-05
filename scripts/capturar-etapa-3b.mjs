@@ -51,7 +51,7 @@ const boardAction = (selector) => ({ type: "click", selector });
 const scenarios = [];
 function account(id, look, extra = {}) { scenarios.push({ id, group: "cuenta", look, ...extra }); }
 account("cuenta-personal", accountBase());
-account("cuenta-guardada", accountBase("El lienzo vigente no dibuja el aviso «Guardamos tus datos.»: se compara con Mi cuenta."), { actions: [fill("Nombre y apellido", "Lucía Fernández Pérez"), click("button", "$save")], responses: [response("PUT", "/api/me", {})], afterName: "Lucía Fernández Pérez", readyText: "Guardamos tus datos." });
+account("cuenta-guardada", accountBase("El lienzo vigente no dibuja el aviso «Guardamos tus datos.»: se compara con Mi cuenta."), { actions: [fill("Nombre y apellido", "Lucía Fernández Pérez"), click("button", "$save")], responses: [response("PUT", "/api/me", { version: 1 })], afterName: "Lucía Fernández Pérez", readyText: "Guardamos tus datos." });
 account("cuenta-solo-empresa", accountBase("El lienzo vigente no dibuja la cuenta con solo el correo de la empresa: se compara con Mi cuenta."), { methods: [{ ...company, isPrimary: true, canRemove: false, canMakePrimary: false }], needsOwn: true });
 account("cuenta-sucia", { desktop: { board: "Cuenta", props: { whatsapp: noWhatsApp }, boardActions: [{ type: "fill", name: "Nombre y apellido", value: "Lucía Fernández Pérez" }] }, phone: { board: "M-Cuenta", props: { estado: "Cambios sin guardar" } } }, { actions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] });
 account("cuenta-descartada", accountBase(), { actions: [fill("Nombre y apellido", "Lucía Fernández Pérez"), click("button", "$discard")] });

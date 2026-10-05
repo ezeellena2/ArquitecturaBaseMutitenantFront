@@ -1520,12 +1520,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -2071,12 +2075,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -2913,12 +2921,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -4118,12 +4130,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -4301,12 +4317,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -4676,12 +4696,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -4772,12 +4796,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -5553,12 +5581,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -5869,12 +5901,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -6291,12 +6327,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -6505,12 +6545,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -6599,12 +6643,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -6692,12 +6740,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -6925,12 +6977,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -9315,12 +9371,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -10928,6 +10988,15 @@ export interface components {
             acceptedTerms: boolean;
             culture?: null | string;
             timeZoneId?: null | string;
+        };
+        /**
+         * @description La versión que quedó después de un guardado: el xmin que EF trae del mismo UPDATE (o INSERT) que escribió la fila o,
+         *     en «Tus datos», la versión propia del perfil. El front la toma como base del próximo guardado, nunca la de una
+         *     relectura (docs/rules/concurrencia.md).
+         */
+        VersionResponse: {
+            /** Format: uint32 */
+            version: number;
         };
     };
     responses: never;

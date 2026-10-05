@@ -270,7 +270,7 @@ describe("CompaniesPage", () => {
       http.get("/api/companies/filter-counts", () => HttpResponse.json({ all: 1, active: 1, inactive: 0 })),
       http.put("/api/companies/company-1/status", async ({ request }) => {
         requestBody = await request.json();
-        return new HttpResponse(null, { status: 204 });
+        return HttpResponse.json({ version: 4 });
       }),
     );
 

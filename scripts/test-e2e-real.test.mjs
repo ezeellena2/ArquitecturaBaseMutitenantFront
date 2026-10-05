@@ -679,12 +679,16 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           const updateData = { name: updatedName, description: role.description, scope: role.scope,
             companyId: role.companyId ?? null, permissions: role.permissions, version: role.version };
           const updateResponse = await rolesPage.request.put(roleUrl.href, { headers, data: updateData });
-          assert.equal(updateResponse.status(), 204, "La versión vigente debe permitir guardar.");
+          assert.equal(updateResponse.status(), 200, "La versión vigente debe permitir guardar.");
+          const saved = await updateResponse.json();
+          assert.equal(typeof saved.version, "number", "El guardado debe responder la versión nueva.");
           const staleResponse = await rolesPage.request.put(roleUrl.href, { headers, data: updateData });
           assert.equal(staleResponse.status(), 409, "Una versión obsoleta debe responder 409.");
           assert.equal((await staleResponse.json()).code, "General.ConcurrencyConflict");
           const afterStaleResponse = await rolesPage.request.get(roleUrl.href, { headers });
-          assert.equal((await afterStaleResponse.json()).name, updatedName, "El conflicto no debe pisar el primer cambio.");
+          const afterStale = await afterStaleResponse.json();
+          assert.equal(afterStale.name, updatedName, "El conflicto no debe pisar el primer cambio.");
+          assert.equal(afterStale.version, saved.version, "La versión que respondió el guardado es la que lee la ficha.");
 
           setStage("abre el listado real y actualiza un rol desde la pantalla de edición");
           await rolesPage.goto(new URL("/org/roles", baseUrl).href);
@@ -697,8 +701,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             new URL(response.url()).pathname === `/api/roles/${roleId}` && response.request().method() === "PUT");
           await rolesPage.getByRole("button", { name: "Guardar cambios", exact: true }).click();
           const uiUpdateResponse = await uiUpdate;
-          const uiUpdateProblem = uiUpdateResponse.status() === 204 ? null : await uiUpdateResponse.json().catch(() => null);
-          assert.equal(uiUpdateResponse.status(), 204,
+          const uiUpdateProblem = uiUpdateResponse.status() === 200 ? null : await uiUpdateResponse.json().catch(() => null);
+          assert.equal(uiUpdateResponse.status(), 200,
             `La pantalla debe guardar el rol con su versión vigente (${uiUpdateProblem?.code ?? "sin código"}; campos: ${Object.keys(uiUpdateProblem?.errors ?? {}).join(", ") || "ninguno"}).`);
           await rolesPage.getByRole("heading", { name: `${updatedName} desde pantalla` }).waitFor();
 
@@ -923,7 +927,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           const companyUpdated = adminPage.waitForResponse((response) =>
             new URL(response.url()).pathname === `/api/companies/${e2eCompanyId}` && response.request().method() === "PUT");
           await companyEdit.getByRole("button", { name: "Guardar cambios", exact: true }).click();
-          assert.equal((await companyUpdated).status(), 204, "La ficha debe guardar la empresa con su versión.");
+          assert.equal((await companyUpdated).status(), 200, "La ficha debe guardar la empresa con su versión.");
           await adminPage.getByRole("heading", { name: updatedCompanyName, exact: true }).waitFor();
           await adminPage.getByText("Administrador", { exact: true }).first().waitFor();
 
@@ -935,7 +939,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           const settingsUpdated = adminPage.waitForResponse((response) =>
             new URL(response.url()).pathname === "/api/organization/settings" && response.request().method() === "PUT");
           await adminPage.getByRole("button", { name: "Guardar cambios", exact: true }).click();
-          assert.equal((await settingsUpdated).status(), 204, "Configuración debe guardar con su versión.");
+          assert.equal((await settingsUpdated).status(), 200, "Configuración debe guardar con su versión.");
           e2eOrganizationName = "Empresa E2E configurada";
           assert.equal(
             await adminPage.getByRole("textbox", { name: "Nombre de la organización", exact: true }).inputValue(),
@@ -966,7 +970,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           const pageUpdated = adminPage.waitForResponse((response) =>
             new URL(response.url()).pathname === "/api/organization/public-page" && response.request().method() === "PUT");
           await adminPage.getByRole("button", { name: "Guardar cambios", exact: true }).click();
-          assert.equal((await pageUpdated).status(), 204, "La Página pública debe guardar los datos del borrador.");
+          assert.equal((await pageUpdated).status(), 200, "La Página pública debe guardar los datos del borrador.");
           const refreshedPageResponse = await publicPageRefreshed;
           assert.equal(refreshedPageResponse.status(), 200);
           const refreshedPage = await refreshedPageResponse.json();
@@ -987,8 +991,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           assert.equal(await publishSwitch.isChecked(), false, "El borrador empieza con la publicación apagada.");
           await publishSwitch.click({ timeout: 5_000 });
           const publicationResponse = await pagePublished;
-          const publicationError = publicationResponse.status() === 204 ? "" : ` (${(await publicationResponse.json()).code ?? "sin código"})`;
-          assert.equal(publicationResponse.status(), 204, `La Página pública debe publicarse con su versión actual${publicationError}.`);
+          const publicationError = publicationResponse.status() === 200 ? "" : ` (${(await publicationResponse.json()).code ?? "sin código"})`;
+          assert.equal(publicationResponse.status(), 200, `La Página pública debe publicarse con su versión actual${publicationError}.`);
           const publishedPageResponse = await pageAfterPublication;
           assert.equal(publishedPageResponse.status(), 200, "La Página pública debe refrescarse después de publicar.");
           const publishedPage = await publishedPageResponse.json();

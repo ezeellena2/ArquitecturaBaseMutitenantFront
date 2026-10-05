@@ -16,6 +16,7 @@ import type {
   RoleResponse,
   UpdateCompanyMemberRolesRequest,
   UpdateCompanyRequest,
+  VersionResponse,
 } from "@/shared/api/types";
 
 export type CompaniesQuery = PagedRequest & { status?: CompanyStatus };
@@ -59,12 +60,12 @@ export function createCompany(request: CreateCompanyRequest, idempotencyKey: str
   return api.post<string>("/api/companies", request, { headers: { "Idempotency-Key": idempotencyKey } });
 }
 
-export function updateCompany(companyId: string, request: UpdateCompanyRequest): Promise<void> {
-  return api.put<void>(`/api/companies/${encodeURIComponent(companyId)}`, request);
+export function updateCompany(companyId: string, request: UpdateCompanyRequest): Promise<VersionResponse> {
+  return api.put<VersionResponse>(`/api/companies/${encodeURIComponent(companyId)}`, request);
 }
 
-export function changeCompanyStatus(companyId: string, request: ChangeCompanyStatusRequest): Promise<void> {
-  return api.put<void>(`/api/companies/${encodeURIComponent(companyId)}/status`, request);
+export function changeCompanyStatus(companyId: string, request: ChangeCompanyStatusRequest): Promise<VersionResponse> {
+  return api.put<VersionResponse>(`/api/companies/${encodeURIComponent(companyId)}/status`, request);
 }
 
 export function fetchCompanyMembers(companyId: string, query: CompanyMembersQuery): Promise<PagedResult<CompanyMemberResponse>> {
@@ -89,12 +90,12 @@ export function addCompanyMember(companyId: string, request: AddCompanyMemberReq
   return api.post<void>(`/api/companies/${encodeURIComponent(companyId)}/members`, request, { headers: { "Idempotency-Key": idempotencyKey } });
 }
 
-export function updateCompanyMemberRoles(companyId: string, memberId: string, request: UpdateCompanyMemberRolesRequest): Promise<void> {
-  return api.put<void>(`/api/companies/${encodeURIComponent(companyId)}/members/${encodeURIComponent(memberId)}/roles`, request);
+export function updateCompanyMemberRoles(companyId: string, memberId: string, request: UpdateCompanyMemberRolesRequest): Promise<VersionResponse> {
+  return api.put<VersionResponse>(`/api/companies/${encodeURIComponent(companyId)}/members/${encodeURIComponent(memberId)}/roles`, request);
 }
 
-export function changeCompanyMemberStatus(companyId: string, memberId: string, request: ChangeCompanyMemberStatusRequest): Promise<void> {
-  return api.put<void>(`/api/companies/${encodeURIComponent(companyId)}/members/${encodeURIComponent(memberId)}/status`, request);
+export function changeCompanyMemberStatus(companyId: string, memberId: string, request: ChangeCompanyMemberStatusRequest): Promise<VersionResponse> {
+  return api.put<VersionResponse>(`/api/companies/${encodeURIComponent(companyId)}/members/${encodeURIComponent(memberId)}/status`, request);
 }
 
 /// Los roles que se asignan en una empresa, ya filtrados por el back: los de cualquier empresa y los propios. Quien ve sus

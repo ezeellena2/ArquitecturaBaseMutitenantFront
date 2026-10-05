@@ -8,6 +8,7 @@ import type {
   RoleResponse,
   RoleScopeFilter,
   UpdateRoleRequest,
+  VersionResponse,
 } from "@/shared/api/types";
 
 export type RolesQuery = PagedRequest & { scope?: RoleScopeFilter; companyId?: string };
@@ -48,8 +49,8 @@ export function createRole(request: CreateRoleRequest, idempotencyKey: string): 
   return api.post<string>("/api/roles", request, { headers: { "Idempotency-Key": idempotencyKey } });
 }
 
-export function updateRole(roleId: string, request: UpdateRoleRequest): Promise<void> {
-  return api.put<void>(`/api/roles/${encodeURIComponent(roleId)}`, request);
+export function updateRole(roleId: string, request: UpdateRoleRequest): Promise<VersionResponse> {
+  return api.put<VersionResponse>(`/api/roles/${encodeURIComponent(roleId)}`, request);
 }
 
 export function deleteRole(roleId: string, version: number): Promise<void> {

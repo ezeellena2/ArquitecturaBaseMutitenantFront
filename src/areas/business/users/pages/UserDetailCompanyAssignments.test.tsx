@@ -48,7 +48,7 @@ describe("UserDetailPage company assignments", () => {
         return HttpResponse.json({ items, page: 1, pageSize: 100, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
       }),
       http.get("/api/companies/paged", () => HttpResponse.json({ items: [company], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
-      http.put("/api/users/member-1", async ({ request }) => { updateBody = await request.json(); return new HttpResponse(null, { status: 204 }); }),
+      http.put("/api/users/member-1", async ({ request }) => { updateBody = await request.json(); return HttpResponse.json({ version: 2 }); }),
     );
 
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });

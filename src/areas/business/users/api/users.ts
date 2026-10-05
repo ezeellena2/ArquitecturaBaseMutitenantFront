@@ -11,6 +11,7 @@ import type {
   RoleScopeFilter,
   UpdateOrganizationUserRequest,
   CompanyResponse,
+  VersionResponse,
 } from "@/shared/api/types";
 import type { PagedResult } from "@/shared/api/pagedResult";
 
@@ -62,12 +63,12 @@ export function revokeUserInvitation(invitationId: string): Promise<void> {
   return api.delete<void>(`/api/users/invitations/${encodeURIComponent(invitationId)}`);
 }
 
-export function updateUser(memberId: string, request: UpdateOrganizationUserRequest): Promise<void> {
-  return api.put<void>(`/api/users/${encodeURIComponent(memberId)}`, request);
+export function updateUser(memberId: string, request: UpdateOrganizationUserRequest): Promise<VersionResponse> {
+  return api.put<VersionResponse>(`/api/users/${encodeURIComponent(memberId)}`, request);
 }
 
-export function changeUserStatus(memberId: string, request: ChangeOrganizationUserStatusRequest): Promise<void> {
-  return api.put<void>(`/api/users/${encodeURIComponent(memberId)}/status`, request);
+export function changeUserStatus(memberId: string, request: ChangeOrganizationUserStatusRequest): Promise<VersionResponse> {
+  return api.put<VersionResponse>(`/api/users/${encodeURIComponent(memberId)}/status`, request);
 }
 
 export function removeUser(memberId: string, version: number): Promise<void> {

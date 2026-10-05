@@ -164,7 +164,7 @@ describe("Mi cuenta", () => {
     server.use(http.put("/api/me", async ({ request }) => {
       submitted = await request.json();
       server.use(http.get("/api/me", () => HttpResponse.json({ ...consumerWithoutOrganizations, culture: "en-US", version: 43 })));
-      return new HttpResponse(null, { status: 204 });
+      return HttpResponse.json({ version: 43 });
     }));
     const { router, container } = renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
     expect(await screen.findByRole("heading", { name: "Mi cuenta" })).toBeVisible();
@@ -187,7 +187,7 @@ describe("Mi cuenta", () => {
     const errorToast = vi.spyOn(toast, "error");
     server.use(http.put("/api/me", () => {
       server.use(http.get("/api/me", () => HttpResponse.error()));
-      return new HttpResponse(null, { status: 204 });
+      return HttpResponse.json({ version: 43 });
     }));
     renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
     const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
@@ -228,7 +228,7 @@ describe("Mi cuenta", () => {
       http.put("/api/me", async ({ request }) => {
         const body = await request.json() as { version: number };
         sent.push(body);
-        return body.version === current.version ? new HttpResponse(null, { status: 204 })
+        return body.version === current.version ? HttpResponse.json({ version: (current.version ?? 0) + 1 })
           : HttpResponse.json({ code: "General.ConcurrencyConflict" }, { status: 409 });
       }),
     );
@@ -279,7 +279,7 @@ describe("Mi cuenta", () => {
         sent.push(body);
         if (body.version !== current.version) return HttpResponse.json({ code: "General.ConcurrencyConflict" }, { status: 409 });
         current = { ...current, displayName: body.displayName, version: (current.version ?? 0) + 1 };
-        return new HttpResponse(null, { status: 204 });
+        return HttpResponse.json({ version: current.version });
       }),
     );
     const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });

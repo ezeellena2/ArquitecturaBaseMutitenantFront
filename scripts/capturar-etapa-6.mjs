@@ -210,7 +210,7 @@ export function settingsResponses(domainState = "Verified") {
   return [
     api("GET", "/api/organization/settings", { name: "Grupo Delta", defaultCulture: "es-AR", defaultTimeZoneId: "America/Argentina/Buenos_Aires", defaultCurrency: "ARS", version: 12 }),
     api("GET", "/api/organization/settings/domains", domainState === "Sin dominio" ? [] : [domain]),
-    api("PUT", "/api/organization/settings", null, 204),
+    api("PUT", "/api/organization/settings", { version: 13 }),
     api("POST", "/api/organization/settings/domains", { ...domain, status: "Pending", managedEmailCount: 0 }, 201),
     api("DELETE", "/api/organization/settings/domains/domain-1", null, 204),
   ];

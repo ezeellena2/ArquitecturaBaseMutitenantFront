@@ -18,8 +18,8 @@ const page = {
 function api(current: typeof page, calls: string[] = []) {
   server.use(
     http.get("/api/organization/public-page", () => HttpResponse.json(current)),
-    http.post("/api/organization/public-page/publish", async ({ request }) => { calls.push(`publish ${JSON.stringify(await request.json())}`); return new HttpResponse(null, { status: 204 }); }),
-    http.post("/api/organization/public-page/unpublish", async ({ request }) => { calls.push(`unpublish ${JSON.stringify(await request.json())}`); return new HttpResponse(null, { status: 204 }); }),
+    http.post("/api/organization/public-page/publish", async ({ request }) => { calls.push(`publish ${JSON.stringify(await request.json())}`); return HttpResponse.json({ version: 9 }); }),
+    http.post("/api/organization/public-page/unpublish", async ({ request }) => { calls.push(`unpublish ${JSON.stringify(await request.json())}`); return HttpResponse.json({ version: 9 }); }),
   );
 }
 
@@ -36,14 +36,14 @@ function versionedApi(initial: typeof page) {
       backend.writes.push(body);
       if (body.version !== backend.current.version) return conflict();
       backend.current = { ...backend.current, name: body.name, version: backend.current.version + 1 };
-      return new HttpResponse(null, { status: 204 });
+      return HttpResponse.json({ version: backend.current.version });
     }),
     http.post("/api/organization/public-page/publish", async ({ request }) => {
       const body = await request.json() as { version: number };
       backend.writes.push(body);
       if (body.version !== backend.current.version) return conflict();
       backend.current = { ...backend.current, isPublished: true, version: backend.current.version + 1 };
-      return new HttpResponse(null, { status: 204 });
+      return HttpResponse.json({ version: backend.current.version });
     }),
   );
   return backend;
@@ -282,7 +282,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
         checkedSlugs.push(slug);
         return HttpResponse.json({ slug, availability: "Available" });
       }),
-      http.put("/api/organization/public-page", async ({ request }) => { updateBody = await request.json(); return new HttpResponse(null, { status: 204 }); }),
+      http.put("/api/organization/public-page", async ({ request }) => { updateBody = await request.json(); return HttpResponse.json({ version: 9 }); }),
     );
     renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
 

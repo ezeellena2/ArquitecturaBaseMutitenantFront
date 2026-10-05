@@ -188,7 +188,7 @@ describe("UsersPage", () => {
       http.get("/api/users/paged", () => HttpResponse.json({ items: [member, invited], page: 1, pageSize: 10, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
       http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 2, active: 1, pendingDeletion: 0, invited: 1, expired: 0, inactive: 0 })),
       http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
-      http.put("/api/users/member-1/status", () => new HttpResponse(null, { status: 204 })),
+      http.put("/api/users/member-1/status", () => HttpResponse.json({ version: 2 })),
       http.delete("/api/users/invitations/invitation-2", () => new HttpResponse(null, { status: 204 })),
     );
     renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });

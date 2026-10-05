@@ -35,7 +35,7 @@ function api(user: typeof member, writes: { put?: unknown[]; deleted?: string[] 
       ? [{ ...role("role-owner", "Dueño", "Organization"), isSystemRole: true }, { ...role("role-support", "Soporte", "Organization"), description: "Atiende las consultas." }]
       : [{ ...role("role-company-manager", "Administrador", "AnyCompany"), description: "Administra la empresa: sus miembros y sus roles." }]))),
     http.get("/api/companies/paged", () => HttpResponse.json(page([company]))),
-    http.put("/api/users/member-1", async ({ request }) => { writes.put?.push(await request.json()); return new HttpResponse(null, { status: 204 }); }),
+    http.put("/api/users/member-1", async ({ request }) => { writes.put?.push(await request.json()); return HttpResponse.json({ version: 3 }); }),
     http.delete("/api/users/member-1", ({ request }) => { writes.deleted?.push(new URL(request.url).search); return new HttpResponse(null, { status: 204 }); }),
     http.delete("/api/users/invitations/inv-1", () => { writes.deleted?.push("invitation"); return new HttpResponse(null, { status: 204 }); }),
   );
@@ -82,7 +82,7 @@ function versionedApi(initial: typeof member) {
         detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar." }, { status: 409 });
       backend.current = { ...backend.current, version: backend.current.version + 1, companies: body.companies.map((assignment) => ({
         companyId: assignment.companyId, companyName: company.name, status: "Active" as const, roles: [] })) };
-      return new HttpResponse(null, { status: 204 });
+      return HttpResponse.json({ version: backend.current.version });
     }),
   );
   return backend;

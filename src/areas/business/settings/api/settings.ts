@@ -1,5 +1,5 @@
 import { api } from "@/shared/api/httpClient";
-import type { OrganizationDomainResponse, OrganizationSettingsResponse, RegisterOrganizationDomainRequest, UpdateOrganizationSettingsRequest } from "@/shared/api/types";
+import type { OrganizationDomainResponse, OrganizationSettingsResponse, RegisterOrganizationDomainRequest, UpdateOrganizationSettingsRequest, VersionResponse } from "@/shared/api/types";
 
 export const organizationSettingsKey = ["organization-settings"] as const;
 export const organizationDomainsKey = ["organization-domains"] as const;
@@ -8,8 +8,8 @@ export function fetchOrganizationSettings(): Promise<OrganizationSettingsRespons
   return api.get<OrganizationSettingsResponse>("/api/organization/settings");
 }
 
-export function updateOrganizationSettings(request: UpdateOrganizationSettingsRequest): Promise<void> {
-  return api.put<void>("/api/organization/settings", request);
+export function updateOrganizationSettings(request: UpdateOrganizationSettingsRequest): Promise<VersionResponse> {
+  return api.put<VersionResponse>("/api/organization/settings", request);
 }
 
 export function fetchOrganizationDomains(): Promise<OrganizationDomainResponse[]> {

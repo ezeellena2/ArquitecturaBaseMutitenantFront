@@ -214,7 +214,7 @@ describe("RoleEditorPage", () => {
       http.put("/api/roles/role-custom", async ({ request }) => {
         const body = await request.json() as { version: number };
         sent.push(body);
-        return body.version === current.version ? new HttpResponse(null, { status: 204 })
+        return body.version === current.version ? HttpResponse.json({ version: current.version + 1 })
           : HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Otra persona cambió este rol." }, { status: 409 });
       }),
     );
@@ -242,7 +242,7 @@ describe("RoleEditorPage", () => {
       http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
       http.put("/api/roles/role-custom", async ({ request }) => {
         bodies.push(await request.json());
-        return bodies.length === 1 ? HttpResponse.error() : new HttpResponse(null, { status: 204 });
+        return bodies.length === 1 ? HttpResponse.error() : HttpResponse.json({ version: 5 });
       }),
     );
     renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });

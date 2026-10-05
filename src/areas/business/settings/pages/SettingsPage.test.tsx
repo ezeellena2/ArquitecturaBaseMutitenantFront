@@ -147,7 +147,7 @@ describe("SettingsPage", () => {
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
       http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
-      http.put("/api/organization/settings", async ({ request }) => { updateBody = await request.json(); return new HttpResponse(null, { status: 204 }); }),
+      http.put("/api/organization/settings", async ({ request }) => { updateBody = await request.json(); return HttpResponse.json({ version: 13 }); }),
     );
 
     const { container } = renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
@@ -335,7 +335,7 @@ describe("SettingsPage", () => {
     server.use(
       http.get("/api/organization/settings", () => HttpResponse.json(settings)),
       http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
-      http.put("/api/organization/settings", () => new HttpResponse(null, { status: 204 })),
+      http.put("/api/organization/settings", () => HttpResponse.json({ version: 13 })),
     );
     renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
@@ -408,7 +408,7 @@ describe("SettingsPage", () => {
       http.put("/api/organization/settings", async ({ request }) => {
         const body = await request.json() as typeof settings;
         sent.push(body);
-        return body.version === current.version ? new HttpResponse(null, { status: 204 })
+        return body.version === current.version ? HttpResponse.json({ version: current.version + 1 })
           : HttpResponse.json({ code: "General.ConcurrencyConflict", title: "Conflicto" }, { status: 409 });
       }),
     );
