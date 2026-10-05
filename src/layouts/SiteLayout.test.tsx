@@ -46,11 +46,18 @@ describe("SiteLayout", () => {
   it("en el teléfono, la cabecera y el pie de los legales van como el tablero", () => {
     render(<MemoryRouter><SiteLayout variant="legal"><h1>{"Términos y condiciones"}</h1></SiteLayout></MemoryRouter>);
 
-    expect(screen.getByRole("banner")).toHaveClass("h-[61px]", "md:h-[72px]");
+    expect(screen.getByRole("banner")).toHaveClass("h-[61px]", "md:h-[73px]");
     const business = screen.getByRole("link", { name: "Ingresá como empresa" });
     const login = screen.getByRole("link", { name: "Ingresar" });
-    expect(business.parentElement).toHaveClass("gap-2.5", "md:gap-2");
-    for (const link of [business, login]) expect(link).toHaveClass("h-8", "border", "border-transparent", "px-3", "md:h-10", "md:border-0");
+    expect(business.parentElement).toHaveClass("gap-2.5");
+    expect(business.parentElement).not.toHaveClass("md:gap-2");
+    // Tablero Legal (.lp-der .b): en la compu, dos botones de 36, con borde transparente, 14 a los costados y 8 de radio.
+    for (const link of [business, login]) {
+      expect(link).toHaveClass("h-8", "rounded-[8px]", "border", "border-transparent", "px-3", "md:h-9", "md:px-3.5");
+      expect(link).not.toHaveClass("md:h-10", "md:border-0", "md:px-[18px]", "md:rounded-[10px]");
+    }
+    // Tablero Legal (.lp-marca): el logo de la compu mide 28, como en el teléfono.
+    expect(screen.getByRole("link", { name: "ArquitecturaBase" }).querySelector(".brand-mark")).not.toHaveClass("md:size-8");
     expect(login).toHaveClass("bg-[linear-gradient(180deg,var(--marca)_0%,var(--marca-h)_100%)]", "shadow-[0_1px_2px_var(--marca-sombra),inset_0_1px_0_var(--brillo)]",
       "md:bg-none", "md:shadow-none");
     expect(screen.getByRole("contentinfo")).toHaveClass("py-4", "max-md:leading-[1.6]", "md:py-6");
