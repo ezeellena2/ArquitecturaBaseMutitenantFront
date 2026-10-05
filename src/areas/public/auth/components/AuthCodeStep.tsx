@@ -41,7 +41,8 @@ export interface AuthCodeStepProps {
 
 /// El paso del código del ingreso y de los dos registros (tableros Ingreso, Registro y Registro-Empresa): es un paso de
 /// la misma pantalla, sin ruta propia. «Verificar» no se apaga por un código incompleto («Criterio · Botones»): la franja
-/// dice qué falta y un dígito nuevo la saca.
+/// dice qué falta y un dígito nuevo la saca. El código es el valor controlado de la pantalla, sin React Hook Form: es la
+/// excepción de formularios.md (la pantalla lo borra al pedir otro, al volver y cuando el back lo da por gastado).
 export function AuthCodeStep({ destination, code, onCodeChange, onBack, onVerify, onResend, invalid = false, locked = false, message,
   verifyLabel, verifyDisabled = false, verifyPending = false, resendSeconds, resendRetryLabel, resendDisabled = false, resendPending = false, footer }: AuthCodeStepProps) {
   const { t } = useTranslation("auth");
