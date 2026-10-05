@@ -362,10 +362,12 @@ describe("LoginPage", () => {
     }
     if (code === "Identity.Account.Suspended") {
       expect(screen.getByRole("button", { name: "Reenviar código" })).toBeDisabled();
-      // Tablero Ingreso: «Volver a ingresar» es un enlace de texto de 13, centrado debajo de los botones.
+      // Tablero Ingreso: «Volver a ingresar» es un enlace de texto de 13, centrado debajo de los botones, con la altura
+      // normal de su letra (.fila-links .lnk): queda a 22 de «Reenviar código», no 4 más abajo.
       const back = screen.getByRole("button", { name: "Volver a ingresar" });
       expect(back).toHaveAttribute("data-variant", "link");
-      expect(back).toHaveClass("text-[var(--marca-tx)]", "text-[13px]");
+      expect(back).toHaveClass("text-[var(--marca-tx)]", "text-[13px]", "leading-[normal]");
+      expect(back.parentElement).toHaveClass("flex", "justify-center");
     }
   });
 });

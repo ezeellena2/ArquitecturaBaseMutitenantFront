@@ -5,6 +5,7 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { initials } from "@/shared/lib/initials";
 import { BrandMark } from "@/shared/ui/BrandMark";
 import { FixedActions } from "@/shared/ui/app/FixedActions";
+import { Button } from "@/shared/ui/button";
 
 export type SessionStatusPageProps =
   | { status: "starting" | "closing"; targetName?: never; loginPath?: never }
@@ -40,8 +41,9 @@ export function SessionStatusPage(props: SessionStatusPageProps) {
       <h1 className="mt-1.5 text-[22px] font-bold leading-tight tracking-[-0.015em]">{title}</h1>
       {detail ? <p className="text-[15px] leading-normal text-[var(--t2)]">{detail}</p> : null}
     </div>
+    {/* M-Sesion (.cb.cb-pri): el botón principal, con su degradé y su sombra. */}
     {isError ? <FixedActions>
-      <Link to={props.loginPath ?? "/login"} className="inline-flex items-center justify-center bg-[var(--marca)] font-semibold text-[var(--lado-activo)]">{backToLogin}</Link>
+      <Button asChild><Link to={props.loginPath ?? "/login"}>{backToLogin}</Link></Button>
     </FixedActions> : null}
   </main>;
 
@@ -59,17 +61,16 @@ export function SessionStatusPage(props: SessionStatusPageProps) {
         ) : (
           <span className="size-10 animate-spin rounded-full border-[3px] border-[var(--marca-t)] border-t-[var(--marca)]" aria-hidden="true" />
         )}
+        {/* Tablero Sesion: el título y el texto con la altura normal de su letra. */}
         <div>
-          <h1 className="text-xl font-bold tracking-[-0.02em]">{title}</h1>
-          {detail ? <p className="mt-1.5 text-sm text-[var(--t2)]">{detail}</p> : null}
+          <h1 className="text-xl leading-[normal] font-bold tracking-[-0.02em]">{title}</h1>
+          {detail ? <p className="mt-1.5 text-sm leading-[normal] text-[var(--t2)]">{detail}</p> : null}
         </div>
+        {/* Tablero Sesion (.b.b-pri.lg de 280): el botón principal de 44, con el degradé y la sombra. */}
         {isError ? (
-          <Link
-            to={props.loginPath ?? "/login"}
-            className="inline-flex h-12 w-[280px] max-w-full items-center justify-center rounded-xl bg-[var(--marca)] px-5 text-[15px] font-semibold text-[var(--lado-activo)] hover:bg-[var(--marca-h)] md:h-10 md:rounded-[10px]"
-          >
-            {backToLogin}
-          </Link>
+          <Button asChild size="lg" className="w-[280px] max-w-full">
+            <Link to={props.loginPath ?? "/login"}>{backToLogin}</Link>
+          </Button>
         ) : null}
       </div>
     </main>

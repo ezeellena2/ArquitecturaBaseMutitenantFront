@@ -32,6 +32,12 @@ describe("SessionStatusPage", () => {
     expect(screen.getByRole("heading", { name: "No pudimos iniciar tu sesión" })).toBeInTheDocument();
     expect(screen.getByText("Volvé a ingresar. Si vuelve a pasar, probá en otra ventana.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Volver a ingresar" })).toHaveAttribute("href", "/login/empresa");
+    // Tablero Sesion (.b.b-pri.lg de 280): el botón principal de 44, con el degradé y la sombra; el título y el texto con
+    // la altura normal de su letra.
+    expect(screen.getByRole("link", { name: "Volver a ingresar" })).toHaveAttribute("data-variant", "default");
+    expect(screen.getByRole("link", { name: "Volver a ingresar" })).toHaveClass("h-11", "w-[280px]");
+    expect(screen.getByRole("heading", { name: "No pudimos iniciar tu sesión" })).toHaveClass("leading-[normal]");
+    expect(screen.getByText("Volvé a ingresar. Si vuelve a pasar, probá en otra ventana.")).toHaveClass("leading-[normal]");
   });
 
   it("mantiene el estado de error accesible", async () => {
@@ -56,6 +62,8 @@ describe("SessionStatusPage", () => {
 
       renderStatus({ status: "error", loginPath: "/login" });
       expect(screen.getByRole("link", { name: "Volver a ingresar" }).parentElement).toHaveAttribute("data-slot", "fixed-actions");
+      // M-Sesion (.cb.cb-pri): el principal con su degradé, como en la compu.
+      expect(screen.getByRole("link", { name: "Volver a ingresar" })).toHaveAttribute("data-variant", "default");
     } finally {
       restore();
     }

@@ -56,8 +56,8 @@ export function AuthCodeStep({ destination, code, onCodeChange, onBack, onVerify
   }
 
   return <div className="flex flex-col gap-[22px]">
-    {/* .lnk del tablero: un enlace de texto con su flecha, a 4. */}
-    <Button type="button" variant="link" onClick={onBack} className="gap-1 self-start">
+    {/* .lnk del tablero: un enlace de texto con su flecha, a 4, con la altura normal de su letra. */}
+    <Button type="button" variant="link" onClick={onBack} className="gap-1 self-start leading-[normal]">
       <ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />{t("common:code.otherEmail")}
     </Button>
     <div>
