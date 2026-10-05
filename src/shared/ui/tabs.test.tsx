@@ -41,4 +41,17 @@ describe("Tabs · Criterio · Marco", () => {
     await userEvent.click(screen.getByRole("tab", { name: "Roles 3" }));
     expect(screen.getByText("Lista de roles")).toBeVisible();
   });
+
+  // Tablero M-Empresa (.ap-tabs span): en el teléfono cada pestaña mide 48 más el subrayado de 2,5, con letra de 15 en
+  // semibold, también la que no está elegida; la cantidad, en gris y en 500.
+  it("en el teléfono, las pestañas de 15 en semibold, de 48 más el subrayado de 2,5", () => {
+    render(<CompanyGroups />);
+
+    const list = screen.getByRole("tablist", { name: "Secciones de la empresa" });
+    expect(list).toHaveClass("max-md:h-[50.5px]");
+    const roles = screen.getByRole("tab", { name: "Roles 3" });
+    expect(roles).toHaveClass("max-md:h-[50.5px]", "max-md:pb-[2.5px]", "max-md:text-[15px]", "max-md:font-semibold",
+      "max-md:data-[state=active]:shadow-[inset_0_-2.5px_0_var(--marca)]");
+    expect(screen.getByText("3")).toHaveClass("max-md:font-medium");
+  });
 });

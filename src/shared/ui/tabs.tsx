@@ -21,7 +21,7 @@ function Tabs({
   )
 }
 
-// En el teléfono las pestañas se reparten el ancho, como M-Empresa.
+// En el teléfono las pestañas se reparten el ancho, como M-Empresa (.ap-tabs): 48 más el subrayado de 2,5.
 function TabsList({
   className,
   ...props
@@ -29,7 +29,7 @@ function TabsList({
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
-      className={cn("inline-flex h-11 w-full items-center justify-start gap-7 bg-transparent p-0 text-[14px] max-md:grid max-md:auto-cols-fr max-md:grid-flow-col max-md:gap-0", className)}
+      className={cn("inline-flex h-11 w-full items-center justify-start gap-7 bg-transparent p-0 text-[14px] max-md:grid max-md:h-[50.5px] max-md:auto-cols-fr max-md:grid-flow-col max-md:gap-0", className)}
       {...props}
     />
   )
@@ -43,8 +43,10 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "inline-flex h-11 items-center gap-1.5 px-0 text-[14px] font-medium max-md:justify-center whitespace-nowrap text-[var(--t2)] outline-none transition-colors hover:text-[var(--t1)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] disabled:pointer-events-none disabled:opacity-50",
-        "data-[state=active]:font-semibold data-[state=active]:text-[var(--marca-tx)] data-[state=active]:shadow-[inset_0_-2px_0_var(--marca)]",
+        // Tablero M-Empresa (.ap-tabs span): en el teléfono, de 15 y en semibold también la que no está elegida, con el texto
+        // centrado en los 48 de arriba del subrayado de 2,5.
+        "inline-flex h-11 items-center gap-1.5 px-0 text-[14px] font-medium max-md:h-[50.5px] max-md:justify-center max-md:pb-[2.5px] max-md:text-[15px] max-md:font-semibold whitespace-nowrap text-[var(--t2)] outline-none transition-colors hover:text-[var(--t1)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] disabled:pointer-events-none disabled:opacity-50",
+        "data-[state=active]:font-semibold data-[state=active]:text-[var(--marca-tx)] data-[state=active]:shadow-[inset_0_-2px_0_var(--marca)] max-md:data-[state=active]:shadow-[inset_0_-2.5px_0_var(--marca)]",
         className
       )}
       {...props}
@@ -55,7 +57,7 @@ function TabsTrigger({
 /** La cantidad de una pestaña: en gris, al lado del nombre, sin etiqueta. */
 function TabCount({ children }: { children: React.ReactNode }) {
   // El espacio separa el número del nombre para el lector de pantalla («Miembros 6»); en pantalla lo separa el gap.
-  return <>{" "}<span data-slot="tab-count" className="font-normal text-[var(--t3)]">{children}</span></>
+  return <>{" "}<span data-slot="tab-count" className="font-normal text-[var(--t3)] max-md:font-medium">{children}</span></>
 }
 
 function TabsContent({
