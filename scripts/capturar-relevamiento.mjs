@@ -89,8 +89,12 @@ export async function openBoard(context, canvasUrl, entry) {
 export async function openApp(context, appUrl, entry) {
   const { app } = entry;
   await installApiMocks(context, app.responses, app.userFixture);
-  // `hang`: una ruta de la API que nunca responde (el estado «cargando» o «enviando»).
-  if (app.hang) await context.route(`**${app.hang}`, () => new Promise(() => {}));
+  // `hang`: una ruta de la API que nunca responde (el estado «cargando» o «enviando»). Con `{ path, method }`, solo ese
+  // método: la ficha se lee y lo que queda colgado es el guardado.
+  if (app.hang) {
+    const hang = typeof app.hang === "string" ? { path: app.hang } : app.hang;
+    await context.route(`**${hang.path}`, (route) => !hang.method || route.request().method() === hang.method ? new Promise(() => {}) : route.fallback());
+  }
   const page = await context.newPage();
   await page.goto(new URL(app.path, appUrl).href, { waitUntil: "domcontentloaded" });
   // Un paso puede pedir `waitFor`: esperar un texto antes de hacerlo (por ejemplo, que la dirección figure disponible).

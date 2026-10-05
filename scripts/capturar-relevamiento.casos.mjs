@@ -432,6 +432,28 @@ function r3bCases(root) {
   ];
 }
 
+// R3e · Piezas comunes: el estado «Guardando» de Button («Criterio · Botones», Estados) en una ficha, en el ingreso y en la
+// invitación (que ya tenía su caso, «invitacion-envio»). Lo que se guarda o se manda queda sin respuesta.
+function r3eCases(root) {
+  const saving = (width) => {
+    const app = stageCases(root, "consolidacion/f7").find((entry) => entry.pair === "usuario-error-al-guardar" && entry.viewport.width === width).app;
+    return { ...app, responses: app.responses.filter((item) => item.method !== "PUT"), hang: { path: "/api/users/member-lucia", method: "PUT" },
+      readySelector: "main", readyText: "Guardando…" };
+  };
+  const sending = { path: "/login?returnUrl=%2Fconnect%2Fauthorize", readySelector: "h1", readyText: "Enviando…", hang: { path: "/api/auth/login-code", method: "POST" },
+    actions: [appFill("Correo electrónico", "lucia.fer@gmail.com"), appClick("button", "Enviar código")] };
+  return [
+    ...custom({ id: "usuario-guardando", group: "usuarios", state: "Ficha de Usuario mientras guarda: «Guardando…» con el aro, opacidad 0,85 y del mismo ancho",
+      desktop: { board: "Criterio-Botones", section: "Estados", state: "Ficha de Usuario mientras guarda (Criterio · Botones › Estados: el tablero Usuario no dibuja el guardado)" },
+      phone: { board: "M-Usuario", state: "Ficha de Usuario en el teléfono mientras guarda: el botón de abajo (el tablero no dibuja el guardado)" },
+      app: saving(1440), phoneApp: saving(390) }),
+    ...custom({ id: "ingreso-enviando", group: "ingreso", state: "Ingreso mientras manda el código: «Enviando…» con el aro (Criterio · Diálogos)",
+      desktop: { board: "Ingreso", props: { estado: "Correo", puerta: "Persona" }, state: "Ingreso mientras manda el código (el tablero no dibuja el envío; el estado es el de Criterio · Botones)" },
+      phone: { board: "M-Ingreso", props: { estado: "Correo", puerta: "Persona" }, state: "Ingreso en el teléfono mientras manda el código (el tablero no dibuja el envío)" },
+      app: sending }),
+  ];
+}
+
 export function catalog(root) {
   const rename ={ board: "Cuenta", boardActions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
@@ -450,5 +472,6 @@ export function catalog(root) {
     ...signupCases(root),
     ...extraCases(root),
     ...r3bCases(root),
+    ...r3eCases(root),
   ];
 }
