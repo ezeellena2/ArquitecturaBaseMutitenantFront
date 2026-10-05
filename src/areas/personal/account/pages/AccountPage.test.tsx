@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { delay, HttpResponse, http } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -215,5 +215,33 @@ describe("Mi cuenta", () => {
     await user.click(screen.getByRole("button", { name: "Descartar cambios" }));
     expect(name).toHaveValue("Ana");
   });
-});
 
+  // concurrencia.md (E7): la relectura de fondo de /api/me (otra pestaña, otro dispositivo) trae el nombre que cambió en
+  // otro lado, pero «Tus datos» sigue con lo que se empezó a editar; el guardado manda la versión de eso y sale el 409.
+  it("una relectura de fondo no cambia la versión que manda el guardado de «Tus datos»: sale el 409", async () => {
+    const user = userEvent.setup();
+    let current = consumerWithoutOrganizations;
+    const sent: unknown[] = [];
+    const { queryClient } = renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+    server.use(
+      http.get("/api/me", () => HttpResponse.json(current)),
+      http.put("/api/me", async ({ request }) => {
+        const body = await request.json() as { version: number };
+        sent.push(body);
+        return body.version === current.version ? new HttpResponse(null, { status: 204 })
+          : HttpResponse.json({ code: "General.ConcurrencyConflict" }, { status: 409 });
+      }),
+    );
+    const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
+
+    current = { ...consumerWithoutOrganizations, displayName: "Ana María", version: 43 };
+    await act(() => queryClient.invalidateQueries({ queryKey: ["current-user"] }));
+    await user.clear(name);
+    await user.type(name, "Nombre nuevo");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(name).toHaveValue("Nombre nuevo");
+    expect(sent).toEqual([expect.objectContaining({ displayName: "Nombre nuevo", version: 42 })]);
+  });
+});

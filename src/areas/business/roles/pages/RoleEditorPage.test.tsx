@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -199,6 +199,37 @@ describe("RoleEditorPage", () => {
     await user.click(await screen.findByRole("button", { name: "Salir sin guardar" }));
     await waitFor(() => expect(name).toHaveValue("Nombre actualizado"));
     expect(reads).toBe(2);
+  });
+
+  // concurrencia.md (E7): la relectura de fondo (volver a la pestaña) trae lo que cambió otra persona, pero el formulario
+  // sigue con lo que la persona empezó a editar; el guardado manda la versión de eso y el back responde 409 en vez de
+  // pisar el cambio de la otra persona.
+  it("una relectura de fondo no cambia la versión que manda el guardado: sale el 409 y no pisa lo de la otra persona", async () => {
+    const user = userEvent.setup();
+    let current = role;
+    const sent: Array<{ version: number }> = [];
+    server.use(
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.get("/api/roles/role-custom", () => HttpResponse.json(current)),
+      http.put("/api/roles/role-custom", async ({ request }) => {
+        const body = await request.json() as { version: number };
+        sent.push(body);
+        return body.version === current.version ? new HttpResponse(null, { status: 204 })
+          : HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Otra persona cambió este rol." }, { status: 409 });
+      }),
+    );
+    const { queryClient } = renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
+
+    current = { ...role, description: "Lo cambió otra persona.", version: 5 };
+    await act(() => queryClient.invalidateQueries({ queryKey: ["roles"] }));
+    expect(screen.getByRole("textbox", { name: "Descripción" })).toHaveValue("Ve los miembros. No cambia nada.");
+    await user.clear(name);
+    await user.type(name, "Nombre del borrador");
+    await user.click(screen.getAllByRole("button", { name: "Guardar cambios" })[0]);
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(sent).toEqual([expect.objectContaining({ name: "Nombre del borrador", version: 4 })]);
   });
 
   // B12 (Criterio · Avisos): si se corta la red al guardar, un solo aviso dice qué pasó y «Reintentar» vuelve a

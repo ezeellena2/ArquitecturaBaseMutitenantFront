@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Copy, Globe, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { useController, useForm } from "react-hook-form";
+import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -12,6 +12,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { OrganizationDomainResponse, OrganizationSettingsResponse, UpdateOrganizationSettingsRequest } from "@/shared/api/types";
+import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
@@ -67,8 +68,8 @@ export function SettingsPage() {
 }
 
 /// Configuración (tableros Configuracion y M-Configuracion), como el editor de Roles: los datos con React Hook Form y zod,
-/// y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`. Los dominios se guardan al
-/// momento, desde sus diálogos.
+/// la versión de `useEditForm`, y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`. Los
+/// dominios se guardan al momento, desde sus diálogos.
 function SettingsEditor({ settings, loadError, reload }: {
   settings: OrganizationSettingsResponse;
   loadError: unknown;
@@ -82,7 +83,7 @@ function SettingsEditor({ settings, loadError, reload }: {
   const { phone } = useAppChrome();
   const client = useQueryClient();
   const domains = useQuery({ queryKey: organizationDomainsKey, queryFn: fetchOrganizationDomains, meta: { silent: true } });
-  const form = useForm<SettingsForm>({ resolver: zodResolver(settingsFormSchema), defaultValues: valuesFromSettings(settings) });
+  const { form, version, resetTo, wrote } = useEditForm({ read: settings, toValues: valuesFromSettings, resolver: zodResolver(settingsFormSchema) });
   const { errors } = form.formState;
   const culture = useController({ control: form.control, name: "defaultCulture" });
   const timeZone = useController({ control: form.control, name: "defaultTimeZoneId" });
@@ -93,7 +94,7 @@ function SettingsEditor({ settings, loadError, reload }: {
   // la franja y «¿Salir sin guardar?» antes de irse con cambios.
   const edit = useEditPage({
     isDirty, error: failure,
-    onSeeNew: () => { void reload().then((fresh) => { if (fresh) form.reset(valuesFromSettings(fresh)); setFailure(undefined); }); },
+    onSeeNew: () => { void reload().then((fresh) => { if (fresh) resetTo(fresh); setFailure(undefined); }); },
     onContinueEditing: () => setFailure(undefined),
   });
   const [addingDomain, setAddingDomain] = useState(false);
@@ -119,21 +120,24 @@ function SettingsEditor({ settings, loadError, reload }: {
     setFailure(error);
   }
 
-  // Después de guardar, la ficha queda limpia con lo guardado, aunque la relectura todavía no lo traiga.
-  async function saved(values: SettingsForm) {
+  // Después de guardar, la ficha queda limpia con lo guardado, aunque la relectura todavía no lo traiga; con la relectura,
+  // esa es la nueva base (`useEditForm`).
+  async function saved(values: SettingsForm, sentVersion: number) {
     setFailure(undefined);
     form.reset(values);
     toast.success(t("settings:saved"));
     await client.invalidateQueries({ queryKey: organizationSettingsKey });
+    wrote(sentVersion, client.getQueryData<OrganizationSettingsResponse>(organizationSettingsKey));
   }
 
   const submit = form.handleSubmit((values) => {
     setFailure(undefined);
-    save.mutate({ ...values, version: settings.version }, { onSuccess: () => { void saved(values); }, onError: rejected });
+    save.mutate({ ...values, version }, { onSuccess: () => { void saved(values, version); }, onError: rejected });
   });
 
+  // «Descartar cambios» vuelve a la última lectura de lo guardado, con su versión.
   function discard() {
-    form.reset();
+    resetTo(settings);
     setFailure(undefined);
   }
 

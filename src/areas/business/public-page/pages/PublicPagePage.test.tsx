@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -21,6 +21,32 @@ function api(current: typeof page, calls: string[] = []) {
     http.post("/api/organization/public-page/publish", async ({ request }) => { calls.push(`publish ${JSON.stringify(await request.json())}`); return new HttpResponse(null, { status: 204 }); }),
     http.post("/api/organization/public-page/unpublish", async ({ request }) => { calls.push(`unpublish ${JSON.stringify(await request.json())}`); return new HttpResponse(null, { status: 204 }); }),
   );
+}
+
+// Como el back (concurrencia.md): guarda y publica solo con la versión vigente, si no responde 409, y cada escritura
+// sube la versión. `current` es lo que tiene el servidor: la prueba lo cambia para simular a otra persona.
+function versionedApi(initial: typeof page) {
+  const backend = { current: initial, writes: [] as Array<{ version: number }> };
+  const conflict = () => HttpResponse.json({ code: "General.ConcurrencyConflict", title: "Conflicto" },
+    { status: 409, headers: { "Content-Type": "application/problem+json" } });
+  server.use(
+    http.get("/api/organization/public-page", () => HttpResponse.json(backend.current)),
+    http.put("/api/organization/public-page", async ({ request }) => {
+      const body = await request.json() as { version: number; name: string };
+      backend.writes.push(body);
+      if (body.version !== backend.current.version) return conflict();
+      backend.current = { ...backend.current, name: body.name, version: backend.current.version + 1 };
+      return new HttpResponse(null, { status: 204 });
+    }),
+    http.post("/api/organization/public-page/publish", async ({ request }) => {
+      const body = await request.json() as { version: number };
+      backend.writes.push(body);
+      if (body.version !== backend.current.version) return conflict();
+      backend.current = { ...backend.current, isPublished: true, version: backend.current.version + 1 };
+      return new HttpResponse(null, { status: 204 });
+    }),
+  );
+  return backend;
 }
 
 function subline() {
@@ -286,5 +312,44 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     await waitFor(() => expect(updateBody).toMatchObject({ slug: "grupo-nuevo", version: 8, removeLogo: false,
       contactPhone: { country: "AR", number: "011 4321-5679" } }));
     expect(await screen.findByText("Guardamos la página.")).toBeVisible();
+  });
+
+  // concurrencia.md (E7): la relectura de fondo trae la descripción que cambió otra persona, pero la ficha sigue con lo
+  // que se empezó a editar; el guardado manda la versión de eso y sale el 409 en vez de volver la descripción atrás.
+  it("una relectura de fondo no cambia la versión que manda el guardado: sale el 409 y no pisa lo de la otra persona", async () => {
+    const user = userEvent.setup();
+    const backend = versionedApi(page);
+    const { queryClient } = renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+    const name = await within(await screen.findByRole("region", { name: "Página" })).findByRole("textbox", { name: "Nombre de la página" });
+
+    backend.current = { ...page, description: "Lo cambió otra persona.", version: 9 };
+    await act(() => queryClient.invalidateQueries({ queryKey: ["organization-public-page"] }));
+    await user.clear(name);
+    await user.type(name, "Grupo Delta Norte");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(backend.writes).toEqual([expect.objectContaining({ name: "Grupo Delta Norte", description: "Servicios del grupo", version: 8 })]);
+  });
+
+  // Publicar se aplica al momento y parte de lo que se está editando: su relectura pasa a ser la base, lo escrito se
+  // conserva y «Guardar cambios» no choca con la escritura propia.
+  it("publicar con cambios sin guardar no hace chocar después a «Guardar cambios»", async () => {
+    const user = userEvent.setup();
+    const backend = versionedApi({ ...page, isPublished: false });
+    renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+    const name = await within(await screen.findByRole("region", { name: "Página" })).findByRole("textbox", { name: "Nombre de la página" });
+    await user.clear(name);
+    await user.type(name, "Grupo Delta Norte");
+
+    await user.click(screen.getByRole("switch", { name: "Visible en grupo-delta.plataforma.com" }));
+    expect(await screen.findByText("Publicamos tu página.")).toBeVisible();
+    await waitFor(() => expect(subline()).toHaveTextContent(/^Publicada · Cambios sin guardar$/));
+    expect(name).toHaveValue("Grupo Delta Norte");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Guardamos la página.")).toBeVisible();
+    expect(backend.writes.map((write) => write.version)).toEqual([8, 9]);
+    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
   });
 });

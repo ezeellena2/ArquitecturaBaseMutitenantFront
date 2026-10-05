@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -378,5 +378,34 @@ describe("SettingsPage", () => {
     expect(subline()).toHaveTextContent(/^Cambios sin guardar$/);
     await user.click(screen.getByRole("button", { name: "Descartar cambios" }));
     expect(subline()).toBeNull();
+  });
+
+  // concurrencia.md (E7): la relectura de fondo trae la moneda que cambió otra persona, pero la ficha sigue con lo que se
+  // empezó a editar; el guardado manda la versión de eso y sale el 409 en vez de volver la moneda atrás.
+  it("una relectura de fondo no cambia la versión que manda el guardado: sale el 409 y no pisa lo de la otra persona", async () => {
+    const user = userEvent.setup();
+    let current = settings;
+    const sent: unknown[] = [];
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(current)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.put("/api/organization/settings", async ({ request }) => {
+        const body = await request.json() as typeof settings;
+        sent.push(body);
+        return body.version === current.version ? new HttpResponse(null, { status: 204 })
+          : HttpResponse.json({ code: "General.ConcurrencyConflict", title: "Conflicto" }, { status: 409 });
+      }),
+    );
+    const { queryClient } = renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+    const name = await screen.findByRole("textbox", { name: "Nombre de la organización" });
+
+    current = { ...settings, defaultCurrency: "USD", version: 13 };
+    await act(() => queryClient.invalidateQueries({ queryKey: ["organization-settings"] }));
+    await user.clear(name);
+    await user.paste("Grupo Delta Sur");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(sent).toEqual([{ ...settings, name: "Grupo Delta Sur" }]);
   });
 });

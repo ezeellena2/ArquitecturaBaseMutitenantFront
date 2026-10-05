@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
 import { Shield } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useController, useForm, useWatch } from "react-hook-form";
+import { useController, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { CreateRoleRequest, RoleResponse, RoleScope, UpdateRoleRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
+import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
@@ -105,7 +106,8 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
 
 /// El editor de un rol (tableros Rol y M-Rol): datos sueltos (nombre, «Vale en», descripción) y «Permisos» en grupos
 /// que se abren. Al editar, «Descartar cambios» vuelve a lo guardado sin salir; al crear, «Cancelar» vuelve a la lista
-/// (lienzo v87). El 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» los pone `useEditPage`.
+/// (lienzo v87). La versión que manda el guardado la lleva `useEditForm`; el 409, «Cambios sin guardar», la franja y
+/// «¿Salir sin guardar?» los pone `useEditPage`.
 function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Promise<RoleResponse | undefined> }) {
   const { t } = useTranslation(["roles", "common"]);
   const [searchParams] = useSearchParams();
@@ -114,7 +116,9 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
   const { can } = usePermissions();
   const editable = can("roles.manage") && role?.isSystemRole !== true;
   const schema = useMemo(() => roleFormSchema(t), [t]);
-  const form = useForm<RoleForm, unknown, RoleFormValues>({ resolver: zodResolver(schema), defaultValues: role ? valuesFromRole(role) : valuesForNewRole(searchParams) });
+  const { form, version, resetTo, wrote } = useEditForm<RoleResponse | undefined, RoleForm, RoleFormValues>({
+    read: role, toValues: (read) => read ? valuesFromRole(read) : valuesForNewRole(searchParams), resolver: zodResolver(schema),
+  });
   const { errors } = form.formState;
   const scopeField = useController({ control: form.control, name: "scope" });
   const permissionsField = useController({ control: form.control, name: "permissions" });
@@ -126,7 +130,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
   const edit = useEditPage({
     isDirty,
     error: failure,
-    onSeeNew: () => { void reload?.().then((fresh) => { if (fresh) form.reset(valuesFromRole(fresh)); setFailure(undefined); }); },
+    onSeeNew: () => { void reload?.().then((fresh) => { if (fresh) resetTo(fresh); setFailure(undefined); }); },
     onContinueEditing: () => setFailure(undefined),
   });
 
@@ -153,7 +157,8 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
     else setFailure(error);
   }
 
-  async function saved(id: string, values: RoleFormValues) {
+  // Al editar, la ficha queda limpia con lo guardado y, con la relectura, esa es la nueva base (`useEditForm`).
+  async function saved(id: string, values: RoleFormValues, sentVersion?: number) {
     setFailure(undefined);
     toast.success(t(role ? "roles:updated" : "roles:created", { name: values.name }));
     if (role) form.reset(values);
@@ -162,6 +167,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
       void navigate(`/org/roles/${encodeURIComponent(id)}`, { replace: true });
     }
     await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
+    if (sentVersion !== undefined) wrote(sentVersion, queryClient.getQueryData<RoleResponse>(roleQueryKey(id)));
   }
 
   const submit = form.handleSubmit((values) => {
@@ -173,7 +179,8 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
       companyId: values.scope === "SpecificCompany" ? values.companyId : null,
       permissions: values.permissions,
     };
-    if (role) update.mutate({ id: role.id, request: { ...request, version: role.version } }, { onSuccess: () => { void saved(role.id, values); }, onError: rejected });
+    // Con un rol, el editor arrancó con su lectura: `version` es la de esa lectura.
+    if (role) update.mutate({ id: role.id, request: { ...request, version: version! } }, { onSuccess: () => { void saved(role.id, values, version); }, onError: rejected });
     else create.mutate(request, { onSuccess: (id) => { void saved(id, values); }, onError: rejected });
   });
 
@@ -184,8 +191,10 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
     scopeField.field.onChange(next.scope);
   }
 
+  // «Descartar cambios» vuelve a la última lectura de lo guardado, con su versión.
   function discard() {
-    form.reset();
+    if (role) resetTo(role);
+    else form.reset();
     setFailure(undefined);
   }
 

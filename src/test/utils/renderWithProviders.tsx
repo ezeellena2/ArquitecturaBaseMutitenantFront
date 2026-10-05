@@ -23,7 +23,8 @@ function anonymousAuth(): AuthContextProps {
 
 /// Renderiza con los mismos providers que la app: traducciones y datos.
 /// Cada render entrega un QueryClient nuevo a todos los providers, incluido el catálogo inicial, con los mismos
-/// avisos de error que la app y sin reintentos para que un error llegue derecho a la aserción.
+/// avisos de error que la app y sin reintentos para que un error llegue derecho a la aserción. Devuelve también ese
+/// cliente, para provocar una relectura de fondo, como la de volver a la pestaña (`invalidateQueries`).
 export function renderWithProviders(ui: ReactElement, options?: { as?: CurrentUserFixture }) {
   const queryClient = createQueryClient({ queries: { retry: false }, mutations: { retry: false } });
   if (options?.as) server.use(meHandlerFor(currentUsers[options.as]));
@@ -35,7 +36,7 @@ export function renderWithProviders(ui: ReactElement, options?: { as?: CurrentUs
     );
   }
 
-  return render(ui, { wrapper: Wrapper });
+  return { ...render(ui, { wrapper: Wrapper }), queryClient };
 }
 
 /// Renderiza la app entera en una ruta concreta, con los providers reales. Devuelve también el router, para

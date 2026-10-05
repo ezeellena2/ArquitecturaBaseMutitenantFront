@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Globe } from "lucide-react";
 import { useId, useState } from "react";
-import { useController, useForm, useWatch } from "react-hook-form";
+import { useController, useWatch } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -11,6 +11,7 @@ import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { PublicPageResponse, TenantSlugAvailability, UpdatePublicPageRequest } from "@/shared/api/types";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
+import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Button, buttonVariants } from "@/shared/ui/button";
 import { ImportantNotice } from "@/shared/ui/ImportantNotice";
@@ -112,13 +113,13 @@ export function PublicPagePage() {
 }
 
 /// La página pública de la organización (tableros Pagina-Org y M-Pagina-Org), como el editor de Roles: React Hook Form
-/// con zod, y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`. La publicación se
-/// aplica al momento, sin esperar a «Guardar cambios».
+/// con zod, la versión de `useEditForm`, y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de
+/// `useEditPage`. La publicación se aplica al momento, sin esperar a «Guardar cambios».
 function PublicPageEditor({ page, loadError, reload }: { page: PublicPageResponse; loadError: unknown; reload: () => Promise<PublicPageResponse | undefined> }) {
   const { t } = useTranslation(["publicPage", "common"]);
   const client = useQueryClient();
   const visibleId = useId();
-  const form = useForm<PageForm>({ resolver: zodResolver(pageFormSchema), defaultValues: valuesFromPage(page) });
+  const { form, version, resetTo, wrote } = useEditForm({ read: page, toValues: valuesFromPage, resolver: zodResolver(pageFormSchema) });
   const { errors } = form.formState;
   const slugField = useController({ control: form.control, name: "slug" });
   const phoneField = useController({ control: form.control, name: "contactPhone" });
@@ -131,7 +132,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
   // la franja del formulario y «¿Salir sin guardar?» antes de irse con cambios.
   const edit = useEditPage({
     isDirty, error: failure,
-    onSeeNew: () => { void reload().then((fresh) => { if (fresh) form.reset(valuesFromPage(fresh)); setFailure(undefined); }); },
+    onSeeNew: () => { void reload().then((fresh) => { if (fresh) resetTo(fresh); setFailure(undefined); }); },
     onContinueEditing: () => setFailure(undefined),
   });
   const savedSlug = page.slug ?? "";
@@ -147,10 +148,19 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
   const [blockedInfoOpen, setBlockedInfoOpen] = useState(false);
   const [unpublishOpen, setUnpublishOpen] = useState(false);
   const update = useMutation({ mutationFn: updatePublicPage });
-  // Tablero Pagina-Org: el interruptor de «Publicación» se aplica al momento, sin esperar a «Guardar cambios».
+  // Tablero Pagina-Org: el interruptor de «Publicación» se aplica al momento, sin esperar a «Guardar cambios», sobre la
+  // última lectura; si partió de lo que se está editando, su relectura pasa a ser la base y lo escrito se conserva.
   const publication = useMutation({
-    mutationFn: (published: boolean) => setPublicPagePublished(published, { version: page.version }),
-    onSuccess: async (_result, published) => { toast.success(t(published ? "publicPage:published" : "publicPage:unpublished")); await client.invalidateQueries({ queryKey: publicPageQueryKey }); },
+    mutationFn: async (published: boolean) => {
+      const sentVersion = page.version;
+      await setPublicPagePublished(published, { version: sentVersion });
+      return sentVersion;
+    },
+    onSuccess: async (sentVersion, published) => {
+      toast.success(t(published ? "publicPage:published" : "publicPage:unpublished"));
+      await client.invalidateQueries({ queryKey: publicPageQueryKey });
+      wrote(sentVersion, client.getQueryData<PublicPageResponse>(publicPageQueryKey));
+    },
     onError: (error) => toastActionError(error, t),
   });
 
@@ -176,20 +186,23 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
     setFailure(error);
   }
 
-  async function saved(values: PageForm) {
+  // La ficha queda limpia con lo guardado y, con la relectura, esa es la nueva base (`useEditForm`).
+  async function saved(values: PageForm, sentVersion: number) {
     setFailure(undefined);
     form.reset(values);
     toast.success(t("publicPage:saved"));
     await client.invalidateQueries({ queryKey: publicPageQueryKey });
+    wrote(sentVersion, client.getQueryData<PublicPageResponse>(publicPageQueryKey));
   }
 
   const submit = form.handleSubmit((values) => {
     setFailure(undefined);
-    update.mutate(pageRequest(values, page.version), { onSuccess: () => { void saved(values); }, onError: rejected });
+    update.mutate(pageRequest(values, version), { onSuccess: () => { void saved(values, version); }, onError: rejected });
   });
 
+  // «Descartar cambios» vuelve a la última lectura de lo guardado, con su versión.
   function discard() {
-    form.reset();
+    resetTo(page);
     setFailure(undefined);
   }
 

@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -7,6 +7,7 @@ import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { userQueryKey } from "../api/users";
 import { asPhone } from "@/test/utils/phone";
 
 const ownerRole = { id: "role-owner", name: "Dueño", isSystemRole: true, scope: "Organization" as const, companyId: null };
@@ -61,6 +62,30 @@ function conflictOnCompanies() {
       detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar." }, { status: 409 })),
   );
   return reads;
+}
+
+// Como el back (concurrencia.md): guarda solo con la versión vigente, si no responde 409, y cada escritura sube la
+// versión y deja las empresas que llegaron. `current` es lo que tiene el servidor: la prueba lo cambia para simular a
+// otra persona. `writes` junta lo que llegó.
+function versionedApi(initial: typeof member) {
+  const backend = { current: initial, writes: [] as Array<{ version: number; roleIds: string[]; companies: Array<{ companyId: string; roleIds: string[] }> }> };
+  api(initial);
+  server.use(
+    http.get("/api/users/member-1", () => HttpResponse.json(backend.current)),
+    http.get("/api/roles/paged", ({ request }) => HttpResponse.json(page(new URL(request.url).searchParams.get("scope") === "Organization"
+      ? [{ ...role("role-owner", "Dueño", "Organization"), isSystemRole: true }, role("role-support", "Soporte", "Organization")]
+      : [role("role-company-manager", "Administrador", "AnyCompany"), role("role-seller", "Vendedor", "AnyCompany")]))),
+    http.put("/api/users/member-1", async ({ request }) => {
+      const body = await request.json() as (typeof backend.writes)[number];
+      backend.writes.push(body);
+      if (body.version !== backend.current.version) return HttpResponse.json({ status: 409, code: "General.ConcurrencyConflict", title: "Conflicto",
+        detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar." }, { status: 409 });
+      backend.current = { ...backend.current, version: backend.current.version + 1, companies: body.companies.map((assignment) => ({
+        companyId: assignment.companyId, companyName: company.name, status: "Active" as const, roles: [] })) };
+      return new HttpResponse(null, { status: 204 });
+    }),
+  );
+  return backend;
 }
 
 async function addCompanyWithConflict(user: ReturnType<typeof userEvent.setup>) {
@@ -579,5 +604,75 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Sumar empresa" })).not.toBeInTheDocument());
     expect(screen.queryAllByRole("alert", { hidden: true })).toHaveLength(0);
+  });
+
+  // concurrencia.md (E7): la relectura de fondo trae los roles que sumó otra persona, pero la ficha sigue con lo que se
+  // empezó a editar; el guardado manda la versión de eso y sale el 409 en vez de sacarle el rol nuevo.
+  it("una relectura de fondo no cambia la versión que manda «Guardar cambios»: sale el 409 y no pisa lo de la otra persona", async () => {
+    const user = userEvent.setup();
+    const backend = versionedApi(member);
+    const { queryClient } = renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+
+    backend.current = { ...member, roles: [ownerRole, { ...ownerRole, id: "role-support", name: "Soporte", isSystemRole: false }], version: 3 };
+    await act(() => queryClient.invalidateQueries({ queryKey: userQueryKey("member-1") }));
+    await open(user, screen.getByRole("combobox", { name: "Estado" }));
+    await user.click(await screen.findByRole("option", { name: /Deshabilitado/ }));
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    await user.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Deshabilitar y guardar" }));
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(backend.writes).toEqual([{ isActive: false, roleIds: ["role-owner"], companies: [], version: 2 }]);
+  });
+
+  // concurrencia.md (E7): «Cambiar roles» de una empresa arranca con lo que había al abrirlo; si mientras tanto otra
+  // persona le cambió esos roles, guardar da 409 en el diálogo en vez de pisarlos.
+  it("«Cambiar roles» de una empresa manda la versión de cuando se abrió", async () => {
+    const user = userEvent.setup();
+    const withDelta = { ...member, companies: [{ companyId: company.id, companyName: company.name, status: "Active" as const, roles: [] as typeof ownerRole[] }] };
+    const backend = versionedApi(withDelta);
+    const { queryClient } = renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+    await open(user, within(screen.getByRole("region", { name: "Empresas" })).getByRole("button", { name: "Acciones de Delta S.A." }));
+    await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
+    const dialog = await screen.findByRole("dialog", { name: "Roles en Delta S.A." });
+
+    const administrator = { ...ownerRole, id: "role-company-manager", name: "Administrador", isSystemRole: false };
+    backend.current = { ...withDelta, companies: [{ ...withDelta.companies[0], roles: [administrator] }], version: 3 };
+    await act(() => queryClient.invalidateQueries({ queryKey: userQueryKey("member-1") }));
+    await open(user, within(dialog).getByRole("button", { name: "Roles en la empresa" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Vendedor" }));
+    await user.keyboard("{Escape}");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent("Otra persona cambió esto. Revisá la versión más reciente antes de guardar.");
+    expect(backend.writes).toEqual([{ roleIds: ["role-owner"], companies: [{ companyId: company.id, roleIds: ["role-seller"] }], version: 2 }]);
+  });
+
+  // Lo que se guarda al momento sobre la misma persona (sumar una empresa) parte de lo que se está editando: su relectura
+  // pasa a ser la base, el acceso a medio editar se conserva y «Guardar cambios» no choca con la escritura propia.
+  it("sumar una empresa con el acceso a medio editar no hace chocar después a «Guardar cambios»", async () => {
+    const user = userEvent.setup();
+    const backend = versionedApi(member);
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
+    await user.keyboard("{Escape}");
+
+    await user.click(screen.getByRole("button", { name: "Sumar empresa" }));
+    const dialog = await screen.findByRole("dialog", { name: "Sumar empresa" });
+    await open(user, within(dialog).getByRole("combobox", { name: "Empresa" }));
+    await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
+    await user.click(within(dialog).getByRole("button", { name: "Sumar" }));
+    expect(await screen.findByText("Sumamos a Lucía Fernández a Delta S.A.")).toBeVisible();
+    await waitFor(() => expect(within(screen.getByRole("region", { name: "Empresas" })).getByText("Delta S.A.")).toBeVisible());
+    expect(subline("Lucía Fernández")).toHaveTextContent(/Cambios sin guardar/);
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Guardamos los cambios de Lucía Fernández.")).toBeVisible();
+    expect(backend.writes.map((write) => write.version)).toEqual([2, 3]);
+    expect(backend.writes[1]).toMatchObject({ roleIds: ["role-owner", "role-support"], companies: [{ companyId: company.id, roleIds: [] }] });
+    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
   });
 });

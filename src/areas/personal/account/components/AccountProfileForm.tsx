@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UserRound } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { useController, useForm } from "react-hook-form";
+import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -11,6 +11,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { MeResponse } from "@/shared/api/types";
+import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { changeCulture } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
@@ -23,9 +24,10 @@ import { Page } from "@/shared/ui/Page";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { updateMe } from "../api/account";
 
-/// «Tus datos» no tiene datos obligatorios: el nombre vacío se guarda como «sin nombre». La versión es la de lo que se
-/// cargó y se conserva hasta guardar o descartar: después de un 409, el próximo guardado vuelve a dar 409.
-const profileFormSchema = z.object({ displayName: z.string(), culture: z.string(), timeZoneId: z.string(), version: z.number() });
+/// «Tus datos» no tiene datos obligatorios: el nombre vacío se guarda como «sin nombre». La versión la lleva `useEditForm`:
+/// es la de lo que se cargó y se conserva hasta guardar, «Ver lo nuevo» o descartar; después de un 409, el próximo
+/// guardado vuelve a dar 409.
+const profileFormSchema = z.object({ displayName: z.string(), culture: z.string(), timeZoneId: z.string() });
 type ProfileForm = z.infer<typeof profileFormSchema>;
 
 // Los errores de validación del back, en PascalCase o en camelCase, a su campo.
@@ -34,15 +36,15 @@ const serverFields: Record<string, keyof ProfileForm> = {
 };
 
 function valuesFromAccount(account: MeResponse): ProfileForm {
-  return { displayName: account.displayName ?? "", culture: account.culture, timeZoneId: account.timeZoneId, version: account.version ?? 0 };
+  return { displayName: account.displayName ?? "", culture: account.culture, timeZoneId: account.timeZoneId };
 }
 
-/// «Tus datos» de Mi cuenta (tableros Cuenta y M-Cuenta), como el editor de Roles: React Hook Form con zod, y el 409,
-/// «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`.
+/// «Tus datos» de Mi cuenta (tableros Cuenta y M-Cuenta), como el editor de Roles: React Hook Form con zod, la versión de
+/// `useEditForm`, y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`.
 export function AccountProfileForm({ account, children }: { account: MeResponse; children?: ReactNode }) {
   const { t } = useTranslation("account");
   const queryClient = useQueryClient();
-  const form = useForm<ProfileForm>({ resolver: zodResolver(profileFormSchema), defaultValues: valuesFromAccount(account) });
+  const { form, version, resetTo, wrote } = useEditForm({ read: account, toValues: valuesFromAccount, resolver: zodResolver(profileFormSchema) });
   const { errors, isDirty } = form.formState;
   const culture = useController({ control: form.control, name: "culture" });
   const timeZone = useController({ control: form.control, name: "timeZoneId" });
@@ -50,11 +52,12 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   const [reloadFailure, setReloadFailure] = useState<unknown>();
 
   // La relectura va por TanStack Query y, como /api/me, en silencio: si falla, lo dice la franja (también sin conexión,
-  // con apiErrorMessage, porque es una consulta y el MutationCache no la avisó), una sola vez.
-  async function reload() {
+  // con apiErrorMessage, porque es una consulta y el MutationCache no la avisó), una sola vez. `adopt` le pasa la lectura
+  // al formulario: «Ver lo nuevo» reinicia con ella y, después de guardar, es la nueva base.
+  async function reload(adopt: (fresh: MeResponse) => void) {
     try {
       const fresh = await queryClient.fetchQuery({ queryKey: currentUserQueryKey, queryFn: fetchCurrentUser, staleTime: 0, meta: { silent: true, blocksView: true } });
-      form.reset(valuesFromAccount(fresh));
+      adopt(fresh);
       setFailure(undefined);
       setReloadFailure(undefined);
       await changeCulture(fresh.culture);
@@ -62,12 +65,16 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
     } catch (error) { setReloadFailure(error); return false; }
   }
   // El 409 en su cartel, «Cambios sin guardar» en la banda, el error en la franja y «¿Salir sin guardar?».
-  const edit = useEditPage({ isDirty, error: failure, onSeeNew: () => { void reload(); }, onContinueEditing: () => setFailure(undefined) });
+  const edit = useEditPage({ isDirty, error: failure, onSeeNew: () => { void reload(resetTo); }, onContinueEditing: () => setFailure(undefined) });
   // Por TanStack Query, como toda escritura: los términos nuevos (403) abren la aceptación también desde acá, y la
-  // relectura va en onSuccess para que «Reintentar» (sin conexión) termine igual que un guardado al primer intento.
+  // relectura va en onSuccess para que «Reintentar» (sin conexión) termine igual que un guardado al primer intento. La
+  // ficha queda limpia con lo guardado y, con la relectura, esa es la nueva base.
   const update = useMutation({
-    mutationFn: (values: ProfileForm) => updateMe({ ...values, displayName: values.displayName.trim() || null }),
-    onSuccess: async () => { if (await reload()) toast.success(t("saved")); },
+    mutationFn: (request: ProfileForm & { version: number | undefined }) => updateMe({ ...request, displayName: request.displayName.trim() || null }),
+    onSuccess: async (_result, { version: sentVersion, ...values }) => {
+      form.reset(values);
+      if (await reload((fresh) => { if (sentVersion !== undefined) wrote(sentVersion, fresh); })) toast.success(t("saved"));
+    },
   });
 
   function rejected(error: unknown) {
@@ -78,11 +85,12 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   const submit = form.handleSubmit((values) => {
     setFailure(undefined);
     setReloadFailure(undefined);
-    update.mutate(values, { onError: rejected });
+    update.mutate({ ...values, version }, { onError: rejected });
   });
 
+  // «Descartar cambios» vuelve a la última lectura de lo guardado, con su versión.
   function discard() {
-    form.reset();
+    resetTo(account);
     setFailure(undefined);
     setReloadFailure(undefined);
   }

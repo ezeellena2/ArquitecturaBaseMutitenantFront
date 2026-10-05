@@ -253,7 +253,7 @@ src/
 │   │   │   │   ├── deletion.ts                      POST /api/me/deletion: motivo + ReauthTicket, con useIdempotentMutation
 │   │   │   │   └── dataExport.ts                    [E10] POST /api/me/data-export, con useIdempotentMutation
 │   │   │   ├── components/
-│   │   │   │   ├── AccountProfileForm.tsx           «Tus datos»: nombre, idioma y región, y zona, en tres columnas; React Hook Form con zod y useEditPage
+│   │   │   │   ├── AccountProfileForm.tsx           «Tus datos»: nombre, idioma y región, y zona, en tres columnas; React Hook Form con zod, useEditForm y useEditPage
 │   │   │   │   ├── LoginMethodsTable.tsx            los métodos de ingreso en su lista, con «Principal» o «Sin verificar» en la segunda línea y su ⋮ (verificar, quitar, hacer principal)
 │   │   │   │   ├── LoginMethodsTable.test.tsx       tests de LoginMethodsTable
 │   │   │   │   ├── VerifyLoginMethodDialog.tsx      verificar un método sin verificar: el diálogo de shared/account/AddLoginMethodDialog
@@ -295,7 +295,7 @@ src/
 │   │   │   └── pages/
 │   │   │       ├── RolesPage.tsx                    /org/roles: el listado de referencia (usePagedQuery, FilterBar, DataTable y Pagination)
 │   │   │       ├── RolesPage.test.tsx
-│   │   │       ├── RoleEditorPage.tsx               /org/roles/nuevo y /org/roles/:id: datos sueltos (nombre, «Vale en», descripción) y «Permisos» en grupos que se abren; React Hook Form con zod, useEditPage y ReadOnlyField; al editar, «Descartar cambios», y al crear, «Cancelar»
+│   │   │       ├── RoleEditorPage.tsx               /org/roles/nuevo y /org/roles/:id: datos sueltos (nombre, «Vale en», descripción) y «Permisos» en grupos que se abren; React Hook Form con zod, useEditForm, useEditPage y ReadOnlyField; al editar, «Descartar cambios», y al crear, «Cancelar»
 │   │   │       └── RoleEditorPage.test.tsx
 │   │   ├── users/                                   [E6]
 │   │   │   ├── api/users.ts                         /api/users; invitar con POST /api/users/invitations (reenviar y revocar en /api/users/invitations/{id})
@@ -313,7 +313,7 @@ src/
 │   │   │   └── pages/
 │   │   │       ├── UsersPage.tsx                    /org/usuarios: filtros, tabla e «Invitar usuario» (InviteUserDialog)
 │   │   │       ├── UsersPage.test.tsx
-│   │   │       ├── UserDetailPage.tsx               /org/usuarios/:id: estado y roles de la organización y las empresas como lista con ⋮ y diálogos chicos (UserCompanyDialog); useEditPage
+│   │   │       ├── UserDetailPage.tsx               /org/usuarios/:id: estado y roles de la organización y las empresas como lista con ⋮ y diálogos chicos (UserCompanyDialog); useEditForm y useEditPage
 │   │   │       ├── UserDetailPage.test.tsx          tests de UserDetailPage
 │   │   │       └── UserDetailCompanyAssignments.test.tsx las empresas de la ficha: sumar una, cambiar sus roles y desvincularla
 │   │   ├── companies/                               [E6]
@@ -344,7 +344,7 @@ src/
 │   │   │   ├── api/settings.ts                      /api/organization/settings y /api/organization/settings/domains: los datos de la organización y sus dominios de correo (agregar, verificar y quitar)
 │   │   │   ├── components/AddDomainDialog.tsx       «Agregar dominio»: React Hook Form con zod; se monta solo mientras está abierto
 │   │   │   └── pages/
-│   │   │       ├── SettingsPage.tsx                 nombre, idioma y región, zona y moneda predeterminados (useEditPage), y los dominios de correo con su estado y los correos administrados
+│   │   │       ├── SettingsPage.tsx                 nombre, idioma y región, zona y moneda predeterminados (useEditForm y useEditPage), y los dominios de correo con su estado y los correos administrados
 │   │   │       └── SettingsPage.test.tsx            tests de SettingsPage
 │   │   ├── audit/                                   [E6]
 │   │   │   ├── api/audit.ts                         GET /api/organization/audit (por cursor) y /api/organization/audit/actors (el filtro «Quién»)
@@ -517,6 +517,8 @@ src/
 │   │   ├── useDebouncedValue.test.tsx               tests de useDebouncedValue
 │   │   ├── useEditPage.tsx                          lo común de una pantalla que edita algo que ya existe: «Cambios sin guardar», el cartel del 409, la franja del error de guardado y «¿Salir sin guardar?»
 │   │   ├── useEditPage.test.tsx                     tests de useEditPage
+│   │   ├── useEditForm.ts                           el formulario de esa pantalla: arranca con lo guardado y manda la versión de la lectura de la que partió; una relectura de fondo no la cambia
+│   │   ├── useEditForm.test.tsx                     tests de useEditForm
 │   │   ├── useFilters.ts                            [E0] de la base
 │   │   ├── useFilters.test.tsx                      tests de useFilters
 │   │   ├── useQueryUpdate.ts                        [E0] de la base
@@ -726,7 +728,7 @@ src/
     │   ├── currentUsers.ts                          [E3] fixtures: persona sin/con organizaciones, empresa admin/sin permisos y operador
     │   └── currentUsers.test.tsx                    tests de currentUsers
     └── utils/
-        ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]
+        ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]; devuelve el QueryClient, para una relectura de fondo [E7]
         ├── renderWithProviders.test.tsx             tests de renderWithProviders
         ├── isolation.ts                             resetBetweenTests: lo que una prueba deja en módulos compartidos (el bloqueo de la vista, los avisos) no lo ve la siguiente
         ├── isolation.test.tsx                       tests de isolation

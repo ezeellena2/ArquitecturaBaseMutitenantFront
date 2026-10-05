@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
 import { Building2, Settings2, Trash2, UserRound } from "lucide-react";
 import { useRef, useState } from "react";
-import { useController, useForm } from "react-hook-form";
+import { useController } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ import { actionErrorMessage, isNotFoundError, toastActionError } from "@/shared/
 import type { OrganizationUserResponse, UpdateOrganizationUserRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
+import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
@@ -47,8 +48,9 @@ type AccessForm = z.infer<typeof accessFormSchema>;
 type UserState = OrganizationUserResponse["state"];
 /// De dónde salió un guardado: su error va en la franja de la ficha o en la del diálogo, arriba de sus botones.
 type SaveOrigin = "page" | "dialog";
-/// «Sumar empresa» o «Cambiar roles» de una empresa; `returnFocusTo`, el ⋮ que lo abrió.
-type CompanyDialogState = { mode: "add" | "roles"; assignment: CompanyAssignment; returnFocusTo?: HTMLElement | null };
+/// «Sumar empresa» o «Cambiar roles» de una empresa; `returnFocusTo`, el ⋮ que lo abrió. `version` es la de la ficha al
+/// abrirlo: el diálogo arranca con lo de ese momento y, si mientras tanto otra persona cambió algo, guardar da 409.
+type CompanyDialogState = { mode: "add" | "roles"; assignment: CompanyAssignment; version: number; returnFocusTo?: HTMLElement | null };
 
 interface SaveVariables {
   request: UpdateOrganizationUserRequest;
@@ -85,8 +87,8 @@ export function UserDetailPage() {
 }
 
 /// La ficha de una persona (tableros Usuario y M-Usuario), como el editor de Roles: el acceso con React Hook Form y zod,
-/// y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`. Las empresas se guardan al
-/// momento, desde su diálogo o el ⋮, y conservan lo que se está editando del acceso.
+/// la versión de `useEditForm`, y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`. Las
+/// empresas se guardan al momento, desde su diálogo o el ⋮, y conservan lo que se está editando del acceso.
 function UserDetail({ memberId, member, reload }: { memberId: string; member: OrganizationUserResponse; reload: () => Promise<OrganizationUserResponse | undefined> }) {
   const { t } = useTranslation(["users", "common"]);
   const { data: currentUser } = useCurrentUser();
@@ -98,7 +100,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const navigate = useNavigate();
   const { phone } = useAppChrome();
   const [sheet, setSheet] = useState<"state" | "roles" | null>(null);
-  const form = useForm<AccessForm>({ resolver: zodResolver(accessFormSchema), defaultValues: savedAccess(member) });
+  const { form, version, resetTo, wrote } = useEditForm({ read: member, toValues: savedAccess, resolver: zodResolver(accessFormSchema) });
   const isActiveField = useController({ control: form.control, name: "isActive" });
   const roleIdsField = useController({ control: form.control, name: "roleIds" });
   const current: AccessForm = { isActive: isActiveField.field.value, roleIds: roleIdsField.field.value };
@@ -121,7 +123,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   // y «¿Salir sin guardar?» antes de irse con cambios.
   const edit = useEditPage({
     isDirty, error: failure?.error,
-    onSeeNew: () => { void reload().then((fresh) => { if (fresh) form.reset(savedAccess(fresh)); setFailure(undefined); }); },
+    onSeeNew: () => { void reload().then((fresh) => { if (fresh) resetTo(fresh); setFailure(undefined); }); },
     onContinueEditing: () => setFailure(undefined),
     errorMessage: (error) => userErrorMessage(error, t, { self, action: failure?.action ?? "save" }),
   });
@@ -135,13 +137,15 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const refresh = () => Promise.all([client.invalidateQueries({ queryKey: userQueryKey(memberId) }), client.invalidateQueries({ queryKey: usersQueryRoot })]);
   const save = useMutation({
     mutationFn: ({ request }: SaveVariables) => updateUser(memberId, request),
-    onSuccess: async (_result, { message, access }) => {
+    // Lo guardado (el acceso, o las empresas sin tocar lo que se está editando) pasa a ser la base con la relectura.
+    onSuccess: async (_result, { request, message, access }) => {
       setFailure(undefined);
       setDialogFailure(undefined);
       if (access) form.reset(access);
       setCompanyDialog(null);
       toast.success(sentence(message));
       await refresh();
+      if (request.version != null) wrote(request.version, client.getQueryData<OrganizationUserResponse>(userQueryKey(memberId)));
     },
     onError: (error, { origin }) => {
       if (origin !== "dialog") { setFailure({ error, action: "save" }); return; }
@@ -181,7 +185,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   function saveAccess(values: AccessForm) {
     setFailure(undefined);
     save.mutate({
-      request: { ...(isMember ? { isActive: values.isActive } : {}), roleIds: values.roleIds, companies: changeableAssignments, version: member.version },
+      request: { ...(isMember ? { isActive: values.isActive } : {}), roleIds: values.roleIds, companies: changeableAssignments, version },
       message: t("users:detail.messages.saved", { name: displayName }), origin: "page", access: values,
     });
   }
@@ -192,20 +196,21 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     else saveAccess(values);
   });
 
-  // Las empresas se guardan al momento, desde el diálogo o el ⋮: no esperan a «Guardar cambios».
-  function saveCompanies(assignments: CompanyAssignment[], message: string, origin: SaveOrigin) {
+  // Las empresas se guardan al momento, desde el diálogo o el ⋮: no esperan a «Guardar cambios». El ⋮ actúa sobre la
+  // última lectura; el diálogo, sobre la de cuando se abrió.
+  function saveCompanies(assignments: CompanyAssignment[], message: string, origin: SaveOrigin, sentVersion = member.version) {
     if (origin === "dialog") setDialogFailure(undefined); else setFailure(undefined);
-    save.mutate({ request: { roleIds: organizationRoleIds(member), companies: assignments, version: member.version }, message, origin });
+    save.mutate({ request: { roleIds: organizationRoleIds(member), companies: assignments, version: sentVersion }, message, origin });
   }
 
-  function saveCompanyDialog(mode: CompanyDialogState["mode"], assignment: CompanyAssignment) {
+  function saveCompanyDialog({ mode, version: openedVersion }: CompanyDialogState, assignment: CompanyAssignment) {
     const name = companyName(assignment.companyId);
     if (mode === "add") {
-      saveCompanies([...changeableAssignments, assignment], t("users:detail.messages.companyAdded", { name: displayName, company: name }), "dialog");
+      saveCompanies([...changeableAssignments, assignment], t("users:detail.messages.companyAdded", { name: displayName, company: name }), "dialog", openedVersion);
       return;
     }
     saveCompanies(changeableAssignments.map((item) => item.companyId === assignment.companyId ? assignment : item),
-      t("users:detail.messages.companyRolesSaved", { company: name }), "dialog");
+      t("users:detail.messages.companyRolesSaved", { company: name }), "dialog", openedVersion);
   }
 
   function openCompanyDialog(next: CompanyDialogState) {
@@ -223,12 +228,13 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     if (isDirty) return;
     void refresh().then(() => {
       const fresh = client.getQueryData<OrganizationUserResponse>(userQueryKey(memberId));
-      if (fresh) form.reset(savedAccess(fresh));
+      if (fresh) resetTo(fresh);
     });
   }
 
+  // «Descartar cambios» vuelve a la última lectura de lo guardado, con su versión.
   function discard() {
-    form.reset();
+    resetTo(member);
     setFailure(undefined);
   }
 
@@ -318,7 +324,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
 
         <Section title={t("users:detail.companyAccess")} action={editable ? { label: t("users:detail.addCompany"),
           disabled: !companies.data || activeCompanies.every((company) => assignedCompanyIds.has(company.id)) || save.isPending,
-          onClick: () => openCompanyDialog({ mode: "add", assignment: { companyId: "", roleIds: [] } }) } : undefined}>
+          onClick: () => openCompanyDialog({ mode: "add", assignment: { companyId: "", roleIds: [] }, version: member.version }) } : undefined}>
             {member.companies.length === 0 ? <p className="p-4 text-[13px] text-[var(--t2)] md:px-5">{t("users:detail.noCompanies")}</p> : <List label={t("users:detail.companyAccess")}>
               {member.companies.map((company) => {
                 const preserved = preservedCompanyIds.has(company.companyId);
@@ -328,7 +334,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
                   detail={preserved ? <>{roleNames}<Separator />{t("users:detail.companyInactive")}</> : roleNames}>
                   {editable && !preserved ? <RowActions label={t("users:detail.companyActions", { name: company.companyName })} actions={[
                     { label: t("users:detail.changeCompanyRoles"), accessibleName: t("users:detail.changeCompanyRoles"), icon: Settings2,
-                      onSelect: (trigger) => openCompanyDialog({ mode: "roles", assignment, returnFocusTo: trigger }) },
+                      onSelect: (trigger) => openCompanyDialog({ mode: "roles", assignment, version: member.version, returnFocusTo: trigger }) },
                     { label: t("users:detail.removeCompanyAction"), accessibleName: t("users:detail.removeCompanyAction"), icon: Trash2, destructive: true,
                       onSelect: () => saveCompanies(changeableAssignments.filter((item) => item.companyId !== company.companyId), t("users:detail.messages.companyRemoved", { name: displayName, company: company.companyName }), "page") },
                   ]} /> : null}
@@ -352,7 +358,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     {companyDialog ? <UserCompanyDialog mode={companyDialog.mode} assignment={companyDialog.assignment} companyName={companyName(companyDialog.assignment.companyId)}
       companies={activeCompanies.filter((company) => !assignedCompanyIds.has(company.id))} roles={companyRoles} pending={save.isPending} error={dialogError}
       returnFocusTo={companyDialog.returnFocusTo} onEdit={() => setDialogFailure(undefined)} onClose={closeCompanyDialog}
-      onSave={(assignment) => saveCompanyDialog(companyDialog.mode, assignment)} /> : null}
+      onSave={(assignment) => saveCompanyDialog(companyDialog, assignment)} /> : null}
     <ConfirmDialog open={confirmation !== null} onOpenChange={(open) => { if (!open) setConfirmAction(null); }} destructive
       title={confirmation?.title ?? ""} description={confirmation?.description} confirmLabel={confirmation?.label ?? ""}
       onConfirm={() => confirmation?.run()} />
