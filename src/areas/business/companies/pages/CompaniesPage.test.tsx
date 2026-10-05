@@ -58,7 +58,7 @@ describe("CompaniesPage", () => {
     await user.click(await screen.findByRole("menuitemradio", { name: /Inactivas/ }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Inactive"));
     expect(router.state.location.search).toContain("status=Inactive");
-  }, 10_000);
+  });
 
   it("muestra 50 empresas cuando la URL pide una página de 50", async () => {
     const companies = Array.from({ length: 50 }, (_item, index) => ({ ...company, id: `company-${index + 1}`, name: `Empresa ${index + 1}`, taxId: index === 49 ? null : company.taxId }));
@@ -77,7 +77,7 @@ describe("CompaniesPage", () => {
     expect(screen.getByText(/50 empresas/)).toBeVisible();
     expect(screen.getByText("Sin CUIT")).toHaveAttribute("data-slot", "cell-detail");
     expect(container.querySelector("table")).toBeVisible();
-  }, 10_000);
+  });
 
   it("crea una empresa como el tablero: Nombre y CUIT, y «Zona de negocio» con «La de la organización»", async () => {
     const bodies: unknown[] = [];
@@ -124,7 +124,7 @@ describe("CompaniesPage", () => {
     await user.paste("30712345671");
     await user.click(within(again).getByRole("button", { name: "Crear empresa" }));
     await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Delta Norte S.A.", taxIdType: "AR-CUIT", taxIdNumber: "30712345671", timeZoneId: null }));
-  }, 15_000);
+  });
 
   // «Criterio · Botones»: «Crear empresa» no se apaga con el CUIT mal; no manda nada y el campo dice qué corregir.
   it("con el CUIT mal, «Crear empresa» sigue activo, no manda nada y el campo dice qué corregir", async () => {
@@ -175,7 +175,7 @@ describe("CompaniesPage", () => {
     expect(following(within(dialog).getByRole("combobox", { name: "Zona de negocio" }), alert)).toBe(true);
     expect(following(alert, within(dialog).getByRole("button", { name: "Cancelar" }))).toBe(true);
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
-  }, 10_000);
+  });
 
   it("inactiva una empresa con su versión y confirmación", async () => {
     let requestBody: unknown;
@@ -202,5 +202,5 @@ describe("CompaniesPage", () => {
 
     await waitFor(() => expect(requestBody).toEqual({ status: "Inactive", version: 3 }));
     expect(await screen.findByText("Inactivamos Delta S.A.")).toBeVisible();
-  }, 10_000);
+  });
 });

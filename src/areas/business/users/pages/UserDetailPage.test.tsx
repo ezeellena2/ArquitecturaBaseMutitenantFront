@@ -321,7 +321,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
 
     await waitFor(() => expect(put).toEqual([{ roleIds: ["role-owner"], companies: [{ companyId: company.id, roleIds: ["role-company-manager"] }], version: 2 }]));
     expect(await screen.findByText("Sumamos a Lucía Fernández a Delta S.A.")).toBeVisible();
-  }, 10_000);
+  });
 
   it("cada empresa es una fila con sus roles y el ⋮ «Cambiar roles» y «Quitar de la empresa»", async () => {
     const user = userEvent.setup();
@@ -359,7 +359,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
       { status: 409, code: "General.ConcurrencyConflict", title: "Conflicto", detail: "La ficha cambió." }, { status: 409 })));
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     expect(await screen.findByText(/Otra persona cambió esto mientras lo editabas/)).toBeVisible();
-  }, 10_000);
+  });
 
   // Tablero Usuario («Lucía (vos)»): el back dice lo mismo por cualquier camino (decisión 29); si la última Dueña se
   // saca el rol ella misma, la franja le dice qué hacer.
@@ -378,7 +378,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de quitártelo.");
     expect(screen.queryByText("Tiene que quedar al menos un Dueño activo.")).not.toBeInTheDocument();
-  }, 10_000);
+  });
 
   // Tablero Usuario («Lucía (vos)»): si la última Dueña se quita de la organización, la franja de la ficha (no el aviso de
   // abajo) le dice que antes le dé el rol a otra persona.
@@ -399,7 +399,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(await within(screen.getByRole("main")).findByRole("alert")).toHaveTextContent(leaving);
     expect(within(screen.getByRole("region", { name: /^Notificaciones/ })).queryByText(leaving)).not.toBeInTheDocument();
     expect(screen.queryByText("Tiene que quedar al menos un Dueño activo.")).not.toBeInTheDocument();
-  }, 10_000);
+  });
 
   // Tableros Usuario y Avisos: con cambios, un enlace del menú pregunta «¿Salir sin guardar?».
   it("con cambios, salir por el menú pregunta «¿Salir sin guardar?»", async () => {
@@ -416,7 +416,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await user.click(screen.getByRole("link", { name: "Empresas" }));
     expect(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).toBeVisible();
     expect(router.state.location.pathname).toBe("/org/usuarios/member-1");
-  }, 10_000);
+  });
 
   // Después de un 409 en un diálogo, la ficha quedó vieja: al cerrarlo se vuelve a leer, salvo que haya cambios sin guardar
   // (esos se conservan y el próximo «Guardar cambios» muestra el cartel del 409 con «Ver lo nuevo»).
@@ -431,7 +431,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Sumar empresa" })).not.toBeInTheDocument());
     await waitFor(() => expect(reads.user).toBeGreaterThan(before));
-  }, 10_000);
+  });
 
   it("después de un 409 en el diálogo, con cambios sin guardar, cerrarlo no relee la ficha y conserva lo elegido", async () => {
     const user = userEvent.setup();
@@ -449,7 +449,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(dialog).not.toBeInTheDocument();
     expect(subline("Lucía Fernández")).toHaveTextContent(/Cambios sin guardar/);
     expect(reads.user).toBe(before);
-  }, 10_000);
+  });
 
   // «Criterio · Diálogos»: el error general de un diálogo va arriba de sus botones; el 409 también, una sola vez y sin el
   // cartel de la ficha. Al cerrar el diálogo, no queda nada.
@@ -478,5 +478,5 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Sumar empresa" })).not.toBeInTheDocument());
     expect(screen.queryAllByRole("alert", { hidden: true })).toHaveLength(0);
-  }, 10_000);
+  });
 });

@@ -104,7 +104,7 @@ describe("CompanyDetailPage", () => {
     expect(within(roles).getByText("1 de 1")).toBeVisible();
     expect(within(roles).getByText("Página 1 de 1")).toBeVisible();
     expect(within(roles).getByRole("combobox", { name: /por página/ })).toBeVisible();
-  }, 15_000);
+  });
 
   // Tablero Empresa (v100) y «Criterio · Diálogos»: «Roles de …» y «Agregar miembro» van en el diálogo chico, sin bajada
   // debajo del título, y el campo de roles vacío dice «Sin roles»; «Editar empresa», en el normal.
@@ -135,7 +135,7 @@ describe("CompanyDetailPage", () => {
 
     await user.click(screen.getByRole("button", { name: "Editar empresa" }));
     expect(await screen.findByRole("dialog", { name: "Editar empresa" })).toHaveClass("md:max-w-[560px]");
-  }, 15_000);
+  });
 
   // En el teléfono, las tres son hojas a todo el alto: el cuerpo de los diálogos ocupa lo que sobra y deja los botones
   // abajo, con el título arriba.
@@ -164,7 +164,7 @@ describe("CompanyDetailPage", () => {
     await user.click(screen.getByRole("button", { name: "Editar empresa" }));
     const edit = await screen.findByRole("dialog", { name: "Editar empresa" });
     expect(within(edit).getByRole("textbox", { name: "Nombre" }).closest("[data-slot='dialog-body']")).not.toBeNull();
-  }, 15_000);
+  });
 
   // B3: la tabla de miembros tiene las cuatro columnas del tablero Empresa, en su orden; las acciones, sin rótulo visible.
   it("los miembros van con Miembro, Roles en la empresa, Estado y Acciones, como el tablero", async () => {
@@ -278,7 +278,7 @@ describe("CompanyDetailPage", () => {
     expect(await screen.findByText("Volvimos a sumar a Marcos Giménez. Dale los roles de nuevo.")).toBeVisible();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(statusBodies).toEqual([{ status: "Inactive", version: 8 }, { status: "Active", version: 8 }]);
-  }, 15_000);
+  });
 
   it("la banda dice el estado primero, el CUIT con su máscara y la zona por su nombre", async () => {
     server.use(
@@ -324,7 +324,7 @@ describe("CompanyDetailPage", () => {
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 
     await waitFor(() => expect(requestBody).toEqual({ roleIds: ["role-company-admin"], version: 8 }));
-  }, 10_000);
+  });
 
   // «Criterio · Diálogos» y lienzo v97 (diálogo de roles): el error general del diálogo, también el 409, va en su franja
   // arriba de los botones, una sola vez; la ficha no muestra además el cartel del 409.
@@ -341,7 +341,7 @@ describe("CompanyDetailPage", () => {
     expectAboveButtons(dialog, alert, "Roles en la empresa");
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
     expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
-  }, 10_000);
+  });
 
   // Tablero Empresa (v97): «Tiene que quedar al menos un administrador en la empresa.» en la franja con su ícono, no en
   // dos lugares. Es el texto que manda el back (95d853f): la app no tiene uno propio.
@@ -358,7 +358,7 @@ describe("CompanyDetailPage", () => {
     expect(alert.querySelector("svg")).not.toBeNull();
     expectAboveButtons(dialog, alert, "Roles en la empresa");
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
-  }, 10_000);
+  });
 
   // Después de un 409 en un diálogo, la ficha quedó vieja: al cerrarlo (Cancelar, ✕ o Escape) se vuelve a leer. La ficha
   // de Empresa no tiene cambios sin guardar propios: siempre se relee.
@@ -377,7 +377,7 @@ describe("CompanyDetailPage", () => {
     await waitFor(() => expect(reads.company).toBeGreaterThan(before.company));
     await waitFor(() => expect(reads.members).toBeGreaterThan(before.members));
     expect(screen.queryAllByRole("alert", { hidden: true })).toHaveLength(0);
-  }, 10_000);
+  });
 
   // «Criterio · Botones» y tablero Empresa (v104): «Agregar miembro» nunca se apaga; sin usuario, el campo queda en rojo
   // con «Elegí un usuario.» y se limpia al elegir uno. Vacío, el campo dice «Elegí un usuario de la organización».
@@ -445,5 +445,5 @@ describe("CompanyDetailPage", () => {
 
     await waitFor(() => expect(requestBody).toEqual({ memberId: "member-2", roleIds: [] }));
     expect(idempotencyKey).toMatch(/^[0-9a-f-]{36}$/i);
-  }, 10_000);
+  });
 });
