@@ -172,9 +172,10 @@ export function Page({
           </DropdownMenu> : null}
         </>} />
       {tabList ? <div data-slot="page-tabs" className="border-b border-[var(--borde)] bg-[var(--lado-activo)]">{tabList}</div> : null}
-      {banner}
-      {/* M-Avisos (.ap-cuerpo): debajo de un cartel, el cuerpo con margen arranca a 14 y no a 4. */}
-      <AppBarToolsProvider value={tools}><div className={cn(phoneBodyClasses[phoneBody], banner && phoneBody === "padded" ? "pt-3.5" : null)}>{content}</div></AppBarToolsProvider>
+      {/* M-Avisos (.ap-cuerpo): debajo de un cartel, el cuerpo con margen arranca a 14 y no a 4. Lo decide el cartel que se
+          ve: el de useEditPage es siempre un fragmento, vacío si no hay nada que avisar. */}
+      <div data-slot="page-banner" className="contents">{banner}</div>
+      <AppBarToolsProvider value={tools}><div className={cn(phoneBodyClasses[phoneBody], phoneBody === "padded" ? "[[data-slot=page-banner]:not(:empty)+&]:pt-3.5" : null)}>{content}</div></AppBarToolsProvider>
       {fab ? <Fab label={fab.label} onClick={fab.onClick} to={fab.to} /> : actions ? <FixedActions>{actions}</FixedActions> : null}
     </div>);
   }

@@ -522,7 +522,9 @@ describe("UserDetailPage (tablero Usuario)", () => {
 
       const band = await screen.findByRole("alert");
       expect(band).toHaveTextContent("Tiene que quedar al menos un Dueño activo.");
-      expect(bar.nextElementSibling).toBe(band);
+      // Debajo de la barra, en el lugar del cartel (Page lo envuelve para saber si se ve algo).
+      expect(bar.nextElementSibling).toHaveAttribute("data-slot", "page-banner");
+      expect(bar.nextElementSibling).toContainElement(band);
       expect(band).not.toHaveClass("rounded-xl");
       expect(bar).toHaveTextContent("Cambios sin guardar");
     } finally {

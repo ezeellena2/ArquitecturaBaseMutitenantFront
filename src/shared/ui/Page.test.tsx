@@ -267,8 +267,24 @@ describe("Page", () => {
         <MemoryRouter><Page title="Configuración" banner={<div role="status">{"Otra persona cambió esto"}</div>}><p>{"los datos"}</p></Page></MemoryRouter>
       </AppChromeProvider>);
 
-      expect(screen.getByText("los datos").parentElement).toHaveClass("pt-3.5");
-      expect(screen.getByText("los datos").parentElement).not.toHaveClass("pt-1");
+      // El 14 lo decide el cartel que se ve: el cuerpo lleva la regla «después de un cartel que no está vacío».
+      const body = screen.getByText("los datos").parentElement!;
+      expect(body).toHaveClass("pt-1", "[[data-slot=page-banner]:not(:empty)+&]:pt-3.5");
+      expect(body.previousElementSibling).toHaveAttribute("data-slot", "page-banner");
+      expect(body.previousElementSibling).not.toBeEmptyDOMElement();
+    });
+
+    // useEditPage da siempre un fragmento como cartel (vacío si no hay nada que avisar): vacío, el cuerpo arranca a 4.
+    it("en el teléfono, un cartel vacío no corre el cuerpo", () => {
+      renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+        <MemoryRouter><Page title="Configuración" banner={<>{null}</>}><p>{"los datos"}</p></Page></MemoryRouter>
+      </AppChromeProvider>);
+
+      const body = screen.getByText("los datos").parentElement!;
+      expect(body.previousElementSibling).toHaveAttribute("data-slot", "page-banner");
+      expect(body.previousElementSibling).toBeEmptyDOMElement();
+      expect(body).toHaveClass("pt-1");
+      expect(body).not.toHaveClass("pt-3.5");
     });
 
     it.each([["la compu", false], ["el teléfono", true]] as const)("con un solo grupo va sin la barra de pestañas, en %s", (_, phone) => {
