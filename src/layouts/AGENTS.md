@@ -1,6 +1,5 @@
 # Layouts
 
-Acá va el armazón común de la app y, desde E3, los layouts de cada acceso.
+`AppShell` envuelve la app: las franjas de red y versión nueva, la organización no disponible, la baja pedida y el 403 que bloquea la vista. `PrivateLayoutFrame` arma el marco de los tres accesos (menú lateral, `AdminPanel` y barra en la compu; la app en el teléfono) y `AccountLayout` pone `/cuenta` y `/mas` en el del acceso activo.
 Leé [frontend.md §4 «Errores»](../../docs/architecture/frontend.md#errores), [errores.md](../../docs/rules/errores.md), [pantallas-y-ui.md](../../docs/rules/pantallas-y-ui.md) y el tablero [Avisos](../../docs/design/lienzo/Avisos.dc.html).
-En E1, `AppShell` muestra solo las franjas de red y versión nueva; auth y estados de organización llegan en E3.
-Las rutas de cada área y su menú salen del manifiesto de `navigation/<área>.ts`: un permiso se declara una sola vez.
+Las rutas de cada área y su menú salen del manifiesto de `navigation/<área>.ts`: un permiso se declara una sola vez. Copiá de `navigation/business.ts`.

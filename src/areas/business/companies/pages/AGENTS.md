@@ -1,5 +1,5 @@
 # Pantallas de empresas
 
-Lista y ficha de empresas, con miembros, roles, CUIT, zona horaria y estado.
-Copiá Empresas, M-Empresas, Empresa y M-Empresa del lienzo v64.
-Usá paginado, filtros en URL, diálogos compartidos y versiones recibidas de la API.
+`CompaniesPage` (la lista) y `CompanyDetailPage` (la ficha: la banda con los datos y las pestañas de `../tabs/`).
+Copiá Empresas, M-Empresas, Empresa y M-Empresa del lienzo vigente; el listado, como `roles/pages/RolesPage.tsx`.
+Usá paginado, filtros en URL, los diálogos de `../components/` y las versiones recibidas de la API.
