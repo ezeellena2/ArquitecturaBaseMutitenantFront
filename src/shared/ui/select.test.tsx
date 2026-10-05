@@ -56,4 +56,24 @@ describe("SelectContent · Criterio · Formularios, Desplegable", () => {
     // Como los menús y las listas que se abren (.menu, .o-lst): 10 de radio, el borde de siempre y su sombra larga.
     expect(list).toHaveClass("rounded-[10px]", "border-[var(--borde)]", "shadow-[var(--sombra-menu)]");
   });
+
+  // Tablero Usuario (.o-lst .op .n2 y .d): el nombre y su explicación con interlineado 1,35; la explicación en 12, gris
+  // claro y de 300 como mucho, así la de «Deshabilitado» va en dos líneas.
+  it("lleva la explicación debajo, en gris claro y de 300 como mucho", async () => {
+    const user = userEvent.setup();
+    render(
+      <Select defaultValue="active">
+        <SelectTrigger aria-label="Estado"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="active" description="Entra a la organización y a sus empresas.">{"Activo"}</SelectItem>
+        </SelectContent>
+      </Select>,
+    );
+
+    screen.getByRole("combobox", { name: "Estado" }).focus();
+    await user.keyboard("{Enter}");
+    const explanation = await screen.findByText("Entra a la organización y a sus empresas.");
+    expect(explanation).toHaveClass("text-[12px]", "text-[var(--t3)]", "max-w-[300px]", "whitespace-normal");
+    expect(explanation.parentElement).toHaveClass("leading-[1.35]");
+  });
 });

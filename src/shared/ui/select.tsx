@@ -148,9 +148,11 @@ function SelectItem({
           <CheckIcon className="size-4" />
         </SelectPrimitive.ItemIndicator>
       </span>
-      {description ? <div className="flex flex-col">
+      {/* Tablero Usuario (.o-lst .op .n2 y .d): el nombre y su explicación con interlineado 1,35; la explicación en 12,
+          gris claro y de 300 como mucho (la de «Deshabilitado» va en dos líneas). */}
+      {description ? <div className="flex flex-col leading-[1.35]">
         <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-        <span className="text-[12px] leading-[1.25] text-[var(--t2)]">{description}</span>
+        <span className="max-w-[300px] text-[12px] whitespace-normal text-[var(--t3)]">{description}</span>
       </div> : <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>}
     </SelectPrimitive.Item>
   )
