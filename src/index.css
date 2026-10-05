@@ -194,4 +194,11 @@ body {
   [data-sonner-toast][data-styled="true"] [data-button] { height: auto; padding: 0; background: transparent; color: var(--marca-tx); font-size: 13px; font-weight: 600; }
   [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 24px; height: 24px; transform: none; border: 0; background: transparent; color: var(--t2); }
   [data-sonner-toast][data-styled="true"] [data-close-button] svg { width: 16px; height: 16px; }
+  /* «Error del servidor» (.p-aviso .o-tt): «Copiar código» va debajo del texto, a 6 (el espacio del aviso, 10, menos 4), y
+     la ✕ queda arriba a la derecha. «Reintentar» sigue al lado del texto. */
+  [data-sonner-toast][data-styled="true"].aviso-codigo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; }
+  [data-sonner-toast][data-styled="true"].aviso-codigo [data-icon] { grid-area: 1 / 1; }
+  [data-sonner-toast][data-styled="true"].aviso-codigo [data-content] { grid-area: 1 / 2; }
+  [data-sonner-toast][data-styled="true"].aviso-codigo [data-button] { grid-area: 2 / 2; justify-self: start; margin: -4px 0 0; }
+  [data-sonner-toast][data-styled="true"].aviso-codigo [data-close-button] { grid-area: 1 / 3; }
 }

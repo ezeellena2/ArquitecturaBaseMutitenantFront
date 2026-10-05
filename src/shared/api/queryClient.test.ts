@@ -179,6 +179,8 @@ describe("avisos de las mutaciones", () => {
 
     expect(toastError).toHaveBeenCalledWith("Algo salió mal. Probá de nuevo en un rato.", expect.objectContaining({
       action: expect.objectContaining({ label: "Copiar código" }),
+      // Tablero Avisos, «Error del servidor»: en la compu, el botón va debajo del texto (sonner.tsx, `toastErrorWithCode`).
+      className: "aviso-codigo",
     }));
   });
 

@@ -1,6 +1,6 @@
 import { MutationCache, QueryCache, QueryClient, type DefaultOptions } from "@tanstack/react-query";
 import i18n from "@/shared/i18n";
-import { toastError } from "@/shared/ui/sonner";
+import { toastError, toastErrorWithCode } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { ApiError } from "./ApiError";
 import { publishAccessError } from "./accessErrorStore";
@@ -47,7 +47,7 @@ function toastGenericError(error: ApiError, retry: () => void): void {
     toastError(i18n.t("rateLimited", { ns: "errors" }));
   } else if (error.traceId) {
     const traceId = error.traceId;
-    toastError(apiErrorMessage(error, i18n.t), { action: { label: i18n.t("copyCode", { ns: "errors" }), onClick: () => copyTraceId(traceId) } });
+    toastErrorWithCode(apiErrorMessage(error, i18n.t), { label: i18n.t("copyCode", { ns: "errors" }), onClick: () => copyTraceId(traceId) });
   } else {
     toastError(apiErrorMessage(error, i18n.t));
   }

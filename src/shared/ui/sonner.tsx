@@ -17,6 +17,12 @@ export function toastError(message: string, options?: ToastErrorOptions): void {
   toast.error(message, { ...options, duration: Number.POSITIVE_INFINITY, closeButton: true })
 }
 
+/// Un 5xx (tablero Avisos, «Error del servidor»): el aviso rojo que queda, con «Copiar código». En la compu el botón va
+/// debajo del texto (`.aviso-codigo` en index.css); en el teléfono, al lado, como en M-Avisos. El código no se muestra.
+export function toastErrorWithCode(message: string, copyCode: { label: string; onClick: () => void }): void {
+  toastError(message, { action: copyCode, className: "aviso-codigo" })
+}
+
 // La app usa tema claro. Los nombres accesibles de los avisos salen de i18n;
 // las opciones del caller se mezclan sin perder el rótulo de cierre traducido.
 const Toaster = ({ toastOptions, ...props }: ToasterProps) => {

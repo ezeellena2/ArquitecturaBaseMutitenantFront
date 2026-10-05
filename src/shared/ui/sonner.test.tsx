@@ -1,8 +1,12 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { toast, type ToasterProps } from "sonner";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { asPhone } from "@/test/utils/phone";
-import { Toaster, toastError } from "./sonner";
+import { Toaster, toastError, toastErrorWithCode } from "./sonner";
+
+const css = readFileSync(path.resolve(import.meta.dirname, "../../index.css"), "utf8");
 
 vi.mock("sonner", async (importOriginal) => {
   const actual = await importOriginal<typeof import("sonner")>();
@@ -77,5 +81,26 @@ describe("Toaster · Criterio v65", () => {
       duration: Number.POSITIVE_INFINITY,
       closeButton: true,
     });
+  });
+
+  // Tablero Avisos, «Error del servidor» (.p-aviso .o-tt): en la compu, «Copiar código» va debajo del texto, a 6, y la ✕
+  // a la derecha; en el teléfono (M-Avisos, .f-snack), al lado del texto, como «Reintentar».
+  it("el aviso de un 5xx lleva «Copiar código» debajo del texto en la compu", () => {
+    const error = vi.spyOn(toast, "error");
+    const onClick = vi.fn();
+    toastErrorWithCode("Algo salió mal. Probá de nuevo en un rato.", { label: "Copiar código", onClick });
+
+    expect(error).toHaveBeenCalledWith("Algo salió mal. Probá de nuevo en un rato.", {
+      action: { label: "Copiar código", onClick },
+      className: "aviso-codigo",
+      duration: Number.POSITIVE_INFINITY,
+      closeButton: true,
+    });
+    const desktop = css.slice(css.indexOf("@media (min-width: 768px)"));
+    expect(desktop).toMatch(/\.aviso-codigo \{[^}]*display: grid;[^}]*grid-template-columns: auto minmax\(0, 1fr\) auto;/);
+    // Sin `:first-of-type`: la ✕ también es un botón y va antes, así que la acción nunca es la primera.
+    expect(desktop).toMatch(/\.aviso-codigo \[data-button\] \{[^}]*grid-area: 2 \/ 2;[^}]*margin: -4px 0 0;/);
+    expect(desktop).toMatch(/\.aviso-codigo \[data-close-button\] \{[^}]*grid-area: 1 \/ 3;/);
+    expect(css.slice(0, css.indexOf("@media (min-width: 768px)"))).not.toContain("aviso-codigo");
   });
 });

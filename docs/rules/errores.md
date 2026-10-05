@@ -40,6 +40,7 @@
 - `UserDetailPage.test.tsx` (E7): si la última Dueña sale de la organización, lo dice la franja de la ficha y no el aviso de abajo.
 - `LegalAcceptanceGate.test.tsx` (E7): si falla `/api/me`, la pantalla de error con «Reintentar», sin el aviso de abajo. `LoadErrorPage.test.tsx` (E7): la pantalla de error en la compu y en el teléfono; `UserDetailPage`, `CompanyDetailPage`, `RoleEditorPage`, `SettingsPage` y `PublicPagePage` (E7): si la ficha no carga, la pantalla de error, y «Reintentar» la vuelve a pedir. `UserDetailPage`, `CompanyDetailPage` y `RoleEditorPage` (E7): si el back no encuentra la ficha (404), «No encontramos esta página» con «Ir al inicio», sin «Reintentar». `AccountPage.test.tsx` (E7): si falla la relectura después de guardar, la franja lo dice una sola vez.
 - `errorMessage.test.ts` (E7): el texto de cada error y que la pantalla no repita lo que avisó el `MutationCache`; `queryClient.test.ts` (E7): los avisos de las mutaciones y `meta.handlesError`; `RoleEditorPage.test.tsx` (E7): sin conexión al guardar, un solo aviso con «Reintentar», que vuelve a guardar.
+- `sonner.test.tsx` (E7): el aviso de un 5xx (`toastErrorWithCode`) lleva «Copiar código» debajo del texto en la compu y al lado en el teléfono.
 
 ## Detalle
 [frontend.md §4, "Errores"](../architecture/frontend.md#errores)
