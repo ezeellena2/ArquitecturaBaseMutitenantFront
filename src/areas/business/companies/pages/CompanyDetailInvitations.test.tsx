@@ -7,6 +7,7 @@ import type { HomeResponse } from "@/shared/api/types";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
+import { asPhone } from "@/test/utils/phone";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 
 // Decisiones del usuario del 2026-10-05 (6e, lienzo v108, tableros Empresa y M-Empresa) y del back (96 a 99): quien
@@ -54,13 +55,6 @@ function companyApi(members: readonly unknown[], candidates: readonly unknown[] 
     http.post("/api/companies/company-1/members", async ({ request }) => { calls.added.push(await request.json()); return new HttpResponse(null, { status: 204 }); }),
   );
   return calls;
-}
-
-function phone(on: boolean) {
-  vi.stubGlobal("matchMedia", (query: string) => ({
-    matches: on && query === "(max-width: 767px)", media: query,
-    addEventListener: () => {}, removeEventListener: () => {},
-  }));
 }
 
 const owner = "business-e6-admin" as const;
@@ -205,7 +199,7 @@ describe("CompanyDetailPage en el teléfono: las invitaciones de la empresa (M-E
   // Tablero M-Empresa (v108): en la línea de abajo, los roles, el estado y «vence 02/10» o «venció 29/09», con la fecha
   // corta del teléfono.
   it("la fila de la invitación dice hasta cuándo vale, con la fecha corta", async () => {
-    phone(true);
+    asPhone();
     companyApi([valentina, sofia, martin]);
     renderRouteWithProviders("/org/empresas/company-1", { as: companyAdmin });
 
@@ -217,7 +211,7 @@ describe("CompanyDetailPage en el teléfono: las invitaciones de la empresa (M-E
   // Tablero M-Empresa, «Invitación: acciones»: en el teléfono el ⋮ abre una hoja desde abajo con el nombre de la persona,
   // «Reenviar invitación», una franja y, en rojo, «Revocar invitación», que pide confirmación.
   it.each([[companyAdmin], [owner]])("%s: el ⋮ de la invitación abre la hoja «Invitación: acciones»", async (as) => {
-    phone(true);
+    asPhone();
     const user = userEvent.setup();
     companyApi([valentina, sofia]);
     renderRouteWithProviders("/org/empresas/company-1", { as });
@@ -238,7 +232,7 @@ describe("CompanyDetailPage en el teléfono: las invitaciones de la empresa (M-E
   // Tablero M-Empresa, «Administra solo la empresa»: llegó desde su Inicio y vuelve a él, así que la barra de abajo marca
   // Inicio; la Dueña llega a Empresas desde «Más», que queda marcado.
   it.each([[companyAdmin, "Inicio"], [owner, "Más"]])("%s: la barra de abajo marca «%s»", async (as, section) => {
-    phone(true);
+    asPhone();
     companyApi([valentina]);
     renderRouteWithProviders("/org/empresas/company-1", { as });
 
