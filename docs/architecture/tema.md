@@ -59,6 +59,7 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 
 ## Forma
 - Tarjetas (filtros y tablas) con radio de 16 px y sombra suave: `0 1px 2px oklch(0.24 0.012 60 / 0.05), 0 8px 24px -12px oklch(0.24 0.012 60 / 0.14)`.
+- **Cajas de un formulario** («Criterio · Formularios», `.caja2`; `Section`): borde `--borde`, radio de 12 px y sin sombra; el encabezado arena de 40 lleva la línea `--borde-cab` y el botón chico a 4 del borde.
 - Botones normales de 36 px y 14 px de texto; los compactos, de 32 px y 13 px. Ambos usan radio de 8 px. El principal es sólido en `--marca` y el botón de una confirmación irreversible es sólido en `--peligro`.
 - **Tablas:** encabezado sobre `--cab`, filas alternadas (`--fila-alterna` desde la primera) y encabezados que bajan de línea en lugar de pisarse.
 - **Marca:** un cuadrado con degradado de `--marca` a `--marca-2`, sombra `0 2px 6px -1px var(--marca-sombra)` y un cuadrado blanco abierto del lado derecho, rotado −45° como en el lienzo. Lleva el nombre del producto al lado. Lo mismo en el menú lateral y en las pantallas públicas.

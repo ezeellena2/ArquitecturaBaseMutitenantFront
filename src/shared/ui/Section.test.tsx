@@ -25,6 +25,14 @@ describe("Section", () => {
     await userEvent.click(screen.getByRole("button", { name: "Agregar dominio" }));
     expect(onClick).toHaveBeenCalledOnce();
     expect(region).toContainElement(screen.getByText("delta.ejemplo.com"));
+    // «Criterio · Formularios» (.caja2) y tableros Configuración y Página pública (.w-caja): la caja de un formulario va
+    // con borde, 12 de radio y sin sombra (la sombra suave es de las tablas de Empresas y Auditoría); la línea de abajo de
+    // su encabezado es la cálida (.cab2).
+    const box = region.parentElement!;
+    expect(box).toHaveClass("rounded-[12px]", "border", "border-[var(--borde)]", "bg-[var(--lado-activo)]");
+    expect(box.style.boxShadow).toBe("");
+    expect(box.className).not.toMatch(/shadow/);
+    expect(screen.getByRole("heading", { name: "Dominio de correo" }).parentElement).toHaveClass("border-[var(--borde-cab)]");
   });
 
   it("en el teléfono lleva el título gris arriba, la acción en texto y una tarjeta blanca", () => {
