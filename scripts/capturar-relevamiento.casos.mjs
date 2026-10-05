@@ -92,10 +92,21 @@ const stage3c = [
   ["ya-no-sirve", "Invitación que ya no sirve", { readyHeading: "Esta invitación ya no sirve" }],
   ["organizacion-suspendida", "Invitación a una organización suspendida", { readyHeading: "Empresa E2E no está disponible" }],
   ["aceptada-sin-metodo-personal", "Invitación aceptada: solo con el correo de la empresa", { readyHeading: "Te sumaste a Empresa E2E" }],
-  ["carga", "Invitación: cargando", { hang: "/api/auth/external/google/antiforgery", readySelector: '[role="status"]' }],
-  ["envio", "Invitación: aceptando", { hang: "/api/invitations/accept", readyHeading: invitation, actions: [accept], readyText: "Aceptando…" }],
-  ["error", "Invitación: error al aceptar", { readyHeading: invitation, actions: [accept], readyText: "Algo salió mal. Probá de nuevo en un rato." }],
 ];
+
+// R3d · Ingreso y registro: lo que muestra la invitación mientras se carga, mientras se acepta y si falla al aceptar.
+// Desde v106 el lienzo los dibuja («Sin cuenta: cargando», «aceptando» y «error al aceptar»); antes se comparaban con
+// «Sin cuenta». Los datos y los pasos de la app siguen siendo los de la etapa 3c.
+const invitationV106 = [
+  ["carga", "Invitación: cargando", "Sin cuenta: cargando", { hang: "/api/auth/external/google/antiforgery", readySelector: '[role="status"]' }],
+  ["envio", "Invitación: aceptando", "Sin cuenta: aceptando", { hang: "/api/invitations/accept", readyHeading: invitation, actions: [accept], readyText: "Aceptando…" }],
+  ["error", "Invitación: error al aceptar", "Sin cuenta: error al aceptar", { readyHeading: invitation, actions: [accept], readyText: "Algo salió mal. Probá de nuevo en un rato." }],
+];
+
+function invitationV106Cases(root) {
+  return invitationV106.flatMap(([pair, state, estado, app]) => pairCases(root, { stage: "etapa-3c", pair, id: `invitacion-${pair}`, group: "invitacion", state,
+    desktop: { props: { estado } }, phone: { props: { estado } }, app: { userFixture: "visual-personal", ...app }, phoneApp: { userFixture: "visual-personal", ...app } }));
+}
 
 // Etapa 3b (el lienzo vigente ya no tiene los estados que inyectaba): aceptar términos, ingreso con la baja pedida y el aviso del inicio.
 const checkTerms = { boardActions: [click("label.chk input")] };
@@ -391,6 +402,7 @@ export function catalog(root) {
   return [
     ...stage3a.flatMap(([pair, group, state]) => pairCases(root, { stage: "etapa-3a", pair, group, state })),
     ...stage3c.flatMap(([pair, state, app]) => pairCases(root, { stage: "etapa-3c", pair, id: `invitacion-${pair}`, group: "invitacion", state, app: { userFixture: "visual-personal", ...app }, phoneApp: { userFixture: "visual-personal", ...app } })),
+    ...invitationV106Cases(root),
     ...stage3b.flatMap(([pair, group, state, board]) => pairCases(root, { stage: "etapa-3b", pair, group, state, desktop: board, phone: board, app: { userFixture: "visual-personal" }, phoneApp: { userFixture: "visual-personal" } })),
     ...stage4Account.flatMap(([pair, group, state, onPhone]) => pairCases(root, { stage: "etapa-4", pair, group, state, phone: onPhone })),
     ...pairCases(root, { stage: "etapa-4", pair: "cuenta", id: "cuenta-cambios-sin-guardar", group: "cuenta", state: "Mi cuenta con el nombre cambiado: «Cambios sin guardar»",

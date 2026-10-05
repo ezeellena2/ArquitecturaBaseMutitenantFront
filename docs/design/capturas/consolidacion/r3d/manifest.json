@@ -1,0 +1,3849 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "ingreso-persona-correo-escritorio",
+      "pair": "ingreso-persona-correo",
+      "group": "ingreso",
+      "state": "Ingreso de persona: pide el correo",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-persona-correo-movil",
+      "pair": "ingreso-persona-correo",
+      "group": "ingreso",
+      "state": "Ingreso de persona: pide el correo",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-empresa-correo-escritorio",
+      "pair": "ingreso-empresa-correo",
+      "group": "ingreso",
+      "state": "Ingreso de empresa: pide el correo",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-empresa-correo-movil",
+      "pair": "ingreso-empresa-correo",
+      "group": "ingreso",
+      "state": "Ingreso de empresa: pide el correo",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-correo-invalido-escritorio",
+      "pair": "ingreso-correo-invalido",
+      "group": "ingreso",
+      "state": "Ingreso: correo inválido",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo inválido",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "ingreso-correo-invalido-movil",
+      "pair": "ingreso-correo-invalido",
+      "group": "ingreso",
+      "state": "Ingreso: correo inválido",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo inválido",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "ingreso-espera-escritorio",
+      "pair": "ingreso-espera",
+      "group": "ingreso",
+      "state": "Ingreso: esperá para pedir otro código",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Esperá para pedir otro código",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 429,
+            "body": {
+              "code": "Auth.LoginCode.ResendTooSoon",
+              "retryAfter": 42
+            }
+          }
+        ],
+        "readyText": "Esperá un momento antes de pedir otro código."
+      }
+    },
+    {
+      "id": "ingreso-espera-movil",
+      "pair": "ingreso-espera",
+      "group": "ingreso",
+      "state": "Ingreso: esperá para pedir otro código",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Esperá para pedir otro código",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 429,
+            "body": {
+              "code": "Auth.LoginCode.ResendTooSoon",
+              "retryAfter": 42
+            }
+          }
+        ],
+        "readyText": "Esperá un momento antes de pedir otro código."
+      }
+    },
+    {
+      "id": "ingreso-demasiados-escritorio",
+      "pair": "ingreso-demasiados",
+      "group": "ingreso",
+      "state": "Ingreso: demasiados pedidos",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Demasiados pedidos",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 429,
+            "body": {
+              "code": "Auth.LoginCode.TooManyRequests",
+              "retryAfter": 840
+            }
+          }
+        ],
+        "readyText": "Pediste demasiados códigos. Probá de nuevo más tarde."
+      }
+    },
+    {
+      "id": "ingreso-demasiados-movil",
+      "pair": "ingreso-demasiados",
+      "group": "ingreso",
+      "state": "Ingreso: demasiados pedidos",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Demasiados pedidos",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 429,
+            "body": {
+              "code": "Auth.LoginCode.TooManyRequests",
+              "retryAfter": 840
+            }
+          }
+        ],
+        "readyText": "Pediste demasiados códigos. Probá de nuevo más tarde."
+      }
+    },
+    {
+      "id": "ingreso-google-error-escritorio",
+      "pair": "ingreso-google-error",
+      "group": "ingreso",
+      "state": "Ingreso: no pudimos entrar con Google",
+      "board": "Ingreso",
+      "props": {
+        "estado": "No pudimos entrar con Google",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize&error=Auth.Google.AccountNotFound",
+        "readySelector": "h1",
+        "readyText": "No pudimos completar el ingreso con Google."
+      }
+    },
+    {
+      "id": "ingreso-google-error-movil",
+      "pair": "ingreso-google-error",
+      "group": "ingreso",
+      "state": "Ingreso: no pudimos entrar con Google",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "No pudimos entrar con Google",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize&error=Auth.Google.AccountNotFound",
+        "readySelector": "h1",
+        "readyText": "No pudimos completar el ingreso con Google."
+      }
+    },
+    {
+      "id": "ingreso-codigo-enviado-escritorio",
+      "pair": "ingreso-codigo-enviado",
+      "group": "ingreso",
+      "state": "Ingreso: código enviado",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Código enviado",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          }
+        ],
+        "readyText": "Revisá tu correo"
+      }
+    },
+    {
+      "id": "ingreso-codigo-enviado-movil",
+      "pair": "ingreso-codigo-enviado",
+      "group": "ingreso",
+      "state": "Ingreso: código enviado",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Código enviado",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          }
+        ],
+        "readyText": "Revisá tu correo"
+      }
+    },
+    {
+      "id": "ingreso-codigo-incorrecto-escritorio",
+      "pair": "ingreso-codigo-incorrecto",
+      "group": "ingreso",
+      "state": "Ingreso: código incorrecto",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Código incorrecto",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.Invalid",
+              "attemptsLeft": 3
+            }
+          }
+        ],
+        "readyText": "El código no es válido.",
+        "readyButtonEnabled": "Verificar"
+      }
+    },
+    {
+      "id": "ingreso-codigo-incorrecto-movil",
+      "pair": "ingreso-codigo-incorrecto",
+      "group": "ingreso",
+      "state": "Ingreso: código incorrecto",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Código incorrecto",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.Invalid",
+              "attemptsLeft": 3
+            }
+          }
+        ],
+        "readyText": "El código no es válido.",
+        "readyButtonEnabled": "Verificar"
+      }
+    },
+    {
+      "id": "ingreso-codigo-vencido-escritorio",
+      "pair": "ingreso-codigo-vencido",
+      "group": "ingreso",
+      "state": "Ingreso: código vencido",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Código vencido",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.Expired"
+            }
+          }
+        ],
+        "readyText": "El código venció. Pedí uno nuevo.",
+        "readyButtonEnabled": "Verificar"
+      }
+    },
+    {
+      "id": "ingreso-codigo-vencido-movil",
+      "pair": "ingreso-codigo-vencido",
+      "group": "ingreso",
+      "state": "Ingreso: código vencido",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Código vencido",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.Expired"
+            }
+          }
+        ],
+        "readyText": "El código venció. Pedí uno nuevo.",
+        "readyButtonEnabled": "Verificar"
+      }
+    },
+    {
+      "id": "ingreso-sin-intentos-escritorio",
+      "pair": "ingreso-sin-intentos",
+      "group": "ingreso",
+      "state": "Ingreso: sin intentos",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Sin intentos",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.TooManyAttempts"
+            }
+          }
+        ],
+        "readyText": "Superaste los intentos para este código."
+      }
+    },
+    {
+      "id": "ingreso-sin-intentos-movil",
+      "pair": "ingreso-sin-intentos",
+      "group": "ingreso",
+      "state": "Ingreso: sin intentos",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Sin intentos",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.TooManyAttempts"
+            }
+          }
+        ],
+        "readyText": "Superaste los intentos para este código."
+      }
+    },
+    {
+      "id": "ingreso-cuenta-bloqueada-escritorio",
+      "pair": "ingreso-cuenta-bloqueada",
+      "group": "ingreso",
+      "state": "Ingreso: cuenta bloqueada",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Cuenta bloqueada",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Identity.Account.LockedOut"
+            }
+          }
+        ],
+        "readyText": "Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos."
+      }
+    },
+    {
+      "id": "ingreso-cuenta-bloqueada-movil",
+      "pair": "ingreso-cuenta-bloqueada",
+      "group": "ingreso",
+      "state": "Ingreso: cuenta bloqueada",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Cuenta bloqueada",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Identity.Account.LockedOut"
+            }
+          }
+        ],
+        "readyText": "Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos."
+      }
+    },
+    {
+      "id": "ingreso-cuenta-suspendida-escritorio",
+      "pair": "ingreso-cuenta-suspendida",
+      "group": "ingreso",
+      "state": "Ingreso: cuenta suspendida",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Cuenta suspendida",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Identity.Account.Suspended"
+            }
+          }
+        ],
+        "readyText": "Tu cuenta está suspendida."
+      }
+    },
+    {
+      "id": "ingreso-cuenta-suspendida-movil",
+      "pair": "ingreso-cuenta-suspendida",
+      "group": "ingreso",
+      "state": "Ingreso: cuenta suspendida",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Cuenta suspendida",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Identity.Account.Suspended"
+            }
+          }
+        ],
+        "readyText": "Tu cuenta está suspendida."
+      }
+    },
+    {
+      "id": "ingreso-empresa-sin-perfil-escritorio",
+      "pair": "ingreso-empresa-sin-perfil",
+      "group": "ingreso",
+      "state": "Ingreso de empresa: la cuenta no está en ninguna empresa",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Empresa: la cuenta no está en ninguna empresa",
+        "puerta": "Empresa",
+        "cuenta": "Beto (sin organizaciones)"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Tenancy.Access.NotMember"
+            }
+          }
+        ],
+        "readyText": "Tu cuenta no está en ninguna empresa todavía"
+      }
+    },
+    {
+      "id": "ingreso-empresa-sin-perfil-movil",
+      "pair": "ingreso-empresa-sin-perfil",
+      "group": "ingreso",
+      "state": "Ingreso de empresa: la cuenta no está en ninguna empresa",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Empresa: la cuenta no está en ninguna empresa",
+        "puerta": "Empresa",
+        "cuenta": "Beto (sin organizaciones)"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Tenancy.Access.NotMember"
+            }
+          }
+        ],
+        "readyText": "Tu cuenta no está en ninguna empresa todavía"
+      }
+    },
+    {
+      "id": "ingreso-empresa-inactiva-escritorio",
+      "pair": "ingreso-empresa-inactiva",
+      "group": "ingreso",
+      "state": "Ingreso de empresa: acceso deshabilitado",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Empresa: acceso deshabilitado",
+        "puerta": "Empresa",
+        "cuenta": "Lucía (miembro de Grupo Delta)"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Tenancy.Member.Inactive",
+              "organizationName": "Grupo Delta"
+            }
+          }
+        ],
+        "readyText": "Tu acceso a Grupo Delta está deshabilitado"
+      }
+    },
+    {
+      "id": "ingreso-empresa-inactiva-movil",
+      "pair": "ingreso-empresa-inactiva",
+      "group": "ingreso",
+      "state": "Ingreso de empresa: acceso deshabilitado",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Empresa: acceso deshabilitado",
+        "puerta": "Empresa",
+        "cuenta": "Lucía (miembro de Grupo Delta)"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "status": 403,
+            "body": {
+              "code": "Tenancy.Member.Inactive",
+              "organizationName": "Grupo Delta"
+            }
+          }
+        ],
+        "readyText": "Tu acceso a Grupo Delta está deshabilitado"
+      }
+    },
+    {
+      "id": "ingreso-sesion-vencida-escritorio",
+      "pair": "ingreso-sesion-vencida",
+      "group": "ingreso",
+      "state": "Ingreso: tu sesión venció",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Tu sesión venció",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize&session=expired",
+        "readySelector": "h1",
+        "readyText": "Tu sesión venció. Ingresá de nuevo."
+      }
+    },
+    {
+      "id": "ingreso-sesion-vencida-movil",
+      "pair": "ingreso-sesion-vencida",
+      "group": "ingreso",
+      "state": "Ingreso: tu sesión venció",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Tu sesión venció",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize&session=expired",
+        "readySelector": "h1",
+        "readyText": "Tu sesión venció. Ingresá de nuevo."
+      }
+    },
+    {
+      "id": "registro-correo-escritorio",
+      "pair": "registro-correo",
+      "group": "registro",
+      "state": "Registro: pide el correo",
+      "board": "Registro",
+      "props": {
+        "estado": "Correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "registro-correo-movil",
+      "pair": "registro-correo",
+      "group": "registro",
+      "state": "Registro: pide el correo",
+      "board": "M-Registro",
+      "props": {
+        "estado": "Correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "registro-correo-invalido-escritorio",
+      "pair": "registro-correo-invalido",
+      "group": "registro",
+      "state": "Registro: correo inválido",
+      "board": "Registro",
+      "props": {
+        "estado": "Correo inválido"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro",
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los Términos y la Política de privacidad"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "registro-correo-invalido-movil",
+      "pair": "registro-correo-invalido",
+      "group": "registro",
+      "state": "Registro: correo inválido",
+      "board": "M-Registro",
+      "props": {
+        "estado": "Correo inválido"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro",
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los Términos y la Política de privacidad"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          }
+        ],
+        "readyText": "Ingresá un correo electrónico válido."
+      }
+    },
+    {
+      "id": "registro-cerrado-escritorio",
+      "pair": "registro-cerrado",
+      "group": "registro",
+      "state": "Registro cerrado",
+      "board": "Registro",
+      "props": {
+        "estado": "Registro cerrado"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro?error=Auth.Signup.Closed",
+        "readyText": "Por ahora no se pueden crear cuentas"
+      }
+    },
+    {
+      "id": "registro-cerrado-movil",
+      "pair": "registro-cerrado",
+      "group": "registro",
+      "state": "Registro cerrado",
+      "board": "M-Registro",
+      "props": {
+        "estado": "Registro cerrado"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro?error=Auth.Signup.Closed",
+        "readyText": "Por ahora no se pueden crear cuentas"
+      }
+    },
+    {
+      "id": "registro-codigo-enviado-escritorio",
+      "pair": "registro-codigo-enviado",
+      "group": "registro",
+      "state": "Registro: código enviado",
+      "board": "Registro",
+      "props": {
+        "estado": "Código enviado"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/signup",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los Términos y la Política de privacidad"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          }
+        ],
+        "readyText": "Revisá tu correo"
+      }
+    },
+    {
+      "id": "registro-codigo-enviado-movil",
+      "pair": "registro-codigo-enviado",
+      "group": "registro",
+      "state": "Registro: código enviado",
+      "board": "M-Registro",
+      "props": {
+        "estado": "Código enviado"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/signup",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los Términos y la Política de privacidad"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          }
+        ],
+        "readyText": "Revisá tu correo"
+      }
+    },
+    {
+      "id": "registro-codigo-incorrecto-escritorio",
+      "pair": "registro-codigo-incorrecto",
+      "group": "registro",
+      "state": "Registro: código incorrecto",
+      "board": "Registro",
+      "props": {
+        "estado": "Código incorrecto"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/signup",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/signup/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.Invalid",
+              "traceId": "capture",
+              "attemptsLeft": 4
+            }
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los Términos y la Política de privacidad"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar y crear la cuenta"
+          }
+        ],
+        "readyText": "El código no es válido."
+      }
+    },
+    {
+      "id": "registro-codigo-incorrecto-movil",
+      "pair": "registro-codigo-incorrecto",
+      "group": "registro",
+      "state": "Registro: código incorrecto",
+      "board": "M-Registro",
+      "props": {
+        "estado": "Código incorrecto"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/signup",
+            "status": 202,
+            "body": {
+              "resendAfterSeconds": 60
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/signup/verify",
+            "status": 400,
+            "body": {
+              "code": "Auth.LoginCode.Invalid",
+              "traceId": "capture",
+              "attemptsLeft": 4
+            }
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los Términos y la Política de privacidad"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar y crear la cuenta"
+          }
+        ],
+        "readyText": "El código no es válido."
+      }
+    },
+    {
+      "id": "invitacion-vencida-escritorio",
+      "pair": "invitacion-vencida",
+      "group": "invitacion",
+      "state": "Invitación vencida",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Vencida"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Expired",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "readyHeading": "Esta invitación venció"
+      }
+    },
+    {
+      "id": "invitacion-vencida-movil",
+      "pair": "invitacion-vencida",
+      "group": "invitacion",
+      "state": "Invitación vencida",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Vencida"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Expired",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "readyHeading": "Esta invitación venció"
+      }
+    },
+    {
+      "id": "invitacion-ya-no-sirve-escritorio",
+      "pair": "invitacion-ya-no-sirve",
+      "group": "invitacion",
+      "state": "Invitación que ya no sirve",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Ya no sirve"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Invalid",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "readyHeading": "Esta invitación ya no sirve"
+      }
+    },
+    {
+      "id": "invitacion-ya-no-sirve-movil",
+      "pair": "invitacion-ya-no-sirve",
+      "group": "invitacion",
+      "state": "Invitación que ya no sirve",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Ya no sirve"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Invalid",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "readyHeading": "Esta invitación ya no sirve"
+      }
+    },
+    {
+      "id": "invitacion-organizacion-suspendida-escritorio",
+      "pair": "invitacion-organizacion-suspendida",
+      "group": "invitacion",
+      "state": "Invitación a una organización suspendida",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Organización suspendida"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "OrganizationSuspended",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "readyHeading": "Empresa E2E no está disponible"
+      }
+    },
+    {
+      "id": "invitacion-organizacion-suspendida-movil",
+      "pair": "invitacion-organizacion-suspendida",
+      "group": "invitacion",
+      "state": "Invitación a una organización suspendida",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Organización suspendida"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "OrganizationSuspended",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "readyHeading": "Empresa E2E no está disponible"
+      }
+    },
+    {
+      "id": "invitacion-aceptada-sin-metodo-personal-escritorio",
+      "pair": "invitacion-aceptada-sin-metodo-personal",
+      "group": "invitacion",
+      "state": "Invitación aceptada: solo con el correo de la empresa",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Aceptada: solo con el correo de la empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Accepted",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": true
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "readyHeading": "Te sumaste a Empresa E2E"
+      }
+    },
+    {
+      "id": "invitacion-aceptada-sin-metodo-personal-movil",
+      "pair": "invitacion-aceptada-sin-metodo-personal",
+      "group": "invitacion",
+      "state": "Invitación aceptada: solo con el correo de la empresa",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Aceptada: solo con el correo de la empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "Accepted",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": true
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "body": {
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "createdAccount": true,
+              "needsPersonalLoginMethod": true
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "readyHeading": "Te sumaste a Empresa E2E"
+      }
+    },
+    {
+      "id": "invitacion-carga-escritorio",
+      "pair": "invitacion-carga",
+      "group": "invitacion",
+      "state": "Invitación: cargando",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Sin cuenta: cargando"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "action": "carga",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "status": 500,
+            "body": {
+              "code": "Invitations.Invitation.Unavailable",
+              "detail": "No pudimos aceptar la invitación. Probá de nuevo."
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "hang": "/api/auth/external/google/antiforgery",
+        "readySelector": "[role=\"status\"]"
+      }
+    },
+    {
+      "id": "invitacion-carga-movil",
+      "pair": "invitacion-carga",
+      "group": "invitacion",
+      "state": "Invitación: cargando",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Sin cuenta: cargando"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "action": "carga",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "status": 500,
+            "body": {
+              "code": "Invitations.Invitation.Unavailable",
+              "detail": "No pudimos aceptar la invitación. Probá de nuevo."
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "hang": "/api/auth/external/google/antiforgery",
+        "readySelector": "[role=\"status\"]"
+      }
+    },
+    {
+      "id": "invitacion-envio-escritorio",
+      "pair": "invitacion-envio",
+      "group": "invitacion",
+      "state": "Invitación: aceptando",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Sin cuenta: aceptando"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "action": "envio",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "status": 500,
+            "body": {
+              "code": "Invitations.Invitation.Unavailable",
+              "detail": "No pudimos aceptar la invitación. Probá de nuevo."
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "hang": "/api/invitations/accept",
+        "readyHeading": "Te sumás a Empresa E2E",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Aceptar invitación"
+          }
+        ],
+        "readyText": "Aceptando…"
+      }
+    },
+    {
+      "id": "invitacion-envio-movil",
+      "pair": "invitacion-envio",
+      "group": "invitacion",
+      "state": "Invitación: aceptando",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Sin cuenta: aceptando"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "action": "envio",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "status": 500,
+            "body": {
+              "code": "Invitations.Invitation.Unavailable",
+              "detail": "No pudimos aceptar la invitación. Probá de nuevo."
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "hang": "/api/invitations/accept",
+        "readyHeading": "Te sumás a Empresa E2E",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Aceptar invitación"
+          }
+        ],
+        "readyText": "Aceptando…"
+      }
+    },
+    {
+      "id": "invitacion-error-escritorio",
+      "pair": "invitacion-error",
+      "group": "invitacion",
+      "state": "Invitación: error al aceptar",
+      "board": "Invitacion",
+      "props": {
+        "estado": "Sin cuenta: error al aceptar"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "action": "error",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "status": 500,
+            "body": {
+              "code": "Invitations.Invitation.Unavailable",
+              "detail": "No pudimos aceptar la invitación. Probá de nuevo."
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "readyHeading": "Te sumás a Empresa E2E",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Aceptar invitación"
+          }
+        ],
+        "readyText": "Algo salió mal. Probá de nuevo en un rato."
+      }
+    },
+    {
+      "id": "invitacion-error-movil",
+      "pair": "invitacion-error",
+      "group": "invitacion",
+      "state": "Invitación: error al aceptar",
+      "board": "M-Invitacion",
+      "props": {
+        "estado": "Sin cuenta: error al aceptar"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Finvitacion%23captura-sintetica",
+        "captureMode": "harness",
+        "action": "error",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "capture-antiforgery"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/preview",
+            "body": {
+              "state": "NoAccount",
+              "organizationId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Empresa E2E",
+              "email": "marta.ruiz@example.test",
+              "inviterName": "Lucía Fernández",
+              "inviterRoles": [
+                "Dueño"
+              ],
+              "companies": [
+                "Delta Norte S.A."
+              ],
+              "roles": [
+                "Solo lectura"
+              ],
+              "issuedAtUtc": "2026-09-30T12:00:00Z",
+              "expiresAtUtc": "2026-10-07T12:00:00Z",
+              "canUseEmailCode": false,
+              "canUseGoogle": false,
+              "needsPersonalLoginMethod": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/invitations/accept",
+            "status": 500,
+            "body": {
+              "code": "Invitations.Invitation.Unavailable",
+              "detail": "No pudimos aceptar la invitación. Probá de nuevo."
+            }
+          }
+        ],
+        "userFixture": "visual-personal",
+        "readyHeading": "Te sumás a Empresa E2E",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Aceptar invitación"
+          }
+        ],
+        "readyText": "Algo salió mal. Probá de nuevo en un rato."
+      }
+    },
+    {
+      "id": "ingreso-baja-persona-escritorio",
+      "pair": "ingreso-baja-persona",
+      "group": "ingreso",
+      "state": "Ingreso de persona con la baja de la cuenta pedida",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Cuenta con la baja pedida",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Flogin%3Ferror%3DIdentity.Account.PendingDeletion",
+        "captureMode": "harness",
+        "actions": [],
+        "readyText": "Tu cuenta tiene la baja pedida",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/deletion/pending",
+            "body": {
+              "scheduledForUtc": "2026-10-27T17:35:00Z",
+              "cancelTicket": "capture-proof",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "returnUrl": "/connect/authorize",
+              "cancelTicketExpiresAtUtc": "2026-09-27T17:40:00Z"
+            },
+            "status": 200
+          }
+        ],
+        "userFixture": "visual-personal"
+      }
+    },
+    {
+      "id": "ingreso-baja-persona-movil",
+      "pair": "ingreso-baja-persona",
+      "group": "ingreso",
+      "state": "Ingreso de persona con la baja de la cuenta pedida",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Cuenta con la baja pedida",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Flogin%3Ferror%3DIdentity.Account.PendingDeletion",
+        "captureMode": "harness",
+        "actions": [],
+        "readyText": "Tu cuenta tiene la baja pedida",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/deletion/pending",
+            "body": {
+              "scheduledForUtc": "2026-10-27T17:35:00Z",
+              "cancelTicket": "capture-proof",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "returnUrl": "/connect/authorize",
+              "cancelTicketExpiresAtUtc": "2026-09-27T17:40:00Z"
+            },
+            "status": 200
+          }
+        ],
+        "userFixture": "visual-personal"
+      }
+    },
+    {
+      "id": "ingreso-baja-empresa-escritorio",
+      "pair": "ingreso-baja-empresa",
+      "group": "ingreso",
+      "state": "Ingreso de empresa con la baja de la cuenta pedida",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Cuenta con la baja pedida",
+        "puerta": "Empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Flogin%2Fempresa%3Ferror%3DIdentity.Account.PendingDeletion",
+        "captureMode": "harness",
+        "actions": [],
+        "readyText": "Tu cuenta tiene la baja pedida",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/deletion/pending",
+            "body": {
+              "scheduledForUtc": "2026-10-27T17:35:00Z",
+              "cancelTicket": "capture-proof",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "returnUrl": "/connect/authorize",
+              "cancelTicketExpiresAtUtc": "2026-09-27T17:40:00Z"
+            },
+            "status": 200
+          }
+        ],
+        "userFixture": "visual-personal"
+      }
+    },
+    {
+      "id": "ingreso-baja-empresa-movil",
+      "pair": "ingreso-baja-empresa",
+      "group": "ingreso",
+      "state": "Ingreso de empresa con la baja de la cuenta pedida",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Cuenta con la baja pedida",
+        "puerta": "Empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Flogin%2Fempresa%3Ferror%3DIdentity.Account.PendingDeletion",
+        "captureMode": "harness",
+        "actions": [],
+        "readyText": "Tu cuenta tiene la baja pedida",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/deletion/pending",
+            "body": {
+              "scheduledForUtc": "2026-10-27T17:35:00Z",
+              "cancelTicket": "capture-proof",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "returnUrl": "/connect/authorize",
+              "cancelTicketExpiresAtUtc": "2026-09-27T17:40:00Z"
+            },
+            "status": 200
+          }
+        ],
+        "userFixture": "visual-personal"
+      }
+    },
+    {
+      "id": "registro-empresa-escritorio",
+      "pair": "registro-empresa",
+      "group": "registro",
+      "state": "Registro de empresa: «Tu organización» (después de ingresar con Google)",
+      "board": "Registro-Empresa",
+      "props": {
+        "estado": "Tu organización"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=consumer-empty&route=%2Fregistro%2Fempresa%3Fgoogle%3Dcomplete",
+        "captureMode": "harness",
+        "userFixture": "consumer-empty",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "visual-antiforgery"
+            },
+            "status": 200
+          }
+        ],
+        "actions": [],
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "registro-empresa-movil",
+      "pair": "registro-empresa",
+      "group": "registro",
+      "state": "Registro de empresa: «Tu organización» (después de ingresar con Google)",
+      "board": "M-Registro-Empresa",
+      "props": {
+        "estado": "Tu organización"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=consumer-empty&route=%2Fregistro%2Fempresa%3Fgoogle%3Dcomplete",
+        "captureMode": "harness",
+        "userFixture": "consumer-empty",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "visual-antiforgery"
+            },
+            "status": 200
+          }
+        ],
+        "actions": [],
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "registro-empresa-correo-escritorio",
+      "pair": "registro-empresa-correo",
+      "group": "registro",
+      "state": "Registro de empresa: pide el correo",
+      "board": "Registro-Empresa",
+      "props": {
+        "estado": "Correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro/empresa",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "registro-empresa-correo-movil",
+      "pair": "registro-empresa-correo",
+      "group": "registro",
+      "state": "Registro de empresa: pide el correo",
+      "board": "M-Registro-Empresa",
+      "props": {
+        "estado": "Correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro/empresa",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "registro-empresa-codigo-escritorio",
+      "pair": "registro-empresa-codigo",
+      "group": "registro",
+      "state": "Registro de empresa: código enviado",
+      "board": "Registro-Empresa",
+      "props": {
+        "estado": "Código enviado"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro/empresa",
+        "readySelector": "h1",
+        "readyText": "Revisá tu correo",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/business-signup/code",
+            "body": {
+              "resendAfterSeconds": 60
+            },
+            "status": 202
+          }
+        ],
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Tu correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Continuar"
+          }
+        ]
+      }
+    },
+    {
+      "id": "registro-empresa-codigo-movil",
+      "pair": "registro-empresa-codigo",
+      "group": "registro",
+      "state": "Registro de empresa: código enviado",
+      "board": "M-Registro-Empresa",
+      "props": {
+        "estado": "Código enviado"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro/empresa",
+        "readySelector": "h1",
+        "readyText": "Revisá tu correo",
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/business-signup/code",
+            "body": {
+              "resendAfterSeconds": 60
+            },
+            "status": 202
+          }
+        ],
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Tu correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Continuar"
+          }
+        ]
+      }
+    },
+    {
+      "id": "registro-empresa-limite-escritorio",
+      "pair": "registro-empresa-limite",
+      "group": "registro",
+      "state": "Registro de empresa: llegó al límite de organizaciones propias",
+      "board": "Registro-Empresa",
+      "props": {
+        "estado": "Llegó al límite"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=consumer-empty&route=%2Fregistro%2Fempresa%3Fgoogle%3Dcomplete",
+        "captureMode": "harness",
+        "userFixture": "consumer-empty",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "visual-antiforgery"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/public-site/slug-availability",
+            "body": {
+              "slug": "omega",
+              "availability": "Available"
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/business-signup",
+            "body": {
+              "code": "Tenancy.Organization.LimitReached",
+              "limit": 3
+            },
+            "status": 409
+          }
+        ],
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Nombre de la organización",
+            "value": "Grupo Omega"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Dirección de tu página",
+            "value": "omega"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Primera empresa",
+            "value": "Omega S.A."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear organización",
+            "waitFor": "Disponible"
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Llegaste al límite"
+      }
+    },
+    {
+      "id": "registro-empresa-limite-movil",
+      "pair": "registro-empresa-limite",
+      "group": "registro",
+      "state": "Registro de empresa: llegó al límite de organizaciones propias",
+      "board": "M-Registro-Empresa",
+      "props": {
+        "estado": "Llegó al límite"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=consumer-empty&route=%2Fregistro%2Fempresa%3Fgoogle%3Dcomplete",
+        "captureMode": "harness",
+        "userFixture": "consumer-empty",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "visual-antiforgery"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/public-site/slug-availability",
+            "body": {
+              "slug": "omega",
+              "availability": "Available"
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/business-signup",
+            "body": {
+              "code": "Tenancy.Organization.LimitReached",
+              "limit": 3
+            },
+            "status": 409
+          }
+        ],
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Nombre de la organización",
+            "value": "Grupo Omega"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Dirección de tu página",
+            "value": "omega"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Primera empresa",
+            "value": "Omega S.A."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear organización",
+            "waitFor": "Disponible"
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Llegaste al límite"
+      }
+    },
+    {
+      "id": "registro-empresa-lista-escritorio",
+      "pair": "registro-empresa-lista",
+      "group": "registro",
+      "state": "Registro de empresa: la organización está lista",
+      "board": "Registro-Empresa",
+      "props": {
+        "estado": "Lista"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=consumer-empty&route=%2Fregistro%2Fempresa%3Fgoogle%3Dcomplete",
+        "captureMode": "harness",
+        "userFixture": "consumer-empty",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "visual-antiforgery"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/public-site/slug-availability",
+            "body": {
+              "slug": "omega",
+              "availability": "Available"
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/business-signup",
+            "body": {
+              "tenantId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Grupo Omega",
+              "slug": "omega",
+              "requiresApproval": false,
+              "firstCompanyId": "22222222-2222-4222-8222-222222222222",
+              "status": "Active",
+              "notificationEmail": "mariana.lopez@gmail.com"
+            },
+            "status": 201
+          }
+        ],
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Nombre de la organización",
+            "value": "Grupo Omega"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Dirección de tu página",
+            "value": "omega"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Primera empresa",
+            "value": "Omega S.A."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear organización",
+            "waitFor": "Disponible"
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "está lista"
+      }
+    },
+    {
+      "id": "registro-empresa-lista-movil",
+      "pair": "registro-empresa-lista",
+      "group": "registro",
+      "state": "Registro de empresa: la organización está lista",
+      "board": "M-Registro-Empresa",
+      "props": {
+        "estado": "Lista"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=consumer-empty&route=%2Fregistro%2Fempresa%3Fgoogle%3Dcomplete",
+        "captureMode": "harness",
+        "userFixture": "consumer-empty",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "visual-antiforgery"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/public-site/slug-availability",
+            "body": {
+              "slug": "omega",
+              "availability": "Available"
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/business-signup",
+            "body": {
+              "tenantId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Grupo Omega",
+              "slug": "omega",
+              "requiresApproval": false,
+              "firstCompanyId": "22222222-2222-4222-8222-222222222222",
+              "status": "Active",
+              "notificationEmail": "mariana.lopez@gmail.com"
+            },
+            "status": 201
+          }
+        ],
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Nombre de la organización",
+            "value": "Grupo Omega"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Dirección de tu página",
+            "value": "omega"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Primera empresa",
+            "value": "Omega S.A."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear organización",
+            "waitFor": "Disponible"
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "está lista"
+      }
+    },
+    {
+      "id": "registro-empresa-espera-escritorio",
+      "pair": "registro-empresa-espera",
+      "group": "registro",
+      "state": "Registro de empresa: espera la aprobación",
+      "board": "Registro-Empresa",
+      "props": {
+        "estado": "Espera aprobación"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=consumer-empty&route=%2Fregistro%2Fempresa%3Fgoogle%3Dcomplete",
+        "captureMode": "harness",
+        "userFixture": "consumer-empty",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "visual-antiforgery"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/public-site/slug-availability",
+            "body": {
+              "slug": "omega",
+              "availability": "Available"
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/business-signup",
+            "body": {
+              "tenantId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Grupo Omega",
+              "slug": "omega",
+              "requiresApproval": true,
+              "firstCompanyId": "22222222-2222-4222-8222-222222222222",
+              "status": "PendingApproval",
+              "notificationEmail": "mariana.lopez@gmail.com"
+            },
+            "status": 201
+          }
+        ],
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Nombre de la organización",
+            "value": "Grupo Omega"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Dirección de tu página",
+            "value": "omega"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Primera empresa",
+            "value": "Omega S.A."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear organización",
+            "waitFor": "Disponible"
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Recibimos el pedido"
+      }
+    },
+    {
+      "id": "registro-empresa-espera-movil",
+      "pair": "registro-empresa-espera",
+      "group": "registro",
+      "state": "Registro de empresa: espera la aprobación",
+      "board": "M-Registro-Empresa",
+      "props": {
+        "estado": "Espera aprobación"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=consumer-empty&route=%2Fregistro%2Fempresa%3Fgoogle%3Dcomplete",
+        "captureMode": "harness",
+        "userFixture": "consumer-empty",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/external/google/antiforgery",
+            "body": {
+              "requestToken": "visual-antiforgery"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/public-site/slug-availability",
+            "body": {
+              "slug": "omega",
+              "availability": "Available"
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/business-signup",
+            "body": {
+              "tenantId": "11111111-1111-4111-8111-111111111111",
+              "organizationName": "Grupo Omega",
+              "slug": "omega",
+              "requiresApproval": true,
+              "firstCompanyId": "22222222-2222-4222-8222-222222222222",
+              "status": "PendingApproval",
+              "notificationEmail": "mariana.lopez@gmail.com"
+            },
+            "status": 201
+          }
+        ],
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Nombre de la organización",
+            "value": "Grupo Omega"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Dirección de tu página",
+            "value": "omega"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Primera empresa",
+            "value": "Omega S.A."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear organización",
+            "waitFor": "Disponible"
+          }
+        ],
+        "readySelector": "main",
+        "readyText": "Recibimos el pedido"
+      }
+    },
+    {
+      "id": "registro-empresa-cerrada-escritorio",
+      "pair": "registro-empresa-cerrada",
+      "group": "registro",
+      "state": "Registro de empresa: el alta está cerrada",
+      "board": "Registro-Empresa",
+      "props": {
+        "estado": "Alta cerrada"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro/empresa?error=Auth.BusinessSignup.Closed",
+        "readyText": "Por ahora no se pueden registrar empresas"
+      }
+    },
+    {
+      "id": "registro-empresa-cerrada-movil",
+      "pair": "registro-empresa-cerrada",
+      "group": "registro",
+      "state": "Registro de empresa: el alta está cerrada",
+      "board": "M-Registro-Empresa",
+      "props": {
+        "estado": "Alta cerrada"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro/empresa?error=Auth.BusinessSignup.Closed",
+        "readyText": "Por ahora no se pueden registrar empresas"
+      }
+    }
+  ]
+}
