@@ -33,10 +33,12 @@ export function ImportantNotice({ open, onOpenChange, title, reason, detail, ste
             {detail ? <span className="text-[12.5px]">{detail}</span> : null}
           </div>
         </div>
-        <span className="text-[12.5px] font-semibold text-[var(--t3)]">{t("notice.whatCanYouDo")}</span>
+        {/* M-Pagina-Org y M-Cuenta (la hoja del aviso): en el teléfono, «Qué podés hacer» de 13,5 y los pasos de 15, con el
+            interlineado normal. */}
+        <span className="text-[12.5px] font-semibold text-[var(--t3)] max-md:text-[13.5px] max-md:leading-[normal]">{t("notice.whatCanYouDo")}</span>
         <ol className="flex flex-col gap-2.5">
-          {steps.map((step, index) => <li key={index} className="flex items-center gap-2.5 text-[13.5px] text-[var(--t1)]">
-            <span aria-hidden="true" data-step-number className="flex size-[22px] shrink-0 items-center justify-center rounded-full bg-[var(--s3)] text-[12px] font-semibold text-[var(--t2)]">{index + 1}</span>{step}
+          {steps.map((step, index) => <li key={index} className="flex items-center gap-2.5 text-[13.5px] text-[var(--t1)] max-md:text-[15px] max-md:leading-[normal]">
+            <span aria-hidden="true" data-step-number className="flex size-[22px] shrink-0 items-center justify-center rounded-full bg-[var(--s3)] text-[12px] font-semibold text-[var(--t2)] max-md:text-[13px]">{index + 1}</span>{step}
           </li>)}
         </ol>
       </DialogBody>

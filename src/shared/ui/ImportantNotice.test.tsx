@@ -25,6 +25,10 @@ describe("ImportantNotice · Criterio · Dialogos", () => {
     expect(within(dialog).getAllByRole("listitem").map((step) => step.textContent)).toEqual([
       "1Corregí los datos de la página", "2Pedí a la plataforma que la habilite",
     ]);
+    // M-Pagina-Org: en el teléfono, «Qué podés hacer» de 13,5 y los pasos de 15 con su número de 13.
+    expect(within(dialog).getByText("Qué podés hacer")).toHaveClass("max-md:text-[13.5px]");
+    expect(within(dialog).getAllByRole("listitem")[0]).toHaveClass("max-md:text-[15px]");
+    expect(within(dialog).getAllByRole("listitem")[0].querySelector("[data-step-number]")).toHaveClass("max-md:text-[13px]");
     expect(within(dialog).queryByRole("button", { name: "Cancelar" })).not.toBeInTheDocument();
     await userEvent.click(within(dialog).getByRole("button", { name: "Entendido" }));
     expect(onOpenChange).toHaveBeenCalledWith(false);
