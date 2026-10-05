@@ -62,8 +62,14 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
     );
 
     const title = screen.getByRole("heading", { name: "Verificar tu correo" });
-    expect(title).toHaveClass("md:text-[15px]", "font-semibold");
-    expect(title.parentElement).toHaveClass("md:min-h-12", "md:bg-[var(--cab)]", "md:border-b");
+    expect(title).toHaveClass("md:text-[15px]", "font-semibold", "tracking-[-0.01em]", "md:leading-normal");
+    // La línea de abajo del encabezado, la cálida de los encabezados arena (.cab); el diálogo, sin borde: solo su sombra.
+    expect(title.parentElement).toHaveClass("md:min-h-12", "md:bg-[var(--cab)]", "md:border-b", "md:border-[var(--borde-cab)]");
+    expect(document.querySelector("[data-slot='dialog-content']")?.className).not.toMatch(/(^|\s)md:border(\s|$)/);
+    // La ✕ del tablero (.ib): de 16, con trazo 2.
+    const cross = screen.getByRole("button", { name: "Cerrar" }).querySelector("svg");
+    expect(cross).toHaveAttribute("stroke-width", "2");
+    expect([...cross!.querySelectorAll("path")].map((path) => path.getAttribute("d"))).toEqual(["M7 7l10 10", "M17 7 7 17"]);
     expect(screen.getByText("Te mandamos un código.").parentElement).toHaveClass("flex", "flex-col", "gap-3.5", "md:p-5");
     expect(screen.getByRole("button", { name: "Verificar" }).parentElement).toHaveClass("md:border-t", "md:py-3");
     // «Criterio · Diálogos» (v97): atrás, la pantalla oscurecida, sin difuminar.

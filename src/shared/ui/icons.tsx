@@ -168,6 +168,17 @@ export function MoreVerticalIcon(props: IconProps) {
   );
 }
 
+/// La ✕ de los tableros: la de cerrar un diálogo o una hoja («Criterio · Diálogos», .ib) y la de «Revocar invitación»
+/// (Empresa y Usuarios). Va con trazo 2.
+export function CloseIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M7 7l10 10" />
+      <path d="M17 7 7 17" />
+    </Icon>
+  );
+}
+
 export function ChevronLeftIcon(props: IconProps) {
   return (
     <Icon {...props}>

@@ -19,6 +19,9 @@
   --s3: oklch(0.945 0.009 80);
   --borde: oklch(0.915 0.01 80);
   --borde2: oklch(0.84 0.014 80);
+  /* «Criterio · Diálogos» (.cab), «Criterio · Formularios» (.cab2) y «Criterio · Tablas» (.lista .cab): la línea de
+     abajo del encabezado arena de un diálogo o de una caja, un tono más cálido que --borde. */
+  --borde-cab: oklch(0.89 0.02 76);
   /* Lienzo v98: el borde gris suave de una bandera, para que la blanca no se pierda sobre el blanco. */
   --borde-bandera: oklch(0.24 0.014 78 / 0.12);
   --t1: oklch(0.24 0.012 60);
@@ -59,8 +62,8 @@
   /* Tablero Avisos (.p-aviso) y «Criterio · Avisos» (.toast3, .ic-ok): la tarjeta blanca de los avisos pasajeros de la
      compu, su sombra y el ícono de lo que salió bien. */
   --sombra-aviso: 0 12px 32px oklch(0.24 0.014 78 / 0.16);
-  /* «Criterio · Diálogos» (.dlg) y los menús y listas que se abren de los tableros (.menu, .o-lst): sus sombras largas. */
-  --sombra-dialogo: 0 24px 48px oklch(0.2 0.014 78 / 0.22);
+  /* «Criterio · Diálogos» (.cd) y los menús y listas que se abren de los tableros (.menu, .o-lst): sus sombras largas. */
+  --sombra-dialogo: 0 24px 48px oklch(0.2 0.014 78 / 0.28);
   --sombra-menu: 0 12px 32px oklch(0.24 0.014 78 / 0.14);
   --aviso-ok: oklch(0.55 0.13 155);
   --punto-ok: oklch(0.6 0.13 155);

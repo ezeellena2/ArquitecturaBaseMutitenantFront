@@ -29,7 +29,7 @@ describe("Dialog mobile layout", () => {
     expect(content.querySelector("[data-slot='dialog-handle']")).toHaveClass("md:hidden", "h-[5px]", "w-9");
     expect(screen.getByRole("button", { name: "Cerrar" })).toHaveClass("size-11", "md:size-8");
     expect(document.querySelector('[data-slot="dialog-header"]')).toHaveClass("md:bg-[var(--cab)]", "md:min-h-12", "max-md:bg-transparent");
-    expect(screen.getByRole("heading", { name: "Editar" })).toHaveClass("max-md:text-[18px]", "max-md:font-bold");
+    expect(screen.getByRole("heading", { name: "Editar" })).toHaveClass("max-md:text-[18px]", "max-md:font-bold", "max-md:leading-[1.3]");
     expect(screen.getByRole("button", { name: "Guardar" }).parentElement).toHaveClass("max-md:[&_button]:h-12", "max-md:[&_button]:flex-1", "max-md:border-0");
   });
 

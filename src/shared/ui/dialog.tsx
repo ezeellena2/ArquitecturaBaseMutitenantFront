@@ -1,11 +1,11 @@
 import * as React from "react"
 import { cn } from "cn"
-import { XIcon } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 // El rótulo de cierre sale de la traducción, también para los lectores de pantalla.
 import { useTranslation } from "react-i18next"
 
 import { Button } from "@/shared/ui/button"
+import { CloseIcon } from "@/shared/ui/icons"
 
 function Dialog({
   ...props
@@ -73,7 +73,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed bottom-0 left-0 z-50 grid max-h-[calc(100dvh-1rem)] w-full gap-0 overflow-y-auto rounded-t-[20px] border-0 bg-[var(--lado-activo)] p-0 text-[15px] shadow-[var(--sombra-hoja)] outline-none md:border md:border-[var(--borde)] md:text-[13px] md:shadow-[var(--sombra-dialogo)] data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[12px] md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0",
+          "fixed bottom-0 left-0 z-50 grid max-h-[calc(100dvh-1rem)] w-full gap-0 overflow-y-auto rounded-t-[20px] border-0 bg-[var(--lado-activo)] p-0 text-[15px] shadow-[var(--sombra-hoja)] outline-none md:text-[13px] md:shadow-[var(--sombra-dialogo)] data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[12px] md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0",
           size === "sm" ? "md:max-w-[420px]" : size === "preview" ? "md:max-w-[640px]" : "md:max-w-[560px]",
           // Lienzo v106 («Criterio · Decisiones»): en el teléfono toda hoja sube desde abajo con el alto de lo que lleva;
           // ninguna ocupa la pantalla completa.
@@ -90,7 +90,8 @@ function DialogContent({
         <span data-slot="dialog-handle" aria-hidden="true" className="mx-auto mt-2 mb-1 h-[5px] w-9 rounded-full bg-[var(--borde2)] md:hidden" />
         <PhoneCloseContext.Provider value={showCloseButton === true}>{children}</PhoneCloseContext.Provider>
         {/* Hojas del teléfono (.ap-hoja .hc .ap-ib): el ✕ de 44, con su cruz de 22, va centrado con el título: debajo de
-            la manija (17) y de los 4 de arriba del encabezado, a 6 del borde. */}
+            la manija (17) y de los 4 de arriba del encabezado, a 6 del borde. En la compu («Criterio · Diálogos», .ib), de
+            32 y gris, a 8 del borde. Es la ✕ de los tableros, con trazo 2. */}
         {showCloseButton ? (
           <DialogPrimitive.Close
             data-slot="dialog-close"
@@ -99,7 +100,7 @@ function DialogContent({
               showCloseButton === "desktop" && "max-md:hidden md:flex"
             )}
           >
-            <XIcon className="size-[22px] md:size-4" />
+            <CloseIcon strokeWidth={2} className="size-[22px] md:size-4" />
             <span className="sr-only">{t("actions.close")}</span>
           </DialogPrimitive.Close>
         ) : null}
@@ -116,7 +117,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-header"
       className={cn(
-        "flex flex-col justify-center gap-1 px-5 py-1 text-left max-md:bg-transparent md:min-h-12 md:border-b md:border-[var(--borde)] md:bg-[var(--cab)] md:py-2 md:pr-5",
+        "flex flex-col justify-center gap-1 px-5 py-1 text-left max-md:bg-transparent md:min-h-12 md:border-b md:border-[var(--borde-cab)] md:bg-[var(--cab)] md:py-2 md:pr-5",
         phoneClose ? "min-h-[52px] pr-14" : "pr-5",
         className
       )}
@@ -166,6 +167,8 @@ function DialogFooter({
   )
 }
 
+// «Criterio · Diálogos» (.cab h3): 15 en semibold, con -0,01em y el renglón de 1,5; en las hojas del teléfono (.ap-hoja
+// .hc h2), 18 en negrita con renglón de 1,3.
 function DialogTitle({
   className,
   ...props
@@ -173,7 +176,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("leading-tight font-semibold text-[var(--t1)] max-md:text-[18px] max-md:font-bold max-md:tracking-[-0.01em] md:text-[15px]", className)}
+      className={cn("font-semibold tracking-[-0.01em] text-[var(--t1)] max-md:text-[18px] max-md:leading-[1.3] max-md:font-bold md:text-[15px] md:leading-normal", className)}
       {...props}
     />
   )

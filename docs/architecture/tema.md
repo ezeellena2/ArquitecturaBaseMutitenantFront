@@ -20,6 +20,7 @@ Tonos cálidos para el contenido, verde petróleo como marca, y un **marco arena
 | `--cab` | `oklch(0.945 0.018 76)` | encabezados arena de tablas, cajas y diálogos |
 | `--s2` / `--s3` | `oklch(0.97 0.007 80)` / `oklch(0.945 0.009 80)` | superficies tenues (buscador, controles segmentados) |
 | `--borde` / `--borde2` | `oklch(0.915 0.01 80)` / `oklch(0.84 0.014 80)` | bordes normal y fuerte |
+| `--borde-cab` | `oklch(0.89 0.02 76)` | línea de abajo del encabezado arena de un diálogo o de una caja («Criterio · Diálogos», «Criterio · Formularios») |
 | `--borde-bandera` | `oklch(0.24 0.014 78 / 0.12)` | borde suave de una bandera (selector de país) |
 | `--t1` / `--t2` / `--t3` | `oklch(0.24 0.012 60)` / `oklch(0.47 0.012 60)` / `oklch(0.62 0.01 60)` | texto principal, secundario y tenue |
 | `--velo` | `oklch(0.2 0.014 78 / 0.42)` | velo detrás de diálogos y hojas móviles, igual al lienzo |
@@ -64,7 +65,7 @@ El estado es un **punto de 8 px y la palabra, sin fondo** («Criterio · Tablas 
 - Los rótulos de grupo del menú van sin mayúsculas ("Administración", no "ADMINISTRACIÓN").
 - **Teléfono:** el «+» flotante lleva `--sombra-fab` (`0 6px 16px oklch(0.3 0.06 195 / 0.3), 0 2px 4px oklch(0.3 0.06 195 / 0.2)`); la hoja que sube desde abajo, `--sombra-hoja` (`0 -8px 24px oklch(0.2 0.014 78 / 0.12)`), y la franja de los avisos, `--sombra-franja` (`0 8px 24px oklch(0.2 0.01 60 / 0.3)`). Los grupos son blancos sobre `--s2`, con radio de 14 px y un borde de 1 px en `--borde`.
 - **Página pública** (tableros Pagina-Publica y M-Pagina-Publica, `shared/ui/PublicPageCard`): la tarjeta blanca de 560 como máximo, con radio de 20 (18 en el teléfono) y `--sombra-tarjeta` (`--sombra-tarjeta-movil` en el teléfono), sobre `--fondo` con el brillo `--fondo-brillo` arriba a la derecha.
-- **Diálogos y menús de la compu** («Criterio · Diálogos», `.dlg`; los menús y listas que se abren, `.menu` y `.o-lst`): el diálogo lleva `--sombra-dialogo` (`0 24px 48px oklch(0.2 0.014 78 / 0.22)`) y el menú o la lista, `--sombra-menu` (`0 12px 32px oklch(0.24 0.014 78 / 0.14)`).
+- **Diálogos y menús de la compu** («Criterio · Diálogos», `.cd`; los menús y listas que se abren, `.menu` y `.o-lst`): el diálogo lleva `--sombra-dialogo` (`0 24px 48px oklch(0.2 0.014 78 / 0.28)`) y el menú o la lista, `--sombra-menu` (`0 12px 32px oklch(0.24 0.014 78 / 0.14)`).
 - **Avisos pasajeros en la compu** (tablero Avisos): abajo a la derecha, una tarjeta blanca de 340 con borde, radio de 10 y `--sombra-aviso` (`0 12px 32px oklch(0.24 0.014 78 / 0.16)`); solo el ícono lleva color (`--aviso-ok`, `--peligro`).
 
 ## Menú lateral y panel de Administración
