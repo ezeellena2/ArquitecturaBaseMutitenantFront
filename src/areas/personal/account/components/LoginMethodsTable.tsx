@@ -1,9 +1,10 @@
-import { Mail, MoreVertical, Star, Trash2 } from "lucide-react";
+import { MoreVertical, Star, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import googleMark from "@/assets/google-mark.svg";
 import type { AccountLoginMethod } from "@/shared/api/types";
 import { Button } from "@/shared/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
+import { MailIcon } from "@/shared/ui/icons";
 import { List, ListItem } from "@/shared/ui/List";
 import { AccountGoogleButton } from "./AccountGoogleButton";
 
@@ -15,15 +16,20 @@ interface Props {
 }
 
 function MethodIcon({ method }: { method: AccountLoginMethod }) {
-  return method.type === "Google" ? <img src={googleMark} width="16" height="16" alt="" aria-hidden="true" /> : <Mail size={16} strokeWidth={1.75} aria-hidden="true" />;
+  return method.type === "Google" ? <img src={googleMark} width="16" height="16" alt="" aria-hidden="true" /> : <MailIcon className="size-4" />;
 }
 
-function methodDetail(method: AccountLoginMethod, t: (key: string, options?: Record<string, unknown>) => string): string {
-  return method.managedByTenantId
-    ? t("managed", { organization: method.managedByOrganizationName })
-    : method.isPrimary
-      ? t("primary")
-      : t(method.isVerified ? "verified" : "pending");
+/// Tableros Cuenta y Cuenta-Metodo: debajo del dato, «Principal» y «Administrado por…» (las dos, si son las dos), «Sin
+/// verificar» o nada; un método verificado no lo dice («el estado solo si pide atención», Criterio · Decisiones). Google va
+/// por su nombre y lleva debajo su correo. Toda fila mide 56, diga algo debajo o no.
+function methodDetail(method: AccountLoginMethod, t: (key: string, options?: Record<string, unknown>) => string): string | undefined {
+  if (!method.isVerified) return t("pending");
+  const parts = [
+    method.type === "Google" ? method.value : null,
+    method.isPrimary ? t("primary") : null,
+    method.managedByTenantId ? t("managed", { organization: method.managedByOrganizationName }) : null,
+  ].filter((part): part is string => Boolean(part));
+  return parts.length > 0 ? parts.join(" · ") : undefined;
 }
 
 function MethodMenu({ method, onAction }: { method: AccountLoginMethod; onAction: Props["onAction"] }) {
@@ -46,7 +52,7 @@ export function LoginMethodsTable({ methods, canLinkGoogle = false, onAction }: 
   const { t } = useTranslation("account");
   const visible = methods.filter((method) => method.type !== "Phone");
   return <List label={t("methods")}>
-    {visible.map((method) => <ListItem key={method.id} icon={<MethodIcon method={method} />} title={method.value} detail={methodDetail(method, t)}>
+    {visible.map((method) => <ListItem key={method.id} className="min-h-14" icon={<MethodIcon method={method} />} title={method.type === "Google" ? t("google") : method.value} detail={methodDetail(method, t)}>
       {!method.isVerified ? <Button type="button" variant="link" size="sm" className="px-1 text-[13px]" onClick={() => onAction("verify", method)}>{t("verify")}</Button> : null}
       {method.canMakePrimary || method.canRemove ? <MethodMenu method={method} onAction={onAction} /> : null}
     </ListItem>)}

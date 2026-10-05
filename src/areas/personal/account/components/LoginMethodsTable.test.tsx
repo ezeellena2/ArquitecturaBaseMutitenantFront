@@ -38,6 +38,23 @@ describe("métodos de cuenta", () => {
     expect(onAction).toHaveBeenCalledWith("primary", managed);
   });
 
+  // Tableros Cuenta y Cuenta-Metodo: un método verificado no dice «Verificado» (solo «Principal» o «Administrado por…», o
+  // nada); Google va por su nombre, con su correo debajo; el principal administrado dice las dos cosas.
+  it("no dice «Verificado» y muestra Google por su nombre, con su correo debajo", () => {
+    const other: AccountLoginMethod = { ...method, id: "other", value: "ana.trabajo@example.test", isPrimary: false, canRemove: true };
+    const google: AccountLoginMethod = { ...method, id: "google", type: "Google", value: "ana@gmail.com", isPrimary: false, canRemove: true };
+    const managedPrimary: AccountLoginMethod = { ...method, id: "managed", value: "ana@delta.ejemplo.com",
+      managedByTenantId: "tenant-delta", managedByOrganizationName: "Grupo Delta" };
+    renderWithProviders(<LoginMethodsTable methods={[managedPrimary, other, google]} onAction={vi.fn()} />);
+
+    const [first, second, third] = screen.getAllByRole("listitem");
+    expect(first).toHaveTextContent("ana@delta.ejemplo.comPrincipal · Administrado por Grupo Delta");
+    expect(second).toHaveTextContent(/^ana\.trabajo@example\.test$/);
+    expect(second).toHaveClass("min-h-14");
+    expect(third).toHaveTextContent(/^Googleana@gmail\.com$/);
+    expect(screen.queryByText("Verificado")).not.toBeInTheDocument();
+  });
+
   it("ofrece verificar un pendiente y entrega su id", async () => {
     const user = userEvent.setup();
     const onAction = vi.fn();
