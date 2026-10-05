@@ -67,7 +67,6 @@ export function CompaniesPage() {
   const [draft, setDraft] = useState<CompanyDraft>(emptyCompanyDraft);
   const [failure, setFailure] = useState<unknown>();
   const validation = useCompanyValidation(draft);
-  const { cuitType } = validation;
   const [statusTarget, setStatusTarget] = useState<CompanyResponse | null>(null);
 
   const invalidate = async () => {
@@ -83,7 +82,7 @@ export function CompaniesPage() {
   };
   const create = useIdempotentMutation((request: CreateCompanyRequest, key) => createCompany(request, key));
   const update = useMutation({
-    mutationFn: (company: CompanyResponse) => updateCompany(company.id, { ...companyPayload(draft, cuitType?.code), version: company.version }),
+    mutationFn: (company: CompanyResponse) => updateCompany(company.id, { ...companyPayload(draft), version: company.version }),
     onSuccess: async () => finishSave(false),
     onError: (error) => setFailure(error),
   });
@@ -118,7 +117,7 @@ export function CompaniesPage() {
     // «Criterio · Formularios»: el nombre y el CUIT se revisan al tocar el botón; lo que falta lo dice el campo.
     if (!validation.validate()) return;
     setFailure(undefined);
-    const request: CreateCompanyRequest = companyPayload(draft, cuitType?.code);
+    const request: CreateCompanyRequest = companyPayload(draft);
     if (editingCompany) update.mutate(editingCompany);
     else create.mutate(request, { onSuccess: () => finishSave(true), onError: setFailure });
   }

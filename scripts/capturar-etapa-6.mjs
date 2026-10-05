@@ -177,6 +177,8 @@ export function companyDetailResponses() {
     api("GET", "/api/companies/company-1", company),
     api("GET", "/api/companies/company-1/members/paged", pageOf(companyMembers), 200, { page: "1", pageSize: "10" }),
     api("GET", "/api/companies/company-1/members/filter-counts", { all: 6, active: 4, pendingDeletion: 1, inactive: 1, invited: 0 }),
+    // Como el back (B4): los roles que se asignan en la empresa, ya filtrados (los de cualquier empresa y los propios).
+    api("GET", "/api/companies/company-1/roles/paged", pageOf([companyAdmin, companyReader], 100, 2), 200, { page: "1", pageSize: "100", sort: "name" }),
     ...commonAdminResponses(),
   ];
 }

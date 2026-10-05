@@ -31,10 +31,10 @@ export function useCuitType() {
   [data]);
 }
 
-export function companyPayload(draft: CompanyDraft, cuitCode: string | undefined) {
+/// Solo el número: el tipo de identificación sale del país de la organización (el back lo resuelve).
+export function companyPayload(draft: CompanyDraft) {
   return {
     name: draft.name.trim(),
-    taxIdType: draft.taxNumber ? cuitCode ?? null : null,
     taxIdNumber: draft.taxNumber || null,
     timeZoneId: draft.timeZoneId || null,
   };
@@ -80,7 +80,6 @@ export function useCompanyValidation(draft: CompanyDraft) {
   const nameMissing = draft.name.trim() === "";
   const taxIdInvalid = draft.taxNumber !== "" && !isValidTaxId(cuitType, draft.taxNumber);
   return {
-    cuitType,
     errors: { name: checked && nameMissing, taxId: checked && taxIdInvalid } satisfies CompanyFieldErrors,
     /** Al tocar Guardar: marca lo que hay que corregir y dice si se puede mandar. */
     validate: () => { setChecked(true); return !nameMissing && !taxIdInvalid; },

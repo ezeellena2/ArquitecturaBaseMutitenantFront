@@ -204,7 +204,7 @@ const roleDescriptions = new Map([
   ["Auditor", "Ve los usuarios y la auditoría. No cambia nada."], ["Administrador", "Administra la empresa: sus miembros y sus roles."],
   ["Solo lectura", "Ve los miembros de la empresa. No cambia nada."],
 ]);
-const withRoleDescriptions = (app) => ({ ...app, responses: app.responses.map((item) => item.path === "/api/roles/paged"
+const withRoleDescriptions = (app) => ({ ...app, responses: app.responses.map((item) => item.path.endsWith("/roles/paged")
   ? { ...item, body: { ...item.body, items: item.body.items.map((role) => ({ ...role, description: roleDescriptions.get(role.name) ?? role.description })) } }
   : item) });
 

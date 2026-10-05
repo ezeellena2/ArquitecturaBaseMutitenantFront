@@ -110,7 +110,7 @@ describe("CompaniesPage", () => {
     await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
     await user.paste("Empresa Nueva S.A.");
     await user.click(within(dialog).getByRole("button", { name: "Crear empresa" }));
-    await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Empresa Nueva S.A.", taxIdType: null, taxIdNumber: null, timeZoneId: null }));
+    await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Empresa Nueva S.A.", taxIdNumber: null, timeZoneId: null }));
     expect(keys.at(-1)).toMatch(/^[0-9a-f-]{36}$/i);
     expect(await screen.findByText("Creamos Empresa Nueva S.A. Quedaste con el rol Administrador.")).toBeVisible();
 
@@ -132,7 +132,7 @@ describe("CompaniesPage", () => {
     await user.paste("30712345671");
     expect(within(again).queryByText("Revisá el CUIT: son 11 números.")).not.toBeInTheDocument();
     await user.click(within(again).getByRole("button", { name: "Crear empresa" }));
-    await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Delta Norte S.A.", taxIdType: "AR-CUIT", taxIdNumber: "30712345671", timeZoneId: null }));
+    await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Delta Norte S.A.", taxIdNumber: "30712345671", timeZoneId: null }));
   });
 
   // Tableros Empresas y M-Empresas, «Criterio · Formularios»: sin nombre, «Crear empresa» no lo frena el navegador; al

@@ -14,7 +14,6 @@ import type {
   OrganizationUserResponse,
   PagedRequest,
   RoleResponse,
-  RoleScopeFilter,
   UpdateCompanyMemberRolesRequest,
   UpdateCompanyRequest,
 } from "@/shared/api/types";
@@ -98,10 +97,13 @@ export function changeCompanyMemberStatus(companyId: string, memberId: string, r
   return api.put<void>(`/api/companies/${encodeURIComponent(companyId)}/members/${encodeURIComponent(memberId)}/status`, request);
 }
 
-export function fetchAssignableCompanyRoles(companyId: string): Promise<PagedResult<RoleResponse>> {
-  const scope: RoleScopeFilter = "Company";
-  return api.get<PagedResult<RoleResponse>>(`/api/roles/paged?scope=${scope}&page=1&pageSize=100&sort=name`)
-    .then((result) => ({ ...result, items: result.items.filter((role) => role.scope === "AnyCompany" || role.companyId === companyId) }));
+/// Los roles que se asignan en una empresa, ya filtrados por el back: los de cualquier empresa y los propios. Quien ve sus
+/// miembros los pide a la ruta de la empresa, que pide `company.members.read` (B4: el Administrador de empresa no tiene
+/// `roles.read`); quien solo ve los roles de la organización, a `/api/roles/paged` con la empresa.
+export function fetchAssignableCompanyRoles(companyId: string, canReadMembers: boolean): Promise<PagedResult<RoleResponse>> {
+  const id = encodeURIComponent(companyId);
+  const page = "page=1&pageSize=100&sort=name";
+  return api.get<PagedResult<RoleResponse>>(canReadMembers ? `/api/companies/${id}/roles/paged?${page}` : `/api/roles/paged?companyId=${id}&${page}`);
 }
 
 export function fetchOrganizationMembers(): Promise<PagedResult<OrganizationUserResponse>> {

@@ -1880,6 +1880,172 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/platform/operators/{id}/invitation/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** «Reenviar invitación»: renueva los 7 días de una invitación sin aceptar y manda el correo de nuevo. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformOperatorInvitationResponse"];
+                        "application/json": components["schemas"]["PlatformOperatorInvitationResponse"];
+                        "text/json": components["schemas"]["PlatformOperatorInvitationResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/operators/{id}/invitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** «Revocar invitación»: borra una invitación sin aceptar y libera el correo. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform/accounts/{id}/operator": {
         parameters: {
             query?: never;
@@ -3868,7 +4034,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/companies/{id}": {
+    "/api/companies/{companyId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -3880,7 +4046,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: string;
+                    companyId: string;
                 };
                 cookie?: never;
             };
@@ -3940,7 +4106,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: string;
+                    companyId: string;
                 };
                 cookie?: never;
             };
@@ -4110,7 +4276,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/companies/{id}/status": {
+    "/api/companies/{companyId}/status": {
         parameters: {
             query?: never;
             header?: never;
@@ -4123,7 +4289,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: string;
+                    companyId: string;
                 };
                 cookie?: never;
             };
@@ -4237,9 +4403,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["PagedResultOfCompanyMemberResponse"];
-                        "application/json": components["schemas"]["PagedResultOfCompanyMemberResponse"];
-                        "text/json": components["schemas"]["PagedResultOfCompanyMemberResponse"];
+                        "text/plain": components["schemas"]["PagedResultOfCompanyMemberHttpResponse"];
+                        "application/json": components["schemas"]["PagedResultOfCompanyMemberHttpResponse"];
+                        "text/json": components["schemas"]["PagedResultOfCompanyMemberHttpResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -4676,6 +4842,95 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/companies/{companyId}/roles/paged": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Sort?: string;
+                    Search?: string;
+                };
+                header?: never;
+                path: {
+                    companyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PagedResultOfRoleResponse"];
+                        "application/json": components["schemas"]["PagedResultOfRoleResponse"];
+                        "text/json": components["schemas"]["PagedResultOfRoleResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/home": {
         parameters: {
             query?: never;
@@ -4755,6 +5010,7 @@ export interface paths {
                     Period?: string;
                     Category?: string;
                     ActorId?: string;
+                    ActorKind?: string;
                     Search?: string;
                 };
                 header?: never;
@@ -4835,6 +5091,7 @@ export interface paths {
                     Period?: string;
                     Category?: string;
                     ActorId?: string;
+                    ActorKind?: string;
                     Search?: string;
                 };
                 header?: never;
@@ -5396,9 +5653,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["PagedResultOfOrganizationUserResponse"];
-                        "application/json": components["schemas"]["PagedResultOfOrganizationUserResponse"];
-                        "text/json": components["schemas"]["PagedResultOfOrganizationUserResponse"];
+                        "text/plain": components["schemas"]["PagedResultOfOrganizationUserHttpResponse"];
+                        "application/json": components["schemas"]["PagedResultOfOrganizationUserHttpResponse"];
+                        "text/json": components["schemas"]["PagedResultOfOrganizationUserHttpResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -5552,9 +5809,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["OrganizationUserResponse"];
-                        "application/json": components["schemas"]["OrganizationUserResponse"];
-                        "text/json": components["schemas"]["OrganizationUserResponse"];
+                        "text/plain": components["schemas"]["OrganizationUserHttpResponse"];
+                        "application/json": components["schemas"]["OrganizationUserHttpResponse"];
+                        "text/json": components["schemas"]["OrganizationUserHttpResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -6190,9 +6447,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["PublicPageResponse"];
-                        "application/json": components["schemas"]["PublicPageResponse"];
-                        "text/json": components["schemas"]["PublicPageResponse"];
+                        "text/plain": components["schemas"]["PublicPageHttpResponse"];
+                        "application/json": components["schemas"]["PublicPageHttpResponse"];
+                        "text/json": components["schemas"]["PublicPageHttpResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -7638,9 +7895,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["GoogleSignupAntiforgeryResponse"];
-                        "application/json": components["schemas"]["GoogleSignupAntiforgeryResponse"];
-                        "text/json": components["schemas"]["GoogleSignupAntiforgeryResponse"];
+                        "text/plain": components["schemas"]["GoogleSignupAntiforgeryHttpResponse"];
+                        "application/json": components["schemas"]["GoogleSignupAntiforgeryHttpResponse"];
+                        "text/json": components["schemas"]["GoogleSignupAntiforgeryHttpResponse"];
                     };
                 };
             };
@@ -9431,7 +9688,7 @@ export interface components {
             /** Format: int32 */
             invited: number;
         };
-        CompanyMemberResponse: {
+        CompanyMemberHttpResponse: {
             /** Format: uuid */
             memberId: string;
             /** Format: uuid */
@@ -9499,9 +9756,9 @@ export interface components {
             /** Format: int32 */
             sortOrder?: null | number;
         };
+        /** @description Solo el número de identificación fiscal: el tipo sale del país de la organización. */
         CreateCompanyHttpRequest: {
             name?: null | string;
-            taxIdType?: null | string;
             taxIdNumber?: null | string;
             timeZoneId?: null | string;
         };
@@ -9596,7 +9853,7 @@ export interface components {
             redirectUrl: string;
         };
         /** @description Token de formulario de un solo origen para iniciar Registro con Google. */
-        GoogleSignupAntiforgeryResponse: {
+        GoogleSignupAntiforgeryHttpResponse: {
             requestToken: string;
         };
         /** @description El último cambio de la auditoría; `null` si todavía no hay. */
@@ -9750,7 +10007,10 @@ export interface components {
          * @enum {string}
          */
         MemberStatus: "Invited" | "Active" | "Inactive" | "Removed";
-        /** @description Cuenta, accesos y preferencias efectivas de la sesión actual. */
+        /**
+         * @description Cuenta, accesos y preferencias efectivas de la sesión actual. El correo es el del perfil activo: en una
+         *     organización, el verificado que ella administra y, si no hay, el principal; en los demás perfiles, el principal.
+         */
         MeResponse: {
             /** Format: uuid */
             id: string;
@@ -9803,6 +10063,7 @@ export interface components {
             changes: components["schemas"]["OrganizationAuditChangeResponse"][];
             actorEmail?: null | components["schemas"]["Email"];
         };
+        /** @description Un dominio de correo de la organización; ManagedEmailCount cuenta los correos verificados de ese dominio que administra. */
         OrganizationDomainResponse: {
             /** Format: uuid */
             id: string;
@@ -9816,6 +10077,8 @@ export interface components {
             verifiedAtUtc?: null | string;
             /** Format: uint32 */
             version: number;
+            /** Format: int32 */
+            managedEmailCount: number;
         };
         /** @description La invitación emitida y cuándo vence, para el aviso «Invitamos a … La invitación vence el …». */
         OrganizationInvitationIssuedResponse: {
@@ -9864,7 +10127,7 @@ export interface components {
             /** Format: int32 */
             inactive: number;
         };
-        OrganizationUserResponse: {
+        OrganizationUserHttpResponse: {
             /** Format: uuid */
             memberId: string;
             /** Format: uuid */
@@ -9911,8 +10174,8 @@ export interface components {
             search?: null | string;
         };
         /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
-        PagedResultOfCompanyMemberResponse: {
-            items: components["schemas"]["CompanyMemberResponse"][];
+        PagedResultOfCompanyMemberHttpResponse: {
+            items: components["schemas"]["CompanyMemberHttpResponse"][];
             /** Format: int32 */
             page: number;
             /** Format: int32 */
@@ -9939,8 +10202,8 @@ export interface components {
             hasNext?: boolean;
         };
         /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
-        PagedResultOfOrganizationUserResponse: {
-            items: components["schemas"]["OrganizationUserResponse"][];
+        PagedResultOfOrganizationUserHttpResponse: {
+            items: components["schemas"]["OrganizationUserHttpResponse"][];
             /** Format: int32 */
             page: number;
             /** Format: int32 */
@@ -10021,6 +10284,7 @@ export interface components {
         /**
          * @description Una fila de «Para resolver». `Area` y `Kind` son claves estables: el front arma el texto, el estado y la
          *     acción. `SinceUtc` ordena; `DueAtUtc` es la fecha del detalle (por ejemplo, cuándo se elimina).
+         *     `CompanyId` y `CompanyName` vienen cuando el pendiente es de una empresa (Inicio-Miembro).
          */
         PendingItem: {
             area: string;
@@ -10033,6 +10297,9 @@ export interface components {
             dueAtUtc?: null | string;
             /** Format: uuid */
             targetId?: null | string;
+            /** Format: uuid */
+            companyId?: null | string;
+            companyName?: null | string;
         };
         /**
          * @description Identifica un documento legal y su versión pendiente de aceptación. Permite que el front solicite la
@@ -10084,6 +10351,8 @@ export interface components {
             /** Format: date-time */
             lastSignInAtUtc?: null | string;
             lastSignInMethod?: null | components["schemas"]["LoginAuditMethod"];
+            /** Format: date-time */
+            invitationExpiresAtUtc?: null | string;
             hasPersonalSpace: boolean;
             deletion?: null | components["schemas"]["PlatformAccountDeletionResponse"];
             loginMethods: components["schemas"]["PlatformAccountLoginMethodResponse"][];
@@ -10132,7 +10401,10 @@ export interface components {
             /** Format: date-time */
             endedAtUtc?: null | string;
         };
-        /** @description Fila del listado: el correo principal completo identifica la cuenta, como en el tablero Cuentas. */
+        /**
+         * @description Fila del listado: el correo principal completo identifica la cuenta, como en el tablero Cuentas. Una invitación de
+         *     operador sin aceptar lleva su vencimiento (ADR 0042).
+         */
         PlatformAccountResponse: {
             /** Format: uuid */
             id: string;
@@ -10146,15 +10418,18 @@ export interface components {
             /** Format: date-time */
             lastSignInAtUtc?: null | string;
             lastSignInMethod?: null | components["schemas"]["LoginAuditMethod"];
+            /** Format: date-time */
+            invitationExpiresAtUtc?: null | string;
             /** Format: uint32 */
             version: number;
         };
         /**
          * @description Estado que ve Plataforma. NeedsRecovery se deriva: cuenta Active sin ningún método que sirva para ingresar;
-         *     los demás estados de la cuenta tienen prioridad.
+         *     los demás estados de la cuenta tienen prioridad. Invited e InvitationExpired son la invitación de un operador
+         *     sin aceptar, vigente o vencida (ADR 0042).
          * @enum {string}
          */
-        PlatformAccountState: "Active" | "Suspended" | "NeedsRecovery" | "PendingDeletion" | "Deleted";
+        PlatformAccountState: "Active" | "Suspended" | "NeedsRecovery" | "PendingDeletion" | "Deleted" | "Invited" | "InvitationExpired";
         PlatformAccountStateCount: {
             state: components["schemas"]["PlatformAccountState"];
             /** Format: int32 */
@@ -10228,10 +10503,15 @@ export interface components {
             effectiveAtUtc: string;
             isCurrent: boolean;
         };
-        /** @description La cuenta del operador invitado: aparece enseguida en Cuentas. */
+        /**
+         * @description La cuenta del operador invitado, que figura en Cuentas como «Invitación pendiente», y el vencimiento de la
+         *     invitación (ADR 0042).
+         */
         PlatformOperatorInvitationResponse: {
             /** Format: uuid */
             id: string;
+            /** Format: date-time */
+            expiresAtUtc: string;
         };
         /** @description Solo metadatos de publicación; no incluye contenido, logo ni contacto de la página. */
         PlatformPublicSiteResponse: {
@@ -10348,7 +10628,7 @@ export interface components {
             /** Format: int32 */
             retryAfter?: null | number;
         };
-        PublicPageResponse: {
+        PublicPageHttpResponse: {
             slug?: null | string;
             name: string;
             description?: null | string;
@@ -10526,9 +10806,9 @@ export interface components {
             /** Format: int32 */
             sortOrder?: null | number;
         };
+        /** @description Solo el número de identificación fiscal: el tipo sale del país de la organización. */
         UpdateCompanyHttpRequest: {
             name?: null | string;
-            taxIdType?: null | string;
             taxIdNumber?: null | string;
             timeZoneId?: null | string;
             /** Format: uint32 */

@@ -91,7 +91,7 @@ export function CompanyDetailPage() {
   const company = useQuery({ queryKey: companyQueryKey(id), queryFn: () => fetchCompany(id), enabled: Boolean(id), meta: { silent: true, blocksView: true } });
   useBreadcrumbLeaf(company.data?.name);
   const counts = useQuery({ queryKey: companyMembersCountQueryKey(id, debouncedSearch || undefined), queryFn: () => fetchCompanyMemberCounts(id, debouncedSearch || undefined), enabled: canReadMembers && Boolean(id), meta: { silent: true } });
-  const roles = useQuery({ queryKey: ["roles", "company-options", id], queryFn: () => fetchAssignableCompanyRoles(id), enabled: (canReadRoles || canReadMembers) && Boolean(id), meta: { silent: true } });
+  const roles = useQuery({ queryKey: ["roles", "company-options", id, canReadMembers], queryFn: () => fetchAssignableCompanyRoles(id, canReadMembers), enabled: (canReadRoles || canReadMembers) && Boolean(id), meta: { silent: true } });
   const activeRoles = (roles.data?.items ?? []).filter((role) => !role.isSystemRole || role.name !== "TenantAdmin");
   const [tab, setTab] = useState<CompanyTab>("members");
   // Los roles propios se paginan en el cliente: el pie es el mismo que el de Miembros (tablero Empresa).
@@ -110,7 +110,6 @@ export function CompanyDetailPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [editDraft, setEditDraft] = useState<CompanyDraft>(emptyCompanyDraft);
   const editValidation = useCompanyValidation(editDraft);
-  const { cuitType } = editValidation;
   const [editFailure, setEditFailure] = useState<unknown>();
   // Un 409 de concurrencia en un diálogo deja la ficha vieja: al cerrarlo se vuelve a leer (la ficha no tiene cambios
   // sin guardar propios). Va aparte del error, que se borra al cambiar algo en el diálogo.
@@ -149,7 +148,7 @@ export function CompanyDetailPage() {
   });
   const saveCompany = useMutation({
     mutationFn: () => {
-      const payload: UpdateCompanyRequest = { ...companyPayload(editDraft, cuitType?.code), version: company.data!.version };
+      const payload: UpdateCompanyRequest = { ...companyPayload(editDraft), version: company.data!.version };
       return updateCompany(id, payload);
     },
     onSuccess: async () => { setEditOpen(false); setEditFailure(undefined); toast.success(t("companies:messages.detailUpdated")); await invalidate(); },
