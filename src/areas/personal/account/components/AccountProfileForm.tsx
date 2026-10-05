@@ -14,7 +14,7 @@ import type { MeResponse } from "@/shared/api/types";
 import { changeCulture } from "@/shared/i18n";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { Page } from "@/shared/ui/Page";
-import { Section } from "@/shared/ui/Section";
+import { Section, SectionFields } from "@/shared/ui/Section";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
@@ -78,11 +78,11 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
       <form id="account-profile" aria-label={t("title")} onSubmit={form.handleSubmit(save)}>
         <Section title={t("data")}>
           {/* Tablero Cuenta: nombre, idioma y zona en tres columnas iguales, al ancho de la tarjeta. */}
-          <div className="grid grid-cols-1 items-start gap-4 px-4 py-4 lg:grid-cols-3 lg:px-5 lg:py-4 max-md:gap-3.5 max-md:py-3.5">
+          <SectionFields className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 max-md:gap-3.5">
             <div className="min-w-0"><FormField label={t("name")} error={form.formState.errors.displayName?.message}><Input {...form.register("displayName")} autoComplete="name" /></FormField></div>
             <div className="min-w-0"><Controller control={form.control} name="culture" render={({ field }) => <FormField label={t("culture")} error={form.formState.errors.culture?.message}><CultureSelect value={field.value} onChange={field.onChange} placeholder={t("culture")} /></FormField>} /></div>
             <div className="min-w-0"><Controller control={form.control} name="timeZoneId" render={({ field }) => <FormField label={t("timeZone")} error={form.formState.errors.timeZoneId?.message}><TimeZoneSelect value={field.value} onChange={field.onChange} placeholder={t("timeZone")} /></FormField>} /></div>
-          </div>
+          </SectionFields>
         </Section>
       </form>
       {children}

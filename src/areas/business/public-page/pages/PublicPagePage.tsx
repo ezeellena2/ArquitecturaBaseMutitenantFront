@@ -18,7 +18,7 @@ import { Input } from "@/shared/ui/input";
 import { phoneDraftFromE164 } from "@/shared/phone/phoneInput";
 import { PhoneField, type PhoneDraft } from "@/shared/ui/fields/PhoneField";
 import { Page } from "@/shared/ui/Page";
-import { Section } from "@/shared/ui/Section";
+import { Section, SectionFields } from "@/shared/ui/Section";
 import { Switch } from "@/shared/ui/switch";
 import { Textarea } from "@/shared/ui/textarea";
 import { DateText } from "@/shared/ui/format/DateText";
@@ -157,7 +157,6 @@ export function PublicPagePage() {
   </span> : undefined;
   const summary = state ? <>{state}{edit.unsaved ? <><span aria-hidden="true">{" · "}</span>{edit.unsaved}</> : null}</> : undefined;
   // Tablero M-Pagina-Org: los campos van adentro de la tarjeta blanca, uno debajo del otro.
-  const fieldsClass = "grid gap-4 p-4 md:grid-cols-2 md:p-5 max-md:gap-3.5 max-md:px-4 max-md:py-3.5";
 
   // «Criterio · Avisos» (Pantalla de error): la página no cargó y no hay nada que mostrar.
   if (page.isError && !pageData) return <LoadErrorPage onRetry={() => { void page.refetch(); }} />;
@@ -207,7 +206,7 @@ export function PublicPagePage() {
                 </label>
               </span>
             </div>
-            <div className={fieldsClass}>
+            <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
               <div className="flex flex-col gap-1.5">
                 {/* El sufijo va sobre el borde derecho del campo: FormField ata el rótulo a su único hijo, el Input. */}
                 <div className="relative">
@@ -220,16 +219,16 @@ export function PublicPagePage() {
               </div>
               <FormField label={t("publicPage:fields.name")} required><Input value={draft.name} maxLength={120} onChange={(event) => setDraftState({ ...draft, name: event.target.value })} /></FormField>
               <div className="md:col-span-2"><FormField label={t("publicPage:fields.description")}><Textarea value={draft.description} maxLength={1000} onChange={(event) => setDraftState({ ...draft, description: event.target.value })} /></FormField></div>
-            </div>
+            </SectionFields>
           </Section>
 
           <Section title={t("publicPage:contactTitle")}>
-            <div className={fieldsClass}>
+            <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
               <FormField label={t("publicPage:fields.email")}><Input type="email" value={draft.contactEmail} maxLength={254} onChange={(event) => setDraftState({ ...draft, contactEmail: event.target.value })} /></FormField>
               <FormField label={t("publicPage:fields.phone")}><PhoneField value={draft.contactPhone} onChange={(contactPhone) => setDraftState({ ...draft, contactPhone })} /></FormField>
               <FormField label={t("publicPage:fields.address")}><Input value={draft.address} maxLength={500} onChange={(event) => setDraftState({ ...draft, address: event.target.value })} /></FormField>
               <FormField label={t("publicPage:fields.website")}><Input type="url" value={draft.website} maxLength={2048} onChange={(event) => setDraftState({ ...draft, website: event.target.value })} /></FormField>
-            </div>
+            </SectionFields>
           </Section>
         </> : null}
       </div>

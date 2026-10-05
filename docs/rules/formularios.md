@@ -9,7 +9,7 @@
   - se monta solo mientras está abierto.
 - **Pantalla:**
   - `Page` con `backTo` y **`useEditPage`** (`shared/hooks`), que da «Cambios sin guardar» para la segunda línea de la banda, el `ConcurrencyBanner` del 409, la franja `FormError` del error de guardado y «¿Salir sin guardar?» (con `useUnsavedChangesGuard`); cada error va en un solo lugar;
-  - **una caja por tema** (`Section`), con el título en el encabezado arena; lo asignado va debajo, en su propia caja (como los permisos en el editor de roles);
+  - **una caja por tema** (`Section`), con el título en el encabezado arena; lo asignado va debajo, en su propia caja (como los permisos en el editor de roles). Los campos de la caja van en `SectionFields`, que pone el relleno del criterio (16 arriba y 20 a los costados y abajo; en el teléfono, el de la tarjeta o nada si van sueltos); quien la usa pone solo las columnas y la separación;
   - **editar algo que ya existe** lleva «Descartar cambios», que vuelve a lo guardado sin salir de la pantalla, y «Guardar cambios»; **crear algo nuevo** lleva «Cancelar», que vuelve (con «¿Salir sin guardar?» si hay cambios), y la acción («Crear rol»).
 - **Validación:** `react-hook-form` + `zod` cuando hay reglas; en un diálogo simple, un draft en `useState`. Los mensajes salen de i18n.
 - **Campos:** `FormField` (rótulo, control, error, `aria-describedby`) + el field del tipo (`MoneyField`, `DateField`, `PercentField`…). El control más simple para cada dato: pocas opciones → `Select`; varias a la vez → `MultiSelect`.
@@ -50,6 +50,7 @@
 - `CompanyDetailPage.test.tsx` (E7), `CompaniesPage.test.tsx` (E7), `UserDetailPage.test.tsx` (E7) y `UsersPage.test.tsx` (E7, «Invitar usuario»): el error de un diálogo, el 409 incluido, sale una sola vez, en su franja arriba de los botones; después de un 409, cerrar el diálogo vuelve a leer la ficha, salvo con cambios sin guardar. `dialog.test.tsx` (E7): el fondo, sin difuminar. `AuditPage.test.tsx` y `PublicPagePage.test.tsx` (E7): el detalle de un movimiento y la vista previa usan el ancho normal de la pieza (`size`), sin anchos propios. `FormError.test.tsx` (E7): la letra de la franja en la app del teléfono.
 - `UserDetailPage.test.tsx` y `CompanyDetailPage.test.tsx` (E7): «Sumar» de «Sumar empresa» y «Agregar miembro» no se apagan: sin empresa o sin usuario, marcan el campo con «Elegí una empresa.» o «Elegí un usuario.», que se va al elegir. `CompaniesPage.test.tsx` y `CompanyDetailPage.test.tsx` (E7): con el CUIT mal, «Crear empresa» y «Guardar cambios» siguen activos, no mandan nada y el campo dice qué corregir. `SettingsPage.test.tsx` (E7): «Siguiente» de «Agregar dominio» sin dominio marca el campo con «Escribí el dominio.».
 - `parsers.test.ts` (E1).
+- `Section.test.tsx` (E7): `SectionFields` lleva 16 arriba y 20 a los costados y abajo en la compu; en el teléfono, el relleno de la tarjeta o ninguno si los campos van sueltos.
 - `referenceData.test.ts` (E1) y tests de los selectores (E1): opciones del catálogo, carga y `{ type: "AR-CUIT", number }` sin separadores.
 - Tests de `shared/ui/fields`: borrado del valor anterior ante texto inválido, aviso tras blur y recuperación de validez al corregir.
 

@@ -20,7 +20,7 @@ import { TimeZoneSelect } from "@/shared/ui/fields/TimeZoneSelect";
 import { Input } from "@/shared/ui/input";
 import { Page } from "@/shared/ui/Page";
 import { RowActions } from "@/shared/ui/RowActions";
-import { Section } from "@/shared/ui/Section";
+import { Section, SectionFields } from "@/shared/ui/Section";
 import { List, ListItem } from "@/shared/ui/List";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { CultureText } from "@/shared/ui/format/CultureText";
@@ -144,7 +144,7 @@ export function SettingsPage() {
         {edit.formError}
         {/* Tablero M-Configuracion: en el teléfono los datos van sueltos sobre blanco, sin título a la vista. */}
         <Section title={t("settings:dataTitle")} phone="untitled">
-          {settings.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft ? <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5 max-md:gap-3.5 max-md:p-0">
+          {settings.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p> : draft ? <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
             {/* Tablero «Criterio · Formularios»: sin permiso para cambiar, los datos se leen como texto, sin campos grises. */}
             {canManage ? <>
               <FormField label={t("settings:fields.name")} required><Input value={draft.name} maxLength={120} onChange={(event) => setDraftState({ ...draft, name: event.target.value })} /></FormField>
@@ -157,7 +157,7 @@ export function SettingsPage() {
               <ReadOnlyField label={t("settings:fields.timeZone")}><TimeZoneText value={draft.defaultTimeZoneId} /></ReadOnlyField>
               <ReadOnlyField label={t("settings:fields.currency")}><CurrencyText value={draft.defaultCurrency} /></ReadOnlyField>
             </>}
-          </div> : null}
+          </SectionFields> : null}
         </Section>
 
         <Section title={t("settings:domains.title")} phone="inset" action={canManage ? { label: t("settings:domains.add"), onClick: () => setDomainDialogOpen(true) } : undefined}>

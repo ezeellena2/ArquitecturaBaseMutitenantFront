@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { AppChromeProvider } from "./app/AppChrome";
-import { Section } from "./Section";
+import { Section, SectionFields } from "./Section";
 
 const phone = { phone: true, parent: null, subtitle: null, hideBottomNav: () => {} };
 
@@ -49,5 +49,26 @@ describe("Section", () => {
     render(<Section title="Permisos" meta="1 de 2 elegidos"><p>{"Miembros"}</p></Section>);
 
     expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[12px]", "font-normal", "text-[var(--t3)]");
+  });
+
+  // «Criterio · Formularios», «Adentro de la caja»: 16 arriba y 20 a los costados y abajo. Quien la usa pone el orden y la
+  // separación de los campos.
+  it("en la compu, los campos de la caja llevan 16 arriba y 20 a los costados y abajo", () => {
+    render(<Section title="Datos"><SectionFields className="grid gap-4 md:grid-cols-2"><p>{"Nombre"}</p></SectionFields></Section>);
+
+    const fields = screen.getByText("Nombre").parentElement;
+    expect(fields).toHaveClass("pt-4", "px-5", "pb-5", "grid", "gap-4", "md:grid-cols-2");
+    expect(fields).not.toHaveClass("p-5", "md:p-5");
+  });
+
+  // Tableros M-Cuenta y M-Pagina-Org (una tarjeta) y M-Configuracion y M-Rol (los campos sueltos sobre blanco).
+  it("en el teléfono, los campos van con 14 arriba y abajo en una tarjeta, y sin relleno si van sueltos", () => {
+    const { unmount } = render(<AppChromeProvider value={phone}><Section title="Tus datos"><SectionFields><p>{"Nombre"}</p></SectionFields></Section></AppChromeProvider>);
+    expect(screen.getByText("Nombre").parentElement).toHaveClass("px-4", "py-3.5");
+    unmount();
+
+    render(<AppChromeProvider value={phone}><Section title="Datos" phone="untitled"><SectionFields><p>{"Nombre"}</p></SectionFields></Section></AppChromeProvider>);
+    expect(screen.getByText("Nombre").parentElement).toHaveClass("p-0");
+    expect(screen.getByText("Nombre").parentElement).not.toHaveClass("px-4", "pt-4");
   });
 });

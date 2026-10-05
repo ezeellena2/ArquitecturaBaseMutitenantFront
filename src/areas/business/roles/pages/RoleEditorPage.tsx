@@ -20,7 +20,7 @@ import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
 import { Page } from "@/shared/ui/Page";
-import { Section } from "@/shared/ui/Section";
+import { Section, SectionFields } from "@/shared/ui/Section";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Textarea } from "@/shared/ui/textarea";
@@ -261,7 +261,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
         {permissions.isError ? <FormError message={apiErrorMessage(permissions.error, t)} /> : null}
         {/* Tablero M-Rol: en el teléfono los datos van sueltos sobre blanco, sin título a la vista. */}
         <Section title={t("roles:dataTitle")} phone="untitled">
-          <div className="flex flex-col gap-3.5 p-4 lg:gap-3.5 lg:p-5 max-md:p-0">
+          <SectionFields className="flex flex-col gap-3.5">
             <div className="grid gap-3.5 lg:grid-cols-2 lg:gap-x-5">
               <div className="w-full">
                 {editable ? <FormField label={t("roles:fields.name")} required error={validation.name}>
@@ -291,7 +291,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
               </FormField> : <div className="flex flex-col gap-1.5"><span className="text-[12.5px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{t("roles:fields.description")}</span><p className="min-h-9 whitespace-pre-wrap text-[13px] text-[var(--t1)] max-md:min-h-0 max-md:text-[16px]">{role.data && isSystemRole ? displayRoleDescription(role.data, t) ?? t("roles:noDescription") : draft.description || t("roles:noDescription")}</p></div>}
             </div>
             </div>
-          </div>
+          </SectionFields>
         </Section>
 
         <Section title={t("roles:permissionsTitle")} phone="inset" meta={draft.scope ? t("roles:permissionCount", { selected: selectedCount, total: availableCount }) : undefined}>

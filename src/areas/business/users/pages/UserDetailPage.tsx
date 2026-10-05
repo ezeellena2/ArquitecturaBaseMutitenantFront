@@ -21,7 +21,7 @@ import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTi
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Page } from "@/shared/ui/Page";
-import { Section } from "@/shared/ui/Section";
+import { Section, SectionFields } from "@/shared/ui/Section";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { EmptyState } from "@/shared/ui/EmptyState";
@@ -289,7 +289,7 @@ export function UserDetailPage() {
           {phone ? <ul className="m-0 list-none p-0">
             <SettingsItem title={t("users:detail.status")} detail={stateLabel} onClick={editable && isMember ? () => setSheet("state") : undefined} />
             <SettingsItem title={t("users:detail.organizationRoles")} detail={roleNames || t("users:detail.noRoles")} onClick={editable ? () => setSheet("roles") : undefined} />
-          </ul> : <div className="grid gap-4 p-4 md:grid-cols-2 md:p-5">
+          </ul> : <SectionFields className="grid gap-4 md:grid-cols-2">
             {editable && isMember ? <FormField label={t("users:detail.status")}>
               <Select value={current.isActive ? "Active" : "Inactive"} onValueChange={(value) => changeDraft({ isActive: value === "Active" })}>
                 <SelectTrigger className="w-full" aria-label={t("users:detail.status")}><SelectValue /></SelectTrigger>
@@ -303,7 +303,7 @@ export function UserDetailPage() {
               options={orgRoles.map((role) => ({ value: role.id, label: role.name }))} value={current.roleIds}
               onChange={(roleIds) => changeDraft({ roleIds })} placeholder={t("users:detail.noRoles")} />
               : <ReadOnlyField label={t("users:detail.organizationRoles")}>{member.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || t("users:detail.noRoles")}</ReadOnlyField>}
-          </div>}
+          </SectionFields>}
         </Section>
 
         <Section title={t("users:detail.companyAccess")} action={editable ? { label: t("users:detail.addCompany"),
