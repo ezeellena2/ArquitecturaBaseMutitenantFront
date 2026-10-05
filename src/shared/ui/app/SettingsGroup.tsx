@@ -4,9 +4,9 @@ import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
 
 // Tableros M-* (.ap-gtit, .ap-grupo, .ap-it): en el teléfono los ajustes van en grupos blancos sobre fondo gris, con su
-// título arriba y, a lo sumo, una acción en texto a la derecha.
+// título arriba y, a lo sumo, una acción en texto a la derecha. El título, con el interlineado normal del tablero.
 export function GroupTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
-  return <div className="mx-5 mt-[18px] mb-2 flex items-center justify-between gap-3">
+  return <div className="mx-5 mt-[18px] mb-2 flex items-center justify-between gap-3 leading-[normal]">
     <span className="text-[13.5px] font-semibold text-[var(--t2)]">{children}</span>
     {action ? <span className="text-[14.5px] font-semibold text-[var(--marca-tx)] [&_a]:text-inherit [&_button]:text-inherit">{action}</span> : null}
   </div>;

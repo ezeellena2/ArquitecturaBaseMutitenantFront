@@ -38,7 +38,7 @@ export function Section({ title, action, meta, phone = "card", children }: Secti
       {body}
     </section>;
     return <section aria-labelledby={id} className="flex flex-col">
-      <div className={cn("mb-2 flex items-center justify-between gap-3", phone === "card" ? "mx-5 mt-[18px]" : "mt-1")}>
+      <div className={cn("mb-2 flex items-center justify-between gap-3 leading-[normal]", phone === "card" ? "mx-5 mt-[18px]" : "mt-1.5")}>
         <h2 id={id} className="text-[13.5px] font-semibold text-[var(--t2)]">{title}</h2>
         {meta ? <span className="text-[13.5px] text-[var(--t3)]">{meta}</span> : null}
         {action ? <button type="button" onClick={action.onClick} disabled={action.disabled}

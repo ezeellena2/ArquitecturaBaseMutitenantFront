@@ -69,6 +69,8 @@ describe("FormField", () => {
 
     expect(screen.getByLabelText("Correo")).toHaveClass("max-md:h-12", "max-md:rounded-[12px]", "max-md:text-[16px]");
     expect(screen.getByText("Correo")).toHaveClass("max-md:text-[13.5px]");
+    // M-* (.ap-cmp .rt): el rótulo con el interlineado normal; con el 1.5 de la página cada campo bajaba 4 px.
+    expect(screen.getByText("Correo")).toHaveClass("max-md:leading-[normal]");
   });
 
   // Tablero «Criterio · Formularios»: si el dato es obligatorio, el rótulo lleva un asterisco rojo.

@@ -37,9 +37,10 @@ export function AccountDeletionDialog({ graceDays, onClose, onComplete }: { grac
       <DialogHeader><DialogTitle>{t("deletionTitle")}</DialogTitle></DialogHeader>
       <DialogBody>
       <DialogDescription>{t("deletionHint", { days: graceDays })}</DialogDescription>
-      {/* M-Cuenta-Baja: en el teléfono, el motivo arranca con el alto de un campo de una línea (48) y crece con lo escrito. */}
+      {/* M-Cuenta-Baja: en el teléfono, el motivo arranca con el alto de un campo de una línea (48) y crece con lo escrito; el
+          código lleva el rótulo de los campos (.ap-cmp .rt: 13,5, interlineado normal, a 6 de los casilleros). */}
       <FormField label={t("reason")} required error={form.formState.errors.reason?.message}><Textarea {...form.register("reason")} disabled={busy} className="max-md:min-h-12" /></FormField>
-      {reauth.proof ? <div className="flex flex-col gap-2"><p className="text-[13px] font-semibold text-[var(--t2)]">{t("deletionCode", { destination: reauth.proof.destination })}</p><OtpInput length={6} value={reauth.code} onChange={reauth.changeCode} label={t("common:code.label")} disabled={busy} error={reauth.codeFailure} /></div> : null}
+      {reauth.proof ? <div className="flex flex-col gap-2 max-md:gap-1.5"><p className="text-[13px] font-semibold text-[var(--t2)] max-md:text-[13.5px] max-md:leading-[normal]">{t("deletionCode", { destination: reauth.proof.destination })}</p><OtpInput length={6} value={reauth.code} onChange={reauth.changeCode} label={t("common:code.label")} disabled={busy} error={reauth.codeFailure} /></div> : null}
       <FormError message={reauth.failure} />
       </DialogBody>
       <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("cancel")}</Button><Button type="submit" variant="destructive" disabled={reauth.retry.isRunning || (!reauth.proof && !reauth.failure)} pending={busy}

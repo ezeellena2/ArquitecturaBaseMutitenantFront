@@ -74,7 +74,8 @@ interface PageProps {
 }
 
 const phoneBodyClasses = {
-  padded: "flex flex-1 flex-col gap-4 px-5 pt-2 pb-6 text-[15px]",
+  // M-Configuracion y M-Rol (.ap-cuerpo): 4 arriba, 20 a los costados y 14 entre bloques.
+  padded: "flex flex-1 flex-col gap-3.5 px-5 pt-1 pb-6 text-[15px]",
   flush: "flex flex-1 flex-col text-[15px]",
   gray: "flex flex-1 flex-col pb-6 text-[15px]",
 } as const;

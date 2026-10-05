@@ -22,9 +22,9 @@ export function FormField({ label, htmlFor, hint, error, required, aside, varian
   const messageId = `${controlId}-message`;
   const message = error ?? hint;
 
-  // «Criterio · Formularios»: rótulo de 12,5 a 6 del campo; en el teléfono de la app (tableros M-*), de 13,5. En ingreso y
-  // registro (tableros Ingreso, Registro y sus M-*), de 12,5 en cualquier tamaño.
-  const labelElement = <Label htmlFor={controlId} className={cn("gap-1! text-[12.5px] font-semibold text-[var(--t2)]", variant === "auth" ? "" : "max-md:text-[13.5px]")}>
+  // «Criterio · Formularios»: rótulo de 12,5 a 6 del campo; en el teléfono de la app (tableros M-*, .ap-cmp .rt), de 13,5
+  // con el interlineado normal. En ingreso y registro (tableros Ingreso, Registro y sus M-*), de 12,5 en cualquier tamaño.
+  const labelElement = <Label htmlFor={controlId} className={cn("gap-1! text-[12.5px] font-semibold text-[var(--t2)]", variant === "auth" ? "" : "max-md:text-[13.5px] max-md:leading-[normal]")}>
     {label}
     {/* Tablero «Criterio · Formularios»: el asterisco de obligatorio va en rojo. */}
     {required ? <span aria-hidden="true" className="text-[var(--peligro)]">{" *"}</span> : null}

@@ -29,6 +29,8 @@ describe("Más en el teléfono", () => {
     const [you, tab] = container.querySelectorAll("[data-slot='avatar']");
     expect(you).toHaveClass("size-14", "text-[20px]", "bg-linear-to-br", "from-[var(--marca)]", "to-[var(--marca-2)]");
     expect(tab).toHaveClass("size-[26px]", "bg-linear-to-br");
+    // .ap-yo: el nombre y el correo con el interlineado normal, como el resto del teléfono.
+    expect(you.nextElementSibling).toHaveClass("leading-[normal]");
     expect(await axe(container)).toHaveNoViolations();
   });
 

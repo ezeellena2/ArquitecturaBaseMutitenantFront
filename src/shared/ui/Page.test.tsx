@@ -239,6 +239,15 @@ describe("Page", () => {
       </AppChromeProvider>,
     );
 
+    // M-Configuracion y M-Rol (.ap-cuerpo): el cuerpo con margen va con 4 arriba, 20 a los costados y 14 entre bloques.
+    it("en el teléfono, el cuerpo con margen va como el del tablero", () => {
+      renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+        <MemoryRouter><Page title="Configuración"><p>{"los datos"}</p></Page></MemoryRouter>
+      </AppChromeProvider>);
+
+      expect(screen.getByText("los datos").parentElement).toHaveClass("gap-3.5", "px-5", "pt-1");
+    });
+
     it.each([["la compu", false], ["el teléfono", true]] as const)("con un solo grupo va sin la barra de pestañas, en %s", (_, phone) => {
       const { container } = renderPage(groups(false), phone);
 

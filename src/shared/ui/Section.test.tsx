@@ -29,6 +29,8 @@ describe("Section", () => {
 
     expect(screen.getByRole("region", { name: "Empresas" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Empresas" })).toHaveClass("text-[13.5px]", "font-semibold");
+    // .ap-gtit: el título y la acción con el interlineado normal (con el 1.5 de la página, la fila medía 4 px más).
+    expect(screen.getByRole("heading", { name: "Empresas" }).parentElement).toHaveClass("leading-[normal]");
     expect(screen.getByRole("button", { name: "Sumar empresa" })).toHaveClass("text-[14.5px]", "text-[var(--marca-tx)]");
     expect(screen.getByText("Delta S.A.").parentElement).toHaveClass("mx-4", "rounded-[14px]", "bg-[var(--lado-activo)]");
   });

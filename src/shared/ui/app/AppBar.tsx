@@ -19,8 +19,10 @@ export function AppBar({ title, subtitle, back, actions }: {
       <ChevronLeft size={26} strokeWidth={1.9} aria-hidden="true" />
     </Link> : null}
     <div className="min-w-0 flex-1">
-      <h1 className={cn("truncate font-bold leading-[1.15] tracking-[-0.02em] text-[var(--t1)]", back ? "text-[20px]" : "text-[24px]")}>{title}</h1>
-      {subtitle ? <span className="block truncate text-[12.5px] font-medium text-[var(--t3)]">{subtitle}</span> : null}
+      {/* .ap-bar h1 y .sub: el interlineado va después del tamaño, o tailwind-merge lo borra (y el título tomaba el 1.5 de
+          la página: la bajada quedaba 4 a 6 px más abajo). La bajada, con el interlineado normal. */}
+      <h1 className={cn("truncate font-bold tracking-[-0.02em] text-[var(--t1)]", back ? "text-[20px]" : "text-[24px]", "leading-[1.15]")}>{title}</h1>
+      {subtitle ? <span className="block truncate text-[12.5px] leading-[normal] font-medium text-[var(--t3)]">{subtitle}</span> : null}
     </div>
     {actions ? <div className="flex shrink-0 items-center">{actions}</div> : null}
   </header>

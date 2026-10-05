@@ -34,7 +34,7 @@ export function MorePage() {
     <AppBar title={t("navigation.more")} subtitle={subtitle} />
     <div className="flex items-center gap-3.5 px-5 pt-2 pb-1">
       <Avatar size="profile" initials={name.charAt(0).toUpperCase()} />
-      <span className="flex min-w-0 flex-col">
+      <span className="flex min-w-0 flex-col leading-[normal]">
         <span className="truncate text-[18px] font-semibold text-[var(--t1)]">{name}</span>
         {email ? <span className="truncate text-[13.5px] text-[var(--t3)]">{email}</span> : null}
       </span>

@@ -7,7 +7,7 @@ import { cn } from "@/shared/lib/utils";
 /// y sin estirarse. Un texto largo (`long`: la descripción de un rol de sistema) conserva sus renglones.
 export function ReadOnlyField({ label, long = false, children }: { label: string; long?: boolean; children: ReactNode }) {
   return <div className="flex flex-col gap-1.5">
-    <span className="text-[12.5px] font-semibold text-[var(--t2)] max-md:text-[13.5px]">{label}</span>
+    <span className="text-[12.5px] font-semibold text-[var(--t2)] max-md:text-[13.5px] max-md:leading-[normal]">{label}</span>
     <p className={cn("text-[13px] text-[var(--t1)] max-md:min-h-0 max-md:text-[16px]", long ? "whitespace-pre-wrap pt-0.5 leading-[1.5]" : "min-h-9 content-center max-md:leading-[normal]")}>{children}</p>
   </div>;
 }

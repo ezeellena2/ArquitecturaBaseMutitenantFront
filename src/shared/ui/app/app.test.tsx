@@ -23,6 +23,10 @@ describe("marco de app del teléfono", () => {
     rerender(<MemoryRouter><AppBar title="Usuarios" subtitle="Administración" back={{ to: "/org/mas", label: "Volver a Más" }}
       actions={<AppIconButton label="Buscar"><House /></AppIconButton>} /></MemoryRouter>);
     expect(screen.getByRole("heading", { level: 1, name: "Usuarios" })).toHaveClass("text-[20px]");
+    // M-* (.ap-bar h1 y .sub): el título con interlineado 1.15 y la bajada con el normal, pegada al título. tailwind-merge
+    // borraba el interlineado del título si iba antes del tamaño.
+    expect(screen.getByRole("heading", { level: 1, name: "Usuarios" })).toHaveClass("leading-[1.15]");
+    expect(screen.getByText("Administración")).toHaveClass("leading-[normal]");
     expect(screen.getByRole("link", { name: "Volver a Más" })).toHaveAttribute("href", "/org/mas");
     expect(screen.getByRole("button", { name: "Buscar" })).toHaveClass("size-11", "rounded-full");
   });
@@ -81,6 +85,8 @@ describe("marco de app del teléfono", () => {
       <SettingsGroup label="Empresas"><SettingsItem title="Delta S.A." detail="Solo lectura" to="/org/empresas/1" /></SettingsGroup>
     </MemoryRouter>);
     expect(screen.getByText("Empresas", { selector: "span" })).toHaveClass("text-[13.5px]", "font-semibold");
+    // .ap-gtit: con el interlineado normal; con el 1.5 de la página, cada grupo bajaba 4 px.
+    expect(screen.getByText("Empresas", { selector: "span" }).parentElement).toHaveClass("leading-[normal]");
     expect(screen.getByRole("list", { name: "Empresas" })).toHaveClass("rounded-[14px]", "bg-[var(--lado-activo)]");
     expect(screen.getByRole("link", { name: /Delta S.A./ })).toHaveClass("min-h-14");
   });
