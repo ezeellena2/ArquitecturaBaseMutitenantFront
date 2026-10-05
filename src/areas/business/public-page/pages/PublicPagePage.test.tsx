@@ -209,7 +209,12 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
 
     expect(await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" })).toBeDisabled();
     expect(subline()).toHaveTextContent(/^Despublicada por la plataforma$/);
-    await user.click(screen.getByRole("button", { name: "Ver el motivo y qué podés hacer" }));
+    // Tablero Pagina-Org (.o-fila-tit, .o-i): la ⓘ va a 6 de la dirección, en su mismo grupo, y el interruptor aparte; en
+    // el teléfono la dirección entra entera.
+    const info = screen.getByRole("button", { name: "Ver el motivo y qué podés hacer" });
+    expect(info.parentElement).toHaveClass("gap-1.5", "min-w-0");
+    expect(info.previousElementSibling).toHaveTextContent("Visible en grupo-delta.plataforma.com");
+    await user.click(info);
     const notice = await screen.findByRole("dialog", { name: "Página despublicada" });
     expect(notice).toHaveTextContent("Datos de contacto falsos");
     // Como el tablero: el motivo en bordó y negrita; los números de los pasos en un círculo gris relleno.
