@@ -26,6 +26,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 - Si llegan `items` vacíos con `totalCount > 0` (por ejemplo, se borró la única fila de la última página), `usePagedQuery` salta solo a la última página que tiene filas, con `replace` y sin agregar historial. Mira solo la respuesta de esa página, nunca la anterior que se muestra mientras carga. No expone `correctPage` a quien lo llama.
 - Los conteos de los filtros salen de `GET …/filter-counts`, con los mismos filtros.
 - **Auditoría y actividad** (lo que solo crece): `useCursorList` + `<LoadMore />`, de a tandas y sin total.
+- **El pie** de `Pagination` va en letra de 12: «1–10 de 11» o, con una sola fila en la página, «1 de 1» (`pagination.single`), y el tamaño de página en una píldora de 28. «Cargar más» es siempre `LoadMore`: en la compu, el botón normal (36 y letra de 14); en el teléfono, el de 44, también como paginado de `Pagination`.
 - Vacío, sin coincidencias, carga y error: los resuelve `DataTable` (`emptyTitle`, `emptyAction`).
 
 ## Prohibido
@@ -43,6 +44,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 - `pageSizes.test.ts` (E2): exige concordancia exacta con `PagedRequest.properties.pageSize.enum` del OpenAPI; el repo hermano es obligatorio en local y solo ese chequeo se omite con aviso en CI aislado.
 - Tests de pantalla: sin coincidencias y cambio de página; en el teléfono, la lista y su «+».
 - `src/shared/ui/app/lists.test.tsx` (E5): en el teléfono, filas de lista, filtros en una hoja y «Cargar más».
+- `Pagination.test.tsx` (E7): el pie en 12 y «1 de 1» con una sola fila en la página, en es-AR y en-US; `LoadMore.test.tsx` (E7): en la compu, «Cargar más» es el botón normal.
 - `DataTable.test.tsx` (E7): la segunda línea que declara la columna, gris de 12, y las filas de 52 si alguna la tiene; si no, de 40. `UsersPage.test.tsx`, `CompaniesPage.test.tsx`, `CompanyDetailPage.test.tsx` y `RolesPage.test.tsx` (E7): el correo, los roles de la empresa, «Vence…», el CUIT y «De sistema» van en esa línea.
 
 ## Detalle

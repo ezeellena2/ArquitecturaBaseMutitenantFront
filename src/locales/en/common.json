@@ -88,6 +88,7 @@
   "pagination": {
     "label": "Pagination",
     "range": "{{from}}–{{to}} of {{total}}",
+    "single": "{{from}} of {{total}}",
     "page": "Page {{page}} of {{totalPages}}",
     "previous": "Previous page",
     "next": "Next page",

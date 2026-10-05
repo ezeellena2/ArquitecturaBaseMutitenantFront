@@ -100,7 +100,8 @@ describe("CompanyDetailPage", () => {
     expect(within(roles).queryByRole("columnheader", { name: "Vale en" })).not.toBeInTheDocument();
     expect(within(roles).getByRole("link", { name: "Solo lectura" })).toBeVisible();
     expect(within(roles).queryByText("Administrador")).not.toBeInTheDocument();
-    // Tablero Empresa, pestaña Roles: el mismo pie que Miembros.
+    // Tablero Empresa, pestaña Roles: el mismo pie que Miembros; con un solo rol, «1 de 1».
+    expect(within(roles).getByText("1 de 1")).toBeVisible();
     expect(within(roles).getByText("Página 1 de 1")).toBeVisible();
     expect(within(roles).getByRole("combobox", { name: /por página/ })).toBeVisible();
   }, 15_000);

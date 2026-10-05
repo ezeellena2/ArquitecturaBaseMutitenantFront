@@ -5,6 +5,7 @@ import { pageSizes } from "@/shared/api/pageSizes";
 import { useFormat } from "@/shared/format/useFormat";
 import { useAppChrome } from "./app/AppChrome";
 import { Button } from "./button";
+import { LoadMore } from "./LoadMore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
 
 export type PaginationProps = Pick<
@@ -25,32 +26,29 @@ export function Pagination({
   // Tablero M-Auditoria-Org (.ap-mas): en el teléfono no hay páginas; «Cargar más» pide la página más grande que
   // sigue. Pasado el tamaño mayor, avanza de página.
   if (phone) {
-    if (!hasNext) return null;
     const larger = pageSizes.find((size) => size > pageSize);
-    return <div className="flex justify-center px-4 pt-3.5 pb-5">
-      <Button type="button" variant="outline" onClick={() => (larger ? onPageSizeChange(larger) : onPageChange(page + 1))}
-        className="h-11 rounded-[12px] px-[22px] text-[15px]">{t("pagination.loadMore")}</Button>
-    </div>;
+    return <LoadMore hasMore={hasNext} onLoadMore={() => (larger ? onPageSizeChange(larger) : onPageChange(page + 1))} />;
   }
   const from = totalCount === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, totalCount);
 
+  // Tableros Empresas, Empresa y Usuarios: el pie en letra de 12; con una sola fila en la página, «1 de 1».
   return (
     <nav
       aria-label={t("pagination.label")}
-      className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--borde)] px-4 py-2 text-[13px] text-[var(--t2)]"
+      className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--borde)] px-4 py-2 text-[12px] text-[var(--t2)]"
     >
       <p className="tabular-nums">
-        {t("pagination.range", {
-          from: formatInteger(from), to: formatInteger(to), total: formatInteger(totalCount),
-        })}
+        {from === to
+          ? t("pagination.single", { from: formatInteger(from), total: formatInteger(totalCount) })
+          : t("pagination.range", { from: formatInteger(from), to: formatInteger(to), total: formatInteger(totalCount) })}
       </p>
       <div className="flex flex-wrap items-center gap-2">
         <Select value={String(pageSize)} onValueChange={(value) => onPageSizeChange(Number(value))}>
           <SelectTrigger
             size="sm"
             aria-label={t("pagination.rowsPerPage")}
-            className="h-7 rounded-full border-[var(--borde)] bg-[var(--lado-activo)] px-2.5 text-[12px] text-[var(--t2)] shadow-none lg:h-8 lg:px-3 lg:text-[13px]"
+            className="h-7 rounded-full border-[var(--borde)] bg-[var(--lado-activo)] px-2.5 text-[12px] text-[var(--t2)] shadow-none"
           >
             <SelectValue />
           </SelectTrigger>

@@ -45,7 +45,11 @@ describe("Pagination", () => {
     const previous = screen.getByRole("button", { name: "Página anterior" });
     expect(previous).toBeDisabled();
     expect(previous).toHaveClass("size-8");
-    expect(screen.getByRole("combobox", { name: "Filas por página" })).toHaveClass("h-7", "lg:h-8");
+    // Tableros Empresas y Usuarios: el pie en letra de 12, y el tamaño de página en una píldora de 28 con letra de 12,
+    // también en la compu grande.
+    expect(screen.getByRole("navigation", { name: "Paginado" })).toHaveClass("text-[12px]");
+    expect(screen.getByRole("combobox", { name: "Filas por página" })).toHaveClass("h-7", "text-[12px]");
+    expect(screen.getByRole("combobox", { name: "Filas por página" })).not.toHaveClass("lg:h-8", "lg:text-[13px]");
 
     await userEvent.click(screen.getByRole("button", { name: "Página siguiente" }));
     expect(onPageChange).toHaveBeenCalledWith(2);
@@ -69,9 +73,18 @@ describe("Pagination", () => {
     await changeCulture("es-AR");
     renderPagination({ totalCount: 0, totalPages: 0, hasNext: false });
 
-    expect(screen.getByText("0–0 de 0")).toBeInTheDocument();
+    expect(screen.getByText("0 de 0")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Página anterior" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Página siguiente" })).toBeDisabled();
+  });
+
+  // Tablero Empresa, pestaña Roles: con una sola fila en la página, «1 de 1» y no «1–1 de 1».
+  it("con una sola fila en la página dice «1 de 1»", async () => {
+    await changeCulture("es-AR");
+    renderPagination({ totalCount: 1, totalPages: 1, hasNext: false });
+
+    expect(screen.getByText("1 de 1")).toBeInTheDocument();
+    expect(screen.queryByText("1–1 de 1")).not.toBeInTheDocument();
   });
 
   it("usa el texto traducido en inglés", async () => {
@@ -80,6 +93,14 @@ describe("Pagination", () => {
 
     expect(screen.getByText("1–10 of 25")).toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Rows per page" })).toBeInTheDocument();
+    await changeCulture("es-AR");
+  });
+
+  it("en inglés, con una sola fila en la página dice «11 of 11»", async () => {
+    await changeCulture("en-US");
+    renderPagination({ page: 2, totalCount: 11, totalPages: 2, hasPrevious: true, hasNext: false });
+
+    expect(screen.getByText("11 of 11")).toBeInTheDocument();
     await changeCulture("es-AR");
   });
 });
