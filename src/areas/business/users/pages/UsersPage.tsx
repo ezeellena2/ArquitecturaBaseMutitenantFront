@@ -105,6 +105,7 @@ export function UsersPage() {
 
   const rowActions = (member: OrganizationUserResponse) => <RowActions
       label={t("users:rowActions", { name: member.displayName || member.email || "" })}
+      title={member.displayName || member.email || ""}
       actions={[
         { label: t("users:actions.view"), accessibleName: t("users:actions.view"), icon: Pencil, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); } },
         { label: t("users:actions.resend"), accessibleName: t("users:actions.resend"), icon: RotateCw, onSelect: () => { if (member.invitationId) resend.mutate(member.invitationId, { onSuccess: async () => { toast.success(t("users:messages.resent", { email: member.email ?? "" })); await invalidate(); }, onError: (error) => toastActionError(error, t) }); }, hidden: !canInvite || !member.invitationId || (member.state !== "Invited" && member.state !== "Expired") },

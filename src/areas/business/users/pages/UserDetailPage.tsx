@@ -336,7 +336,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
                 const roleNames = company.roles.map((role) => role.name).join(", ") || t("users:detail.companyNoRoles");
                 return <ListItem key={company.companyId} icon={<Building2 aria-hidden="true" />} title={company.companyName}
                   detail={preserved ? <>{roleNames}<Separator />{t("users:detail.companyInactive")}</> : roleNames}>
-                  {editable && !preserved ? <RowActions label={t("users:detail.companyActions", { name: company.companyName })} actions={[
+                  {editable && !preserved ? <RowActions label={t("users:detail.companyActions", { name: company.companyName })} title={company.companyName} actions={[
                     { label: t("users:detail.changeCompanyRoles"), accessibleName: t("users:detail.changeCompanyRoles"), icon: Settings2,
                       onSelect: (trigger) => openCompanyDialog({ mode: "roles", assignment, version: member.version, returnFocusTo: trigger }) },
                     { label: t("users:detail.removeCompanyAction"), accessibleName: t("users:detail.removeCompanyAction"), icon: Trash2, destructive: true,

@@ -21,7 +21,7 @@ export function CompanyRolesTab({ roles }: { roles: CompanyRoles }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const { query, own } = roles;
-  const roleActions = (role: RoleResponse) => <RowActions label={t("companies:roleActions", { name: role.name })} actions={[
+  const roleActions = (role: RoleResponse) => <RowActions label={t("companies:roleActions", { name: role.name })} title={role.name} actions={[
     { label: t("companies:actions.edit"), accessibleName: t("companies:actions.edit"), icon: Pencil, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); } },
   ]} />;
   const columns: Column<RoleResponse>[] = [

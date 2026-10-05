@@ -221,7 +221,7 @@ function SettingsEditor({ settings, loadError, reload }: {
                     ? ` · ${t("settings:domains.managedEmails", { count: domain.managedEmailCount, organization: organizationName })}` : null}</span>
                 </span>}>
                 {domain.status === "Pending" && canManage && domain.txtRecordValue ? <Button type="button" variant="outline" size="sm" onClick={() => openVerify(domain)}>{t("settings:domains.verify")}</Button> : null}
-                {canManage ? <RowActions label={t("settings:domains.actions", { domain: domain.domain })} actions={[
+                {canManage ? <RowActions label={t("settings:domains.actions", { domain: domain.domain })} title={domain.domain} actions={[
                   { label: t("settings:domains.remove"), accessibleName: t("settings:domains.remove"), icon: Trash2, destructive: true, onSelect: () => setDomainToRemove(domain) },
                 ]} /> : null}
               </ListItem>)}</List>}

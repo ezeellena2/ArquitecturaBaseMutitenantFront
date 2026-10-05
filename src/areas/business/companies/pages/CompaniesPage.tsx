@@ -78,7 +78,7 @@ export function CompaniesPage() {
 
   const openCreate = () => setDialog({});
 
-  const rowActions = (company: CompanyResponse) => <RowActions label={t("companies:rowActions", { name: company.name })} actions={[
+  const rowActions = (company: CompanyResponse) => <RowActions label={t("companies:rowActions", { name: company.name })} title={company.name} actions={[
         // Tablero Empresas: «Ver ficha», «Editar» y, después de la franja, «Inactivar» en rojo; «Activar» es directo.
         { label: t("companies:actions.view"), accessibleName: t("companies:actions.view"), icon: Eye, onSelect: () => { void navigate(`/org/empresas/${encodeURIComponent(company.id)}`); } },
         { label: t("companies:actions.edit"), accessibleName: t("companies:actions.edit"), icon: Pencil, onSelect: (trigger) => setDialog({ company, returnFocusTo: trigger }), hidden: !canManage },
