@@ -201,6 +201,35 @@ describe("RoleEditorPage", () => {
     expect(reads).toBe(2);
   });
 
+  // B7 + D2 (plan de la consolidación; back 600405a): un rol con personas asignadas no cambia dónde vale. El editor no lo
+  // ofrece («Vale en» es solo lectura al editar y el guardado manda el mismo alcance); si el back responde el 409
+  // `Roles.Role.ScopeChangeHasUsers`, la franja lo dice con el texto del back y lo escrito queda.
+  it("con personas asignadas, el 409 de cambiar dónde vale sale en la franja con el texto del back", async () => {
+    const user = userEvent.setup();
+    let updateBody: unknown;
+    const assigned = { ...role, userCount: 4 };
+    server.use(
+      http.get("/api/roles/role-custom", () => HttpResponse.json(assigned)),
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.put("/api/roles/role-custom", async ({ request }) => {
+        updateBody = await request.json();
+        return HttpResponse.json({ status: 409, code: "Roles.Role.ScopeChangeHasUsers",
+          detail: "El rol tiene usuarios asignados. Reasignalos antes de cambiar dónde vale.", userCount: 4 }, { status: 409 });
+      }),
+    );
+    renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
+    expect(screen.queryByRole("combobox", { name: "Vale en" })).not.toBeInTheDocument();
+    await user.clear(name);
+    await user.type(name, "Solo lectura de la organización");
+    await user.click(screen.getAllByRole("button", { name: "Guardar cambios" })[0]);
+
+    expect(await screen.findByText("El rol tiene usuarios asignados. Reasignalos antes de cambiar dónde vale.")).toBeVisible();
+    expect(updateBody).toMatchObject({ scope: "Organization", companyId: null, version: 4 });
+    expect(name).toHaveValue("Solo lectura de la organización");
+  });
+
   // concurrencia.md (E7): la relectura de fondo (volver a la pestaña) trae lo que cambió otra persona, pero el formulario
   // sigue con lo que la persona empezó a editar; el guardado manda la versión de eso y el back responde 409 en vez de
   // pisar el cambio de la otra persona.
