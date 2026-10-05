@@ -3,8 +3,9 @@ import { cn } from "cn"
 import { Tabs as TabsPrimitive } from "radix-ui"
 
 // Tablero «Criterio · Marco», Pestañas: una por cada grupo de datos de una ficha, o dos vistas del mismo contenido.
-// Van en su propia banda blanca debajo de la de la página (`Page` les deja el lugar `tabs`), alineadas a la
-// izquierda con 28 de separación y 44 de alto; la elegida, en petróleo y subrayada; la cantidad, en gris al lado.
+// En la compu abren el contenido de la página, debajo de la banda (tablero Empresa; `Page` les deja el lugar `tabs`);
+// en el teléfono, en su banda blanca. Alineadas a la izquierda con 28 de separación y 44 de alto; la elegida, en
+// petróleo y subrayada; la cantidad, en gris al lado.
 
 function Tabs({
   className,

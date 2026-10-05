@@ -5,10 +5,11 @@ import { describe, expect, it } from "vitest";
 import { Page } from "./Page";
 import { TabCount, Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
-// Tablero «Criterio · Marco», Pestañas: debajo de la banda, en una banda blanca; alineadas a la izquierda con 28 de
-// separación y 44 de alto; la elegida en petróleo y subrayada; la cantidad, en gris al lado del nombre, sin etiqueta.
+// Tableros Empresa, Organizacion y Cuenta-Plat: las pestañas abren el contenido de la página, dentro de su margen, con la
+// línea a lo ancho del contenido y 16 hasta lo de abajo; alineadas a la izquierda con 28 de separación y 44 de alto; la
+// elegida en petróleo y subrayada; la cantidad, en gris al lado del nombre, sin etiqueta («Criterio · Marco»).
 describe("Tabs · Criterio · Marco", () => {
-  it("van en su banda debajo de la de la página, subrayadas y con la cantidad en gris", async () => {
+  it("abren el contenido, debajo de la banda, subrayadas y con la cantidad en gris", async () => {
     render(<MemoryRouter><Tabs defaultValue="members" className="contents!">
       <Page title="Delta S.A." tabs={<TabsList aria-label="Secciones de la empresa">
         <TabsTrigger value="members">{"Miembros"}<TabCount>{6}</TabCount></TabsTrigger>
@@ -20,8 +21,15 @@ describe("Tabs · Criterio · Marco", () => {
     </Tabs></MemoryRouter>);
 
     const list = screen.getByRole("tablist", { name: "Secciones de la empresa" });
-    expect(list.parentElement).toHaveAttribute("data-slot", "page-tabs");
-    expect(list.parentElement).toHaveClass("border-b", "bg-[var(--lado-activo)]");
+    const strip = list.parentElement!;
+    expect(strip).toHaveAttribute("data-slot", "page-tabs");
+    expect(strip).toHaveClass("border-b", "px-1");
+    expect(strip).not.toHaveClass("bg-[var(--lado-activo)]");
+    // Dentro del contenido, que lleva el margen de la página, y no pegadas a la banda.
+    expect(screen.getByRole("banner")).not.toContainElement(list);
+    expect(screen.getByRole("banner").nextElementSibling).toContainElement(strip);
+    expect(strip.nextElementSibling).toHaveClass("pt-4");
+    expect(strip.nextElementSibling).toContainElement(screen.getByText("Lista de miembros"));
     expect(list).toHaveClass("h-11", "gap-7", "justify-start");
     const members = screen.getByRole("tab", { name: "Miembros 6" });
     expect(members).toHaveClass("text-[14px]", "data-[state=active]:text-[var(--marca-tx)]", "data-[state=active]:shadow-[inset_0_-2px_0_var(--marca)]");

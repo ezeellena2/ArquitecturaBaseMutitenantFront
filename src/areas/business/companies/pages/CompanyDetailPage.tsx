@@ -244,12 +244,12 @@ export function CompanyDetailPage() {
         {canManageRoles && tab === "roles" ? <Button asChild><Link to={`/org/roles/new?scope=SpecificCompany&companyId=${encodeURIComponent(id)}`}><Plus aria-hidden="true" className="size-4" />{t("companies:detail.createRole")}</Link></Button> : null}
       </>}
       moreActions={canManageCompany ? { label: t("companies:actions.more"), items: [{ label: t("companies:actions.editCompany"), onSelect: openEdit, hidden: !phone }, { label: t(data.status === "Active" ? "companies:actions.deactivate" : "companies:actions.activate"), onSelect: () => { if (data.status === "Active") setCompanyStatusConfirm(true); else changeCompanyState.mutate(); }, destructive: data.status === "Active" }] } : undefined}
-      // Tablero «Criterio · Marco»: las pestañas van en su banda, debajo de la de la página, con la cantidad en gris.
+      // Tablero Empresa: las pestañas abren el contenido, debajo de la banda, con la cantidad en gris.
       tabs={<TabsList aria-label={t("companies:detail.tabsLabel")}>
         <TabsTrigger value="members">{t("companies:detail.members")}<TabCount>{members.data?.totalCount ?? data.memberCount}</TabCount></TabsTrigger>
         {canReadRoles ? <TabsTrigger value="roles">{t("companies:detail.roles")}<TabCount>{ownRoles.length}</TabCount></TabsTrigger> : null}
       </TabsList>}>
-        <TabsContent value="members" className="flex flex-col gap-3">
+        <TabsContent value="members" className="flex flex-col gap-3 md:gap-4">
           {!canReadMembers ? <FormError message={t("companies:detail.membersForbidden")} /> : <>
             {counts.isError ? <FormError message={apiErrorMessage(counts.error, t)} /> : null}
             <FilterBar phoneTools="none" label={t("companies:detail.filters.label")} searchLabel={t("companies:detail.filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
