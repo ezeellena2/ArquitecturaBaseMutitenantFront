@@ -366,7 +366,8 @@ function errorsAndButtonsCases(root) {
       app: emptyDomain, phoneApp: emptyDomain }),
     ...pairCases(root, { stage: "etapa-6", pair: "auditoria-lista", id: "auditoria-detalle", group: "auditoria",
       state: "Auditoría: el detalle de un movimiento, en el diálogo normal de 560",
-      desktop: { boardActions: [click("button.o-link")] },
+      // El mismo movimiento que la app («Roles en la empresa: Sin roles → Solo lectura»): desde v107 no es la primera fila.
+      desktop: { boardActions: [click('button.o-link:has-text("Cambió los roles de Tomás Acosta")')] },
       phone: { state: "Auditoría en el teléfono: el detalle de un movimiento (el tablero no dibuja esa hoja)" },
       app: auditDetail, phoneApp: auditDetailPhone }),
     ...pairCases(root, { stage: "etapa-6", pair: "pagina-publica-borrador", id: "pagina-publica-vista-previa", group: "pagina-publica",
@@ -470,7 +471,8 @@ function r3cCases(root) {
     desktop: { boardActions: [click('button.pill-sel:has-text("Quién")')] },
     phone: { state: "Auditoría en el teléfono: la hoja de filtros, con «Quién» (el tablero no dibuja esa hoja)" },
     app: { actions: [appClick("button", "Quién: todos")], readySelector: '[role="menu"]' },
-    phoneApp: { actions: [appClick("button", "Filtros de auditoría")], ...dialog } });
+    // En el teléfono, «Quién» queda al final de la hoja: el foco en «Plataforma» la lleva hasta ahí.
+    phoneApp: { actions: [appClick("button", "Filtros de auditoría"), { type: "press", role: "radio", name: "Plataforma", key: "Shift" }], ...dialog } });
 }
 
 // R3e · Piezas comunes: el estado «Guardando» de Button («Criterio · Botones», Estados) en una ficha, en el ingreso y en la
