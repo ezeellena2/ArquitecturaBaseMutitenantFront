@@ -55,7 +55,8 @@ export function Section({ title, action, meta, phone = "card", children }: Secti
           derecha, con el botón chico a 4 del borde; lo que cuenta la caja, a 16 (4 y 12 suyos). */}
       <header className="flex min-h-10 items-center justify-between gap-3 border-b border-[var(--borde-cab)] bg-[var(--cab)] pr-1 pl-4 text-[13px] font-semibold text-[var(--t1)]">
         <h2 id={id}>{title}</h2>
-        {meta ? <span className="pr-3 text-[12px] font-normal text-[var(--t3)]">{meta}</span> : null}
+        {/* Tablero Rol (.w-cab > span): lo que cuenta la caja, en 13 y peso 500, gris claro. */}
+        {meta ? <span className="pr-3 text-[13px] font-medium text-[var(--t3)]">{meta}</span> : null}
         {action ? <Button type="button" variant="outline" size="sm" onClick={action.onClick} disabled={action.disabled}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{action.label}</Button> : null}
       </header>
       {body}

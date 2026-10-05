@@ -22,6 +22,8 @@ describe("Banner", () => {
     const banner = screen.getByRole("status");
     expect(banner).toHaveClass("min-h-11", "rounded-[10px]", "py-1.5", "pr-2", "pl-3.5", "text-[13px]", "text-[var(--alerta-tx)]");
     expect(banner.querySelector("svg")).toHaveClass("size-[18px]");
+    // Los carteles del lienzo (.cartel, .w-cartel) dibujan su ícono con trazo 2.
+    expect(banner.querySelector("svg")).toHaveAttribute("stroke-width", "2");
   });
 
   it("is an alert when it is an error", () => {

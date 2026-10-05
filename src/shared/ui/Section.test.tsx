@@ -65,7 +65,8 @@ describe("Section", () => {
   it("en la compu, lo que cuenta la caja va gris a la derecha del título", () => {
     render(<Section title="Permisos" meta="1 de 2 elegidos"><p>{"Miembros"}</p></Section>);
 
-    expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[12px]", "font-normal", "text-[var(--t3)]");
+    // Tablero Rol (.w-cab > span): en 13 y peso 500, gris claro.
+    expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[13px]", "font-medium", "text-[var(--t3)]");
     // Tablero Rol (.w-cab > span): sin botón, lo que cuenta la caja queda a 16 del borde (4 del encabezado y 12 suyos).
     expect(screen.getByText("1 de 2 elegidos")).toHaveClass("pr-3");
   });

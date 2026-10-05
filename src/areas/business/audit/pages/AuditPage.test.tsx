@@ -60,11 +60,12 @@ describe("AuditPage", () => {
     // Tablero Auditoria-Org: banda sin bajada, «Fecha y hora», filtros «Tema: todos» y «Quién: todos», sin el ojo.
     const heading = screen.getByRole("heading", { level: 1, name: "Auditoría" });
     expect(heading.parentElement!.querySelector("[data-slot='page-subline']")).toBeNull();
-    // Columnas del tablero: 140px, 2.4fr, 1.4fr y 1.2fr, más los márgenes de cada celda.
+    // Columnas del tablero: 140px, 2.4fr, 1.4fr y 1.2fr, más los márgenes de cada celda. «Quién» se lleva el 21 % para que
+    // «Dónde» y «Quién» arranquen donde el tablero (1013 y 1227 a 1440).
     expect(screen.getByRole("columnheader", { name: "Fecha y hora" })).toHaveClass("w-[162px]");
     expect(screen.getByRole("columnheader", { name: "Fecha y hora" })).not.toHaveClass("text-right");
     expect(screen.getByRole("columnheader", { name: "Dónde" })).toHaveClass("w-[23%]");
-    expect(screen.getByRole("columnheader", { name: "Quién" })).toHaveClass("w-[20%]");
+    expect(screen.getByRole("columnheader", { name: "Quién" })).toHaveClass("w-[21%]");
     expect(screen.getByRole("searchbox", { name: "Buscar en la auditoría" })).toBeVisible();
     // Tableros de listas (.pagina, compacto): 14 entre la caja de los filtros y la tabla.
     expect(screen.getByRole("search").parentElement).toHaveClass("md:gap-3.5");

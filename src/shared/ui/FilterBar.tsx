@@ -153,8 +153,9 @@ export function FilterBar({
                 <ChevronDownIcon strokeWidth={2} className="size-3.5" />
               </Button>
             </DropdownMenuTrigger>
-            {/* Tablero Usuarios (filtro abierto, .menu): 4 de relleno alrededor de las opciones y 200 de ancho mínimo. */}
-            <DropdownMenuContent align="start" aria-label={filter.menuLabel} className="min-w-[200px] p-1">
+            {/* Tablero Usuarios (filtro abierto, .menu): 4 de relleno alrededor de las opciones; el ancho, el de «Criterio ·
+                Menús» (de 220 a 320; los tableros Empresa y Auditoria-Org lo dibujan de 210). */}
+            <DropdownMenuContent align="start" aria-label={filter.menuLabel} className="min-w-[220px] p-1">
               <DropdownMenuRadioGroup value={checked} onValueChange={filter.onChange}>
                 {filter.options.map((option) => (
                   <DropdownMenuRadioItem key={option.value} value={option.value}>
@@ -175,8 +176,8 @@ export function FilterBar({
         <button
           type="button"
           onClick={onClear}
-          // Tableros de listas (.fb-limpiar): gris de 14, que se oscurece con el mouse.
-          className="min-h-11 rounded-[8px] px-2.5 py-1.5 text-[14px] text-[var(--t3)] hover:bg-[var(--s2)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] md:min-h-8"
+          // Tableros de listas (.fb-limpiar): gris de 13 con 6 y 8 de relleno, que se oscurece con el mouse.
+          className="min-h-11 rounded-[8px] px-2 py-1.5 text-[13px] leading-[normal] text-[var(--t3)] hover:bg-[var(--s2)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] md:min-h-7"
         >
           {clearLabel}
         </button>

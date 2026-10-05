@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
 
+// .f-banda.mal: el rosa de la banda, un poco más oscuro que el de la franja de un diálogo (--peligro-t).
 const tones = {
-  danger: "bg-[var(--peligro-t)] text-[var(--peligro-tx)]",
+  danger: "bg-[var(--peligro-banda)] text-[var(--peligro-tx)]",
   warning: "bg-[var(--alerta-t)] text-[var(--alerta-tx)]",
 } as const;
 

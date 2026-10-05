@@ -82,6 +82,17 @@ describe("los íconos de las áreas", () => {
   });
 });
 
+// «Criterio · Formularios» (.aviso-mal), «Criterio · Avisos» y tableros Usuario, Rol y M-Usuario (.w-cartel, .f-banda): el
+// ícono de error es un círculo de 8,5, la raya de 8 a 12,5 y el punto en 15,8; los avisos lo piden con trazo 2.
+describe("el ícono de error", () => {
+  it("dibuja el del tablero y acepta su trazo", () => {
+    const svg = render(<icons.AlertCircleIcon strokeWidth={2} />).container.querySelector("svg")!;
+    expect(svg.querySelector("circle")).toHaveAttribute("r", "8.5");
+    expect([...svg.querySelectorAll("path")].map((path) => path.getAttribute("d"))).toEqual(["M12 8v4.5", "M12 15.8h.01"]);
+    expect(svg).toHaveAttribute("stroke-width", "2");
+  });
+});
+
 // Los controles de los tableros (.fb-sel, .sel, .pag, el menú de la cuenta): la flecha del desplegable es la chica del
 // lienzo y las flechas de los controles van con trazo 2.
 describe("las flechas de los controles", () => {

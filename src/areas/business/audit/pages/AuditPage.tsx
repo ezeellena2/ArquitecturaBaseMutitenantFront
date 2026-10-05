@@ -59,9 +59,10 @@ export function AuditPage() {
         className="block w-full truncate text-left text-[var(--t1)] hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
         onClick={() => setSelected(row)}>{row.actionText}</button>,
     },
-    // Columnas del tablero: 140px, 2.4fr, 1.4fr y 1.2fr, más los márgenes de cada celda; «Qué pasó» se lleva el resto.
+    // Columnas del tablero: 140px, 2.4fr, 1.4fr y 1.2fr, más los márgenes de cada celda; «Qué pasó» se lleva el resto. Con
+    // «Quién» en el 21 %, «Dónde» y «Quién» arrancan donde el tablero (1013 y 1227 a 1440).
     { id: "where", header: t("audit:columns.where"), type: "text", className: "w-[23%]", value: (row) => row.whereText },
-    { id: "actor", header: t("audit:columns.who"), type: "text", className: "w-[20%]", value: (row) => row.actorDisplayName ?? row.actorText },
+    { id: "actor", header: t("audit:columns.who"), type: "text", className: "w-[21%]", value: (row) => row.actorDisplayName ?? row.actorText },
   ];
   const periodValue = period;
   // Como el tablero: cualquier filtro distinto de «Últimos 30 días» sin búsqueda ni tema ni persona cuenta.

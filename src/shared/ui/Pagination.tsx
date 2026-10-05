@@ -32,13 +32,14 @@ export function Pagination({
   const from = totalCount === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, totalCount);
 
-  // Tableros Empresas, Empresa y Usuarios: el pie en letra de 12; con una sola fila en la página, «1 de 1».
+  // Tableros Empresas, Empresa y Usuarios: el pie en letra de 12, con las cifras de su ancho de siempre (.pag); con una sola
+  // fila en la página, «1 de 1».
   return (
     <nav
       aria-label={t("pagination.label")}
       className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--borde)] px-4 py-2 text-[12px] text-[var(--t2)]"
     >
-      <p className="tabular-nums">
+      <p>
         {from === to
           ? t("pagination.single", { from: formatInteger(from), total: formatInteger(totalCount) })
           : t("pagination.range", { from: formatInteger(from), to: formatInteger(to), total: formatInteger(totalCount) })}
@@ -58,10 +59,11 @@ export function Pagination({
             ))}
           </SelectContent>
         </Select>
-        <span className="tabular-nums">
+        <span>
           {/* Sin filas, «Página 1 de 1» y no «de 0» (tablero Roles, «Ningún rol coincide con los filtros»). */}
           {t("pagination.page", { page: formatInteger(page), totalPages: formatInteger(Math.max(totalPages, 1)) })}
         </span>
+        {/* .pag .ico-btn: las flechas en el gris de los íconos (--t3) y, sin otra página, al 40 %. */}
         <Button
           type="button"
           variant="icon"
@@ -69,7 +71,7 @@ export function Pagination({
           aria-label={t("pagination.previous")}
           disabled={!hasPrevious}
           onClick={() => onPageChange(page - 1)}
-          className="text-[var(--t2)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)]"
+          className="text-[var(--t3)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)] disabled:opacity-40"
         >
           <ChevronLeftIcon strokeWidth={2} className="size-4" />
         </Button>
@@ -80,7 +82,7 @@ export function Pagination({
           aria-label={t("pagination.next")}
           disabled={!hasNext}
           onClick={() => onPageChange(page + 1)}
-          className="text-[var(--t2)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)]"
+          className="text-[var(--t3)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)] disabled:opacity-40"
         >
           <ChevronRightIcon strokeWidth={2} className="size-4" />
         </Button>

@@ -23,6 +23,7 @@ describe("OfflineBanner", () => {
   it("en el teléfono es una banda roja clara", () => {
     render(<I18nextProvider i18n={i18n}><AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}><OfflineBanner /></AppChromeProvider></I18nextProvider>);
 
-    expect(screen.getByRole("status", { name: "Sin conexión" })).toHaveClass("bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]", "text-[14.5px]");
+    // M-Avisos (.f-banda.mal): el rosa de la banda del teléfono.
+    expect(screen.getByRole("status", { name: "Sin conexión" })).toHaveClass("bg-[var(--peligro-banda)]", "text-[var(--peligro-tx)]", "text-[14.5px]");
   });
 });

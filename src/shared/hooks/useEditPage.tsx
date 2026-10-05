@@ -4,9 +4,9 @@ import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { PhoneBand } from "@/shared/ui/app/PhoneBand";
+import { Banner } from "@/shared/ui/Banner";
 import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
-import { FormError } from "@/shared/ui/FormError";
 import { AlertCircleIcon } from "@/shared/ui/icons";
 import { useUnsavedChangesGuard } from "./useUnsavedChangesGuard";
 
@@ -53,12 +53,13 @@ export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, error
       <ConcurrencyBanner error={error} isDirty={isDirty} onSeeNew={onSeeNew} onContinueEditing={onContinueEditing} />
       {/* Tableros M-Usuario y M-Pagina-Org («Error al guardar»): en el teléfono, el error con el texto del back va en la
           banda roja debajo de la barra, donde va lo que sigue pasando («Criterio · Decisiones»). */}
-      {phone && message ? <PhoneBand tone="danger" role="alert" icon={<AlertCircleIcon className="mt-0.5 size-4 shrink-0" />}>
+      {phone && message ? <PhoneBand tone="danger" role="alert" icon={<AlertCircleIcon className="mt-0.5 size-4 shrink-0" strokeWidth={2} />}>
         <span className="min-w-0">{message}</span>
       </PhoneBand> : null}
     </>,
     unsaved: isDirty ? <span className="font-medium text-[var(--alerta)]">{t("unsaved.changes")}</span> : null,
-    formError: message && !phone ? <FormError message={message} /> : null,
+    // Tablero Usuario («Error al guardar», .w-cartel.o-prob): en la compu, el cartel de problema debajo de la banda.
+    formError: message && !phone ? <Banner tone="danger">{message}</Banner> : null,
     leaveDialog: <ConfirmDialog
       open={guard.isBlocked}
       onOpenChange={(open) => { if (!open) guard.stay(); }}

@@ -19,6 +19,8 @@ describe("FormError", () => {
     const alert = screen.getByRole("alert");
     expect(alert).toHaveClass("text-[13px]", "leading-normal", "px-3", "py-2.5", "rounded-[8px]", "bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]");
     expect(alert.querySelector("svg")).toHaveClass("size-4", "mt-0.5");
+    // .aviso-mal y .msj: el ícono con trazo 2, como el de los tableros.
+    expect(alert.querySelector("svg")).toHaveAttribute("stroke-width", "2");
   });
 
   // Lienzo v100 (.aviso-mal.tel) y v104 (.msj de M-Ingreso, M-Registro, M-Registro-Empresa y M-Invitacion): en el

@@ -424,13 +424,14 @@ export function InfoIcon(props: IconProps) {
   );
 }
 
-/// Un aviso de error (`Banner` con `tone="danger"`).
+/// Un aviso de error (`Banner` con `tone="danger"`, `FormError`, la banda del teléfono y la pantalla de error): el de
+/// «Criterio · Formularios» (.aviso-mal) y «Criterio · Avisos». Los avisos lo piden con trazo 2, como sus tableros.
 export function AlertCircleIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <circle cx="12" cy="12" r="8.25" />
-      <path d="M12 8v5" />
-      <path d="M12 16h.01" />
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 8v4.5" />
+      <path d="M12 15.8h.01" />
     </Icon>
   );
 }

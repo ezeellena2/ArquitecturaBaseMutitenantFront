@@ -47,7 +47,7 @@ describe("FilterBar", () => {
   });
 
   // Tableros de listas (.fb-limpiar: Usuarios, Roles, Empresas, Auditoría y «Criterio · Tablas»): «Limpiar» va en gris de
-  // 14 y se oscurece con el mouse, sin el petróleo de un enlace.
+  // 13, con 6 y 8 de relleno (la regla que sigue a la de 14), y se oscurece con el mouse, sin el petróleo de un enlace.
   // Tableros Usuarios, Roles y Empresas (.fb-bus, .fb-sel): la lupa y la flecha del filtro son las del lienzo.
   it("dibuja la lupa y la flecha del tablero", () => {
     render(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={vi.fn()}
@@ -59,11 +59,11 @@ describe("FilterBar", () => {
     expect(chevron).toHaveAttribute("stroke-width", "2");
   });
 
-  it("«Limpiar» va en gris de 14, como los tableros", () => {
+  it("«Limpiar» va en gris de 13, como los tableros", () => {
     render(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="zzz" onSearchChange={vi.fn()} filters={[]} clearLabel="Limpiar" onClear={vi.fn()} />);
 
     const clear = screen.getByRole("button", { name: "Limpiar" });
-    expect(clear).toHaveClass("text-[14px]", "text-[var(--t3)]", "hover:text-[var(--t1)]", "hover:bg-[var(--s2)]");
+    expect(clear).toHaveClass("text-[13px]", "px-2", "py-1.5", "text-[var(--t3)]", "hover:text-[var(--t1)]", "hover:bg-[var(--s2)]");
     expect(clear).not.toHaveClass("text-[var(--marca-tx)]");
   });
 
@@ -103,7 +103,8 @@ describe("FilterBar", () => {
     screen.getByRole("button", { name: "Estado: todos" }).focus();
     await userEvent.keyboard("{Enter}");
     const menu = await screen.findByRole("menu");
-    expect(menu).toHaveClass("p-1", "min-w-[200px]");
+    // «Criterio · Menús» (Medidas): un menú mide de 220 a 320 de ancho.
+    expect(menu).toHaveClass("p-1", "min-w-[220px]");
     for (const name of [/^Todos/, /^Activos/]) {
       const option = screen.getByRole("menuitemradio", { name });
       expect(option).not.toHaveClass("border-t");

@@ -92,8 +92,9 @@ export function createCompanyColumns(t: TFunction): Column<CompanyResponse>[] {
 
 export function createCompanyMemberColumns(t: TFunction): Column<CompanyMember>[] {
   return [
-    // Anchos del tablero Empresa: 1.6fr, 1.4fr y 150 px, más los márgenes de cada celda. Debajo del nombre, el correo.
-    { id: "displayName", header: t("companies:memberColumns.name"), type: "custom", mobile: "primary", sortable: true, className: "w-[42%]",
+    // Anchos del tablero Empresa: 1.6fr, 1.4fr y 150 px, más los márgenes de cada celda (con «Miembro» en el 41,5 %, «Roles en
+    // la empresa» arranca donde el tablero). Debajo del nombre, el correo.
+    { id: "displayName", header: t("companies:memberColumns.name"), type: "custom", mobile: "primary", sortable: true, className: "w-[41.5%]",
       cell: (member) => <span className="block truncate font-medium text-[var(--t1)]">{member.displayName}</span>,
       detail: (member) => member.email },
     { id: "roles", header: t("companies:memberColumns.roles"), type: "text", value: (member) => member.roles.map((role) => role.name).join(", ") || null },

@@ -17,6 +17,8 @@ import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
+import { useAppChrome } from "@/shared/ui/app/AppChrome";
+import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
@@ -114,6 +116,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { can } = usePermissions();
+  const { phone } = useAppChrome();
   const editable = can("roles.manage") && role?.isSystemRole !== true;
   const schema = useMemo(() => roleFormSchema(t), [t]);
   const { form, version, resetTo, wrote } = useEditForm<RoleResponse | undefined, RoleForm, RoleFormValues>({
@@ -258,7 +261,10 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
         </Section>
 
         <Section title={t("roles:permissionsTitle")} phone="inset" meta={scope ? t("roles:permissionCount", count) : undefined}>
-          {errors.permissions?.message ? <FormError className="mx-4 mt-3 max-md:mx-3.5" message={errors.permissions.message} /> : null}
+          {/* Tablero Rol (.w-cartel.o-prob, con 12 y 16 de margen): en la compu, el cartel de problema; M-Rol no lo dibuja y
+              el teléfono sigue con la franja de sus avisos. */}
+          {errors.permissions?.message ? phone ? <FormError className="mx-3.5 mt-3" message={errors.permissions.message} />
+            : <Banner tone="danger" className="mx-4 my-3">{errors.permissions.message}</Banner> : null}
           {!scope ? <p className="p-4 text-[13px] text-[var(--t3)] max-md:px-4 max-md:py-3.5 max-md:text-[14.5px] max-md:text-[var(--t2)]">{t("roles:scope.chooseForPermissions")}</p>
             : permissionGroups.isPending ? <p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p>
               : <PermissionPicker key={scope} groups={scopeGroups} value={permissions} onChange={permissionsField.field.onChange} readOnly={!editable} />}

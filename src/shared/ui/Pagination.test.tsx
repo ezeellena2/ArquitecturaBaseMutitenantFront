@@ -45,6 +45,11 @@ describe("Pagination", () => {
     const previous = screen.getByRole("button", { name: "Página anterior" });
     expect(previous).toBeDisabled();
     expect(previous).toHaveClass("size-8");
+    // Tableros Empresas y Empresa (.pag): las cifras con su ancho de siempre, y las flechas en el gris claro de los íconos
+    // (.ico-btn, --t3), al 40 % cuando no se pueden tocar.
+    expect(screen.getByText("Página 1 de 124")).not.toHaveClass("tabular-nums");
+    expect(screen.getByText("1–10 de 1.234")).not.toHaveClass("tabular-nums");
+    expect(previous).toHaveClass("text-[var(--t3)]", "disabled:opacity-40");
     // Tableros Empresas y Usuarios: el pie en letra de 12, y el tamaño de página en una píldora de 28 con letra de 12,
     // también en la compu grande.
     expect(screen.getByRole("navigation", { name: "Paginado" })).toHaveClass("text-[12px]");

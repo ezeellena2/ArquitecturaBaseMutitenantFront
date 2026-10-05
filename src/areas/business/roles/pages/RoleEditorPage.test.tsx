@@ -511,6 +511,11 @@ describe("RoleEditorPage", () => {
     expect(name).toHaveAccessibleDescription("Escribí el nombre del rol.");
     expect(screen.getByRole("combobox", { name: "Vale en" })).toHaveAccessibleDescription("Elegí dónde vale el rol.");
     expect(screen.getByText("Elegí al menos un permiso.")).toBeVisible();
+    // Tablero Rol (.w-cartel.o-prob, con 12 y 16 de margen): en la compu, el error de los permisos va en el cartel de
+    // problema, de 44 con el ícono de 18.
+    const permissionsError = screen.getByText("Elegí al menos un permiso.").closest("[role=alert]");
+    expect(permissionsError).toHaveClass("min-h-11", "rounded-[10px]", "mx-4", "my-3");
+    expect(permissionsError?.querySelector("svg")).toHaveClass("size-[18px]");
     expect(posts).toBe(0);
     expect(await axe(container)).toHaveNoViolations();
 

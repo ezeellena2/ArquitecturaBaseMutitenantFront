@@ -47,6 +47,10 @@ describe("listas en el teléfono", () => {
     expect(plain).toHaveClass("[&>[data-slot=row-actions]]:text-[var(--t2)]", "[&>[data-slot=row-actions]]:-mr-1");
     expect(person).not.toHaveClass("[&>[data-slot=row-actions]]:text-[var(--t2)]");
     expect(person).not.toHaveClass("[&>[data-slot=row-actions]]:-mr-1");
+    // M-Roles y M-Empresas (.ap-fila: 14 entre el texto y el ⋮, más los 10 del texto): «1 usuario» queda a 24 del ⋮. En la
+    // de una persona (.w-conv), el texto y el ⋮ quedan a 14, como ya están.
+    expect(plain).toHaveClass("gap-3.5");
+    expect(person).toHaveClass("gap-1");
   });
 
   // Tablero M-Usuarios (.w-av.g): una invitación sin nombre lleva «@» en gris, sin el degradé.

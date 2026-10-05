@@ -9,14 +9,15 @@ export interface FormErrorProps extends Omit<ComponentProps<"div">, "children"> 
   /** La de error (por defecto) es roja; la de atención, ámbar; la de información, petróleo («Tu sesión venció»). */
   tone?: Tone;
   /** Otro ícono que el del tono: el reloj de «Tu sesión venció» (tableros Ingreso y M-Ingreso). */
-  icon?: ComponentType<{ className?: string }>;
+  icon?: ComponentType<{ className?: string; strokeWidth?: number }>;
 }
 
-// El texto y el ícono, en el color de los avisos (.aviso-mal, .msj.alerta y .msj.info).
-const tones: Record<Tone, { icon: ComponentType<{ className?: string }>; box: string }> = {
-  danger: { icon: AlertCircleIcon, box: "bg-[var(--peligro-t)] text-[var(--peligro-tx)]" },
+// El texto y el ícono, en el color de los avisos (.aviso-mal, .msj.alerta y .msj.info). Los tableros dibujan el ícono del
+// error y el de la información con trazo 2; el triángulo de la atención, con el del set.
+const tones: Record<Tone, { icon: ComponentType<{ className?: string; strokeWidth?: number }>; box: string; stroke?: number }> = {
+  danger: { icon: AlertCircleIcon, box: "bg-[var(--peligro-t)] text-[var(--peligro-tx)]", stroke: 2 },
   warning: { icon: AlertTriangleIcon, box: "bg-[var(--alerta-t)] text-[var(--alerta-tx)]" },
-  info: { icon: InfoIcon, box: "bg-[var(--marca-t)] text-[var(--marca-tx)]" },
+  info: { icon: InfoIcon, box: "bg-[var(--marca-t)] text-[var(--marca-tx)]", stroke: 2 },
 };
 
 export function FormError({ message, tone = "danger", icon, role, className, ...props }: FormErrorProps) {
@@ -45,7 +46,7 @@ export function FormError({ message, tone = "danger", icon, role, className, ...
       {...props}
     >
       {/* El ícono de 16 al medio de la primera línea, como .aviso-mal (el del teléfono, 1 px abajo, como .aviso-mal.tel). */}
-      <Icon className="mt-0.5 size-4 shrink-0 max-md:mt-px" />
+      <Icon className="mt-0.5 size-4 shrink-0 max-md:mt-px" strokeWidth={tones[tone].stroke} />
       <span className="min-w-0">{message}</span>
     </div>
   );

@@ -90,6 +90,10 @@ describe("useEditPage", () => {
     const alerts = await screen.findAllByRole("alert");
     expect(alerts).toHaveLength(1);
     expect(alerts[0]).toHaveTextContent("Tiene que quedar al menos un Dueño activo.");
+    // Tablero Usuario (.w-cartel.o-prob): en la compu, la franja debajo de la banda es el cartel de problema de «Criterio ·
+    // Avisos», de 44 con el ícono de 18, y no la franja de un diálogo.
+    expect(alerts[0]).toHaveClass("min-h-11", "rounded-[10px]", "bg-[var(--peligro-t)]");
+    expect(alerts[0].querySelector("svg")).toHaveClass("size-[18px]");
     expect(screen.queryByRole("button", { name: "Ver lo nuevo" })).not.toBeInTheDocument();
   });
 
@@ -108,7 +112,8 @@ describe("useEditPage", () => {
 
     const band = await within(await screen.findByTestId("cartel")).findByRole("alert");
     expect(band).toHaveTextContent("Tiene que quedar al menos un Dueño activo.");
-    expect(band).toHaveClass("px-4", "py-3", "text-[14.5px]", "leading-[1.4]", "bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]");
+    // M-Usuario (.f-banda.mal): el rosa de la banda es un poco más oscuro que el de la franja.
+    expect(band).toHaveClass("px-4", "py-3", "text-[14.5px]", "leading-[1.4]", "bg-[var(--peligro-banda)]", "text-[var(--peligro-tx)]");
     expect(band).not.toHaveClass("rounded-xl");
     expect(screen.getByTestId("franja")).toBeEmptyDOMElement();
     expect(screen.getAllByRole("alert")).toHaveLength(1);
