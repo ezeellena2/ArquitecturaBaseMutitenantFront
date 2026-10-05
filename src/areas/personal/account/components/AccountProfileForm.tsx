@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UserRound } from "lucide-react";
-import { useImperativeHandle, useState, type ReactNode, type Ref } from "react";
+import { useState, type ReactNode } from "react";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -26,7 +26,8 @@ import { updateMe } from "../api/account";
 
 /// «Tus datos» no tiene datos obligatorios: el nombre vacío se guarda como «sin nombre». La versión la lleva `useEditForm`:
 /// es la de lo que se cargó y se conserva hasta guardar, «Ver lo nuevo» o descartar; después de un 409, el próximo
-/// guardado vuelve a dar 409.
+/// guardado vuelve a dar 409. Es la versión propia del perfil (`/api/me.version`, 0 si nunca se guardó, y el 0 es una
+/// versión): cambiar un método de ingreso no la mueve.
 const profileFormSchema = z.object({ displayName: z.string(), culture: z.string(), timeZoneId: z.string() });
 type ProfileForm = z.infer<typeof profileFormSchema>;
 
@@ -39,18 +40,9 @@ function valuesFromAccount(account: MeResponse): ProfileForm {
   return { displayName: account.displayName ?? "", culture: account.culture, timeZoneId: account.timeZoneId };
 }
 
-/// Lo que Mi cuenta le avisa a «Tus datos»: una escritura propia sobre la cuenta que no es este formulario.
-export interface AccountProfileFormHandle {
-  /** Después de hacer principal un método de ingreso, quitarlo o verificarlo: el back puede cambiar el correo principal
-   * de la cuenta, y con eso su versión. Relee la cuenta y, si la escritura partió de la base (la última lectura es la
-   * base), la relectura pasa a ser la base y lo que se está escribiendo se conserva, como al publicar la Página pública.
-   * Si en el medio llegó un cambio de otra persona, la base queda y el próximo guardado da 409. */
-  accountWritten: () => Promise<void>;
-}
-
 /// «Tus datos» de Mi cuenta (tableros Cuenta y M-Cuenta), como el editor de Roles: React Hook Form con zod, la versión de
 /// `useEditForm`, y el 409, «Cambios sin guardar», la franja y «¿Salir sin guardar?» de `useEditPage`.
-export function AccountProfileForm({ account, children, ref }: { account: MeResponse; children?: ReactNode; ref?: Ref<AccountProfileFormHandle> }) {
+export function AccountProfileForm({ account, children }: { account: MeResponse; children?: ReactNode }) {
   const { t } = useTranslation("account");
   const queryClient = useQueryClient();
   const { form, version, resetTo, wrote } = useEditForm({ read: account, toValues: valuesFromAccount, resolver: zodResolver(profileFormSchema) });
@@ -73,17 +65,6 @@ export function AccountProfileForm({ account, children, ref }: { account: MeResp
       return true;
     } catch (error) { setReloadFailure(error); return false; }
   }
-  // Una escritura propia sobre la cuenta desde los métodos de ingreso. Si la relectura falla, la base queda: lo peor es un
-  // 409 al guardar, con «Ver lo nuevo».
-  useImperativeHandle(ref, () => ({
-    accountWritten: async () => {
-      const from = account.version ?? undefined;
-      try {
-        const fresh = await queryClient.fetchQuery({ queryKey: currentUserQueryKey, queryFn: fetchCurrentUser, staleTime: 0, meta: { silent: true, blocksView: true } });
-        if (from !== undefined) wrote(from, fresh);
-      } catch { /* la base queda */ }
-    },
-  }));
   // El 409 en su cartel, «Cambios sin guardar» en la banda, el error en la franja y «¿Salir sin guardar?».
   const edit = useEditPage({ isDirty, error: failure, onSeeNew: () => { void reload(resetTo); }, onContinueEditing: () => setFailure(undefined) });
   // Por TanStack Query, como toda escritura: los términos nuevos (403) abren la aceptación también desde acá, y la

@@ -128,6 +128,8 @@ export const visualUnavailableClosed: MeResponse = {
 
 export const currentUsers = {
   "consumer-empty": consumerWithoutOrganizations,
+  // «Tus datos» nunca se guardó: /api/me trae la versión 0 del perfil (identidad.md).
+  "consumer-profile-never-saved": { ...consumerWithoutOrganizations, version: 0 },
   "consumer-needs-personal-method": { ...consumerWithoutOrganizations, needsPersonalLoginMethod: true },
   "consumer-new-terms": { ...consumerWithoutOrganizations, pendingLegalDocuments: [{ id: "terms-v2", kind: "Terms", version: 2 }] },
   "consumer-with-organizations": consumerWithOrganizations,

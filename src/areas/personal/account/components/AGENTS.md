@@ -1,4 +1,4 @@
 Formularios y diálogos de Mi cuenta: la referencia de formulario y de diálogo que copian las demás features.
 `AccountProfileForm` («Tus datos»: React Hook Form con zod, `useEditForm` y `useEditPage`), `LoginMethodsTable` (los métodos de ingreso con su ⋮), `VerifyLoginMethodDialog` (verificar un método, con el diálogo de `shared/account`), `AccountGoogleButton` (vincular Google), `AccountDeletionDialog` (se monta al abrirse, devuelve el foco y lleva su error arriba de los botones) y `DeletionRequestedPage`.
 Leé [formularios](../../../../../docs/rules/formularios.md) y [datos-y-api](../../../../../docs/rules/datos-y-api.md); ningún código o ticket sale en la URL.
-La versión de lo cargado se conserva hasta guardar o descartar. Hacer principal, quitar o verificar un método de ingreso puede cambiar la versión de la cuenta en el back (el correo principal): Mi cuenta se lo avisa a «Tus datos» con `accountWritten`, que toma la relectura como base si partió de ella.
+La versión de lo cargado se conserva hasta guardar o descartar. Es la del perfil (`/api/me.version`, 0 si nunca se guardó, y el 0 es una versión): cambiar un método de ingreso no la mueve.

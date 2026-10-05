@@ -4,7 +4,7 @@ import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { List, ListItem } from "@/shared/ui/List";
-import { AccountProfileForm, type AccountProfileFormHandle } from "../components/AccountProfileForm";
+import { AccountProfileForm } from "../components/AccountProfileForm";
 import { useQuery } from "@tanstack/react-query";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { accountMethodsQueryKey, fetchLoginMethods } from "@/shared/account/api/loginMethods";
@@ -47,14 +47,9 @@ export function AccountPage() {
   // Tablero Cuenta, «Es la única Dueña»: «Dar de baja» apagado; la ⓘ y el botón explican por qué.
   const soleOwnerOf = methods.data?.soleOwnerOrganizations.join(", ") ?? "";
   const deletionBlocked = soleOwnerOf.length > 0;
-  const profile = useRef<AccountProfileFormHandle>(null);
-  // Después de cambiar un método de ingreso: los métodos y la cuenta, que en el back puede cambiar de versión (el correo
-  // principal). «Tus datos» toma esa relectura como base, para que guardar después no dé un 409 falso.
-  function refresh() {
-    void queryClient.invalidateQueries({ queryKey: accountMethodsQueryKey });
-    if (profile.current) void profile.current.accountWritten();
-    else void queryClient.invalidateQueries({ queryKey: currentUserQueryKey });
-  }
+  // Después de cambiar un método de ingreso: los métodos y la cuenta (el correo principal). La versión de «Tus datos» no
+  // cambia: es la del perfil, que solo sube al guardarlo.
+  function refresh() { void queryClient.invalidateQueries({ queryKey: accountMethodsQueryKey }); void queryClient.invalidateQueries({ queryKey: currentUserQueryKey }); }
   async function deleted(scheduledForUtc: string) {
     showDeletionRequested(format.formatDate(scheduledForUtc));
     await auth.removeUser();
@@ -73,7 +68,7 @@ export function AccountPage() {
   if (isPending) return <p role="status" className="p-4 text-[13px] lg:px-6 lg:py-5">{t("states.loading")}</p>;
   // «Criterio · Avisos» (Pantalla de error): sin /api/me no hay nada que mostrar (LegalAcceptanceGate lo ve primero).
   if (!data) return <LoadErrorPage onRetry={() => { void refetch(); }} />;
-  return <><AccountProfileForm ref={profile} key={data.id} account={data}>
+  return <><AccountProfileForm key={data.id} account={data}>
     {/* Tablero M-Cuenta: en el teléfono, «Agregar correo o teléfono» en texto a la derecha del título. */}
     <Section title={t("account:methods")} action={{ label: t("account:add"), onClick: () => setAddOpen(true) }}>
       {methods.data?.needsPersonalLoginMethod ? <div className="border-b border-[var(--borde)] p-3"><PersonalLoginMethodNotice onAdd={() => setAddOpen(true)} /></div> : null}

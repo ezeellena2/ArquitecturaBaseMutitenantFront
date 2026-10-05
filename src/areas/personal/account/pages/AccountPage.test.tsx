@@ -245,62 +245,33 @@ describe("Mi cuenta", () => {
     expect(sent).toEqual([expect.objectContaining({ displayName: "Nombre nuevo", version: 42 })]);
   });
 
-  // concurrencia.md (E7): en el back, la versión de la cuenta es la de su fila, y hacer principal un método o quitar el
-  // principal cambia el correo principal de esa fila, y con eso la versión. Es una escritura propia, como publicar en la
-  // Página pública: guardar «Tus datos» después no da un 409 falso; manda la versión nueva y conserva lo que se escribía.
-  it.each([
-    { action: "Quitar", target: "ana@example.test", title: "¿Quitar este correo?" },
-    { action: "Hacer principal", target: "nuevo@example.test", title: "¿Hacer principal este correo?" },
-  ])("«$action» un método que cambia la versión de la cuenta no hace chocar después a «Guardar cambios»", async ({ action, target, title }) => {
+  // concurrencia.md e identidad.md (E7): la versión de /api/me es la de «Tus datos», 0 si el perfil nunca se guardó. El 0
+  // es una versión: el primer guardado la manda y el siguiente manda la que respondió el guardado.
+  it("con la versión 0 de un perfil que nunca se guardó, «Tus datos» la manda y después manda la que respondió", async () => {
     const user = userEvent.setup();
-    const ana = { id: "email-ana", type: "Email", value: "ana@example.test", isVerified: true, isPrimary: true, canRemove: true, canMakePrimary: false };
-    const nuevo = { id: "email-nuevo", type: "Email", value: "nuevo@example.test", isVerified: true, isPrimary: false, canRemove: true, canMakePrimary: true };
-    let methods = [ana, nuevo];
-    let current = consumerWithoutOrganizations;
-    const sent: unknown[] = [];
-    // Como el back: el correo principal cambia en la fila de la cuenta y sube su versión.
-    const changePrimary = () => {
-      methods = [{ ...nuevo, isPrimary: true, canMakePrimary: false }, ...(action === "Quitar" ? [] : [{ ...ana, isPrimary: false, canMakePrimary: true }])];
-      current = { ...current, email: "nuevo@example.test", version: (current.version ?? 0) + 1 };
-      return new HttpResponse(null, { status: 204 });
-    };
-    // Después de montar: la ruta registra su /api/me de la persona, y este lo reemplaza.
-    renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+    let current = { ...consumerWithoutOrganizations, version: 0 };
+    const sent: Array<{ version: number }> = [];
+    renderRouteWithProviders("/cuenta", { as: "consumer-profile-never-saved" });
     server.use(
       http.get("/api/me", () => HttpResponse.json(current)),
-      http.get("/api/me/login-methods", () => HttpResponse.json({ methods, canLinkGoogle: false, needsPersonalLoginMethod: false,
-        accountDeletionGraceDays: 30, soleOwnerOrganizations: [] })),
-      http.post("/api/me/reauth", () => HttpResponse.json({ sourceMethodId: "email-nuevo", destination: "n***@example.test", resendAfterSeconds: 60 })),
-      http.post("/api/me/reauth/verify", () => HttpResponse.json({ reauthTicket: "opaque-ticket" })),
-      http.delete("/api/me/login-methods/email-ana", changePrimary),
-      http.put("/api/me/login-methods/email-nuevo/primary", changePrimary),
       http.put("/api/me", async ({ request }) => {
-        const body = await request.json() as { version: number; displayName: string };
+        const body = await request.json() as { displayName: string; version: number };
         sent.push(body);
         if (body.version !== current.version) return HttpResponse.json({ code: "General.ConcurrencyConflict" }, { status: 409 });
-        current = { ...current, displayName: body.displayName, version: (current.version ?? 0) + 1 };
+        current = { ...current, displayName: body.displayName, version: current.version + 1 };
         return HttpResponse.json({ version: current.version });
       }),
     );
     const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
     await user.clear(name);
-    await user.type(name, "Nombre nuevo");
-
-    (await screen.findByRole("button", { name: `Acciones de ${target}` })).focus();
-    await user.keyboard("{Enter}");
-    await user.click(await screen.findByRole("menuitem", { name: action }));
-    const dialog = await screen.findByRole("dialog", { name: title });
-    expect(await within(dialog).findByText(/n\*\*\*@example.test/)).toBeVisible();
-    await user.type(within(dialog).getByRole("textbox", { name: "Código 1" }), "123456");
-    await user.click(within(dialog).getByRole("button", { name: action }));
-    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    // La cuenta releída llega a la barra lateral con su correo principal nuevo, además de la lista de métodos.
-    await waitFor(() => expect(screen.getAllByText("nuevo@example.test")).toHaveLength(2));
-    expect(name).toHaveValue("Nombre nuevo");
-
+    await user.type(name, "Primer nombre");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
-    await waitFor(() => expect(sent).toEqual([expect.objectContaining({ displayName: "Nombre nuevo", version: 43 })]));
     expect(await screen.findByText("Guardamos tus datos.")).toBeVisible();
+
+    await user.type(name, " y apellido");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => expect(sent.map((body) => body.version)).toEqual([0, 1]));
     expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
   });
 });
