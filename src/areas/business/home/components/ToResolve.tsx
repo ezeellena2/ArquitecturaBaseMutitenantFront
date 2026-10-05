@@ -29,7 +29,8 @@ export function ToResolve({ rows, byCompany = false }: { rows: readonly PendingR
   ];
   return <Surface className="overflow-hidden">
     <section aria-labelledby={titleId}>
-      <div className="flex items-center gap-2 px-4 py-3.5">
+      {/* Tablero Inicio-Org (.t-cab): 12 arriba y abajo y 16 a los lados. */}
+      <div className="flex items-center gap-2 px-4 py-3">
         <h2 id={titleId} className="text-[15px] font-semibold text-[var(--t1)]">{t("toResolve.title")}</h2>
         <span className="text-[13px] font-semibold text-[var(--t3)]">{rows.length}</span>
       </div>

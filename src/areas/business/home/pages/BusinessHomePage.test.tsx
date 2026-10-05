@@ -83,6 +83,10 @@ describe("BusinessHomePage", () => {
     const toResolve = screen.getByRole("region", { name: "Para resolver" });
     expect(within(toResolve).getByText("3")).toBeVisible();
     expect(toResolve).not.toHaveTextContent("+54 9 351 555-0200");
+    // Tablero Inicio-Org (.ini y .t-cab): los bloques del inicio van a 20 uno del otro, y el encabezado de «Para resolver»
+    // lleva 12 arriba y abajo.
+    expect(areas.parentElement).toHaveClass("gap-5");
+    expect(within(toResolve).getByRole("heading", { name: "Para resolver" }).parentElement).toHaveClass("py-3");
     const invitation = within(toResolve).getByText("carla.bianchi@delta.ejemplo.com").closest("tr")!;
     expect(invitation).toHaveTextContent("Invitación");
     // «Criterio · Tablas» (lienzo v92): lo que aclara el pendiente va en la segunda línea gris de la tabla.
@@ -133,7 +137,17 @@ describe("BusinessHomePage", () => {
 
     expect(await screen.findByText("Hola, Lucía")).toBeVisible();
     expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" })).toBeVisible();
+    // M-Inicio-Org (.c-top, .c-hola): la cabecera con 10 arriba y 46 abajo, el saludo con la altura normal de su letra y el
+    // nombre con interlineado 1,15.
+    expect(screen.getByText("Hola, Lucía")).toHaveClass("leading-[normal]");
+    expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" })).toHaveClass("leading-[1.15]");
+    expect(screen.getByRole("heading", { level: 1, name: "Grupo Delta" }).parentElement).toHaveClass("pt-2.5", "pb-[46px]");
     const shortcuts = screen.getByRole("navigation", { name: "Áreas de la organización" });
+    // .c-atajos a, .c-tit y .c-p: los rótulos de los atajos, el título y las dos líneas de cada fila con la altura normal
+    // de su letra (las filas, de 60).
+    expect(within(shortcuts).getByRole("link", { name: /^Roles/ })).toHaveClass("leading-[normal]");
+    expect(screen.getByRole("heading", { level: 2, name: "Para resolver" })).toHaveClass("leading-[normal]");
+    expect(screen.getByText("carla.bianchi@delta.ejemplo.com").parentElement).toHaveClass("leading-[normal]");
     const users = within(shortcuts).getByRole("link", { name: /^Usuarios/ });
     expect(users).toHaveAttribute("href", "/org/usuarios");
     expect(within(users).getByText("2")).toBeVisible();

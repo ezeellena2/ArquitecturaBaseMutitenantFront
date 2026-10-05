@@ -82,6 +82,10 @@ describe("AccessMenu", () => {
       "M10 16l-4-4 4-4",
       "M6 12h10",
     ]);
+    // «Criterio · Menús» (el menú de la cuenta) y tableros Inicio-Org e Inicio-Personal: los íconos de «Mi cuenta» y
+    // «Salir», en el gris claro de los íconos de un menú.
+    expect(signOutIcon).toHaveClass("text-[var(--t3)]");
+    expect(within(menu).getByRole("menuitem", { name: "Mi cuenta" }).querySelector("svg")).toHaveClass("text-[var(--t3)]");
   });
 
   it("en Personal sin organizaciones no ofrece empresa ni crearla; usa correo si falta nombre", async () => {

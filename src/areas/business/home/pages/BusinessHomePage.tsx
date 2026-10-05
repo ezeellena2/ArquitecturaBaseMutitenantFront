@@ -33,15 +33,16 @@ export function BusinessHomePage() {
     return <PhoneHome organization={organization ?? null} companies={home.data.companies} rows={rows} organizationName={organizationName}
       firstName={currentUser?.displayName?.trim().split(/\s+/)[0] ?? ""} />;
   }
+  // Tableros Inicio-Org e Inicio-Miembro (.ini): los bloques del inicio van a 20 uno del otro.
   return <Page icon={HomeIcon} title={t("common:home.title")} summary={organizationName}>
-    {organization ? <>
+    {organization ? <div className="flex flex-col gap-5">
       <AreaCards organization={organization} />
       <ToResolve rows={rows} />
-    </> : null}
-    {home.data && !organization ? <>
+    </div> : null}
+    {home.data && !organization ? <div className="flex flex-col gap-5">
       <h2 className="mb-[-6px] mt-1 text-[15px] font-semibold text-[var(--t1)]">{t("home:yourCompanies")}</h2>
       <CompanyCards companies={home.data.companies} />
       {rows.length > 0 ? <ToResolve rows={rows} byCompany /> : null}
-    </> : null}
+    </div> : null}
   </Page>;
 }

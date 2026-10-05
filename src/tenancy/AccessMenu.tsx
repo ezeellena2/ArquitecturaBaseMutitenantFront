@@ -72,9 +72,10 @@ export function AccessMenu() {
         {profiles.map((profile) => <ProfileRow key={profile.key} profile={profile} onClose={() => setOpen(false)} />)}
       </DropdownMenuGroup>
       {separator}
-      <DropdownMenuItem asChild className={itemClass}><Link to="/cuenta" onClick={() => setOpen(false)}><UserIcon className="size-4" />{t("accessMenu.myAccount")}</Link></DropdownMenuItem>
+      {/* «Criterio · Menús»: el ícono de una opción va gris claro (--t3), a la izquierda. */}
+      <DropdownMenuItem asChild className={itemClass}><Link to="/cuenta" onClick={() => setOpen(false)}><UserIcon className="size-4 text-[var(--t3)]" />{t("accessMenu.myAccount")}</Link></DropdownMenuItem>
       {separator}
-      <DropdownMenuItem onSelect={() => { setOpen(false); void signOut(); }} className={itemClass}><LogOutIcon className="size-4" />{t("accessMenu.signOut")}</DropdownMenuItem>
+      <DropdownMenuItem onSelect={() => { setOpen(false); void signOut(); }} className={itemClass}><LogOutIcon className="size-4 text-[var(--t3)]" />{t("accessMenu.signOut")}</DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>;
 }
