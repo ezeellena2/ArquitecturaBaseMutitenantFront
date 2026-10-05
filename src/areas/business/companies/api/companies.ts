@@ -5,13 +5,13 @@ import type {
   ChangeCompanyMemberStatusRequest,
   ChangeCompanyStatusRequest,
   CompanyFilterCountsResponse,
+  CompanyCandidateResponse,
   CompanyMemberFilterCountsResponse,
   CompanyMemberResponse,
   CompanyMemberState,
   CompanyResponse,
   CompanyStatus,
   CreateCompanyRequest,
-  OrganizationUserResponse,
   PagedRequest,
   RoleResponse,
   UpdateCompanyMemberRolesRequest,
@@ -33,6 +33,7 @@ export const companyQueryKey = (companyId: string) => [...companiesQueryRoot, "d
 export const companyMembersQueryRoot = (companyId: string) => [...companiesQueryRoot, companyId, "members"] as const;
 export const companyMembersQueryKey = (companyId: string, query: CompanyMembersQuery) => [...companyMembersQueryRoot(companyId), query] as const;
 export const companyMembersCountQueryKey = (companyId: string, search?: string) => [...companyMembersQueryRoot(companyId), "counts", search ?? ""] as const;
+export const companyCandidatesQueryKey = (companyId: string) => [...companiesQueryRoot, companyId, "candidates"] as const;
 
 function toSearch(query: object): string {
   const params = new URLSearchParams();
@@ -73,14 +74,6 @@ export function fetchCompanyMembers(companyId: string, query: CompanyMembersQuer
   return api.get<PagedResult<CompanyMemberResponse>>(`/api/companies/${encodeURIComponent(companyId)}/members/paged${search ? `?${search}` : ""}`);
 }
 
-export async function fetchCompanyMemberIds(companyId: string): Promise<string[]> {
-  const firstPage = await fetchCompanyMembers(companyId, { page: 1, pageSize: 100, sort: "displayName" });
-  if (firstPage.totalPages <= 1) return firstPage.items.map((member) => member.memberId);
-  const remaining = await Promise.all(Array.from({ length: firstPage.totalPages - 1 }, (_item, index) =>
-    fetchCompanyMembers(companyId, { page: index + 2, pageSize: 100, sort: "displayName" })));
-  return [...firstPage.items, ...remaining.flatMap((page) => page.items)].map((member) => member.memberId);
-}
-
 export function fetchCompanyMemberCounts(companyId: string, search?: string): Promise<CompanyMemberFilterCountsResponse> {
   const query = toSearch({ search });
   return api.get<CompanyMemberFilterCountsResponse>(`/api/companies/${encodeURIComponent(companyId)}/members/filter-counts${query ? `?${query}` : ""}`);
@@ -107,6 +100,20 @@ export function fetchAssignableCompanyRoles(companyId: string, canReadMembers: b
   return api.get<PagedResult<RoleResponse>>(canReadMembers ? `/api/companies/${id}/roles/paged?${page}` : `/api/roles/paged?companyId=${id}&${page}`);
 }
 
-export function fetchOrganizationMembers(): Promise<PagedResult<OrganizationUserResponse>> {
-  return api.get<PagedResult<OrganizationUserResponse>>("/api/users/paged?state=Active&page=1&pageSize=100&sort=displayName");
+/// A quién se puede sumar a la empresa (decisión 96): las personas activas de la organización que todavía no están en ella,
+/// con el nombre y el correo tapado. La pide quien administra la empresa, sin `users.read`, y también la Dueña: una sola
+/// forma. Se busca y se ordena solo por nombre.
+export function fetchCompanyCandidates(companyId: string): Promise<PagedResult<CompanyCandidateResponse>> {
+  return api.get<PagedResult<CompanyCandidateResponse>>(`/api/companies/${encodeURIComponent(companyId)}/candidates/paged?page=1&pageSize=100&sort=displayName`);
+}
+
+/// Reenviar o revocar la invitación de un miembro desde su empresa (decisión 97), con `company.members.manage` de esa
+/// empresa: reenviar manda la misma invitación (con su clave de idempotencia) y revocar la cancela entera.
+export function resendCompanyInvitation(companyId: string, invitationId: string, idempotencyKey: string): Promise<string> {
+  return api.post<string>(`/api/companies/${encodeURIComponent(companyId)}/invitations/${encodeURIComponent(invitationId)}/resend`, undefined,
+    { headers: { "Idempotency-Key": idempotencyKey } });
+}
+
+export function revokeCompanyInvitation(companyId: string, invitationId: string): Promise<void> {
+  return api.delete<void>(`/api/companies/${encodeURIComponent(companyId)}/invitations/${encodeURIComponent(invitationId)}`);
 }

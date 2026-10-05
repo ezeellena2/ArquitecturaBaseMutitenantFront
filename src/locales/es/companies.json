@@ -57,7 +57,9 @@
     "viewUser": "Ver usuario",
     "removeMember": "Quitar de la empresa",
     "restoreMember": "Volver a sumar",
-    "editCompany": "Editar empresa"
+    "editCompany": "Editar empresa",
+    "resendInvitation": "Reenviar invitación",
+    "revokeInvitation": "Revocar invitación"
   },
   "confirm": {
     "deactivate": "¿Inactivar {{name}}?",
@@ -65,7 +67,10 @@
     "removeMember": "¿Quitar a {{name}} de la empresa?",
     "removeMemberDescription": "Deja de entrar a {{company}} y pierde sus roles acá. Sigue en la organización y en sus otras empresas.",
     "deactivateConfirm": "Inactivar",
-    "removeMemberConfirm": "Quitar"
+    "removeMemberConfirm": "Quitar",
+    "revokeInvitation": "¿Revocar la invitación a {{email}}?",
+    "revokeInvitationDescription": "El enlace deja de funcionar. Podés volver a invitar a esta persona cuando quieras.",
+    "revokeInvitationConfirm": "Revocar"
   },
   "messages": {
     "created": "Creamos {{name}}. Quedaste con el rol Administrador.",
@@ -76,13 +81,19 @@
     "rolesUpdated": "Guardamos los roles de {{name}}.",
     "memberRemoved": "Quitamos a {{name}} de la empresa.",
     "memberRestored": "Volvimos a sumar a {{name}}. Dale los roles de nuevo.",
-    "detailUpdated": "Guardamos los cambios."
+    "detailUpdated": "Guardamos los cambios.",
+    "invitationResent": "Reenviamos la invitación a {{email}}.",
+    "invitationRevoked": "Revocamos la invitación a {{email}}."
   },
   "memberColumns": {
     "name": "Miembro",
     "email": "Correo",
     "roles": "Roles en la empresa",
-    "state": "Estado"
+    "state": "Estado",
+    "expiresPrefix": "Vence",
+    "expiredPrefix": "Venció",
+    "expiresInline": "vence",
+    "expiredInline": "venció"
   },
   "back": "Volver a Empresas",
   "backHome": "Volver al inicio",

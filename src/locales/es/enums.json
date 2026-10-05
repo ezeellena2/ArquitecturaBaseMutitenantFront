@@ -17,7 +17,8 @@
     "Active": "Activo",
     "PendingDeletion": "Baja pedida",
     "Inactive": "Inactivo",
-    "Invited": "Invitación pendiente"
+    "Invited": "Invitación pendiente",
+    "Expired": "Invitación vencida"
   },
   "HomePublicPageState": {
     "Published": "Publicada",

@@ -10,6 +10,7 @@
 | `Page` | ícono, título, segunda línea y hasta 3 botones | igual | título en la barra, con «‹» si es interna y el camino o el estado debajo (`phoneSubtitle`); el ⋮ en la barra; crear es un «+» flotante (`fab`); guardar va fijo abajo; el cuerpo, con margen, de borde a borde o gris (`phoneBody`) |
 | `FilterBar` | buscador y filtros en su tarjeta | igual | la lupa y el filtro son íconos de la barra; el filtro abre una hoja con las opciones y su conteo |
 | `DataTable` | todas las columnas | sin las `priority: "low"` | la fila de lista de la pantalla (`mobileRow`, con `ListRow`): de borde a borde, hasta tres líneas, el ⋮ solo si hay acciones; el paginado es «Cargar más» |
+| `RowActions` | el ⋮ abre su menú | igual | el ⋮ abre una hoja desde abajo con el dato de la fila de título (`title`) y sin ✕; las de peligro, al final, en rojo y después de una franja |
 | `Section` | caja con el título en el encabezado arena | igual | el título gris arriba y una tarjeta blanca (`card`), la tarjeta dentro de una página con margen (`inset`) o los campos sueltos (`untitled`) |
 | `Dialog` | centrado, 560 px, o 420 (`size="sm"`: uno o dos campos y las confirmaciones); 640 solo la vista previa de la Página pública (`size="preview"`) | centrado | hoja desde abajo, con manija y botones de 48 a lo ancho; la confirmación, sin ✕ |
 | Pantalla de edición | al editar, «Descartar cambios» y «Guardar cambios» en la banda; al crear, «Cancelar» y la acción | igual | los mismos botones, fijos abajo (`FixedActions`) |
@@ -45,6 +46,8 @@
 ## Lo verifica
 - `src/shared/ui/app/lists.test.tsx` (E5): la tabla es una lista de filas en el teléfono, los filtros son íconos con su hoja y el paginado es «Cargar más».
 - `src/shared/ui/app/app.test.tsx` (E5): la barra, la barra de abajo, el «+», los botones fijos y los grupos.
+- `src/shared/ui/RowActions.test.tsx` (E7): en el teléfono, el ⋮ abre la hoja con el dato de la fila y las de peligro al final.
+- `src/layouts/PrivateLayoutFrame.test.tsx` (E7): una pantalla cuyo ‹ vuelve al Inicio marca Inicio en la barra de abajo.
 - `columns-mobile.test.ts` (E1): toda definición de columnas tiene exactamente una `primary`.
 - Los tests «en el teléfono …» de cada pantalla (con `asPhone()`), el recorrido del teléfono del E2E real y las capturas a 390 y 1440 contra el tablero antes de cerrar la etapa.
 

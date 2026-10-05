@@ -12,6 +12,11 @@ export interface AppChrome {
   hideBottomNav: (hidden: boolean) => void;
   /** Una pantalla que no es de ninguna sección (el 403 o el 404, M-Error-Org) apaga la marca de la barra de abajo. */
   hideActiveSection?: (hidden: boolean) => void;
+  /** El Inicio del acceso: una pantalla cuyo ‹ vuelve a él es del Inicio. */
+  homePath?: string | null;
+  /** Una pantalla del Inicio (la ficha de la empresa de quien la administra sola, M-Empresa) marca Inicio en la barra de
+   *  abajo, aunque no sea el Inicio mismo. */
+  markHome?: (marked: boolean) => void;
 }
 
 const AppChromeContext = createContext<AppChrome>({ phone: false, parent: null, subtitle: null, hideBottomNav: () => {} });

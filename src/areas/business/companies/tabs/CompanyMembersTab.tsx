@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Power, ShieldCheck, UserRound } from "lucide-react";
+import { Power, RotateCw, ShieldCheck, Trash2, UserRound } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { CompanyMemberResponse, CompanyResponse, RoleResponse } from "@/shared/api/types";
+import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
@@ -20,8 +21,10 @@ import {
   companiesQueryRoot,
   companyMembersCountQueryKey,
   fetchCompanyMemberCounts,
+  resendCompanyInvitation,
+  revokeCompanyInvitation,
 } from "../api/companies";
-import { companyMemberPhoneRow, createCompanyMemberColumns } from "../columns";
+import { companyMemberPhoneRow, createCompanyMemberColumns, isCompanyInvitation } from "../columns";
 import { MemberRolesDialog } from "../components/MemberRolesDialog";
 import { memberStates, type CompanyMembersList } from "./useCompanyMembers";
 
@@ -33,8 +36,8 @@ interface MemberTarget {
 
 /**
  * Pestaña Miembros de la ficha (tableros Empresa y M-Empresa): búsqueda, filtros de rol y de estado con sus cantidades,
- * la tabla (las filas en el teléfono) y el ⋮ de cada miembro. Es dueña de sus diálogos: los roles de un miembro y la
- * confirmación para quitarlo.
+ * la tabla (las filas en el teléfono) y el ⋮ de cada miembro. Es dueña de sus diálogos: los roles de un miembro y las
+ * confirmaciones para quitarlo o para revocar su invitación.
  */
 export function CompanyMembersTab({ company, list, roles }: {
   company: CompanyResponse;
@@ -57,6 +60,7 @@ export function CompanyMembersTab({ company, list, roles }: {
     enabled: canReadMembers, meta: { silent: true } });
   const [rolesTarget, setRolesTarget] = useState<MemberTarget | null>(null);
   const [removeTarget, setRemoveTarget] = useState<MemberTarget | null>(null);
+  const [revokeTarget, setRevokeTarget] = useState<MemberTarget | null>(null);
   const changeMemberState = useMutation({
     mutationFn: (member: CompanyMemberResponse) => changeCompanyMemberStatus(company.id, member.memberId,
       { status: member.membershipStatus === "Active" ? "Inactive" : "Active", version: member.version }),
@@ -67,13 +71,42 @@ export function CompanyMembersTab({ company, list, roles }: {
     },
     onError: (error) => toastActionError(error, t),
   });
+  // Decisión 97: la invitación de un miembro se reenvía o se revoca desde su empresa. Reenviar manda la misma invitación,
+  // con su clave de idempotencia; la lista se vuelve a leer con la invitación nueva y su vencimiento.
+  const resendInvitation = useIdempotentMutation((member: CompanyMemberResponse, key) => resendCompanyInvitation(company.id, member.invitationId ?? "", key));
+  const revokeInvitation = useMutation({
+    mutationFn: (member: CompanyMemberResponse) => revokeCompanyInvitation(company.id, member.invitationId ?? ""),
+    onSuccess: async (_result, member) => {
+      setRevokeTarget(null);
+      toast.success(t("companies:messages.invitationRevoked", { email: member.email ?? member.displayName }));
+      await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
+    },
+    onError: (error) => toastActionError(error, t),
+  });
+  const resend = (member: CompanyMemberResponse) => resendInvitation.mutate(member, {
+    onSuccess: async () => {
+      toast.success(t("companies:messages.invitationResent", { email: member.email ?? member.displayName }));
+      await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
+    },
+    onError: (error) => toastActionError(error, t),
+  });
 
   if (!canReadMembers) return <FormError message={t("companies:detail.membersForbidden")} />;
 
   const editable = company.status === "Active";
   const memberActions = (member: CompanyMemberResponse) => {
+    // Tableros Empresa y M-Empresa (v108): el ⋮ de una invitación trae solo «Reenviar invitación» y, de peligro, «Revocar
+    // invitación». Sin `invitationId` (una invitación que no se resuelve desde esta empresa) va sin ⋮.
+    if (isCompanyInvitation(member)) {
+      const hidden = !canManageMembers || !editable || !member.invitationId;
+      return <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName} actions={[
+        { label: t("companies:actions.resendInvitation"), accessibleName: t("companies:actions.resendInvitation"), icon: RotateCw, hidden, onSelect: () => resend(member) },
+        { label: t("companies:actions.revokeInvitation"), accessibleName: t("companies:actions.revokeInvitation"), icon: Trash2, destructive: true, hidden,
+          onSelect: (trigger) => setRevokeTarget({ member, trigger }) },
+      ]} />;
+    }
     const removing = member.membershipStatus === "Active";
-    return <RowActions label={t("companies:memberActions", { name: member.displayName })} actions={[
+    return <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName} actions={[
       { label: t("companies:actions.changeRoles"), accessibleName: t("companies:actions.changeRoles"), icon: ShieldCheck, onSelect: (trigger) => setRolesTarget({ member, trigger }),
         hidden: !canManageMembers || member.state !== "Active" || member.membershipStatus !== "Active" || !editable },
       { label: t("companies:actions.viewUser"), accessibleName: t("companies:actions.viewUser"), icon: UserRound, onSelect: () => { void navigate(`/org/usuarios/${encodeURIComponent(member.memberId)}`); }, hidden: !canViewUsers },
@@ -105,7 +138,7 @@ export function CompanyMembersTab({ company, list, roles }: {
       ]}
       clearLabel={t("common:actions.clear")} onClear={filters.clear} />
     <Surface className="overflow-hidden" phoneFlush>
-      <DataTable columns={columns} mobileRow={(member) => companyMemberPhoneRow(member, memberActions(member))} rows={members.data?.items ?? []} rowKey={(member) => member.memberId}
+      <DataTable columns={columns} mobileRow={(member) => companyMemberPhoneRow(member, t, memberActions(member))} rows={members.data?.items ?? []} rowKey={(member) => member.memberId}
         isLoading={members.isPending} isFetching={members.isFetching} error={members.error ? apiErrorMessage(members.error, t) : undefined}
         onRetry={() => { void members.refetch(); void counts.refetch(); }}
         emptyTitle={filtered ? t("companies:detail.empty.filtered") : t("companies:detail.empty.all")}
@@ -121,5 +154,11 @@ export function CompanyMembersTab({ company, list, roles }: {
       description={t("companies:confirm.removeMemberDescription", { company: company.name })}
       confirmLabel={t("companies:confirm.removeMemberConfirm")} destructive returnFocusTo={removeTarget.trigger}
       onConfirm={() => changeMemberState.mutate(removeTarget.member)} /> : null}
+    {/* Tablero Empresa: revocar pide confirmación con el correo de la invitación. */}
+    {revokeTarget ? <ConfirmDialog open onOpenChange={(open) => { if (!open) setRevokeTarget(null); }}
+      title={t("companies:confirm.revokeInvitation", { email: revokeTarget.member.email ?? revokeTarget.member.displayName })}
+      description={t("companies:confirm.revokeInvitationDescription")}
+      confirmLabel={t("companies:confirm.revokeInvitationConfirm")} destructive returnFocusTo={revokeTarget.trigger}
+      onConfirm={() => revokeInvitation.mutate(revokeTarget.member)} /> : null}
   </>;
 }

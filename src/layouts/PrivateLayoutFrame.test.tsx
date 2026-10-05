@@ -121,6 +121,20 @@ describe("PrivateLayoutFrame", () => {
     expect(within(screen.getByRole("navigation", { name: "Secciones" })).getByRole("link", { name: "Más" })).toHaveAttribute("aria-current", "page");
   });
 
+  // Tablero M-Empresa («Administra solo la empresa», v108): quien administra solo su empresa llega a la ficha desde su
+  // Inicio y vuelve a él con ‹; la barra de abajo marca Inicio y no «Más».
+  it("en el teléfono, una pantalla cuyo ‹ vuelve al Inicio marca Inicio abajo", () => {
+    viewport.mobile = true;
+    render(<MemoryRouter initialEntries={["/org/empresas/company-1"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business">
+      <Page title="Delta S.A." backTo={{ to: "/org", label: "Volver al inicio" }}><p>{"miembros"}</p></Page>
+    </PrivateLayoutFrame></MemoryRouter>);
+
+    const sections = screen.getByRole("navigation", { name: "Secciones" });
+    expect(within(sections).getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
+    expect(within(sections).getByRole("link", { name: "Más" })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("link", { name: "Volver al inicio" })).toHaveAttribute("href", "/org");
+  });
+
   it("durante el cierre reemplaza el layout para no mostrar datos de sesión vacíos", () => {
     render(<MemoryRouter><PrivateLayoutFrame navigation={businessNavigation}><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
     act(() => beginSignOut());

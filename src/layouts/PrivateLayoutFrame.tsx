@@ -45,6 +45,8 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   const hideBottomNav = useCallback((hidden: boolean) => setBottomNavHidden(hidden), []);
   const [activeSectionHidden, setActiveSectionHidden] = useState(false);
   const hideActiveSection = useCallback((hidden: boolean) => setActiveSectionHidden(hidden), []);
+  const [homeMarked, setHomeMarked] = useState(false);
+  const markHome = useCallback((marked: boolean) => setHomeMarked(marked), []);
   const name = user?.displayName || user?.email || "";
   const account = user ? { name, email: user.email ?? null } : null;
   const organization = activeOrganization(user);
@@ -55,7 +57,8 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   // Tableros M-* («Criterio · Marco»): en el teléfono, Inicio y «Más» abajo; las demás pantallas se abren desde
   // «Más» y vuelven a él con ‹. Debajo del título va el camino («Administración») o la organización.
   const home = navigation.links.at(0);
-  const onHome = home?.path === pathname;
+  // Una pantalla que vuelve al Inicio con ‹ (la ficha de la empresa de quien la administra sola) también es del Inicio.
+  const onHome = home?.path === pathname || homeMarked;
   const onMore = navigation.moreTo === pathname;
   const chrome = useMemo<AppChrome>(() => ({
     phone: isMobile,
@@ -64,7 +67,9 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
     title: administrationEntry ? t(administrationEntry.link.labelKey) : null,
     hideBottomNav,
     hideActiveSection,
-  }), [isMobile, navigation.moreTo, navigation.administration, onHome, onMore, administrationEntry, context?.title, hideBottomNav, hideActiveSection, t]);
+    homePath: home?.path ?? null,
+    markHome,
+  }), [isMobile, navigation.moreTo, navigation.administration, onHome, onMore, administrationEntry, context?.title, hideBottomNav, hideActiveSection, home?.path, markHome, t]);
 
   if (isSigningOut) return <SessionStatusPage status="closing" />;
 

@@ -18,7 +18,7 @@ import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { addCompanyMember, companiesQueryRoot, fetchCompanyMemberIds, fetchOrganizationMembers } from "../api/companies";
+import { addCompanyMember, companiesQueryRoot, companyCandidatesQueryKey, fetchCompanyCandidates } from "../api/companies";
 import { memberErrorField } from "../errors";
 import { useDialogFailure } from "./useDialogFailure";
 
@@ -34,7 +34,9 @@ const serverFields: Record<string, keyof AddMemberForm> = { memberId: "memberId"
 
 /**
  * «Agregar miembro» (tablero Empresa, v100): el diálogo chico, sin bajada debajo del título («Criterio · Diálogos»); la
- * empresa ya se ve atrás. Con React Hook Form y zod, como Roles: es dueño de lo elegido, del alta y de su error, que se va
+ * empresa ya se ve atrás. Las personas salen de los candidatos de la empresa (decisión 96, v108): las activas de la
+ * organización que todavía no están en ella, con el nombre y, debajo, el correo tapado. Las pide quien administra la
+ * empresa sin `users.read`, y también la Dueña: una sola forma. Con React Hook Form y zod, como Roles: es dueño de lo elegido, del alta y de su error, que se va
  * al cambiar la persona o sus roles, como en los otros diálogos de Empresa. Se monta solo mientras está abierto y, al
  * cerrar, le devuelve el foco al botón que lo abrió.
  */
@@ -52,12 +54,10 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
   const member = useController({ control: form.control, name: "memberId" });
   const roleIds = useController({ control: form.control, name: "roleIds" });
   const { failure, clear, fail, close } = useDialogFailure(onClose);
-  const existingMemberIds = useQuery({ queryKey: ["companies", companyId, "all-member-ids"], queryFn: () => fetchCompanyMemberIds(companyId), meta: { silent: true } });
-  const alreadyAssigned = new Set(existingMemberIds.data ?? []);
-  const candidateQuery = useQuery({ queryKey: ["organization-members", "company-candidates"], queryFn: fetchOrganizationMembers, meta: { silent: true } });
-  const candidates = (candidateQuery.data?.items ?? []).filter((candidate) => !alreadyAssigned.has(candidate.memberId));
+  const candidateQuery = useQuery({ queryKey: companyCandidatesQueryKey(companyId), queryFn: () => fetchCompanyCandidates(companyId), meta: { silent: true } });
+  const candidates = candidateQuery.data?.items ?? [];
   const addMember = useIdempotentMutation((request: AddCompanyMemberRequest, key) => addCompanyMember(companyId, request, key));
-  const loading = candidateQuery.isPending || existingMemberIds.isPending;
+  const loading = candidateQuery.isPending;
 
   // Lo que el back rechaza de la persona o de los roles va debajo de ese campo (`errors.ts`); lo demás, en la franja.
   function rejected(error: unknown) {
@@ -89,7 +89,11 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
           <FormField label={t("companies:addMember.user")} required error={form.formState.errors.memberId?.message}>
             <Select value={member.field.value} onValueChange={(memberId) => { member.field.onChange(memberId); clear(); }} disabled={loading || candidates.length === 0}>
               <SelectTrigger className="w-full" aria-label={t("companies:addMember.user")}><SelectValue placeholder={loading ? t("common:states.loading") : t("companies:addMember.chooseUser")} /></SelectTrigger>
-              <SelectContent>{candidates.map((candidate) => <SelectItem key={candidate.memberId} value={candidate.memberId}>{candidate.displayName}{" · "}{candidate.email ?? t("companies:addMember.withoutEmail")}</SelectItem>)}</SelectContent>
+              {/* Tablero Empresa: cada candidato con su nombre y, debajo, el correo tapado; sin nombre, el nombre ya es el
+                  correo tapado y no se repite. */}
+              <SelectContent>{candidates.map((candidate) => <SelectItem key={candidate.memberId} value={candidate.memberId}
+                description={candidate.maskedEmailAddress === candidate.displayName ? undefined : candidate.maskedEmailAddress ?? t("companies:addMember.withoutEmail")}>
+                {candidate.displayName}</SelectItem>)}</SelectContent>
             </Select>
           </FormField>
           <FormField label={t("companies:addMember.roles")} error={form.formState.errors.roleIds?.message}>
@@ -97,7 +101,6 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
           </FormField>
           {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
           {candidateQuery.isError ? <FormError message={apiErrorMessage(candidateQuery.error, t)} /> : null}
-          {existingMemberIds.isError ? <FormError message={apiErrorMessage(existingMemberIds.error, t)} /> : null}
           <FormError message={actionErrorMessage(failure, t)} />
         </DialogBody>
         <DialogFooter>

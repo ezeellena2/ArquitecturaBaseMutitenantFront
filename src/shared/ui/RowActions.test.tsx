@@ -1,7 +1,8 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { RowActions, type RowAction } from "./RowActions";
+import { AppChromeProvider } from "./app/AppChrome";
 import { ShieldIcon } from "./icons";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 
@@ -86,5 +87,35 @@ describe("RowActions", () => {
 
     expect(screen.getByRole("button", { name: "Acciones de Luis" })).toBe(trigger);
     expect(trigger).toHaveFocus();
+  });
+
+  // Tableros M-Empresa («Invitación: acciones») y M-Cuenta-Metodo: en el teléfono el ⋮ abre una hoja desde abajo con el dato
+  // de la fila de título, sin ✕; las opciones de 54, las de peligro al final, en rojo y después de una franja. Elegir una
+  // cierra la hoja y corre la acción con el ⋮, para que el diálogo que abra le devuelva el foco.
+  it("en el teléfono abre una hoja con el dato de la fila, las opciones y las de peligro al final", async () => {
+    const onSelect = vi.fn();
+    renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+      <RowActions label="Acciones de Ana" title="Ana Gómez" actions={[
+        action({ label: "Eliminar", accessibleName: "Eliminar a Ana", destructive: true, onSelect }),
+        action(),
+      ]} />
+    </AppChromeProvider>);
+
+    const trigger = screen.getByRole("button", { name: "Acciones de Ana" });
+    expect(trigger).toHaveAttribute("aria-haspopup", "dialog");
+    await userEvent.click(trigger);
+    const sheet = await screen.findByRole("dialog", { name: "Ana Gómez" });
+    expect(sheet).toHaveClass("bottom-0", "rounded-t-[20px]");
+    expect(within(sheet).queryByRole("button", { name: "Cerrar" })).not.toBeInTheDocument();
+    const menu = within(sheet).getByRole("menu", { name: "Acciones de Ana" });
+    const items = within(menu).getAllByRole("menuitem");
+    expect(items.map((item) => item.textContent)).toEqual(["Roles", "Eliminar"]);
+    expect(items[0]).toHaveClass("min-h-[54px]", "text-[16.5px]");
+    expect(items[1]).toHaveClass("text-[var(--peligro)]");
+    expect(within(menu).getByRole("separator")).toHaveClass("bg-[var(--s2)]");
+
+    await userEvent.click(items[1]);
+    expect(onSelect).toHaveBeenCalledWith(trigger);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 });

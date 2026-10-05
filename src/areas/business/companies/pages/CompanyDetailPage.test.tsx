@@ -116,7 +116,7 @@ describe("CompanyDetailPage", () => {
   it("los diálogos de la ficha con el ancho, el encabezado y el campo vacío del tablero", async () => {
     const user = userEvent.setup();
     rolesApi(() => HttpResponse.json({ version: 9 }));
-    server.use(http.get("/api/users/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
+    server.use(http.get("/api/companies/company-1/candidates/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
 
     expect(await screen.findByText("Lucía Fernández")).toBeVisible();
@@ -147,7 +147,7 @@ describe("CompanyDetailPage", () => {
   it("los diálogos de la ficha usan el cuerpo de los diálogos y en el teléfono suben desde abajo con su alto", async () => {
     const user = userEvent.setup();
     rolesApi(() => HttpResponse.json({ version: 9 }));
-    server.use(http.get("/api/users/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
+    server.use(http.get("/api/companies/company-1/candidates/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
 
     expect(await screen.findByText("Lucía Fernández")).toBeVisible();
@@ -542,11 +542,8 @@ describe("CompanyDetailPage", () => {
       http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
       http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: 0, active: 0, pendingDeletion: 0, inactive: 0, invited: 0 })),
       http.get("/api/companies/company-1/roles/paged", () => HttpResponse.json({ items: [companyAdmin], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
-      http.get("/api/users/paged", () => HttpResponse.json({ items: [{
-        memberId: "member-2", userId: "user-2", displayName: "Tomás Acosta", email: "tomas@example.com", state: "Active",
-        hasManagedEmail: false, roles: [], companies: [], invitationId: null, invitationIssuedAtUtc: null, invitationExpiresAtUtc: null,
-        version: 1, createdAtUtc: "2026-09-27T12:00:00Z",
-      }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/company-1/candidates/paged", () => HttpResponse.json({ items: [{ memberId: "member-2", displayName: "Tomás Acosta",
+        maskedEmailAddress: "to•••@example.com" }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
       http.post("/api/companies/company-1/members", () => { posts += 1; return new HttpResponse(null, { status: 204 }); }),
     );
 
@@ -578,11 +575,8 @@ describe("CompanyDetailPage", () => {
       http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
       http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: 0, active: 0, pendingDeletion: 0, inactive: 0, invited: 0 })),
       http.get("/api/companies/company-1/roles/paged", () => HttpResponse.json({ items: [companyAdmin], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
-      http.get("/api/users/paged", () => HttpResponse.json({ items: [{
-        memberId: "member-2", userId: "user-2", displayName: "Tomás Acosta", email: "tomas@example.com", state: "Active",
-        hasManagedEmail: false, roles: [], companies: [], invitationId: null, invitationIssuedAtUtc: null, invitationExpiresAtUtc: null,
-        version: 1, createdAtUtc: "2026-09-27T12:00:00Z",
-      }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/company-1/candidates/paged", () => HttpResponse.json({ items: [{ memberId: "member-2", displayName: "Tomás Acosta",
+        maskedEmailAddress: "to•••@example.com" }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
       http.post("/api/companies/company-1/members", async ({ request }) => {
         requestBody = await request.json();
         idempotencyKey = request.headers.get("Idempotency-Key");
@@ -609,11 +603,8 @@ describe("CompanyDetailPage", () => {
       http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
       http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: 0, active: 0, pendingDeletion: 0, inactive: 0, invited: 0 })),
       http.get("/api/companies/company-1/roles/paged", () => HttpResponse.json({ items: [companyAdmin], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
-      http.get("/api/users/paged", () => HttpResponse.json({ items: [{
-        memberId: "member-2", userId: "user-2", displayName: "Tomás Acosta", email: "tomas@example.com", state: "Active",
-        hasManagedEmail: false, roles: [], companies: [], invitationId: null, invitationIssuedAtUtc: null, invitationExpiresAtUtc: null,
-        version: 1, createdAtUtc: "2026-09-27T12:00:00Z",
-      }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/company-1/candidates/paged", () => HttpResponse.json({ items: [{ memberId: "member-2", displayName: "Tomás Acosta",
+        maskedEmailAddress: "to•••@example.com" }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
       http.post("/api/companies/company-1/members", () => HttpResponse.json({ status: 409, code: "Companies.Membership.AlreadyExists",
         title: "Conflicto", detail: "Esta persona ya pertenece a la empresa." }, { status: 409 })),
     );
@@ -635,17 +626,14 @@ describe("CompanyDetailPage", () => {
   // Como «Editar empresa» y «Roles de …»: el error de la franja de «Agregar miembro» se va al cambiar la persona o sus
   // roles; al volver a agregar, si el back lo rechaza otra vez, vuelve.
   it("«Agregar miembro»: el error de la franja se va al cambiar un campo", async () => {
-    const candidate = (memberId: string, displayName: string, email: string) => ({
-      memberId, userId: `user-${memberId}`, displayName, email, state: "Active", hasManagedEmail: false, roles: [], companies: [],
-      invitationId: null, invitationIssuedAtUtc: null, invitationExpiresAtUtc: null, version: 1, createdAtUtc: "2026-09-27T12:00:00Z",
-    });
+    const candidate = (memberId: string, displayName: string, maskedEmailAddress: string) => ({ memberId, displayName, maskedEmailAddress });
     server.use(
       http.get("/api/companies/company-1", () => HttpResponse.json(company)),
       http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
       http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: 0, active: 0, pendingDeletion: 0, inactive: 0, invited: 0 })),
       http.get("/api/companies/company-1/roles/paged", () => HttpResponse.json({ items: [companyAdmin], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
-      http.get("/api/users/paged", () => HttpResponse.json({ items: [candidate("member-2", "Tomás Acosta", "tomas@example.com"),
-        candidate("member-3", "Sofía Ruiz", "sofia@example.com")], page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/company-1/candidates/paged", () => HttpResponse.json({ items: [candidate("member-2", "Tomás Acosta", "to•••@example.com"),
+        candidate("member-3", "Sofía Ruiz", "so•••@example.com")], page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
       http.post("/api/companies/company-1/members", () => HttpResponse.json({ status: 409, code: "Tenancy.Company.Inactive",
         title: "Conflicto", detail: "Activá la empresa antes de administrar sus miembros." }, { status: 409 })),
     );
@@ -714,7 +702,7 @@ describe("CompanyDetailPage", () => {
   it("cada diálogo de la ficha le devuelve el foco a lo que lo abrió", async () => {
     const user = userEvent.setup();
     rolesApi(() => HttpResponse.json({ version: 9 }));
-    server.use(http.get("/api/users/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
+    server.use(http.get("/api/companies/company-1/candidates/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })));
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     expect(await screen.findByText("Lucía Fernández")).toBeVisible();
 

@@ -1,4 +1,4 @@
-import { useRef, useState, type ComponentType, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
 import { AppBar, AppIconButton } from "./app/AppBar";
@@ -103,6 +103,15 @@ export function Page({
 }: PageProps): ReactNode {
   const chrome = useAppChrome();
   const [tools, setTools] = useState<HTMLDivElement | null>(null);
+  // Tablero M-Empresa («Administra solo la empresa»): una pantalla cuyo ‹ vuelve al Inicio es del Inicio, y la barra de
+  // abajo lo marca a él y no a «Más».
+  const { markHome } = chrome;
+  const fromHome = chrome.phone && backTo !== undefined && backTo.to === chrome.homePath;
+  useEffect(() => {
+    if (!fromHome) return;
+    markHome?.(true);
+    return () => markHome?.(false);
+  }, [fromHome, markHome]);
   const moreTrigger = useRef<HTMLButtonElement>(null);
   const visibleMoreActions = moreActions?.items.filter((action) => !action.hidden) ?? [];
   const regularActions = visibleMoreActions.filter((action) => !action.destructive);

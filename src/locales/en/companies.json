@@ -57,7 +57,9 @@
     "viewUser": "View user",
     "removeMember": "Remove from company",
     "restoreMember": "Add back",
-    "editCompany": "Edit company"
+    "editCompany": "Edit company",
+    "resendInvitation": "Resend invitation",
+    "revokeInvitation": "Revoke invitation"
   },
   "confirm": {
     "deactivate": "Deactivate {{name}}?",
@@ -65,7 +67,10 @@
     "removeMember": "Remove {{name}} from the company?",
     "removeMemberDescription": "They can no longer enter {{company}} and lose their roles here. They stay in the organization and its other companies.",
     "deactivateConfirm": "Deactivate",
-    "removeMemberConfirm": "Remove"
+    "removeMemberConfirm": "Remove",
+    "revokeInvitation": "Revoke the invitation to {{email}}?",
+    "revokeInvitationDescription": "The link stops working. You can invite this person again whenever you want.",
+    "revokeInvitationConfirm": "Revoke"
   },
   "messages": {
     "created": "We created {{name}}. You have the Administrator role.",
@@ -76,13 +81,19 @@
     "rolesUpdated": "We saved the roles of {{name}}.",
     "memberRemoved": "We removed {{name}} from the company.",
     "memberRestored": "We added {{name}} back. Give them their roles again.",
-    "detailUpdated": "We saved the changes."
+    "detailUpdated": "We saved the changes.",
+    "invitationResent": "We resent the invitation to {{email}}.",
+    "invitationRevoked": "We revoked the invitation to {{email}}."
   },
   "memberColumns": {
     "name": "Member",
     "email": "Email",
     "roles": "Company roles",
-    "state": "Status"
+    "state": "Status",
+    "expiresPrefix": "Expires",
+    "expiredPrefix": "Expired",
+    "expiresInline": "expires",
+    "expiredInline": "expired"
   },
   "back": "Back to Companies",
   "backHome": "Back to home",

@@ -272,7 +272,8 @@ Rige el [lienzo vigente](../design/lienzo/README.md): **mandan los ocho tableros
 - **Con sesión, el teléfono es una app** (tableros M-* y «Criterio · Marco y pantallas»), no la web achicada:
   - arriba, la barra del teléfono y el título grande (`AppBar`), con la organización o el perfil debajo; en una pantalla interna, «‹» y el título, con el camino debajo («Administración»). Buscar y filtrar son íconos de esa barra; el filtro abre una hoja con las opciones y su conteo;
   - abajo, hasta cuatro secciones y «Más» con tu inicial (`BottomNav`). «Más» (`/mas`) reúne los perfiles, la Administración, Mi cuenta y Salir. No hay barra de abajo en un chat ni si hay una acción fija abajo;
-  - las listas van de borde a borde, con filas de hasta tres líneas (`ListRow`); el ⋮ va solo si la fila tiene acciones y, si no, se toca la fila; el paginado es «Cargar más»;
+  - las listas van de borde a borde, con filas de hasta tres líneas (`ListRow`); el ⋮ va solo si la fila tiene acciones y, si no, se toca la fila; el ⋮ abre una hoja desde abajo con el dato de la fila de título (M-Empresa, «Invitación: acciones»); el paginado es «Cargar más»;
+  - una pantalla cuyo ‹ vuelve al Inicio (la ficha de la empresa de quien la administra sola) marca Inicio en la barra de abajo;
   - **crear algo nuevo es un «+» flotante** abajo a la derecha (`Fab`), también con la lista vacía;
   - lo que en la compu es un diálogo es una **hoja desde abajo**, con manija y botones de 48 a lo ancho; la confirmación, sin ✕;
   - los ajustes y las fichas van en grupos blancos sobre fondo gris (`Section`, `SettingsGroup`), con el título gris arriba y a lo sumo una acción en texto; una fila con «›» abre otra pantalla o una hoja para elegir;

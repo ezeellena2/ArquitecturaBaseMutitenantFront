@@ -73,6 +73,7 @@ export type CreateCompanyRequest = ApiSchemas["CreateCompanyHttpRequest"];
 export type UpdateCompanyRequest = ApiSchemas["UpdateCompanyHttpRequest"];
 export type ChangeCompanyStatusRequest = ApiSchemas["ChangeCompanyStatusHttpRequest"];
 export type CompanyMemberResponse = ApiSchemas["CompanyMemberHttpResponse"];
+export type CompanyCandidateResponse = ApiSchemas["CompanyCandidateResponse"];
 export type CompanyMemberFilterCountsResponse = ApiSchemas["CompanyMemberFilterCountsResponse"];
 export type CompanyMemberState = ApiSchemas["CompanyMemberState"];
 export type CompanyMembershipStatus = ApiSchemas["CompanyMembershipStatus"];
