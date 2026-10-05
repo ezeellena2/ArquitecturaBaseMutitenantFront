@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Globe, Trash2 } from "lucide-react";
+import { Copy, Globe, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -22,6 +22,8 @@ import { Input } from "@/shared/ui/input";
 import { Page } from "@/shared/ui/Page";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Section, SectionFields } from "@/shared/ui/Section";
+import { useAppChrome } from "@/shared/ui/app/AppChrome";
+import { cn } from "@/shared/lib/utils";
 import { List, ListItem } from "@/shared/ui/List";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { CultureText } from "@/shared/ui/format/CultureText";
@@ -47,6 +49,7 @@ export function SettingsPage() {
   const { can } = usePermissions();
   const canManage = can("settings.manage");
   const organizationName = activeOrganization(currentUser)?.name ?? "";
+  const { phone } = useAppChrome();
   const client = useQueryClient();
   const settings = useQuery({ queryKey: organizationSettingsKey, queryFn: fetchOrganizationSettings, meta: { silent: true, blocksView: true } });
   const domains = useQuery({ queryKey: organizationDomainsKey, queryFn: fetchOrganizationDomains, meta: { silent: true } });
@@ -203,11 +206,18 @@ export function SettingsPage() {
         {/* Tablero Configuracion-Verificar: lo que hay que hacer, con la letra de los diálogos, y el registro TXT. */}
         <DialogBody>
           <DialogDescription>{t("settings:domains.verifyDescription")}</DialogDescription>
+          {/* Tablero M-Configuracion-Verificar: en el teléfono, el rótulo como el de los campos (13,5 y gris), el registro en
+              la caja gris de 48 sin borde y «Copiar» en texto petróleo con su ícono, como las acciones en texto (.ap-txt). */}
           <div className="flex flex-col gap-1.5">
-            <span className="text-[12px] font-semibold text-[var(--t1)] lg:text-[13px]">{t("settings:domains.txtLabel", { domain: domainToVerify?.domain ?? "" })}</span>
-            <div className="flex items-center gap-3 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] py-2 pl-3 pr-2">
-              <code className="min-w-0 flex-1 break-all font-mono text-[12.5px] text-[var(--t1)]">{domainToVerify?.txtRecordValue}</code>
-              <Button type="button" variant="outline" size="sm" onClick={() => { if (domainToVerify?.txtRecordValue) copyTxt(domainToVerify.txtRecordValue); }}>{copied ? t("settings:domains.copied") : t("settings:domains.copy")}</Button>
+            <span className={phone ? "text-[13.5px] font-semibold text-[var(--t2)]" : "text-[12px] font-semibold text-[var(--t1)] lg:text-[13px]"}>{t("settings:domains.txtLabel", { domain: domainToVerify?.domain ?? "" })}</span>
+            <div className={phone ? "flex min-h-12 items-center gap-2 rounded-xl bg-[var(--s3)] pl-3.5 pr-1.5" : "flex items-center gap-3 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] py-2 pl-3 pr-2"}>
+              <code className={cn("min-w-0 flex-1 break-all font-mono text-[var(--t1)]", phone ? "text-[14px]" : "text-[12.5px]")}>{domainToVerify?.txtRecordValue}</code>
+              {phone
+                ? <button type="button" onClick={() => { if (domainToVerify?.txtRecordValue) copyTxt(domainToVerify.txtRecordValue); }}
+                  className="inline-flex h-10 shrink-0 items-center gap-1.5 px-2.5 text-[15.5px] font-semibold text-[var(--marca-tx)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
+                  <Copy aria-hidden="true" className="size-4" />{copied ? t("settings:domains.copied") : t("settings:domains.copy")}
+                </button>
+                : <Button type="button" variant="outline" size="sm" onClick={() => { if (domainToVerify?.txtRecordValue) copyTxt(domainToVerify.txtRecordValue); }}>{copied ? t("settings:domains.copied") : t("settings:domains.copy")}</Button>}
             </div>
           </div>
           {verifyFailure ? <FormError message={verifyFailure} /> : null}

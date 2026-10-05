@@ -219,6 +219,34 @@ describe("SettingsPage", () => {
     expect(within(add).queryByText("Escribí el dominio.")).not.toBeInTheDocument();
   });
 
+  // Tablero M-Configuracion-Verificar: en el teléfono, el rótulo del TXT en 13,5 y gris, el registro en una caja gris de
+  // 48 sin borde, con radio 12, y «Copiar» en texto petróleo con su ícono, como las acciones en texto del teléfono.
+  it("en el teléfono, «Verificar» lleva el rótulo del TXT y «Copiar» del tablero", async () => {
+    const restore = asPhone();
+    try {
+      const user = userEvent.setup();
+      server.use(
+        http.get("/api/organization/settings", () => HttpResponse.json(settings)),
+        http.get("/api/organization/settings/domains", () => HttpResponse.json([pending])),
+      );
+      renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+
+      await user.click(await screen.findByRole("button", { name: "Verificar" }));
+      const verify = await screen.findByRole("dialog", { name: "Verificar delta.example.test" });
+      expect(within(verify).getByText("Registro TXT a cargar en el DNS de delta.example.test")).toHaveClass("text-[13.5px]", "font-semibold", "text-[var(--t2)]");
+      const code = within(verify).getByText("ab-verificacion=7f3c9a2e");
+      expect(code).toHaveClass("text-[14px]", "break-all");
+      expect(code.parentElement).toHaveClass("min-h-12", "rounded-xl", "bg-[var(--s3)]", "pl-3.5", "pr-1.5");
+      expect(code.parentElement).not.toHaveClass("border");
+      const copy = within(verify).getByRole("button", { name: "Copiar" });
+      expect(copy).toHaveClass("h-10", "px-2.5", "text-[15.5px]", "font-semibold", "text-[var(--marca-tx)]");
+      expect(copy).not.toHaveAttribute("data-variant", "outline");
+      expect(copy.querySelector("svg")).not.toBeNull();
+    } finally {
+      restore();
+    }
+  });
+
   it("en un dominio pendiente, «Verificar» abre el diálogo con el TXT y la fila no lo muestra", async () => {
     const user = userEvent.setup();
     server.use(
