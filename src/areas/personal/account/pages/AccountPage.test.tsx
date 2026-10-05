@@ -245,6 +245,37 @@ describe("Mi cuenta", () => {
     expect(sent).toEqual([expect.objectContaining({ displayName: "Nombre nuevo", version: 42 })]);
   });
 
+  // concurrencia.md (E7): después de guardar «Tus datos», la base es la versión que respondió el guardado. Si otra sesión
+  // guardó justo después, la relectura trae su cambio con otra versión: no pasa a ser la base y el próximo guardado da 409.
+  it("después de guardar «Tus datos», el próximo guardado manda la versión que respondió el guardado, no la de la relectura", async () => {
+    const user = userEvent.setup();
+    let current = consumerWithoutOrganizations;
+    const sent: Array<{ version: number }> = [];
+    renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+    server.use(
+      http.get("/api/me", () => HttpResponse.json(current)),
+      http.put("/api/me", async ({ request }) => {
+        const body = await request.json() as { displayName: string; version: number };
+        sent.push(body);
+        if (body.version !== current.version) return HttpResponse.json({ code: "General.ConcurrencyConflict" }, { status: 409 });
+        // Otra sesión guarda justo después: la relectura ya trae su cambio, con otra versión.
+        current = { ...current, displayName: "Ana María", version: (current.version ?? 0) + 2 };
+        return HttpResponse.json({ version: 43 });
+      }),
+    );
+    const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
+    await user.clear(name);
+    await user.type(name, "Nombre guardado");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    expect(await screen.findByText("Guardamos tus datos.")).toBeVisible();
+
+    await user.type(name, " otra vez");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(sent.map((body) => body.version)).toEqual([42, 43]);
+  });
+
   // concurrencia.md e identidad.md (E7): la versión de /api/me es la de «Tus datos», 0 si el perfil nunca se guardó. El 0
   // es una versión: el primer guardado la manda y el siguiente manda la que respondió el guardado.
   it("con la versión 0 de un perfil que nunca se guardó, «Tus datos» la manda y después manda la que respondió", async () => {

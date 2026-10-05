@@ -232,6 +232,43 @@ describe("RoleEditorPage", () => {
     expect(sent).toEqual([expect.objectContaining({ name: "Nombre del borrador", version: 4 })]);
   });
 
+  // concurrencia.md (E7): después de guardar, la base es la versión que respondió el guardado. Si otra persona guardó
+  // justo después, la relectura trae su cambio con otra versión: no pasa a ser la base, el próximo guardado da 409 y la
+  // persona elige con «Ver lo nuevo».
+  it("después de guardar, el próximo guardado manda la versión que respondió el guardado, no la de la relectura", async () => {
+    const user = userEvent.setup();
+    let current = role;
+    const sent: Array<{ version: number }> = [];
+    server.use(
+      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
+      http.get("/api/roles/role-custom", () => HttpResponse.json(current)),
+      http.put("/api/roles/role-custom", async ({ request }) => {
+        const body = await request.json() as { name: string; version: number };
+        sent.push(body);
+        if (body.version !== current.version) {
+          return HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Otra persona cambió este rol." }, { status: 409 });
+        }
+        // Otra persona guarda justo después: la relectura ya trae su cambio, con otra versión.
+        current = { ...role, name: body.name, description: "Lo cambió otra persona.", version: current.version + 2 };
+        return HttpResponse.json({ version: role.version + 1 });
+      }),
+    );
+    renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
+    await user.clear(name);
+    await user.type(name, "Nombre guardado");
+    await user.click(screen.getAllByRole("button", { name: "Guardar cambios" })[0]);
+    expect(await screen.findByText("Guardamos el rol Nombre guardado.")).toBeVisible();
+
+    await user.type(name, " otra vez");
+    await user.click(screen.getAllByRole("button", { name: "Guardar cambios" })[0]);
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Ver lo nuevo" })).toBeVisible();
+    expect(screen.getByRole("textbox", { name: "Descripción" })).toHaveValue("Ve los miembros. No cambia nada.");
+    expect(sent.map((body) => body.version)).toEqual([4, 5]);
+  });
+
   // B12 (Criterio · Avisos): si se corta la red al guardar, un solo aviso dice qué pasó y «Reintentar» vuelve a
   // guardar lo mismo; la franja del formulario no repite el error.
   it("si se corta la red al guardar, avisa «No pudimos conectarnos» con «Reintentar»", async () => {

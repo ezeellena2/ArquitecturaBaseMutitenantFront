@@ -24,9 +24,15 @@ function api(current: typeof page, calls: string[] = []) {
 }
 
 // Como el back (concurrencia.md): guarda y publica solo con la versión vigente, si no responde 409, y cada escritura
-// sube la versión. `current` es lo que tiene el servidor: la prueba lo cambia para simular a otra persona.
+// sube la versión y responde la nueva. `current` es lo que tiene el servidor: la prueba lo cambia para simular a otra
+// persona, también con `afterWrite`, que guarda justo después de una escritura (la relectura ya trae su cambio).
 function versionedApi(initial: typeof page) {
-  const backend = { current: initial, writes: [] as Array<{ version: number }> };
+  const backend = { current: initial, writes: [] as Array<{ version: number }>, afterWrite: undefined as (() => void) | undefined };
+  const saved = () => {
+    const version = backend.current.version;
+    backend.afterWrite?.();
+    return HttpResponse.json({ version });
+  };
   const conflict = () => HttpResponse.json({ code: "General.ConcurrencyConflict", title: "Conflicto" },
     { status: 409, headers: { "Content-Type": "application/problem+json" } });
   server.use(
@@ -36,14 +42,14 @@ function versionedApi(initial: typeof page) {
       backend.writes.push(body);
       if (body.version !== backend.current.version) return conflict();
       backend.current = { ...backend.current, name: body.name, version: backend.current.version + 1 };
-      return HttpResponse.json({ version: backend.current.version });
+      return saved();
     }),
     http.post("/api/organization/public-page/publish", async ({ request }) => {
       const body = await request.json() as { version: number };
       backend.writes.push(body);
       if (body.version !== backend.current.version) return conflict();
       backend.current = { ...backend.current, isPublished: true, version: backend.current.version + 1 };
-      return HttpResponse.json({ version: backend.current.version });
+      return saved();
     }),
   );
   return backend;
@@ -332,8 +338,8 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(backend.writes).toEqual([expect.objectContaining({ name: "Grupo Delta Norte", description: "Servicios del grupo", version: 8 })]);
   });
 
-  // Publicar se aplica al momento y parte de lo que se está editando: su relectura pasa a ser la base, lo escrito se
-  // conserva y «Guardar cambios» no choca con la escritura propia.
+  // Publicar se aplica al momento y parte de lo que se está editando: la versión que respondió pasa a ser la base, lo
+  // escrito se conserva y «Guardar cambios» no choca con la escritura propia.
   it("publicar con cambios sin guardar no hace chocar después a «Guardar cambios»", async () => {
     const user = userEvent.setup();
     const backend = versionedApi({ ...page, isPublished: false });
@@ -351,5 +357,47 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(await screen.findByText("Guardamos la página.")).toBeVisible();
     expect(backend.writes.map((write) => write.version)).toEqual([8, 9]);
     expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
+  });
+
+  // concurrencia.md (E7): después de guardar, la base es la versión que respondió el guardado. Si otra persona guardó
+  // justo después, la relectura trae su cambio con otra versión: no pisa lo que se ve y el próximo guardado da 409.
+  it("después de guardar, el próximo guardado manda la versión que respondió el guardado, no la de la relectura", async () => {
+    const user = userEvent.setup();
+    const backend = versionedApi(page);
+    backend.afterWrite = () => { backend.current = { ...backend.current, description: "Lo cambió otra persona.", version: backend.current.version + 1 }; };
+    renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+    const name = await within(await screen.findByRole("region", { name: "Página" })).findByRole("textbox", { name: "Nombre de la página" });
+    await user.clear(name);
+    await user.type(name, "Grupo Delta Norte");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    expect(await screen.findByText("Guardamos la página.")).toBeVisible();
+
+    backend.afterWrite = undefined;
+    await user.type(name, " y Sur");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(screen.getByRole("textbox", { name: "Descripción" })).toHaveValue("Servicios del grupo");
+    expect(backend.writes.map((write) => write.version)).toEqual([8, 9]);
+  });
+
+  // Publicar también responde la versión nueva: si partió de lo que se está editando, esa es la base. La relectura con
+  // otra versión trae el cambio de otra persona y «Guardar cambios» da 409.
+  it("después de publicar, «Guardar cambios» manda la versión que respondió la publicación, no la de la relectura", async () => {
+    const user = userEvent.setup();
+    const backend = versionedApi({ ...page, isPublished: false });
+    backend.afterWrite = () => { backend.current = { ...backend.current, description: "Lo cambió otra persona.", version: backend.current.version + 1 }; };
+    renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+    const name = await within(await screen.findByRole("region", { name: "Página" })).findByRole("textbox", { name: "Nombre de la página" });
+    await user.clear(name);
+    await user.type(name, "Grupo Delta Norte");
+
+    await user.click(screen.getByRole("switch", { name: "Visible en grupo-delta.plataforma.com" }));
+    expect(await screen.findByText("Publicamos tu página.")).toBeVisible();
+    backend.afterWrite = undefined;
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(backend.writes.map((write) => write.version)).toEqual([8, 9]);
   });
 });

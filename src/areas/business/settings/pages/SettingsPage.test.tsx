@@ -424,4 +424,36 @@ describe("SettingsPage", () => {
     expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
     expect(sent).toEqual([{ ...settings, name: "Grupo Delta Sur" }]);
   });
+
+  // concurrencia.md (E7): después de guardar, la base es la versión que respondió el guardado. Si otra persona guardó
+  // justo después, la relectura trae su cambio con otra versión: no pasa a ser la base y el próximo guardado da 409.
+  it("después de guardar, el próximo guardado manda la versión que respondió el guardado, no la de la relectura", async () => {
+    const user = userEvent.setup();
+    let current = settings;
+    const sent: Array<{ version: number }> = [];
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(current)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([verified])),
+      http.put("/api/organization/settings", async ({ request }) => {
+        const body = await request.json() as typeof settings;
+        sent.push(body);
+        if (body.version !== current.version) return HttpResponse.json({ code: "General.ConcurrencyConflict", title: "Conflicto" }, { status: 409 });
+        // Otra persona guarda justo después: la relectura ya trae su cambio, con otra versión.
+        current = { ...current, name: body.name, defaultCurrency: "USD", version: current.version + 2 };
+        return HttpResponse.json({ version: settings.version + 1 });
+      }),
+    );
+    renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+    const name = await screen.findByRole("textbox", { name: "Nombre de la organización" });
+    await user.clear(name);
+    await user.paste("Grupo Delta Sur");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    expect(await screen.findByText("Guardamos la configuración.")).toBeVisible();
+
+    await user.type(name, " Norte");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(sent.map((body) => body.version)).toEqual([12, 13]);
+  });
 });

@@ -67,8 +67,11 @@ function conflictOnCompanies() {
 // Como el back (concurrencia.md): guarda solo con la versión vigente, si no responde 409, y cada escritura sube la
 // versión y deja las empresas que llegaron. `current` es lo que tiene el servidor: la prueba lo cambia para simular a
 // otra persona. `writes` junta lo que llegó.
+// Como el back (concurrencia.md): guarda solo con la versión vigente, si no responde 409, sube la versión y responde la
+// nueva. `afterWrite` simula a otra persona que guarda justo después (la relectura ya trae su cambio).
 function versionedApi(initial: typeof member) {
-  const backend = { current: initial, writes: [] as Array<{ version: number; roleIds: string[]; companies: Array<{ companyId: string; roleIds: string[] }> }> };
+  const backend = { current: initial, afterWrite: undefined as (() => void) | undefined,
+    writes: [] as Array<{ version: number; roleIds: string[]; companies: Array<{ companyId: string; roleIds: string[] }> }> };
   api(initial);
   server.use(
     http.get("/api/users/member-1", () => HttpResponse.json(backend.current)),
@@ -82,7 +85,9 @@ function versionedApi(initial: typeof member) {
         detail: "Otra persona cambió esto. Revisá la versión más reciente antes de guardar." }, { status: 409 });
       backend.current = { ...backend.current, version: backend.current.version + 1, companies: body.companies.map((assignment) => ({
         companyId: assignment.companyId, companyName: company.name, status: "Active" as const, roles: [] })) };
-      return HttpResponse.json({ version: backend.current.version });
+      const saved = backend.current.version;
+      backend.afterWrite?.();
+      return HttpResponse.json({ version: saved });
     }),
   );
   return backend;
@@ -649,8 +654,9 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(backend.writes).toEqual([{ roleIds: ["role-owner"], companies: [{ companyId: company.id, roleIds: ["role-seller"] }], version: 2 }]);
   });
 
-  // Lo que se guarda al momento sobre la misma persona (sumar una empresa) parte de lo que se está editando: su relectura
-  // pasa a ser la base, el acceso a medio editar se conserva y «Guardar cambios» no choca con la escritura propia.
+  // Lo que se guarda al momento sobre la misma persona (sumar una empresa) parte de lo que se está editando: la versión
+  // que respondió pasa a ser la base, el acceso a medio editar se conserva y «Guardar cambios» no choca con la escritura
+  // propia.
   it("sumar una empresa con el acceso a medio editar no hace chocar después a «Guardar cambios»", async () => {
     const user = userEvent.setup();
     const backend = versionedApi(member);
@@ -674,5 +680,58 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(backend.writes.map((write) => write.version)).toEqual([2, 3]);
     expect(backend.writes[1]).toMatchObject({ roleIds: ["role-owner", "role-support"], companies: [{ companyId: company.id, roleIds: [] }] });
     expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
+  });
+
+  // concurrencia.md (E7): después de guardar los roles, la base es la versión que respondió el guardado. Si otra persona
+  // guardó justo después, la relectura trae su cambio con otra versión: no pasa a ser la base y cambiar el estado después
+  // da 409.
+  it("después de guardar, cambiar el estado manda la versión que respondió el guardado, no la de la relectura", async () => {
+    const user = userEvent.setup();
+    const backend = versionedApi(member);
+    backend.afterWrite = () => { backend.current = { ...backend.current, version: backend.current.version + 1 }; };
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
+    await user.keyboard("{Escape}");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    expect(await screen.findByText("Guardamos los cambios de Lucía Fernández.")).toBeVisible();
+
+    backend.afterWrite = undefined;
+    await open(user, screen.getByRole("combobox", { name: "Estado" }));
+    await user.click(await screen.findByRole("option", { name: /Deshabilitado/ }));
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    await user.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Deshabilitar y guardar" }));
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(backend.writes.map((write) => write.version)).toEqual([2, 3]);
+  });
+
+  // «Cambiar roles» de una empresa se guarda al momento: si partió de lo que se está editando, la versión que respondió
+  // es la base. La relectura con otra versión trae el cambio de otra persona y «Guardar cambios» da 409.
+  it("después de «Cambiar roles» de una empresa, «Guardar cambios» manda la versión que respondió, no la de la relectura", async () => {
+    const user = userEvent.setup();
+    const withDelta = { ...member, companies: [{ companyId: company.id, companyName: company.name, status: "Active" as const, roles: [] as typeof ownerRole[] }] };
+    const backend = versionedApi(withDelta);
+    backend.afterWrite = () => { backend.current = { ...backend.current, version: backend.current.version + 1 }; };
+    renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+    await open(user, within(screen.getByRole("region", { name: "Empresas" })).getByRole("button", { name: "Acciones de Delta S.A." }));
+    await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
+    const dialog = await screen.findByRole("dialog", { name: "Roles en Delta S.A." });
+    await open(user, within(dialog).getByRole("button", { name: "Roles en la empresa" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Vendedor" }));
+    await user.keyboard("{Escape}");
+    await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Roles en Delta S.A." })).not.toBeInTheDocument());
+
+    backend.afterWrite = undefined;
+    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
+    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
+    await user.keyboard("{Escape}");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(backend.writes.map((write) => write.version)).toEqual([2, 3]);
   });
 });
