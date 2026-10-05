@@ -3485,9 +3485,96 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["PlatformTenantResponse"];
-                        "application/json": components["schemas"]["PlatformTenantResponse"];
-                        "text/json": components["schemas"]["PlatformTenantResponse"];
+                        "text/plain": components["schemas"]["PlatformTenantDetailResponse"];
+                        "application/json": components["schemas"]["PlatformTenantDetailResponse"];
+                        "text/json": components["schemas"]["PlatformTenantDetailResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/tenants/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    After?: string;
+                    Limit?: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CursorResultOfPlatformTenantHistoryResponse"];
+                        "application/json": components["schemas"]["CursorResultOfPlatformTenantHistoryResponse"];
+                        "text/json": components["schemas"]["CursorResultOfPlatformTenantHistoryResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -10230,6 +10317,12 @@ export interface components {
             nextCursor?: null | string;
             hasMore: boolean;
         };
+        /** @description Resultado por cursor, sin conteo total sobre tablas que solo crecen. */
+        CursorResultOfPlatformTenantHistoryResponse: {
+            items: components["schemas"]["PlatformTenantHistoryResponse"][];
+            nextCursor?: null | string;
+            hasMore: boolean;
+        };
         DeleteRoleHttpRequest: {
             /** Format: uint32 */
             version?: null | number;
@@ -10875,8 +10968,8 @@ export interface components {
             key: string;
             enabled: boolean;
             source: components["schemas"]["TenantFeatureSource"];
-            /** Format: date-time */
-            expiresAtUtc?: null | string;
+            /** Format: date */
+            expiresOn?: null | string;
             /** Format: uint32 */
             version: number;
         };
@@ -10934,6 +11027,8 @@ export interface components {
             publishBlockedReason?: null | string;
             /** Format: uint32 */
             version: number;
+            /** Format: date-time */
+            publishedAtUtc?: null | string;
         };
         PlatformRecoveryFilterCounts: {
             /** Format: int32 */
@@ -10976,11 +11071,54 @@ export interface components {
             /** Format: uint32 */
             version: number;
         };
+        /** @description Ficha global; su versión pertenece únicamente a Tenants. */
+        PlatformTenantDetailResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            slug?: null | string;
+            status: components["schemas"]["TenantStatus"];
+            source: components["schemas"]["TenantRegistrationSource"];
+            /** Format: date-time */
+            createdAtUtc?: null | string;
+            /** Format: int32 */
+            companyCount: number;
+            /** Format: int32 */
+            memberCount: number;
+            /** Format: uint32 */
+            version: number;
+            ownerName?: null | string;
+            ownerEmail?: null | components["schemas"]["Email"];
+            owners: components["schemas"]["PlatformTenantOwnerResponse"][];
+            lastStateChange?: null | components["schemas"]["PlatformTenantStateChangeResponse"];
+        };
         PlatformTenantFilterCounts: {
             /** Format: int32 */
             total: number;
             statuses: components["schemas"]["PlatformTenantStatusCount"][];
             sources: components["schemas"]["PlatformTenantSourceCount"][];
+        };
+        PlatformTenantHistoryResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            occurredAtUtc: string;
+            action: string;
+            actor: string;
+            actorRole: string;
+            reason?: null | string;
+            summary: string;
+        };
+        PlatformTenantOwnerResponse: {
+            /** Format: uuid */
+            id: string;
+            displayName?: null | string;
+            email?: null | components["schemas"]["Email"];
+            identityStatus: components["schemas"]["UserStatus"];
+            membershipStatus: components["schemas"]["MemberStatus"];
+            /** Format: date-time */
+            lastSignInAtUtc?: null | string;
+            lastSignInMethod?: null | components["schemas"]["LoginAuditMethod"];
         };
         PlatformTenantResponse: {
             /** Format: uuid */
@@ -11009,6 +11147,12 @@ export interface components {
             source: components["schemas"]["TenantRegistrationSource"];
             /** Format: int32 */
             count: number;
+        };
+        PlatformTenantStateChangeResponse: {
+            /** Format: date-time */
+            atUtc: string;
+            action: string;
+            reason?: null | string;
         };
         PlatformTenantStateHttpRequest: {
             /** Format: uint32 */
@@ -11065,7 +11209,7 @@ export interface components {
         PublishLegalDocumentHttpRequest: {
             kind?: null | components["schemas"]["LegalDocumentKind"];
             /** Format: date */
-            effectiveOn?: unknown;
+            effectiveOn?: null | string;
             contents?: null | components["schemas"]["LegalDocumentContentHttpRequest"][];
         };
         /** @enum {null|string} */
@@ -11256,8 +11400,8 @@ export interface components {
         UpdatePlatformFeatureHttpRequest: {
             enabled?: null | boolean;
             source?: null | components["schemas"]["TenantFeatureSource"];
-            /** Format: date-time */
-            expiresAtUtc?: null | string;
+            /** Format: date */
+            expiresOn?: null | string;
             /** Format: uint32 */
             version?: null | number;
             reason?: null | string;
@@ -11297,6 +11441,12 @@ export interface components {
             /** Format: uint32 */
             version?: null | number;
         };
+        /**
+         * @description Describe el ciclo de vida de una cuenta: activa, suspendida, con baja pendiente o eliminada. Permite
+         *     decidir si puede ingresar y qué acciones siguen disponibles.
+         * @enum {string}
+         */
+        UserStatus: "Active" | "Suspended" | "PendingDeletion" | "Deleted";
         /** @description Verifica el código y vuelve a la autorización local. */
         VerifyLoginCodeHttpRequest: {
             email?: null | string;

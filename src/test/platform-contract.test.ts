@@ -13,7 +13,7 @@ const versionedActions = [
   ...["approve", "reject"].map((action) => `/api/platform/recoveries/{id}/${action}`),
 ];
 
-type Schema = { $ref?: string; type?: string; items?: Schema };
+type Schema = { $ref?: string; type?: string; items?: Schema; anyOf?: Schema[]; oneOf?: Schema[] };
 type OpenApi = {
   paths: Record<string, Record<string, {
     requestBody?: { content: Record<string, { schema: Schema }> };
@@ -33,6 +33,12 @@ function generatedRoute(route: string): string {
   return generated.slice(start, end < 0 ? generated.indexOf("\n}\n", start) : end);
 }
 
+function referencedProperties(schema: Schema) {
+  const reference = schema.$ref ?? [...(schema.anyOf ?? []), ...(schema.oneOf ?? [])].find((candidate) => candidate.$ref)?.$ref;
+  expect(reference).toMatch(/^#\/components\/schemas\//u);
+  return openApi.components.schemas[reference?.split("/").at(-1) ?? ""].properties;
+}
+
 describe("contratos de Plataforma entre back y front", () => {
   it("los permisos de Plataforma viajan en effectivePermissions de /api/me (E5)", () => {
     const permissions = openApi.components.schemas.EffectivePermissions.properties;
@@ -47,7 +53,7 @@ describe("contratos de Plataforma entre back y front", () => {
     ["/api/platform/tenants/paged", "get", 200, null, "PagedResultOfPlatformTenantResponse"],
     ["/api/platform/tenants/filter-counts", "get", 200, null, "PlatformTenantFilterCounts"],
     ["/api/platform/tenants", "post", 201, "CreatePlatformTenantHttpRequest", "CreatedPlatformTenantResponse"],
-    ["/api/platform/tenants/{id}", "get", 200, null, "PlatformTenantResponse"],
+    ["/api/platform/tenants/{id}", "get", 200, null, "PlatformTenantDetailResponse"],
     ...["approve", "reject", "suspend", "reactivate", "close"].map((action) => [`/api/platform/tenants/{id}/${action}`, "post", 200, "PlatformTenantStateHttpRequest", "VersionResponse"]),
     ["/api/platform/tenants/{id}/retry-provisioning", "post", 200, "PlatformTenantRetryHttpRequest", "VersionResponse"],
     ["/api/platform/tenants/{id}/features", "get", 200, null, "PlatformFeatureResponse[]"],
@@ -107,7 +113,7 @@ describe("contratos de Plataforma entre back y front", () => {
     ["PlatformTenantStateHttpRequest", ["version", "reason"]],
     ["PlatformAccountReasonHttpRequest", ["reason"]],
     ["PlatformAccountActionHttpRequest", ["version", "reason"]],
-    ["UpdatePlatformFeatureHttpRequest", ["enabled", "source", "expiresAtUtc", "version", "reason"]],
+    ["UpdatePlatformFeatureHttpRequest", ["enabled", "source", "expiresOn", "version", "reason"]],
     ["InvitePlatformOperatorHttpRequest", ["email", "permissions"]],
     ["ChangePlatformOperatorHttpRequest", ["version", "reason", "permissions"]],
     ["PublishLegalDocumentHttpRequest", ["kind", "effectiveOn", "contents"]],
@@ -141,9 +147,9 @@ describe("contratos de Plataforma entre back y front", () => {
     ["PlatformTenantResponse", ["id", "name", "slug", "status", "source", "createdAtUtc", "companyCount", "memberCount", "ownerName", "ownerEmail", "version"]],
     ["PlatformTenantFilterCounts", ["total", "statuses", "sources"]],
     ["CreatedPlatformTenantResponse", ["id", "name", "slug", "firstCompanyId", "invitationId"]],
-    ["PlatformFeatureResponse", ["key", "enabled", "source", "expiresAtUtc", "version"]],
+    ["PlatformFeatureResponse", ["key", "enabled", "source", "expiresOn", "version"]],
     ["OrganizationDomainResponse", ["id", "domain", "status", "txtRecordName", "txtRecordValue", "verifiedAtUtc", "version", "managedEmailCount"]],
-    ["PlatformPublicSiteResponse", ["slug", "name", "isPublished", "publishBlockedAtUtc", "publishBlockedReason", "version"]],
+    ["PlatformPublicSiteResponse", ["slug", "name", "isPublished", "publishedAtUtc", "publishBlockedAtUtc", "publishBlockedReason", "version"]],
     ["PlatformAccountResponse", ["id", "displayName", "primaryEmail", "kind", "state", "hasPersonalSpace", "organizationCount", "lastSignInAtUtc", "lastSignInMethod", "invitationExpiresAtUtc"]],
     ["PlatformAccountFilterCounts", ["total", "states", "kinds"]],
     ["PlatformAccountDetailResponse", ["displayName", "kind", "state", "createdAtUtc", "lastSignInAtUtc", "lastSignInMethod", "invitationExpiresAtUtc", "hasPersonalSpace", "deletion", "loginMethods", "organizations", "soleOwnerOrganizations", "operatorPermissions", "operatorVersion"]],
@@ -164,6 +170,48 @@ describe("contratos de Plataforma entre back y front", () => {
     for (const field of fields) {
       expect(openApi.components.schemas[schema].properties).toHaveProperty(field);
       expect(body).toMatch(new RegExp(`\\b${field}\\??:`, "u"));
+    }
+  });
+
+  it("T21a separa la ficha de la fila paginada y declara su historial por cursor", () => {
+    const detail = openApi.components.schemas.PlatformTenantDetailResponse;
+    expect(detail).toBeDefined();
+    expect(detail.properties).toHaveProperty("owners");
+    expect(detail.properties).toHaveProperty("lastStateChange");
+    expect(detail.properties).toHaveProperty("version");
+    const owners = detail.properties.owners as Schema;
+    expect(owners.type).toBe("array");
+    const owner = referencedProperties(owners.items ?? {});
+    for (const field of ["id", "displayName", "email", "identityStatus", "membershipStatus", "lastSignInAtUtc", "lastSignInMethod"]) {
+      expect(owner).toHaveProperty(field);
+    }
+    const state = referencedProperties(detail.properties.lastStateChange as Schema);
+    expect(Object.keys(state).sort()).toEqual(["atUtc", "action", "reason"].sort());
+    expect(openApi.components.schemas.PlatformTenantResponse.properties).not.toHaveProperty("owners");
+    expect(openApi.components.schemas.PlatformTenantResponse.properties).not.toHaveProperty("lastStateChange");
+    const history = openApi.paths["/api/platform/tenants/{id}/history"]?.get;
+    expect(history).toBeDefined();
+    expect(history.parameters?.map((parameter) => parameter.name).sort()).toEqual(["After", "Limit", "id"].sort());
+    const historyBlock = generatedRoute("/api/platform/tenants/{id}/history");
+    expect(historyBlock).toContain("After?:");
+    expect(historyBlock).toContain("Limit?:");
+    expect(history.responses["200"]?.content?.["application/json"]?.schema?.$ref).toBeDefined();
+    const cursor = referencedProperties(history.responses["200"].content?.["application/json"]?.schema ?? {});
+    expect(Object.keys(cursor).sort()).toEqual(["items", "nextCursor", "hasMore"].sort());
+    const event = referencedProperties((cursor.items as Schema).items ?? {});
+    for (const field of ["id", "occurredAtUtc", "action", "actor", "actorRole", "reason", "summary"]) expect(event).toHaveProperty(field);
+    for (const status of ["401", "403", "404"]) expect(history.responses).toHaveProperty(status);
+    expect(generated).toContain("        PlatformTenantDetailResponse: {");
+  });
+
+  it("T21a extiende pruebas con una fecha civil en ambos contratos", () => {
+    for (const name of ["UpdatePlatformFeatureHttpRequest", "PlatformFeatureResponse"]) {
+      const properties = openApi.components.schemas[name].properties;
+      expect(properties.expiresOn).toMatchObject({ format: "date" });
+      expect(properties).not.toHaveProperty("expiresAtUtc");
+      const body = generated.match(new RegExp(`        ${name}: \\{([\\s\\S]*?)\\n        \\};`, "u"))?.[1];
+      expect(body).toMatch(/\bexpiresOn\??: (?:null \| string|string \| null);/u);
+      expect(body).not.toContain("expiresAtUtc");
     }
   });
 
