@@ -21,9 +21,9 @@ async function open(user: ReturnType<typeof userEvent.setup>) {
   await user.click(await screen.findByRole("button", { name: "Crear organización" })); return screen.getByRole("dialog");
 }
 async function fill(user: ReturnType<typeof userEvent.setup>) {
-  await user.type(screen.getByRole("textbox", { name: "Nombre de la organización" }), " Grupo Delta ");
-  await user.type(screen.getByRole("textbox", { name: "Primera empresa" }), " Delta S.A. ");
-  await user.type(screen.getByRole("textbox", { name: "Correo del Dueño" }), "LUCIA@EXAMPLE.COM");
+  await user.click(screen.getByRole("textbox", { name: "Nombre de la organización" })); await user.paste(" Grupo Delta ");
+  await user.click(screen.getByRole("textbox", { name: "Primera empresa" })); await user.paste(" Delta S.A. ");
+  await user.click(screen.getByRole("textbox", { name: "Correo del Dueño" })); await user.paste("LUCIA@EXAMPLE.COM");
 }
 describe("Crear organización", () => {
   it("ofrece cinco campos accesibles con defaults del operador y Crear habilitado", async () => {

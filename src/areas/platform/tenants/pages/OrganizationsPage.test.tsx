@@ -1,7 +1,7 @@
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -12,6 +12,8 @@ import type { PlatformTenantResponse, TenantStatus } from "@/shared/api/types";
 import { tenantsQueryRoot } from "../api/tenants";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { platformOperator } from "@/test/mocks/currentUsers";
+
+beforeAll(async () => { await import("./OrganizationsPage"); });
 
 const organization: PlatformTenantResponse = { id: "delta", name: "Grupo Delta", status: "Active", source: "SelfService", createdAtUtc: "2026-01-12T12:00:00Z", companyCount: 3, memberCount: 11, version: 2, ownerName: "Lucía Fernández", ownerEmail: "lucia@example.com" };
 const counts = { total: 7, statuses: [{ status: "PendingApproval", count: 2 }, { status: "Active", count: 2 }, { status: "Suspended", count: 1 }, { status: "Provisioning", count: 1 }, { status: "Closed", count: 1 }], sources: [{ source: "SelfService", count: 5 }, { source: "Platform", count: 2 }] };
@@ -138,7 +140,7 @@ describe("OrganizationsPage", () => {
     failing = false; await openAction(user, "Reintentar el alta");
     expect(await screen.findByText("Terminamos el alta de Grupo Delta.")).toBeVisible(); expect(bodies).toEqual([{ version: 2 }, { version: 2 }]);
   });
-  it("conserva respuesta propia ante versión ajena y tras 409 al cerrar acepta la lectura autoritativa", async () => {
+  it("conserva la versión respondida al suspender ante una lectura ajena", async () => {
     const user = userEvent.setup(); let read = organization; const bodies: unknown[] = [];
     server.use(http.get("/api/platform/tenants/paged", () => HttpResponse.json(list([read]))), http.post("/api/platform/tenants/delta/suspend", async ({ request }) => { bodies.push(await request.json()); return HttpResponse.json({ version: 10 }); }), http.post("/api/platform/tenants/delta/reactivate", async ({ request }) => { bodies.push(await request.json()); return HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Otra persona cambió la organización." }, { status: 409 }); }));
     const { queryClient } = renderRouteWithProviders("/plataforma", { as: "platform-operator" });
@@ -146,9 +148,20 @@ describe("OrganizationsPage", () => {
     read = { ...organization, version: 50 }; await act(async () => { await queryClient.invalidateQueries({ queryKey: tenantsQueryRoot }); });
     await openAction(user, "Reactivar"); await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Resuelto"); await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Reactivar" }));
     expect(await screen.findByText("Otra persona cambió la organización.")).toBeVisible(); expect(bodies[1]).toEqual({ version: 10, reason: "Resuelto" });
+  });
+  it("tras el 409 al cerrar acepta la versión de la lectura autoritativa", async () => {
+    const user = userEvent.setup(); let read = organization; const bodies: unknown[] = [];
+    server.use(http.get("/api/platform/tenants/paged", () => HttpResponse.json(list([read]))), http.post("/api/platform/tenants/delta/suspend", async ({ request }) => {
+      bodies.push(await request.json());
+      if (bodies.length === 1) { read = { ...organization, version: 50 }; return HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Otra persona cambió la organización." }, { status: 409 }); }
+      return HttpResponse.json({ version: 51 });
+    }));
+    renderRouteWithProviders("/plataforma", { as: "platform-operator" });
+    await openAction(user, "Suspender"); await user.click(screen.getByRole("textbox", { name: "Motivo" })); await user.paste("Revisión"); await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Suspender" }));
+    expect(await screen.findByText("Otra persona cambió la organización.")).toBeVisible(); expect(bodies[0]).toEqual({ version: 2, reason: "Revisión" });
     await user.click(screen.getByRole("button", { name: "Cancelar" }));
     await openAction(user, "Suspender"); await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Nuevo" ); await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Suspender" }));
-    await waitFor(() => expect(bodies[2]).toEqual({ version: 50, reason: "Nuevo" }));
+    await waitFor(() => expect(bodies[1]).toEqual({ version: 50, reason: "Nuevo" }));
   });
   it("el reintento global de red conserva clave, motivo y callbacks de la confirmación", async () => {
     const user = userEvent.setup(); const keys: (string | null)[] = []; const bodies: unknown[] = [];
