@@ -626,6 +626,9 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-alineacion-app">
 .in2.mal { border-color: var(--peligro) !important; }
 </style>
+<style data-vuelta="1004-cuenta-existe">
+.err-acc { align-self: flex-start; font-size: 14px; font-weight: 600; }
+</style>
 </helmet>
 
 <div class="auth auth-m">
@@ -648,7 +651,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             <div class="campo2">
               <label class="et" for="f-correo">Correo electrónico</label>
               <input class="in2 lg {{malCampo}}" id="f-correo" type="email" autocomplete="email" value="{{correo}}" onChange="{{onCorreo}}">
-              <sc-if value="{{errCampo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errCampo}}</span></sc-if>
+              <sc-if value="{{errCampo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errCampo}}</span></sc-if><sc-if value="{{conEnlace}}" hint-placeholder-val="{{no}}"><a class="lnk err-acc" href="{{hrefEnlace}}">{{textoEnlace}}</a></sc-if>
             </div>
           </sc-if>
           <sc-if value="{{esWhatsappB}}" hint-placeholder-val="{{no}}">
@@ -710,12 +713,14 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Correo","WhatsApp","Correo inválido","Registro cerrado","Código enviado","Código incorrecto"],"default":"Correo","section":"Estado"},"$preview":{"width":390,"height":844}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Correo","WhatsApp","Correo inválido","Correo con cuenta","Registro cerrado","Código enviado","Código incorrecto"],"default":"Correo","section":"Estado"},"$preview":{"width":390,"height":844}}'>
 const VACIO = ['', '', '', '', '', ''];
 const ESTADOS = {
   'Correo': {},
   'WhatsApp': { medio: 'whatsapp' },
   'Correo inválido': { acepta: true, correo: 'mariana.lopez@gmail', errCampo: 'Ingresá un correo electrónico válido.' },
+  // ADR 0043: el correo ya tiene cuenta (también el de un operador); el enlace lleva al ingreso con el correo ya escrito.
+  'Correo con cuenta': { acepta: true, correo: 'lucia.fernandez@delta.ejemplo.com', errCampo: 'Ya tenés una cuenta con ese correo.', errAccion: 'ingresar' },
   // 403 Auth.Signup.Closed: PlatformSettings.ConsumerSignup está cerrado.
   'Registro cerrado': { paso: 'cerrado' },
   'Código enviado': { paso: 'codigo', correo: 'mariana.lopez@gmail.com' },
@@ -933,7 +938,7 @@ class Component extends DCLogic {
   inicial(estado) {
     const e = ESTADOS[estado ?? 'Correo'];
 
-    return { acepta: !!e.acepta, paso: e.paso ?? 'correo', medio: e.medio ?? 'correo', correo: e.correo ?? '', tel: '', errCampo: e.errCampo ?? '', cod: e.cod ?? [...VACIO], mal: !!e.mal, msj: e.msj ?? null };
+    return { acepta: !!e.acepta, paso: e.paso ?? 'correo', medio: e.medio ?? 'correo', correo: e.correo ?? '', tel: '', errCampo: e.errCampo ?? '', errAccion: e.errAccion ?? '', cod: e.cod ?? [...VACIO], mal: !!e.mal, msj: e.msj ?? null };
   }
 
   componentDidUpdate() {
@@ -971,6 +976,9 @@ class Component extends DCLogic {
     const ok = cod.length === 6 && !s.mal;
 
     return {
+      conEnlace: s.errAccion === 'ingresar' && !!s.errCampo,
+      textoEnlace: 'Ingresar',
+      hrefEnlace: 'M-Ingreso.dc.html',
       ...this.comunes(),
       enCorreo: s.paso === 'correo',
       enCodigo: s.paso === 'codigo',

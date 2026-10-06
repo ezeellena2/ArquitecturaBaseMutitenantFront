@@ -617,6 +617,9 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-alineacion-app">
 .in2.mal { border-color: var(--peligro) !important; }
 </style>
+<style data-vuelta="1004-cuenta-existe">
+.err-acc { align-self: flex-start; font-size: 14px; font-weight: 600; }
+</style>
 </helmet>
 
 <div class="auth">
@@ -638,7 +641,7 @@ textarea.in2 { height: auto; min-height: 84px; }
             <div class="campo2">
               <label class="et" for="f-correo">Correo electrónico</label>
               <input class="in2 lg {{malCampo}}" id="f-correo" type="email" autocomplete="email" value="{{correo}}" onChange="{{onCorreo}}">
-              <sc-if value="{{errCampo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errCampo}}</span></sc-if>
+              <sc-if value="{{errCampo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errCampo}}</span></sc-if><sc-if value="{{conEnlace}}" hint-placeholder-val="{{no}}"><a class="lnk err-acc" href="{{hrefEnlace}}">{{textoEnlace}}</a></sc-if>
             </div>
           </sc-if>
           <sc-if value="{{esWhatsappB}}" hint-placeholder-val="{{no}}">
@@ -697,6 +700,15 @@ textarea.in2 { height: auto; min-height: 84px; }
           <div style="display: flex; flex-direction: column; gap: 10px;">
             <a class="b b-pri lg" href="Registro-Empresa.dc.html">Registrá tu empresa</a>
             <a class="b b-sec lg" href="Inicio-Personal.dc.html">Ingresá como persona</a>
+          </div>
+        </div>
+      </sc-if><sc-if value="{{enOperador}}" hint-placeholder-val="{{no}}">
+        <div style="display: flex; flex-direction: column; gap: 22px;">
+          <span class="circulo gris"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16"/><path d="M15 9h4a1 1 0 0 1 1 1v11"/><path d="M3 21h18"/><path d="M8 8h3"/><path d="M8 12h3"/><path d="M8 16h3"/></svg></span>
+          <div class="centro"><h1>Esta cuenta es de un operador: solo entra a Plataforma</h1></div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a class="b b-pri lg" href="Organizaciones.dc.html">Ir a Plataforma</a>
+            <a class="b b-sec lg" href="Ingreso.dc.html">Salir</a>
           </div>
         </div>
       </sc-if>
@@ -810,7 +822,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Correo","WhatsApp","Correo inválido","Esperá para pedir otro código","Demasiados pedidos","No pudimos entrar con Google","Código enviado","Código enviado por WhatsApp","Código incorrecto","Código vencido","Sin intentos","Cuenta bloqueada","Cuenta suspendida","Operador: segundo factor","Operador: código del autenticador incorrecto","Operador: código de recuperación","Operador: configurar el autenticador","Operador: guardar los códigos","Empresa: la cuenta no está en ninguna empresa","Empresa: acceso deshabilitado","Cuenta con la baja pedida","Tu sesión venció"],"default":"Correo","section":"Estado"},"puerta":{"editor":"enum","options":["Persona","Empresa"],"default":"Persona","section":"Estado"},"cuenta":{"editor":"enum","options":["Lucía (miembro de Grupo Delta)","Beto (sin organizaciones)","Martín (operador de la plataforma)"],"default":"Lucía (miembro de Grupo Delta)","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Correo","WhatsApp","Correo inválido","Correo sin cuenta","Esperá para pedir otro código","Demasiados pedidos","No pudimos entrar con Google","Código enviado","Código enviado por WhatsApp","Código incorrecto","Código vencido","Sin intentos","Cuenta bloqueada","Cuenta suspendida","Operador: segundo factor","Operador: código del autenticador incorrecto","Operador: código de recuperación","Operador: configurar el autenticador","Operador: guardar los códigos","Operador: la cuenta entra por Plataforma","Empresa: la cuenta no está en ninguna empresa","Empresa: acceso deshabilitado","Cuenta con la baja pedida","Tu sesión venció"],"default":"Correo","section":"Estado"},"puerta":{"editor":"enum","options":["Persona","Empresa"],"default":"Persona","section":"Estado"},"cuenta":{"editor":"enum","options":["Lucía (miembro de Grupo Delta)","Beto (sin organizaciones)","Martín (operador de la plataforma)"],"default":"Lucía (miembro de Grupo Delta)","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 const CUENTAS = {
   // Destino después del código, según la puerta: Persona, al inicio personal; Empresa, al inicio de la organización que eligió la última vez.
   'Lucía (miembro de Grupo Delta)': { id: 'lucia', correo: 'lucia.fernandez@delta.ejemplo.com', tel: '11 5555 4521', Persona: 'Inicio-Personal.dc.html', Empresa: 'Inicio-Org.dc.html' },
@@ -826,6 +838,8 @@ const ESTADOS = {
   'Correo': {},
   'WhatsApp': { medio: 'whatsapp' },
   'Correo inválido': { correo: 'lucia.fernandez@', errCampo: 'Ingresá un correo electrónico válido.' },
+  // ADR 0043: sin cuenta no se manda código; el enlace lleva al registro con el correo ya escrito.
+  'Correo sin cuenta': { correo: 'mariana.lopez@gmail.com', errCampo: 'No hay una cuenta con ese correo.', errAccion: 'crear' },
   'Esperá para pedir otro código': { msj: ['alerta', 'Esperá un momento antes de pedir otro código.', ''], espera: 42 },
   'Demasiados pedidos': { msj: ['mal', 'Pediste demasiados códigos. Probá de nuevo más tarde.', ''], espera: 840 },
   'No pudimos entrar con Google': { msj: ['mal', 'No pudimos completar el ingreso con Google.', 'Probá de nuevo o entrá con tu correo.'] },
@@ -846,6 +860,8 @@ const ESTADOS = {
   'Tu sesión venció': { vencida: true },
   'Empresa: la cuenta no está en ninguna empresa': { cuenta: 'Beto (sin organizaciones)', puerta: 'Empresa', paso: 'sinEmpresa' },
   // Tenancy.Member.Inactive: su única membresía está deshabilitada; con otra activa, entra a esa.
+  // A1: Tenancy.Access.PlatformOnly, después del código o con la sesión del operador abierta. Antes del código nada lo menciona.
+  'Operador: la cuenta entra por Plataforma': { cuenta: 'Martín (operador de la plataforma)', paso: 'operador' },
   'Empresa: acceso deshabilitado': { cuenta: 'Lucía (miembro de Grupo Delta)', puerta: 'Empresa', paso: 'deshabilitado' },
 };
 
@@ -1065,7 +1081,7 @@ class Component extends DCLogic {
     return {
       cuenta, puerta: e.puerta ?? props.puerta ?? 'Persona', paso: e.paso ?? 'correo', medio: e.medio ?? 'correo',
       correo: e.correo ?? (e.paso ? c.correo : ''), tel: e.medio === 'whatsapp' && e.paso ? c.tel : '',
-      errCampo: e.errCampo ?? '', msj: e.msj ?? null, espera: e.espera ?? 0,
+      errCampo: e.errCampo ?? '', errAccion: e.errAccion ?? '', msj: e.msj ?? null, espera: e.espera ?? 0,
       cod: e.cod ?? [...VACIO], mal: !!e.mal, intentos: e.intentos ?? 5, gastado: !!e.gastado, cerrada: !!e.cerrada, reenviarEn: e.reenviarEn ?? 54,
       vencida: !!e.vencida, cancelandoBaja: false,
       tot: e.tot ?? [...VACIO], malTot: !!e.malTot, recuperacion: !!e.recuperacion, rec: '', alt: [...VACIO], guardados: false,
@@ -1144,6 +1160,10 @@ class Component extends DCLogic {
     const destino = c[s.puerta];
 
     return {
+      conEnlace: s.errAccion === 'crear' && !!s.errCampo && s.paso === 'correo',
+      textoEnlace: s.puerta === 'Empresa' ? 'Registrá tu empresa' : 'Crear mi cuenta',
+      hrefEnlace: s.puerta === 'Empresa' ? 'Registro-Empresa.dc.html' : 'Registro.dc.html',
+      enOperador: s.paso === 'operador',
       ...this.comunes(),
       enCorreo: s.paso === 'correo',
       enCodigo: s.paso === 'codigo',
