@@ -113,6 +113,18 @@ describe("LoginPage", () => {
     expect(signinRedirect).toHaveBeenCalledWith(expect.objectContaining({ extraQueryParams: { access: "business" } }));
   });
 
+  it.each(["/plataforma", "/plataforma?estado=Active", "/plataforma/cuentas#detalle"])("pide Plataforma para volver a %s desde la puerta compartida", async (returnTo) => {
+    show("consumer", `/login?returnUrl=${encodeURIComponent(returnTo)}&session=expired`);
+    await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
+    expect(signinRedirect).toHaveBeenCalledWith({ state: { returnTo }, extraQueryParams: { access: "platform", prompt: "login" } });
+  });
+
+  it.each(["//externo.test/plataforma", "https://externo.test/plataforma", "/plataformax"])("no pide Plataforma para un retorno externo o ajeno: %s", async (returnTo) => {
+    show("consumer", `/login?returnUrl=${encodeURIComponent(returnTo)}`);
+    await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
+    expect(signinRedirect).toHaveBeenCalledWith(expect.objectContaining({ extraQueryParams: { access: "consumer" } }));
+  });
+
   it("presenta la puerta personal con los controles y enlaces en el orden del lienzo", async () => {
     const { container } = show("consumer", loginUrl);
     const main = screen.getByRole("main");

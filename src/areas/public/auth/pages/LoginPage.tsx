@@ -29,7 +29,7 @@ import { getPendingDeletion, cancelAccountDeletion } from "../api/deletion";
 import { PendingDeletionPanel } from "../components/PendingDeletionPanel";
 import { toast } from "sonner";
 import { toastError } from "@/shared/ui/sonner";
-import { homeOf, isUnavailableCode, loginPathOf, type UnavailableCode } from "@/tenancy/access";
+import { accessOfPath, homeOf, isUnavailableCode, loginPathOf, type UnavailableCode } from "@/tenancy/access";
 
 export interface LoginPageProps {
   access: "consumer" | "business";
@@ -86,10 +86,11 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     if (redirectError && !googleProofExpired) carryLoginRedirectError(redirectError);
     const destination = homeOf(access);
     const returnTo = safeReturnUrl(searchParams.get("returnUrl"), destination);
+    const returnAccess = accessOfPath(returnTo.split(/[?#]/u)[0] ?? returnTo);
     void auth.signinRedirect({
       state: { returnTo },
       extraQueryParams: {
-        access,
+        access: returnAccess === "platform" ? returnAccess : access,
         ...(searchParams.get("session") === "expired" ? { prompt: "login" } : {}),
       },
     });
