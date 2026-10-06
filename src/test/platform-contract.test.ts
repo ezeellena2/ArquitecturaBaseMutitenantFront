@@ -183,7 +183,7 @@ describe("contratos de Plataforma entre back y front", () => {
     ["PlatformPublicSiteResponse", ["slug", "name", "isPublished", "publishedAtUtc", "publishBlockedAtUtc", "publishBlockedReason", "version"]],
     ["PlatformAccountResponse", ["id", "displayName", "primaryEmail", "kind", "state", "hasPersonalSpace", "organizationCount", "lastSignInAtUtc", "lastSignInMethod", "invitationExpiresAtUtc"]],
     ["PlatformAccountFilterCounts", ["total", "states", "kinds"]],
-    ["PlatformAccountDetailResponse", ["displayName", "kind", "state", "createdAtUtc", "lastSignInAtUtc", "lastSignInMethod", "invitationExpiresAtUtc", "hasPersonalSpace", "deletion", "loginMethods", "organizations", "soleOwnerOrganizations", "operatorPermissions", "operatorVersion"]],
+    ["PlatformAccountDetailResponse", ["displayName", "kind", "state", "createdAtUtc", "lastSignInAtUtc", "lastSignInMethod", "invitationExpiresAtUtc", "hasPersonalSpace", "deletion", "loginMethods", "organizations", "soleOwnerOrganizations", "operatorPermissions", "operatorVersion", "lastStateChange", "deletedAtUtc"]],
     ["PlatformAccountLoginMethodResponse", ["type", "maskedValue", "isPrimary", "verifiedAtUtc", "managedByOrganizationName", "canSignIn"]],
     ["PlatformAccountMembershipResponse", ["tenantId", "name", "roleName", "joinedAtUtc", "status", "tenantStatus", "endedAtUtc"]],
     ["PlatformOperatorInvitationResponse", ["id", "expiresAtUtc"]],
@@ -201,6 +201,24 @@ describe("contratos de Plataforma entre back y front", () => {
     for (const field of fields) {
       expect(openApi.components.schemas[schema].properties).toHaveProperty(field);
       expect(body).toMatch(new RegExp(`\\b${field}\\??:`, "u"));
+    }
+  });
+
+  it("T22a la ficha expone evidencia nullable del último estado y la eliminación, sin version de cuenta", () => {
+    const detail = openApi.components.schemas.PlatformAccountDetailResponse;
+    expect(detail.properties).toHaveProperty("lastStateChange");
+    expect(detail.properties).toHaveProperty("deletedAtUtc");
+    const state = referencedProperties(detail.properties.lastStateChange as Schema);
+    expect(Object.keys(state).sort()).toEqual(["atUtc", "action", "reason"].sort());
+    expect(state.atUtc).toMatchObject({ format: "date-time" });
+    expect(detail.properties.deletedAtUtc).toMatchObject({ format: "date-time" });
+    expect(detail.properties).not.toHaveProperty("version");
+    expect(detail.properties).toHaveProperty("operatorVersion");
+    const body = generated.match(/        PlatformAccountDetailResponse: \{([\s\S]*?)\n        \};/u)?.[1];
+    expect(body).toMatch(/\blastStateChange\??: [^\n]*\bnull\b/u);
+    expect(body).toMatch(/\bdeletedAtUtc\??: (?:null \| string|string \| null);/u);
+    for (const field of ["lastStateChange", "deletedAtUtc"]) {
+      expect(openApi.components.schemas.PlatformAccountResponse.properties).not.toHaveProperty(field);
     }
   });
 

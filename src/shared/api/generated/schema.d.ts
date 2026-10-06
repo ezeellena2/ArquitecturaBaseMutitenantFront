@@ -10853,6 +10853,8 @@ export interface components {
             /** Format: date-time */
             createdAtUtc?: null | string;
             /** Format: date-time */
+            deletedAtUtc?: null | string;
+            /** Format: date-time */
             lastSignInAtUtc?: null | string;
             lastSignInMethod?: null | components["schemas"]["LoginAuditMethod"];
             /** Format: date-time */
@@ -10865,6 +10867,7 @@ export interface components {
             operatorPermissions?: null | string[];
             /** Format: uint32 */
             operatorVersion?: null | number;
+            lastStateChange?: null | components["schemas"]["PlatformAccountStateChangeResponse"];
         };
         PlatformAccountFilterCounts: {
             /** Format: int32 */
@@ -10934,6 +10937,13 @@ export interface components {
          * @enum {string}
          */
         PlatformAccountState: "Active" | "Suspended" | "NeedsRecovery" | "PendingDeletion" | "Deleted" | "Invited" | "InvitationExpired";
+        /** @description Última transición efectiva registrada en SecurityEvents; el motivo desconocido queda null. */
+        PlatformAccountStateChangeResponse: {
+            /** Format: date-time */
+            atUtc: string;
+            action: string;
+            reason?: null | string;
+        };
         PlatformAccountStateCount: {
             state: components["schemas"]["PlatformAccountState"];
             /** Format: int32 */
