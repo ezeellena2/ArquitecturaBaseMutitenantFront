@@ -1,9 +1,19 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { server } from "@/test/mocks/server";
 import { fetchLegalDocuments, publishLegalDocument } from "./legalDocuments";
+
+const backendRoot = path.resolve(import.meta.dirname, "../../../../../../ArquitecturaBaseMutitenant");
+const contractSource = path.join(backendRoot, "docs/contracts/openapi.json");
+const hasBackend = existsSync(backendRoot);
+if (!hasBackend && process.env.CI !== "true") {
+  throw new Error("El repo hermano ArquitecturaBaseMutitenant es obligatorio para comprobar el contrato de Documentos legales.");
+}
+if (!hasBackend) {
+  console.warn("Se omite el contrato cruzado de Documentos legales en CI: falta el repo hermano ArquitecturaBaseMutitenant.");
+}
 
 describe("API legal de Plataforma", () => {
   it("GET no fabrica filtros y POST DateOnly/key devuelve 201 real sin motivo", async () => {
@@ -14,8 +24,8 @@ describe("API legal de Plataforma", () => {
     const request = { kind: "Terms" as const, effectiveOn: "2026-11-01", contents: [{ culture: "es-AR", text: "Términos" }, { culture: "en-US", text: "Terms" }] };
     expect(await publishLegalDocument(request, "native-key")).toEqual({ id: "new", version: 13 }); expect(sent).toEqual(request); expect(key).toBe("native-key");
   });
-  it("contrato productor exige sólo kind/effectiveOn/contents y éxito201 id/version", () => {
-    const contract = JSON.parse(readFileSync(path.resolve(import.meta.dirname, "../../../../../../ArquitecturaBaseMutitenant/docs/contracts/openapi.json"), "utf8")) as {
+  it.skipIf(!hasBackend)("contrato productor exige sólo kind/effectiveOn/contents y éxito201 id/version", () => {
+    const contract = JSON.parse(readFileSync(contractSource, "utf8")) as {
       paths: Record<string, { post: { responses: Record<string, { content: Record<string, { schema: { $ref: string } }> }> } }>;
       components: { schemas: Record<string, { properties: Record<string, unknown> }> };
     };
