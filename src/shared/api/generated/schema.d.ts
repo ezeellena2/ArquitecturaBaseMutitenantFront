@@ -1068,6 +1068,87 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/platform/audit/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    After?: string;
+                    Limit?: number;
+                    Period?: string;
+                    Type?: string;
+                    TenantId?: string;
+                    AccountId?: string;
+                    Search?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformAuditOrganizationResponse"][];
+                        "application/json": components["schemas"]["PlatformAuditOrganizationResponse"][];
+                        "text/json": components["schemas"]["PlatformAuditOrganizationResponse"][];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform/audit/{id}": {
         parameters: {
             query?: never;
@@ -10968,6 +11049,12 @@ export interface components {
             actorRole: string;
             reason?: null | string;
             ipAddress?: null | string;
+        };
+        /** @description Una organización presente en los eventos filtrados, con su nombre global actual. */
+        PlatformAuditOrganizationResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
         };
         /** @description Los correos de contacto que muestran Ingreso y Registro, sin sesión; null mientras no se cargaron. */
         PlatformContactResponse: {

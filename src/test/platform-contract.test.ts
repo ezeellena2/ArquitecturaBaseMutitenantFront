@@ -109,6 +109,7 @@ describe("contratos de Plataforma entre back y front", () => {
     ["/api/platform/legal-documents", "get", 200, null, "PlatformLegalDocumentGroupResponse[]"],
     ["/api/platform/legal-documents", "post", 201, "PublishLegalDocumentHttpRequest", "PublishedLegalDocumentResponse"],
     ["/api/platform/audit", "get", 200, null, "CursorResultOfPlatformAuditEventResponse"],
+    ["/api/platform/audit/organizations", "get", 200, null, "PlatformAuditOrganizationResponse[]"],
     ["/api/platform/audit/{id}", "get", 200, null, "PlatformAuditEventResponse"],
     ["/api/platform/settings", "get", 200, null, "PlatformSettingsResponse"],
     ["/api/platform/settings", "put", 200, "UpdatePlatformSettingsHttpRequest", "VersionResponse"],
@@ -168,6 +169,7 @@ describe("contratos de Plataforma entre back y front", () => {
     ["/api/platform/recoveries/paged", ["Page", "PageSize", "Sort", "Search", "Status"]],
     ["/api/platform/recoveries/filter-counts", ["Page", "PageSize", "Sort", "Search", "Status"]],
     ["/api/platform/audit", ["After", "Limit", "Period", "Type", "TenantId", "AccountId", "Search"]],
+    ["/api/platform/audit/organizations", ["After", "Limit", "Period", "Type", "TenantId", "AccountId", "Search"]],
   ] as const)("%s conserva todos los parámetros de consulta", (route, fields) => {
     expect(openApi.paths[route].get.parameters?.map((parameter) => parameter.name).sort()).toEqual([...fields].sort());
     const block = generatedRoute(route).split("        get: {")[1]?.split("        put:")[0];
@@ -193,6 +195,7 @@ describe("contratos de Plataforma entre back y front", () => {
     ["PlatformLegalVersionResponse", ["id", "version", "effectiveAtUtc", "isCurrent"]],
     ["PublishedLegalDocumentResponse", ["id", "version"]],
     ["PlatformAuditEventResponse", ["id", "occurredAtUtc", "type", "action", "summary", "target", "targetTenantId", "targetAccountId", "actor", "actorRole", "reason", "ipAddress"]],
+    ["PlatformAuditOrganizationResponse", ["id", "name"]],
     ["PlatformSettingsResponse", ["consumerSignup", "businessSignup", "maxOwnedOrganizations", "salesEmail", "supportEmail", "version"]],
     ["RequestLoginCodeResponse", ["resendAfterSeconds"]],
   ] as const)("%s expone los campos de respuesta usados por la pantalla", (schema, fields) => {
