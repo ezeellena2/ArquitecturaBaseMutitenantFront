@@ -133,3 +133,7 @@ export type PlatformAuditCursorResponse = ApiSchemas["CursorResultOfPlatformAudi
 export type AccountRecoveryStatus = ApiSchemas["AccountRecoveryStatus"];
 export type PlatformRecoveryResponse = ApiSchemas["PlatformRecoveryResponse"];
 export type PlatformRecoveryFilterCounts = ApiSchemas["PlatformRecoveryFilterCounts"];
+export type PlatformSettingsResponse = ApiSchemas["PlatformSettingsResponse"];
+export type UpdatePlatformSettingsRequest = ApiSchemas["UpdatePlatformSettingsHttpRequest"];
+export type ConsumerSignupMode = ApiSchemas["ConsumerSignupMode"];
+export type BusinessSignupMode = ApiSchemas["BusinessSignupMode"];

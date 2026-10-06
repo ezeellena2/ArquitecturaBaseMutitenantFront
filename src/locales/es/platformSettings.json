@@ -1,0 +1,25 @@
+{
+  "title": "Configuración",
+  "administration": "Administración",
+  "back": "Volver",
+  "signupTitle": "Registro y altas",
+  "contactTitle": "Contacto",
+  "discard": "Descartar cambios",
+  "save": "Guardar cambios",
+  "saving": "Guardando…",
+  "saved": "Guardamos la configuración.",
+  "fields": { "consumerSignup": "Registro de personas", "businessSignup": "Alta de organizaciones", "maxOwnedOrganizations": "Organizaciones propias por persona", "salesEmail": "Correo de ventas", "supportEmail": "Correo de soporte" },
+  "consumer": {
+    "Open": { "label": "Abierto", "description": "Cualquiera crea su cuenta con su correo o su WhatsApp." },
+    "Closed": { "label": "Cerrado", "description": "Solo entran las personas invitadas a una organización." }
+  },
+  "business": {
+    "Open": { "label": "Abierta", "description": "La organización queda activa al crearla." },
+    "RequiresApproval": { "label": "Requiere aprobación", "description": "Queda esperando hasta que un operador la aprueba." },
+    "Closed": { "label": "Cerrada", "description": "Solo la plataforma crea organizaciones." }
+  },
+  "validation": { "range": "Usá un número de 1 a 50.", "email": "Ingresá un correo válido." },
+  "confirmTitle": "¿Guardar la configuración?",
+  "confirmDescription": "Cambia cómo entran las personas y las organizaciones nuevas. Lo que ya existe no cambia.",
+  "confirm": "Guardar"
+}

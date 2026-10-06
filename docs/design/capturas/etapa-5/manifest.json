@@ -70521,9 +70521,37 @@
       },
       "boardReadyText": "Configuración",
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "configuracion-sin-cambios",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "configuracion-sin-cambios: Configuración real T23d; PUT con versión y motivo",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Correo de soporte",
+        "readySelector": "main"
       }
     },
     {
@@ -70542,9 +70570,37 @@
       },
       "boardReadyText": "Configuración",
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "configuracion-sin-cambios",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "configuracion-sin-cambios: Configuración real T23d; PUT con versión y motivo",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Correo de soporte",
+        "readySelector": "main"
       }
     },
     {
@@ -70570,9 +70626,44 @@
       },
       "boardReadyText": "Cambios sin guardar",
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "configuracion-con-cambios",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "configuracion-con-cambios: Configuración real T23d; PUT con versión y motivo",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Organizaciones propias por persona",
+            "value": "4"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Correo de soporte",
+        "readySelector": "main"
       }
     },
     {
@@ -70591,9 +70682,44 @@
         "note": "M-Config-Plat v111 solo dibuja la referencia base; sus campos y botones son estáticos; no dibuja cambios, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "configuracion-con-cambios",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "configuracion-con-cambios: Configuración real T23d; PUT con versión y motivo",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Organizaciones propias por persona",
+            "value": "4"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Correo de soporte",
+        "readySelector": "main"
       }
     },
     {
@@ -70636,9 +70762,61 @@
       },
       "boardReadyText": "Usá un número de 1 a 50.",
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "configuracion-errores",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "configuracion-errores: Configuración real T23d; PUT con versión y motivo",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Organizaciones propias por persona",
+            "value": "0"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo de ventas",
+            "value": "ventas"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo de soporte",
+            "value": "soporte"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Guardar cambios"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Usá un número de 1 a 50.",
+        "readySelector": "main"
       }
     },
     {
@@ -70657,9 +70835,61 @@
         "note": "M-Config-Plat v111 solo dibuja la referencia base; sus campos y botones son estáticos; no dibuja cambios, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "configuracion-errores",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "configuracion-errores: Configuración real T23d; PUT con versión y motivo",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Organizaciones propias por persona",
+            "value": "0"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo de ventas",
+            "value": "ventas"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo de soporte",
+            "value": "soporte"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Guardar cambios"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Usá un número de 1 a 50.",
+        "readySelector": "main"
       }
     },
     {
@@ -70690,9 +70920,49 @@
       },
       "boardReadyText": "¿Guardar la configuración?",
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "configuracion-confirmacion",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "configuracion-confirmacion: Configuración real T23d; PUT con versión y motivo",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Organizaciones propias por persona",
+            "value": "4"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Guardar cambios"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "¿Guardar la configuración?",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -70711,9 +70981,49 @@
         "note": "M-Config-Plat v111 solo dibuja la referencia base; sus campos y botones son estáticos; no dibuja cambios, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "configuracion-confirmacion",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "configuracion-confirmacion: Configuración real T23d; PUT con versión y motivo",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Organizaciones propias por persona",
+            "value": "4"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Guardar cambios"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "¿Guardar la configuración?",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -70748,9 +71058,54 @@
       },
       "boardReadyText": "Escribí el motivo.",
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "configuracion-confirmacion-error",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "configuracion-confirmacion-error: Configuración real T23d; PUT con versión y motivo",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Organizaciones propias por persona",
+            "value": "4"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Guardar cambios"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Guardar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Escribí el motivo.",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -70769,9 +71124,54 @@
         "note": "M-Config-Plat v111 solo dibuja la referencia base; sus campos y botones son estáticos; no dibuja cambios, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "configuracion-confirmacion-error",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "configuracion-confirmacion-error: Configuración real T23d; PUT con versión y motivo",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Organizaciones propias por persona",
+            "value": "4"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Guardar cambios"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Guardar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Escribí el motivo.",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -70787,12 +71187,67 @@
       "boardActions": [],
       "boardReference": {
         "kind": "base",
-        "note": "Config-Plat v111 no simula conflicto 409; se conserva la configuración real para la captura futura de app."
+        "note": "Config-Plat v111 no simula conflicto 409; se conserva la configuración guardada como referencia base para compararla con el conflicto real de la app."
       },
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "Conflicto 409 al guardar con versión anterior, conservando cambios y ofreciendo volver a cargar, según T23/T24.",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "configuracion-409: Configuración real T23d; PUT con versión y motivo",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Organizaciones propias por persona",
+            "value": "4"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Guardar cambios"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Revisión simultánea."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Guardar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 409,
+            "body": {
+              "type": "about:blank",
+              "title": "Conflicto",
+              "status": 409,
+              "code": "General.ConcurrencyConflict",
+              "traceId": "capture-settings-conflict"
+            }
+          }
+        ],
+        "readyText": "Ver lo nuevo",
+        "readySelector": "main"
       }
     },
     {
@@ -70811,9 +71266,64 @@
         "note": "M-Config-Plat v111 solo dibuja la referencia base; sus campos y botones son estáticos; no dibuja cambios, errores ni confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/configuracion",
-        "scenario": "Conflicto 409 al guardar con versión anterior, conservando cambios y ofreciendo volver a cargar, según T23/T24.",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "configuracion-409: Configuración real T23d; PUT con versión y motivo",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Organizaciones propias por persona",
+            "value": "4"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Guardar cambios"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Revisión simultánea."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Guardar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 409,
+            "body": {
+              "type": "about:blank",
+              "title": "Conflicto",
+              "status": 409,
+              "code": "General.ConcurrencyConflict",
+              "traceId": "capture-settings-conflict"
+            }
+          }
+        ],
+        "readyText": "Ver lo nuevo",
+        "readySelector": "main"
       }
     },
     {

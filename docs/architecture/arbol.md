@@ -451,8 +451,14 @@ src/
 │       │       ├── SecurityAuditPage.tsx             cinco columnas, filtros sin cantidades y detalle con grilla/hoja móvil
 │       │       └── SecurityAuditPage.test.tsx        filtros, cursor, permisos, errores, detalle, idiomas, 390 y axe
 │       └── settings/                                /plataforma/configuracion
-│           ├── api/platformSettings.ts
-│           └── pages/PlatformSettingsPage.tsx       ConsumerSignup, BusinessSignup, límite de organizaciones y días de gracia de la baja
+│           ├── api/
+│           │   ├── platformSettings.ts              GET y PUT versionado de los cinco campos con motivo, sin clave de idempotencia
+│           │   └── platformSettings.test.ts         campos/version/reason, respuesta nueva y errores de API
+│           └── pages/
+│               ├── PlatformSettingsPage.tsx         Registro y altas/Contacto, editor común, límite1–50 y conflicto de versión
+│               ├── PlatformSettingsPage.test.tsx    datos guardados, validación, motivo, versión, concurrencia, idiomas, 390 y axe
+│               ├── PlatformSettingsPage.lifetime.test.tsx reintentos nativos, motivo/borrador, permiso y respuestas abandonadas
+│               └── SettingsRoutes.test.tsx          Atrás con única decisión, callbacks previos al bloqueo y relecturas con caché
 │
 ├── locales/                                         un namespace por módulo; es y en con las mismas claves
 │   ├── es/
@@ -474,6 +480,7 @@ src/
 │   │   ├── platformRecoveries.json                  [E5/T23a] pedidos, revisión, resoluciones y errores
 │   │   ├── platformLegal.json                       [E5/T23b] vigencia actual/futura, editor y confirmación
 │   │   ├── platformAudit.json                       [E5/T23c] filtros, columnas y detalle de la auditoría de seguridad
+│   │   ├── platformSettings.json                    [E5/T23d] cinco campos, descripciones, errores y confirmación con motivo
 │   │   ├── users.json                               [E6]
 │   │   ├── companies.json                           [E6]
 │   │   ├── settings.json                            [E6]
@@ -803,7 +810,8 @@ src/
     │   ├── platformAccountDetail.ts                 ficha Cuenta-Plat: estados, métodos, roles globales, historial y permisos
     │   ├── platformRecoveries.ts                    pedidos v111 tapados y nuevo correo disponible hasta E8
     │   ├── platformLegal.ts                         versiones legales vigentes y futuras v111, fechas UTC y POST201
-    │   └── platformAudit.ts                         resúmenes del productor, ingresos sin IP, 25 filas y cursor real
+    │   ├── platformAudit.ts                         resúmenes del productor, ingresos sin IP, 25 filas y cursor real
+    │   └── platformSettings.ts                      configuración v111 sin gracia, PUT200 con versión nueva o409
     ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
     └── utils/
         ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]; devuelve el QueryClient, para una relectura de fondo [E7]

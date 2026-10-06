@@ -60,6 +60,7 @@ export const platformPages: PlatformPages = {
   legal: lazyPage(() => import("@/areas/platform/legal/pages/LegalDocumentsPage"), (page) => page.LegalDocumentsPage),
   newLegal: lazyPage(() => import("@/areas/platform/legal/pages/PublishLegalVersionPage"), (page) => page.PublishLegalVersionPage),
   audit: lazyPage(() => import("@/areas/platform/audit/pages/SecurityAuditPage"), (page) => page.SecurityAuditPage),
+  settings: lazyPage(() => import("@/areas/platform/settings/pages/PlatformSettingsPage"), (page) => page.PlatformSettingsPage),
 };
 
 /// Monta sólo las páginas disponibles, con el permiso del manifiesto. El inicio elige Gestión y luego Administración.

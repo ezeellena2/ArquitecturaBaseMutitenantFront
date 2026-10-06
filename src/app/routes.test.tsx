@@ -126,10 +126,10 @@ function platformRouter(path: string, pages: PlatformPages = testPages, account:
 }
 
 describe("las rutas del marco de Plataforma", () => {
-  it("T23c monta Auditoría junto a Organizaciones, Cuentas, Recuperaciones y las páginas legales lazy", async () => {
-    expect(Object.keys(platformPages)).toEqual(["organizations", "organization", "accounts", "account", "recoveries", "legal", "newLegal", "audit"]);
+  it("T23d monta Configuración junto a Organizaciones, Cuentas, Recuperaciones, Legales y Auditoría lazy", async () => {
+    expect(Object.keys(platformPages)).toEqual(["organizations", "organization", "accounts", "account", "recoveries", "legal", "newLegal", "audit", "settings"]);
     const available = createPlatformPageRoutes(platformPages);
-    expect(available).toHaveLength(8);
+    expect(available).toHaveLength(9);
     expect(available[0].children?.[0]).toMatchObject({ index: true, lazy: platformPages.organizations });
     const page = platformPages.organizations;
     expect(typeof page).toBe("function");
@@ -150,7 +150,7 @@ describe("las rutas del marco de Plataforma", () => {
     const recoveries = platformPages.recoveries;
     expect(typeof recoveries).toBe("function");
     if (typeof recoveries === "function") expect(await recoveries()).toHaveProperty("Component");
-    for (const [index, name] of [[5, "legal"], [6, "newLegal"], [7, "audit"]] as const) {
+    for (const [index, name] of [[5, "legal"], [6, "newLegal"], [7, "audit"], [8, "settings"]] as const) {
       expect(available[index].children?.[0]).toMatchObject({ path: platformRoutes[name].path, lazy: platformPages[name] });
       const page = platformPages[name];
       expect(typeof page).toBe("function");

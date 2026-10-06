@@ -9,6 +9,38 @@ import { buildCases, canvas, output } from "./capturar-etapa-5.mjs";
 const groups = ["plataforma-marco", "plataforma-organizaciones", "plataforma-organizacion", "plataforma-cuentas",
   "plataforma-cuenta", "plataforma-recuperaciones", "plataforma-legales", "plataforma-auditoria", "plataforma-configuracion", "recuperar"];
 
+test("T23d recorre la configuración real con NumberField y confirmación nativa", () => {
+  const cases = buildCases().filter((entry) => entry.group === "plataforma-configuracion");
+  assert.equal(cases.length, 12);
+  for (const entry of cases) {
+    assert.equal(entry.app.captureMode, "harness", entry.id);
+    assert.equal(new URL(entry.app.path, "http://example.test").searchParams.get("route"), "/plataforma/configuracion", entry.id);
+    assert.match(entry.app.scenario, /Configuración real T23d/u, entry.id);
+    assert.ok(!entry.app.actions.some((action) => action.role === "spinbutton" || action.selector?.includes("b-pri")), entry.id);
+    if (entry.pair.startsWith("configuracion-confirmacion")) assert.equal(entry.app.readySelector, '[role="dialog"]', entry.id);
+    if (entry.viewport.width === 390 && entry.pair !== "configuracion-sin-cambios") assert.equal(entry.boardReference.kind, "base", entry.id);
+  }
+});
+
+test("T23d usa cinco campos del contrato y un conflicto PUT en la banda de concurrencia", () => {
+  for (const entry of buildCases().filter((entry) => entry.group === "plataforma-configuracion")) {
+    const settings = entry.app.responses.find((item) => item.method === "GET" && item.path === "/api/platform/settings").body;
+    assert.deepEqual(Object.keys(settings).sort(), ["businessSignup", "consumerSignup", "maxOwnedOrganizations", "salesEmail", "supportEmail", "version"].sort());
+    assert.equal(settings.businessSignup, "RequiresApproval");
+    assert.equal(settings.maxOwnedOrganizations, 3);
+    const save = entry.app.responses.find((item) => item.method === "PUT" && item.path === "/api/platform/settings");
+    assert.equal(save.status, entry.pair === "configuracion-409" ? 409 : 200);
+    if (save.status === 200) assert.notEqual(save.body.version, settings.version);
+    else {
+      assert.equal(save.body.code, "General.ConcurrencyConflict");
+      assert.equal(entry.app.readyText, "Ver lo nuevo");
+      assert.equal(entry.app.readySelector, "main");
+      assert.ok(entry.app.actions.some((action) => action.name === "Motivo" && action.type === "fill"));
+      assert.equal(entry.app.actions.at(-1).name, "Guardar");
+    }
+  }
+});
+
 test("T23c captura Auditoría real, filtra y abre el detalle en ambos tamaños", () => {
   const cases = buildCases().filter((entry) => entry.group === "plataforma-auditoria");
   assert.equal(cases.length, 6);
@@ -502,7 +534,7 @@ test("Recuperar reproduce la app por su recorrido con los tres contratos públic
   }
 });
 
-test("mantiene 50 filas y 409 como casos futuros con referencia real y limitación explícita", () => {
+test("mantiene 50 filas y 409 con referencia base real y limitación explícita", () => {
   const cases = buildCases();
   for (const pair of ["organizaciones-50-filas", "organizaciones-409", "configuracion-409"]) {
     const entries = cases.filter((entry) => entry.pair === pair);

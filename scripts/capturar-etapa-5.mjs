@@ -12,6 +12,7 @@ import { platformAccountDetailFixture, platformAccountDetailCaptureResponses } f
 import { platformRecoveriesCaptureResponses } from "../src/test/mocks/platformRecoveries.ts";
 import { platformLegalCaptureResponses } from "../src/test/mocks/platformLegal.ts";
 import { platformAuditCaptureResponses } from "../src/test/mocks/platformAudit.ts";
+import { platformSettingsCaptureResponses } from "../src/test/mocks/platformSettings.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const canvas = path.join(root, "docs/design/lienzo");
@@ -208,6 +209,29 @@ function auditApp(entry) {
   return { ...entry.app, path: `/src/test/visualApp.html?as=visual-operator&route=${encodeURIComponent("/plataforma/auditoria")}`,
     captureMode: "harness", userFixture: "visual-operator", scenario: `${entry.pair}: Auditoría real T23c; resúmenes de API y tanda de 25`,
     now: "2026-09-27T20:35:00Z", responses: platformAuditCaptureResponses(), actions, readyText, readySelector };
+}
+
+function settingsApp(entry) {
+  const pair = entry.pair;
+  const actions = [];
+  let readySelector = "main";
+  let readyText = "Correo de soporte";
+  if (pair !== "configuracion-sin-cambios") actions.push(fill("Organizaciones propias por persona", pair === "configuracion-errores" ? "0" : "4"));
+  if (pair === "configuracion-errores") {
+    actions.push(fill("Correo de ventas", "ventas"), fill("Correo de soporte", "soporte"), click("Guardar cambios"));
+    readyText = "Usá un número de 1 a 50.";
+  } else if (pair.startsWith("configuracion-confirmacion") || pair === "configuracion-409") {
+    actions.push(click("Guardar cambios"));
+    readySelector = '[role="dialog"]'; readyText = "¿Guardar la configuración?";
+    if (pair.endsWith("error")) { actions.push(click("Guardar")); readyText = "Escribí el motivo."; }
+    if (pair === "configuracion-409") {
+      actions.push(fill("Motivo", "Revisión simultánea."), click("Guardar"));
+      readySelector = "main"; readyText = "Ver lo nuevo";
+    }
+  }
+  return { ...entry.app, path: `/src/test/visualApp.html?as=visual-operator&route=${encodeURIComponent("/plataforma/configuracion")}`,
+    captureMode: "harness", userFixture: "visual-operator", scenario: `${pair}: Configuración real T23d; PUT con versión y motivo`,
+    now: "2026-09-27T20:35:00Z", responses: platformSettingsCaptureResponses({ conflict: pair === "configuracion-409" }), actions, readyText, readySelector };
 }
 
 function legalApp(entry) {
@@ -534,7 +558,7 @@ export function buildCases() {
   settingsAction("configuracion-errores", [fill("Organizaciones propias por persona", "0", "spinbutton"), fill("Correo de ventas", "ventas"), fill("Correo de soporte", "soporte"), click("Guardar cambios")], "Usá un número de 1 a 50.");
   settingsAction("configuracion-confirmacion", [fill("Organizaciones propias por persona", "4", "spinbutton"), click("Guardar cambios")], "¿Guardar la configuración?");
   settingsAction("configuracion-confirmacion-error", [fill("Organizaciones propias por persona", "4", "spinbutton"), click("Guardar cambios"), clickSelector('[role="alertdialog"] button.b-pri')], "Escribí el motivo.");
-  settingsAction("configuracion-409", [], undefined, { boardReference: base("Config-Plat v111 no simula conflicto 409; se conserva la configuración real para la captura futura de app."),
+  settingsAction("configuracion-409", [], undefined, { boardReference: base("Config-Plat v111 no simula conflicto 409; se conserva la configuración guardada como referencia base para compararla con el conflicto real de la app."),
     scenario: "Conflicto 409 al guardar con versión anterior, conservando cambios y ofreciendo volver a cargar, según T23/T24." });
 
   const recovery = { group: "recuperar", board: "Recuperar", mobileBoard: "M-Recuperar", route: "/recuperar" };
@@ -567,6 +591,7 @@ export function buildCases() {
     if (entry.group === "plataforma-recuperaciones") return { ...entry, app: recoveriesApp(entry) };
     if (entry.group === "plataforma-legales") return { ...entry, app: legalApp(entry) };
     if (entry.group === "plataforma-auditoria") return { ...entry, app: auditApp(entry) };
+    if (entry.group === "plataforma-configuracion") return { ...entry, app: settingsApp(entry) };
     if (isOrganizationDetailCase(entry)) return { ...entry, app: organizationApp(entry) };
     if (isOrganizationAdministrationCase(entry)) return { ...entry, app: organizationAdministrationApp(entry) };
     if (entry.pair in platformReasons) return { ...entry, app: reasonApp(entry) };
