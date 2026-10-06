@@ -592,19 +592,27 @@ test("Más usa su ruta móvil y conserva la referencia Administración desktop",
   assert.equal(new URL(desktop.app.path, "http://example.test").searchParams.get("route"), "/plataforma/configuracion");
 });
 
-test("el marco usa la app real aislada y declara el contenido pendiente sin montar features", () => {
+test("el marco final monta las pantallas completas con datos aislados", () => {
   for (const entry of buildCases().filter((item) => item.group === "plataforma-marco")) {
     const params = new URL(entry.app.path, "http://example.test").searchParams;
     const realMore = entry.viewport.width === 390 && params.get("route") === "/plataforma/mas";
-    assert.equal(params.get("frame"), realMore ? null : "platform", entry.id);
+    assert.equal(params.get("frame"), null, entry.id);
     assert.equal(params.get("as"), "visual-operator", entry.id);
     assert.ok(params.get("route").startsWith("/plataforma"), entry.id);
     assert.equal(entry.app.captureMode, "harness");
-    assert.match(entry.app.scenario, /contenido pendiente T21–T23/);
-    assert.equal(entry.app.readySelector, "main");
+    assert.match(entry.app.scenario, /marco final T24/);
+    assert.doesNotMatch(entry.app.scenario, /pendiente/);
+    if (!realMore) {
+      const settings = params.get("route") === "/plataforma/configuracion";
+      assert.ok(entry.app.responses.some((response) => response.method === "GET" && response.path === (settings ? "/api/platform/settings" : "/api/platform/tenants/paged")), entry.id);
+      assert.equal(settings ? entry.app.readySelector : entry.app.readyText, settings ? 'input[name="salesEmail"]' : "Grupo Delta", entry.id);
+      if (!settings) assert.ok(entry.app.responses.some((response) => response.path === "/api/platform/tenants/paged" && response.body.items.some((row) => row.name === entry.app.readyText)), entry.id);
+    }
   }
   const menu = buildCases().find((entry) => entry.id === "marco-tu-menu-escritorio");
   assert.deepEqual(menu.app.actions, [{ type: "click", role: "button", name: "Martín Sosa, Plataforma" }]);
+  assert.equal(menu.app.readyHeading, undefined);
+  assert.equal(menu.app.readySelector, '[role="menu"]');
 });
 
 test("Más de Plataforma a 390 usa su ruta real y espera el título, sin marco vacío", () => {

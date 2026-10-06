@@ -1,3 +1,3 @@
 Ingreso (las dos puertas comparten pantalla), registro de personas, «Registrá tu empresa» e invitación. Leé `docs/architecture/frontend.md` «Auth», `docs/rules/accesos-y-permisos.md` y los tableros Ingreso, Registro, Registro-Empresa, Invitacion y Sesion.
-El código de correo es un paso de la misma pantalla, sin ruta propia; la pantalla de estado y el paso del código son las piezas de `components/`.
+El código de correo es un paso de la misma pantalla, sin ruta propia; estado y código usan `components/`. RecoverAccountPage en `/recuperar` es público: variante Sin WhatsApp v111, nonce sólo en memoria y tres POST con clave por cuerpo/recorrido; leé la ficha Identidad del back (E5).
 Los textos salen de `src/locales/`; el token no sale de `src/auth/`.

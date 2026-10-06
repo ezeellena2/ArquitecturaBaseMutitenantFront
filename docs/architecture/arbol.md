@@ -367,7 +367,7 @@ src/
 │   │   └── <módulo B2B del producto>/               misma forma que roles/
 │   │
 │   └── platform/                                    ÁREA PLATAFORMA [E5]
-│       ├── AGENTS.md · CLAUDE.md                     permisos individuales y páginas parciales
+│       ├── AGENTS.md · CLAUDE.md                     permisos individuales y las nueve páginas lazy de T21–T23
 │       ├── tenants/
 │       │   ├── AGENTS.md · CLAUDE.md                 fuente Organizaciones y M-Organizaciones; coordinación de versión
 │       │   ├── api/tenants.ts                       T21b–d: listado, alta, detalle/historial y subrecursos tipados; POST con clave, PUT/DELETE sin clave
@@ -383,8 +383,11 @@ src/
 │       │   │   ├── OrganizationHistoryTab.tsx       Historial: fecha y hora, qué pasó, quién y motivo (eventos de seguridad)
 │       │   │   ├── OrganizationOwnersTab.tsx        Dueños: nombre/correo, último ingreso relativo y estado; fila móvil sin avatar
 │       │   │   ├── OrganizationModulesTab.tsx       Módulos (P8): Prender, Extender prueba (hasta una fecha) o Apagar, con motivo
+│       │   │   ├── OrganizationModulesTab.test.tsx  catálogo vacío, fechas civiles, versiones propias, permisos, errores y vida de la edición
 │       │   │   ├── OrganizationDomainTab.tsx        Dominio verificado: registro TXT, Verificar o Quitar, con motivo
+│       │   │   ├── OrganizationDomainTab.test.tsx   idempotencia por dominio, reintentos nativos, versiones, errores y respuestas abandonadas
 │       │   │   ├── OrganizationPublicPageTab.tsx    Página pública: dirección, publicación/bloqueo y fecha/motivo real; Despublicar o Permitir con POST versionado; Ver página pendiente E7
+│       │   │   ├── OrganizationPublicPageTab.test.tsx metadatos, moderación, versiones propias y vida del formulario
 │       │   │   └── testSupport.ts                  TestFeatures y respuestas MSW locales de prueba de T21d, sin catálogo productivo
 │       │   └── pages/
 │       │       ├── OrganizationsPage.tsx            /plataforma: banda global, filtros cruzados, menú por estado, ReasonDialog y reintento directo del alta
@@ -455,7 +458,7 @@ src/
 │           │   ├── platformSettings.ts              GET y PUT versionado de los cinco campos con motivo, sin clave de idempotencia
 │           │   └── platformSettings.test.ts         campos/version/reason, respuesta nueva y errores de API
 │           └── pages/
-│               ├── PlatformSettingsPage.tsx         Registro y altas/Contacto, editor común, límite1–50 y conflicto de versión
+│               ├── PlatformSettingsPage.tsx         cinco campos de Registro y altas/Contacto, editor común, límite 1–50 y conflicto de versión
 │               ├── PlatformSettingsPage.test.tsx    datos guardados, validación, motivo, versión, concurrencia, idiomas, 390 y axe
 │               ├── PlatformSettingsPage.lifetime.test.tsx reintentos nativos, motivo/borrador, permiso y respuestas abandonadas
 │               └── SettingsRoutes.test.tsx          Atrás con única decisión, callbacks previos al bloqueo y relecturas con caché

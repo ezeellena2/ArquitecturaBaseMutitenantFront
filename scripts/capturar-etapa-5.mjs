@@ -597,12 +597,16 @@ export function buildCases() {
     if (entry.pair in platformReasons) return { ...entry, app: reasonApp(entry) };
     if (entry.group === "plataforma-marco") {
       const realMore = entry.viewport.width === 390 && entry.app.path === "/plataforma/mas";
+      const settings = entry.app.path === "/plataforma/configuracion";
+      const userMenu = entry.pair === "marco-tu-menu" && entry.viewport.width === 1440;
       return { ...entry, app: {
         ...entry.app,
-        path: `/src/test/visualApp.html?as=visual-operator&${realMore ? "" : "frame=platform&"}route=${encodeURIComponent(entry.app.path)}`,
-        captureMode: "harness", userFixture: "visual-operator", readySelector: "main",
-        scenario: `${entry.pair}: ${realMore ? "Más real T20c" : "marco real"}, contenido pendiente T21–T23`,
-        ...(realMore ? { readyHeading: "Más" } : {}),
+        path: `/src/test/visualApp.html?as=visual-operator&route=${encodeURIComponent(entry.app.path)}`,
+        captureMode: "harness", userFixture: "visual-operator", readySelector: userMenu ? '[role="menu"]' : settings ? 'input[name="salesEmail"]' : "main",
+        scenario: `${entry.pair}: ${realMore ? "Más real T20c, " : ""}marco final T24 con sus pantallas completas`,
+        readyHeading: userMenu ? undefined : realMore ? "Más" : settings ? "Configuración" : "Organizaciones",
+        readyText: realMore || settings ? undefined : "Grupo Delta",
+        responses: realMore ? [] : settings ? platformSettingsCaptureResponses() : platformTenantsCaptureResponses(),
         actions: entry.pair === "marco-tu-menu" && entry.viewport.width === 1440 ? [click("Martín Sosa, Plataforma")] : [],
       } };
     }

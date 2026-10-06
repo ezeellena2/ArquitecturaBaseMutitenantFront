@@ -26,6 +26,7 @@ Las carpetas que la feature no necesita no se crean (`audit/` tiene solo `api/` 
 ## Copiá de
 - `src/areas/business/roles/` completo (E4)
 - `src/areas/business/companies/` para una ficha con pestañas (E6)
+- `src/areas/platform/tenants/` y `src/shared/platform/ReasonDialog.tsx` (E5): features separadas por recurso y confirmación compartida; `src/shared/hooks/useDialogFailure.ts`, `src/shared/ui/DetailGrid.tsx` y `src/tenancy/publicSite.ts` son las extracciones de T20d.
 
 ## Lo verifica
 - `tsc -b` estricto y `oxlint`.

@@ -5,7 +5,7 @@
       "id": "marco-gestion-escritorio",
       "pair": "marco-gestion",
       "group": "plataforma-marco",
-      "state": "v111: marco-gestion: marco real, contenido pendiente T21–T23",
+      "state": "v111: marco-gestion: marco final T24 con sus pantallas completas",
       "board": "Organizaciones",
       "props": {},
       "boardActions": [],
@@ -14,19 +14,564 @@
         "height": 900
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
-        "scenario": "marco-gestion: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma",
+        "scenario": "marco-gestion: marco final T24 con sus pantallas completas",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "main",
+        "readyHeading": "Organizaciones",
+        "readyText": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "search": "sin coincidencias"
+            },
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "50"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 50,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "20"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 20,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "10"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/filter-counts",
+            "query": {
+              "search": "sin coincidencias"
+            },
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "PendingApproval",
+                  "count": 0
+                },
+                {
+                  "status": "Active",
+                  "count": 0
+                },
+                {
+                  "status": "Suspended",
+                  "count": 0
+                },
+                {
+                  "status": "Provisioning",
+                  "count": 0
+                },
+                {
+                  "status": "Closed",
+                  "count": 0
+                }
+              ],
+              "sources": [
+                {
+                  "source": "SelfService",
+                  "count": 0
+                },
+                {
+                  "source": "Platform",
+                  "count": 0
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 7,
+              "statuses": [
+                {
+                  "status": "PendingApproval",
+                  "count": 2
+                },
+                {
+                  "status": "Active",
+                  "count": 2
+                },
+                {
+                  "status": "Suspended",
+                  "count": 1
+                },
+                {
+                  "status": "Provisioning",
+                  "count": 1
+                },
+                {
+                  "status": "Closed",
+                  "count": 1
+                }
+              ],
+              "sources": [
+                {
+                  "source": "SelfService",
+                  "count": 5
+                },
+                {
+                  "source": "Platform",
+                  "count": 2
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
       "id": "marco-gestion-movil",
       "pair": "marco-gestion",
       "group": "plataforma-marco",
-      "state": "v111: marco-gestion: marco real, contenido pendiente T21–T23",
+      "state": "v111: marco-gestion: marco final T24 con sus pantallas completas",
       "board": "M-Organizaciones",
       "props": {},
       "boardActions": [],
@@ -35,19 +580,564 @@
         "height": 844
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
-        "scenario": "marco-gestion: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma",
+        "scenario": "marco-gestion: marco final T24 con sus pantallas completas",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "main",
+        "readyHeading": "Organizaciones",
+        "readyText": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "search": "sin coincidencias"
+            },
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "50"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 50,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "20"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 20,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "10"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/filter-counts",
+            "query": {
+              "search": "sin coincidencias"
+            },
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "PendingApproval",
+                  "count": 0
+                },
+                {
+                  "status": "Active",
+                  "count": 0
+                },
+                {
+                  "status": "Suspended",
+                  "count": 0
+                },
+                {
+                  "status": "Provisioning",
+                  "count": 0
+                },
+                {
+                  "status": "Closed",
+                  "count": 0
+                }
+              ],
+              "sources": [
+                {
+                  "source": "SelfService",
+                  "count": 0
+                },
+                {
+                  "source": "Platform",
+                  "count": 0
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 7,
+              "statuses": [
+                {
+                  "status": "PendingApproval",
+                  "count": 2
+                },
+                {
+                  "status": "Active",
+                  "count": 2
+                },
+                {
+                  "status": "Suspended",
+                  "count": 1
+                },
+                {
+                  "status": "Provisioning",
+                  "count": 1
+                },
+                {
+                  "status": "Closed",
+                  "count": 1
+                }
+              ],
+              "sources": [
+                {
+                  "source": "SelfService",
+                  "count": 5
+                },
+                {
+                  "source": "Platform",
+                  "count": 2
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
       "id": "marco-administracion-escritorio",
       "pair": "marco-administracion",
       "group": "plataforma-marco",
-      "state": "v111: marco-administracion: marco real, contenido pendiente T21–T23",
+      "state": "v111: marco-administracion: marco final T24 con sus pantallas completas",
       "board": "Config-Plat",
       "props": {},
       "boardActions": [],
@@ -56,19 +1146,43 @@
         "height": 900
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fconfiguracion",
-        "scenario": "marco-administracion: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "marco-administracion: marco final T24 con sus pantallas completas",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "input[name=\"salesEmail\"]",
+        "readyHeading": "Configuración",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
       "id": "marco-administracion-movil",
       "pair": "marco-administracion",
       "group": "plataforma-marco",
-      "state": "v111: marco-administracion: Más real T20c, contenido pendiente T21–T23",
+      "state": "v111: marco-administracion: Más real T20c, marco final T24 con sus pantallas completas",
       "board": "M-Mas-Plat",
       "props": {},
       "boardActions": [],
@@ -78,19 +1192,20 @@
       },
       "app": {
         "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fmas",
-        "scenario": "marco-administracion: Más real T20c, contenido pendiente T21–T23",
+        "scenario": "marco-administracion: Más real T20c, marco final T24 con sus pantallas completas",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
         "readySelector": "main",
-        "readyHeading": "Más"
+        "readyHeading": "Más",
+        "responses": []
       }
     },
     {
       "id": "marco-tu-menu-escritorio",
       "pair": "marco-tu-menu",
       "group": "plataforma-marco",
-      "state": "v111: marco-tu-menu: marco real, contenido pendiente T21–T23",
+      "state": "v111: marco-tu-menu: marco final T24 con sus pantallas completas",
       "board": "Organizaciones",
       "props": {},
       "boardActions": [
@@ -104,8 +1219,8 @@
         "height": 900
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
-        "scenario": "marco-tu-menu: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma",
+        "scenario": "marco-tu-menu: marco final T24 con sus pantallas completas",
         "actions": [
           {
             "type": "click",
@@ -115,14 +1230,558 @@
         ],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "[role=\"menu\"]",
+        "readyText": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "search": "sin coincidencias"
+            },
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "50"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 50,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "20"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 20,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "10"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/filter-counts",
+            "query": {
+              "search": "sin coincidencias"
+            },
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "PendingApproval",
+                  "count": 0
+                },
+                {
+                  "status": "Active",
+                  "count": 0
+                },
+                {
+                  "status": "Suspended",
+                  "count": 0
+                },
+                {
+                  "status": "Provisioning",
+                  "count": 0
+                },
+                {
+                  "status": "Closed",
+                  "count": 0
+                }
+              ],
+              "sources": [
+                {
+                  "source": "SelfService",
+                  "count": 0
+                },
+                {
+                  "source": "Platform",
+                  "count": 0
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 7,
+              "statuses": [
+                {
+                  "status": "PendingApproval",
+                  "count": 2
+                },
+                {
+                  "status": "Active",
+                  "count": 2
+                },
+                {
+                  "status": "Suspended",
+                  "count": 1
+                },
+                {
+                  "status": "Provisioning",
+                  "count": 1
+                },
+                {
+                  "status": "Closed",
+                  "count": 1
+                }
+              ],
+              "sources": [
+                {
+                  "source": "SelfService",
+                  "count": 5
+                },
+                {
+                  "source": "Platform",
+                  "count": 2
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
       "id": "marco-tu-menu-movil",
       "pair": "marco-tu-menu",
       "group": "plataforma-marco",
-      "state": "v111: marco-tu-menu: Más real T20c, contenido pendiente T21–T23",
+      "state": "v111: marco-tu-menu: Más real T20c, marco final T24 con sus pantallas completas",
       "board": "M-Mas-Plat",
       "props": {},
       "boardActions": [],
@@ -132,19 +1791,20 @@
       },
       "app": {
         "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fmas",
-        "scenario": "marco-tu-menu: Más real T20c, contenido pendiente T21–T23",
+        "scenario": "marco-tu-menu: Más real T20c, marco final T24 con sus pantallas completas",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
         "readySelector": "main",
-        "readyHeading": "Más"
+        "readyHeading": "Más",
+        "responses": []
       }
     },
     {
       "id": "marco-barra-inferior-escritorio",
       "pair": "marco-barra-inferior",
       "group": "plataforma-marco",
-      "state": "v111: marco-barra-inferior: marco real, contenido pendiente T21–T23",
+      "state": "v111: marco-barra-inferior: marco final T24 con sus pantallas completas",
       "board": "Organizaciones",
       "props": {},
       "boardActions": [],
@@ -153,19 +1813,564 @@
         "height": 900
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
-        "scenario": "marco-barra-inferior: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma",
+        "scenario": "marco-barra-inferior: marco final T24 con sus pantallas completas",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "main",
+        "readyHeading": "Organizaciones",
+        "readyText": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "search": "sin coincidencias"
+            },
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "50"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 50,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "20"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 20,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "10"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/filter-counts",
+            "query": {
+              "search": "sin coincidencias"
+            },
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "PendingApproval",
+                  "count": 0
+                },
+                {
+                  "status": "Active",
+                  "count": 0
+                },
+                {
+                  "status": "Suspended",
+                  "count": 0
+                },
+                {
+                  "status": "Provisioning",
+                  "count": 0
+                },
+                {
+                  "status": "Closed",
+                  "count": 0
+                }
+              ],
+              "sources": [
+                {
+                  "source": "SelfService",
+                  "count": 0
+                },
+                {
+                  "source": "Platform",
+                  "count": 0
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 7,
+              "statuses": [
+                {
+                  "status": "PendingApproval",
+                  "count": 2
+                },
+                {
+                  "status": "Active",
+                  "count": 2
+                },
+                {
+                  "status": "Suspended",
+                  "count": 1
+                },
+                {
+                  "status": "Provisioning",
+                  "count": 1
+                },
+                {
+                  "status": "Closed",
+                  "count": 1
+                }
+              ],
+              "sources": [
+                {
+                  "source": "SelfService",
+                  "count": 5
+                },
+                {
+                  "source": "Platform",
+                  "count": 2
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
       "id": "marco-barra-inferior-movil",
       "pair": "marco-barra-inferior",
       "group": "plataforma-marco",
-      "state": "v111: marco-barra-inferior: marco real, contenido pendiente T21–T23",
+      "state": "v111: marco-barra-inferior: marco final T24 con sus pantallas completas",
       "board": "M-Organizaciones",
       "props": {},
       "boardActions": [],
@@ -174,19 +2379,564 @@
         "height": 844
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma",
-        "scenario": "marco-barra-inferior: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma",
+        "scenario": "marco-barra-inferior: marco final T24 con sus pantallas completas",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "main",
+        "readyHeading": "Organizaciones",
+        "readyText": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "search": "sin coincidencias"
+            },
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "50"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 50,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "20"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 20,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "query": {
+              "pageSize": "10"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "tenant-3",
+                  "name": "Gamma S.A.",
+                  "slug": "gamma",
+                  "ownerName": "Julio Pérez",
+                  "ownerEmail": "julio@gamma.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-4",
+                  "name": "Épsilon S.R.L.",
+                  "slug": "epsilon",
+                  "ownerName": "Morena Paz",
+                  "ownerEmail": "morena@epsilon.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-26T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "PendingApproval",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-1",
+                  "name": "Grupo Delta",
+                  "slug": "delta",
+                  "ownerName": "Lucía Fernández",
+                  "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+                  "companyCount": 3,
+                  "memberCount": 11,
+                  "createdAtUtc": "2026-01-12T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-5",
+                  "name": "Omega S.A.",
+                  "slug": "omega",
+                  "ownerName": null,
+                  "ownerEmail": "gerencia@omega.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 1,
+                  "createdAtUtc": "2026-09-20T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Active",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-2",
+                  "name": "Beta S.R.L.",
+                  "slug": "beta",
+                  "ownerName": "Beto Ramírez",
+                  "ownerEmail": "beto.ramirez@beta.ejemplo.com",
+                  "companyCount": 1,
+                  "memberCount": 6,
+                  "createdAtUtc": "2026-02-03T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Suspended",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-6",
+                  "name": "Sigma S.A.",
+                  "slug": "sigma",
+                  "ownerName": "Rosa Luna",
+                  "ownerEmail": "rosa@sigma.ejemplo.com",
+                  "companyCount": 0,
+                  "memberCount": 0,
+                  "createdAtUtc": "2026-09-27T15:00:00Z",
+                  "source": "SelfService",
+                  "status": "Provisioning",
+                  "version": 1
+                },
+                {
+                  "id": "tenant-7",
+                  "name": "Kappa S.R.L.",
+                  "slug": "kappa",
+                  "ownerName": "Pablo Ortiz",
+                  "ownerEmail": "pablo@kappa.ejemplo.com",
+                  "companyCount": 2,
+                  "memberCount": 4,
+                  "createdAtUtc": "2026-03-15T15:00:00Z",
+                  "source": "Platform",
+                  "status": "Closed",
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 7,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/filter-counts",
+            "query": {
+              "search": "sin coincidencias"
+            },
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "PendingApproval",
+                  "count": 0
+                },
+                {
+                  "status": "Active",
+                  "count": 0
+                },
+                {
+                  "status": "Suspended",
+                  "count": 0
+                },
+                {
+                  "status": "Provisioning",
+                  "count": 0
+                },
+                {
+                  "status": "Closed",
+                  "count": 0
+                }
+              ],
+              "sources": [
+                {
+                  "source": "SelfService",
+                  "count": 0
+                },
+                {
+                  "source": "Platform",
+                  "count": 0
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 7,
+              "statuses": [
+                {
+                  "status": "PendingApproval",
+                  "count": 2
+                },
+                {
+                  "status": "Active",
+                  "count": 2
+                },
+                {
+                  "status": "Suspended",
+                  "count": 1
+                },
+                {
+                  "status": "Provisioning",
+                  "count": 1
+                },
+                {
+                  "status": "Closed",
+                  "count": 1
+                }
+              ],
+              "sources": [
+                {
+                  "source": "SelfService",
+                  "count": 5
+                },
+                {
+                  "source": "Platform",
+                  "count": 2
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
       "id": "marco-mas-escritorio",
       "pair": "marco-mas",
       "group": "plataforma-marco",
-      "state": "v111: marco-mas: marco real, contenido pendiente T21–T23",
+      "state": "v111: marco-mas: marco final T24 con sus pantallas completas",
       "board": "Config-Plat",
       "props": {},
       "boardActions": [],
@@ -195,19 +2945,43 @@
         "height": 900
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&route=%2Fplataforma%2Fconfiguracion",
-        "scenario": "marco-mas: marco real, contenido pendiente T21–T23",
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fconfiguracion",
+        "scenario": "marco-mas: marco final T24 con sus pantallas completas",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
-        "readySelector": "main"
+        "readySelector": "input[name=\"salesEmail\"]",
+        "readyHeading": "Configuración",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "consumerSignup": "Open",
+              "businessSignup": "RequiresApproval",
+              "maxOwnedOrganizations": 3,
+              "salesEmail": "ventas@ejemplo.com",
+              "supportEmail": "soporte@ejemplo.com",
+              "version": 1
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/settings",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
       "id": "marco-mas-movil",
       "pair": "marco-mas",
       "group": "plataforma-marco",
-      "state": "v111: marco-mas: Más real T20c, contenido pendiente T21–T23",
+      "state": "v111: marco-mas: Más real T20c, marco final T24 con sus pantallas completas",
       "board": "M-Mas-Plat",
       "props": {},
       "boardActions": [],
@@ -217,12 +2991,13 @@
       },
       "app": {
         "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fmas",
-        "scenario": "marco-mas: Más real T20c, contenido pendiente T21–T23",
+        "scenario": "marco-mas: Más real T20c, marco final T24 con sus pantallas completas",
         "actions": [],
         "captureMode": "harness",
         "userFixture": "visual-operator",
         "readySelector": "main",
-        "readyHeading": "Más"
+        "readyHeading": "Más",
+        "responses": []
       }
     },
     {

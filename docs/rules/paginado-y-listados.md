@@ -48,12 +48,14 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 - `src/areas/business/roles/pages/RolesPage.tsx` y `roles/columns.tsx` (E4): `usePagedQuery`, `FilterBar`, `DataTable`, `Pagination`, «Ningún rol coincide con los filtros» y la fila del teléfono
 - `src/areas/platform/tenants/pages/OrganizationsPage.tsx` (E5/T21b): banda con conteos globales y opciones con conteos cruzados; el backend ordena por nombre; fila móvil sin avatar y fecha completa del tablero M-Organizaciones.
 - por cursor: `src/areas/business/audit/pages/AuditPage.tsx` (E7): `useCursorList`, los filtros en la URL y `LoadMore`
+- `src/areas/platform/audit/pages/SecurityAuditPage.tsx` y `src/areas/platform/tenants/tabs/useOrganizationHistory.ts` (E5): filtros en la URL, tandas por cursor opaco y Cargar más sin total.
 
 ## Lo verifica
 - `usePagination.test.tsx` (E0/E1): conserva el estado en la URL y vuelve a la página 1, canoniza página/tamaño inválidos con `replace`, alterna el orden descendente predeterminado y omite `pageSize=10` en la URL.
 - `usePagedQuery.test.tsx` (E7): la URL llega a la consulta, la búsqueda con debounce, la corrección de una página fuera de rango (solo con `items` vacíos y `totalCount > 0`) y las props de `Pagination`; `RolesPage.test.tsx` (E7): al inactivar el único rol de la última página, vuelve a la anterior.
 - `pageSizes.test.ts` (E2): exige concordancia exacta con `PagedRequest.properties.pageSize.enum` del OpenAPI; el repo hermano es obligatorio en local y solo ese chequeo se omite con aviso en CI aislado.
 - Tests de pantalla: sin coincidencias y cambio de página; en el teléfono, la lista y su «+».
+- `OrganizationsPage.test.tsx`, `AccountsPage.test.tsx` y `RecoveriesPage.test.tsx` (E5): banda global, filtros cruzados, búsqueda en URL, vacío/sin coincidencias y 1/50 filas; Recuperaciones no muestra pie con total 0. `SecurityAuditPage.test.tsx` y `OrganizationPage.test.tsx` (E5): cursor, filtros y Cargar más sin total.
 - `src/shared/ui/app/lists.test.tsx` (E5): en el teléfono, filas de lista, filtros en una hoja y «Cargar más».
 - `Pagination.test.tsx` (E7): el pie en 12 y «1 de 1» con una sola fila en la página, en es-AR y en-US; `LoadMore.test.tsx` (E7): en la compu, «Cargar más» es el botón normal.
 - `useCursorList.test.tsx` (E7): las tandas por cursor opaco, sin total; con otros filtros vuelve a la primera tanda y muestra la anterior mientras llega la nueva; lleva su `meta`; y es lo único que usa `useInfiniteQuery`. `AuditPage.test.tsx` (E7): «Cargar más» pide la tanda siguiente con el cursor y los mismos filtros, y un 403 del historial muestra «No tenés permiso».
