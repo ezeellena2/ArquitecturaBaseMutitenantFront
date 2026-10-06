@@ -183,7 +183,7 @@ describe("contratos de Plataforma entre back y front", () => {
     ["PlatformPublicSiteResponse", ["slug", "name", "isPublished", "publishedAtUtc", "publishBlockedAtUtc", "publishBlockedReason", "version"]],
     ["PlatformAccountResponse", ["id", "displayName", "primaryEmail", "kind", "state", "hasPersonalSpace", "organizationCount", "lastSignInAtUtc", "lastSignInMethod", "invitationExpiresAtUtc"]],
     ["PlatformAccountFilterCounts", ["total", "states", "kinds"]],
-    ["PlatformAccountDetailResponse", ["displayName", "kind", "state", "createdAtUtc", "lastSignInAtUtc", "lastSignInMethod", "invitationExpiresAtUtc", "hasPersonalSpace", "deletion", "loginMethods", "organizations", "soleOwnerOrganizations", "operatorPermissions", "operatorVersion", "lastStateChange", "deletedAtUtc"]],
+    ["PlatformAccountDetailResponse", ["displayName", "primaryEmail", "kind", "state", "createdAtUtc", "lastSignInAtUtc", "lastSignInMethod", "invitationExpiresAtUtc", "hasPersonalSpace", "deletion", "loginMethods", "organizations", "soleOwnerOrganizations", "operatorPermissions", "operatorVersion", "lastStateChange", "deletedAtUtc"]],
     ["PlatformAccountLoginMethodResponse", ["type", "maskedValue", "isPrimary", "verifiedAtUtc", "managedByOrganizationName", "canSignIn"]],
     ["PlatformAccountMembershipResponse", ["tenantId", "name", "roleName", "joinedAtUtc", "status", "tenantStatus", "endedAtUtc"]],
     ["PlatformOperatorInvitationResponse", ["id", "expiresAtUtc"]],
@@ -202,6 +202,19 @@ describe("contratos de Plataforma entre back y front", () => {
       expect(openApi.components.schemas[schema].properties).toHaveProperty(field);
       expect(body).toMatch(new RegExp(`\\b${field}\\??:`, "u"));
     }
+  });
+
+  it("T22b la ficha identifica la cuenta con el mismo Email nullable del listado", () => {
+    const detail = openApi.components.schemas.PlatformAccountDetailResponse;
+    const row = openApi.components.schemas.PlatformAccountResponse;
+    expect(detail.properties).toHaveProperty("primaryEmail");
+    expect(detail.properties.primaryEmail).toEqual(row.properties.primaryEmail);
+    expect(detail.properties.primaryEmail).toEqual({ oneOf: [{ type: "null" }, { $ref: "#/components/schemas/Email" }] });
+    expect(openApi.components.schemas.Email).toMatchObject({ type: ["null", "string"] });
+    const body = generated.match(/        PlatformAccountDetailResponse: \{([\s\S]*?)\n        \};/u)?.[1];
+    expect(body).toContain('primaryEmail?: null | components["schemas"]["Email"];');
+    expect(openApi.components.schemas.PlatformAccountLoginMethodResponse.properties).toHaveProperty("maskedValue");
+    expect(openApi.components.schemas.PlatformAccountLoginMethodResponse.properties).not.toHaveProperty("value");
   });
 
   it("T22a la ficha expone evidencia nullable del último estado y la eliminación, sin version de cuenta", () => {

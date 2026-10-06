@@ -10843,11 +10843,12 @@ export interface components {
             scheduledForUtc: string;
             requestedByPlatform: boolean;
         };
-        /** @description Ficha: métodos enmascarados, membresías desde el índice global y permisos si es operador. */
+        /** @description Ficha: correo principal, métodos enmascarados, membresías globales y permisos si es operador. */
         PlatformAccountDetailResponse: {
             /** Format: uuid */
             id: string;
             displayName?: null | string;
+            primaryEmail?: null | components["schemas"]["Email"];
             kind: components["schemas"]["PlatformAccountKind"];
             state: components["schemas"]["PlatformAccountState"];
             /** Format: date-time */
