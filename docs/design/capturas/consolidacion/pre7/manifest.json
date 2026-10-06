@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "registro-correo-escritorio",
+      "pair": "registro-correo",
+      "group": "registro",
+      "state": "Registro: pide el correo",
+      "board": "Registro",
+      "props": {
+        "estado": "Correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "registro-correo-movil",
+      "pair": "registro-correo",
+      "group": "registro",
+      "state": "Registro: pide el correo",
+      "board": "M-Registro",
+      "props": {
+        "estado": "Correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "registro-empresa-correo-escritorio",
+      "pair": "registro-empresa-correo",
+      "group": "registro",
+      "state": "Registro de empresa: pide el correo",
+      "board": "Registro-Empresa",
+      "props": {
+        "estado": "Correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro/empresa",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "registro-empresa-correo-movil",
+      "pair": "registro-empresa-correo",
+      "group": "registro",
+      "state": "Registro de empresa: pide el correo",
+      "board": "M-Registro-Empresa",
+      "props": {
+        "estado": "Correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro/empresa",
+        "readySelector": "h1"
+      }
+    }
+  ]
+}
