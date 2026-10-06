@@ -905,5 +905,10 @@ export function catalog(root) {
     ...b6d3bCases(root),
     ...b6d4aCases(root),
     ...b6d4bCases(root),
-  ];
+  ].map((entry) => {
+    // El catálogo global reúne las dos auditorías; los manifiestos/vivos de cada etapa conservan sus ids.
+    if (entry.group !== "auditoria" || !["auditoria-lista", "auditoria-detalle"].includes(entry.pair)) return entry;
+    return { ...entry, id: entry.id.replace(/^auditoria-/, "auditoria-organizacion-"),
+      pair: entry.pair.replace(/^auditoria-/, "auditoria-organizacion-") };
+  });
 }

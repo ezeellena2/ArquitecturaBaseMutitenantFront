@@ -11,6 +11,7 @@ import { platformAccountRows, platformAccountsCaptureResponses } from "../src/te
 import { platformAccountDetailFixture, platformAccountDetailCaptureResponses } from "../src/test/mocks/platformAccountDetail.ts";
 import { platformRecoveriesCaptureResponses } from "../src/test/mocks/platformRecoveries.ts";
 import { platformLegalCaptureResponses } from "../src/test/mocks/platformLegal.ts";
+import { platformAuditCaptureResponses } from "../src/test/mocks/platformAudit.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const canvas = path.join(root, "docs/design/lienzo");
@@ -190,6 +191,23 @@ function recoveriesApp(entry) {
   return { ...entry.app, path: `/src/test/visualApp.html?as=visual-operator&route=${encodeURIComponent("/plataforma/recuperaciones")}`,
     captureMode: "harness", userFixture: "visual-operator", scenario: `${pair}: lista real T23a`, now: "2026-09-27T20:35:00Z",
     responses: platformRecoveriesCaptureResponses({ empty: pair === "recuperaciones-sin-pedidos" }), actions, readyText, readySelector };
+}
+
+function auditApp(entry) {
+  const actions = [];
+  let readySelector = "main";
+  let readyText = "Reactivó la organización";
+  if (entry.pair === "auditoria-filtrada") {
+    if (entry.viewport.width === 390) actions.push(click("Filtrar la auditoría"), click("Grupo Delta", "radio"));
+    else actions.push(fill("Buscar en la auditoría", "Grupo Delta", "searchbox"));
+    readySelector = entry.viewport.width === 390 ? "main ul > li:only-child" : "main tbody > tr:only-child";
+  } else if (entry.pair === "auditoria-detalle") {
+    actions.push(click(entry.viewport.width === 390 ? "Suspendió la cuenta" : "Ver el detalle: Suspendió la cuenta"));
+    readySelector = '[role="dialog"]'; readyText = "Dirección IP";
+  }
+  return { ...entry.app, path: `/src/test/visualApp.html?as=visual-operator&route=${encodeURIComponent("/plataforma/auditoria")}`,
+    captureMode: "harness", userFixture: "visual-operator", scenario: `${entry.pair}: Auditoría real T23c; resúmenes de API y tanda de 25`,
+    now: "2026-09-27T20:35:00Z", responses: platformAuditCaptureResponses(), actions, readyText, readySelector };
 }
 
 function legalApp(entry) {
@@ -548,6 +566,7 @@ export function buildCases() {
     if (entry.group === "plataforma-cuenta") return { ...entry, app: accountDetailApp(entry) };
     if (entry.group === "plataforma-recuperaciones") return { ...entry, app: recoveriesApp(entry) };
     if (entry.group === "plataforma-legales") return { ...entry, app: legalApp(entry) };
+    if (entry.group === "plataforma-auditoria") return { ...entry, app: auditApp(entry) };
     if (isOrganizationDetailCase(entry)) return { ...entry, app: organizationApp(entry) };
     if (isOrganizationAdministrationCase(entry)) return { ...entry, app: organizationAdministrationApp(entry) };
     if (entry.pair in platformReasons) return { ...entry, app: reasonApp(entry) };

@@ -9,6 +9,46 @@ import { buildCases, canvas, output } from "./capturar-etapa-5.mjs";
 const groups = ["plataforma-marco", "plataforma-organizaciones", "plataforma-organizacion", "plataforma-cuentas",
   "plataforma-cuenta", "plataforma-recuperaciones", "plataforma-legales", "plataforma-auditoria", "plataforma-configuracion", "recuperar"];
 
+test("T23c captura Auditoría real, filtra y abre el detalle en ambos tamaños", () => {
+  const cases = buildCases().filter((entry) => entry.group === "plataforma-auditoria");
+  assert.equal(cases.length, 6);
+  for (const entry of cases) {
+    assert.equal(entry.app.captureMode, "harness", entry.id);
+    assert.equal(new URL(entry.app.path, "http://example.test").searchParams.get("route"), "/plataforma/auditoria");
+    assert.ok(entry.app.responses.some((response) => response.path === "/api/platform/audit/organizations"));
+    if (entry.pair === "auditoria-detalle") {
+      assert.ok(entry.app.actions.some((action) => action.name.endsWith("Suspendió la cuenta")));
+      assert.equal(entry.app.readySelector, '[role="dialog"]');
+    }
+    if (entry.pair === "auditoria-filtrada") {
+      assert.ok(entry.app.actions.some((action) => action.value === "Grupo Delta" || action.role === "radio" && action.name === "Grupo Delta"));
+      assert.match(entry.app.readySelector, /only-child/u);
+    }
+  }
+});
+
+test("T23c usa una tanda real de 25 y resúmenes del productor, con ingresos sin IP", () => {
+  const entry = buildCases().find((item) => item.id === "auditoria-lista-escritorio");
+  const body = entry.app.responses.find((response) => response.path === "/api/platform/audit" && !response.query).body;
+  assert.equal(body.items.length, 25);
+  assert.equal(body.hasMore, true);
+  assert.match(body.nextCursor, /^[A-Za-z0-9_-]{34}$/u);
+  assert.ok(body.items.every((row) => row.type !== "signins" || row.ipAddress === null));
+  assert.ok(!body.items.some((row) => /autenticador|Cuenta bloqueada|Falló el alta|Cambió el alta de/u.test(row.summary)));
+  const filtered = entry.app.responses.find((response) => response.query?.search === "Grupo Delta").body;
+  assert.equal(filtered.items.length, 1);
+  assert.equal(filtered.items[0].summary, "Reactivó la organización");
+  assert.equal(filtered.hasMore, false);
+});
+
+test("T23c el filtro móvil se cierra al elegir, sin pulsar un Cerrar inexistente", () => {
+  const entry = buildCases().find((item) => item.id === "auditoria-filtrada-movil");
+  assert.deepEqual(entry.app.actions, [
+    { type: "click", role: "button", name: "Filtrar la auditoría" },
+    { type: "click", role: "radio", name: "Grupo Delta" },
+  ]);
+});
+
 test("T23b recorre Legales real y conserva la referencia móvil base del editor", () => {
   const cases = buildCases().filter((entry) => entry.group === "plataforma-legales");
   assert.equal(cases.length, 10);

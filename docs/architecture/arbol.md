@@ -444,9 +444,12 @@ src/
 │       │       ├── PublishLegalVersionPage.tsx      ruta propia, fecha civil y textos por cultura habilitada; cambios, salida y confirmación
 │       │       └── PublishLegalVersionPage.test.tsx validación, culturas, publicación, errores, vida y reintentos nativos
 │       ├── audit/                                   /plataforma/auditoria
-│       │   ├── api/securityEvents.ts
-│       │   ├── columns.tsx
-│       │   └── pages/SecurityAuditPage.tsx
+│       │   ├── api/
+│       │   │   ├── securityEvents.ts                 listado por cursor y opciones cruzadas con audit.read
+│       │   │   └── securityEvents.test.ts            filtros, cursor opaco y query de opciones sin paginación ni organización propia
+│       │   └── pages/
+│       │       ├── SecurityAuditPage.tsx             cinco columnas, filtros sin cantidades y detalle con grilla/hoja móvil
+│       │       └── SecurityAuditPage.test.tsx        filtros, cursor, permisos, errores, detalle, idiomas, 390 y axe
 │       └── settings/                                /plataforma/configuracion
 │           ├── api/platformSettings.ts
 │           └── pages/PlatformSettingsPage.tsx       ConsumerSignup, BusinessSignup, límite de organizaciones y días de gracia de la baja
@@ -470,6 +473,7 @@ src/
 │   │   ├── platformAccounts.json                    [E5/T22a] listado, invitación, acciones y errores de cuentas y operadores
 │   │   ├── platformRecoveries.json                  [E5/T23a] pedidos, revisión, resoluciones y errores
 │   │   ├── platformLegal.json                       [E5/T23b] vigencia actual/futura, editor y confirmación
+│   │   ├── platformAudit.json                       [E5/T23c] filtros, columnas y detalle de la auditoría de seguridad
 │   │   ├── users.json                               [E6]
 │   │   ├── companies.json                           [E6]
 │   │   ├── settings.json                            [E6]
@@ -798,7 +802,8 @@ src/
     │   ├── platformAccounts.ts                      once cuentas literales v111, fechas UTC y ficha mínima para el bloqueo real de baja en el listado
     │   ├── platformAccountDetail.ts                 ficha Cuenta-Plat: estados, métodos, roles globales, historial y permisos
     │   ├── platformRecoveries.ts                    pedidos v111 tapados y nuevo correo disponible hasta E8
-    │   └── platformLegal.ts                         versiones legales vigentes y futuras v111, fechas UTC y POST201
+    │   ├── platformLegal.ts                         versiones legales vigentes y futuras v111, fechas UTC y POST201
+    │   └── platformAudit.ts                         resúmenes del productor, ingresos sin IP, 25 filas y cursor real
     ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
     └── utils/
         ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]; devuelve el QueryClient, para una relectura de fondo [E7]

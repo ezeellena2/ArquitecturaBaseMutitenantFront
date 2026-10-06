@@ -1,0 +1,11 @@
+{
+  "title": "Auditoría",
+  "details": "Ver detalle",
+  "openDetails": "Ver el detalle: {{summary}}",
+  "empty": "No hay movimientos para mostrar",
+  "emptyFiltered": "Nada coincide con los filtros",
+  "columns": { "when": "Fecha y hora", "summary": "Qué pasó", "target": "Sobre", "actor": "Quién", "reason": "Motivo", "ip": "Dirección IP" },
+  "filters": { "label": "Filtrar la auditoría", "search": "Buscar en la auditoría", "period": "Período", "periodMenu": "Filtrar por período", "type": "Tipo: todos", "typeMenu": "Filtrar por tipo de evento", "allTypes": "Todos", "organization": "Organización: todas", "organizationMenu": "Filtrar por organización", "allOrganizations": "Todas" },
+  "period": { "today": "Hoy", "days7": "Últimos 7 días", "days30": "Últimos 30 días", "all": "Todo" },
+  "types": { "signins": "Ingresos", "organizations": "Organizaciones", "accounts": "Cuentas", "operators": "Operadores", "settings": "Configuración" }
+}

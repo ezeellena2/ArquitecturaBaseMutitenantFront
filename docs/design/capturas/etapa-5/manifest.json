@@ -67466,9 +67466,490 @@
       },
       "boardReadyText": "Auditoría",
       "app": {
-        "path": "/plataforma/auditoria",
-        "scenario": "auditoria-lista",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fauditoria",
+        "scenario": "auditoria-lista: Auditoría real T23c; resúmenes de API y tanda de 25",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "search": "Grupo Delta"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "tenantId": "d0000000-0000-4000-8000-000000000001"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "after": "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001020",
+                  "occurredAtUtc": "2026-09-18T14:00:00Z"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000000001",
+                  "occurredAtUtc": "2026-09-27T13:55:00Z"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000002",
+                  "occurredAtUtc": "2026-09-27T13:20:00Z",
+                  "type": "signins",
+                  "action": "SignInFailed",
+                  "summary": "No pudo ingresar: El código no es válido.",
+                  "target": "ma•••@gmail.com",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000002",
+                  "actor": "ma•••@gmail.com",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000003",
+                  "occurredAtUtc": "2026-09-27T12:55:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationProvisioningRetried",
+                  "summary": "Reintentó el alta de la organización",
+                  "target": "Sigma S.A.",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000002",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Reintento del alta.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000004",
+                  "occurredAtUtc": "2026-09-26T20:30:00Z",
+                  "type": "accounts",
+                  "action": "AccountSuspended",
+                  "summary": "Suspendió la cuenta",
+                  "target": "Ana Gómez",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000004",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Denuncia de uso indebido.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000005",
+                  "occurredAtUtc": "2026-09-22T15:00:00Z",
+                  "type": "settings",
+                  "action": "PlatformSettingsChanged",
+                  "summary": "Cambió la configuración de la plataforma",
+                  "target": "Plataforma",
+                  "targetTenantId": null,
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Muchas altas de prueba.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001001",
+                  "occurredAtUtc": "2026-09-19T14:00:19Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001002",
+                  "occurredAtUtc": "2026-09-19T14:00:18Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001003",
+                  "occurredAtUtc": "2026-09-19T14:00:17Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001004",
+                  "occurredAtUtc": "2026-09-19T14:00:16Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001005",
+                  "occurredAtUtc": "2026-09-19T14:00:15Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001006",
+                  "occurredAtUtc": "2026-09-19T14:00:14Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001007",
+                  "occurredAtUtc": "2026-09-19T14:00:13Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001008",
+                  "occurredAtUtc": "2026-09-19T14:00:12Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001009",
+                  "occurredAtUtc": "2026-09-19T14:00:11Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001010",
+                  "occurredAtUtc": "2026-09-19T14:00:10Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001011",
+                  "occurredAtUtc": "2026-09-19T14:00:09Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001012",
+                  "occurredAtUtc": "2026-09-19T14:00:08Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001013",
+                  "occurredAtUtc": "2026-09-19T14:00:07Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001014",
+                  "occurredAtUtc": "2026-09-19T14:00:06Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001015",
+                  "occurredAtUtc": "2026-09-19T14:00:05Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001016",
+                  "occurredAtUtc": "2026-09-19T14:00:04Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001017",
+                  "occurredAtUtc": "2026-09-19T14:00:03Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001018",
+                  "occurredAtUtc": "2026-09-19T14:00:02Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001019",
+                  "occurredAtUtc": "2026-09-19T14:00:01Z"
+                }
+              ],
+              "nextCursor": "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ",
+              "hasMore": true
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit/organizations",
+            "query": {
+              "search": "Grupo Delta"
+            },
+            "status": 200,
+            "body": [
+              {
+                "id": "d0000000-0000-4000-8000-000000000001",
+                "name": "Grupo Delta"
+              }
+            ]
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit/organizations",
+            "status": 200,
+            "body": [
+              {
+                "id": "d0000000-0000-4000-8000-000000000001",
+                "name": "Grupo Delta"
+              },
+              {
+                "id": "d0000000-0000-4000-8000-000000000002",
+                "name": "Sigma S.A."
+              }
+            ]
+          }
+        ],
+        "readyText": "Reactivó la organización",
+        "readySelector": "main"
       }
     },
     {
@@ -67487,9 +67968,490 @@
       },
       "boardReadyText": "Auditoría",
       "app": {
-        "path": "/plataforma/auditoria",
-        "scenario": "auditoria-lista",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fauditoria",
+        "scenario": "auditoria-lista: Auditoría real T23c; resúmenes de API y tanda de 25",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "search": "Grupo Delta"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "tenantId": "d0000000-0000-4000-8000-000000000001"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "after": "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001020",
+                  "occurredAtUtc": "2026-09-18T14:00:00Z"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000000001",
+                  "occurredAtUtc": "2026-09-27T13:55:00Z"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000002",
+                  "occurredAtUtc": "2026-09-27T13:20:00Z",
+                  "type": "signins",
+                  "action": "SignInFailed",
+                  "summary": "No pudo ingresar: El código no es válido.",
+                  "target": "ma•••@gmail.com",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000002",
+                  "actor": "ma•••@gmail.com",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000003",
+                  "occurredAtUtc": "2026-09-27T12:55:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationProvisioningRetried",
+                  "summary": "Reintentó el alta de la organización",
+                  "target": "Sigma S.A.",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000002",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Reintento del alta.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000004",
+                  "occurredAtUtc": "2026-09-26T20:30:00Z",
+                  "type": "accounts",
+                  "action": "AccountSuspended",
+                  "summary": "Suspendió la cuenta",
+                  "target": "Ana Gómez",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000004",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Denuncia de uso indebido.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000005",
+                  "occurredAtUtc": "2026-09-22T15:00:00Z",
+                  "type": "settings",
+                  "action": "PlatformSettingsChanged",
+                  "summary": "Cambió la configuración de la plataforma",
+                  "target": "Plataforma",
+                  "targetTenantId": null,
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Muchas altas de prueba.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001001",
+                  "occurredAtUtc": "2026-09-19T14:00:19Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001002",
+                  "occurredAtUtc": "2026-09-19T14:00:18Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001003",
+                  "occurredAtUtc": "2026-09-19T14:00:17Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001004",
+                  "occurredAtUtc": "2026-09-19T14:00:16Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001005",
+                  "occurredAtUtc": "2026-09-19T14:00:15Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001006",
+                  "occurredAtUtc": "2026-09-19T14:00:14Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001007",
+                  "occurredAtUtc": "2026-09-19T14:00:13Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001008",
+                  "occurredAtUtc": "2026-09-19T14:00:12Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001009",
+                  "occurredAtUtc": "2026-09-19T14:00:11Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001010",
+                  "occurredAtUtc": "2026-09-19T14:00:10Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001011",
+                  "occurredAtUtc": "2026-09-19T14:00:09Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001012",
+                  "occurredAtUtc": "2026-09-19T14:00:08Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001013",
+                  "occurredAtUtc": "2026-09-19T14:00:07Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001014",
+                  "occurredAtUtc": "2026-09-19T14:00:06Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001015",
+                  "occurredAtUtc": "2026-09-19T14:00:05Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001016",
+                  "occurredAtUtc": "2026-09-19T14:00:04Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001017",
+                  "occurredAtUtc": "2026-09-19T14:00:03Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001018",
+                  "occurredAtUtc": "2026-09-19T14:00:02Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001019",
+                  "occurredAtUtc": "2026-09-19T14:00:01Z"
+                }
+              ],
+              "nextCursor": "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ",
+              "hasMore": true
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit/organizations",
+            "query": {
+              "search": "Grupo Delta"
+            },
+            "status": 200,
+            "body": [
+              {
+                "id": "d0000000-0000-4000-8000-000000000001",
+                "name": "Grupo Delta"
+              }
+            ]
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit/organizations",
+            "status": 200,
+            "body": [
+              {
+                "id": "d0000000-0000-4000-8000-000000000001",
+                "name": "Grupo Delta"
+              },
+              {
+                "id": "d0000000-0000-4000-8000-000000000002",
+                "name": "Sigma S.A."
+              }
+            ]
+          }
+        ],
+        "readyText": "Reactivó la organización",
+        "readySelector": "main"
       }
     },
     {
@@ -67515,9 +68477,497 @@
       },
       "boardReadyText": "Reactivó la organización",
       "app": {
-        "path": "/plataforma/auditoria",
-        "scenario": "auditoria-filtrada",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fauditoria",
+        "scenario": "auditoria-filtrada: Auditoría real T23c; resúmenes de API y tanda de 25",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "searchbox",
+            "name": "Buscar en la auditoría",
+            "value": "Grupo Delta"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "search": "Grupo Delta"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "tenantId": "d0000000-0000-4000-8000-000000000001"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "after": "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001020",
+                  "occurredAtUtc": "2026-09-18T14:00:00Z"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000000001",
+                  "occurredAtUtc": "2026-09-27T13:55:00Z"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000002",
+                  "occurredAtUtc": "2026-09-27T13:20:00Z",
+                  "type": "signins",
+                  "action": "SignInFailed",
+                  "summary": "No pudo ingresar: El código no es válido.",
+                  "target": "ma•••@gmail.com",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000002",
+                  "actor": "ma•••@gmail.com",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000003",
+                  "occurredAtUtc": "2026-09-27T12:55:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationProvisioningRetried",
+                  "summary": "Reintentó el alta de la organización",
+                  "target": "Sigma S.A.",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000002",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Reintento del alta.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000004",
+                  "occurredAtUtc": "2026-09-26T20:30:00Z",
+                  "type": "accounts",
+                  "action": "AccountSuspended",
+                  "summary": "Suspendió la cuenta",
+                  "target": "Ana Gómez",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000004",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Denuncia de uso indebido.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000005",
+                  "occurredAtUtc": "2026-09-22T15:00:00Z",
+                  "type": "settings",
+                  "action": "PlatformSettingsChanged",
+                  "summary": "Cambió la configuración de la plataforma",
+                  "target": "Plataforma",
+                  "targetTenantId": null,
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Muchas altas de prueba.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001001",
+                  "occurredAtUtc": "2026-09-19T14:00:19Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001002",
+                  "occurredAtUtc": "2026-09-19T14:00:18Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001003",
+                  "occurredAtUtc": "2026-09-19T14:00:17Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001004",
+                  "occurredAtUtc": "2026-09-19T14:00:16Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001005",
+                  "occurredAtUtc": "2026-09-19T14:00:15Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001006",
+                  "occurredAtUtc": "2026-09-19T14:00:14Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001007",
+                  "occurredAtUtc": "2026-09-19T14:00:13Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001008",
+                  "occurredAtUtc": "2026-09-19T14:00:12Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001009",
+                  "occurredAtUtc": "2026-09-19T14:00:11Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001010",
+                  "occurredAtUtc": "2026-09-19T14:00:10Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001011",
+                  "occurredAtUtc": "2026-09-19T14:00:09Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001012",
+                  "occurredAtUtc": "2026-09-19T14:00:08Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001013",
+                  "occurredAtUtc": "2026-09-19T14:00:07Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001014",
+                  "occurredAtUtc": "2026-09-19T14:00:06Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001015",
+                  "occurredAtUtc": "2026-09-19T14:00:05Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001016",
+                  "occurredAtUtc": "2026-09-19T14:00:04Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001017",
+                  "occurredAtUtc": "2026-09-19T14:00:03Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001018",
+                  "occurredAtUtc": "2026-09-19T14:00:02Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001019",
+                  "occurredAtUtc": "2026-09-19T14:00:01Z"
+                }
+              ],
+              "nextCursor": "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ",
+              "hasMore": true
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit/organizations",
+            "query": {
+              "search": "Grupo Delta"
+            },
+            "status": 200,
+            "body": [
+              {
+                "id": "d0000000-0000-4000-8000-000000000001",
+                "name": "Grupo Delta"
+              }
+            ]
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit/organizations",
+            "status": 200,
+            "body": [
+              {
+                "id": "d0000000-0000-4000-8000-000000000001",
+                "name": "Grupo Delta"
+              },
+              {
+                "id": "d0000000-0000-4000-8000-000000000002",
+                "name": "Sigma S.A."
+              }
+            ]
+          }
+        ],
+        "readyText": "Reactivó la organización",
+        "readySelector": "main tbody > tr:only-child"
       }
     },
     {
@@ -67536,9 +68986,501 @@
         "note": "M-Auditoria-Plat v111 solo dibuja la referencia base; no simula filtros. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/auditoria",
-        "scenario": "auditoria-filtrada",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fauditoria",
+        "scenario": "auditoria-filtrada: Auditoría real T23c; resúmenes de API y tanda de 25",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Filtrar la auditoría"
+          },
+          {
+            "type": "click",
+            "role": "radio",
+            "name": "Grupo Delta"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "search": "Grupo Delta"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "tenantId": "d0000000-0000-4000-8000-000000000001"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "after": "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001020",
+                  "occurredAtUtc": "2026-09-18T14:00:00Z"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000000001",
+                  "occurredAtUtc": "2026-09-27T13:55:00Z"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000002",
+                  "occurredAtUtc": "2026-09-27T13:20:00Z",
+                  "type": "signins",
+                  "action": "SignInFailed",
+                  "summary": "No pudo ingresar: El código no es válido.",
+                  "target": "ma•••@gmail.com",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000002",
+                  "actor": "ma•••@gmail.com",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000003",
+                  "occurredAtUtc": "2026-09-27T12:55:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationProvisioningRetried",
+                  "summary": "Reintentó el alta de la organización",
+                  "target": "Sigma S.A.",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000002",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Reintento del alta.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000004",
+                  "occurredAtUtc": "2026-09-26T20:30:00Z",
+                  "type": "accounts",
+                  "action": "AccountSuspended",
+                  "summary": "Suspendió la cuenta",
+                  "target": "Ana Gómez",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000004",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Denuncia de uso indebido.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000005",
+                  "occurredAtUtc": "2026-09-22T15:00:00Z",
+                  "type": "settings",
+                  "action": "PlatformSettingsChanged",
+                  "summary": "Cambió la configuración de la plataforma",
+                  "target": "Plataforma",
+                  "targetTenantId": null,
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Muchas altas de prueba.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001001",
+                  "occurredAtUtc": "2026-09-19T14:00:19Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001002",
+                  "occurredAtUtc": "2026-09-19T14:00:18Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001003",
+                  "occurredAtUtc": "2026-09-19T14:00:17Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001004",
+                  "occurredAtUtc": "2026-09-19T14:00:16Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001005",
+                  "occurredAtUtc": "2026-09-19T14:00:15Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001006",
+                  "occurredAtUtc": "2026-09-19T14:00:14Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001007",
+                  "occurredAtUtc": "2026-09-19T14:00:13Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001008",
+                  "occurredAtUtc": "2026-09-19T14:00:12Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001009",
+                  "occurredAtUtc": "2026-09-19T14:00:11Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001010",
+                  "occurredAtUtc": "2026-09-19T14:00:10Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001011",
+                  "occurredAtUtc": "2026-09-19T14:00:09Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001012",
+                  "occurredAtUtc": "2026-09-19T14:00:08Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001013",
+                  "occurredAtUtc": "2026-09-19T14:00:07Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001014",
+                  "occurredAtUtc": "2026-09-19T14:00:06Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001015",
+                  "occurredAtUtc": "2026-09-19T14:00:05Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001016",
+                  "occurredAtUtc": "2026-09-19T14:00:04Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001017",
+                  "occurredAtUtc": "2026-09-19T14:00:03Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001018",
+                  "occurredAtUtc": "2026-09-19T14:00:02Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001019",
+                  "occurredAtUtc": "2026-09-19T14:00:01Z"
+                }
+              ],
+              "nextCursor": "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ",
+              "hasMore": true
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit/organizations",
+            "query": {
+              "search": "Grupo Delta"
+            },
+            "status": 200,
+            "body": [
+              {
+                "id": "d0000000-0000-4000-8000-000000000001",
+                "name": "Grupo Delta"
+              }
+            ]
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit/organizations",
+            "status": 200,
+            "body": [
+              {
+                "id": "d0000000-0000-4000-8000-000000000001",
+                "name": "Grupo Delta"
+              },
+              {
+                "id": "d0000000-0000-4000-8000-000000000002",
+                "name": "Sigma S.A."
+              }
+            ]
+          }
+        ],
+        "readyText": "Reactivó la organización",
+        "readySelector": "main ul > li:only-child"
       }
     },
     {
@@ -67563,9 +69505,496 @@
       },
       "boardReadyText": "Dirección IP",
       "app": {
-        "path": "/plataforma/auditoria",
-        "scenario": "auditoria-detalle",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fauditoria",
+        "scenario": "auditoria-detalle: Auditoría real T23c; resúmenes de API y tanda de 25",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Ver el detalle: Suspendió la cuenta"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "search": "Grupo Delta"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "tenantId": "d0000000-0000-4000-8000-000000000001"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "after": "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001020",
+                  "occurredAtUtc": "2026-09-18T14:00:00Z"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000000001",
+                  "occurredAtUtc": "2026-09-27T13:55:00Z"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000002",
+                  "occurredAtUtc": "2026-09-27T13:20:00Z",
+                  "type": "signins",
+                  "action": "SignInFailed",
+                  "summary": "No pudo ingresar: El código no es válido.",
+                  "target": "ma•••@gmail.com",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000002",
+                  "actor": "ma•••@gmail.com",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000003",
+                  "occurredAtUtc": "2026-09-27T12:55:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationProvisioningRetried",
+                  "summary": "Reintentó el alta de la organización",
+                  "target": "Sigma S.A.",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000002",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Reintento del alta.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000004",
+                  "occurredAtUtc": "2026-09-26T20:30:00Z",
+                  "type": "accounts",
+                  "action": "AccountSuspended",
+                  "summary": "Suspendió la cuenta",
+                  "target": "Ana Gómez",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000004",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Denuncia de uso indebido.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000005",
+                  "occurredAtUtc": "2026-09-22T15:00:00Z",
+                  "type": "settings",
+                  "action": "PlatformSettingsChanged",
+                  "summary": "Cambió la configuración de la plataforma",
+                  "target": "Plataforma",
+                  "targetTenantId": null,
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Muchas altas de prueba.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001001",
+                  "occurredAtUtc": "2026-09-19T14:00:19Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001002",
+                  "occurredAtUtc": "2026-09-19T14:00:18Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001003",
+                  "occurredAtUtc": "2026-09-19T14:00:17Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001004",
+                  "occurredAtUtc": "2026-09-19T14:00:16Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001005",
+                  "occurredAtUtc": "2026-09-19T14:00:15Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001006",
+                  "occurredAtUtc": "2026-09-19T14:00:14Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001007",
+                  "occurredAtUtc": "2026-09-19T14:00:13Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001008",
+                  "occurredAtUtc": "2026-09-19T14:00:12Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001009",
+                  "occurredAtUtc": "2026-09-19T14:00:11Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001010",
+                  "occurredAtUtc": "2026-09-19T14:00:10Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001011",
+                  "occurredAtUtc": "2026-09-19T14:00:09Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001012",
+                  "occurredAtUtc": "2026-09-19T14:00:08Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001013",
+                  "occurredAtUtc": "2026-09-19T14:00:07Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001014",
+                  "occurredAtUtc": "2026-09-19T14:00:06Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001015",
+                  "occurredAtUtc": "2026-09-19T14:00:05Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001016",
+                  "occurredAtUtc": "2026-09-19T14:00:04Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001017",
+                  "occurredAtUtc": "2026-09-19T14:00:03Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001018",
+                  "occurredAtUtc": "2026-09-19T14:00:02Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001019",
+                  "occurredAtUtc": "2026-09-19T14:00:01Z"
+                }
+              ],
+              "nextCursor": "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ",
+              "hasMore": true
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit/organizations",
+            "query": {
+              "search": "Grupo Delta"
+            },
+            "status": 200,
+            "body": [
+              {
+                "id": "d0000000-0000-4000-8000-000000000001",
+                "name": "Grupo Delta"
+              }
+            ]
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit/organizations",
+            "status": 200,
+            "body": [
+              {
+                "id": "d0000000-0000-4000-8000-000000000001",
+                "name": "Grupo Delta"
+              },
+              {
+                "id": "d0000000-0000-4000-8000-000000000002",
+                "name": "Sigma S.A."
+              }
+            ]
+          }
+        ],
+        "readyText": "Dirección IP",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -67584,9 +70013,496 @@
       },
       "boardReadyText": "Dirección IP",
       "app": {
-        "path": "/plataforma/auditoria",
-        "scenario": "auditoria-detalle",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fauditoria",
+        "scenario": "auditoria-detalle: Auditoría real T23c; resúmenes de API y tanda de 25",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspendió la cuenta"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "search": "Grupo Delta"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "tenantId": "d0000000-0000-4000-8000-000000000001"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "after": "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001020",
+                  "occurredAtUtc": "2026-09-18T14:00:00Z"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000000001",
+                  "occurredAtUtc": "2026-09-27T13:55:00Z"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000002",
+                  "occurredAtUtc": "2026-09-27T13:20:00Z",
+                  "type": "signins",
+                  "action": "SignInFailed",
+                  "summary": "No pudo ingresar: El código no es válido.",
+                  "target": "ma•••@gmail.com",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000002",
+                  "actor": "ma•••@gmail.com",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000003",
+                  "occurredAtUtc": "2026-09-27T12:55:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationProvisioningRetried",
+                  "summary": "Reintentó el alta de la organización",
+                  "target": "Sigma S.A.",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000002",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Reintento del alta.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000004",
+                  "occurredAtUtc": "2026-09-26T20:30:00Z",
+                  "type": "accounts",
+                  "action": "AccountSuspended",
+                  "summary": "Suspendió la cuenta",
+                  "target": "Ana Gómez",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000004",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Denuncia de uso indebido.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000005",
+                  "occurredAtUtc": "2026-09-22T15:00:00Z",
+                  "type": "settings",
+                  "action": "PlatformSettingsChanged",
+                  "summary": "Cambió la configuración de la plataforma",
+                  "target": "Plataforma",
+                  "targetTenantId": null,
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Muchas altas de prueba.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "id": "a0000000-0000-4000-8000-000000000006",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationReactivated",
+                  "summary": "Reactivó la organización",
+                  "target": "Grupo Delta",
+                  "targetTenantId": "d0000000-0000-4000-8000-000000000001",
+                  "targetAccountId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "ipAddress": "181.45.178.•••"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001001",
+                  "occurredAtUtc": "2026-09-19T14:00:19Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001002",
+                  "occurredAtUtc": "2026-09-19T14:00:18Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001003",
+                  "occurredAtUtc": "2026-09-19T14:00:17Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001004",
+                  "occurredAtUtc": "2026-09-19T14:00:16Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001005",
+                  "occurredAtUtc": "2026-09-19T14:00:15Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001006",
+                  "occurredAtUtc": "2026-09-19T14:00:14Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001007",
+                  "occurredAtUtc": "2026-09-19T14:00:13Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001008",
+                  "occurredAtUtc": "2026-09-19T14:00:12Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001009",
+                  "occurredAtUtc": "2026-09-19T14:00:11Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001010",
+                  "occurredAtUtc": "2026-09-19T14:00:10Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001011",
+                  "occurredAtUtc": "2026-09-19T14:00:09Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001012",
+                  "occurredAtUtc": "2026-09-19T14:00:08Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001013",
+                  "occurredAtUtc": "2026-09-19T14:00:07Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001014",
+                  "occurredAtUtc": "2026-09-19T14:00:06Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001015",
+                  "occurredAtUtc": "2026-09-19T14:00:05Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001016",
+                  "occurredAtUtc": "2026-09-19T14:00:04Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001017",
+                  "occurredAtUtc": "2026-09-19T14:00:03Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001018",
+                  "occurredAtUtc": "2026-09-19T14:00:02Z"
+                },
+                {
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Martín Sosa",
+                  "targetTenantId": null,
+                  "targetAccountId": "b0000000-0000-4000-8000-000000000001",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null,
+                  "id": "a0000000-0000-4000-8000-000000001019",
+                  "occurredAtUtc": "2026-09-19T14:00:01Z"
+                }
+              ],
+              "nextCursor": "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ",
+              "hasMore": true
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit/organizations",
+            "query": {
+              "search": "Grupo Delta"
+            },
+            "status": 200,
+            "body": [
+              {
+                "id": "d0000000-0000-4000-8000-000000000001",
+                "name": "Grupo Delta"
+              }
+            ]
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit/organizations",
+            "status": 200,
+            "body": [
+              {
+                "id": "d0000000-0000-4000-8000-000000000001",
+                "name": "Grupo Delta"
+              },
+              {
+                "id": "d0000000-0000-4000-8000-000000000002",
+                "name": "Sigma S.A."
+              }
+            ]
+          }
+        ],
+        "readyText": "Dirección IP",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {

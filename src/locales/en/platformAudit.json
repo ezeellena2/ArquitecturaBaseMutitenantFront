@@ -1,0 +1,11 @@
+{
+  "title": "Audit",
+  "details": "View details",
+  "openDetails": "View details: {{summary}}",
+  "empty": "No activity to display",
+  "emptyFiltered": "Nothing matches the filters",
+  "columns": { "when": "Date and time", "summary": "What happened", "target": "About", "actor": "Who", "reason": "Reason", "ip": "IP address" },
+  "filters": { "label": "Filter the audit log", "search": "Search the audit log", "period": "Period", "periodMenu": "Filter by period", "type": "Type: all", "typeMenu": "Filter by event type", "allTypes": "All", "organization": "Organization: all", "organizationMenu": "Filter by organization", "allOrganizations": "All" },
+  "period": { "today": "Today", "days7": "Last 7 days", "days30": "Last 30 days", "all": "All time" },
+  "types": { "signins": "Sign-ins", "organizations": "Organizations", "accounts": "Accounts", "operators": "Operators", "settings": "Settings" }
+}

@@ -100,6 +100,17 @@ test("el relevamiento ejecuta las acciones por rol del tablero de Recuperar v111
   }
 });
 
+test("T23c distingue Auditoría de organización y Plataforma sin cambiar los ids de la etapa", () => {
+  const cases = buildCases();
+  for (const [group, prefix, board] of [["auditoria", "auditoria-organizacion", "Auditoria-Org"], ["plataforma-auditoria", "auditoria", "Auditoria-Plat"]]) {
+    for (const kind of ["lista", "detalle"]) {
+      const entry = cases.find((item) => item.id === `${prefix}-${kind}-escritorio`);
+      assert.equal(entry?.group, group);
+      assert.equal(entry?.board, board);
+    }
+  }
+});
+
 test("el relevamiento tiene cada estado a 1440 y a 390, contra tableros vigentes y con sus datos de prueba", () => {
   const cases = buildCases();
   const file = path.join(mkdtempSync(path.join(os.tmpdir(), "relevamiento-")), "manifest.json");
@@ -120,7 +131,7 @@ test("el relevamiento tiene cada estado a 1440 y a 390, contra tableros vigentes
   }
   const pairs = new Set(cases.map((entry) => entry.pair));
   assert.equal(cases.length, pairs.size * 2);
-  for (const pair of ["landing", "ingreso-persona-correo", "registro-empresa-lista", "invitacion-sin-cuenta", "cuenta", "roles-lista", "usuarios-lista", "empresas-lista", "configuracion-verificada", "pagina-publica-publicada", "auditoria-lista"]) {
+  for (const pair of ["landing", "ingreso-persona-correo", "registro-empresa-lista", "invitacion-sin-cuenta", "cuenta", "roles-lista", "usuarios-lista", "empresas-lista", "configuracion-verificada", "pagina-publica-publicada", "auditoria-organizacion-lista"]) {
     assert.ok(pairs.has(pair), `falta el par ${pair}`);
   }
 });
