@@ -60521,9 +60521,371 @@
       },
       "boardReadyText": "Pedidos",
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-pedidos",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-pedidos: lista real T23a",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Pablo Ortiz",
+        "readySelector": "main"
       }
     },
     {
@@ -60542,9 +60904,371 @@
       },
       "boardReadyText": "Recuperaciones",
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-pedidos",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-pedidos: lista real T23a",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Pablo Ortiz",
+        "readySelector": "main"
       }
     },
     {
@@ -60565,9 +61289,382 @@
       },
       "boardReadyText": "Revisar el pedido",
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-revisar-un-pedido",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-revisar-un-pedido: lista real T23a",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Pablo Ortiz"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Revisar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Revisar el pedido",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -60586,9 +61683,382 @@
         "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-revisar-un-pedido",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-revisar-un-pedido: lista real T23a",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Pablo Ortiz"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Revisar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Revisar el pedido",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -60609,9 +62079,178 @@
       },
       "boardReadyText": "Sin pedidos",
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-sin-pedidos",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-sin-pedidos: lista real T23a",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 0
+                },
+                {
+                  "status": "Approved",
+                  "count": 0
+                },
+                {
+                  "status": "Rejected",
+                  "count": 0
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 0
+                },
+                {
+                  "status": "Approved",
+                  "count": 0
+                },
+                {
+                  "status": "Rejected",
+                  "count": 0
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 0
+                },
+                {
+                  "status": "Approved",
+                  "count": 0
+                },
+                {
+                  "status": "Rejected",
+                  "count": 0
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 0
+                },
+                {
+                  "status": "Approved",
+                  "count": 0
+                },
+                {
+                  "status": "Rejected",
+                  "count": 0
+                }
+              ]
+            }
+          }
+        ],
+        "readyText": "No hay pedidos de recuperación",
+        "readySelector": "main"
       }
     },
     {
@@ -60630,9 +62269,178 @@
         "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-sin-pedidos",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-sin-pedidos: lista real T23a",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 0
+                },
+                {
+                  "status": "Approved",
+                  "count": 0
+                },
+                {
+                  "status": "Rejected",
+                  "count": 0
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 0
+                },
+                {
+                  "status": "Approved",
+                  "count": 0
+                },
+                {
+                  "status": "Rejected",
+                  "count": 0
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 0
+                },
+                {
+                  "status": "Approved",
+                  "count": 0
+                },
+                {
+                  "status": "Rejected",
+                  "count": 0
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 0,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 0
+                },
+                {
+                  "status": "Approved",
+                  "count": 0
+                },
+                {
+                  "status": "Rejected",
+                  "count": 0
+                }
+              ]
+            }
+          }
+        ],
+        "readyText": "No hay pedidos de recuperación",
+        "readySelector": "main"
       }
     },
     {
@@ -60662,9 +62470,382 @@
       },
       "boardReadyText": "Confirmó sus datos por videollamada.",
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-resuelto-aprobado",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-resuelto-aprobado: lista real T23a",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Rosa Luna"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Ver detalle"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Confirmó sus datos por videollamada.",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -60683,9 +62864,382 @@
         "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-resuelto-aprobado",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-resuelto-aprobado: lista real T23a",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Rosa Luna"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Ver detalle"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Confirmó sus datos por videollamada.",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -60715,9 +63269,382 @@
       },
       "boardReadyText": "No pudo confirmar que la cuenta es suya.",
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-resuelto-rechazado",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-resuelto-rechazado: lista real T23a",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Carla Núñez"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Ver detalle"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "No pudo confirmar que la cuenta es suya.",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -60736,9 +63663,382 @@
         "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-resuelto-rechazado",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-resuelto-rechazado: lista real T23a",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Carla Núñez"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Ver detalle"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "No pudo confirmar que la cuenta es suya.",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -60768,9 +64068,382 @@
       },
       "boardReadyText": "Ninguna",
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-sin-cuenta",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-sin-cuenta: lista real T23a",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Sin cuenta"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Revisar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Ninguna",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -60789,9 +64462,382 @@
         "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-sin-cuenta",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-sin-cuenta: lista real T23a",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Sin cuenta"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Revisar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Ninguna",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -60818,9 +64864,387 @@
       },
       "boardReadyText": "Escribí el motivo.",
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-error-aprobar",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-error-aprobar: lista real T23a",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Pablo Ortiz"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Revisar"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Aprobar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Escribí el motivo.",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -60839,9 +65263,387 @@
         "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-error-aprobar",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-error-aprobar: lista real T23a",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Pablo Ortiz"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Revisar"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Aprobar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Escribí el motivo.",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -60868,9 +65670,387 @@
       },
       "boardReadyText": "Escribí el motivo.",
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-error-rechazar",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-error-rechazar: lista real T23a",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Pablo Ortiz"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Revisar"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Rechazar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Escribí el motivo.",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {
@@ -60889,9 +66069,387 @@
         "note": "M-Recuperaciones v111 solo dibuja la referencia base; solo dibuja la lista, sin detalle, resolución ni errores. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/recuperaciones",
-        "scenario": "recuperaciones-error-rechazar",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Frecuperaciones",
+        "scenario": "recuperaciones-error-rechazar: lista real T23a",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Pablo Ortiz"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Revisar"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Rechazar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 2,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Pending"
+            },
+            "status": 200,
+            "body": {
+              "total": 2,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Approved"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 1,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "query": {
+              "status": "Rejected"
+            },
+            "status": 200,
+            "body": {
+              "total": 1,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/paged",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "r1",
+                  "createdAtUtc": "2026-09-27T13:20:00Z",
+                  "accountId": "account-pablo",
+                  "accountName": "Pablo Ortiz",
+                  "previousMethodType": "Email",
+                  "previousMethod": "pa•••@kappa.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "pa•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r2",
+                  "createdAtUtc": "2026-09-26T21:05:00Z",
+                  "accountId": null,
+                  "accountName": null,
+                  "previousMethodType": "Email",
+                  "previousMethod": "ma•••@omega.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ma•••@gmail.com",
+                  "status": "Pending",
+                  "decidedAtUtc": null,
+                  "decidedBy": null,
+                  "reason": null,
+                  "version": 1
+                },
+                {
+                  "id": "r3",
+                  "createdAtUtc": "2026-09-22T12:40:00Z",
+                  "accountId": "account-rosa",
+                  "accountName": "Rosa Luna",
+                  "previousMethodType": "Email",
+                  "previousMethod": "ro•••@sigma.ejemplo.com",
+                  "newMethodType": "Email",
+                  "newMethod": "ro•••@gmail.com",
+                  "status": "Approved",
+                  "decidedAtUtc": "2026-09-22T14:00:00Z",
+                  "decidedBy": "Laura Díaz",
+                  "reason": "Confirmó sus datos por videollamada.",
+                  "version": 2
+                },
+                {
+                  "id": "r4",
+                  "createdAtUtc": "2026-09-15T16:12:00Z",
+                  "accountId": "account-carla",
+                  "accountName": "Carla Núñez",
+                  "previousMethodType": "Phone",
+                  "previousMethod": "•••• 2204",
+                  "newMethodType": "Email",
+                  "newMethod": "ca•••@gmail.com",
+                  "status": "Rejected",
+                  "decidedAtUtc": "2026-09-15T18:00:00Z",
+                  "decidedBy": "Martín Sosa",
+                  "reason": "No pudo confirmar que la cuenta es suya.",
+                  "version": 2
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 4,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/recoveries/filter-counts",
+            "status": 200,
+            "body": {
+              "total": 4,
+              "statuses": [
+                {
+                  "status": "Pending",
+                  "count": 2
+                },
+                {
+                  "status": "Approved",
+                  "count": 1
+                },
+                {
+                  "status": "Rejected",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.NoAccount",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r2/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r3/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/approve",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/recoveries/r4/reject",
+            "status": 409,
+            "body": {
+              "code": "Platform.AccountRecovery.AlreadyResolved",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Escribí el motivo.",
+        "readySelector": "[role=\"dialog\"]"
       }
     },
     {

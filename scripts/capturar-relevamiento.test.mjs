@@ -64,6 +64,9 @@ test("el catálogo compara lista y ficha completas T21b–d y Cuentas T22a–b",
   const account = cases.filter((entry) => entry.group === "plataforma-cuenta");
   assert.equal(account.length, 32);
   assert.ok(account.every((entry) => entry.app.captureMode === "harness" && entry.state.includes("ficha real T22b")));
+  const recoveries = cases.filter((entry) => entry.group === "plataforma-recuperaciones");
+  assert.equal(recoveries.length, 16);
+  assert.ok(recoveries.every((entry) => entry.app.captureMode === "harness" && entry.state.includes("lista real T23a")));
   const source = JSON.parse(readFileSync(path.join(canvas, "../capturas/etapa-5/manifest.json"), "utf8")).cases;
   const pending = new Set(source.filter((entry) => entry.group.startsWith("plataforma-") && entry.app.captureMode !== "harness").map((entry) => `${entry.group}/${entry.id}`));
   assert.ok(!cases.some((entry) => pending.has(`${entry.group}/${entry.id}`)));

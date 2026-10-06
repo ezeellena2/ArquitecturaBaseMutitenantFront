@@ -9,6 +9,49 @@ import { buildCases, canvas, output } from "./capturar-etapa-5.mjs";
 const groups = ["plataforma-marco", "plataforma-organizaciones", "plataforma-organizacion", "plataforma-cuentas",
   "plataforma-cuenta", "plataforma-recuperaciones", "plataforma-legales", "plataforma-auditoria", "plataforma-configuracion", "recuperar"];
 
+test("T23a recorre Recuperaciones real con estados y métodos tapados en ambos tamaños", () => {
+  const cases = buildCases().filter((entry) => entry.group === "plataforma-recuperaciones");
+  assert.equal(cases.length, 16);
+  for (const entry of cases) {
+    const params = new URL(entry.app.path, "http://example.test").searchParams;
+    assert.equal(params.get("route"), "/plataforma/recuperaciones", entry.id);
+    assert.equal(entry.app.captureMode, "harness", entry.id);
+    assert.match(entry.app.scenario, /lista real T23a/, entry.id);
+    const rows = entry.app.responses.find((row) => row.path === "/api/platform/recoveries/paged" && !row.query).body.items;
+    assert.ok(rows.every((row) => row.previousMethod.includes("•••") && row.newMethod.includes("•••")), entry.id);
+    assert.ok(rows.every((row) => row.newMethodType === "Email"), entry.id);
+    if (entry.pair === "recuperaciones-sin-pedidos") assert.equal(rows.length, 0);
+    else assert.equal(rows.length, 4);
+  }
+});
+
+test("T23a distingue cuenta ausente, estados resueltos y cantidades del contrato", () => {
+  for (const entry of buildCases().filter((item) => item.group === "plataforma-recuperaciones")) {
+    const counts = entry.app.responses.find((row) => row.path === "/api/platform/recoveries/filter-counts" && !row.query).body;
+    const rows = entry.app.responses.find((row) => row.path === "/api/platform/recoveries/paged" && !row.query).body.items;
+    assert.equal(counts.total, rows.length);
+    for (const status of counts.statuses) assert.equal(status.count, rows.filter((row) => row.status === status.status).length);
+    if (entry.pair === "recuperaciones-sin-pedidos") continue;
+    const noAccount = rows.find((row) => row.id === "r2");
+    assert.equal(noAccount.accountId, null);
+    assert.equal(noAccount.accountName, null);
+    assert.equal(rows.find((row) => row.id === "r3").decidedBy, "Laura Díaz");
+    assert.ok(rows.filter((row) => row.status !== "Pending").every((row) => row.reason && row.decidedAtUtc >= row.createdAtUtc && row.version > 1));
+    const approve = entry.app.responses.find((row) => row.method === "POST" && row.path.endsWith("/approve"));
+    assert.equal(approve.status, 200);
+    assert.deepEqual(approve.body, { version: 2 });
+  }
+});
+
+test("T23a fotografía los diálogos y errores reales aun con referencia móvil base", () => {
+  for (const entry of buildCases().filter((item) => item.group === "plataforma-recuperaciones" && !["recuperaciones-pedidos", "recuperaciones-sin-pedidos"].includes(item.pair))) {
+    assert.equal(entry.app.readySelector, '[role="dialog"]', entry.id);
+    assert.ok(entry.app.actions.some((action) => action.name === "Revisar" || action.name === "Ver detalle"), entry.id);
+    if (entry.pair.startsWith("recuperaciones-error-")) assert.equal(entry.app.readyText, "Escribí el motivo.");
+    if (entry.viewport.width === 390) assert.equal(entry.boardReference.kind, "base");
+  }
+});
+
 test("T22b recorre la ficha real por id y conserva métodos tapados y evidencia por estado", () => {
   const cases = buildCases().filter((entry) => entry.group === "plataforma-cuenta");
   assert.equal(cases.length, 32);

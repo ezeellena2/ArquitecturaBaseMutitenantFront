@@ -9,6 +9,7 @@ import { platformOrganizationCaptureResponses } from "../src/test/mocks/platform
 import { platformOrganizationAdministrationCaptureResponses } from "../src/test/mocks/platformOrganizationAdministration.ts";
 import { platformAccountRows, platformAccountsCaptureResponses } from "../src/test/mocks/platformAccounts.ts";
 import { platformAccountDetailFixture, platformAccountDetailCaptureResponses } from "../src/test/mocks/platformAccountDetail.ts";
+import { platformRecoveriesCaptureResponses } from "../src/test/mocks/platformRecoveries.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const canvas = path.join(root, "docs/design/lienzo");
@@ -163,6 +164,31 @@ function accountsApp(entry) {
   return { ...entry.app, path: "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas",
     captureMode: "harness", userFixture: "visual-operator", scenario, now: "2026-09-27T20:35:00Z", actions, readySelector,
     responses: platformAccountsCaptureResponses({ invitationError, mobile: phone, includeAll: pair === "cuentas-menu-julio-perez" || pair === "cuentas-menu-laura-diaz" }), ...(readyHeading ? { readyHeading } : {}), ...(readyText ? { readyText } : {}) };
+}
+
+function recoveriesApp(entry) {
+  const pair = entry.pair;
+  const actions = [];
+  let readyText = pair === "recuperaciones-sin-pedidos" ? "No hay pedidos de recuperación" : "Pablo Ortiz";
+  let readySelector = "main";
+  const dialog = !["recuperaciones-pedidos", "recuperaciones-sin-pedidos"].includes(pair);
+  if (dialog) {
+    const name = pair === "recuperaciones-resuelto-aprobado" ? "Rosa Luna"
+      : pair === "recuperaciones-resuelto-rechazado" ? "Carla Núñez"
+        : pair === "recuperaciones-sin-cuenta" ? "Sin cuenta" : "Pablo Ortiz";
+    actions.push(click(`Acciones de ${name}`), click(pair.startsWith("recuperaciones-resuelto-") ? "Ver detalle" : "Revisar", "menuitem"));
+    readySelector = '[role="dialog"]';
+    readyText = pair === "recuperaciones-resuelto-aprobado" ? "Confirmó sus datos por videollamada."
+      : pair === "recuperaciones-resuelto-rechazado" ? "No pudo confirmar que la cuenta es suya."
+        : pair === "recuperaciones-sin-cuenta" ? "Ninguna" : "Revisar el pedido";
+    if (pair.startsWith("recuperaciones-error-")) {
+      actions.push(click(pair.endsWith("aprobar") ? "Aprobar" : "Rechazar"));
+      readyText = "Escribí el motivo.";
+    }
+  }
+  return { ...entry.app, path: `/src/test/visualApp.html?as=visual-operator&route=${encodeURIComponent("/plataforma/recuperaciones")}`,
+    captureMode: "harness", userFixture: "visual-operator", scenario: `${pair}: lista real T23a`, now: "2026-09-27T20:35:00Z",
+    responses: platformRecoveriesCaptureResponses({ empty: pair === "recuperaciones-sin-pedidos" }), actions, readyText, readySelector };
 }
 
 function accountDetailApp(entry) {
@@ -497,6 +523,7 @@ export function buildCases() {
     if (entry.group === "plataforma-organizaciones") return { ...entry, app: organizationsApp(entry) };
     if (entry.group === "plataforma-cuentas") return { ...entry, app: accountsApp(entry) };
     if (entry.group === "plataforma-cuenta") return { ...entry, app: accountDetailApp(entry) };
+    if (entry.group === "plataforma-recuperaciones") return { ...entry, app: recoveriesApp(entry) };
     if (isOrganizationDetailCase(entry)) return { ...entry, app: organizationApp(entry) };
     if (isOrganizationAdministrationCase(entry)) return { ...entry, app: organizationAdministrationApp(entry) };
     if (entry.pair in platformReasons) return { ...entry, app: reasonApp(entry) };

@@ -415,11 +415,15 @@ src/
 │       │       ├── AccountPage.tsx                  [T22b] /plataforma/cuentas/:id: estados y evidencia, grupos de persona/operador e invitación con correo principal
 │       │       └── AccountPage.test.tsx            [T22b] estados, permisos, cursor, métodos, operador, versionado, vida de acciones, errores, 390 y axe
 │       ├── recoveries/                              /plataforma/recuperaciones: pedidos de «Recuperar mi cuenta» (ADR 0033)
-│       │   ├── api/recoveries.ts                    pedidos; aprobar o rechazar
-│       │   ├── columns.tsx
-│       │   ├── errors.ts
-│       │   ├── components/ReviewRecoveryDialog.tsx  revisar el pedido: aprobar o rechazar, con motivo
-│       │   └── pages/RecoveriesPage.tsx             pedidos y estado vacío «Sin pedidos»
+│       │   ├── api/
+│       │   │   ├── recoveries.ts                    listado, conteos y decisiones versionadas e idempotentes
+│       │   │   └── recoveries.test.ts               consultas, cuerpos, claves y versión respondida
+│       │   ├── columns.tsx                          cuenta nullable, métodos tapados y filas móviles
+│       │   ├── errors.ts                            errores por código y conflicto de estado
+│       │   ├── components/ReviewRecoveryDialog.tsx  grilla, motivo, decisiones y detalle resuelto
+│       │   └── pages/
+│       │       ├── RecoveriesPage.tsx               banda global, filtros y versión propia ante lectura vieja
+│       │       └── RecoveriesPage.test.tsx          estados, filtros, permisos, decisiones, concurrencia y accesibilidad
 │       ├── legal/                                   /plataforma/legales: términos y privacidad (P7)
 │       │   ├── api/legalDocuments.ts                documentos y publicación de una versión nueva
 │       │   ├── columns.tsx                          documento, vigente desde, versión vigente, versiones
@@ -452,6 +456,7 @@ src/
 │   │   ├── platform.json                            [E5]
 │   │   ├── platformTenants.json                     [E5/T21b] listado, alta y confirmaciones de organizaciones
 │   │   ├── platformAccounts.json                    [E5/T22a] listado, invitación, acciones y errores de cuentas y operadores
+│   │   ├── platformRecoveries.json                  [E5/T23a] pedidos, revisión, resoluciones y errores
 │   │   ├── users.json                               [E6]
 │   │   ├── companies.json                           [E6]
 │   │   ├── settings.json                            [E6]
@@ -778,7 +783,8 @@ src/
     │   ├── platformOrganization.ts                  ficha, Dueños e Historial de Organizacion v111 con fechas UTC para las capturas
     │   ├── platformOrganizationAdministration.ts    TestFeatures, dominios y página pública de Organizacion v111, con versiones reales del contrato
     │   ├── platformAccounts.ts                      once cuentas literales v111, fechas UTC y ficha mínima para el bloqueo real de baja en el listado
-    │   └── platformAccountDetail.ts                 ficha Cuenta-Plat: estados, métodos, roles globales, historial y permisos
+    │   ├── platformAccountDetail.ts                 ficha Cuenta-Plat: estados, métodos, roles globales, historial y permisos
+    │   └── platformRecoveries.ts                    pedidos v111 tapados y nuevo correo disponible hasta E8
     ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
     └── utils/
         ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]; devuelve el QueryClient, para una relectura de fondo [E7]

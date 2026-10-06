@@ -125,3 +125,6 @@ export type PlatformAccountLoginMethodResponse = ApiSchemas["PlatformAccountLogi
 export type PlatformAccountMembershipResponse = ApiSchemas["PlatformAccountMembershipResponse"];
 export type PlatformAuditEventResponse = ApiSchemas["PlatformAuditEventResponse"];
 export type PlatformAuditCursorResponse = ApiSchemas["CursorResultOfPlatformAuditEventResponse"];
+export type AccountRecoveryStatus = ApiSchemas["AccountRecoveryStatus"];
+export type PlatformRecoveryResponse = ApiSchemas["PlatformRecoveryResponse"];
+export type PlatformRecoveryFilterCounts = ApiSchemas["PlatformRecoveryFilterCounts"];

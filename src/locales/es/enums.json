@@ -1,4 +1,5 @@
 {
+  "AccountRecoveryStatus": { "Pending": "Pendiente", "Approved": "Aprobado", "Rejected": "Rechazado" },
   "PlatformAccountState": {
     "Active": "Activa",
     "Suspended": "Suspendida",

@@ -56,6 +56,7 @@ export const platformPages: PlatformPages = {
   organization: lazyPage(() => import("@/areas/platform/tenants/pages/OrganizationPage"), (page) => page.OrganizationPage),
   accounts: lazyPage(() => import("@/areas/platform/accounts/pages/AccountsPage"), (page) => page.AccountsPage),
   account: lazyPage(() => import("@/areas/platform/accounts/pages/AccountPage"), (page) => page.AccountPage),
+  recoveries: lazyPage(() => import("@/areas/platform/recoveries/pages/RecoveriesPage"), (page) => page.RecoveriesPage),
 };
 
 /// Monta sólo las páginas disponibles, con el permiso del manifiesto. El inicio elige Gestión y luego Administración.
