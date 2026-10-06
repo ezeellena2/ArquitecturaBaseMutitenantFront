@@ -477,7 +477,6 @@ src/
 │   │   ├── invitations.json                         la invitación (/invitacion)
 │   │   ├── home.json                                el inicio de la organización: tarjetas, «Tus empresas» y «Para resolver»
 │   │   ├── roles.json                               [E4]
-│   │   ├── platform.json                            [E5]
 │   │   ├── platformTenants.json                     [E5/T21b] listado, alta y confirmaciones de organizaciones
 │   │   ├── platformAccounts.json                    [E5/T22a] listado, invitación, acciones y errores de cuentas y operadores
 │   │   ├── platformRecoveries.json                  [E5/T23a] pedidos, revisión, resoluciones y errores
