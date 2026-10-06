@@ -29,3 +29,6 @@ export function defineStatusTones<TEnum extends keyof ContractEnums>(enumName: T
 /// en gris y despublicada por la plataforma en rojo, con la palabra también en rojo (tema.md); la palabra sale de
 /// `enums.HomePublicPageState` (formatos.md).
 export const publicPageStateTones = defineStatusTones("HomePublicPageState", { Published: "success", Draft: "neutral", Blocked: "danger" });
+
+/// Configuración de Empresa y Dominio de Plataforma muestran el mismo estado del contrato con los mismos tonos.
+export const tenantDomainStatusTones = defineStatusTones("TenantDomainStatus", { Pending: "warning", Verified: "success", Removed: "neutral" });

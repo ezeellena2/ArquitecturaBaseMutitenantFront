@@ -9,7 +9,7 @@ import { z } from "zod";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
 import { ApiError } from "@/shared/api/ApiError";
-import { defineStatusTones } from "@/shared/format/statusTones";
+import { tenantDomainStatusTones } from "@/shared/format/statusTones";
 import { StatusMark } from "@/shared/ui/format/StatusBadge";
 import { actionErrorMessage, apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
@@ -54,9 +54,6 @@ type SettingsForm = z.infer<typeof settingsFormSchema>;
 const serverFields: Record<string, keyof SettingsForm> = {
   name: "name", defaultCulture: "defaultCulture", defaultTimeZoneId: "defaultTimeZoneId", defaultCurrency: "defaultCurrency",
 };
-
-/// Tablero M-Configuracion (`.w-est`): el dominio verificado en verde y el pendiente en ámbar (tema.md).
-const domainStatusTones = defineStatusTones("TenantDomainStatus", { Verified: "success", Pending: "warning", Removed: "neutral" });
 
 function valuesFromSettings(settings: OrganizationSettingsResponse): SettingsForm {
   return { name: settings.name, defaultCulture: settings.defaultCulture, defaultTimeZoneId: settings.defaultTimeZoneId, defaultCurrency: settings.defaultCurrency };
@@ -214,7 +211,7 @@ function SettingsEditor({ settings, loadError, reload }: {
               : <List label={t("settings:domains.title")}>{activeDomains.map((domain) => <ListItem key={domain.id} icon={<Globe aria-hidden="true" />} title={domain.domain}
                 detail={<span className="inline-flex items-center gap-1.5 max-md:block max-md:whitespace-normal">
                   {/* Tablero M-Configuracion: en el teléfono el estado lleva su punto, y la línea sigue abajo en lugar de cortarse. */}
-                  <StatusMark tones={domainStatusTones} value={domain.status} className="hidden max-md:mr-1.5 max-md:inline-block max-md:align-middle" />
+                  <StatusMark tones={tenantDomainStatusTones} value={domain.status} className="hidden max-md:mr-1.5 max-md:inline-block max-md:align-middle" />
                   {/* Tableros Configuracion y M-Configuracion: el verificado dice cuántos correos administra la organización
                       («Verificado · 10 correos administrados por Grupo Delta», con managedEmailCount del back). */}
                   <span><span>{t(`settings:domains.status.${domain.status}`)}</span>{domain.status === "Verified" && domain.managedEmailCount > 0

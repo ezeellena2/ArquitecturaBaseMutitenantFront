@@ -1,11 +1,8 @@
 # Organizaciones de Plataforma
 
-Leé la ficha del backend `docs/features/plataforma.md` y las reglas de paginado, formularios, formatos, errores y permisos.
-La lista y el alta copian `Organizaciones` y `M-Organizaciones`; la ficha, `Organizacion` y `M-Organizacion` del lienzo vigente.
-T21c–d monta banda, Historial por cursor, Dueños actuales/contacto pendiente, Módulos, Dominio y Página pública.
-`Provisioning` se muestra como «Falló el alta». Banda global; conteos de filtros cruzados; servidor pagina y ordena.
-Las acciones piden motivo con `shared/platform/ReasonDialog`, salvo reintentar el alta (sólo versión) y Verificar dominio (motivo fijo traducido).
-La próxima acción toma la versión respondida por la escritura propia; una relectura no la reemplaza. Tras 409, cerrar relee la lista.
-La ficha conserva sólo versión/estado propios y descarta un `lastStateChange` incompatible; las fechas y motivos se leen del servidor.
-Cada módulo, dominio y página conserva su propia base en el padre `key=id`, también al cambiar de pestaña. PUT/DELETE no llevan clave idempotente; los POST sí.
-Módulos se oculta si el catálogo real viene vacío. Dominio y Página pública sólo se leen al abrir su pestaña, con manage, y no muestran cantidades; Ver página se habilita en E7.
+Leé la ficha backend docs/features/plataforma.md y paginado, formularios, formatos, errores y permisos. Lista/alta copian Organizaciones/M-Organizaciones; ficha, Organizacion/M-Organizacion vigentes.
+T21c–d monta banda global, Historial por cursor, Dueños actuales/contacto pendiente, Módulos, Dominio y Pública; filtros cruzados y paginado/orden en servidor. Provisioning dice «Falló el alta».
+Las acciones piden motivo con shared/platform/ReasonDialog, salvo reintentar alta (sólo versión) y Verificar dominio (motivo fijo traducido); tras409, cerrar relee lista.
+La siguiente acción toma versión de escritura propia, nunca de relectura. Ficha conserva sólo versión/estado propios, descarta lastStateChange incompatible y lee fechas/motivos del servidor.
+Cada módulo/dominio/página conserva base propia en padre key=id, también al cambiar pestaña; PUT/DELETE sin clave idempotente, POST con clave.
+Módulos se oculta con catálogo vacío; Dominio/Pública se leen al abrir con manage, sin cantidades; Ver página se habilita en E7.

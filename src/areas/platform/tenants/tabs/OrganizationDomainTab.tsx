@@ -7,7 +7,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { OrganizationDomainResponse, PlatformTenantDetailResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
-import { defineStatusTones } from "@/shared/format/statusTones";
+import { tenantDomainStatusTones } from "@/shared/format/statusTones";
 import { ReasonDialog } from "@/shared/platform/ReasonDialog";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { CircleCheckIcon, TrashIcon } from "@/shared/ui/icons";
@@ -21,7 +21,6 @@ import { removeTenantDomain, tenantDomainsQueryKey, tenantsQueryRoot, verifyTena
 export type OwnDomainWrite = Pick<OrganizationDomainResponse, "version" | "status">;
 interface Confirmation { domain: OrganizationDomainResponse; trigger: HTMLElement | null }
 interface VerifyOperation { id: string; domain: string; version: number; reason: string }
-const tones = defineStatusTones("TenantDomainStatus", { Pending: "warning", Verified: "success", Removed: "neutral" });
 const conflicts = ["Settings.TenantDomain.AlreadyVerified", "Settings.TenantDomain.NotFound"] as const;
 function conflicted(error: unknown) { return error instanceof ApiError && (error.code === "General.ConcurrencyConflict" || error.status === 409 && conflicts.some((code) => error.code === code)); }
 
@@ -37,13 +36,13 @@ export function OrganizationDomainTab({ organization, query, writes, onWrite, on
     onWrite={onWrite} onConflict={onConflict} onRemove={setConfirmation} />;
   const columns: Column<OrganizationDomainResponse>[] = [
     { id: "domain", header: t("platformTenants:domains.domain"), type: "text", mobile: "primary", value: (row) => row.domain },
-    { id: "status", header: t("platformTenants:columns.status"), type: "status", mobile: "status", tones, value: (row) => row.status },
+    { id: "status", header: t("platformTenants:columns.status"), type: "status", mobile: "status", tones: tenantDomainStatusTones, value: (row) => row.status },
     { id: "txtRecordValue", header: t("platformTenants:domains.txt"), type: "text", value: (row) => row.status === "Pending" ? row.txtRecordValue : null },
     { id: "actions", header: t("platformTenants:columns.actions"), type: "actions", cell: rowActions },
   ];
   return <>
     <Surface phoneFlush><DataTable columns={columns} rows={rows} rowKey={(row) => row.id} isLoading={query.isPending} isFetching={query.isFetching}
-      mobileRow={(row) => <ListRow key={row.id} title={row.domain} meta={<StatusBadge tones={tones} value={row.status} />} lines={[row.status === "Pending" ? row.txtRecordValue || <EmptyValue key="txt" /> : <EmptyValue key="txt" />]} trailing={rowActions(row)} />}
+      mobileRow={(row) => <ListRow key={row.id} title={row.domain} meta={<StatusBadge tones={tenantDomainStatusTones} value={row.status} />} lines={[row.status === "Pending" ? row.txtRecordValue || <EmptyValue key="txt" /> : <EmptyValue key="txt" />]} trailing={rowActions(row)} />}
       error={query.error ? apiErrorMessage(query.error, t) : undefined} onRetry={() => { void query.refetch(); }} emptyTitle={t("platformTenants:domains.empty")} /></Surface>
     {confirmation ? <DomainReasonDialog organization={organization} confirmation={confirmation} onClose={(stale) => {
       if (stale) onConflict(confirmation.domain.domain); setConfirmation((current) => current === confirmation ? null : current);
