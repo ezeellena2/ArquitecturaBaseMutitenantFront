@@ -126,10 +126,10 @@ function platformRouter(path: string, pages: PlatformPages = testPages, account:
 }
 
 describe("las rutas del marco de Plataforma", () => {
-  it("T21c monta Organizaciones y su ficha lazy; las demás features conservan sólo su manifiesto", async () => {
-    expect(Object.keys(platformPages)).toEqual(["organizations", "organization"]);
+  it("T22a monta Cuentas junto a Organizaciones y su ficha lazy; las demás features conservan sólo su manifiesto", async () => {
+    expect(Object.keys(platformPages)).toEqual(["organizations", "organization", "accounts"]);
     const available = createPlatformPageRoutes(platformPages);
-    expect(available).toHaveLength(2);
+    expect(available).toHaveLength(3);
     expect(available[0].children?.[0]).toMatchObject({ index: true, lazy: platformPages.organizations });
     const page = platformPages.organizations;
     expect(typeof page).toBe("function");
@@ -138,6 +138,10 @@ describe("las rutas del marco de Plataforma", () => {
     const detail = platformPages.organization;
     expect(typeof detail).toBe("function");
     if (typeof detail === "function") expect(await detail()).toHaveProperty("Component");
+    expect(available[2].children?.[0]).toMatchObject({ path: platformRoutes.accounts.path, lazy: platformPages.accounts });
+    const accounts = platformPages.accounts;
+    expect(typeof accounts).toBe("function");
+    if (typeof accounts === "function") expect(await accounts()).toHaveProperty("Component");
     expect(available.flatMap((route) => route.children ?? []).some((route) => route.path === platformRoutes.account.path)).toBe(false);
   });
   it("cada destino declara el permiso del contrato de Plataforma", () => {

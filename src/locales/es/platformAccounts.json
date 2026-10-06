@@ -1,0 +1,30 @@
+{
+  "title": "Cuentas", "platform": "Plataforma", "summary_one": "{{total}} cuentas · {{suspended}} suspendida", "summary_other": "{{total}} cuentas · {{suspended}} suspendidas",
+  "rowActions": "Acciones de {{name}}",
+  "columns": { "account": "Cuenta", "profiles": "Perfiles", "lastSignIn": "Último ingreso", "state": "Estado", "actions": "Acciones", "never": "Nunca", "expiresPrefix": "Vence el", "expiresInline": "vence" },
+  "profiles": { "personal": "Personal", "operator": "Operador", "personalOrganizations_one": "Personal + {{count}} organización", "personalOrganizations_other": "Personal + {{count}} organizaciones", "organizations_one": "{{count}} organización", "organizations_other": "{{count}} organizaciones" },
+  "filters": { "label": "Filtrar cuentas", "search": "Buscar por nombre, correo o teléfono", "kind": "Tipo: todas", "kindMenu": "Filtrar por tipo", "state": "Estado: todos", "stateMenu": "Filtrar por estado", "kinds": { "all": "Todas", "Person": "Personas", "Operator": "Operadores" }, "states": { "all": "Todos", "Active": "Activas", "Invited": "Invitación pendiente", "InvitationExpired": "Invitación vencida", "Suspended": "Suspendidas", "NeedsRecovery": "Necesitan recuperación", "PendingDeletion": "Baja pedida", "Deleted": "Eliminadas" } },
+  "empty": { "filtered": "Ninguna cuenta coincide con los filtros", "clear": "Limpiar filtros" },
+  "invite": { "title": "Invitar operador", "email": "Correo", "permissions": "Permisos de plataforma", "none": "Ninguno", "send": "Invitar", "sending": "Invitando…", "emailRequired": "Escribí el correo.", "emailInvalid": "Revisá el correo: no parece válido.", "invitationExists": "Ese correo ya tiene una invitación. Reenviala desde la lista.", "accountExists": "Ese correo ya tiene una cuenta. Un operador no puede tener perfiles de persona.", "permissionsRequired": "Elegí al menos un permiso de plataforma." },
+  "permissions": {
+    "platform.tenants.read": { "name": "Ver organizaciones", "description": "El listado y la ficha de cada organización." },
+    "platform.tenants.manage": { "name": "Administrar organizaciones", "description": "Aprobar, suspender, reactivar y cerrar; módulos y página pública." },
+    "platform.accounts.read": { "name": "Ver cuentas", "description": "Buscar cuentas y ver su ficha." },
+    "platform.accounts.manage": { "name": "Administrar cuentas", "description": "Suspender, cerrar sesiones y dar de baja." },
+    "platform.recoveries.manage": { "name": "Recuperaciones", "description": "Aprobar o rechazar pedidos de «Recuperar mi cuenta»." },
+    "platform.legal.manage": { "name": "Documentos legales", "description": "Publicar una versión nueva de términos o privacidad." },
+    "platform.operators.manage": { "name": "Administrar operadores", "description": "Invitar operadores y cambiar sus permisos." },
+    "platform.audit.read": { "name": "Ver la auditoría", "description": "Los eventos de seguridad de todo el servicio." },
+    "platform.settings.manage": { "name": "Cambiar la configuración", "description": "Registro de personas y alta de organizaciones." }
+  },
+  "errors": { "alreadyPending": "Esa cuenta ya tiene la baja pedida." },
+  "actions": { "resend": "Reenviar invitación", "revoke": "Revocar invitación", "revoke-sessions": "Cerrar sus sesiones", "suspend": "Suspender", "reactivate": "Reactivar", "deletion": "Dar de baja" },
+  "confirm": {
+    "revoke": { "title": "¿Revocar la invitación a {{name}}?", "description": "El enlace deja de funcionar. Podés volver a invitarla cuando quieras.", "button": "Revocar", "pending": "Revocando…" },
+    "revoke-sessions": { "title": "¿Cerrar las sesiones de {{name}}?", "description": "Tiene que volver a ingresar en todos sus dispositivos, como persona y en sus organizaciones. No le cambia nada más.", "button": "Cerrar sesiones", "pending": "Cerrando sesiones…" },
+    "suspend": { "title": "¿Suspender la cuenta de {{name}}?", "description": "No puede entrar como persona ni en sus organizaciones, y se cierran sus sesiones en los dos lados. Sus organizaciones siguen funcionando para el resto de los miembros.", "button": "Suspender", "pending": "Suspendiendo…" },
+    "reactivate": { "title": "¿Reactivar la cuenta de {{name}}?", "description": "Vuelve a entrar como persona y en sus organizaciones, con los mismos roles.", "button": "Reactivar", "pending": "Reactivando…" },
+    "deletion": { "title": "¿Dar de baja la cuenta de {{name}}?", "description": "Se cierran sus sesiones y le avisamos por todos sus métodos de ingreso. Tiene 30 días para cancelar la baja ingresando; después se elimina la cuenta. La plataforma no puede cancelarla.", "button": "Dar de baja", "pending": "Dando de baja…", "soleOwner": "Es el único Dueño de {{organization}}. Primero la organización tiene que sumar otro Dueño, o la plataforma tiene que cerrarla." }
+  },
+  "messages": { "invited": "Invitamos a {{email}} como operador.", "resent": "Reenviamos la invitación a {{name}}.", "revoked": "Revocamos la invitación a {{name}}.", "suspend": "Suspendimos la cuenta de {{name}}.", "reactivate": "Reactivamos la cuenta de {{name}}.", "revoke-sessions": "Cerramos las sesiones de {{name}}.", "deletion": "Dimos de baja la cuenta de {{name}}. Se elimina el {{date}}.", "deletedWithoutDate": "Dimos de baja la cuenta de {{name}}." }
+}

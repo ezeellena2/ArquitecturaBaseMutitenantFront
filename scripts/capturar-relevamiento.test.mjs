@@ -47,7 +47,7 @@ test("los rótulos de Más real de T20c corresponden al tamaño móvil, sin here
   assert.ok(cases.filter((entry) => entry.viewport.width === 1440).every((entry) => !entry.state.includes("Más real")));
 });
 
-test("el catálogo compara lista y ficha completas T21b–d y conserva sólo los diálogos pendientes T20d", () => {
+test("el catálogo compara lista y ficha completas T21b–d y el listado real de Cuentas T22a", () => {
   const cases = buildCases();
   const organizations = cases.filter((entry) => entry.group === "plataforma-organizaciones");
   assert.equal(organizations.length, 28);
@@ -58,11 +58,9 @@ test("el catálogo compara lista y ficha completas T21b–d y conserva sólo los
   const administration = cases.filter((entry) => entry.group === "plataforma-organizacion" && entry.state.includes("administración real T21d"));
   assert.equal(administration.length, 30);
   assert.ok(administration.every((entry) => entry.app.captureMode === "harness" && entry.app.now === "2026-09-27T20:35:00Z"));
-  for (const pair of ["cuentas-baja-bloqueada"]) {
-    const entries = cases.filter((entry) => entry.pair === pair);
-    assert.equal(entries.length, 2, pair);
-    assert.ok(entries.every((entry) => entry.app.captureMode === "harness" && entry.state.includes("diálogo real T20d")));
-  }
+  const accounts = cases.filter((entry) => entry.group === "plataforma-cuentas");
+  assert.equal(accounts.length, 36);
+  assert.ok(accounts.every((entry) => entry.app.captureMode === "harness" && entry.state.includes("lista real T22a")));
   const source = JSON.parse(readFileSync(path.join(canvas, "../capturas/etapa-5/manifest.json"), "utf8")).cases;
   const pending = new Set(source.filter((entry) => entry.group.startsWith("plataforma-") && entry.app.captureMode !== "harness").map((entry) => `${entry.group}/${entry.id}`));
   assert.ok(!cases.some((entry) => pending.has(`${entry.group}/${entry.id}`)));

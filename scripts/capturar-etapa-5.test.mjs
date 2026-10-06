@@ -9,6 +9,68 @@ import { buildCases, canvas, output } from "./capturar-etapa-5.mjs";
 const groups = ["plataforma-marco", "plataforma-organizaciones", "plataforma-organizacion", "plataforma-cuentas",
   "plataforma-cuenta", "plataforma-recuperaciones", "plataforma-legales", "plataforma-auditoria", "plataforma-configuracion", "recuperar"];
 
+test("T22a recorre Cuentas real y sus estados en los dos tamaños, sin diálogo aislado", () => {
+  const cases = buildCases().filter((entry) => entry.group === "plataforma-cuentas");
+  assert.equal(cases.length, 36);
+  for (const entry of cases) {
+    const params = new URL(entry.app.path, "http://example.test").searchParams;
+    assert.equal(params.get("route"), "/plataforma/cuentas", entry.id);
+    assert.equal(params.get("frame"), null, entry.id);
+    assert.equal(params.get("reason"), null, entry.id);
+    assert.equal(entry.app.captureMode, "harness", entry.id);
+    assert.equal(entry.app.now, "2026-09-27T20:35:00Z", entry.id);
+    assert.ok(entry.app.responses.some((item) => item.path === "/api/platform/accounts/paged"), entry.id);
+    assert.ok(entry.app.responses.some((item) => item.path === "/api/platform/accounts/filter-counts"), entry.id);
+  }
+});
+
+test("T22a captura la baja con evidencia real y respeta que tu propia cuenta no tiene menú", () => {
+  const cases = buildCases();
+  for (const entry of cases.filter((item) => item.pair === "cuentas-baja-bloqueada")) {
+    const detail = entry.app.responses.find((item) => item.path === "/api/platform/accounts/account-lucia");
+    assert.deepEqual(detail?.body.soleOwnerOrganizations, ["Grupo Delta"], entry.id);
+    assert.equal(detail?.body.deletedAtUtc, null);
+    assert.equal(detail?.body.lastStateChange, null);
+    assert.ok(!Object.hasOwn(detail.body, "version"));
+    assert.ok(entry.app.actions.some((action) => action.name === "Dar de baja"), entry.id);
+  }
+  for (const entry of cases.filter((item) => item.pair === "cuentas-menu-martin-sosa")) {
+    assert.ok(!entry.app.actions.some((action) => action.name === "Acciones de Martín Sosa"), entry.id);
+    assert.match(entry.app.scenario, /propia cuenta sin acciones/, entry.id);
+  }
+});
+
+test("T22a espera cada error real también cuando el tablero móvil sólo es una referencia base", () => {
+  const cases = buildCases();
+  const desktop = cases.filter((entry) => entry.pair.startsWith("cuentas-invitar-error-") && entry.viewport.width === 1440);
+  assert.equal(desktop.length, 4);
+  for (const entry of desktop) {
+    const mobile = cases.find((item) => item.pair === entry.pair && item.viewport.width === 390);
+    assert.equal(mobile.boardReference.kind, "base");
+    assert.equal(mobile.app.readyText, entry.boardReadyText, mobile.id);
+  }
+});
+
+test("T22a la selección de permisos espera el menú accesible, sin depender del título tapado por la capa modal", () => {
+  for (const entry of buildCases().filter((item) => item.pair === "cuentas-invitar-con-permisos")) {
+    assert.equal(entry.app.readySelector, '[role="menu"]', entry.id);
+    assert.equal(entry.app.readyHeading, undefined, entry.id);
+  }
+});
+
+test("T22a lista móvil conserva las ocho cuentas dibujadas y desktop sus once cuentas", () => {
+  const cases = buildCases();
+  const response = (entry, path) => entry.app.responses.find((item) => item.path === path && !item.query)?.body;
+  const mobile = cases.find((entry) => entry.id === "cuentas-lista-movil");
+  const desktop = cases.find((entry) => entry.id === "cuentas-lista-escritorio");
+  assert.deepEqual(response(mobile, "/api/platform/accounts/paged").items.map((row) => row.id),
+    ["account-lucia", "account-beto", "account-ana", "account-mariana", "account-pablo", "account-diego", "martin-sosa", "account-julieta"]);
+  assert.equal(response(mobile, "/api/platform/accounts/filter-counts").total, 8);
+  assert.equal(response(desktop, "/api/platform/accounts/filter-counts").total, 11);
+  const invited = cases.find((entry) => entry.id === "cuentas-menu-julieta-molina-arquitecturabase-ejemplo-com-movil");
+  assert.ok(!invited.app.actions.some((action) => action.name === "Cargar más"));
+});
+
 test("T21d recorre las tres pestañas administrativas y sus acciones por la ficha real", () => {
   const cases = buildCases().filter((entry) => entry.group === "plataforma-organizacion"
     && /^organizacion-(pagina-|dominio-|modulo-|pestana-(modulos|dominio-verificado|pagina-publica)$)/.test(entry.pair));
@@ -142,22 +204,6 @@ test("T21b captura siete filas del tablero y cincuenta datos de prueba sin false
     assert.equal(data.items.length, 50);
     assert.equal(data.totalCount, 50);
     assert.equal(entry.boardReference.kind, "base");
-  }
-});
-
-test("T20d conserva el diálogo aislado de las fichas todavía pendientes", () => {
-  const cases = buildCases();
-  for (const pair of ["cuentas-baja-bloqueada"]) {
-    const entries = cases.filter((entry) => entry.pair === pair);
-    assert.equal(entries.length, 2);
-    for (const entry of entries) {
-      const params = new URL(entry.app.path, "http://example.test").searchParams;
-      assert.equal(params.get("frame"), "platform", entry.id);
-      assert.equal(params.get("reason"), pair, entry.id);
-      assert.equal(entry.app.captureMode, "harness");
-      assert.equal(entry.app.readySelector, '[role="dialog"]');
-      assert.match(entry.app.scenario, /diálogo real T20d.*contenido pendiente T21–T23/);
-    }
   }
 });
 

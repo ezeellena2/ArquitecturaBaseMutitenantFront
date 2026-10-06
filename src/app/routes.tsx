@@ -54,6 +54,7 @@ export type PlatformPages = Partial<Record<keyof typeof platformRoutes, LazyRout
 export const platformPages: PlatformPages = {
   organizations: lazyPage(() => import("@/areas/platform/tenants/pages/OrganizationsPage"), (page) => page.OrganizationsPage),
   organization: lazyPage(() => import("@/areas/platform/tenants/pages/OrganizationPage"), (page) => page.OrganizationPage),
+  accounts: lazyPage(() => import("@/areas/platform/accounts/pages/AccountsPage"), (page) => page.AccountsPage),
 };
 
 /// Monta sólo las páginas disponibles, con el permiso del manifiesto. El inicio elige Gestión y luego Administración.

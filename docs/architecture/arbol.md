@@ -393,17 +393,17 @@ src/
 │       │       └── OrganizationPage.test.tsx        estados, cursor, identidad/membresía, permisos, errores, versiones, idempotencia, formatos, 390 y axe
 │       ├── accounts/                                /plataforma/cuentas: cuentas y operadores
 │       │   ├── api/
-│       │   │   ├── accounts.ts                      incluye POST /api/platform/accounts/{id}/deletion (ADR 0035)
-│       │   │   └── operators.ts                     invitar operador (PlatformOperatorsController)
-│       │   ├── columns.tsx                          una sola tabla; Perfiles muestra «Operador»
+│       │   │   ├── accounts.ts                      [T22a] listado/conteos/detalle y acciones de cuenta; POST sólo motivo sin versión
+│       │   │   ├── accounts.test.ts                 rutas/cuerpos/versionless y contratos HTTP de invitaciones
+│       │   │   └── operators.ts                     [T22a] invitar201, reenviar200 idempotentes y revocar204 sin motivo
+│       │   ├── columns.tsx                          [T22a] estados, perfiles reales, métodos y fecha común; tabla y ListRow móvil
+│       │   ├── errors.ts                            [T22a] voz Plataforma, estado409, LastManager y único Dueño
 │       │   ├── components/
-│       │   │   ├── ChangeAccountStatusDialog.tsx    suspender o reactivar, con motivo
-│       │   │   ├── RevokeSessionsDialog.tsx         «Cerrar sesiones», con motivo
-│       │   │   ├── DeleteAccountDialog.tsx          «Dar de baja», con motivo; bloqueada si es el único Dueño de una organización no cerrada; la plataforma no puede cancelarla
-│       │   │   └── AddOperatorDialog.tsx            «Invitar operador»: correo y permisos de plataforma
+│       │   │   └── InviteOperatorDialog.tsx        [T22a] correo, nueve permisos individuales con descripción y errores junto al campo
 │       │   └── pages/
-│       │       ├── AccountsPage.tsx                 filtro Tipo (Personas | Operadores) y «Invitar operador»
-│       │       └── AccountPage.tsx                  /plataforma/cuentas/:id: pestañas Métodos de ingreso, Organizaciones e Historial de seguridad; estados Baja pedida, Baja iniciada por la plataforma y Eliminada (sin acciones)
+│       │       ├── AccountsPage.tsx                 [T22a] banda global, filtros cruzados, búsqueda, menús por permiso, reenvío por recurso y baja con GET fresco
+│       │       ├── AccountsPage.test.tsx            [T22a] filtros, permisos, errores, idempotencia, vida al navegar, baja, 1/50, idiomas, 390 y axe
+│       │       └── AccountPage.tsx                  [pendiente T22b] /plataforma/cuentas/:id: Métodos, Organizaciones, Historial y variante operador
 │       ├── recoveries/                              /plataforma/recuperaciones: pedidos de «Recuperar mi cuenta» (ADR 0033)
 │       │   ├── api/recoveries.ts                    pedidos; aprobar o rechazar
 │       │   ├── columns.tsx
@@ -441,6 +441,7 @@ src/
 │   │   ├── roles.json                               [E4]
 │   │   ├── platform.json                            [E5]
 │   │   ├── platformTenants.json                     [E5/T21b] listado, alta y confirmaciones de organizaciones
+│   │   ├── platformAccounts.json                    [E5/T22a] listado, invitación, acciones y errores de cuentas y operadores
 │   │   ├── users.json                               [E6]
 │   │   ├── companies.json                           [E6]
 │   │   ├── settings.json                            [E6]
@@ -500,7 +501,7 @@ src/
 │   │   ├── useDateInTimeZone.ts                     una fecha y hora en la zona que se le pasa (la de una prueba de cuenta), no la del navegador
 │   │   ├── personalData.ts                          el correo tapado («lu•••@gmail.com»), como PersonalDataMask.Email del back
 │   │   ├── personalData.test.ts                     tests de personalData
-│   │   ├── statusTones.ts                           estado → tono visual (success, warning, danger, neutral, pending); colores en tema.md
+│   │   ├── statusTones.ts                           estado → tono visual; Página pública y dominio tienen un registro común entre features, sin duplicar enums
 │   │   ├── statusTones.test.ts                      tests de statusTones
 │   │   └── format-usage.test.ts                     falla si se formatea fuera de shared/format y shared/time o se fijan catálogos en código
 │   ├── time/                                        [E3] zona efectiva de cuenta/empresa/organización
@@ -765,7 +766,8 @@ src/
     │   ├── platformReasons.ts                       confirmaciones literales v111 para capturar las piezas de Plataforma
     │   ├── platformTenants.ts                       siete organizaciones literales v111 y filas adicionales exclusivas del paginado de prueba
     │   ├── platformOrganization.ts                  ficha, Dueños e Historial de Organizacion v111 con fechas UTC para las capturas
-    │   └── platformOrganizationAdministration.ts    TestFeatures, dominios y página pública de Organizacion v111, con versiones reales del contrato
+    │   ├── platformOrganizationAdministration.ts    TestFeatures, dominios y página pública de Organizacion v111, con versiones reales del contrato
+    │   └── platformAccounts.ts                      once cuentas literales v111, fechas UTC y ficha mínima para el bloqueo real de baja en el listado
     ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
     └── utils/
         ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]; devuelve el QueryClient, para una relectura de fondo [E7]

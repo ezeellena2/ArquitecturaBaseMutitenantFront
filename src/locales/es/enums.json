@@ -1,4 +1,6 @@
 {
+  "PlatformAccountState": { "Active": "Activa", "Suspended": "Suspendida", "NeedsRecovery": "Necesita recuperación", "PendingDeletion": "Baja pedida", "Deleted": "Eliminada", "Invited": "Invitación pendiente", "InvitationExpired": "Invitación vencida" },
+  "LoginAuditMethod": { "Code": "Código por correo", "Google": "Google", "WhatsAppCode": "WhatsApp", "WhatsAppLink": "WhatsApp" },
   "TenantStatus": { "PendingApproval": "Espera aprobación", "Provisioning": "Falló el alta", "Active": "Activa", "Suspended": "Suspendida", "Closed": "Cerrada" },
   "TenantRegistrationSource": { "SelfService": "Autoservicio", "Platform": "Plataforma" },
   "TenantFeatureSource": { "Plan": "Plan", "Manual": "Manual", "Trial": "Prueba" },

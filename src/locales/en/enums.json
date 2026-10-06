@@ -1,4 +1,6 @@
 {
+  "PlatformAccountState": { "Active": "Active", "Suspended": "Suspended", "NeedsRecovery": "Needs recovery", "PendingDeletion": "Deletion requested", "Deleted": "Deleted", "Invited": "Invitation pending", "InvitationExpired": "Invitation expired" },
+  "LoginAuditMethod": { "Code": "Email code", "Google": "Google", "WhatsAppCode": "WhatsApp", "WhatsAppLink": "WhatsApp" },
   "TenantStatus": { "PendingApproval": "Awaiting approval", "Provisioning": "Setup failed", "Active": "Active", "Suspended": "Suspended", "Closed": "Closed" },
   "TenantRegistrationSource": { "SelfService": "Self service", "Platform": "Platform" },
   "TenantFeatureSource": { "Plan": "Plan", "Manual": "Manual", "Trial": "Trial" },

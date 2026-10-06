@@ -7,6 +7,7 @@ import { platformReasons } from "../src/test/mocks/platformReasons.ts";
 import { platformTenantsCaptureResponses } from "../src/test/mocks/platformTenants.ts";
 import { platformOrganizationCaptureResponses } from "../src/test/mocks/platformOrganization.ts";
 import { platformOrganizationAdministrationCaptureResponses } from "../src/test/mocks/platformOrganizationAdministration.ts";
+import { platformAccountRows, platformAccountsCaptureResponses } from "../src/test/mocks/platformAccounts.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const canvas = path.join(root, "docs/design/lienzo");
@@ -107,6 +108,60 @@ function organizationsApp(entry) {
     responses: platformTenantsCaptureResponses({ many: pair === "organizaciones-50-filas", conflict: pair === "organizaciones-409" }),
     ...(readyText ? { readyText } : {}), ...(readyHeading ? { readyHeading } : {}),
   };
+}
+
+function accountsApp(entry) {
+  const pair = entry.pair;
+  const phone = entry.viewport.width === 390;
+  const actions = [];
+  let readySelector = "main";
+  let readyHeading;
+  let readyText = "Lucía Fernández";
+  let scenario = `${pair}: lista real T22a`;
+  const invitationError = pair.endsWith("invitacion-existente") ? "InvitationExists" : pair.endsWith("cuenta-existente") ? "AccountExists" : undefined;
+  if (pair.startsWith("cuentas-menu-")) {
+    const name = pair.slice("cuentas-menu-".length);
+    const row = platformAccountRows.find((item) => slug(item.displayName || item.primaryEmail || "") === name);
+    if (!row) throw new Error(`Cuentas: falta la fila de ${pair}.`);
+    if (row.id === "martin-sosa") {
+      // Para decidir 5: el tablero conserva un menú, pero tu propia cuenta es de sólo lectura.
+      scenario += ": propia cuenta sin acciones (diferencia aprobada)";
+      readyText = "Martín Sosa";
+    } else {
+      if (row.id === "account-julieta" && !phone) actions.push(click("Página siguiente"));
+      actions.push(click(`Acciones de ${row.displayName || row.primaryEmail}`));
+      readySelector = phone ? '[role="dialog"]' : '[role="menu"]';
+      readyText = undefined;
+    }
+  } else if (pair.startsWith("cuentas-invitar-")) {
+    actions.push(click("Invitar operador"));
+    readySelector = '[role="dialog"]';
+    readyHeading = "Invitar operador";
+    readyText = undefined;
+    if (pair === "cuentas-invitar-con-permisos") {
+      actions.push(fill("Correo", "julieta.molina@arquitecturabase.ejemplo.com"), click("Permisos de plataforma"), { ...click("Ver organizaciones", "menuitemcheckbox"), exact: false });
+      // La capa modal del menú oculta el título del diálogo a la accesibilidad mientras está abierto.
+      readySelector = '[role="menu"]';
+      readyHeading = undefined;
+      readyText = "El listado y la ficha de cada organización.";
+    } else if (pair.startsWith("cuentas-invitar-error-")) {
+      const email = pair.endsWith("vacio") ? "" : pair.endsWith("invalido") ? "lucia"
+        : invitationError === "InvitationExists" ? "julieta.molina@arquitecturabase.ejemplo.com" : "lucia.fernandez@delta.ejemplo.com";
+      actions.push(fill("Correo", email), click("Invitar"));
+      readyText = pair.endsWith("vacio") ? "Escribí el correo." : pair.endsWith("invalido") ? "Revisá el correo: no parece válido."
+        : invitationError === "InvitationExists" ? "Ese correo ya tiene una invitación. Reenviala desde la lista."
+          : "Ese correo ya tiene una cuenta. Un operador no puede tener perfiles de persona.";
+    }
+  } else if (pair.startsWith("cuentas-baja-")) {
+    const name = pair.endsWith("bloqueada") ? "Lucía Fernández" : "Beto Ramírez";
+    actions.push(click(`Acciones de ${name}`), { ...click("Dar de baja", "menuitem"), exact: true });
+    readySelector = '[role="dialog"]';
+    readyHeading = `¿Dar de baja la cuenta de ${name}?`;
+    readyText = pair.endsWith("bloqueada") ? "Es el único Dueño de Grupo Delta." : undefined;
+  }
+  return { ...entry.app, path: "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas",
+    captureMode: "harness", userFixture: "visual-operator", scenario, now: "2026-09-27T20:35:00Z", actions, readySelector,
+    responses: platformAccountsCaptureResponses({ invitationError, mobile: phone, includeAll: pair === "cuentas-menu-julio-perez" || pair === "cuentas-menu-laura-diaz" }), ...(readyHeading ? { readyHeading } : {}), ...(readyText ? { readyText } : {}) };
 }
 
 const isOrganizationDetailCase = (entry) => entry.group === "plataforma-organizacion"
@@ -396,6 +451,7 @@ export function buildCases() {
   return cases.map((entry) => {
     if (entry.group === "recuperar") return { ...entry, app: recoveryApp(entry) };
     if (entry.group === "plataforma-organizaciones") return { ...entry, app: organizationsApp(entry) };
+    if (entry.group === "plataforma-cuentas") return { ...entry, app: accountsApp(entry) };
     if (isOrganizationDetailCase(entry)) return { ...entry, app: organizationApp(entry) };
     if (isOrganizationAdministrationCase(entry)) return { ...entry, app: organizationAdministrationApp(entry) };
     if (entry.pair in platformReasons) return { ...entry, app: reasonApp(entry) };
