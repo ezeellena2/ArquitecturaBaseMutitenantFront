@@ -31,11 +31,11 @@ export function accountPhoneRow(account: PlatformAccountResponse, t: TFunction, 
 }
 export function createAccountColumns(t: TFunction): Column<PlatformAccountResponse>[] {
   return [
-    { id: "displayName", header: t("platformAccounts:columns.account"), type: "custom", mobile: "primary", sortable: true,
+    { id: "name", header: t("platformAccounts:columns.account"), type: "custom", mobile: "primary", sortable: true,
       cell: (account) => <Link className={`block truncate hover:underline ${account.displayName ? "font-medium text-[var(--t1)]" : "text-[var(--t3)]"}`} to={accountPath(account.id)}>{accountName(account) || <EmptyValue />}</Link>,
       detail: (account) => account.displayName ? account.primaryEmail || null : null },
     { id: "profiles", header: t("platformAccounts:columns.profiles"), type: "custom", cell: (account) => profiles(account, t) },
-    { id: "lastSignInAtUtc", header: t("platformAccounts:columns.lastSignIn"), type: "custom", sortable: true,
+    { id: "lastSignInAtUtc", header: t("platformAccounts:columns.lastSignIn"), type: "custom",
       cell: (account) => isOperatorInvitation(account) ? t("platformAccounts:columns.never") : <DateText value={account.lastSignInAtUtc} kind="relative" />,
       detail: (account) => isOperatorInvitation(account) ? account.invitationExpiresAtUtc ? <>{t("platformAccounts:columns.expiresPrefix")} <DateText value={account.invitationExpiresAtUtc} /></> : null : account.lastSignInMethod ? <EnumText enum="LoginAuditMethod" value={account.lastSignInMethod} /> : null },
     { id: "state", header: t("platformAccounts:columns.state"), type: "status", tones: accountStateTones, value: (account) => account.state, mobile: "status" },

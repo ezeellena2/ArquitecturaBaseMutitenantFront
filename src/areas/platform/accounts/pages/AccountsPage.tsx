@@ -71,7 +71,7 @@ export function AccountsPage() {
   const { t } = useTranslation(["platformAccounts", "common"]); const format = useFormat(); const client = useQueryClient(); const location = useLocation();
   const { data: currentUser } = useCurrentUser(); const { canPlatform } = usePermissions();
   const canManage = canPlatform("platform.accounts.manage"); const canInvite = canPlatform("platform.operators.manage");
-  const { filters, pagination, query, result: accounts, paginationProps } = usePagedQuery({ filterKeys, defaultSort: "displayName",
+  const { filters, pagination, query, result: accounts, paginationProps } = usePagedQuery({ filterKeys, defaultSort: "name",
     toQuery: (page, values): AccountsQuery => ({ ...page, kind: kinds.find((value) => value === values.kind), state: states.find((value) => value === values.state) }),
     queryKey: accountsQueryKey, queryFn: fetchAccounts, meta: { silent: true, blocksView: true } });
   const countQuery = { search: query.search, kind: query.kind, state: query.state };

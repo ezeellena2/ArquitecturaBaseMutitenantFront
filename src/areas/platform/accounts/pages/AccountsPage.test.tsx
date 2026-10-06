@@ -36,6 +36,19 @@ beforeEach(async () => {
   server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list())), http.get("/api/platform/accounts/filter-counts", () => HttpResponse.json(counts)), http.get("/api/platform/accounts/lucia", () => HttpResponse.json(detail)));
 });
 describe("Cuentas de Plataforma", () => {
+  it("carga y ordena por Cuenta con el campo name admitido por el contrato", async () => {
+    const user = userEvent.setup(); const sorts: string[] = [];
+    server.use(http.get("/api/platform/accounts/paged", ({ request }) => {
+      const sort = new URL(request.url).searchParams.get("sort") ?? ""; sorts.push(sort);
+      return sort === "name" || sort === "-name" ? HttpResponse.json(list()) : HttpResponse.json({ code: "Validation.Failed", errors: { sort: ["Orden no admitido."] } }, { status: 400 });
+    }));
+    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });
+    expect(await screen.findByRole("link", { name: "Lucía Fernández" })).toBeVisible();
+    expect(sorts[0]).toBe("name");
+    await user.click(screen.getByRole("button", { name: /^Cuenta/ }));
+    await waitFor(() => expect(sorts.at(-1)).toBe("-name"));
+    expect(within(screen.getByRole("columnheader", { name: "Último ingreso" })).queryByRole("button")).not.toBeInTheDocument();
+  });
   it("banda global, perfiles reales, invitación Nunca/Vence y sin errores axe", async () => {
     const { container } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });
     expect(await screen.findByRole("heading", { name: "Cuentas", level: 1 })).toBeVisible();
@@ -323,7 +336,7 @@ describe("Cuentas de Plataforma", () => {
     expect(await screen.findByText("11 cuentas · 1 suspendida")).toBeVisible(); const state = screen.getByRole("button", { name: "Activas" }); state.focus(); await user.keyboard("{ArrowDown}");
     expect(screen.getByRole("menuitemradio", { name: /^Todos/ })).toHaveTextContent("5"); expect(screen.getByRole("menuitemradio", { name: /^Suspendidas/ })).toHaveTextContent("2"); await user.click(screen.getByRole("menuitemradio", { name: /^Suspendidas/ }));
     await waitFor(() => expect(requested.at(-1)).toMatchObject({ kind: "Person", state: "Suspended", search: "lucia" })); expect(router.state.location.search).toContain("state=Suspended");
-    await user.click(screen.getByRole("button", { name: /Último ingreso/ })); await waitFor(() => expect(requested.at(-1)?.sort).toBe("lastSignInAtUtc"));
+    await user.click(screen.getByRole("button", { name: /^Cuenta/ })); await waitFor(() => expect(requested.at(-1)?.sort).toBe("-name"));
     await user.click(screen.getByRole("button", { name: "Limpiar" })); await waitFor(() => expect(router.state.location.search).not.toMatch(/kind=|state=|search=/));
   });
   it.each([1, 50])("%s filas del servidor, sin recortar ni paginar en cliente", async (size) => {

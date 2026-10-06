@@ -16,9 +16,9 @@ describe("Contrato HTTP de Cuentas", () => {
   it("pagina, ordena y busca en servidor; conteos cruzados sin paginado", async () => {
     const urls: URL[] = [];
     server.use(http.get("/api/platform/accounts/paged", ({ request }) => { urls.push(new URL(request.url)); return HttpResponse.json({ items: [], page: 2, pageSize: 50, totalCount: 0, totalPages: 0, hasPrevious: true, hasNext: false }); }), http.get("/api/platform/accounts/filter-counts", ({ request }) => { urls.push(new URL(request.url)); return HttpResponse.json({ total: 0, states: [], kinds: [] }); }));
-    await fetchAccounts({ page: 2, pageSize: 50, sort: "-lastSignInAtUtc", search: "Lucía & Hijos", kind: "Person", state: "Suspended" });
+    await fetchAccounts({ page: 2, pageSize: 50, sort: "-name", search: "Lucía & Hijos", kind: "Person", state: "Suspended" });
     await fetchAccountCounts({ search: "Lucía & Hijos", kind: "Person", state: "Suspended" });
-    expect(Object.fromEntries(urls[0].searchParams)).toEqual({ page: "2", pageSize: "50", sort: "-lastSignInAtUtc", search: "Lucía & Hijos", kind: "Person", state: "Suspended" });
+    expect(Object.fromEntries(urls[0].searchParams)).toEqual({ page: "2", pageSize: "50", sort: "-name", search: "Lucía & Hijos", kind: "Person", state: "Suspended" });
     expect(Object.fromEntries(urls[1].searchParams)).toEqual({ search: "Lucía & Hijos", kind: "Person", state: "Suspended" });
   });
   it("detalle usa id opaco escapado y raíz común", async () => {
