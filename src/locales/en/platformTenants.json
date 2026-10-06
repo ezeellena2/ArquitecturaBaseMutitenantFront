@@ -23,6 +23,30 @@
     "close": { "title": "Close {{name}}?", "description": "This cannot be undone. Its data will be retained until purging and nobody can enter again.", "pending": "Closing…" }
   },
   "messages": { "created": "We created {{name}} and invited {{email}} as Owner.", "approve": "We approved {{name}}. We notified {{email}}.", "approveOwners": "We approved {{name}}. We notified its Owners.", "reject": "We rejected {{name}}.", "suspend": "We suspended {{name}}.", "reactivate": "We reactivated {{name}}.", "close": "We closed {{name}}.", "retried": "We finished setting up {{name}}." },
+  "modules": {
+    "title": "Modules", "module": "Module", "source": "Source", "trialUntil": "Trial until {{date}}",
+    "actions": { "enable": "Turn on", "extend": "Extend trial", "disable": "Turn off" },
+    "confirm": {
+      "enable": { "title": "Turn on {{module}}?", "description": "{{name}} can use it from now on, with no end date.", "pending": "Turning on…" },
+      "extend": { "title": "Extend the trial of {{module}}?", "description": "{{name}} can keep using it until the date you choose.", "pending": "Extending…" },
+      "disable": { "title": "Turn off {{module}}?", "description": "Its screens will no longer appear for {{name}}. The data is preserved.", "pending": "Turning off…" }
+    },
+    "messages": { "enable": "We turned on {{module}}.", "extend": "We extended the trial of {{module}}.", "disable": "We turned off {{module}}." }
+  },
+  "domains": {
+    "title": "Verified domain", "domain": "Domain", "txt": "TXT record", "verify": "Verify", "remove": "Remove", "empty": "No email domain",
+    "verifyReason": "Verify the domain", "verified": "We verified {{domain}}.", "removed": "We removed {{domain}}.",
+    "confirm": { "title": "Remove {{domain}}?", "description": "It will no longer be an email domain for {{name}}.", "pending": "Removing…" }
+  },
+  "publicPage": {
+    "title": "Public page", "address": "Address", "publishedOn": "Published on",
+    "actions": { "unpublish": "Unpublish", "allow-publish": "Allow publishing" },
+    "confirm": {
+      "unpublish": { "title": "Unpublish {{address}}?", "description": "The page will no longer be visible, and {{name}} cannot publish it again until you allow it. We will notify its Owners.", "pending": "Unpublishing…" },
+      "allow-publish": { "title": "Allow publishing {{address}}?", "description": "{{name}} can publish its page again whenever it chooses.", "pending": "Allowing…" }
+    },
+    "messages": { "unpublish": "We unpublished {{address}}.", "allow-publish": "{{name}} can now publish its page." }
+  },
   "detail": {
     "source": {
       "Platform": "by the platform",

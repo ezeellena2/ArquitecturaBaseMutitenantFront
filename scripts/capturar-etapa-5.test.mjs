@@ -9,6 +9,45 @@ import { buildCases, canvas, output } from "./capturar-etapa-5.mjs";
 const groups = ["plataforma-marco", "plataforma-organizaciones", "plataforma-organizacion", "plataforma-cuentas",
   "plataforma-cuenta", "plataforma-recuperaciones", "plataforma-legales", "plataforma-auditoria", "plataforma-configuracion", "recuperar"];
 
+test("T21d recorre las tres pestañas administrativas y sus acciones por la ficha real", () => {
+  const cases = buildCases().filter((entry) => entry.group === "plataforma-organizacion"
+    && /^organizacion-(pagina-|dominio-|modulo-|pestana-(modulos|dominio-verificado|pagina-publica)$)/.test(entry.pair));
+  assert.equal(cases.length, 30);
+  for (const entry of cases) {
+    const params = new URL(entry.app.path, "http://example.test").searchParams;
+    assert.equal(params.get("route"), "/plataforma/organizaciones/tenant-1", entry.id);
+    assert.equal(params.get("frame"), null, entry.id);
+    assert.equal(params.get("reason"), null, entry.id);
+    assert.equal(entry.app.captureMode, "harness", entry.id);
+    assert.match(entry.app.scenario, /administración real T21d/, entry.id);
+    assert.equal(entry.app.now, "2026-09-27T20:35:00Z", entry.id);
+    assert.ok(entry.app.actions.some((action) => action.role === "tab"), entry.id);
+    for (const action of entry.app.actions) assert.ok(action.role && !action.selector, entry.id);
+  }
+});
+
+test("T21d conserva catálogo TestFeatures y estados privados aunque el móvil use referencia base", () => {
+  const cases = buildCases();
+  for (const entry of cases.filter((entry) => entry.pair === "organizacion-pestana-modulos")) {
+    const rows = entry.app.responses.find((item) => item.path.endsWith("/features")).body;
+    assert.deepEqual(rows.map((row) => row.key), ["WhatsApp", "Módulo B"]);
+    assert.deepEqual(rows.map((row) => row.source), ["Plan", "Trial"]);
+    assert.equal(rows[1].expiresOn, "2026-10-27");
+    assert.ok(rows.every((row) => !Object.hasOwn(row, "name")));
+  }
+  for (const entry of cases.filter((entry) => entry.pair === "organizacion-dominio-pendiente")) {
+    const rows = entry.app.responses.find((item) => item.path.endsWith("/domains")).body;
+    assert.equal(rows[0].txtRecordName, rows[0].domain);
+    assert.equal(rows[0].txtRecordValue, "ab-verificacion=7f3c9a2e41b8d605");
+  }
+  for (const entry of cases.filter((entry) => entry.pair === "organizacion-pagina-despublicada-por-la-plataforma")) {
+    const page = entry.app.responses.find((item) => item.path.endsWith("/public-site")).body;
+    assert.equal(page.isPublished, false);
+    assert.equal(page.publishBlockedReason, "Datos de contacto falsos.");
+    assert.ok(entry.app.actions.some((action) => action.name === "Página pública"));
+  }
+});
+
 test("T21c compara estados, Historial, Dueños y confirmaciones con la ficha real sin lecturas privadas", () => {
   const cases = buildCases().filter((entry) => entry.group === "plataforma-organizacion"
     && /^organizacion-(estado-|duenos-|confirmar-|confirmacion-error$|pestana-(historial|duenos)$)/.test(entry.pair));
@@ -23,6 +62,7 @@ test("T21c compara estados, Historial, Dueños y confirmaciones con la ficha rea
     assert.equal(entry.app.now, "2026-09-27T20:35:00Z", entry.id);
     assert.ok(entry.app.responses.some((item) => item.path === "/api/platform/tenants/tenant-1"), entry.id);
     assert.ok(entry.app.responses.some((item) => item.path.endsWith("/history")), entry.id);
+    assert.deepEqual(entry.app.responses.find((item) => item.path.endsWith("/features")).body.map((item) => item.key), ["WhatsApp", "Módulo B"], entry.id);
     assert.ok(!entry.app.responses.some((item) => /\/(domains|public-site)$/.test(item.path)), entry.id);
     for (const action of entry.app.actions) assert.ok(action.role && !action.selector, entry.id);
   }
@@ -107,7 +147,7 @@ test("T21b captura siete filas del tablero y cincuenta datos de prueba sin false
 
 test("T20d conserva el diálogo aislado de las fichas todavía pendientes", () => {
   const cases = buildCases();
-  for (const pair of ["organizacion-modulo-extender-prueba", "cuentas-baja-bloqueada"]) {
+  for (const pair of ["cuentas-baja-bloqueada"]) {
     const entries = cases.filter((entry) => entry.pair === pair);
     assert.equal(entries.length, 2);
     for (const entry of entries) {

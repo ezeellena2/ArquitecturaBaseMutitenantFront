@@ -107,3 +107,7 @@ export type CreatePlatformTenantRequest = ApiSchemas["CreatePlatformTenantHttpRe
 export type CreatedPlatformTenantResponse = ApiSchemas["CreatedPlatformTenantResponse"];
 export type PlatformTenantStateRequest = ApiSchemas["PlatformTenantStateHttpRequest"];
 export type PlatformTenantRetryRequest = ApiSchemas["PlatformTenantRetryHttpRequest"];
+export type PlatformFeatureResponse = ApiSchemas["PlatformFeatureResponse"];
+export type UpdatePlatformFeatureRequest = ApiSchemas["UpdatePlatformFeatureHttpRequest"];
+export type TenantFeatureSource = ApiSchemas["TenantFeatureSource"];
+export type PlatformPublicSiteResponse = ApiSchemas["PlatformPublicSiteResponse"];

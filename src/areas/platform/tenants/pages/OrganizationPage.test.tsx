@@ -23,6 +23,7 @@ function cacheOtherOrganization(page: ReturnType<typeof render>) {
   page.queryClient.setQueryDefaults(tenantQueryKey("omega"), { staleTime: Infinity });
   page.queryClient.setQueryData(tenantQueryKey("omega"), otherOrganization);
   server.use(http.get("/api/platform/tenants/omega", () => HttpResponse.json(otherOrganization)), http.get("/api/platform/tenants/omega/history", () => HttpResponse.json({ items: [], hasMore: false })));
+  server.use(http.get("/api/platform/tenants/omega/features", () => HttpResponse.json([])));
 }
 async function confirm(user: ReturnType<typeof userEvent.setup>, label: string, reason = "Revisión") {
   await user.click(await screen.findByRole("button", { name: label }));
@@ -34,6 +35,7 @@ beforeEach(async () => {
   vi.unstubAllGlobals();
   await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); detail();
   server.use(http.get("/api/platform/tenants/delta/history", () => HttpResponse.json({ items: [history], hasMore: false, nextCursor: null })));
+  server.use(http.get("/api/platform/tenants/delta/features", () => HttpResponse.json([])));
 });
 
 describe("Ficha de Organización", () => {
@@ -47,7 +49,7 @@ describe("Ficha de Organización", () => {
     for (const header of ["Fecha y hora", "Qué pasó", "Quién", "Motivo"]) expect(await screen.findByRole("columnheader", { name: header })).toBeVisible();
     expect(await screen.findByText(history.action)).toBeVisible();
     expect(screen.queryByText(history.summary)).not.toBeInTheDocument();
-    expect(screen.queryByRole("tab", { name: "Módulos" })).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole("tab", { name: /^Módulos/ })).not.toBeInTheDocument());
     expect(await axe(container)).toHaveNoViolations();
   });
   it.each([

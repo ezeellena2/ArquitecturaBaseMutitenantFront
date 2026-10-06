@@ -22,11 +22,14 @@ import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { homeOf } from "@/tenancy/access";
-import { changeTenantState, fetchTenant, retryTenantProvisioning, tenantQueryKey, tenantsQueryRoot, type TenantAction } from "../api/tenants";
+import { changeTenantState, fetchTenant, fetchTenantDomains, fetchTenantFeatures, fetchTenantPublicPage, retryTenantProvisioning, tenantDomainsQueryKey, tenantFeaturesQueryKey, tenantPublicPageQueryKey, tenantQueryKey, tenantsQueryRoot, type TenantAction } from "../api/tenants";
 import { organizationOwners, tenantStatusTones } from "../columns";
 import { isTenantStateConflict, tenantStateConflictCodes } from "../errors";
 import { OrganizationHistoryTab } from "../tabs/OrganizationHistoryTab";
 import { OrganizationOwnersTab } from "../tabs/OrganizationOwnersTab";
+import { OrganizationModulesTab, type OwnFeatureWrite } from "../tabs/OrganizationModulesTab";
+import { OrganizationDomainTab, type OwnDomainWrite } from "../tabs/OrganizationDomainTab";
+import { OrganizationPublicPageTab, type OwnPublicPageWrite } from "../tabs/OrganizationPublicPageTab";
 
 const nextStatus: Record<TenantAction, TenantStatus> = { approve: "Active", reject: "Closed", suspend: "Suspended", reactivate: "Active", close: "Closed" };
 interface OwnWrite { version: number; status: TenantStatus }
@@ -66,6 +69,13 @@ function OrganizationDetail({ id }: { id: string }) {
   const organization = useQuery({ queryKey: tenantQueryKey(id), queryFn: () => fetchTenant(id), enabled: Boolean(id) && canPlatform("platform.tenants.read"), meta: { silent: true, blocksView: true } });
   useBreadcrumbLeaf(organization.data?.name);
   const [tab, setTab] = useState("history");
+  const features = useQuery({ queryKey: tenantFeaturesQueryKey(id), queryFn: () => fetchTenantFeatures(id), enabled: Boolean(organization.data), meta: { silent: true } });
+  // Estas lecturas registran la entrada al alcance privado: jamás se anticipan para contar pestañas.
+  const domains = useQuery({ queryKey: tenantDomainsQueryKey(id), queryFn: () => fetchTenantDomains(id), enabled: canManage && Boolean(organization.data) && tab === "domains", meta: { silent: true } });
+  const publicPage = useQuery({ queryKey: tenantPublicPageQueryKey(id), queryFn: () => fetchTenantPublicPage(id), enabled: canManage && Boolean(organization.data) && tab === "publicPage", meta: { silent: true } });
+  const [featureWrites, setFeatureWrites] = useState(() => new Map<string, OwnFeatureWrite>());
+  const [domainWrites, setDomainWrites] = useState(() => new Map<string, OwnDomainWrite>());
+  const [publicPageWrite, setPublicPageWrite] = useState<OwnPublicPageWrite>();
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [ownWrites, setOwnWrites] = useState(() => new Map<string, OwnWrite>());
   const invalidate = () => client.invalidateQueries({ queryKey: tenantsQueryRoot });
@@ -98,6 +108,14 @@ function OrganizationDetail({ id }: { id: string }) {
       tabs={{ label: t("platformTenants:detail.tabsLabel"), value: tab, onValueChange: setTab, items: [
         { value: "history", label: t("platformTenants:detail.history"), content: <OrganizationHistoryTab id={id} /> },
         { value: "owners", label: t("platformTenants:detail.owners"), count: organizationOwners(data).length, content: <OrganizationOwnersTab organization={data} /> },
+        { value: "modules", label: t("platformTenants:modules.title"), count: features.data?.length, hidden: features.data?.length === 0,
+          content: <OrganizationModulesTab organization={data} query={features} writes={featureWrites} onWrite={(key, write) => setFeatureWrites((previous) => new Map(previous).set(key, write))}
+            onConflict={(key) => setFeatureWrites((previous) => { const next = new Map(previous); next.delete(key); return next; })} /> },
+        { value: "domains", label: t("platformTenants:domains.title"), hidden: !canManage,
+          content: <OrganizationDomainTab organization={data} query={domains} writes={domainWrites} onWrite={(domain, write) => setDomainWrites((previous) => new Map(previous).set(domain, write))}
+            onConflict={(domain) => setDomainWrites((previous) => { const next = new Map(previous); next.delete(domain); return next; })} /> },
+        { value: "publicPage", label: t("platformTenants:publicPage.title"), hidden: !canManage,
+          content: <OrganizationPublicPageTab organization={data} query={publicPage} write={publicPageWrite} onWrite={setPublicPageWrite} onConflict={() => setPublicPageWrite(undefined)} /> },
       ] }} />
     {confirmation ? <OrganizationStateDialog confirmation={confirmation} onClose={(conflicted) => {
       if (conflicted) setOwnWrites((previous) => { const next = new Map(previous); next.delete(confirmation.organization.id); return next; });

@@ -370,10 +370,10 @@ src/
 │       ├── AGENTS.md · CLAUDE.md                     permisos individuales y páginas parciales
 │       ├── tenants/
 │       │   ├── AGENTS.md · CLAUDE.md                 fuente Organizaciones y M-Organizaciones; coordinación de versión
-│       │   ├── api/tenants.ts                       T21b–c: listado, conteos, alta, detalle global, historial por cursor y acciones con versión e Idempotency-Key
+│       │   ├── api/tenants.ts                       T21b–d: listado, alta, detalle/historial y subrecursos tipados; POST con clave, PUT/DELETE sin clave
 │       │   ├── api/tenants.test.ts                  rutas, filtros, cuerpos y clave recibida
 │       │   ├── columns.tsx                          columnas y filas del teléfono sin avatar; tonos de TenantStatus y Dueños derivados de identidad/membresía
-│       │   ├── errors.ts                            códigos de campo del alta y conflictos de estado
+│       │   ├── errors.ts                            códigos de campo del alta, conflictos de estado y campo de motivo/fecha en ReasonDialog
 │       │   ├── components/
 │       │   │   ├── CreateOrganizationDialog.tsx     cinco campos, defaults del operador y clave por cuerpo/recorrido
 │       │   │   └── CreateOrganizationDialog.test.tsx validaciones, referencias, 400, foco, red y claves
@@ -384,7 +384,8 @@ src/
 │       │   │   ├── OrganizationOwnersTab.tsx        Dueños: nombre/correo, último ingreso relativo y estado; fila móvil sin avatar
 │       │   │   ├── OrganizationModulesTab.tsx       Módulos (P8): Prender, Extender prueba (hasta una fecha) o Apagar, con motivo
 │       │   │   ├── OrganizationDomainTab.tsx        Dominio verificado: registro TXT, Verificar o Quitar, con motivo
-│       │   │   └── OrganizationPublicPageTab.tsx    Página pública: Ver página, Despublicar (vuelve a borrador con el bloqueo) o Permitir publicar (levanta el bloqueo), con motivo: POST /api/platform/tenants/{id}/public-site/unpublish y …/allow-publish
+│       │   │   ├── OrganizationPublicPageTab.tsx    Página pública: dirección, publicación/bloqueo y fecha/motivo real; Despublicar o Permitir con POST versionado; Ver página pendiente E7
+│       │   │   └── testSupport.ts                  TestFeatures y respuestas MSW locales de prueba de T21d, sin catálogo productivo
 │       │   └── pages/
 │       │       ├── OrganizationsPage.tsx            /plataforma: banda global, filtros cruzados, menú por estado, ReasonDialog y reintento directo del alta
 │       │       ├── OrganizationsPage.test.tsx       tabla/móvil, filtros/URL, permisos, acciones, versión respondida, 409, red, estados y axe
@@ -763,7 +764,8 @@ src/
     │   ├── currentUsers.test.tsx                    tests de currentUsers
     │   ├── platformReasons.ts                       confirmaciones literales v111 para capturar las piezas de Plataforma
     │   ├── platformTenants.ts                       siete organizaciones literales v111 y filas adicionales exclusivas del paginado de prueba
-    │   └── platformOrganization.ts                  ficha, Dueños e Historial de Organizacion v111 con fechas UTC para las capturas
+    │   ├── platformOrganization.ts                  ficha, Dueños e Historial de Organizacion v111 con fechas UTC para las capturas
+    │   └── platformOrganizationAdministration.ts    TestFeatures, dominios y página pública de Organizacion v111, con versiones reales del contrato
     ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
     └── utils/
         ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]; devuelve el QueryClient, para una relectura de fondo [E7]

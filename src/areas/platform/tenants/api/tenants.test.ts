@@ -1,9 +1,29 @@
 import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { server } from "@/test/mocks/server";
-import { changeTenantState, createTenant, fetchTenant, fetchTenantCounts, fetchTenantHistory, fetchTenants, retryTenantProvisioning, tenantHistoryQueryKey, tenantQueryKey, tenantsQueryRoot } from "./tenants";
+import { changeTenantPublicPage, changeTenantState, createTenant, fetchTenant, fetchTenantCounts, fetchTenantDomains, fetchTenantFeatures, fetchTenantHistory, fetchTenantPublicPage, fetchTenants, removeTenantDomain, retryTenantProvisioning, tenantDomainsQueryKey, tenantFeaturesQueryKey, tenantHistoryQueryKey, tenantPublicPageQueryKey, tenantQueryKey, tenantsQueryRoot, updateTenantFeature, verifyTenantDomain } from "./tenants";
 
 describe("API de Organizaciones", () => {
+  it("subrecursos usan ids/claves opacos escapados y raíz de Query", async () => {
+    server.use(http.get("/api/platform/tenants/org%2F1/features", () => HttpResponse.json([])), http.get("/api/platform/tenants/org%2F1/domains", () => HttpResponse.json([])), http.get("/api/platform/tenants/org%2F1/public-site", () => HttpResponse.json({ slug: null, name: "Organización", isPublished: false, version: 0 })));
+    expect(await fetchTenantFeatures("org/1")).toEqual([]); expect(await fetchTenantDomains("org/1")).toEqual([]); expect(await fetchTenantPublicPage("org/1")).toMatchObject({ version: 0 });
+    expect(tenantFeaturesQueryKey("org/1")).toEqual([...tenantsQueryRoot, "features", "org/1"]); expect(tenantDomainsQueryKey("org/1")).toEqual([...tenantsQueryRoot, "domains", "org/1"]); expect(tenantPublicPageQueryKey("org/1")).toEqual([...tenantsQueryRoot, "public-site", "org/1"]);
+  });
+  it("PUT y DELETE mandan el cuerpo/version, sin Idempotency-Key", async () => {
+    const bodies: unknown[] = []; const keys: (string | null)[] = [];
+    server.use(http.put("/api/platform/tenants/org%2F1/features/module%2Fkey", async ({ request }) => { bodies.push(await request.json()); keys.push(request.headers.get("Idempotency-Key")); return HttpResponse.json({ version: 90 }); }), http.delete("/api/platform/tenants/org%2F1/domains/example.com", async ({ request }) => { bodies.push(await request.json()); keys.push(request.headers.get("Idempotency-Key")); return new HttpResponse(null, { status: 204 }); }));
+    const feature = { enabled: true, source: "Trial" as const, expiresOn: "2026-10-30", version: 0, reason: "Prueba" };
+    expect(await updateTenantFeature("org/1", "module/key", feature)).toEqual({ version: 90 }); expect(await removeTenantDomain("org/1", "example.com", { version: 90, reason: "Quitar" })).toBeUndefined();
+    expect(bodies).toEqual([feature, { version: 90, reason: "Quitar" }]); expect(keys).toEqual([null, null]);
+  });
+  it.each(["unpublish", "allow-publish"] as const)("página %s manda motivo/version y clave recibida", async (action) => {
+    let body: unknown; let key: string | null = null; server.use(http.post(`/api/platform/tenants/org%2F1/public-site/${action}`, async ({ request }) => { body = await request.json(); key = request.headers.get("Idempotency-Key"); return HttpResponse.json({ version: 90 }); }));
+    expect(await changeTenantPublicPage("org/1", action, { version: 89, reason: "Revisión" }, "page-key")).toEqual({ version: 90 }); expect(body).toEqual({ version: 89, reason: "Revisión" }); expect(key).toBe("page-key");
+  });
+  it("Verificar manda dominio normalizado real, motivo/version y clave recibida", async () => {
+    let body: unknown; let key: string | null = null; server.use(http.post("/api/platform/tenants/org%2F1/domains/example.com/verify", async ({ request }) => { body = await request.json(); key = request.headers.get("Idempotency-Key"); return HttpResponse.json({ version: 90 }); }));
+    expect(await verifyTenantDomain("org/1", "example.com", { version: 89, reason: "Verificar el dominio" }, "verify-key")).toEqual({ version: 90 }); expect(body).toEqual({ version: 89, reason: "Verificar el dominio" }); expect(key).toBe("verify-key");
+  });
   it("detalle e historial usan el id escapado, cursor opaco, límite y raíz común", async () => {
     const urls: URL[] = [];
     server.use(http.get("/api/platform/tenants/org%2F1", ({ request }) => { urls.push(new URL(request.url)); return HttpResponse.json({ id: "org/1", owners: [] }); }), http.get("/api/platform/tenants/org%2F1/history", ({ request }) => { urls.push(new URL(request.url)); return HttpResponse.json({ items: [], hasMore: false }); }));

@@ -1,6 +1,6 @@
 import { api } from "@/shared/api/httpClient";
 import type { PagedResult } from "@/shared/api/pagedResult";
-import type { CreatePlatformTenantRequest, CreatedPlatformTenantResponse, PagedRequest, PlatformTenantDetailResponse, PlatformTenantFilterCounts, PlatformTenantHistoryCursorResponse, PlatformTenantResponse, PlatformTenantRetryRequest, PlatformTenantStateRequest, TenantRegistrationSource, TenantStatus, VersionResponse } from "@/shared/api/types";
+import type { CreatePlatformTenantRequest, CreatedPlatformTenantResponse, OrganizationDomainResponse, PagedRequest, PlatformFeatureResponse, PlatformPublicSiteResponse, PlatformTenantDetailResponse, PlatformTenantFilterCounts, PlatformTenantHistoryCursorResponse, PlatformTenantResponse, PlatformTenantRetryRequest, PlatformTenantStateRequest, TenantRegistrationSource, TenantStatus, UpdatePlatformFeatureRequest, VersionResponse } from "@/shared/api/types";
 
 export interface TenantsQuery extends PagedRequest { status?: TenantStatus; source?: TenantRegistrationSource }
 export type TenantCountsQuery = Pick<TenantsQuery, "search" | "status" | "source">;
@@ -10,6 +10,32 @@ export const tenantsQueryKey = (query: TenantsQuery) => [...tenantsQueryRoot, "p
 export const tenantCountsQueryKey = (query: TenantCountsQuery) => [...tenantsQueryRoot, "counts", query] as const;
 export const tenantQueryKey = (id: string) => [...tenantsQueryRoot, "detail", id] as const;
 export const tenantHistoryQueryKey = (id: string) => [...tenantsQueryRoot, "history", id] as const;
+export const tenantFeaturesQueryKey = (id: string) => [...tenantsQueryRoot, "features", id] as const;
+export const tenantDomainsQueryKey = (id: string) => [...tenantsQueryRoot, "domains", id] as const;
+export const tenantPublicPageQueryKey = (id: string) => [...tenantsQueryRoot, "public-site", id] as const;
+
+export function fetchTenantFeatures(id: string): Promise<PlatformFeatureResponse[]> {
+  return api.get(`/api/platform/tenants/${encodeURIComponent(id)}/features`);
+}
+export function updateTenantFeature(id: string, key: string, request: UpdatePlatformFeatureRequest): Promise<VersionResponse> {
+  return api.put(`/api/platform/tenants/${encodeURIComponent(id)}/features/${encodeURIComponent(key)}`, request);
+}
+export function fetchTenantDomains(id: string): Promise<OrganizationDomainResponse[]> {
+  return api.get(`/api/platform/tenants/${encodeURIComponent(id)}/domains`);
+}
+export function verifyTenantDomain(id: string, domain: string, request: PlatformTenantStateRequest, key: string): Promise<VersionResponse> {
+  return api.post(`/api/platform/tenants/${encodeURIComponent(id)}/domains/${encodeURIComponent(domain)}/verify`, request, { headers: { "Idempotency-Key": key } });
+}
+export function removeTenantDomain(id: string, domain: string, request: PlatformTenantStateRequest): Promise<void> {
+  return api.delete(`/api/platform/tenants/${encodeURIComponent(id)}/domains/${encodeURIComponent(domain)}`, { body: JSON.stringify(request) });
+}
+export function fetchTenantPublicPage(id: string): Promise<PlatformPublicSiteResponse> {
+  return api.get(`/api/platform/tenants/${encodeURIComponent(id)}/public-site`);
+}
+export type PublicPageAction = "unpublish" | "allow-publish";
+export function changeTenantPublicPage(id: string, action: PublicPageAction, request: PlatformTenantStateRequest, key: string): Promise<VersionResponse> {
+  return api.post(`/api/platform/tenants/${encodeURIComponent(id)}/public-site/${action}`, request, { headers: { "Idempotency-Key": key } });
+}
 
 export function fetchTenant(id: string): Promise<PlatformTenantDetailResponse> {
   return api.get<PlatformTenantDetailResponse>(`/api/platform/tenants/${encodeURIComponent(id)}`);

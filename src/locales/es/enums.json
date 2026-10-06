@@ -1,6 +1,10 @@
 {
   "TenantStatus": { "PendingApproval": "Espera aprobación", "Provisioning": "Falló el alta", "Active": "Activa", "Suspended": "Suspendida", "Closed": "Cerrada" },
   "TenantRegistrationSource": { "SelfService": "Autoservicio", "Platform": "Plataforma" },
+  "TenantFeatureSource": { "Plan": "Plan", "Manual": "Manual", "Trial": "Prueba" },
+  "PlatformModuleState": { "On": "Prendido", "Trial": "Prueba", "Off": "Apagado" },
+  "TenantDomainStatus": { "Pending": "Pendiente", "Verified": "Verificado", "Removed": "Quitado" },
+  "PlatformPublicPageState": { "Published": "Publicada", "Draft": "Borrador", "Blocked": "Despublicada por la plataforma" },
   "TestStatus": {
     "Active": "Activo"
   },

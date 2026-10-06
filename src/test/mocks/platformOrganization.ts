@@ -1,6 +1,10 @@
 import type { ApiSchemas } from "@/shared/api/types";
 
 // Estados y filas de Organizacion v111. Son respuestas de prueba, nunca catálogo productivo.
+export const platformOrganizationTestFeatures: ApiSchemas["PlatformFeatureResponse"][] = [
+  { key: "WhatsApp", enabled: true, source: "Plan", expiresOn: null, version: 1 },
+  { key: "Módulo B", enabled: true, source: "Trial", expiresOn: "2026-10-27", version: 0 },
+];
 const states: Record<string, ApiSchemas["TenantStatus"]> = {
   "Espera aprobación": "PendingApproval", "Falló el alta": "Provisioning", Activa: "Active", Suspendida: "Suspended", Cerrada: "Closed",
 };
@@ -42,6 +46,7 @@ export function platformOrganizationCaptureResponses({ state = "Activa", owners 
   return [
     { method: "GET", path: "/api/platform/tenants/tenant-1", status: 200, body: detail },
     { method: "GET", path: "/api/platform/tenants/tenant-1/history", status: 200, body: page },
+    { method: "GET", path: "/api/platform/tenants/tenant-1/features", status: 200, body: platformOrganizationTestFeatures },
     ...["approve", "reject", "suspend", "reactivate", "close", "retry-provisioning"].map((action) => ({
       method: "POST", path: `/api/platform/tenants/tenant-1/${action}`, status: 200, body: { version: 2 },
     })),

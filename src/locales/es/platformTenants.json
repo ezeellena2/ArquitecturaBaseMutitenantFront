@@ -23,6 +23,30 @@
     "close": { "title": "¿Cerrar {{name}}?", "description": "No se puede deshacer. Sus datos se conservan hasta la purga y nadie vuelve a entrar.", "pending": "Cerrando…" }
   },
   "messages": { "created": "Creamos {{name}} e invitamos a {{email}} como Dueño.", "approve": "Aprobamos {{name}}. Le avisamos a {{email}}.", "approveOwners": "Aprobamos {{name}}. Les avisamos a sus Dueños.", "reject": "Rechazamos {{name}}.", "suspend": "Suspendimos {{name}}.", "reactivate": "Reactivamos {{name}}.", "close": "Cerramos {{name}}.", "retried": "Terminamos el alta de {{name}}." },
+  "modules": {
+    "title": "Módulos", "module": "Módulo", "source": "Origen", "trialUntil": "Prueba hasta {{date}}",
+    "actions": { "enable": "Prender", "extend": "Extender prueba", "disable": "Apagar" },
+    "confirm": {
+      "enable": { "title": "¿Prender {{module}}?", "description": "{{name}} lo tiene desde ahora, sin fecha de fin.", "pending": "Prendiendo…" },
+      "extend": { "title": "¿Extender la prueba de {{module}}?", "description": "{{name}} lo sigue usando hasta la fecha que elijas.", "pending": "Extendiendo…" },
+      "disable": { "title": "¿Apagar {{module}}?", "description": "Sus pantallas dejan de existir para {{name}}. Los datos se conservan.", "pending": "Apagando…" }
+    },
+    "messages": { "enable": "Prendimos {{module}}.", "extend": "Extendimos la prueba de {{module}}.", "disable": "Apagamos {{module}}." }
+  },
+  "domains": {
+    "title": "Dominio verificado", "domain": "Dominio", "txt": "Registro TXT", "verify": "Verificar", "remove": "Quitar", "empty": "Sin dominio de correo",
+    "verifyReason": "Verificar el dominio", "verified": "Verificamos {{domain}}.", "removed": "Quitamos {{domain}}.",
+    "confirm": { "title": "¿Quitar {{domain}}?", "description": "Deja de contar como dominio de correo de {{name}}.", "pending": "Quitando…" }
+  },
+  "publicPage": {
+    "title": "Página pública", "address": "Dirección", "publishedOn": "Publicada el",
+    "actions": { "unpublish": "Despublicar", "allow-publish": "Permitir publicar" },
+    "confirm": {
+      "unpublish": { "title": "¿Despublicar {{address}}?", "description": "La página deja de verse y {{name}} no puede volver a publicarla hasta que lo permitas. Les avisamos a sus Dueños.", "pending": "Despublicando…" },
+      "allow-publish": { "title": "¿Permitir publicar {{address}}?", "description": "{{name}} puede volver a publicar su página cuando quiera.", "pending": "Permitiendo…" }
+    },
+    "messages": { "unpublish": "Despublicamos {{address}}.", "allow-publish": "{{name}} ya puede publicar su página." }
+  },
   "detail": {
     "source": {
       "Platform": "por la plataforma",

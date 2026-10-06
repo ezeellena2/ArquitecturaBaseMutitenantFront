@@ -6,6 +6,7 @@ import { boardChoices, capturePaths, otpMaskStyle, startCanvasServer, validateMa
 import { platformReasons } from "../src/test/mocks/platformReasons.ts";
 import { platformTenantsCaptureResponses } from "../src/test/mocks/platformTenants.ts";
 import { platformOrganizationCaptureResponses } from "../src/test/mocks/platformOrganization.ts";
+import { platformOrganizationAdministrationCaptureResponses } from "../src/test/mocks/platformOrganizationAdministration.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const canvas = path.join(root, "docs/design/lienzo");
@@ -110,6 +111,43 @@ function organizationsApp(entry) {
 
 const isOrganizationDetailCase = (entry) => entry.group === "plataforma-organizacion"
   && /^organizacion-(estado-|duenos-|confirmar-|confirmacion-error$|pestana-(historial|duenos)$)/.test(entry.pair);
+
+const isOrganizationAdministrationCase = (entry) => entry.group === "plataforma-organizacion"
+  && /^organizacion-(pagina-|dominio-|modulo-|pestana-(modulos|dominio-verificado|pagina-publica)$)/.test(entry.pair);
+
+function organizationAdministrationApp(entry) {
+  const pair = entry.pair;
+  const moduleCase = pair.includes("modulo");
+  const domainCase = pair.includes("dominio");
+  const tab = moduleCase ? "Módulos" : domainCase ? "Dominio verificado" : "Página pública";
+  const pendingDomain = ["organizacion-dominio-pendiente", "organizacion-dominio-verificar"].includes(pair);
+  const pageState = ["organizacion-pagina-despublicada-por-la-plataforma", "organizacion-pagina-permitir-publicar"].includes(pair) ? "Blocked"
+    : pair === "organizacion-pagina-borrador" ? "Draft" : "Published";
+  const actions = [{ ...click(tab, "tab"), exact: false }];
+  let readySelector = "main";
+  let readyHeading = "Grupo Delta";
+  let readyText = moduleCase ? "Prueba hasta" : domainCase ? pendingDomain ? "ab-verificacion=7f3c9a2e41b8d605" : "Verificado"
+    : pageState === "Blocked" ? "Datos de contacto falsos." : pageState === "Draft" ? "Borrador" : "Publicada";
+  const confirmation = {
+    "organizacion-modulo-apagar": ["WhatsApp", "Apagar", "¿Apagar WhatsApp?"],
+    "organizacion-modulo-prender": ["Módulo B", "Prender", "¿Prender Módulo B?"],
+    "organizacion-modulo-extender-prueba": ["Módulo B", "Extender prueba", "¿Extender la prueba de Módulo B?"],
+    "organizacion-dominio-quitar": ["delta.ejemplo.com", "Quitar", "¿Quitar delta.ejemplo.com?"],
+    "organizacion-pagina-despublicar": ["delta.plataforma.com", "Despublicar", "¿Despublicar delta.plataforma.com?"],
+    "organizacion-pagina-permitir-publicar": ["delta.plataforma.com", "Permitir publicar", "¿Permitir publicar delta.plataforma.com?"],
+  }[pair];
+  if (confirmation || pair === "organizacion-dominio-verificar") {
+    const [resource, action, title] = confirmation ?? ["delta.ejemplo.com", "Verificar"];
+    actions.push({ ...click(`Acciones de ${resource}`), exact: true }, { ...click(action, "menuitem"), exact: true });
+    if (confirmation) { readySelector = '[role="dialog"]'; readyHeading = title; readyText = undefined; }
+    else { readyText = "Verificamos delta.ejemplo.com."; }
+  }
+  return { ...entry.app,
+    path: "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1", captureMode: "harness", userFixture: "visual-operator",
+    scenario: `${pair}: administración real T21d`, now: "2026-09-27T20:35:00Z", actions, readySelector, readyHeading,
+    responses: platformOrganizationAdministrationCaptureResponses({ pendingDomain, pageState }), ...(readyText ? { readyText } : {}),
+  };
+}
 
 function organizationApp(entry) {
   const phone = entry.viewport.width === 390;
@@ -359,6 +397,7 @@ export function buildCases() {
     if (entry.group === "recuperar") return { ...entry, app: recoveryApp(entry) };
     if (entry.group === "plataforma-organizaciones") return { ...entry, app: organizationsApp(entry) };
     if (isOrganizationDetailCase(entry)) return { ...entry, app: organizationApp(entry) };
+    if (isOrganizationAdministrationCase(entry)) return { ...entry, app: organizationAdministrationApp(entry) };
     if (entry.pair in platformReasons) return { ...entry, app: reasonApp(entry) };
     if (entry.group === "plataforma-marco") {
       const realMore = entry.viewport.width === 390 && entry.app.path === "/plataforma/mas";
