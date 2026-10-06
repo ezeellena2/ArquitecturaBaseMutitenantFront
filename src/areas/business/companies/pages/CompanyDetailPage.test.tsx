@@ -81,8 +81,7 @@ function expectAboveButtons(dialog: HTMLElement, alert: HTMLElement, lastField: 
 }
 
 describe("CompanyDetailPage", () => {
-  it("tablero Empresa: banda, columnas, filtros y la pestaña Roles con los roles propios de la empresa", async () => {
-    const user = userEvent.setup();
+  it("tablero Empresa: banda, columnas y filtros accesibles de Miembros", async () => {
     detailApi([member]);
     const { container } = renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
 
@@ -98,7 +97,12 @@ describe("CompanyDetailPage", () => {
     expect(screen.getByRole("button", { name: "Rol: todos" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Estado: todos" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
-
+  });
+  it("tablero Empresa: pestaña Roles accesible con los roles propios de la empresa", async () => {
+    const user = userEvent.setup();
+    detailApi([member]);
+    const { container } = renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    await screen.findByRole("button", { name: "Editar empresa" });
     await user.click(screen.getByRole("tab", { name: /Roles/ }));
     expect(await screen.findByRole("link", { name: "Crear rol" })).toHaveAttribute("href", "/org/roles/nuevo?scope=SpecificCompany&companyId=company-1");
     expect(screen.queryByRole("button", { name: "Agregar miembro" })).not.toBeInTheDocument();

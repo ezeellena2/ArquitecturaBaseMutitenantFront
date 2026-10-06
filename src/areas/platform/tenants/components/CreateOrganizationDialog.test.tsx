@@ -1,13 +1,16 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 import { asPhone } from "@/test/utils/phone";
+
+// La carga lazy queda fuera del límite de cada recorrido, como en las fichas de Empresa y Organización.
+beforeAll(async () => { await import("../pages/OrganizationsPage"); });
 
 beforeEach(async () => {
   await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR");
@@ -23,18 +26,23 @@ async function fill(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByRole("textbox", { name: "Correo del Dueño" }), "LUCIA@EXAMPLE.COM");
 }
 describe("Crear organización", () => {
-  it("ofrece cinco campos con defaults del operador, valida sin apagar Crear y restaura foco al cerrar", async () => {
-    const user = userEvent.setup(); let calls = 0;
-    server.use(http.post("/api/platform/tenants", () => { calls++; return HttpResponse.json(created, { status: 201 }); }));
+  it("ofrece cinco campos accesibles con defaults del operador y Crear habilitado", async () => {
+    const user = userEvent.setup();
     const { container } = renderRouteWithProviders("/plataforma", { as: "platform-operator" }); const dialog = await open(user);
     expect(within(dialog).getAllByRole("textbox")).toHaveLength(3); expect(within(dialog).getAllByRole("combobox")).toHaveLength(2);
     expect(within(dialog).getByRole("combobox", { name: "Zona horaria" })).toHaveTextContent("Buenos Aires");
     expect(within(dialog).getByRole("combobox", { name: "Idioma y región" })).toHaveTextContent("Español");
     expect(within(dialog).getByRole("button", { name: "Crear organización" })).toBeEnabled();
+    expect(await axe(container)).toHaveNoViolations();
+  });
+  it("valida sin enviar, restaura foco al cancelar y reabre el alta limpia", async () => {
+    const user = userEvent.setup(); let calls = 0;
+    server.use(http.post("/api/platform/tenants", () => { calls++; return HttpResponse.json(created, { status: 201 }); }));
+    renderRouteWithProviders("/plataforma", { as: "platform-operator" }); const dialog = await open(user);
     await user.click(within(dialog).getByRole("button", { name: "Crear organización" }));
     expect(await screen.findByText("Escribí el nombre de la organización.")).toBeVisible(); expect(screen.getByText("Escribí el nombre de la primera empresa.")).toBeVisible(); expect(screen.getByText("Escribí el correo.")).toBeVisible(); expect(calls).toBe(0);
     await user.type(screen.getByRole("textbox", { name: "Correo del Dueño" }), "incorrecto"); await user.click(within(dialog).getByRole("button", { name: "Crear organización" })); expect(await screen.findByText("Revisá el correo: no parece válido.")).toBeVisible();
-    expect(await axe(container)).toHaveNoViolations(); await user.click(within(dialog).getByRole("button", { name: "Cancelar" })); await waitFor(() => expect(screen.getByRole("button", { name: "Crear organización" })).toHaveFocus());
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" })); await waitFor(() => expect(screen.getByRole("button", { name: "Crear organización" })).toHaveFocus());
     await open(user); expect(screen.getByRole("textbox", { name: "Correo del Dueño" })).toHaveValue(""); expect(screen.queryByText("Revisá el correo: no parece válido.")).not.toBeInTheDocument();
   });
   it("crea con los cinco valores normalizados, muestra correo enmascarado y relee al cerrar", async () => {
