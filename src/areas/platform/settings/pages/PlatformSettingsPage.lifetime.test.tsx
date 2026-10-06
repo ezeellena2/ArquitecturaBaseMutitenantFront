@@ -1,9 +1,11 @@
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { onlineManager } from "@tanstack/react-query";
 import { http, HttpResponse } from "msw";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { StrictMode } from "react";
+import { toast, type Action } from "sonner";
 import { routes } from "@/app/routes";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { changeCulture, configureI18n } from "@/shared/i18n";
@@ -42,6 +44,12 @@ async function finishMutation(page: Awaited<ReturnType<typeof editor>>, release?
   await act(async () => { release?.(); });
   await waitFor(() => expect(mutation?.state.status).toBe("error")); expect(mutation?.state.error).toMatchObject({ name: "AbortError" });
 }
+function retainedNativeRetry() {
+  const action = toast.getHistory().map((entry) => "action" in entry ? entry.action : undefined)
+    .findLast((candidate): candidate is Action => typeof candidate === "object" && candidate !== null && "onClick" in candidate && typeof candidate.onClick === "function" && "label" in candidate && candidate.label === "Reintentar");
+  if (!action) throw new Error("Falta el Retry nativo del aviso actual.");
+  return () => { Reflect.apply(action.onClick, undefined, []); };
+}
 
 describe("Vida del guardado de Configuración", () => {
   it("cambiar motivo A→B→A antes de resolver validación abandona el envío original sin franja", async () => {
@@ -66,6 +74,42 @@ describe("Vida del guardado de Configuración", () => {
     const user = userEvent.setup(); await editor(); await confirm(user); const retry = await screen.findByRole("button", { name: "Reintentar" });
     await act(async () => { fireEvent.click(retry); }); expect(await screen.findByText("Guardamos la configuración.")).toBeVisible(); expect(requests).toHaveLength(2); expect(requests[1]).toEqual(requests[0]);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
+  });
+  it.each(["pausado tras A→B→A", "tras nuevo submit del mismo motivo"] as const)("Retry anterior %s nunca cambia de dueño nativo", async (scenario) => {
+    const wasOnline = onlineManager.isOnline(); const releases: Array<() => void> = []; const requests: Record<string, unknown>[] = [];
+    let page: Awaited<ReturnType<typeof editor>> | undefined; let unexpectedRequest: (() => void) | undefined; let unsubscribe: (() => void) | undefined;
+    server.use(http.put("/api/platform/settings", async ({ request }) => {
+      requests.push(await request.json() as Record<string, unknown>);
+      if (requests.length === 1) return HttpResponse.error();
+      if (requests.length > 2) unexpectedRequest?.();
+      await new Promise<void>((resolve) => { releases.push(resolve); }); return HttpResponse.json({ version: 7 });
+    }));
+    try {
+      await act(async () => { onlineManager.setOnline(true); });
+      const user = userEvent.setup(); page = await editor(); const dialog = await confirm(user); const oldRetry = await screen.findByRole("button", { name: "Reintentar" });
+      const retryAgain = retainedNativeRetry(); const old = page.queryClient.getMutationCache().getAll().at(-1); if (!old) throw new Error("Falta la mutación nativa original.");
+      const reason = within(dialog).getByRole("textbox", { name: "Motivo" });
+      if (scenario === "pausado tras A→B→A") {
+        reason.focus(); fireEvent.change(reason, { target: { value: "Motivo B" } }); fireEvent.change(reason, { target: { value: "Motivo A" } }); const previousFn = old.options.mutationFn;
+        await act(async () => { onlineManager.setOnline(false); fireEvent.click(oldRetry); });
+        await waitFor(() => expect(old.state.isPaused).toBe(true)); await waitFor(() => expect(old.options.mutationFn).not.toBe(previousFn));
+        await act(async () => { onlineManager.setOnline(true); }); await waitFor(() => expect(old.state.status).toBe("error")); expect(old.state.error).toMatchObject({ name: "AbortError" });
+        expect(requests).toHaveLength(1); expect(within(dialog).queryByRole("alert")).not.toBeInTheDocument(); expect(document.activeElement).toBe(reason);
+      }
+      await user.click(within(dialog).getByRole("button", { name: "Guardar" })); await waitFor(() => expect(releases).toHaveLength(1)); expect(requests).toHaveLength(2); const focused = document.activeElement;
+      const result = new Promise<"abort" | "extra">((resolve) => {
+        unexpectedRequest = () => resolve("extra");
+        unsubscribe = page?.queryClient.getMutationCache().subscribe((event) => {
+          if (event.type === "updated" && event.mutation === old && old.state.status === "error") resolve("abort");
+        });
+      });
+      // El primer click puede quitar el aviso. Éste sigue siendo su callback público original, ligado a la misma Mutation.
+      await act(async () => { retryAgain(); expect(await result).toBe("abort"); });
+      expect(old.state.error).toMatchObject({ name: "AbortError" }); expect(requests).toHaveLength(2); expect(screen.getByRole("dialog")).toBe(dialog); expect(within(dialog).getByRole("textbox", { name: "Motivo" })).toBe(reason); expect(reason).toHaveValue("Motivo A"); expect(within(dialog).queryByRole("alert")).not.toBeInTheDocument(); expect(document.activeElement).toBe(focused);
+      await act(async () => { releases.splice(0).forEach((release) => release()); }); expect(await screen.findByText("Guardamos la configuración.")).toBeVisible(); expect(requests).toHaveLength(2); expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    } finally {
+      unsubscribe?.(); page?.unmount(); await act(async () => { onlineManager.setOnline(wasOnline); releases.splice(0).forEach((release) => release()); });
+    }
   });
   it.each(["cancelar", "editar", "descartar"])("%s abandona Retry A y volver A no revive el dueño anterior", async (action) => {
     let calls = 0; server.use(http.put("/api/platform/settings", () => { calls++; return calls === 1 ? HttpResponse.error() : HttpResponse.json({ version: 6 }); }));

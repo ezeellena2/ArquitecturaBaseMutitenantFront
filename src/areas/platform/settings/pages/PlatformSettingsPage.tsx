@@ -172,7 +172,7 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
 }
 
 interface NativeCallbacks {
-  valid: () => boolean;
+  readonly valid: () => boolean;
   original: MutationOptions<unknown, Error, unknown, unknown>;
   guarded: MutationOptions<unknown, Error, unknown, unknown>;
 }
@@ -183,7 +183,7 @@ function SettingsReasonConfirmation({ confirmation, current, onClose, execute }:
   execute: (reason: ReasonDialogValues, reasonCurrent: () => boolean) => Promise<VersionResponse> }) {
   const { t } = useTranslation(["platformSettings", "common"]); const client = useQueryClient();
   const active = useRef(true); const revision = useRef(0); const [reasonRevision, setReasonRevision] = useState(0);
-  const reasonValue = useRef(""); const submittedRevision = useRef<number | null>(null);
+  const reasonValue = useRef(""); const submittedRevision = useRef<number | null>(null); const submission = useRef(0);
   const bindings = useRef(new WeakMap<Mutation, NativeCallbacks>());
   const protect = useCallback((mutation: Mutation) => {
     const binding = bindings.current.get(mutation);
@@ -212,7 +212,8 @@ function SettingsReasonConfirmation({ confirmation, current, onClose, execute }:
       };
       bindings.current.set(mutation, next); binding = next;
     }
-    binding.valid = valid; protect(mutation); return mutation;
+    // El primer intento fija su dueño: Observer puede cambiar mutationFn, pero un Retry nunca adopta otro submit.
+    protect(mutation); return { mutation, valid: binding.valid };
   }
   useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
   useEffect(() => client.getMutationCache().subscribe((event) => {
@@ -222,16 +223,18 @@ function SettingsReasonConfirmation({ confirmation, current, onClose, execute }:
       queueMicrotask(() => protect(mutation));
     }
   }), [client, protect]);
-  return <div onSubmitCapture={() => { submittedRevision.current = revision.current; }} onChangeCapture={(event) => {
+  return <div onSubmitCapture={() => { submittedRevision.current = revision.current; submission.current++; }} onChangeCapture={(event) => {
     if (event.target instanceof HTMLTextAreaElement && event.target.name === "reason") { reasonValue.current = event.target.value.trim(); revision.current++; setReasonRevision(revision.current); }
   }}>
     <ReasonDialog title={t("platformSettings:confirmTitle")} description={t("platformSettings:confirmDescription")} confirmLabel={t("platformSettings:confirm")} pendingLabel={t("platformSettings:saving")}
       queryRoot={platformSettingsKey} onClose={onClose} mutationFn={async (values) => {
-        const sentRevision = submittedRevision.current;
-        const valid = () => active.current && current() && reasonRevision === revision.current && sentRevision === revision.current && values.reason === reasonValue.current;
-        const mutation = bind(values, valid);
-        try { const response = await execute(values, valid); if (mutation) protect(mutation); return response; }
-        catch (error) { if (mutation) protect(mutation); throw error; }
+        const sentRevision = submittedRevision.current; const sentSubmission = submission.current;
+        const valid = () => active.current && current() && reasonRevision === revision.current && sentRevision === revision.current && sentSubmission === submission.current && values.reason === reasonValue.current;
+        const owner = bind(values, valid);
+        try {
+          if (!owner) throw new DOMException("", "AbortError");
+          const response = await execute(values, owner.valid); protect(owner.mutation); return response;
+        } catch (error) { if (owner) protect(owner.mutation); throw error; }
       }} onSuccess={() => {}}
       key={confirmation.draft} />
   </div>;
