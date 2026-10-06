@@ -5,6 +5,7 @@ import { chromium } from "playwright";
 import { boardChoices, capturePaths, otpMaskStyle, startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
 import { platformReasons } from "../src/test/mocks/platformReasons.ts";
 import { platformTenantsCaptureResponses } from "../src/test/mocks/platformTenants.ts";
+import { platformOrganizationCaptureResponses } from "../src/test/mocks/platformOrganization.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const canvas = path.join(root, "docs/design/lienzo");
@@ -104,6 +105,46 @@ function organizationsApp(entry) {
     scenario: `${pair}: lista real T21b`, actions, readySelector,
     responses: platformTenantsCaptureResponses({ many: pair === "organizaciones-50-filas", conflict: pair === "organizaciones-409" }),
     ...(readyText ? { readyText } : {}), ...(readyHeading ? { readyHeading } : {}),
+  };
+}
+
+const isOrganizationDetailCase = (entry) => entry.group === "plataforma-organizacion"
+  && /^organizacion-(estado-|duenos-|confirmar-|confirmacion-error$|pestana-(historial|duenos)$)/.test(entry.pair);
+
+function organizationApp(entry) {
+  const phone = entry.viewport.width === 390;
+  // Las propiedades son del tablero; una referencia base móvil no describe el estado de la app.
+  const confirmation = entry.pair.startsWith("organizacion-confirmar-") ? entry.pair.slice("organizacion-confirmar-".length)
+    : entry.pair === "organizacion-confirmacion-error" ? "suspender" : undefined;
+  const state = { activa: "Activa", "espera-aprobacion": "Espera aprobación", "fallo-el-alta": "Falló el alta", suspendida: "Suspendida", cerrada: "Cerrada" }[entry.pair.slice("organizacion-estado-".length)]
+    ?? (confirmation === "aprobar" || confirmation === "rechazar" ? "Espera aprobación" : confirmation === "reactivar" || confirmation === "cerrar" ? "Suspendida" : "Activa");
+  const owners = { "con-su-dueno": "Con su Dueño", "sin-dueno-todavia": "Sin Dueño todavía", "con-el-dueno-suspendido": "Con el Dueño suspendido" }[entry.pair.slice("organizacion-duenos-".length)] ?? "Con su Dueño";
+  const tab = entry.pair.startsWith("organizacion-duenos-") || entry.pair === "organizacion-pestana-duenos" ? "Dueños" : "Historial";
+  let actions = tab === "Dueños" ? [click("Dueños", "tab")] : [];
+  let readyText = tab === "Dueños" ? owners === "Sin Dueño todavía" ? "Invitación pendiente"
+    : owners === "Con el Dueño suspendido" ? "Suspendido" : "Activo"
+    : state === "Activa" ? "Reactivó la organización" : state === "Suspendida" ? "Suspendió la organización"
+      : state === "Cerrada" ? "Cerró la organización" : "Pidió crear la organización";
+  let readyHeading = "Grupo Delta";
+  let readySelector = "main";
+  if (phone && state === "Falló el alta" && !confirmation) {
+    actions = [{ ...click("Acciones de Grupo Delta"), exact: true }];
+    readySelector = '[role="menu"]';
+    readyHeading = undefined;
+    readyText = "Reintentar el alta";
+  }
+  if (confirmation) {
+    const action = { aprobar: "Aprobar", rechazar: "Rechazar", suspender: "Suspender", reactivar: "Reactivar", cerrar: "Cerrar" }[confirmation];
+    actions = phone ? [click("Acciones de Grupo Delta"), { ...click(action, "menuitem"), exact: true }] : [{ ...click(action), exact: true }];
+    readySelector = '[role="dialog"]';
+    readyHeading = `¿${action} Grupo Delta?`;
+    readyText = undefined;
+    if (entry.pair === "organizacion-confirmacion-error") { actions.push(click(action)); readyText = "Escribí el motivo."; }
+  }
+  return { ...entry.app,
+    path: "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1", captureMode: "harness", userFixture: "visual-operator",
+    scenario: `${entry.pair}: ficha real T21c`, now: "2026-09-27T20:35:00Z", actions, readySelector, readyHeading,
+    responses: platformOrganizationCaptureResponses({ state, owners }), ...(readyText ? { readyText } : {}),
   };
 }
 
@@ -317,6 +358,7 @@ export function buildCases() {
   return cases.map((entry) => {
     if (entry.group === "recuperar") return { ...entry, app: recoveryApp(entry) };
     if (entry.group === "plataforma-organizaciones") return { ...entry, app: organizationsApp(entry) };
+    if (isOrganizationDetailCase(entry)) return { ...entry, app: organizationApp(entry) };
     if (entry.pair in platformReasons) return { ...entry, app: reasonApp(entry) };
     if (entry.group === "plataforma-marco") {
       const realMore = entry.viewport.width === 390 && entry.app.path === "/plataforma/mas";

@@ -3,9 +3,34 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { createServer } from "node:http";
 import { chromium } from "playwright";
 import { startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
-import { buildCases, canvas, mergeManifest, runBoardActions } from "./capturar-relevamiento.mjs";
+import { buildCases, canvas, mergeManifest, openApp, runBoardActions } from "./capturar-relevamiento.mjs";
+
+test("Cerrar espera la acción exacta de la ficha y no toca Cerrar Gestión durante la carga", { timeout: 15_000 }, async () => {
+  const server = createServer((_request, response) => response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" }).end(`
+    <main><button onclick="document.querySelector('main').textContent = 'Se cerró Gestión por error'">Cerrar Gestión</button></main>
+    <script>setTimeout(() => {
+      const button = document.createElement('button'); button.textContent = 'Cerrar';
+      button.onclick = () => document.querySelector('main').innerHTML = '<div role="dialog"><h2>¿Cerrar Grupo Delta?</h2></div>';
+      document.querySelector('main').append(button);
+    }, 150);</script>`));
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const browser = await chromium.launch({ headless: true, channel: "chrome" });
+  try {
+    const context = await browser.newContext();
+    context.setDefaultTimeout(2_000);
+    const app = await openApp(context, `http://127.0.0.1:${server.address().port}`, { app: {
+      path: "/", responses: [], userFixture: "visual-operator", actions: [{ type: "click", role: "button", name: "Cerrar", exact: true }],
+      readySelector: '[role="dialog"]', readyHeading: "¿Cerrar Grupo Delta?",
+    } });
+    assert.equal(await app.getByRole("dialog").count(), 1);
+  } finally {
+    await browser.close();
+    await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  }
+});
 
 test("incluye los trece pares aprobados de Recuperar v111 para comparar la app de T19", () => {
   const cases = buildCases().filter((entry) => entry.group === "recuperar");
@@ -22,12 +47,15 @@ test("los rótulos de Más real de T20c corresponden al tamaño móvil, sin here
   assert.ok(cases.filter((entry) => entry.viewport.width === 1440).every((entry) => !entry.state.includes("Más real")));
 });
 
-test("el catálogo compara Organizaciones real T21b y conserva sólo los diálogos de fichas pendientes T20d", () => {
+test("el catálogo compara lista y ficha reales T21b–c y conserva sólo los diálogos pendientes T20d", () => {
   const cases = buildCases();
   const organizations = cases.filter((entry) => entry.group === "plataforma-organizaciones");
   assert.equal(organizations.length, 28);
   assert.ok(organizations.every((entry) => entry.app.captureMode === "harness" && entry.state.includes("lista real T21b")));
-  for (const pair of ["organizacion-confirmar-aprobar", "organizacion-modulo-extender-prueba", "cuentas-baja-bloqueada"]) {
+  const detail = cases.filter((entry) => entry.group === "plataforma-organizacion" && entry.state.includes("ficha real T21c"));
+  assert.equal(detail.length, 32);
+  assert.ok(detail.every((entry) => entry.app.captureMode === "harness" && entry.app.now === "2026-09-27T20:35:00Z"));
+  for (const pair of ["organizacion-modulo-extender-prueba", "cuentas-baja-bloqueada"]) {
     const entries = cases.filter((entry) => entry.pair === pair);
     assert.equal(entries.length, 2, pair);
     assert.ok(entries.every((entry) => entry.app.captureMode === "harness" && entry.state.includes("diálogo real T20d")));

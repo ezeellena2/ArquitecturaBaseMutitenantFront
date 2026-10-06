@@ -26,5 +26,14 @@
     "Published": "Publicada",
     "Draft": "Borrador",
     "Blocked": "Despublicada"
+  },
+  "PlatformOwnerState": {
+    "Inactive": "Inactivo",
+    "Active": "Activo",
+    "Invited": "Invitación pendiente",
+    "PendingDeletion": "Baja pedida",
+    "Removed": "Terminada",
+    "Suspended": "Suspendido",
+    "Deleted": "Eliminado"
   }
 }

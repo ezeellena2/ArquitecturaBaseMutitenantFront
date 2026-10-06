@@ -53,6 +53,7 @@ export type PlatformPages = Partial<Record<keyof typeof platformRoutes, LazyRout
 // Las páginas se suman en T21–T23: una entrada del manifiesto sola no monta una pantalla futura.
 export const platformPages: PlatformPages = {
   organizations: lazyPage(() => import("@/areas/platform/tenants/pages/OrganizationsPage"), (page) => page.OrganizationsPage),
+  organization: lazyPage(() => import("@/areas/platform/tenants/pages/OrganizationPage"), (page) => page.OrganizationPage),
 };
 
 /// Monta sólo las páginas disponibles, con el permiso del manifiesto. El inicio elige Gestión y luego Administración.

@@ -18200,9 +18200,146 @@
       },
       "boardReadyText": "Activa",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-estado-activa",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-estado-activa: ficha real T21c",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Reactivó la organización"
       }
     },
     {
@@ -18223,9 +18360,146 @@
       },
       "boardReadyText": "Grupo Delta",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-estado-activa",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-estado-activa: ficha real T21c",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Reactivó la organización"
       }
     },
     {
@@ -18247,9 +18521,115 @@
       },
       "boardReadyText": "Espera aprobación",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-estado-espera-aprobacion",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-estado-espera-aprobacion: ficha real T21c",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "PendingApproval",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 1,
+              "memberCount": 1,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": null
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Pidió crear la organización"
       }
     },
     {
@@ -18270,9 +18650,115 @@
         "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-estado-espera-aprobacion",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-estado-espera-aprobacion: ficha real T21c",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "PendingApproval",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 1,
+              "memberCount": 1,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": null
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Pidió crear la organización"
       }
     },
     {
@@ -18294,9 +18780,115 @@
       },
       "boardReadyText": "Falló el alta",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-estado-fallo-el-alta",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-estado-fallo-el-alta: ficha real T21c",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Provisioning",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 0,
+              "memberCount": 0,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": null
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Pidió crear la organización"
       }
     },
     {
@@ -18317,9 +18909,121 @@
       },
       "boardReadyText": "Falló el alta",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-estado-fallo-el-alta",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-estado-fallo-el-alta: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Grupo Delta",
+            "exact": true
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"menu\"]",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Provisioning",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 0,
+              "memberCount": 0,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": null
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Reintentar el alta"
       }
     },
     {
@@ -18341,9 +19045,155 @@
       },
       "boardReadyText": "Suspendida",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-estado-suspendida",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-estado-suspendida: ficha real T21c",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Suspended",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-25T13:15:00Z",
+                "action": "Suspendió la organización",
+                "reason": "Dos meses sin pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-5",
+                  "occurredAtUtc": "2026-09-25T13:15:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Suspendió la organización"
       }
     },
     {
@@ -18364,9 +19214,155 @@
         "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-estado-suspendida",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-estado-suspendida: ficha real T21c",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Suspended",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-25T13:15:00Z",
+                "action": "Suspendió la organización",
+                "reason": "Dos meses sin pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-5",
+                  "occurredAtUtc": "2026-09-25T13:15:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Suspendió la organización"
       }
     },
     {
@@ -18388,9 +19384,164 @@
       },
       "boardReadyText": "Cerrada",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-estado-cerrada",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-estado-cerrada: ficha real T21c",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Closed",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-26T15:30:00Z",
+                "action": "Cerró la organización",
+                "reason": "Lo pidió la Dueña por escrito."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-6",
+                  "occurredAtUtc": "2026-09-26T15:30:00Z",
+                  "action": "Cerró la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Lo pidió la Dueña por escrito.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Closed\"}}"
+                },
+                {
+                  "id": "history-5",
+                  "occurredAtUtc": "2026-09-25T13:15:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Cerró la organización"
       }
     },
     {
@@ -18411,9 +19562,164 @@
         "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-estado-cerrada",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-estado-cerrada: ficha real T21c",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Closed",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-26T15:30:00Z",
+                "action": "Cerró la organización",
+                "reason": "Lo pidió la Dueña por escrito."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-6",
+                  "occurredAtUtc": "2026-09-26T15:30:00Z",
+                  "action": "Cerró la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Lo pidió la Dueña por escrito.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Closed\"}}"
+                },
+                {
+                  "id": "history-5",
+                  "occurredAtUtc": "2026-09-25T13:15:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Cerró la organización"
       }
     },
     {
@@ -18436,9 +19742,146 @@
       "boardReadyText": "Reactivó la organización",
       "boardReadySelector": "[role=\"tab\"][aria-selected=\"true\"]",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-pestana-historial",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-pestana-historial: ficha real T21c",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Reactivó la organización"
       }
     },
     {
@@ -18459,9 +19902,146 @@
       },
       "boardReadyText": "Reactivó la organización",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-pestana-historial",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-pestana-historial: ficha real T21c",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Reactivó la organización"
       }
     },
     {
@@ -18483,9 +20063,152 @@
       },
       "boardReadySelector": "[role=\"tab\"][aria-selected=\"true\"]",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-pestana-duenos",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-pestana-duenos: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Dueños"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Activo"
       }
     },
     {
@@ -18505,9 +20228,152 @@
         "kind": "drawn"
       },
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-pestana-duenos",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-pestana-duenos: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Dueños"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Activo"
       }
     },
     {
@@ -18905,9 +20771,152 @@
       },
       "boardReadyText": "Activo",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-duenos-con-su-dueno",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-duenos-con-su-dueno: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Dueños"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Activo"
       }
     },
     {
@@ -18928,9 +20937,152 @@
       },
       "boardReadyText": "Activo",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-duenos-con-su-dueno",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-duenos-con-su-dueno: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Dueños"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Activo"
       }
     },
     {
@@ -18952,9 +21104,142 @@
       },
       "boardReadyText": "Invitación pendiente",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-duenos-sin-dueno-todavia",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-duenos-sin-dueno-todavia: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Dueños"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": null,
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Invitación pendiente"
       }
     },
     {
@@ -18975,9 +21260,142 @@
       },
       "boardReadyText": "Invitación pendiente",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-duenos-sin-dueno-todavia",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-duenos-sin-dueno-todavia: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Dueños"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": null,
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Invitación pendiente"
       }
     },
     {
@@ -18999,9 +21417,152 @@
       },
       "boardReadyText": "Suspendido",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-duenos-con-el-dueno-suspendido",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-duenos-con-el-dueno-suspendido: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Dueños"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Suspended",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-24T20:35:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Suspendido"
       }
     },
     {
@@ -19022,9 +21583,152 @@
       },
       "boardReadyText": "Suspendido",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-duenos-con-el-dueno-suspendido",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-duenos-con-el-dueno-suspendido: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Dueños"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "readyHeading": "Grupo Delta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Suspended",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-24T20:35:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Suspendido"
       }
     },
     {
@@ -19051,13 +21755,121 @@
       },
       "boardReadyText": "¿Aprobar Grupo Delta?",
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizacion-confirmar-aprobar&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
-        "scenario": "organizacion-confirmar-aprobar: diálogo real T20d, contenido pendiente T21–T23",
-        "actions": [],
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-aprobar: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Aprobar",
+            "exact": true
+          }
+        ],
         "captureMode": "harness",
         "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
         "readySelector": "[role=\"dialog\"]",
-        "readyHeading": "¿Aprobar Grupo Delta?"
+        "readyHeading": "¿Aprobar Grupo Delta?",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "PendingApproval",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 1,
+              "memberCount": 1,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": null
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
@@ -19078,13 +21890,126 @@
         "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/src/test/visualApp.html?as=visual-operator&frame=platform&reason=organizacion-confirmar-aprobar&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
-        "scenario": "organizacion-confirmar-aprobar: diálogo real T20d, contenido pendiente T21–T23",
-        "actions": [],
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-aprobar: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Grupo Delta"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Aprobar",
+            "exact": true
+          }
+        ],
         "captureMode": "harness",
         "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
         "readySelector": "[role=\"dialog\"]",
-        "readyHeading": "¿Aprobar Grupo Delta?"
+        "readyHeading": "¿Aprobar Grupo Delta?",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "PendingApproval",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 1,
+              "memberCount": 1,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": null
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
@@ -19111,9 +22036,121 @@
       },
       "boardReadyText": "¿Rechazar Grupo Delta?",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-confirmar-rechazar",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-rechazar: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Rechazar",
+            "exact": true
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Rechazar Grupo Delta?",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "PendingApproval",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 1,
+              "memberCount": 1,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": null
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
@@ -19134,9 +22171,126 @@
         "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-confirmar-rechazar",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-rechazar: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Grupo Delta"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Rechazar",
+            "exact": true
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Rechazar Grupo Delta?",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "PendingApproval",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 1,
+              "memberCount": 1,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": null
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
@@ -19163,9 +22317,152 @@
       },
       "boardReadyText": "¿Suspender Grupo Delta?",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-confirmar-suspender",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-suspender: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspender",
+            "exact": true
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
@@ -19186,9 +22483,157 @@
         "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-confirmar-suspender",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-suspender: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Grupo Delta"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Suspender",
+            "exact": true
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
@@ -19215,9 +22660,161 @@
       },
       "boardReadyText": "¿Reactivar Grupo Delta?",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-confirmar-reactivar",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-reactivar: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Reactivar",
+            "exact": true
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Reactivar Grupo Delta?",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Suspended",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-25T13:15:00Z",
+                "action": "Suspendió la organización",
+                "reason": "Dos meses sin pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-5",
+                  "occurredAtUtc": "2026-09-25T13:15:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
@@ -19238,9 +22835,166 @@
         "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-confirmar-reactivar",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-reactivar: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Grupo Delta"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Reactivar",
+            "exact": true
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Reactivar Grupo Delta?",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Suspended",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-25T13:15:00Z",
+                "action": "Suspendió la organización",
+                "reason": "Dos meses sin pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-5",
+                  "occurredAtUtc": "2026-09-25T13:15:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
@@ -19267,9 +23021,161 @@
       },
       "boardReadyText": "¿Cerrar Grupo Delta?",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-confirmar-cerrar",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-cerrar: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Cerrar",
+            "exact": true
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Cerrar Grupo Delta?",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Suspended",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-25T13:15:00Z",
+                "action": "Suspendió la organización",
+                "reason": "Dos meses sin pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-5",
+                  "occurredAtUtc": "2026-09-25T13:15:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
@@ -19290,9 +23196,166 @@
         "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-confirmar-cerrar",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmar-cerrar: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Grupo Delta"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Cerrar",
+            "exact": true
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Cerrar Grupo Delta?",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Suspended",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-25T13:15:00Z",
+                "action": "Suspendió la organización",
+                "reason": "Dos meses sin pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-5",
+                  "occurredAtUtc": "2026-09-25T13:15:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ]
       }
     },
     {
@@ -19323,9 +23386,158 @@
       },
       "boardReadyText": "Escribí el motivo.",
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-confirmacion-error",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmacion-error: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspender",
+            "exact": true
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspender"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Escribí el motivo."
       }
     },
     {
@@ -19346,9 +23558,163 @@
         "note": "M-Organizacion v111 solo dibuja la referencia base; no dibuja esta pestaña, estado o confirmación. La app móvil se revisa al implementarla (decisión 12)."
       },
       "app": {
-        "path": "/plataforma/organizaciones/tenant-1",
-        "scenario": "organizacion-confirmacion-error",
-        "actions": []
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Forganizaciones%2Ftenant-1",
+        "scenario": "organizacion-confirmacion-error: ficha real T21c",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Grupo Delta"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Suspender",
+            "exact": true
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Suspender"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "readyHeading": "¿Suspender Grupo Delta?",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1",
+            "status": 200,
+            "body": {
+              "id": "tenant-1",
+              "name": "Grupo Delta",
+              "slug": "delta",
+              "status": "Active",
+              "source": "SelfService",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "version": 1,
+              "companyCount": 3,
+              "memberCount": 11,
+              "ownerName": "Lucía Fernández",
+              "ownerEmail": "lucia.fernandez@delta.ejemplo.com",
+              "owners": [
+                {
+                  "id": "owner-1",
+                  "displayName": "Lucía Fernández",
+                  "email": "lucia.fernandez@delta.ejemplo.com",
+                  "identityStatus": "Active",
+                  "membershipStatus": "Active",
+                  "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+                  "lastSignInMethod": "Code"
+                }
+              ],
+              "lastStateChange": {
+                "atUtc": "2026-09-20T14:02:00Z",
+                "action": "Reactivó la organización",
+                "reason": "Regularizó el pago."
+              }
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/tenants/tenant-1/history",
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "history-4",
+                  "occurredAtUtc": "2026-09-20T14:02:00Z",
+                  "action": "Reactivó la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Regularizó el pago.",
+                  "summary": "{\"status\":{\"before\":\"Suspended\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-3",
+                  "occurredAtUtc": "2026-09-18T19:45:00Z",
+                  "action": "Suspendió la organización",
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": "Dos meses sin pago.",
+                  "summary": "{\"status\":{\"before\":\"Active\",\"after\":\"Suspended\"}}"
+                },
+                {
+                  "id": "history-2",
+                  "occurredAtUtc": "2026-01-12T12:03:00Z",
+                  "action": "Aprobó la organización",
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Datos verificados con AFIP.",
+                  "summary": "{\"status\":{\"before\":\"PendingApproval\",\"after\":\"Active\"}}"
+                },
+                {
+                  "id": "history-1",
+                  "occurredAtUtc": "2026-01-12T11:40:00Z",
+                  "action": "Pidió crear la organización",
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "summary": "{}"
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/approve",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reject",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/suspend",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/reactivate",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/close",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/tenants/tenant-1/retry-provisioning",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          }
+        ],
+        "readyText": "Escribí el motivo."
       }
     },
     {

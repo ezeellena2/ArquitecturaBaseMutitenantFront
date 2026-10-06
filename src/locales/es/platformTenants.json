@@ -22,5 +22,37 @@
     "reactivate": { "title": "¿Reactivar {{name}}?", "description": "Sus miembros vuelven a entrar con los mismos roles.", "pending": "Reactivando…" },
     "close": { "title": "¿Cerrar {{name}}?", "description": "No se puede deshacer. Sus datos se conservan hasta la purga y nadie vuelve a entrar.", "pending": "Cerrando…" }
   },
-  "messages": { "created": "Creamos {{name}} e invitamos a {{email}} como Dueño.", "approve": "Aprobamos {{name}}. Le avisamos a {{email}}.", "approveOwners": "Aprobamos {{name}}. Les avisamos a sus Dueños.", "reject": "Rechazamos {{name}}.", "suspend": "Suspendimos {{name}}.", "reactivate": "Reactivamos {{name}}.", "close": "Cerramos {{name}}.", "retried": "Terminamos el alta de {{name}}." }
+  "messages": { "created": "Creamos {{name}} e invitamos a {{email}} como Dueño.", "approve": "Aprobamos {{name}}. Le avisamos a {{email}}.", "approveOwners": "Aprobamos {{name}}. Les avisamos a sus Dueños.", "reject": "Rechazamos {{name}}.", "suspend": "Suspendimos {{name}}.", "reactivate": "Reactivamos {{name}}.", "close": "Cerramos {{name}}.", "retried": "Terminamos el alta de {{name}}." },
+  "detail": {
+    "source": {
+      "Platform": "por la plataforma",
+      "SelfService": "por autoservicio"
+    },
+    "requested": "Pidió el alta el",
+    "created": "Alta el",
+    "counts": "{{companies}} {{companyLabel}} · {{members}} {{memberLabel}}",
+    "back": "Organizaciones",
+    "lastSignIn": "Último ingreso",
+    "historyEmpty": "Todavía no hay historial",
+    "banner": {
+      "Closed": "Cerrada el",
+      "Suspended": "Suspendida el"
+    },
+    "reason": "Motivo:",
+    "history": "Historial",
+    "ownersEmpty": "Todavía no hay Dueños",
+    "tabsLabel": "Secciones de la organización",
+    "never": "Nunca",
+    "historyColumns": {
+      "what": "Qué pasó",
+      "reason": "Motivo",
+      "when": "Fecha y hora",
+      "who": "Quién"
+    },
+    "readOnly": "Solo lectura.",
+    "owners": "Dueños",
+    "loading": "Organización",
+    "title": "Organización",
+    "phoneNever": "Último ingreso: nunca"
+  }
 }

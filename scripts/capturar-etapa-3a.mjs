@@ -145,11 +145,11 @@ export async function startCanvasServer(canvasRoot = defaultCanvas) {
 export async function runAppActions(page, actions = []) {
   for (const action of actions) {
     if (action.type === "fill") {
-      await page.getByRole(action.role, { name: action.name }).fill(action.value);
+      await page.getByRole(action.role, { name: action.name, exact: action.exact ?? false }).fill(action.value);
     } else if (action.type === "click") {
-      await page.getByRole(action.role, { name: action.name }).click({ force: action.force ?? false });
+      await page.getByRole(action.role, { name: action.name, exact: action.exact ?? false }).click({ force: action.force ?? false });
     } else if (action.type === "press") {
-      const target = page.getByRole(action.role, { name: action.name });
+      const target = page.getByRole(action.role, { name: action.name, exact: action.exact ?? false });
       await target.focus();
       await target.press(action.key);
     } else if (action.type === "otp") {

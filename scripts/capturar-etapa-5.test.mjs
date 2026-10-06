@@ -9,6 +9,70 @@ import { buildCases, canvas, output } from "./capturar-etapa-5.mjs";
 const groups = ["plataforma-marco", "plataforma-organizaciones", "plataforma-organizacion", "plataforma-cuentas",
   "plataforma-cuenta", "plataforma-recuperaciones", "plataforma-legales", "plataforma-auditoria", "plataforma-configuracion", "recuperar"];
 
+test("T21c compara estados, Historial, Dueños y confirmaciones con la ficha real sin lecturas privadas", () => {
+  const cases = buildCases().filter((entry) => entry.group === "plataforma-organizacion"
+    && /^organizacion-(estado-|duenos-|confirmar-|confirmacion-error$|pestana-(historial|duenos)$)/.test(entry.pair));
+  assert.equal(cases.length, 32);
+  for (const entry of cases) {
+    const params = new URL(entry.app.path, "http://example.test").searchParams;
+    assert.equal(params.get("route"), "/plataforma/organizaciones/tenant-1", entry.id);
+    assert.equal(params.get("frame"), null, entry.id);
+    assert.equal(params.get("reason"), null, entry.id);
+    assert.equal(entry.app.captureMode, "harness", entry.id);
+    assert.match(entry.app.scenario, /ficha real T21c/, entry.id);
+    assert.equal(entry.app.now, "2026-09-27T20:35:00Z", entry.id);
+    assert.ok(entry.app.responses.some((item) => item.path === "/api/platform/tenants/tenant-1"), entry.id);
+    assert.ok(entry.app.responses.some((item) => item.path.endsWith("/history")), entry.id);
+    assert.ok(!entry.app.responses.some((item) => /\/(domains|public-site)$/.test(item.path)), entry.id);
+    for (const action of entry.app.actions) assert.ok(action.role && !action.selector, entry.id);
+  }
+});
+
+test("T21c muestra el menú de Falló el alta dibujado en M-Organizacion", () => {
+  const entry = buildCases().find((item) => item.id === "organizacion-estado-fallo-el-alta-movil");
+  assert.deepEqual(entry.app.actions, [{ type: "click", role: "button", name: "Acciones de Grupo Delta", exact: true }]);
+  assert.equal(entry.app.readySelector, '[role="menu"]');
+  assert.equal(entry.app.readyText, "Reintentar el alta");
+  assert.equal(entry.app.readyHeading, undefined);
+});
+
+test("T21c conserva Action traducida y Summary técnico del contrato real de Historial", () => {
+  const entry = buildCases().find((item) => item.pair === "organizacion-pestana-historial");
+  const rows = entry.app.responses.find((item) => item.path.endsWith("/history")).body.items;
+  assert.equal(rows[0].action, "Reactivó la organización");
+  assert.deepEqual(JSON.parse(rows[0].summary), { status: { before: "Suspended", after: "Active" } });
+  assert.deepEqual(JSON.parse(rows.at(-1).summary), {});
+});
+
+test("T21c usa estado e historial efectivo y contacto pendiente sin inventar un Dueño", () => {
+  const cases = buildCases();
+  const detailOf = (pair) => cases.find((entry) => entry.pair === pair && entry.viewport.width === 1440)?.app.responses
+    ?.find((item) => item.path === "/api/platform/tenants/tenant-1")?.body;
+  assert.equal(detailOf("organizacion-estado-suspendida")?.lastStateChange?.reason, "Dos meses sin pago.");
+  assert.equal(detailOf("organizacion-estado-cerrada")?.lastStateChange?.atUtc, "2026-09-26T15:30:00Z");
+  const pending = detailOf("organizacion-duenos-sin-dueno-todavia");
+  assert.deepEqual(pending?.owners, []);
+  assert.equal(pending.ownerEmail, "lucia.fernandez@delta.ejemplo.com");
+  const suspended = detailOf("organizacion-duenos-con-el-dueno-suspendido");
+  assert.equal(suspended?.owners[0]?.identityStatus, "Suspended");
+});
+
+test("T21c conserva estado y Dueños de la app cuando el teléfono usa un tablero base", () => {
+  const cases = buildCases();
+  for (const [pair, expected] of [["organizacion-estado-espera-aprobacion", "PendingApproval"], ["organizacion-estado-suspendida", "Suspended"],
+    ["organizacion-estado-cerrada", "Closed"], ["organizacion-confirmar-aprobar", "PendingApproval"], ["organizacion-confirmar-cerrar", "Suspended"]]) {
+    const entries = cases.filter((entry) => entry.pair === pair);
+    assert.equal(entries.length, 2, pair);
+    for (const entry of entries) {
+      assert.equal(entry.app.responses.find((item) => item.path === "/api/platform/tenants/tenant-1")?.body.status, expected, entry.id);
+    }
+  }
+  for (const entry of cases.filter((item) => item.pair === "organizacion-duenos-sin-dueno-todavia")) {
+    assert.deepEqual(entry.app.responses.find((item) => item.path === "/api/platform/tenants/tenant-1")?.body.owners, [], entry.id);
+    assert.ok(entry.app.actions.some((item) => item.role === "tab" && item.name === "Dueños"), entry.id);
+  }
+});
+
 test("T21b compara todas las variantes de Organizaciones con la lista real", () => {
   const cases = buildCases().filter((entry) => entry.group === "plataforma-organizaciones");
   assert.equal(cases.length, 28);
@@ -43,7 +107,7 @@ test("T21b captura siete filas del tablero y cincuenta datos de prueba sin false
 
 test("T20d conserva el diálogo aislado de las fichas todavía pendientes", () => {
   const cases = buildCases();
-  for (const pair of ["organizacion-confirmar-aprobar", "organizacion-modulo-extender-prueba", "cuentas-baja-bloqueada"]) {
+  for (const pair of ["organizacion-modulo-extender-prueba", "cuentas-baja-bloqueada"]) {
     const entries = cases.filter((entry) => entry.pair === pair);
     assert.equal(entries.length, 2);
     for (const entry of entries) {

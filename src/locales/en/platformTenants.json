@@ -22,5 +22,37 @@
     "reactivate": { "title": "Reactivate {{name}}?", "description": "Its members can sign in again with the same roles.", "pending": "Reactivating…" },
     "close": { "title": "Close {{name}}?", "description": "This cannot be undone. Its data will be retained until purging and nobody can enter again.", "pending": "Closing…" }
   },
-  "messages": { "created": "We created {{name}} and invited {{email}} as Owner.", "approve": "We approved {{name}}. We notified {{email}}.", "approveOwners": "We approved {{name}}. We notified its Owners.", "reject": "We rejected {{name}}.", "suspend": "We suspended {{name}}.", "reactivate": "We reactivated {{name}}.", "close": "We closed {{name}}.", "retried": "We finished setting up {{name}}." }
+  "messages": { "created": "We created {{name}} and invited {{email}} as Owner.", "approve": "We approved {{name}}. We notified {{email}}.", "approveOwners": "We approved {{name}}. We notified its Owners.", "reject": "We rejected {{name}}.", "suspend": "We suspended {{name}}.", "reactivate": "We reactivated {{name}}.", "close": "We closed {{name}}.", "retried": "We finished setting up {{name}}." },
+  "detail": {
+    "source": {
+      "Platform": "by the platform",
+      "SelfService": "through self-service"
+    },
+    "requested": "Requested on",
+    "created": "Created on",
+    "counts": "{{companies}} {{companyLabel}} · {{members}} {{memberLabel}}",
+    "back": "Organizations",
+    "lastSignIn": "Last sign-in",
+    "historyEmpty": "No history yet",
+    "banner": {
+      "Closed": "Closed on",
+      "Suspended": "Suspended on"
+    },
+    "reason": "Reason:",
+    "history": "History",
+    "ownersEmpty": "No Owners yet",
+    "tabsLabel": "Organization sections",
+    "never": "Never",
+    "historyColumns": {
+      "what": "What happened",
+      "reason": "Reason",
+      "when": "Date and time",
+      "who": "Who"
+    },
+    "readOnly": "Read-only.",
+    "owners": "Owners",
+    "loading": "Organization",
+    "title": "Organization",
+    "phoneNever": "Last sign-in: never"
+  }
 }

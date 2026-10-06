@@ -370,23 +370,26 @@ src/
 │       ├── AGENTS.md · CLAUDE.md                     permisos individuales y páginas parciales
 │       ├── tenants/
 │       │   ├── AGENTS.md · CLAUDE.md                 fuente Organizaciones y M-Organizaciones; coordinación de versión
-│       │   ├── api/tenants.ts                       T21b: listado, conteos, alta y acciones con versión e Idempotency-Key; detalle y subrecursos llegan en T21c–d
+│       │   ├── api/tenants.ts                       T21b–c: listado, conteos, alta, detalle global, historial por cursor y acciones con versión e Idempotency-Key
 │       │   ├── api/tenants.test.ts                  rutas, filtros, cuerpos y clave recibida
-│       │   ├── columns.tsx                          columnas y fila del teléfono sin avatar; tonos de TenantStatus
+│       │   ├── columns.tsx                          columnas y filas del teléfono sin avatar; tonos de TenantStatus y Dueños derivados de identidad/membresía
 │       │   ├── errors.ts                            códigos de campo del alta y conflictos de estado
 │       │   ├── components/
 │       │   │   ├── CreateOrganizationDialog.tsx     cinco campos, defaults del operador y clave por cuerpo/recorrido
 │       │   │   └── CreateOrganizationDialog.test.tsx validaciones, referencias, 400, foco, red y claves
-│       │   ├── tabs/                               objetivo T21c–d; aún no montadas
+│       │   ├── tabs/                               Historial/Dueños T21c; las otras pestañas pendientes T21d
+│       │   │   ├── AGENTS.md · CLAUDE.md             cursor, Dueños actuales/contacto pendiente y filas móviles
+│       │   │   ├── useOrganizationHistory.ts        useCursorList global con after opaco y límite 25
 │       │   │   ├── OrganizationHistoryTab.tsx       Historial: fecha y hora, qué pasó, quién y motivo (eventos de seguridad)
-│       │   │   ├── OrganizationOwnersTab.tsx        Dueños
+│       │   │   ├── OrganizationOwnersTab.tsx        Dueños: nombre/correo, último ingreso relativo y estado; fila móvil sin avatar
 │       │   │   ├── OrganizationModulesTab.tsx       Módulos (P8): Prender, Extender prueba (hasta una fecha) o Apagar, con motivo
 │       │   │   ├── OrganizationDomainTab.tsx        Dominio verificado: registro TXT, Verificar o Quitar, con motivo
 │       │   │   └── OrganizationPublicPageTab.tsx    Página pública: Ver página, Despublicar (vuelve a borrador con el bloqueo) o Permitir publicar (levanta el bloqueo), con motivo: POST /api/platform/tenants/{id}/public-site/unpublish y …/allow-publish
 │       │   └── pages/
 │       │       ├── OrganizationsPage.tsx            /plataforma: banda global, filtros cruzados, menú por estado, ReasonDialog y reintento directo del alta
 │       │       ├── OrganizationsPage.test.tsx       tabla/móvil, filtros/URL, permisos, acciones, versión respondida, 409, red, estados y axe
-│       │       └── OrganizationPage.tsx             objetivo T21c: /plataforma/organizaciones/:id; aún no montada
+│       │       ├── OrganizationPage.tsx             /plataforma/organizaciones/:id: banda, estado, acciones, carteles, Historial y Dueños; versiones propias sin fecha inventada
+│       │       └── OrganizationPage.test.tsx        estados, cursor, identidad/membresía, permisos, errores, versiones, idempotencia, formatos, 390 y axe
 │       ├── accounts/                                /plataforma/cuentas: cuentas y operadores
 │       │   ├── api/
 │       │   │   ├── accounts.ts                      incluye POST /api/platform/accounts/{id}/deletion (ADR 0035)
@@ -759,7 +762,8 @@ src/
     │   ├── currentUsers.ts                          [E3] fixtures: persona sin/con organizaciones, empresa admin/sin permisos y operador
     │   ├── currentUsers.test.tsx                    tests de currentUsers
     │   ├── platformReasons.ts                       confirmaciones literales v111 para capturar las piezas de Plataforma
-    │   └── platformTenants.ts                       siete organizaciones literales v111 y filas adicionales exclusivas del paginado de prueba
+    │   ├── platformTenants.ts                       siete organizaciones literales v111 y filas adicionales exclusivas del paginado de prueba
+    │   └── platformOrganization.ts                  ficha, Dueños e Historial de Organizacion v111 con fechas UTC para las capturas
     ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
     └── utils/
         ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]; devuelve el QueryClient, para una relectura de fondo [E7]
