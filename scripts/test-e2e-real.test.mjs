@@ -406,6 +406,82 @@ async function publishNewTerms(readyFile) {
   throw new Error("La versión nueva no quedó publicada en la base propia del E2E.");
 }
 
+async function preparePlatform(readyFile) {
+  const commandFile = readyFile.replace(/\.ready$/, ".platform.json");
+  await writeFile(commandFile, JSON.stringify({ kind: "prepare" }), { flag: "wx" });
+  for (let attempt = 0; attempt < 120; attempt++) {
+    try { await access(`${commandFile}.done`); return; }
+    catch (error) { if (error?.code !== "ENOENT") throw error; }
+    await delay(250);
+  }
+  throw new Error("El preparador de Plataforma no terminó en la base aislada.");
+}
+
+async function acceptCurrentTerms(page) {
+  const terms = page.getByRole("heading", { name: "Actualizamos los términos" });
+  const chrome = page.getByRole("button", { name: /, (Plataforma|Personal|Empresa E2E)$/ });
+  await terms.or(chrome).first().waitFor({ timeout: 20_000 });
+  if (await terms.isVisible()) {
+    await page.getByRole("checkbox", { name: /Leí y acepto/ }).check();
+    await page.getByRole("button", { name: "Aceptar y seguir", exact: true }).click();
+    await terms.waitFor({ state: "hidden" });
+  }
+}
+
+async function loginThroughUi(page, email, access = "platform") {
+  page.setDefaultTimeout(30_000);
+  await page.goto(new URL(access === "platform" ? "/plataforma" : access === "business" ? "/login/empresa" : "/login", baseUrl).href);
+  await page.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
+  const before = new Set(await pickupFiles());
+  await sendLoginCode(page);
+  await page.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+  await enterCode(page, await codeFromPickup(email, before));
+  await page.getByRole("button", { name: "Verificar", exact: true }).click();
+  await expectPath(page, access === "platform" ? "/plataforma" : access === "business" ? "/org" : "/", "ingreso real desde pantalla");
+  await acceptCurrentTerms(page);
+}
+
+async function platformNavigate(page, panel, link) {
+  const button = page.getByRole("button", { name: panel, exact: true });
+  await button.waitFor();
+  if (await button.getAttribute("aria-expanded") !== "true") await button.click();
+  await page.getByRole("navigation", { name: panel, exact: true }).getByRole("link", { name: link, exact: true }).click();
+  await page.getByRole("heading", { name: link, exact: true }).waitFor();
+}
+
+async function openPlatformOrganization(page, name) {
+  await platformNavigate(page, "Gestión", "Organizaciones");
+  await page.getByRole("link", { name, exact: true }).click();
+  await page.getByRole("heading", { name, exact: true }).waitFor();
+}
+
+async function confirmPlatformReason(page, action, confirm = action) {
+  const direct = page.getByRole("button", { name: action, exact: true });
+  if (await direct.count()) await direct.click();
+  else {
+    try { await page.getByRole("button", { name: /^Acciones de/ }).click(); }
+    catch {
+      const published = await page.getByText("Publicada", { exact: true }).filter({ visible: true }).count();
+      const draft = await page.getByText("Borrador", { exact: true }).filter({ visible: true }).count();
+      const blocked = await page.getByText("Bloqueada", { exact: true }).filter({ visible: true }).count();
+      throw new Error(`${action}: no se pudo abrir Acciones (Publicada ${published}, Borrador ${draft}, Bloqueada ${blocked}).`);
+    }
+    try { await page.getByRole("menuitem", { name: action, exact: true }).click(); }
+    catch { throw new Error(`${action}: no se pudo elegir la opción del menú de Acciones.`); }
+  }
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("textbox", { name: /^Motivo/ }).fill("Verificación del recorrido real T25");
+  await dialog.getByRole("button", { name: confirm, exact: true }).click();
+  await dialog.waitFor({ state: "hidden" });
+}
+
+async function openPlatformAccount(page, name) {
+  await platformNavigate(page, "Gestión", "Cuentas");
+  await page.getByRole("searchbox", { name: "Buscar por nombre, correo o teléfono", exact: true }).fill(name);
+  await page.getByRole("link", { name, exact: true }).click();
+  await page.getByRole("heading", { name, exact: true }).waitFor();
+}
+
 async function sendLoginCode(page) {
   for (let attempt = 0; attempt < 5; attempt++) {
     const responsePromise = page.waitForResponse((response) =>
@@ -497,7 +573,7 @@ async function accountPost(page, route, data, extraHeaders = {}) {
   });
 }
 
-test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pickup sin mocks", { timeout: 1_800_000 }, async (t) => {
+test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pickup sin mocks", { timeout: 2_700_000 }, async (t) => {
   const { stdout } = await aspire(["ps", "--format", "Json", "--non-interactive"]);
   assert.equal(JSON.parse(stdout).length, 0, "Detené el AppHost en ejecución antes de iniciar el E2E aislado.");
 
@@ -563,8 +639,9 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       const e2eCompanyName = "Sucursal E2E";
       let e2eOrganizationName = "Empresa E2E";
       let e2eCompanyId;
+      await preparePlatform(readyFile);
       const accountCases = [
-        ["5: ingresar como operador y consultar Plataforma", async (platformPage, setStage) => {
+        ["5a: ingresar como operador y consultar Plataforma con permisos reducidos", async (platformPage, setStage) => {
           setStage("abre Plataforma sin sesión");
           await platformPage.goto(new URL("/plataforma", baseUrl).href);
           await platformPage.getByRole("textbox", { name: "Correo electrónico" }).fill("e2e-operator@example.test");
@@ -579,51 +656,272 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           setStage("muestra el listado real de Organizaciones");
           await platformPage.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
 
-          const navigate = async (panelName, linkName) => {
-            const button = platformPage.getByRole("button", { name: panelName, exact: true });
-            await button.waitFor();
-            if (await button.getAttribute("aria-expanded") !== "true") await button.click();
-            await platformPage.getByRole("navigation", { name: panelName, exact: true })
-              .getByRole("link", { name: linkName, exact: true }).click();
-          };
-          const changeState = async (action, state) => {
-            await platformPage.getByRole("button", { name: action, exact: true }).click();
-            const dialog = platformPage.getByRole("dialog");
-            await dialog.getByRole("textbox", { name: /^Motivo/ }).fill("Verificación del recorrido real");
-            await dialog.getByRole("button", { name: action, exact: true }).click();
-            await platformPage.getByText(state, { exact: true }).waitFor();
-          };
-
-          setStage("abre una organización real desde Gestión");
-          await navigate("Gestión", "Organizaciones");
-          await platformPage.getByRole("row", { name: /Empresa E2E/ })
-            .getByRole("link", { name: "Empresa E2E", exact: true }).click();
-          await platformPage.getByRole("heading", { name: "Empresa E2E", exact: true }).waitFor();
-          let suspended = false;
-          try {
-            setStage("suspende con motivo y verifica el estado después de F5");
-            await changeState("Suspender", "Suspendida");
-            suspended = true;
-            await platformPage.reload();
-            await platformPage.getByRole("heading", { name: "Empresa E2E", exact: true }).waitFor();
-            await platformPage.getByText("Suspendida", { exact: true }).waitFor();
-          } finally {
-            if (suspended) {
-              setStage("reactiva la organización para preservar los recorridos de empresa");
-              await changeState("Reactivar", "Activa");
-            }
-          }
-
-          setStage("consulta Cuentas y Administración desde sus pantallas");
-          await navigate("Gestión", "Cuentas");
-          await platformPage.getByRole("heading", { name: "Cuentas", exact: true }).waitFor();
+          setStage("F5 conserva el acceso exclusivo de Plataforma");
+          await platformPage.reload();
+          await expectProfile(platformPage, "Plataforma", "F5 conserva Plataforma");
+          setStage("consulta la lista real de Cuentas");
+          await platformNavigate(platformPage, "Gestión", "Cuentas");
           await platformPage.getByRole("row", { name: /Cuenta E2E/ }).waitFor();
-          await navigate("Administración", "Auditoría");
-          await platformPage.getByRole("heading", { name: "Auditoría", exact: true }).waitFor();
-          await navigate("Administración", "Configuración");
-          await platformPage.getByRole("heading", { name: "Configuración", exact: true }).waitFor();
+          setStage("consulta Auditoría por pantalla");
+          await platformNavigate(platformPage, "Administración", "Auditoría");
+          setStage("consulta Configuración por pantalla");
+          await platformNavigate(platformPage, "Administración", "Configuración");
+          setStage("ingresa el operador con permisos reducidos");
+          const reducedContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          try {
+            const reduced = await reducedContext.newPage();
+            await loginThroughUi(reduced, "e2e-reduced@example.test");
+            await reduced.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+            assert.equal(await reduced.getByRole("button", { name: "Crear organización", exact: true }).count(), 0);
+            assert.equal(await reduced.getByRole("button", { name: "Administración", exact: true }).count(), 0);
+            assert.equal(await reduced.getByRole("link", { name: "Cuentas", exact: true }).count(), 0);
+            await reduced.getByRole("link", { name: "Empresa E2E", exact: true }).click();
+            await reduced.getByRole("heading", { name: "Empresa E2E", exact: true }).waitFor();
+            assert.equal(await reduced.getByRole("button", { name: "Suspender", exact: true }).count(), 0);
+            assert.equal(await reduced.getByRole("tab", { name: "Dominio verificado", exact: true }).count(), 0);
+            await reduced.goto(new URL("/plataforma/configuracion", baseUrl).href);
+            await reduced.getByRole("heading", { name: "No tenés permiso para ver esta página", exact: true }).waitFor();
+          } finally { await reducedContext.close(); }
+        }],
+        ["5b: crear, aprobar, reintentar y moderar organizaciones reales", async (platformPage, setStage) => {
+          setStage("ingresa el operador para administrar organizaciones");
+          await loginThroughUi(platformPage, "e2e-operator@example.test");
+          const ownerEmail = `e2e-owner-${randomUUID()}@example.test`;
+          const name = "Creada T25";
+          setStage("crea una organización con un Dueño sin cuenta");
+          await platformPage.getByRole("button", { name: "Crear organización", exact: true }).click();
+          const creation = platformPage.getByRole("dialog");
+          await creation.getByRole("textbox", { name: "Nombre de la organización" }).fill(name);
+          await creation.getByRole("textbox", { name: "Primera empresa" }).fill("Empresa creada T25");
+          await creation.getByRole("textbox", { name: "Correo del Dueño" }).fill(ownerEmail);
+          const invitationBefore = new Set(await pickupFiles());
+          await creation.getByRole("button", { name: "Crear organización", exact: true }).click();
+          await creation.waitFor({ state: "hidden" });
+          await openPlatformOrganization(platformPage, name);
+          await platformPage.getByRole("tab", { name: /^Dueños/ }).click();
+          await platformPage.getByText("Invitación pendiente", { exact: true }).waitFor();
+          const ownerContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          try {
+            setStage("el Dueño acepta la invitación sin crear Personal");
+            const owner = await ownerContext.newPage();
+            owner.setDefaultTimeout(30_000);
+            await owner.goto(await invitationFromPickup(ownerEmail, invitationBefore));
+            await owner.getByRole("heading", { name: `Te sumás a ${name}`, exact: true }).waitFor();
+            await owner.getByRole("button", { name: "Aceptar invitación", exact: true }).click();
+            await owner.getByRole("heading", { name: `Te sumaste a ${name}`, exact: true }).waitFor();
+            await owner.getByRole("button", { name: "Más tarde", exact: true }).click();
+            await expectPath(owner, "/org", "Dueño acepta el alta de Plataforma");
+            await expectProfile(owner, name, "el Dueño entra a la organización creada");
+            await owner.goto(new URL("/org/empresas", baseUrl).href);
+            await owner.getByRole("link", { name: "Empresa creada T25", exact: true }).waitFor();
+          } finally { await ownerContext.close(); }
+          setStage("la lista real de Cuentas confirma organización sin Personal para el Dueño invitado");
+          await platformNavigate(platformPage, "Gestión", "Cuentas");
+          await platformPage.getByRole("searchbox", { name: "Buscar por nombre, correo o teléfono", exact: true }).fill(ownerEmail);
+          const invitedOwner = platformPage.getByRole("row").filter({ has: platformPage.getByRole("link", { name: ownerEmail, exact: true }) });
+          await invitedOwner.getByRole("cell", { name: "1 organización", exact: true }).waitFor();
+          assert.equal(await invitedOwner.getByRole("cell", { name: /Personal/ }).count(), 0,
+            "Aceptar la invitación de Plataforma concede empresa sin crear un espacio Personal.");
+          for (const [organization, action] of [["Pendiente T25", "Aprobar"], ["Alta interrumpida T25", "Reintentar el alta"]]) {
+            setStage(`${action} preserva la empresa y el miembro existentes`);
+            await openPlatformOrganization(platformPage, organization);
+            await platformPage.getByText(/1 empresa · 1 miembro$/).filter({ visible: true }).first().waitFor();
+            if (action === "Aprobar") await confirmPlatformReason(platformPage, action);
+            else await platformPage.getByRole("button", { name: action, exact: true }).click();
+            await platformPage.getByText("Activa", { exact: true }).first().waitFor();
+            await platformPage.reload();
+            await platformPage.getByRole("heading", { name: organization, exact: true }).waitFor();
+            await platformPage.getByText(/1 empresa · 1 miembro$/).filter({ visible: true }).first().waitFor();
+          }
+          await openPlatformOrganization(platformPage, "Empresa E2E");
+          setStage("suspende Business y conserva el ingreso Personal del Dueño");
+          await confirmPlatformReason(platformPage, "Suspender");
+          await platformPage.getByText("Suspendida", { exact: true }).first().waitFor();
+          const personContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          try {
+            const person = await personContext.newPage();
+            await loginThroughUi(person, businessEmail, "consumer");
+            await expectProfile(person, "Personal", "el Dueño conserva Personal durante la suspensión");
+          } finally {
+            await personContext.close();
+            await confirmPlatformReason(platformPage, "Reactivar");
+          }
+          assert.equal(await platformPage.getByRole("tab", { name: /^Módulos/ }).count(), 0,
+            "El preparador y el catálogo real no contienen módulos; T25 permite registrar esta ausencia.");
+          setStage("despublica la página y bloquea la publicación desde Business");
+          await platformPage.getByRole("tab", { name: "Página pública", exact: true }).click();
+          await confirmPlatformReason(platformPage, "Despublicar");
+          const businessContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          try {
+            const business = await businessContext.newPage();
+            await loginThroughUi(business, businessEmail, "business");
+            await business.goto(new URL("/org/pagina", baseUrl).href);
+            await business.getByRole("heading", { name: "Página pública", exact: true }).waitFor();
+            const publish = business.getByRole("switch");
+            assert.equal(await publish.getAttribute("aria-disabled"), "true");
+            setStage("Business intenta publicar y ve el aviso de moderación");
+            // El switch usa aria-disabled y permite tocarlo para abrir el aviso; Space ejercita esa UI real.
+            await publish.focus();
+            await publish.press("Space");
+            await business.getByRole("dialog").getByRole("heading", { name: "Página despublicada" }).waitFor();
+            await business.getByRole("dialog").getByRole("button", { name: "Cerrar", exact: true }).click();
+            assert.equal(await publish.isChecked(), false, "El control moderado no puede publicar la página.");
+            setStage("permite publicar y Business vuelve a publicar por pantalla");
+            await confirmPlatformReason(platformPage, "Permitir publicar");
+            await business.reload();
+            await business.getByRole("heading", { name: "Página pública", exact: true }).waitFor();
+            await business.getByRole("switch").click();
+            await business.getByText("Publicada", { exact: true }).first().waitFor();
+            // E6 conserva su recorrido de edición de borrador y publicación desde cero.
+            await business.getByRole("switch").click();
+            await business.getByRole("dialog").getByRole("button", { name: "Despublicar", exact: true }).click();
+            await business.getByText("Borrador", { exact: true }).first().waitFor();
+          } finally { await businessContext.close(); }
+          setStage("quita el dominio y conserva el método vinculado de la cuenta");
+          await openPlatformAccount(platformPage, "Cuenta E2E");
+          const methods = platformPage.getByRole("list", { name: "Métodos de ingreso", exact: true });
+          await methods.getByRole("listitem").filter({ hasText: "Administrado por Empresa E2E" }).waitFor();
+          const beforeMethods = await methods.getByRole("listitem").allTextContents();
+          assert.equal(beforeMethods.length, 2, "El preparador incluye un método propio y uno administrado.");
+          await openPlatformOrganization(platformPage, "Empresa E2E");
+          await platformPage.getByRole("tab", { name: "Dominio verificado", exact: true }).click();
+          await platformPage.getByRole("row", { name: /corp.example.test/ }).waitFor();
+          await confirmPlatformReason(platformPage, "Quitar");
+          await platformPage.getByText("Sin dominio de correo", { exact: true }).waitFor();
+          await openPlatformAccount(platformPage, "Cuenta E2E");
+          await platformPage.reload();
+          await platformPage.getByRole("heading", { name: "Cuenta E2E", exact: true }).waitFor();
+          await methods.getByRole("listitem").filter({ hasText: "Administrado por Empresa E2E" }).waitFor();
+          assert.deepEqual(await methods.getByRole("listitem").allTextContents(), beforeMethods,
+            "Quitar el dominio no retira ni altera los métodos vinculados de la cuenta.");
+        }],
+        ["5c: suspender, reactivar, cerrar sesiones, dar de baja y recuperar cuentas", async (platformPage, setStage) => {
+          setStage("ingresa el operador para administrar cuentas");
+          await loginThroughUi(platformPage, "e2e-operator@example.test");
+          await openPlatformAccount(platformPage, "Cuenta E2E");
+          setStage("suspende y reactiva una cuenta por Plataforma");
+          await confirmPlatformReason(platformPage, "Suspender");
+          await platformPage.getByText("Suspendida", { exact: true }).first().waitFor();
+          await platformPage.reload();
+          await platformPage.getByRole("heading", { name: "Cuenta E2E", exact: true }).waitFor();
+          await confirmPlatformReason(platformPage, "Reactivar");
+          await platformPage.getByText("Activa", { exact: true }).first().waitFor();
+          const memberContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          try {
+            const member = await memberContext.newPage();
+            await loginThroughUi(member, businessEmail, "consumer");
+            setStage("cierra sesiones y comprueba el reingreso después de F5");
+            await confirmPlatformReason(platformPage, "Cerrar sesiones");
+            await member.reload();
+            await member.getByRole("button", { name: /, Personal$/ }).waitFor({ state: "hidden" });
+            const login = member.getByRole("textbox", { name: "Correo electrónico", exact: true });
+            const returnToLogin = member.getByRole("link", { name: "Volver a ingresar", exact: true });
+            const publicLogin = member.getByRole("link", { name: "Ingresá", exact: true });
+            try { await login.or(returnToLogin).or(publicLogin).first().waitFor(); }
+            catch { throw new Error(`F5 después de cerrar sesiones no ofrece ingreso; ruta ${new URL(member.url()).pathname}.`); }
+            if (await returnToLogin.isVisible()) await returnToLogin.click();
+            else if (await publicLogin.isVisible()) await publicLogin.click();
+            await login.waitFor();
+          } finally { await memberContext.close(); }
+          const deletionContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          try {
+            setStage("registra otra cuenta y solicita su baja desde Plataforma");
+            const person = await deletionContext.newPage();
+            person.setDefaultTimeout(30_000);
+            const email = await registerPerson(person);
+            await openPlatformAccount(platformPage, email);
+            await platformPage.getByRole("button", { name: /^Acciones de/ }).click();
+            await platformPage.getByRole("menuitem", { name: "Dar de baja", exact: true }).click();
+            const dialog = platformPage.getByRole("dialog");
+            await dialog.getByRole("textbox", { name: /^Motivo/ }).fill("Verificación de baja T25");
+            await dialog.getByRole("button", { name: "Dar de baja", exact: true }).click();
+            await dialog.waitFor({ state: "hidden" });
+            await platformPage.getByText("Baja pedida", { exact: true }).first().waitFor();
+            await person.reload();
+            await person.getByRole("button", { name: /, Personal$/ }).waitFor({ state: "hidden" });
+          } finally { await deletionContext.close(); }
+          const recoveryContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          try {
+            setStage("pide Recuperar mi cuenta con un correo nuevo verificado");
+            const person = await recoveryContext.newPage();
+            person.setDefaultTimeout(30_000);
+            const previous = await registerPerson(person);
+            await signOut(person, "Personal");
+            const next = `e2e-recovery-${randomUUID()}@example.test`;
+            await person.goto(new URL("/recuperar", baseUrl).href);
+            await person.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(previous);
+            await person.getByRole("button", { name: "Seguir", exact: true }).click();
+            await person.getByRole("textbox", { name: "Correo electrónico nuevo", exact: true }).fill(next);
+            const before = new Set(await pickupFiles());
+            await person.getByRole("button", { name: "Enviar código", exact: true }).click();
+            await person.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+            await enterCode(person, await codeFromPickup(next, before));
+            await person.getByRole("button", { name: "Verificar", exact: true }).click();
+            await person.getByRole("heading", { name: "Recibimos tu pedido", exact: true }).waitFor();
+            setStage("el operador aprueba la recuperación y la persona ingresa con el correo nuevo");
+            await platformNavigate(platformPage, "Gestión", "Recuperaciones");
+            await platformPage.getByRole("searchbox", { name: "Buscar por cuenta, correo o teléfono", exact: true }).fill(next);
+            // Recuperaciones muestra métodos enmascarados; la búsqueda real por el correo selecciona el pedido.
+            await platformPage.getByRole("button", { name: /^Acciones de/ }).click();
+            await platformPage.getByRole("menuitem", { name: "Revisar", exact: true }).click();
+            const review = platformPage.getByRole("dialog");
+            await review.getByRole("textbox", { name: /^Motivo/ }).fill("Identidad comprobada en recorrido T25");
+            await review.getByRole("button", { name: "Aprobar", exact: true }).click();
+            await review.waitFor({ state: "hidden" });
+            await platformPage.getByText("Aprobado", { exact: true }).waitFor();
+            setStage("ingresa con el correo recuperado y comprueba que es Principal en Mi cuenta");
+            await loginThroughUi(person, next, "consumer");
+            await openAccount(person);
+            const recoveredMethod = person.getByRole("list", { name: "Cómo entrás", exact: true })
+              .getByRole("listitem").filter({ hasText: next });
+            await recoveredMethod.getByText(next, { exact: true }).waitFor();
+            await recoveredMethod.getByText("Principal", { exact: true }).waitFor();
+          } finally { await recoveryContext.close(); }
+        }],
+        ["5d: publicar y aceptar legales, consultar auditoría y guardar configuración", async (platformPage, setStage) => {
+          setStage("ingresa el operador para legales y configuración");
+          await loginThroughUi(platformPage, "e2e-operator@example.test");
+          setStage("publica por pantalla una versión de Privacidad vigente hoy");
+          await platformNavigate(platformPage, "Administración", "Documentos legales");
+          await platformPage.getByRole("link", { name: "Publicar versión nueva", exact: true }).click();
+          await platformPage.getByRole("combobox", { name: "Documento" }).click();
+          await platformPage.getByRole("option", { name: "Política de privacidad", exact: true }).click();
+          const civil = new Intl.DateTimeFormat("es-AR", { timeZone: "America/Argentina/Buenos_Aires", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date());
+          await platformPage.getByRole("textbox", { name: "Vigente desde" }).fill(civil);
+          await platformPage.getByRole("textbox", { name: "En español" }).fill("Política de privacidad publicada por el operador en el recorrido real T25.");
+          await platformPage.getByRole("textbox", { name: "En inglés" }).fill("Privacy policy published by the operator during the real T25 journey.");
+          await platformPage.getByRole("button", { name: "Publicar", exact: true }).click();
+          await platformPage.getByRole("alertdialog").getByRole("button", { name: "Publicar", exact: true }).click();
+          await platformPage.getByRole("heading", { name: "Actualizamos los términos" }).waitFor();
+          await acceptCurrentTerms(platformPage);
+          await platformPage.reload();
+          await platformPage.getByRole("heading", { name: "Documentos legales", exact: true }).waitFor();
+          await platformPage.getByText(/Versión 2 · vigente desde/).waitFor();
+          setStage("consulta un movimiento y su detalle en Auditoría");
+          await platformNavigate(platformPage, "Administración", "Auditoría");
+          await platformPage.getByRole("button", { name: /^Ver el detalle:/ }).first().click();
+          await platformPage.getByRole("dialog").getByText("Fecha y hora", { exact: true }).waitFor();
+          await platformPage.getByRole("dialog").getByRole("button", { name: "Cerrar", exact: true }).last().click();
+          setStage("guarda configuración con motivo y verifica después de F5");
+          await platformNavigate(platformPage, "Administración", "Configuración");
+          const limit = platformPage.getByRole("textbox", { name: "Organizaciones propias por persona" });
+          const original = await limit.inputValue();
+          const next = original === "4" ? "5" : "4";
+          await limit.fill(next);
+          // El seed deja los contactos vacíos hasta el primer guardado: la UI requiere completar ambos.
+          await platformPage.getByRole("textbox", { name: "Correo de ventas", exact: true }).fill("e2e-sales@example.test");
+          await platformPage.getByRole("textbox", { name: "Correo de soporte", exact: true }).fill("e2e-support@example.test");
+          await platformPage.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+          setStage("confirma el motivo del guardado de Configuración");
+          const dialog = platformPage.getByRole("dialog", { name: "¿Guardar la configuración?", exact: true });
+          await dialog.getByRole("textbox", { name: /^Motivo/ }).fill("Verificación de configuración T25");
+          await dialog.getByRole("button", { name: "Guardar", exact: true }).click();
+          await dialog.waitFor({ state: "hidden" });
           await platformPage.reload();
           await platformPage.getByRole("heading", { name: "Configuración", exact: true }).waitFor();
+          assert.equal(await limit.inputValue(), next);
+          assert.equal(await platformPage.getByRole("textbox", { name: "Correo de ventas", exact: true }).inputValue(), "e2e-sales@example.test");
+          assert.equal(await platformPage.getByRole("textbox", { name: "Correo de soporte", exact: true }).inputValue(), "e2e-support@example.test");
         }],
         ["4: administrar roles y bloquear la baja del único Dueño", async (rolesPage, setStage) => {
           setStage("ingresa como Dueño por la puerta de empresa");
@@ -635,6 +933,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await enterCode(rolesPage, await codeFromPickup(businessEmail, loginBefore));
           await rolesPage.getByRole("button", { name: "Verificar", exact: true }).click();
           await expectPath(rolesPage, "/org", "ingreso del Dueño para E4");
+          await acceptCurrentTerms(rolesPage);
           await expectProfile(rolesPage, "Empresa E2E", "ingreso del Dueño para E4");
 
           const authorization = accountTokens.get(rolesPage);
@@ -804,6 +1103,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await enterCode(adminPage, await codeFromPickup(businessEmail, ownerLoginBefore));
           await adminPage.getByRole("button", { name: "Verificar", exact: true }).click();
           await expectPath(adminPage, "/org", "ingreso del Dueño para invitar desde Usuarios");
+          await acceptCurrentTerms(adminPage);
 
           setStage("ve el inicio real: las áreas y la página en borrador para resolver");
           const areas = adminPage.getByRole("navigation", { name: "Áreas de la organización" });
@@ -1297,14 +1597,17 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         : accountCases;
       assert.ok(selectedAccountCases.length > 0 || onlyCase.includes("390"), "MT_E2E_ONLY_CASE debe coincidir con un recorrido de cuenta existente.");
       for (const [name, journey] of selectedAccountCases) {
-        await t.test(name, { timeout: 240_000 }, async () => {
+        await t.test(name, { timeout: name.startsWith("5") ? 600_000 : 240_000 }, async () => {
           const accountContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
           let lastFailure = "";
           let lastApiActivity = "";
           let lastInvitationState = "";
+          let lastPublicSiteState = "";
+          let lastOidcActivity = "";
           let pageErrorName = "";
           let stage = "inicia el recorrido";
           const accountPage = await accountContext.newPage();
+          accountPage.setDefaultTimeout(30_000);
           accountPage.on("pageerror", (error) => { pageErrorName = error?.name ?? "Error"; });
           accountPage.on("request", (request) => {
             const authorization = request.headers().authorization;
@@ -1315,6 +1618,16 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           });
           accountPage.on("response", async (response) => {
             const responseUrl = new URL(response.url());
+            if (responseUrl.pathname.startsWith("/connect/")) {
+              lastOidcActivity = `${response.request().method()} ${responseUrl.pathname} → ${response.status()}`;
+              if (response.status() >= 400) {
+                try {
+                  const problem = await response.json();
+                  const code = problem.error;
+                  if (typeof code === "string" && /^[a-z_]+$/.test(code)) lastOidcActivity += ` ${code}`;
+                } catch { /* No se imprime la respuesta OIDC ni sus credenciales. */ }
+              }
+            }
             if (!responseUrl.pathname.startsWith("/api/")) return;
             lastApiActivity = `${response.request().method()} ${responseUrl.pathname} → ${response.status()}`;
             if (responseUrl.pathname === "/api/invitations/preview" && response.status() === 200) {
@@ -1324,12 +1637,32 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
                   ? `preview ${payload.state}` : "preview recibido";
               } catch { lastInvitationState = "preview recibido"; }
             }
+            if (/^\/api\/platform\/tenants\/[0-9a-f-]+\/public-site$/.test(responseUrl.pathname) && response.status() === 200) {
+              try {
+                const payload = await response.json();
+                lastPublicSiteState = `página publicada ${payload.isPublished === true}, bloqueada ${payload.publishBlockedAtUtc != null}, dirección ${payload.slug != null}`;
+              } catch { lastPublicSiteState = "estado de página no legible"; }
+            }
             if (response.status() < 400) return;
             let code;
-            try { code = (await response.json()).code; } catch { /* El estado basta si no hay ProblemDetails. */ }
-            lastFailure = `HTTP ${response.status()}${typeof code === "string" && /^[A-Za-z0-9.]+$/.test(code) ? ` ${code}` : ""}`;
+            let fields = [];
+            try {
+              const problem = await response.json();
+              code = problem.code;
+              fields = Object.keys(problem.errors ?? {}).filter((field) => /^[A-Za-z.]+$/.test(field));
+            } catch { /* El estado basta si no hay ProblemDetails. */ }
+            const sort = responseUrl.searchParams.get("sort");
+            const knownSort = ["name", "displayName", "lastSignInAtUtc", "createdAt", "createdAtUtc"];
+            const sortDiagnostic = sort && knownSort.includes(sort.replace(/^-/, "")) ? `; sort ${sort}` : "";
+            lastFailure = `${response.request().method()} ${responseUrl.pathname} HTTP ${response.status()}${typeof code === "string" && /^[A-Za-z0-9.]+$/.test(code) ? ` ${code}` : ""}${fields.length ? `; campos ${fields.join(", ")}` : ""}${sortDiagnostic}`;
           });
-          try { await journey(accountPage, (value) => { stage = value; }); }
+          try {
+            await journey(accountPage, (value) => {
+              stage = value;
+              lastFailure = "";
+              if (name.startsWith("5")) console.info(`E5 ${name.slice(0, 2)}: ${stage}.`);
+            });
+          }
           catch (error) {
             // Playwright puede incluir valores de controles/URLs; solo publicar el paso.
             const safeDetail = typeof error?.message === "string"
@@ -1344,10 +1677,17 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               || error?.message?.startsWith("No llegó el .eml")
               || error?.message?.startsWith("El código de registro respondió")
               || error?.message?.startsWith("registro de cuenta 3b:");
-            const diagnostics = [lastFailure, lastApiActivity && `última Api: ${lastApiActivity}`, lastInvitationState,
+            const callback = new URL(accountPage.url());
+            const oidcError = callback.pathname === "/auth/callback" ? callback.searchParams.get("error") : null;
+            const callbackFailure = oidcError && /^[a-z_]+$/.test(oidcError) ? `callback ${oidcError}` : "";
+            const diagnostics = [lastFailure, lastApiActivity && `última Api: ${lastApiActivity}`, lastInvitationState, lastPublicSiteState,
+              lastOidcActivity && `último OIDC: ${lastOidcActivity}`,
+              callbackFailure,
               pageErrorName && `error de página: ${pageErrorName}`].filter(Boolean).join("; ");
-            throw new Error(known ? error.message
-              : `${name}: falló en “${stage}”${diagnostics ? ` (${diagnostics})` : ""} [${error?.name ?? "Error"}]${safeDetail ? ` ${safeDetail}` : ""}.`);
+            const failure = known ? error.message
+              : `${name}: falló en “${stage}”${diagnostics ? ` (${diagnostics})` : ""} [${error?.name ?? "Error"}]${safeDetail ? ` ${safeDetail}` : ""}.`;
+            console.error(failure);
+            throw new Error(failure);
           } finally { await accountContext.close(); }
         });
       }
