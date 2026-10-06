@@ -55120,6 +55120,4883 @@
       }
     },
     {
+      "id": "cuenta-estado-activa-escritorio",
+      "pair": "cuenta-estado-activa",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-estado-activa: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "estado": "Activa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-lucia",
+        "scenario": "cuenta-estado-activa: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-lucia",
+            "status": 200,
+            "body": {
+              "id": "account-lucia",
+              "displayName": "Lucía Fernández",
+              "primaryEmail": "lucia.fer@gmail.com",
+              "kind": "Person",
+              "state": "Active",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [
+                "Grupo Delta"
+              ],
+              "loginMethods": [
+                {
+                  "id": "method-managed",
+                  "type": "Email",
+                  "maskedValue": "lu•••@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-01-12T11:40:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                },
+                {
+                  "id": "method-phone",
+                  "type": "Phone",
+                  "maskedValue": "•••• 4521",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-02-03T14:47:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": false
+                },
+                {
+                  "id": "method-primary",
+                  "type": "Email",
+                  "maskedValue": "lu•••@gmail.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-05-10T17:20:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-01-12T11:40:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                },
+                {
+                  "tenantId": "tenant-beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-03T14:47:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-lucia",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "account-history-3",
+                  "occurredAtUtc": "2026-09-27T19:40:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-2",
+                  "occurredAtUtc": "2026-05-10T17:20:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-1",
+                  "occurredAtUtc": "2026-02-03T14:47:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Lucía Fernández"
+      }
+    },
+    {
+      "id": "cuenta-estado-activa-movil",
+      "pair": "cuenta-estado-activa",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-estado-activa: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-lucia",
+        "scenario": "cuenta-estado-activa: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-lucia",
+            "status": 200,
+            "body": {
+              "id": "account-lucia",
+              "displayName": "Lucía Fernández",
+              "primaryEmail": "lucia.fer@gmail.com",
+              "kind": "Person",
+              "state": "Active",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [
+                "Grupo Delta"
+              ],
+              "loginMethods": [
+                {
+                  "id": "method-managed",
+                  "type": "Email",
+                  "maskedValue": "lu•••@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-01-12T11:40:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                },
+                {
+                  "id": "method-phone",
+                  "type": "Phone",
+                  "maskedValue": "•••• 4521",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-02-03T14:47:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": false
+                },
+                {
+                  "id": "method-primary",
+                  "type": "Email",
+                  "maskedValue": "lu•••@gmail.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-05-10T17:20:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-01-12T11:40:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                },
+                {
+                  "tenantId": "tenant-beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-03T14:47:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-lucia",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "account-history-3",
+                  "occurredAtUtc": "2026-09-27T19:40:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-2",
+                  "occurredAtUtc": "2026-05-10T17:20:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-1",
+                  "occurredAtUtc": "2026-02-03T14:47:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Lucía Fernández"
+      }
+    },
+    {
+      "id": "cuenta-estado-suspendida-escritorio",
+      "pair": "cuenta-estado-suspendida",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-estado-suspendida: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "estado": "Suspendida"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-lucia",
+        "scenario": "cuenta-estado-suspendida: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-lucia",
+            "status": 200,
+            "body": {
+              "id": "account-lucia",
+              "displayName": "Lucía Fernández",
+              "primaryEmail": "lucia.fer@gmail.com",
+              "kind": "Person",
+              "state": "Suspended",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": {
+                "atUtc": "2026-09-27T20:00:00Z",
+                "action": "Suspendió la cuenta",
+                "reason": "Denuncia de uso indebido."
+              },
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [
+                "Grupo Delta"
+              ],
+              "loginMethods": [
+                {
+                  "id": "method-managed",
+                  "type": "Email",
+                  "maskedValue": "lu•••@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-01-12T11:40:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                },
+                {
+                  "id": "method-phone",
+                  "type": "Phone",
+                  "maskedValue": "•••• 4521",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-02-03T14:47:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": false
+                },
+                {
+                  "id": "method-primary",
+                  "type": "Email",
+                  "maskedValue": "lu•••@gmail.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-05-10T17:20:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-01-12T11:40:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                },
+                {
+                  "tenantId": "tenant-beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-03T14:47:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-lucia",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "suspended-history-4",
+                  "occurredAtUtc": "2026-09-27T20:00:00Z",
+                  "type": "accounts",
+                  "action": "AccountSuspended",
+                  "summary": "Suspendió la cuenta",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Denuncia de uso indebido.",
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-3",
+                  "occurredAtUtc": "2026-09-27T19:40:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-2",
+                  "occurredAtUtc": "2026-05-10T17:20:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-1",
+                  "occurredAtUtc": "2026-02-03T14:47:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Denuncia de uso indebido."
+      }
+    },
+    {
+      "id": "cuenta-estado-suspendida-movil",
+      "pair": "cuenta-estado-suspendida",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-estado-suspendida: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-lucia",
+        "scenario": "cuenta-estado-suspendida: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-lucia",
+            "status": 200,
+            "body": {
+              "id": "account-lucia",
+              "displayName": "Lucía Fernández",
+              "primaryEmail": "lucia.fer@gmail.com",
+              "kind": "Person",
+              "state": "Suspended",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": {
+                "atUtc": "2026-09-27T20:00:00Z",
+                "action": "Suspendió la cuenta",
+                "reason": "Denuncia de uso indebido."
+              },
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [
+                "Grupo Delta"
+              ],
+              "loginMethods": [
+                {
+                  "id": "method-managed",
+                  "type": "Email",
+                  "maskedValue": "lu•••@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-01-12T11:40:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                },
+                {
+                  "id": "method-phone",
+                  "type": "Phone",
+                  "maskedValue": "•••• 4521",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-02-03T14:47:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": false
+                },
+                {
+                  "id": "method-primary",
+                  "type": "Email",
+                  "maskedValue": "lu•••@gmail.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-05-10T17:20:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-01-12T11:40:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                },
+                {
+                  "tenantId": "tenant-beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-03T14:47:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-lucia",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "suspended-history-4",
+                  "occurredAtUtc": "2026-09-27T20:00:00Z",
+                  "type": "accounts",
+                  "action": "AccountSuspended",
+                  "summary": "Suspendió la cuenta",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Denuncia de uso indebido.",
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-3",
+                  "occurredAtUtc": "2026-09-27T19:40:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-2",
+                  "occurredAtUtc": "2026-05-10T17:20:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-1",
+                  "occurredAtUtc": "2026-02-03T14:47:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Denuncia de uso indebido."
+      }
+    },
+    {
+      "id": "cuenta-estado-necesita-recuperacion-escritorio",
+      "pair": "cuenta-estado-necesita-recuperacion",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-estado-necesita-recuperacion: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "estado": "Necesita recuperación"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-pablo",
+        "scenario": "cuenta-estado-necesita-recuperacion: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-pablo",
+            "status": 200,
+            "body": {
+              "id": "account-pablo",
+              "displayName": "Pablo Ortiz",
+              "primaryEmail": "pablo@kappa.ejemplo.com",
+              "kind": "Person",
+              "state": "NeedsRecovery",
+              "createdAtUtc": "2026-03-15T12:30:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-19T21:12:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-kappa",
+                  "type": "Email",
+                  "maskedValue": "pa•••@kappa.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-03-15T12:30:00Z",
+                  "managedByOrganizationName": "Kappa S.R.L.",
+                  "canSignIn": false
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-kappa",
+                  "name": "Kappa S.R.L.",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-03-15T12:30:00Z",
+                  "status": "Inactive",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": "2026-09-20T13:00:00Z"
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-pablo",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "recovery-history-3",
+                  "occurredAtUtc": "2026-09-20T13:00:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationMembershipEnded",
+                  "summary": "Terminó la membresía en la organización",
+                  "target": "Kappa S.R.L.",
+                  "targetAccountId": "account-pablo",
+                  "targetTenantId": "tenant-kappa",
+                  "actor": "Sistema",
+                  "actorRole": "Automático",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "recovery-history-2",
+                  "occurredAtUtc": "2026-09-19T21:12:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Pablo Ortiz",
+                  "targetAccountId": "account-pablo",
+                  "targetTenantId": null,
+                  "actor": "Pablo Ortiz",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "recovery-history-1",
+                  "occurredAtUtc": "2026-03-15T12:30:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Pablo Ortiz",
+                  "targetAccountId": "account-pablo",
+                  "targetTenantId": null,
+                  "actor": "Pablo Ortiz",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-pablo/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-pablo/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Su único método de ingreso era un correo administrado por Kappa S.R.L."
+      }
+    },
+    {
+      "id": "cuenta-estado-necesita-recuperacion-movil",
+      "pair": "cuenta-estado-necesita-recuperacion",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-estado-necesita-recuperacion: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-pablo",
+        "scenario": "cuenta-estado-necesita-recuperacion: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-pablo",
+            "status": 200,
+            "body": {
+              "id": "account-pablo",
+              "displayName": "Pablo Ortiz",
+              "primaryEmail": "pablo@kappa.ejemplo.com",
+              "kind": "Person",
+              "state": "NeedsRecovery",
+              "createdAtUtc": "2026-03-15T12:30:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-19T21:12:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-kappa",
+                  "type": "Email",
+                  "maskedValue": "pa•••@kappa.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-03-15T12:30:00Z",
+                  "managedByOrganizationName": "Kappa S.R.L.",
+                  "canSignIn": false
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-kappa",
+                  "name": "Kappa S.R.L.",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-03-15T12:30:00Z",
+                  "status": "Inactive",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": "2026-09-20T13:00:00Z"
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-pablo",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "recovery-history-3",
+                  "occurredAtUtc": "2026-09-20T13:00:00Z",
+                  "type": "organizations",
+                  "action": "OrganizationMembershipEnded",
+                  "summary": "Terminó la membresía en la organización",
+                  "target": "Kappa S.R.L.",
+                  "targetAccountId": "account-pablo",
+                  "targetTenantId": "tenant-kappa",
+                  "actor": "Sistema",
+                  "actorRole": "Automático",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "recovery-history-2",
+                  "occurredAtUtc": "2026-09-19T21:12:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Pablo Ortiz",
+                  "targetAccountId": "account-pablo",
+                  "targetTenantId": null,
+                  "actor": "Pablo Ortiz",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "recovery-history-1",
+                  "occurredAtUtc": "2026-03-15T12:30:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Pablo Ortiz",
+                  "targetAccountId": "account-pablo",
+                  "targetTenantId": null,
+                  "actor": "Pablo Ortiz",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-pablo/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-pablo/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Su único método de ingreso era un correo administrado por Kappa S.R.L."
+      }
+    },
+    {
+      "id": "cuenta-estado-baja-pedida-escritorio",
+      "pair": "cuenta-estado-baja-pedida",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-estado-baja-pedida: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "estado": "Baja pedida"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-diego",
+        "scenario": "cuenta-estado-baja-pedida: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-diego",
+            "status": 200,
+            "body": {
+              "id": "account-diego",
+              "displayName": "Diego Ríos",
+              "primaryEmail": "diego.rios@delta.ejemplo.com",
+              "kind": "Person",
+              "state": "PendingDeletion",
+              "createdAtUtc": "2026-02-18T13:05:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T12:12:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": {
+                "requestedAtUtc": "2026-09-27T12:15:00Z",
+                "scheduledForUtc": "2026-10-27T12:15:00Z",
+                "requestedByPlatform": false
+              },
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-diego",
+                  "type": "Email",
+                  "maskedValue": "di•••@delta.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-02-18T13:05:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-18T13:05:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-diego",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "deletion-history-3",
+                  "occurredAtUtc": "2026-09-27T12:15:00Z",
+                  "type": "accounts",
+                  "action": "AccountDeletionRequested",
+                  "summary": "Pidió la baja de la cuenta",
+                  "target": "Diego Ríos",
+                  "targetAccountId": "account-diego",
+                  "targetTenantId": null,
+                  "actor": "Diego Ríos",
+                  "actorRole": "Persona",
+                  "reason": "Ya no uso el servicio.",
+                  "ipAddress": null
+                },
+                {
+                  "id": "deletion-history-2",
+                  "occurredAtUtc": "2026-09-27T12:12:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Diego Ríos",
+                  "targetAccountId": "account-diego",
+                  "targetTenantId": null,
+                  "actor": "Diego Ríos",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "deletion-history-1",
+                  "occurredAtUtc": "2026-02-18T13:05:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Diego Ríos",
+                  "targetAccountId": "account-diego",
+                  "targetTenantId": null,
+                  "actor": "Diego Ríos",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-diego/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-diego/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Pidió la baja el"
+      }
+    },
+    {
+      "id": "cuenta-estado-baja-pedida-movil",
+      "pair": "cuenta-estado-baja-pedida",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-estado-baja-pedida: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-diego",
+        "scenario": "cuenta-estado-baja-pedida: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-diego",
+            "status": 200,
+            "body": {
+              "id": "account-diego",
+              "displayName": "Diego Ríos",
+              "primaryEmail": "diego.rios@delta.ejemplo.com",
+              "kind": "Person",
+              "state": "PendingDeletion",
+              "createdAtUtc": "2026-02-18T13:05:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T12:12:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": {
+                "requestedAtUtc": "2026-09-27T12:15:00Z",
+                "scheduledForUtc": "2026-10-27T12:15:00Z",
+                "requestedByPlatform": false
+              },
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-diego",
+                  "type": "Email",
+                  "maskedValue": "di•••@delta.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-02-18T13:05:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-18T13:05:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-diego",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "deletion-history-3",
+                  "occurredAtUtc": "2026-09-27T12:15:00Z",
+                  "type": "accounts",
+                  "action": "AccountDeletionRequested",
+                  "summary": "Pidió la baja de la cuenta",
+                  "target": "Diego Ríos",
+                  "targetAccountId": "account-diego",
+                  "targetTenantId": null,
+                  "actor": "Diego Ríos",
+                  "actorRole": "Persona",
+                  "reason": "Ya no uso el servicio.",
+                  "ipAddress": null
+                },
+                {
+                  "id": "deletion-history-2",
+                  "occurredAtUtc": "2026-09-27T12:12:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Diego Ríos",
+                  "targetAccountId": "account-diego",
+                  "targetTenantId": null,
+                  "actor": "Diego Ríos",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "deletion-history-1",
+                  "occurredAtUtc": "2026-02-18T13:05:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Diego Ríos",
+                  "targetAccountId": "account-diego",
+                  "targetTenantId": null,
+                  "actor": "Diego Ríos",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-diego/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-diego/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Pidió la baja el"
+      }
+    },
+    {
+      "id": "cuenta-estado-baja-iniciada-por-la-plataforma-escritorio",
+      "pair": "cuenta-estado-baja-iniciada-por-la-plataforma",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-estado-baja-iniciada-por-la-plataforma: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "estado": "Baja iniciada por la plataforma"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-diego",
+        "scenario": "cuenta-estado-baja-iniciada-por-la-plataforma: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-diego",
+            "status": 200,
+            "body": {
+              "id": "account-diego",
+              "displayName": "Diego Ríos",
+              "primaryEmail": "diego.rios@delta.ejemplo.com",
+              "kind": "Person",
+              "state": "PendingDeletion",
+              "createdAtUtc": "2026-02-18T13:05:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T12:12:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": {
+                "requestedAtUtc": "2026-09-27T13:30:00Z",
+                "scheduledForUtc": "2026-10-27T12:15:00Z",
+                "requestedByPlatform": true
+              },
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-diego",
+                  "type": "Email",
+                  "maskedValue": "di•••@delta.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-02-18T13:05:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-18T13:05:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-diego",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "deletion-history-3",
+                  "occurredAtUtc": "2026-09-27T13:30:00Z",
+                  "type": "accounts",
+                  "action": "AccountDeletionRequested",
+                  "summary": "Pidió la baja de la cuenta",
+                  "target": "Diego Ríos",
+                  "targetAccountId": "account-diego",
+                  "targetTenantId": null,
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Pedido legal recibido por correo.",
+                  "ipAddress": null
+                },
+                {
+                  "id": "deletion-history-2",
+                  "occurredAtUtc": "2026-09-27T12:12:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Diego Ríos",
+                  "targetAccountId": "account-diego",
+                  "targetTenantId": null,
+                  "actor": "Diego Ríos",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "deletion-history-1",
+                  "occurredAtUtc": "2026-02-18T13:05:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Diego Ríos",
+                  "targetAccountId": "account-diego",
+                  "targetTenantId": null,
+                  "actor": "Diego Ríos",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-diego/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-diego/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "La plataforma inició la baja el"
+      }
+    },
+    {
+      "id": "cuenta-estado-baja-iniciada-por-la-plataforma-movil",
+      "pair": "cuenta-estado-baja-iniciada-por-la-plataforma",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-estado-baja-iniciada-por-la-plataforma: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-diego",
+        "scenario": "cuenta-estado-baja-iniciada-por-la-plataforma: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-diego",
+            "status": 200,
+            "body": {
+              "id": "account-diego",
+              "displayName": "Diego Ríos",
+              "primaryEmail": "diego.rios@delta.ejemplo.com",
+              "kind": "Person",
+              "state": "PendingDeletion",
+              "createdAtUtc": "2026-02-18T13:05:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T12:12:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": {
+                "requestedAtUtc": "2026-09-27T13:30:00Z",
+                "scheduledForUtc": "2026-10-27T12:15:00Z",
+                "requestedByPlatform": true
+              },
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-diego",
+                  "type": "Email",
+                  "maskedValue": "di•••@delta.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-02-18T13:05:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-18T13:05:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-diego",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "deletion-history-3",
+                  "occurredAtUtc": "2026-09-27T13:30:00Z",
+                  "type": "accounts",
+                  "action": "AccountDeletionRequested",
+                  "summary": "Pidió la baja de la cuenta",
+                  "target": "Diego Ríos",
+                  "targetAccountId": "account-diego",
+                  "targetTenantId": null,
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": "Pedido legal recibido por correo.",
+                  "ipAddress": null
+                },
+                {
+                  "id": "deletion-history-2",
+                  "occurredAtUtc": "2026-09-27T12:12:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Diego Ríos",
+                  "targetAccountId": "account-diego",
+                  "targetTenantId": null,
+                  "actor": "Diego Ríos",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "deletion-history-1",
+                  "occurredAtUtc": "2026-02-18T13:05:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Diego Ríos",
+                  "targetAccountId": "account-diego",
+                  "targetTenantId": null,
+                  "actor": "Diego Ríos",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-diego/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-diego/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "La plataforma inició la baja el"
+      }
+    },
+    {
+      "id": "cuenta-estado-eliminada-escritorio",
+      "pair": "cuenta-estado-eliminada",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-estado-eliminada: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "estado": "Eliminada"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-deleted",
+        "scenario": "cuenta-estado-eliminada: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-deleted",
+            "status": 200,
+            "body": {
+              "id": "account-deleted",
+              "displayName": "Cuenta eliminada",
+              "primaryEmail": null,
+              "kind": "Person",
+              "state": "Deleted",
+              "createdAtUtc": "2026-03-04T19:22:00Z",
+              "deletedAtUtc": "2026-09-11T06:00:00Z",
+              "lastSignInAtUtc": "2026-08-12T21:36:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-deleted",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "deleted-history-3",
+                  "occurredAtUtc": "2026-09-11T06:00:00Z",
+                  "type": "accounts",
+                  "action": "AccountDeleted",
+                  "summary": "Eliminó la cuenta",
+                  "target": "Cuenta eliminada",
+                  "targetAccountId": "account-deleted",
+                  "targetTenantId": null,
+                  "actor": "Sistema",
+                  "actorRole": "Automático",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "deleted-history-2",
+                  "occurredAtUtc": "2026-08-12T21:40:00Z",
+                  "type": "accounts",
+                  "action": "AccountDeletionRequested",
+                  "summary": "Pidió la baja de la cuenta",
+                  "target": "Cuenta eliminada",
+                  "targetAccountId": "account-deleted",
+                  "targetTenantId": null,
+                  "actor": "Cuenta eliminada",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "deleted-history-1",
+                  "occurredAtUtc": "2026-08-12T21:36:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Cuenta eliminada",
+                  "targetAccountId": "account-deleted",
+                  "targetTenantId": null,
+                  "actor": "Cuenta eliminada",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-deleted/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-deleted/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "No tiene métodos de ingreso."
+      }
+    },
+    {
+      "id": "cuenta-estado-eliminada-movil",
+      "pair": "cuenta-estado-eliminada",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-estado-eliminada: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-deleted",
+        "scenario": "cuenta-estado-eliminada: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-deleted",
+            "status": 200,
+            "body": {
+              "id": "account-deleted",
+              "displayName": "Cuenta eliminada",
+              "primaryEmail": null,
+              "kind": "Person",
+              "state": "Deleted",
+              "createdAtUtc": "2026-03-04T19:22:00Z",
+              "deletedAtUtc": "2026-09-11T06:00:00Z",
+              "lastSignInAtUtc": "2026-08-12T21:36:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-deleted",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "deleted-history-3",
+                  "occurredAtUtc": "2026-09-11T06:00:00Z",
+                  "type": "accounts",
+                  "action": "AccountDeleted",
+                  "summary": "Eliminó la cuenta",
+                  "target": "Cuenta eliminada",
+                  "targetAccountId": "account-deleted",
+                  "targetTenantId": null,
+                  "actor": "Sistema",
+                  "actorRole": "Automático",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "deleted-history-2",
+                  "occurredAtUtc": "2026-08-12T21:40:00Z",
+                  "type": "accounts",
+                  "action": "AccountDeletionRequested",
+                  "summary": "Pidió la baja de la cuenta",
+                  "target": "Cuenta eliminada",
+                  "targetAccountId": "account-deleted",
+                  "targetTenantId": null,
+                  "actor": "Cuenta eliminada",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "deleted-history-1",
+                  "occurredAtUtc": "2026-08-12T21:36:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Cuenta eliminada",
+                  "targetAccountId": "account-deleted",
+                  "targetTenantId": null,
+                  "actor": "Cuenta eliminada",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-deleted/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-deleted/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "No tiene métodos de ingreso."
+      }
+    },
+    {
+      "id": "cuenta-pestana-metodos-de-ingreso-escritorio",
+      "pair": "cuenta-pestana-metodos-de-ingreso",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-pestana-metodos-de-ingreso: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "pestana": "Métodos de ingreso"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-lucia",
+        "scenario": "cuenta-pestana-metodos-de-ingreso: ficha real T22b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Métodos de ingreso",
+            "exact": false
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-lucia",
+            "status": 200,
+            "body": {
+              "id": "account-lucia",
+              "displayName": "Lucía Fernández",
+              "primaryEmail": "lucia.fer@gmail.com",
+              "kind": "Person",
+              "state": "Active",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [
+                "Grupo Delta"
+              ],
+              "loginMethods": [
+                {
+                  "id": "method-managed",
+                  "type": "Email",
+                  "maskedValue": "lu•••@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-01-12T11:40:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                },
+                {
+                  "id": "method-phone",
+                  "type": "Phone",
+                  "maskedValue": "•••• 4521",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-02-03T14:47:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": false
+                },
+                {
+                  "id": "method-primary",
+                  "type": "Email",
+                  "maskedValue": "lu•••@gmail.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-05-10T17:20:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-01-12T11:40:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                },
+                {
+                  "tenantId": "tenant-beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-03T14:47:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-lucia",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "account-history-3",
+                  "occurredAtUtc": "2026-09-27T19:40:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-2",
+                  "occurredAtUtc": "2026-05-10T17:20:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-1",
+                  "occurredAtUtc": "2026-02-03T14:47:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "lu•••@gmail.com"
+      }
+    },
+    {
+      "id": "cuenta-pestana-metodos-de-ingreso-movil",
+      "pair": "cuenta-pestana-metodos-de-ingreso",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-pestana-metodos-de-ingreso: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-lucia",
+        "scenario": "cuenta-pestana-metodos-de-ingreso: ficha real T22b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Métodos de ingreso",
+            "exact": false
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-lucia",
+            "status": 200,
+            "body": {
+              "id": "account-lucia",
+              "displayName": "Lucía Fernández",
+              "primaryEmail": "lucia.fer@gmail.com",
+              "kind": "Person",
+              "state": "Active",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [
+                "Grupo Delta"
+              ],
+              "loginMethods": [
+                {
+                  "id": "method-managed",
+                  "type": "Email",
+                  "maskedValue": "lu•••@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-01-12T11:40:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                },
+                {
+                  "id": "method-phone",
+                  "type": "Phone",
+                  "maskedValue": "•••• 4521",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-02-03T14:47:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": false
+                },
+                {
+                  "id": "method-primary",
+                  "type": "Email",
+                  "maskedValue": "lu•••@gmail.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-05-10T17:20:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-01-12T11:40:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                },
+                {
+                  "tenantId": "tenant-beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-03T14:47:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-lucia",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "account-history-3",
+                  "occurredAtUtc": "2026-09-27T19:40:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-2",
+                  "occurredAtUtc": "2026-05-10T17:20:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-1",
+                  "occurredAtUtc": "2026-02-03T14:47:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "lu•••@gmail.com"
+      }
+    },
+    {
+      "id": "cuenta-pestana-organizaciones-escritorio",
+      "pair": "cuenta-pestana-organizaciones",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-pestana-organizaciones: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "pestana": "Organizaciones"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-lucia",
+        "scenario": "cuenta-pestana-organizaciones: ficha real T22b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Organizaciones",
+            "exact": false
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-lucia",
+            "status": 200,
+            "body": {
+              "id": "account-lucia",
+              "displayName": "Lucía Fernández",
+              "primaryEmail": "lucia.fer@gmail.com",
+              "kind": "Person",
+              "state": "Active",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [
+                "Grupo Delta"
+              ],
+              "loginMethods": [
+                {
+                  "id": "method-managed",
+                  "type": "Email",
+                  "maskedValue": "lu•••@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-01-12T11:40:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                },
+                {
+                  "id": "method-phone",
+                  "type": "Phone",
+                  "maskedValue": "•••• 4521",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-02-03T14:47:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": false
+                },
+                {
+                  "id": "method-primary",
+                  "type": "Email",
+                  "maskedValue": "lu•••@gmail.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-05-10T17:20:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-01-12T11:40:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                },
+                {
+                  "tenantId": "tenant-beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-03T14:47:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-lucia",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "account-history-3",
+                  "occurredAtUtc": "2026-09-27T19:40:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-2",
+                  "occurredAtUtc": "2026-05-10T17:20:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-1",
+                  "occurredAtUtc": "2026-02-03T14:47:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Beta S.R.L."
+      }
+    },
+    {
+      "id": "cuenta-pestana-organizaciones-movil",
+      "pair": "cuenta-pestana-organizaciones",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-pestana-organizaciones: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-lucia",
+        "scenario": "cuenta-pestana-organizaciones: ficha real T22b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Organizaciones",
+            "exact": false
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-lucia",
+            "status": 200,
+            "body": {
+              "id": "account-lucia",
+              "displayName": "Lucía Fernández",
+              "primaryEmail": "lucia.fer@gmail.com",
+              "kind": "Person",
+              "state": "Active",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [
+                "Grupo Delta"
+              ],
+              "loginMethods": [
+                {
+                  "id": "method-managed",
+                  "type": "Email",
+                  "maskedValue": "lu•••@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-01-12T11:40:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                },
+                {
+                  "id": "method-phone",
+                  "type": "Phone",
+                  "maskedValue": "•••• 4521",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-02-03T14:47:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": false
+                },
+                {
+                  "id": "method-primary",
+                  "type": "Email",
+                  "maskedValue": "lu•••@gmail.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-05-10T17:20:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-01-12T11:40:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                },
+                {
+                  "tenantId": "tenant-beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-03T14:47:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-lucia",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "account-history-3",
+                  "occurredAtUtc": "2026-09-27T19:40:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-2",
+                  "occurredAtUtc": "2026-05-10T17:20:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-1",
+                  "occurredAtUtc": "2026-02-03T14:47:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Beta S.R.L."
+      }
+    },
+    {
+      "id": "cuenta-pestana-historial-de-seguridad-escritorio",
+      "pair": "cuenta-pestana-historial-de-seguridad",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-pestana-historial-de-seguridad: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona",
+        "pestana": "Historial de seguridad"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-lucia",
+        "scenario": "cuenta-pestana-historial-de-seguridad: ficha real T22b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Historial de seguridad",
+            "exact": false
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-lucia",
+            "status": 200,
+            "body": {
+              "id": "account-lucia",
+              "displayName": "Lucía Fernández",
+              "primaryEmail": "lucia.fer@gmail.com",
+              "kind": "Person",
+              "state": "Active",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [
+                "Grupo Delta"
+              ],
+              "loginMethods": [
+                {
+                  "id": "method-managed",
+                  "type": "Email",
+                  "maskedValue": "lu•••@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-01-12T11:40:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                },
+                {
+                  "id": "method-phone",
+                  "type": "Phone",
+                  "maskedValue": "•••• 4521",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-02-03T14:47:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": false
+                },
+                {
+                  "id": "method-primary",
+                  "type": "Email",
+                  "maskedValue": "lu•••@gmail.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-05-10T17:20:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-01-12T11:40:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                },
+                {
+                  "tenantId": "tenant-beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-03T14:47:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-lucia",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "account-history-3",
+                  "occurredAtUtc": "2026-09-27T19:40:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-2",
+                  "occurredAtUtc": "2026-05-10T17:20:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-1",
+                  "occurredAtUtc": "2026-02-03T14:47:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Ingresó con un código por correo"
+      }
+    },
+    {
+      "id": "cuenta-pestana-historial-de-seguridad-movil",
+      "pair": "cuenta-pestana-historial-de-seguridad",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-pestana-historial-de-seguridad: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-lucia",
+        "scenario": "cuenta-pestana-historial-de-seguridad: ficha real T22b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "tab",
+            "name": "Historial de seguridad",
+            "exact": false
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-lucia",
+            "status": 200,
+            "body": {
+              "id": "account-lucia",
+              "displayName": "Lucía Fernández",
+              "primaryEmail": "lucia.fer@gmail.com",
+              "kind": "Person",
+              "state": "Active",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [
+                "Grupo Delta"
+              ],
+              "loginMethods": [
+                {
+                  "id": "method-managed",
+                  "type": "Email",
+                  "maskedValue": "lu•••@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-01-12T11:40:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                },
+                {
+                  "id": "method-phone",
+                  "type": "Phone",
+                  "maskedValue": "•••• 4521",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-02-03T14:47:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": false
+                },
+                {
+                  "id": "method-primary",
+                  "type": "Email",
+                  "maskedValue": "lu•••@gmail.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-05-10T17:20:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-01-12T11:40:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                },
+                {
+                  "tenantId": "tenant-beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-03T14:47:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-lucia",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "account-history-3",
+                  "occurredAtUtc": "2026-09-27T19:40:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-2",
+                  "occurredAtUtc": "2026-05-10T17:20:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-1",
+                  "occurredAtUtc": "2026-02-03T14:47:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Ingresó con un código por correo"
+      }
+    },
+    {
+      "id": "cuenta-tipo-persona-escritorio",
+      "pair": "cuenta-tipo-persona",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-persona: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-lucia",
+        "scenario": "cuenta-tipo-persona: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-lucia",
+            "status": 200,
+            "body": {
+              "id": "account-lucia",
+              "displayName": "Lucía Fernández",
+              "primaryEmail": "lucia.fer@gmail.com",
+              "kind": "Person",
+              "state": "Active",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [
+                "Grupo Delta"
+              ],
+              "loginMethods": [
+                {
+                  "id": "method-managed",
+                  "type": "Email",
+                  "maskedValue": "lu•••@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-01-12T11:40:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                },
+                {
+                  "id": "method-phone",
+                  "type": "Phone",
+                  "maskedValue": "•••• 4521",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-02-03T14:47:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": false
+                },
+                {
+                  "id": "method-primary",
+                  "type": "Email",
+                  "maskedValue": "lu•••@gmail.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-05-10T17:20:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-01-12T11:40:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                },
+                {
+                  "tenantId": "tenant-beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-03T14:47:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-lucia",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "account-history-3",
+                  "occurredAtUtc": "2026-09-27T19:40:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-2",
+                  "occurredAtUtc": "2026-05-10T17:20:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-1",
+                  "occurredAtUtc": "2026-02-03T14:47:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Lucía Fernández"
+      }
+    },
+    {
+      "id": "cuenta-tipo-persona-movil",
+      "pair": "cuenta-tipo-persona",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-persona: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-lucia",
+        "scenario": "cuenta-tipo-persona: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-lucia",
+            "status": 200,
+            "body": {
+              "id": "account-lucia",
+              "displayName": "Lucía Fernández",
+              "primaryEmail": "lucia.fer@gmail.com",
+              "kind": "Person",
+              "state": "Active",
+              "createdAtUtc": "2026-01-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-27T19:40:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": true,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": null,
+              "operatorVersion": null,
+              "soleOwnerOrganizations": [
+                "Grupo Delta"
+              ],
+              "loginMethods": [
+                {
+                  "id": "method-managed",
+                  "type": "Email",
+                  "maskedValue": "lu•••@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-01-12T11:40:00Z",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canSignIn": true
+                },
+                {
+                  "id": "method-phone",
+                  "type": "Phone",
+                  "maskedValue": "•••• 4521",
+                  "isPrimary": false,
+                  "verifiedAtUtc": "2026-02-03T14:47:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": false
+                },
+                {
+                  "id": "method-primary",
+                  "type": "Email",
+                  "maskedValue": "lu•••@gmail.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-05-10T17:20:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": [
+                {
+                  "tenantId": "tenant-1",
+                  "name": "Grupo Delta",
+                  "roleName": "TenantAdmin",
+                  "joinedAtUtc": "2026-01-12T11:40:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                },
+                {
+                  "tenantId": "tenant-beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": null,
+                  "joinedAtUtc": "2026-02-03T14:47:00Z",
+                  "status": "Active",
+                  "tenantStatus": "Active",
+                  "endedAtUtc": null
+                }
+              ]
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-lucia",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "account-history-3",
+                  "occurredAtUtc": "2026-09-27T19:40:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-2",
+                  "occurredAtUtc": "2026-05-10T17:20:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "account-history-1",
+                  "occurredAtUtc": "2026-02-03T14:47:00Z",
+                  "type": "accounts",
+                  "action": "LoginMethodChanged",
+                  "summary": "Cambió un método de ingreso",
+                  "target": "Lucía Fernández",
+                  "targetAccountId": "account-lucia",
+                  "targetTenantId": null,
+                  "actor": "Lucía Fernández",
+                  "actorRole": "Persona",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-lucia/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Lucía Fernández"
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-escritorio",
+      "pair": "cuenta-tipo-operador",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-operador: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Operador"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-laura",
+        "scenario": "cuenta-tipo-operador: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-laura",
+            "status": 200,
+            "body": {
+              "id": "account-laura",
+              "displayName": "Laura Díaz",
+              "primaryEmail": "laura.diaz@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Active",
+              "createdAtUtc": "2026-08-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-22T20:35:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.recoveries.manage"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-laura",
+                  "type": "Email",
+                  "maskedValue": "la•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-08-12T11:40:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-laura",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "op-history-3",
+                  "occurredAtUtc": "2026-09-22T20:35:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-2",
+                  "occurredAtUtc": "2026-08-22T17:20:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorPermissionsChanged",
+                  "summary": "Cambió los permisos del operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-1",
+                  "occurredAtUtc": "2026-08-12T11:40:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorInvited",
+                  "summary": "Invitó a un operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Laura Díaz"
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-movil",
+      "pair": "cuenta-tipo-operador",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-operador: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Operador"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-laura",
+        "scenario": "cuenta-tipo-operador: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-laura",
+            "status": 200,
+            "body": {
+              "id": "account-laura",
+              "displayName": "Laura Díaz",
+              "primaryEmail": "laura.diaz@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Active",
+              "createdAtUtc": "2026-08-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-22T20:35:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.recoveries.manage"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-laura",
+                  "type": "Email",
+                  "maskedValue": "la•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-08-12T11:40:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-laura",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "op-history-3",
+                  "occurredAtUtc": "2026-09-22T20:35:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-2",
+                  "occurredAtUtc": "2026-08-22T17:20:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorPermissionsChanged",
+                  "summary": "Cambió los permisos del operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-1",
+                  "occurredAtUtc": "2026-08-12T11:40:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorInvited",
+                  "summary": "Invitó a un operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Laura Díaz"
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-acciones-escritorio",
+      "pair": "cuenta-tipo-operador-acciones",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-operador-acciones: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Operador: acciones"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-laura",
+        "scenario": "cuenta-tipo-operador-acciones: ficha real T22b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Laura Díaz"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"menu\"]",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-laura",
+            "status": 200,
+            "body": {
+              "id": "account-laura",
+              "displayName": "Laura Díaz",
+              "primaryEmail": "laura.diaz@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Active",
+              "createdAtUtc": "2026-08-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-22T20:35:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.recoveries.manage"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-laura",
+                  "type": "Email",
+                  "maskedValue": "la•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-08-12T11:40:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-laura",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "op-history-3",
+                  "occurredAtUtc": "2026-09-22T20:35:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-2",
+                  "occurredAtUtc": "2026-08-22T17:20:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorPermissionsChanged",
+                  "summary": "Cambió los permisos del operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-1",
+                  "occurredAtUtc": "2026-08-12T11:40:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorInvited",
+                  "summary": "Invitó a un operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Quitar operador"
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-acciones-movil",
+      "pair": "cuenta-tipo-operador-acciones",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-operador-acciones: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Operador: acciones"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-laura",
+        "scenario": "cuenta-tipo-operador-acciones: ficha real T22b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Laura Díaz"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"menu\"]",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-laura",
+            "status": 200,
+            "body": {
+              "id": "account-laura",
+              "displayName": "Laura Díaz",
+              "primaryEmail": "laura.diaz@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Active",
+              "createdAtUtc": "2026-08-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-22T20:35:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.recoveries.manage"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-laura",
+                  "type": "Email",
+                  "maskedValue": "la•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-08-12T11:40:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-laura",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "op-history-3",
+                  "occurredAtUtc": "2026-09-22T20:35:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-2",
+                  "occurredAtUtc": "2026-08-22T17:20:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorPermissionsChanged",
+                  "summary": "Cambió los permisos del operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-1",
+                  "occurredAtUtc": "2026-08-12T11:40:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorInvited",
+                  "summary": "Invitó a un operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Quitar operador"
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-cambiar-permisos-escritorio",
+      "pair": "cuenta-tipo-operador-cambiar-permisos",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-operador-cambiar-permisos: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Operador: cambiar permisos"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-laura",
+        "scenario": "cuenta-tipo-operador-cambiar-permisos: ficha real T22b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Cambiar permisos"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Permisos de plataforma"
+          },
+          {
+            "type": "click",
+            "role": "menuitemcheckbox",
+            "name": "Ver la auditoría",
+            "exact": false
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"menu\"]",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-laura",
+            "status": 200,
+            "body": {
+              "id": "account-laura",
+              "displayName": "Laura Díaz",
+              "primaryEmail": "laura.diaz@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Active",
+              "createdAtUtc": "2026-08-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-22T20:35:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.recoveries.manage"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-laura",
+                  "type": "Email",
+                  "maskedValue": "la•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-08-12T11:40:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-laura",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "op-history-3",
+                  "occurredAtUtc": "2026-09-22T20:35:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-2",
+                  "occurredAtUtc": "2026-08-22T17:20:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorPermissionsChanged",
+                  "summary": "Cambió los permisos del operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-1",
+                  "occurredAtUtc": "2026-08-12T11:40:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorInvited",
+                  "summary": "Invitó a un operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Los eventos de seguridad de todo el servicio."
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-cambiar-permisos-movil",
+      "pair": "cuenta-tipo-operador-cambiar-permisos",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-operador-cambiar-permisos: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Operador: cambiar permisos"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-laura",
+        "scenario": "cuenta-tipo-operador-cambiar-permisos: ficha real T22b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Laura Díaz"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Cambiar permisos"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Permisos de plataforma"
+          },
+          {
+            "type": "click",
+            "role": "menuitemcheckbox",
+            "name": "Ver la auditoría",
+            "exact": false
+          },
+          {
+            "type": "press",
+            "role": "menuitemcheckbox",
+            "name": "Ver la auditoría",
+            "exact": false,
+            "key": "Escape"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-laura",
+            "status": 200,
+            "body": {
+              "id": "account-laura",
+              "displayName": "Laura Díaz",
+              "primaryEmail": "laura.diaz@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Active",
+              "createdAtUtc": "2026-08-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-22T20:35:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.recoveries.manage"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-laura",
+                  "type": "Email",
+                  "maskedValue": "la•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-08-12T11:40:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-laura",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "op-history-3",
+                  "occurredAtUtc": "2026-09-22T20:35:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-2",
+                  "occurredAtUtc": "2026-08-22T17:20:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorPermissionsChanged",
+                  "summary": "Cambió los permisos del operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-1",
+                  "occurredAtUtc": "2026-08-12T11:40:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorInvited",
+                  "summary": "Invitó a un operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Cambiar permisos de Laura Díaz"
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-quitar-operador-escritorio",
+      "pair": "cuenta-tipo-operador-quitar-operador",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-operador-quitar-operador: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Operador: quitar operador"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-laura",
+        "scenario": "cuenta-tipo-operador-quitar-operador: ficha real T22b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Laura Díaz"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Quitar operador"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Dejó el equipo de soporte."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Quitar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-laura",
+            "status": 200,
+            "body": {
+              "id": "account-laura",
+              "displayName": "Laura Díaz",
+              "primaryEmail": "laura.diaz@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Active",
+              "createdAtUtc": "2026-08-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-22T20:35:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.recoveries.manage"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-laura",
+                  "type": "Email",
+                  "maskedValue": "la•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-08-12T11:40:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-laura",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "op-history-3",
+                  "occurredAtUtc": "2026-09-22T20:35:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-2",
+                  "occurredAtUtc": "2026-08-22T17:20:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorPermissionsChanged",
+                  "summary": "Cambió los permisos del operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-1",
+                  "occurredAtUtc": "2026-08-12T11:40:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorInvited",
+                  "summary": "Invitó a un operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 409,
+            "body": {
+              "code": "Platform.Operator.LastManager",
+              "detail": "Tiene que quedar al menos un operador activo que pueda administrar operadores.",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Tiene que quedar al menos un operador activo que pueda administrar operadores.",
+        "readyHeading": "¿Quitar a Laura Díaz como operador?"
+      }
+    },
+    {
+      "id": "cuenta-tipo-operador-quitar-operador-movil",
+      "pair": "cuenta-tipo-operador-quitar-operador",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-operador-quitar-operador: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Operador: quitar operador"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-laura",
+        "scenario": "cuenta-tipo-operador-quitar-operador: ficha real T22b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Acciones de Laura Díaz"
+          },
+          {
+            "type": "click",
+            "role": "menuitem",
+            "name": "Quitar operador"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Motivo",
+            "value": "Dejó el equipo de soporte."
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Quitar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "[role=\"dialog\"]",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-laura",
+            "status": 200,
+            "body": {
+              "id": "account-laura",
+              "displayName": "Laura Díaz",
+              "primaryEmail": "laura.diaz@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Active",
+              "createdAtUtc": "2026-08-12T11:40:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": "2026-09-22T20:35:00Z",
+              "lastSignInMethod": "Code",
+              "invitationExpiresAtUtc": null,
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.recoveries.manage"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-laura",
+                  "type": "Email",
+                  "maskedValue": "la•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-08-12T11:40:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-laura",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "op-history-3",
+                  "occurredAtUtc": "2026-09-22T20:35:00Z",
+                  "type": "signins",
+                  "action": "SignIn",
+                  "summary": "Ingresó con un código por correo",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Laura Díaz",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-2",
+                  "occurredAtUtc": "2026-08-22T17:20:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorPermissionsChanged",
+                  "summary": "Cambió los permisos del operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                },
+                {
+                  "id": "op-history-1",
+                  "occurredAtUtc": "2026-08-12T11:40:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorInvited",
+                  "summary": "Invitó a un operador",
+                  "target": "Laura Díaz",
+                  "targetAccountId": "account-laura",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-laura/operator",
+            "status": 409,
+            "body": {
+              "code": "Platform.Operator.LastManager",
+              "detail": "Tiene que quedar al menos un operador activo que pueda administrar operadores.",
+              "traceId": "capture"
+            }
+          }
+        ],
+        "readyText": "Tiene que quedar al menos un operador activo que pueda administrar operadores.",
+        "readyHeading": "¿Quitar a Laura Díaz como operador?"
+      }
+    },
+    {
+      "id": "cuenta-tipo-invitacion-de-operador-pendiente-escritorio",
+      "pair": "cuenta-tipo-invitacion-de-operador-pendiente",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-invitacion-de-operador-pendiente: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Invitación de operador pendiente"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-julieta",
+        "scenario": "cuenta-tipo-invitacion-de-operador-pendiente: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-julieta",
+            "status": 200,
+            "body": {
+              "id": "account-julieta",
+              "displayName": null,
+              "primaryEmail": "julieta.molina@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Invited",
+              "createdAtUtc": "2026-09-27T20:35:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": null,
+              "lastSignInMethod": null,
+              "invitationExpiresAtUtc": "2026-10-04T20:35:00Z",
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.accounts.read",
+                "platform.audit.read"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-julieta",
+                  "type": "Email",
+                  "maskedValue": "ju•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-09-27T20:35:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-julieta",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "invitation-history-1",
+                  "occurredAtUtc": "2026-09-27T20:35:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorInvited",
+                  "summary": "Invitó a un operador",
+                  "target": "ju•••@arquitecturabase.ejemplo.com",
+                  "targetAccountId": "account-julieta",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-julieta/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-julieta/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Invitación pendiente"
+      }
+    },
+    {
+      "id": "cuenta-tipo-invitacion-de-operador-pendiente-movil",
+      "pair": "cuenta-tipo-invitacion-de-operador-pendiente",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-invitacion-de-operador-pendiente: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Invitación de operador pendiente"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-julieta",
+        "scenario": "cuenta-tipo-invitacion-de-operador-pendiente: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-julieta",
+            "status": 200,
+            "body": {
+              "id": "account-julieta",
+              "displayName": null,
+              "primaryEmail": "julieta.molina@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "Invited",
+              "createdAtUtc": "2026-09-27T20:35:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": null,
+              "lastSignInMethod": null,
+              "invitationExpiresAtUtc": "2026-10-04T20:35:00Z",
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.accounts.read",
+                "platform.audit.read"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-julieta",
+                  "type": "Email",
+                  "maskedValue": "ju•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-09-27T20:35:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-julieta",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "invitation-history-1",
+                  "occurredAtUtc": "2026-09-27T20:35:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorInvited",
+                  "summary": "Invitó a un operador",
+                  "target": "ju•••@arquitecturabase.ejemplo.com",
+                  "targetAccountId": "account-julieta",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-julieta/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-julieta/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Invitación pendiente"
+      }
+    },
+    {
+      "id": "cuenta-tipo-invitacion-de-operador-vencida-escritorio",
+      "pair": "cuenta-tipo-invitacion-de-operador-vencida",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-invitacion-de-operador-vencida: ficha real T22b",
+      "board": "Cuenta-Plat",
+      "props": {
+        "cuenta": "Invitación de operador vencida"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-julieta",
+        "scenario": "cuenta-tipo-invitacion-de-operador-vencida: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-10-05T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-julieta",
+            "status": 200,
+            "body": {
+              "id": "account-julieta",
+              "displayName": null,
+              "primaryEmail": "julieta.molina@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "InvitationExpired",
+              "createdAtUtc": "2026-09-27T20:35:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": null,
+              "lastSignInMethod": null,
+              "invitationExpiresAtUtc": "2026-10-04T20:35:00Z",
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.accounts.read",
+                "platform.audit.read"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-julieta",
+                  "type": "Email",
+                  "maskedValue": "ju•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-09-27T20:35:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-julieta",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "invitation-history-1",
+                  "occurredAtUtc": "2026-09-27T20:35:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorInvited",
+                  "summary": "Invitó a un operador",
+                  "target": "ju•••@arquitecturabase.ejemplo.com",
+                  "targetAccountId": "account-julieta",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-julieta/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-julieta/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Invitación vencida"
+      }
+    },
+    {
+      "id": "cuenta-tipo-invitacion-de-operador-vencida-movil",
+      "pair": "cuenta-tipo-invitacion-de-operador-vencida",
+      "group": "plataforma-cuenta",
+      "state": "v111: cuenta-tipo-invitacion-de-operador-vencida: ficha real T22b",
+      "board": "M-Cuenta-Plat",
+      "props": {
+        "estado": "Invitación de operador vencida"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas%2Faccount-julieta",
+        "scenario": "cuenta-tipo-invitacion-de-operador-vencida: ficha real T22b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-10-05T20:35:00Z",
+        "readySelector": "main",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/accounts/account-julieta",
+            "status": 200,
+            "body": {
+              "id": "account-julieta",
+              "displayName": null,
+              "primaryEmail": "julieta.molina@arquitecturabase.ejemplo.com",
+              "kind": "Operator",
+              "state": "InvitationExpired",
+              "createdAtUtc": "2026-09-27T20:35:00Z",
+              "deletedAtUtc": null,
+              "lastSignInAtUtc": null,
+              "lastSignInMethod": null,
+              "invitationExpiresAtUtc": "2026-10-04T20:35:00Z",
+              "hasPersonalSpace": false,
+              "deletion": null,
+              "lastStateChange": null,
+              "operatorPermissions": [
+                "platform.tenants.read",
+                "platform.accounts.read",
+                "platform.audit.read"
+              ],
+              "operatorVersion": 1,
+              "soleOwnerOrganizations": [],
+              "loginMethods": [
+                {
+                  "id": "method-julieta",
+                  "type": "Email",
+                  "maskedValue": "ju•••@arquitecturabase.ejemplo.com",
+                  "isPrimary": true,
+                  "verifiedAtUtc": "2026-09-27T20:35:00Z",
+                  "managedByOrganizationName": null,
+                  "canSignIn": true
+                }
+              ],
+              "organizations": []
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/audit",
+            "query": {
+              "accountId": "account-julieta",
+              "period": "all"
+            },
+            "status": 200,
+            "body": {
+              "items": [
+                {
+                  "id": "invitation-history-1",
+                  "occurredAtUtc": "2026-09-27T20:35:00Z",
+                  "type": "operators",
+                  "action": "PlatformOperatorInvited",
+                  "summary": "Invitó a un operador",
+                  "target": "ju•••@arquitecturabase.ejemplo.com",
+                  "targetAccountId": "account-julieta",
+                  "targetTenantId": null,
+                  "actor": "Martín Sosa",
+                  "actorRole": "Operador",
+                  "reason": null,
+                  "ipAddress": null
+                }
+              ],
+              "nextCursor": null,
+              "hasMore": false
+            }
+          },
+          {
+            "method": "PUT",
+            "path": "/api/platform/accounts/account-julieta/operator",
+            "status": 200,
+            "body": {
+              "version": 2
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/platform/accounts/account-julieta/operator",
+            "status": 204
+          }
+        ],
+        "readyText": "Invitación vencida"
+      }
+    },
+    {
       "id": "recuperar-paso-1-escritorio",
       "pair": "recuperar-paso-1",
       "group": "recuperar",

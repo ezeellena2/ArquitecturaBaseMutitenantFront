@@ -13,8 +13,8 @@ import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 
 export const accountStateTones = defineStatusTones("PlatformAccountState", { Active: "success", Suspended: "warning", NeedsRecovery: "danger", PendingDeletion: "warning", Deleted: "neutral", Invited: "pending", InvitationExpired: "warning" });
 export const accountPath = (id: string) => `/plataforma/cuentas/${encodeURIComponent(id)}`;
-export const accountName = (account: PlatformAccountResponse) => account.displayName || account.primaryEmail || "";
-export const isOperatorInvitation = (account: PlatformAccountResponse) => account.state === "Invited" || account.state === "InvitationExpired";
+export const accountName = (account: Pick<PlatformAccountResponse, "displayName" | "primaryEmail">) => account.displayName || account.primaryEmail || "";
+export const isOperatorInvitation = (account: Pick<PlatformAccountResponse, "state">) => account.state === "Invited" || account.state === "InvitationExpired";
 function profiles(account: PlatformAccountResponse, t: TFunction): ReactNode {
   if (account.state === "Deleted") return <EmptyValue />;
   if (account.kind === "Operator") return t("platformAccounts:profiles.operator");

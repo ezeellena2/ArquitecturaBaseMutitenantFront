@@ -47,7 +47,7 @@ test("los rótulos de Más real de T20c corresponden al tamaño móvil, sin here
   assert.ok(cases.filter((entry) => entry.viewport.width === 1440).every((entry) => !entry.state.includes("Más real")));
 });
 
-test("el catálogo compara lista y ficha completas T21b–d y el listado real de Cuentas T22a", () => {
+test("el catálogo compara lista y ficha completas T21b–d y Cuentas T22a–b", () => {
   const cases = buildCases();
   const organizations = cases.filter((entry) => entry.group === "plataforma-organizaciones");
   assert.equal(organizations.length, 28);
@@ -61,6 +61,9 @@ test("el catálogo compara lista y ficha completas T21b–d y el listado real de
   const accounts = cases.filter((entry) => entry.group === "plataforma-cuentas");
   assert.equal(accounts.length, 36);
   assert.ok(accounts.every((entry) => entry.app.captureMode === "harness" && entry.state.includes("lista real T22a")));
+  const account = cases.filter((entry) => entry.group === "plataforma-cuenta");
+  assert.equal(account.length, 32);
+  assert.ok(account.every((entry) => entry.app.captureMode === "harness" && entry.state.includes("ficha real T22b")));
   const source = JSON.parse(readFileSync(path.join(canvas, "../capturas/etapa-5/manifest.json"), "utf8")).cases;
   const pending = new Set(source.filter((entry) => entry.group.startsWith("plataforma-") && entry.app.captureMode !== "harness").map((entry) => `${entry.group}/${entry.id}`));
   assert.ok(!cases.some((entry) => pending.has(`${entry.group}/${entry.id}`)));

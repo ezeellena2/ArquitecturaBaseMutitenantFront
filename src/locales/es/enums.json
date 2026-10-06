@@ -1,12 +1,50 @@
 {
-  "PlatformAccountState": { "Active": "Activa", "Suspended": "Suspendida", "NeedsRecovery": "Necesita recuperación", "PendingDeletion": "Baja pedida", "Deleted": "Eliminada", "Invited": "Invitación pendiente", "InvitationExpired": "Invitación vencida" },
-  "LoginAuditMethod": { "Code": "Código por correo", "Google": "Google", "WhatsAppCode": "WhatsApp", "WhatsAppLink": "WhatsApp" },
-  "TenantStatus": { "PendingApproval": "Espera aprobación", "Provisioning": "Falló el alta", "Active": "Activa", "Suspended": "Suspendida", "Closed": "Cerrada" },
-  "TenantRegistrationSource": { "SelfService": "Autoservicio", "Platform": "Plataforma" },
-  "TenantFeatureSource": { "Plan": "Plan", "Manual": "Manual", "Trial": "Prueba" },
-  "PlatformModuleState": { "On": "Prendido", "Trial": "Prueba", "Off": "Apagado" },
-  "TenantDomainStatus": { "Pending": "Pendiente", "Verified": "Verificado", "Removed": "Quitado" },
-  "PlatformPublicPageState": { "Published": "Publicada", "Draft": "Borrador", "Blocked": "Despublicada por la plataforma" },
+  "PlatformAccountState": {
+    "Active": "Activa",
+    "Suspended": "Suspendida",
+    "NeedsRecovery": "Necesita recuperación",
+    "PendingDeletion": "Baja pedida",
+    "Deleted": "Eliminada",
+    "Invited": "Invitación pendiente",
+    "InvitationExpired": "Invitación vencida"
+  },
+  "LoginAuditMethod": {
+    "Code": "Código por correo",
+    "Google": "Google",
+    "WhatsAppCode": "WhatsApp",
+    "WhatsAppLink": "WhatsApp"
+  },
+  "TenantStatus": {
+    "PendingApproval": "Espera aprobación",
+    "Provisioning": "Falló el alta",
+    "Active": "Activa",
+    "Suspended": "Suspendida",
+    "Closed": "Cerrada"
+  },
+  "TenantRegistrationSource": {
+    "SelfService": "Autoservicio",
+    "Platform": "Plataforma"
+  },
+  "TenantFeatureSource": {
+    "Plan": "Plan",
+    "Manual": "Manual",
+    "Trial": "Prueba"
+  },
+  "PlatformModuleState": {
+    "On": "Prendido",
+    "Trial": "Prueba",
+    "Off": "Apagado"
+  },
+  "TenantDomainStatus": {
+    "Pending": "Pendiente",
+    "Verified": "Verificado",
+    "Removed": "Quitado"
+  },
+  "PlatformPublicPageState": {
+    "Published": "Publicada",
+    "Draft": "Borrador",
+    "Blocked": "Despublicada por la plataforma"
+  },
   "TestStatus": {
     "Active": "Activo"
   },
@@ -41,5 +79,10 @@
     "Removed": "Terminada",
     "Suspended": "Suspendido",
     "Deleted": "Eliminado"
+  },
+  "LoginMethodType": {
+    "Email": "Correo",
+    "Phone": "WhatsApp",
+    "Google": "Google"
   }
 }

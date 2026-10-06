@@ -1,30 +1,225 @@
 {
-  "title": "Accounts", "platform": "Platform", "summary_one": "{{total}} accounts · {{suspended}} suspended", "summary_other": "{{total}} accounts · {{suspended}} suspended",
+  "title": "Accounts",
+  "platform": "Platform",
+  "summary_one": "{{total}} accounts · {{suspended}} suspended",
+  "summary_other": "{{total}} accounts · {{suspended}} suspended",
   "rowActions": "Actions for {{name}}",
-  "columns": { "account": "Account", "profiles": "Profiles", "lastSignIn": "Last sign-in", "state": "State", "actions": "Actions", "never": "Never", "expiresPrefix": "Expires on", "expiresInline": "expires" },
-  "profiles": { "personal": "Personal", "operator": "Operator", "personalOrganizations_one": "Personal + {{count}} organization", "personalOrganizations_other": "Personal + {{count}} organizations", "organizations_one": "{{count}} organization", "organizations_other": "{{count}} organizations" },
-  "filters": { "label": "Filter accounts", "search": "Search by name, email or phone", "kind": "Type: all", "kindMenu": "Filter by type", "state": "State: all", "stateMenu": "Filter by state", "kinds": { "all": "All", "Person": "People", "Operator": "Operators" }, "states": { "all": "All", "Active": "Active", "Invited": "Invitation pending", "InvitationExpired": "Invitation expired", "Suspended": "Suspended", "NeedsRecovery": "Need recovery", "PendingDeletion": "Deletion requested", "Deleted": "Deleted" } },
-  "empty": { "filtered": "No accounts match the filters", "clear": "Clear filters" },
-  "invite": { "title": "Invite operator", "email": "Email", "permissions": "Platform permissions", "none": "None", "send": "Invite", "sending": "Inviting…", "emailRequired": "Enter the email.", "emailInvalid": "Check the email: it doesn't look valid.", "invitationExists": "That email already has an invitation. Resend it from the list.", "accountExists": "That email already has an account. An operator cannot have personal profiles.", "permissionsRequired": "Select at least one platform permission." },
+  "columns": {
+    "account": "Account",
+    "profiles": "Profiles",
+    "lastSignIn": "Last sign-in",
+    "state": "State",
+    "actions": "Actions",
+    "never": "Never",
+    "expiresPrefix": "Expires on",
+    "expiresInline": "expires"
+  },
+  "profiles": {
+    "personal": "Personal",
+    "operator": "Operator",
+    "personalOrganizations_one": "Personal + {{count}} organization",
+    "personalOrganizations_other": "Personal + {{count}} organizations",
+    "organizations_one": "{{count}} organization",
+    "organizations_other": "{{count}} organizations"
+  },
+  "filters": {
+    "label": "Filter accounts",
+    "search": "Search by name, email or phone",
+    "kind": "Type: all",
+    "kindMenu": "Filter by type",
+    "state": "State: all",
+    "stateMenu": "Filter by state",
+    "kinds": {
+      "all": "All",
+      "Person": "People",
+      "Operator": "Operators"
+    },
+    "states": {
+      "all": "All",
+      "Active": "Active",
+      "Invited": "Invitation pending",
+      "InvitationExpired": "Invitation expired",
+      "Suspended": "Suspended",
+      "NeedsRecovery": "Need recovery",
+      "PendingDeletion": "Deletion requested",
+      "Deleted": "Deleted"
+    }
+  },
+  "empty": {
+    "filtered": "No accounts match the filters",
+    "clear": "Clear filters"
+  },
+  "invite": {
+    "title": "Invite operator",
+    "email": "Email",
+    "permissions": "Platform permissions",
+    "none": "None",
+    "send": "Invite",
+    "sending": "Inviting…",
+    "emailRequired": "Enter the email.",
+    "emailInvalid": "Check the email: it doesn't look valid.",
+    "invitationExists": "That email already has an invitation. Resend it from the list.",
+    "accountExists": "That email already has an account. An operator cannot have personal profiles.",
+    "permissionsRequired": "Select at least one platform permission."
+  },
   "permissions": {
-    "platform.tenants.read": { "name": "View organizations", "description": "The list and details of each organization." },
-    "platform.tenants.manage": { "name": "Manage organizations", "description": "Approve, suspend, reactivate and close; modules and public page." },
-    "platform.accounts.read": { "name": "View accounts", "description": "Search accounts and view their details." },
-    "platform.accounts.manage": { "name": "Manage accounts", "description": "Suspend, close sessions and request deletion." },
-    "platform.recoveries.manage": { "name": "Recoveries", "description": "Approve or reject requests to recover an account." },
-    "platform.legal.manage": { "name": "Legal documents", "description": "Publish a new version of terms or privacy." },
-    "platform.operators.manage": { "name": "Manage operators", "description": "Invite operators and change their permissions." },
-    "platform.audit.read": { "name": "View the audit", "description": "Security events across the service." },
-    "platform.settings.manage": { "name": "Change settings", "description": "Personal registration and organization creation." }
+    "platform.tenants.read": {
+      "name": "View organizations",
+      "description": "The list and details of each organization."
+    },
+    "platform.tenants.manage": {
+      "name": "Manage organizations",
+      "description": "Approve, suspend, reactivate and close; modules and public page."
+    },
+    "platform.accounts.read": {
+      "name": "View accounts",
+      "description": "Search accounts and view their details."
+    },
+    "platform.accounts.manage": {
+      "name": "Manage accounts",
+      "description": "Suspend, close sessions and request deletion."
+    },
+    "platform.recoveries.manage": {
+      "name": "Recoveries",
+      "description": "Approve or reject requests to recover an account."
+    },
+    "platform.legal.manage": {
+      "name": "Legal documents",
+      "description": "Publish a new version of terms or privacy."
+    },
+    "platform.operators.manage": {
+      "name": "Manage operators",
+      "description": "Invite operators and change their permissions."
+    },
+    "platform.audit.read": {
+      "name": "View the audit",
+      "description": "Security events across the service."
+    },
+    "platform.settings.manage": {
+      "name": "Change settings",
+      "description": "Personal registration and organization creation."
+    }
   },
-  "errors": { "alreadyPending": "This account is already scheduled for deletion." },
-  "actions": { "resend": "Resend invitation", "revoke": "Revoke invitation", "revoke-sessions": "Close their sessions", "suspend": "Suspend", "reactivate": "Reactivate", "deletion": "Delete account" },
+  "errors": {
+    "alreadyPending": "This account is already scheduled for deletion."
+  },
+  "actions": {
+    "resend": "Resend invitation",
+    "revoke": "Revoke invitation",
+    "revoke-sessions": "Close their sessions",
+    "suspend": "Suspend",
+    "reactivate": "Reactivate",
+    "deletion": "Delete account"
+  },
   "confirm": {
-    "revoke": { "title": "Revoke the invitation to {{name}}?", "description": "The link will stop working. You can invite them again whenever you want.", "button": "Revoke", "pending": "Revoking…" },
-    "revoke-sessions": { "title": "Close sessions for {{name}}?", "description": "They must sign in again on every device, personally and in their organizations. Nothing else changes.", "button": "Close sessions", "pending": "Closing sessions…" },
-    "suspend": { "title": "Suspend the account for {{name}}?", "description": "They cannot sign in personally or in their organizations, and sessions on both sides are closed. Their organizations continue working for the other members.", "button": "Suspend", "pending": "Suspending…" },
-    "reactivate": { "title": "Reactivate the account for {{name}}?", "description": "They can sign in personally and in their organizations again, with the same roles.", "button": "Reactivate", "pending": "Reactivating…" },
-    "deletion": { "title": "Delete the account for {{name}}?", "description": "Their sessions are closed and they are notified through all their sign-in methods. They have 30 days to cancel by signing in; the account is deleted afterwards. The platform cannot cancel it.", "button": "Delete account", "pending": "Requesting deletion…", "soleOwner": "They are the only Owner of {{organization}}. The organization must add another Owner first, or the platform must close it." }
+    "revoke": {
+      "title": "Revoke the invitation to {{name}}?",
+      "description": "The link will stop working. You can invite them again whenever you want.",
+      "button": "Revoke",
+      "pending": "Revoking…"
+    },
+    "revoke-sessions": {
+      "title": "Close sessions for {{name}}?",
+      "description": "They must sign in again on every device, personally and in their organizations. Nothing else changes.",
+      "button": "Close sessions",
+      "pending": "Closing sessions…"
+    },
+    "suspend": {
+      "title": "Suspend the account for {{name}}?",
+      "description": "They cannot sign in personally or in their organizations, and sessions on both sides are closed. Their organizations continue working for the other members.",
+      "button": "Suspend",
+      "pending": "Suspending…"
+    },
+    "reactivate": {
+      "title": "Reactivate the account for {{name}}?",
+      "description": "They can sign in personally and in their organizations again, with the same roles.",
+      "button": "Reactivate",
+      "pending": "Reactivating…"
+    },
+    "deletion": {
+      "title": "Delete the account for {{name}}?",
+      "description": "Their sessions are closed and they are notified through all their sign-in methods. They have 30 days to cancel by signing in; the account is deleted afterwards. The platform cannot cancel it.",
+      "button": "Delete account",
+      "pending": "Requesting deletion…",
+      "soleOwner": "They are the only Owner of {{organization}}. The organization must add another Owner first, or the platform must close it."
+    }
   },
-  "messages": { "invited": "We invited {{email}} as an operator.", "resent": "We resent the invitation to {{name}}.", "revoked": "We revoked the invitation to {{name}}.", "suspend": "We suspended the account for {{name}}.", "reactivate": "We reactivated the account for {{name}}.", "revoke-sessions": "We closed the sessions for {{name}}.", "deletion": "We requested deletion of the account for {{name}}. It will be deleted on {{date}}.", "deletedWithoutDate": "We requested deletion of the account for {{name}}." }
+  "messages": {
+    "invited": "We invited {{email}} as an operator.",
+    "resent": "We resent the invitation to {{name}}.",
+    "revoked": "We revoked the invitation to {{name}}.",
+    "suspend": "We suspended the account for {{name}}.",
+    "reactivate": "We reactivated the account for {{name}}.",
+    "revoke-sessions": "We closed the sessions for {{name}}.",
+    "deletion": "We requested deletion of the account for {{name}}. It will be deleted on {{date}}.",
+    "deletedWithoutDate": "We requested deletion of the account for {{name}}."
+  },
+  "detail": {
+    "title": "Account",
+    "loading": "Account",
+    "back": "Back to Accounts",
+    "tabsLabel": "Account sections",
+    "methods": "Sign-in methods",
+    "organizations": "Organizations",
+    "history": "Security history",
+    "permissions": "Permissions",
+    "methodsEmpty": "This account has no sign-in methods.",
+    "organizationsEmpty": "This account does not belong to any organization.",
+    "historyEmpty": "This account has no security history.",
+    "primary": "Primary",
+    "managedBy": "Managed by {{organization}}",
+    "verified": "Verified on",
+    "verifiedInline": "verified on",
+    "canSignIn": "Can sign in",
+    "cannotSignIn": "Can no longer sign in",
+    "organization": "Organization",
+    "role": "Role",
+    "since": "Since",
+    "membershipState": "Membership status",
+    "membershipActive": "Active",
+    "membershipInvited": "Invited",
+    "membershipEnded": "Ended",
+    "owner": "Owner",
+    "permissionGranted": "Granted",
+    "permissionCount_one": "permission",
+    "permissionCount_other": "permissions",
+    "created": "Created on",
+    "lastSignIn": "Last sign-in",
+    "lastSignInInline": "last sign-in",
+    "deleted": "Deleted on",
+    "deletedInline": "deleted on",
+    "never": "Last sign-in: never",
+    "expires": "expires on",
+    "expired": "expired on",
+    "operatorInline": "operator",
+    "closeSessions": "Close sessions",
+    "resending": "Resending…",
+    "suspended": "Suspended on",
+    "reason": "Reason:",
+    "personalDeletion": "Requested deletion on",
+    "platformDeletion": "The platform requested deletion on",
+    "scheduled": "Will be deleted on",
+    "recovery": "Needs recovery.",
+    "recoveryDescription": "Their only sign-in method was an email managed by {{organization}} and their membership ended on",
+    "recoveries": "View recovery requests",
+    "historyColumns": {
+      "when": "Date and time",
+      "what": "What happened",
+      "who": "Who",
+      "reason": "Reason"
+    }
+  },
+  "operator": {
+    "change": "Change permissions",
+    "changeTitle": "Change permissions for {{name}}",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "saved": "Changed permissions for {{name}}.",
+    "remove": "Remove operator",
+    "removeTitle": "Remove {{name}} as an operator?",
+    "removeDescription": "They can no longer access the platform.",
+    "removeButton": "Remove",
+    "removing": "Removing…",
+    "removed": "Removed {{name}} as an operator."
+  }
 }

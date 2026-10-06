@@ -9,6 +9,108 @@ import { buildCases, canvas, output } from "./capturar-etapa-5.mjs";
 const groups = ["plataforma-marco", "plataforma-organizaciones", "plataforma-organizacion", "plataforma-cuentas",
   "plataforma-cuenta", "plataforma-recuperaciones", "plataforma-legales", "plataforma-auditoria", "plataforma-configuracion", "recuperar"];
 
+test("T22b recorre la ficha real por id y conserva métodos tapados y evidencia por estado", () => {
+  const cases = buildCases().filter((entry) => entry.group === "plataforma-cuenta");
+  assert.equal(cases.length, 32);
+  for (const entry of cases) {
+    const params = new URL(entry.app.path, "http://example.test").searchParams;
+    assert.equal(entry.app.captureMode, "harness", entry.id);
+    assert.match(params.get("route"), /^\/plataforma\/cuentas\/account-/, entry.id);
+    assert.equal(params.get("reason"), null);
+    assert.equal(entry.app.now, entry.pair.endsWith("invitacion-de-operador-vencida") ? "2026-10-05T20:35:00Z" : "2026-09-27T20:35:00Z");
+    const detail = entry.app.responses.find((item) => item.path === `/api/platform/accounts/${params.get("route").split("/").at(-1)}`)?.body;
+    assert.ok(detail, entry.id);
+    assert.ok(!Object.hasOwn(detail, "version"));
+    assert.ok(detail.loginMethods.every((method) => !Object.hasOwn(method, "value") && method.maskedValue.includes("•••")));
+    if (detail.state === "Deleted") assert.equal(detail.primaryEmail, null);
+    if (detail.state === "InvitationExpired") assert.ok(detail.invitationExpiresAtUtc < entry.app.now);
+    if (entry.pair === "cuenta-estado-suspendida") assert.equal(detail.lastStateChange.reason, "Denuncia de uso indebido.");
+    if (entry.pair === "cuenta-estado-baja-iniciada-por-la-plataforma") assert.equal(detail.deletion.requestedByPlatform, true);
+  }
+});
+
+test("T22b distingue invitación sin nombre, permiso propio, LastManager y cursor de cuenta", () => {
+  const cases = buildCases();
+  for (const entry of cases.filter((item) => item.group === "plataforma-cuenta")) {
+    const detail = entry.app.responses.find((item) => /^\/api\/platform\/accounts\/account-/.test(item.path))?.body;
+    if (entry.pair.includes("invitacion-de-operador")) {
+      assert.equal(detail.displayName, null);
+      assert.equal(detail.primaryEmail, "julieta.molina@arquitecturabase.ejemplo.com");
+      assert.equal(detail.operatorPermissions.length, 3);
+    }
+    if (entry.pair === "cuenta-tipo-operador-quitar-operador") {
+      assert.ok(entry.app.actions.some((action) => action.name === "Quitar operador"));
+      assert.ok(entry.app.responses.some((item) => item.method === "DELETE" && item.status === 409 && item.body.code === "Platform.Operator.LastManager"));
+      assert.ok(entry.app.readyText.includes("Tiene que quedar"));
+    }
+    if (entry.pair === "cuenta-pestana-historial-de-seguridad") {
+      assert.ok(entry.app.actions.some((action) => action.role === "tab" && action.name === "Historial de seguridad"));
+      const audit = entry.app.responses.find((item) => item.path === "/api/platform/audit");
+      assert.equal(audit.query.period, "all");
+      assert.equal(audit.query.accountId, detail.id);
+      assert.ok(!Object.hasOwn(audit.body, "totalCount"));
+      assert.equal(audit.body.items[0].summary, "Ingresó con un código por correo");
+    }
+  }
+});
+
+test("T22b los datos de prueba no inventan ingresos posteriores a eliminar la cuenta", () => {
+  for (const entry of buildCases().filter((item) => item.pair === "cuenta-estado-eliminada")) {
+    const detail = entry.app.responses.find((item) => item.path.endsWith("/account-deleted"))?.body;
+    const audit = entry.app.responses.find((item) => item.path === "/api/platform/audit")?.body;
+    assert.ok(audit.items.every((row) => row.occurredAtUtc <= detail.deletedAtUtc));
+    assert.equal(audit.items[0].action, "AccountDeleted");
+    assert.equal(audit.items[0].actor, "Sistema");
+  }
+});
+
+test("T22b conserva el método principal aprovisionado del operador y una invitación sin ingresos", () => {
+  for (const entry of buildCases().filter((item) => item.pair.startsWith("cuenta-tipo-") && item.pair !== "cuenta-tipo-persona")) {
+    const detail = entry.app.responses.find((item) => item.path.startsWith("/api/platform/accounts/") && item.method === "GET")?.body;
+    assert.ok(detail.loginMethods.some((method) => method.type === "Email" && method.isPrimary && method.verifiedAtUtc && method.canSignIn), entry.id);
+    if (detail.state === "Invited" || detail.state === "InvitationExpired") {
+      const audit = entry.app.responses.find((item) => item.path === "/api/platform/audit")?.body;
+      assert.ok(audit.items.every((row) => row.action !== "SignIn" && row.action !== "SignInFailed"), entry.id);
+    }
+  }
+});
+
+test("T22b el índice de únicos Dueños no incluye membresías terminadas", () => {
+  for (const entry of buildCases().filter((item) => item.pair === "cuenta-estado-necesita-recuperacion")) {
+    const detail = entry.app.responses.find((item) => item.path.endsWith("/account-pablo"))?.body;
+    assert.ok(detail.soleOwnerOrganizations.every((name) => detail.organizations.some((membership) => membership.name === name && membership.status === "Active")));
+  }
+});
+
+test("T22b el teléfono conserva su verificación sin un canal de ingreso habilitado", () => {
+  for (const entry of buildCases().filter((item) => item.pair === "cuenta-tipo-persona")) {
+    const detail = entry.app.responses.find((item) => item.path.endsWith("/account-lucia"))?.body;
+    const phone = detail.loginMethods.find((method) => method.type === "Phone");
+    assert.ok(phone.verifiedAtUtc);
+    assert.equal(phone.canSignIn, false);
+  }
+});
+
+test("T22b la última entrada y la suspensión usan la misma historia temporal del backend", () => {
+  for (const entry of buildCases().filter((item) => item.pair === "cuenta-estado-activa" || item.pair === "cuenta-estado-suspendida")) {
+    const detail = entry.app.responses.find((item) => item.method === "GET" && item.path.startsWith("/api/platform/accounts/"))?.body;
+    const audit = entry.app.responses.find((item) => item.path === "/api/platform/audit")?.body;
+    assert.equal(audit.items.find((row) => row.action === "SignIn")?.occurredAtUtc, detail.lastSignInAtUtc);
+    if (detail.state === "Suspended") assert.ok(detail.lastStateChange.atUtc >= detail.lastSignInAtUtc);
+  }
+});
+
+test("T22b el historial copia rol automático y destino de organización del backend", () => {
+  for (const entry of buildCases().filter((item) => ["cuenta-estado-necesita-recuperacion", "cuenta-estado-eliminada"].includes(item.pair))) {
+    const detail = entry.app.responses.find((item) => item.method === "GET" && item.path.startsWith("/api/platform/accounts/"))?.body;
+    const audit = entry.app.responses.find((item) => item.path === "/api/platform/audit")?.body;
+    for (const row of audit.items) {
+      if (row.actor === "Sistema") assert.equal(row.actorRole, "Automático");
+      if (row.targetTenantId) assert.equal(row.target, detail.organizations.find((membership) => membership.tenantId === row.targetTenantId)?.name);
+    }
+  }
+});
+
 test("T22a recorre Cuentas real y sus estados en los dos tamaños, sin diálogo aislado", () => {
   const cases = buildCases().filter((entry) => entry.group === "plataforma-cuentas");
   assert.equal(cases.length, 36);

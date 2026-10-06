@@ -2,9 +2,17 @@ import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { server } from "@/test/mocks/server";
 import { accountQueryKey, accountsQueryRoot, changeAccount, fetchAccount, fetchAccountCounts, fetchAccounts } from "./accounts";
-import { inviteOperator, resendOperatorInvitation, revokeOperatorInvitation } from "./operators";
+import { changeOperatorPermissions, inviteOperator, removeOperator, resendOperatorInvitation, revokeOperatorInvitation } from "./operators";
 
 describe("Contrato HTTP de Cuentas", () => {
+  it("PUT y DELETE operador llevan cuerpo version/motivo y clave; sólo PUT responde versión", async () => {
+    const received: { body: unknown; key: string | null }[] = [];
+    server.use(http.put("/api/platform/accounts/account%2F1/operator", async ({ request }) => { received.push({ body: await request.json(), key: request.headers.get("Idempotency-Key") }); return HttpResponse.json({ version: 7 }); }),
+      http.delete("/api/platform/accounts/account%2F1/operator", async ({ request }) => { received.push({ body: await request.json(), key: request.headers.get("Idempotency-Key") }); return new HttpResponse(null, { status: 204 }); }));
+    expect(await changeOperatorPermissions("account/1", { version: 6, reason: "Revisión", permissions: ["platform.accounts.read"] }, "put-key")).toEqual({ version: 7 });
+    expect(await removeOperator("account/1", { version: 7, reason: "Fin" }, "delete-key")).toBeUndefined();
+    expect(received).toEqual([{ body: { version: 6, reason: "Revisión", permissions: ["platform.accounts.read"] }, key: "put-key" }, { body: { version: 7, reason: "Fin" }, key: "delete-key" }]);
+  });
   it("pagina, ordena y busca en servidor; conteos cruzados sin paginado", async () => {
     const urls: URL[] = [];
     server.use(http.get("/api/platform/accounts/paged", ({ request }) => { urls.push(new URL(request.url)); return HttpResponse.json({ items: [], page: 2, pageSize: 50, totalCount: 0, totalPages: 0, hasPrevious: true, hasNext: false }); }), http.get("/api/platform/accounts/filter-counts", ({ request }) => { urls.push(new URL(request.url)); return HttpResponse.json({ total: 0, states: [], kinds: [] }); }));

@@ -8,6 +8,7 @@ import { platformTenantsCaptureResponses } from "../src/test/mocks/platformTenan
 import { platformOrganizationCaptureResponses } from "../src/test/mocks/platformOrganization.ts";
 import { platformOrganizationAdministrationCaptureResponses } from "../src/test/mocks/platformOrganizationAdministration.ts";
 import { platformAccountRows, platformAccountsCaptureResponses } from "../src/test/mocks/platformAccounts.ts";
+import { platformAccountDetailFixture, platformAccountDetailCaptureResponses } from "../src/test/mocks/platformAccountDetail.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const canvas = path.join(root, "docs/design/lienzo");
@@ -162,6 +163,49 @@ function accountsApp(entry) {
   return { ...entry.app, path: "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Fcuentas",
     captureMode: "harness", userFixture: "visual-operator", scenario, now: "2026-09-27T20:35:00Z", actions, readySelector,
     responses: platformAccountsCaptureResponses({ invitationError, mobile: phone, includeAll: pair === "cuentas-menu-julio-perez" || pair === "cuentas-menu-laura-diaz" }), ...(readyHeading ? { readyHeading } : {}), ...(readyText ? { readyText } : {}) };
+}
+
+function accountDetailApp(entry) {
+  const pair = entry.pair;
+  const phone = entry.viewport.width === 390;
+  // Una referencia base de teléfono no cambia el estado real de la app.
+  const state = { activa: "Activa", suspendida: "Suspendida", "necesita-recuperacion": "Necesita recuperación", "baja-pedida": "Baja pedida", "baja-iniciada-por-la-plataforma": "Baja iniciada por la plataforma", eliminada: "Eliminada" }[pair.slice("cuenta-estado-".length)] ?? "Activa";
+  const kind = { persona: "Persona", operador: "Operador", "operador-acciones": "Operador: acciones", "operador-cambiar-permisos": "Operador: cambiar permisos", "operador-quitar-operador": "Operador: quitar operador", "invitacion-de-operador-pendiente": "Invitación de operador pendiente", "invitacion-de-operador-vencida": "Invitación de operador vencida" }[pair.slice("cuenta-tipo-".length)] ?? "Persona";
+  const detail = platformAccountDetailFixture({ state, kind });
+  const actions = [];
+  let readyText = detail.displayName ?? detail.primaryEmail;
+  let readySelector = "main";
+  let readyHeading;
+  if (pair.startsWith("cuenta-pestana-")) {
+    const tab = { "metodos-de-ingreso": "Métodos de ingreso", organizaciones: "Organizaciones", "historial-de-seguridad": "Historial de seguridad" }[pair.slice("cuenta-pestana-".length)];
+    actions.push({ ...click(tab, "tab"), exact: false });
+    readyText = tab === "Historial de seguridad" ? "Ingresó con un código por correo" : tab === "Organizaciones" ? "Beta S.R.L." : "lu•••@gmail.com";
+  } else if (kind === "Operador: acciones") {
+    actions.push(click("Acciones de Laura Díaz"));
+    readySelector = '[role="menu"]';
+    readyText = "Quitar operador";
+  } else if (kind === "Operador: cambiar permisos") {
+    actions.push(...(phone ? [click("Acciones de Laura Díaz"), click("Cambiar permisos", "menuitem")] : [click("Cambiar permisos")]),
+      click("Permisos de plataforma"), { ...click("Ver la auditoría", "menuitemcheckbox"), exact: false });
+    // El tablero móvil dibuja el desplegable cerrado; el de escritorio, expandido.
+    if (phone) actions.push({ type: "press", role: "menuitemcheckbox", name: "Ver la auditoría", exact: false, key: "Escape" });
+    readySelector = phone ? '[role="dialog"]' : '[role="menu"]';
+    readyText = phone ? "Cambiar permisos de Laura Díaz" : "Los eventos de seguridad de todo el servicio.";
+  } else if (kind === "Operador: quitar operador") {
+    actions.push(click("Acciones de Laura Díaz"), click("Quitar operador", "menuitem"), fill("Motivo", "Dejó el equipo de soporte."), click("Quitar"));
+    readySelector = '[role="dialog"]';
+    readyHeading = "¿Quitar a Laura Díaz como operador?";
+    readyText = "Tiene que quedar al menos un operador activo que pueda administrar operadores.";
+  } else if (detail.state === "NeedsRecovery") readyText = "Su único método de ingreso era un correo administrado por Kappa S.R.L.";
+  else if (detail.state === "Suspended") readyText = "Denuncia de uso indebido.";
+  else if (detail.state === "PendingDeletion") readyText = detail.deletion.requestedByPlatform ? "La plataforma inició la baja el" : "Pidió la baja el";
+  else if (detail.state === "Deleted") readyText = "No tiene métodos de ingreso.";
+  else if (kind.startsWith("Invitación")) readyText = kind.endsWith("vencida") ? "Invitación vencida" : "Invitación pendiente";
+  return { ...entry.app, path: `/src/test/visualApp.html?as=visual-operator&route=${encodeURIComponent(`/plataforma/cuentas/${detail.id}`)}`,
+    captureMode: "harness", userFixture: "visual-operator", scenario: `${pair}: ficha real T22b`,
+    now: kind.endsWith("vencida") ? "2026-10-05T20:35:00Z" : "2026-09-27T20:35:00Z", actions, readySelector,
+    responses: platformAccountDetailCaptureResponses({ state, kind, lastManager: kind === "Operador: quitar operador" }),
+    ...(readyText ? { readyText } : {}), ...(readyHeading ? { readyHeading } : {}) };
 }
 
 const isOrganizationDetailCase = (entry) => entry.group === "plataforma-organizacion"
@@ -452,6 +496,7 @@ export function buildCases() {
     if (entry.group === "recuperar") return { ...entry, app: recoveryApp(entry) };
     if (entry.group === "plataforma-organizaciones") return { ...entry, app: organizationsApp(entry) };
     if (entry.group === "plataforma-cuentas") return { ...entry, app: accountsApp(entry) };
+    if (entry.group === "plataforma-cuenta") return { ...entry, app: accountDetailApp(entry) };
     if (isOrganizationDetailCase(entry)) return { ...entry, app: organizationApp(entry) };
     if (isOrganizationAdministrationCase(entry)) return { ...entry, app: organizationAdministrationApp(entry) };
     if (entry.pair in platformReasons) return { ...entry, app: reasonApp(entry) };

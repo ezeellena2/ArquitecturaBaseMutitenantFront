@@ -377,7 +377,7 @@ src/
 │       │   ├── components/
 │       │   │   ├── CreateOrganizationDialog.tsx     cinco campos, defaults del operador y clave por cuerpo/recorrido
 │       │   │   └── CreateOrganizationDialog.test.tsx validaciones, referencias, 400, foco, red y claves
-│       │   ├── tabs/                               Historial/Dueños T21c; las otras pestañas pendientes T21d
+│       │   ├── tabs/                               Historial/Dueños T21c y Módulos/Dominio/Página pública T21d
 │       │   │   ├── AGENTS.md · CLAUDE.md             cursor, Dueños actuales/contacto pendiente y filas móviles
 │       │   │   ├── useOrganizationHistory.ts        useCursorList global con after opaco y límite 25
 │       │   │   ├── OrganizationHistoryTab.tsx       Historial: fecha y hora, qué pasó, quién y motivo (eventos de seguridad)
@@ -395,15 +395,25 @@ src/
 │       │   ├── api/
 │       │   │   ├── accounts.ts                      [T22a] listado/conteos/detalle y acciones de cuenta; POST sólo motivo sin versión
 │       │   │   ├── accounts.test.ts                 rutas/cuerpos/versionless y contratos HTTP de invitaciones
-│       │   │   └── operators.ts                     [T22a] invitar201, reenviar200 idempotentes y revocar204 sin motivo
+│       │   │   └── operators.ts                     [T22a–b] invitación/reenvío idempotentes, revocación204; PUT/DELETE de asignación con operatorVersion y clave
 │       │   ├── columns.tsx                          [T22a] estados, perfiles reales, métodos y fecha común; tabla y ListRow móvil
 │       │   ├── errors.ts                            [T22a] voz Plataforma, estado409, LastManager y único Dueño
 │       │   ├── components/
-│       │   │   └── InviteOperatorDialog.tsx        [T22a] correo, nueve permisos individuales con descripción y errores junto al campo
+│       │   │   ├── InviteOperatorDialog.tsx        [T22a] correo, nueve permisos individuales con descripción y errores junto al campo
+│       │   │   ├── AccountDialogs.tsx              [T22a–b] motivo de cuenta, baja con GET fresco y revocación de invitación, compartidos dentro de Cuentas
+│       │   │   ├── OperatorPermissionsDialog.tsx   [T22b] permisos y motivo, versión propia y reintento idempotente por recorrido
+│       │   │   └── RemoveOperatorDialog.tsx        [T22b] quitar asignación con motivo; LastManager en la franja
+│       │   ├── tabs/
+│       │   │   ├── AGENTS.md · CLAUDE.md            métodos tapados, membresías globales, cursor de seguridad y permisos individuales
+│       │   │   ├── AccountMethodsTab.tsx           [T22b] List de escritorio y ListRow móvil con verificación y disponibilidad
+│       │   │   ├── AccountOrganizationsTab.tsx     [T22b] organización, rol canónico traducido, fecha y estado de membresía
+│       │   │   ├── AccountHistoryTab.tsx           [T22b] summary humano del cursor de Auditoría, sin total y con audit.read
+│       │   │   └── AccountPermissionsTab.tsx       [T22b] nueve permisos con descripción y selección actual del operador
 │       │   └── pages/
 │       │       ├── AccountsPage.tsx                 [T22a] banda global, filtros cruzados, búsqueda, menús por permiso, reenvío por recurso y baja con GET fresco
 │       │       ├── AccountsPage.test.tsx            [T22a] filtros, permisos, errores, idempotencia, vida al navegar, baja, 1/50, idiomas, 390 y axe
-│       │       └── AccountPage.tsx                  [pendiente T22b] /plataforma/cuentas/:id: Métodos, Organizaciones, Historial y variante operador
+│       │       ├── AccountPage.tsx                  [T22b] /plataforma/cuentas/:id: estados y evidencia, grupos de persona/operador e invitación con correo principal
+│       │       └── AccountPage.test.tsx            [T22b] estados, permisos, cursor, métodos, operador, versionado, vida de acciones, errores, 390 y axe
 │       ├── recoveries/                              /plataforma/recuperaciones: pedidos de «Recuperar mi cuenta» (ADR 0033)
 │       │   ├── api/recoveries.ts                    pedidos; aprobar o rechazar
 │       │   ├── columns.tsx
@@ -767,7 +777,8 @@ src/
     │   ├── platformTenants.ts                       siete organizaciones literales v111 y filas adicionales exclusivas del paginado de prueba
     │   ├── platformOrganization.ts                  ficha, Dueños e Historial de Organizacion v111 con fechas UTC para las capturas
     │   ├── platformOrganizationAdministration.ts    TestFeatures, dominios y página pública de Organizacion v111, con versiones reales del contrato
-    │   └── platformAccounts.ts                      once cuentas literales v111, fechas UTC y ficha mínima para el bloqueo real de baja en el listado
+    │   ├── platformAccounts.ts                      once cuentas literales v111, fechas UTC y ficha mínima para el bloqueo real de baja en el listado
+    │   └── platformAccountDetail.ts                 ficha Cuenta-Plat: estados, métodos, roles globales, historial y permisos
     ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
     └── utils/
         ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]; devuelve el QueryClient, para una relectura de fondo [E7]

@@ -1,6 +1,6 @@
 import { api } from "@/shared/api/httpClient";
 import type { PagedResult } from "@/shared/api/pagedResult";
-import type { PagedRequest, PlatformAccountDetailResponse, PlatformAccountFilterCounts, PlatformAccountKind, PlatformAccountReasonRequest, PlatformAccountResponse, PlatformAccountState } from "@/shared/api/types";
+import type { PagedRequest, PlatformAccountDetailResponse, PlatformAccountFilterCounts, PlatformAccountKind, PlatformAccountReasonRequest, PlatformAccountResponse, PlatformAccountState, PlatformAuditCursorResponse } from "@/shared/api/types";
 
 export interface AccountsQuery extends PagedRequest { state?: PlatformAccountState; kind?: PlatformAccountKind }
 export type AccountCountsQuery = Pick<AccountsQuery, "search" | "state" | "kind">;
@@ -9,6 +9,12 @@ export const accountsQueryRoot = ["platform-accounts"] as const;
 export const accountsQueryKey = (query: AccountsQuery) => [...accountsQueryRoot, "paged", query] as const;
 export const accountCountsQueryKey = (query: AccountCountsQuery) => [...accountsQueryRoot, "counts", query] as const;
 export const accountQueryKey = (id: string) => [...accountsQueryRoot, "detail", id] as const;
+export const accountHistoryQueryKey = (id: string) => [...accountsQueryRoot, "history", id] as const;
+export function fetchAccountHistory(id: string, after: string | null): Promise<PlatformAuditCursorResponse> {
+  const query = new URLSearchParams({ accountId: id, period: "all", limit: "50" });
+  if (after) query.set("after", after);
+  return api.get(`/api/platform/audit?${query}`);
+}
 function toSearch(query: AccountsQuery | AccountCountsQuery): string {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(query)) if (value !== undefined && value !== null && value !== "") params.set(key, String(value));
