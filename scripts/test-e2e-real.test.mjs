@@ -482,7 +482,7 @@ async function openPlatformAccount(page, name) {
   await page.getByRole("heading", { name, exact: true }).waitFor();
 }
 
-async function sendLoginCode(page) {
+async function sendLoginCode(page, onStage = () => {}) {
   for (let attempt = 0; attempt < 5; attempt++) {
     const responsePromise = page.waitForResponse((response) =>
       new URL(response.url()).pathname === "/api/auth/login-code" && response.request().method() === "POST");
@@ -492,6 +492,8 @@ async function sendLoginCode(page) {
     const problem = await response.json();
     if (response.status() !== 429 || typeof problem.retryAfter !== "number")
       throw new Error(`El envío de ingreso falló (HTTP ${response.status()}).`);
+    const code = typeof problem.code === "string" && /^[A-Za-z0-9.]+$/.test(problem.code) ? problem.code : "sin código";
+    onStage(`respeta el límite de ingreso HTTP429 ${code} (${problem.retryAfter}s)`);
     // El límite es por destino, también después del código de baja; el recorrido lo respeta.
     await delay((problem.retryAfter + 1) * 1000);
   }
@@ -580,6 +582,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
   pickupDirectory = await mkdtemp(path.join(os.tmpdir(), "arquitecturabase-e2e-"));
   const readyFile = path.join(pickupDirectory, `mt-e2e-${randomUUID()}.ready`);
   const businessEmail = `e2e-business-${randomUUID()}@example.test`;
+  // El mismo Dueño conserva este método vinculado después de quitar el dominio en E5.
+  const managedBusinessEmail = "e2e-managed@corp.example.test";
   let started = false;
   try {
     const e2eEnvironment = {
@@ -1079,31 +1083,42 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
 
           setStage("abre Mi cuenta como único Dueño y comprueba que la baja está bloqueada");
           await openAccount(rolesPage, "Empresa E2E");
-          // Tablero Cuenta: «Dar de baja» apagado; ⓘ abre «No podés dar de baja tu cuenta» con la organización.
+          // Tablero Cuenta: «Dar de baja» apagado; el aviso enumera las organizaciones donde es única Dueña.
           const blockedInfo = rolesPage.getByRole("button", { name: "Por qué no podés darte de baja", exact: true });
+          setStage("comprueba el acceso al motivo de baja bloqueada del único Dueño");
           await blockedInfo.waitFor();
+          setStage("comprueba Dar de baja apagado para el único Dueño");
           assert.equal(await rolesPage.getByRole("button", { name: "Dar de baja", exact: true }).getAttribute("aria-disabled"), "true",
             "La baja del único Dueño queda apagada.");
+          setStage("abre el aviso No podés dar de baja tu cuenta");
           await blockedInfo.click();
           const blockedDialog = rolesPage.getByRole("dialog");
           await blockedDialog.getByRole("heading", { name: "No podés dar de baja tu cuenta" }).waitFor();
-          await blockedDialog.getByText("Sos la única persona con el rol Dueño en Empresa E2E", { exact: true }).waitFor();
+          setStage("comprueba las tres organizaciones donde la cuenta es única Dueña");
+          const reasonPrefix = "Sos la única persona con el rol Dueño en ";
+          const blockedReason = blockedDialog.getByText(/^Sos la única persona con el rol Dueño en /);
+          await blockedReason.waitFor();
+          const soleOwnedOrganizations = (await blockedReason.textContent()).slice(reasonPrefix.length).split(", ").sort();
+          assert.deepEqual(soleOwnedOrganizations, ["Alta interrumpida T25", "Empresa E2E", "Pendiente T25"],
+            "El aviso identifica las tres organizaciones reales donde la cuenta es única Dueña.");
+          setStage("cierra el aviso de baja bloqueada sin solicitar la baja");
           await blockedDialog.getByRole("button", { name: "Entendido", exact: true }).click();
         }],
         ["6: registrar empresa por correo sin crear Personal", async (businessSignupPage, setStage) => {
           await registerBusinessByEmail(businessSignupPage, readyFile, setStage);
         }],
         ["6: invitar desde Usuarios y aceptar con/sin cuenta previa", async (adminPage, setStage) => {
-          setStage("ingresa como Dueño para administrar Usuarios");
+          setStage("ingresa como el mismo Dueño con su método administrado conservado");
           await adminPage.goto(new URL("/login/empresa", baseUrl).href);
-          await adminPage.getByRole("textbox", { name: "Correo electrónico" }).fill(businessEmail);
+          await adminPage.getByRole("textbox", { name: "Correo electrónico" }).fill(managedBusinessEmail);
           const ownerLoginBefore = new Set(await pickupFiles());
-          await sendLoginCode(adminPage);
+          await sendLoginCode(adminPage, setStage);
           await adminPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
-          await enterCode(adminPage, await codeFromPickup(businessEmail, ownerLoginBefore));
+          await enterCode(adminPage, await codeFromPickup(managedBusinessEmail, ownerLoginBefore));
           await adminPage.getByRole("button", { name: "Verificar", exact: true }).click();
           await expectPath(adminPage, "/org", "ingreso del Dueño para invitar desde Usuarios");
           await acceptCurrentTerms(adminPage);
+          await adminPage.getByRole("button", { name: "Cuenta E2E, Empresa E2E", exact: true }).waitFor();
 
           setStage("ve el inicio real: las áreas y la página en borrador para resolver");
           const areas = adminPage.getByRole("navigation", { name: "Áreas de la organización" });
@@ -1159,7 +1174,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
                 await recipientPage.getByRole("button", { name: "Ingresá para aceptar", exact: true }).click();
                 await recipientPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
                 const loginBefore = new Set(await pickupFiles());
-                await sendLoginCode(recipientPage);
+                await sendLoginCode(recipientPage, setStage);
                 await recipientPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
                 await enterCode(recipientPage, await codeFromPickup(email, loginBefore));
                 await recipientPage.getByRole("button", { name: "Verificar", exact: true }).click();
@@ -1235,7 +1250,11 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await resend.click();
             await expectPath(companyAdminPage, `/org/empresas/${e2eCompanyId}`, "ficha de la empresa del Administrador de empresa");
             await companyAdminPage.getByRole("heading", { level: 1, name: e2eCompanyName, exact: true }).waitFor();
-            const companyMembers = companyAdminPage.getByRole("tabpanel");
+            setStage("ve Miembros sin pestañas y conserva el rol Administrador de empresa");
+            // B4: sin roles.read solo ve Miembros; Page presenta ese grupo sin barra ni tabpanel.
+            assert.equal(await companyAdminPage.getByRole("tablist").count(), 0);
+            const companyMembers = companyAdminPage.getByRole("table");
+            await companyMembers.waitFor();
             await companyMembers.getByRole("row").filter({ hasText: companyAdminEmail }).getByText("Administrador", { exact: true }).waitFor();
             assert.equal(await companyAdminPage.getByRole("heading", { name: "No tenés permiso para ver esta página" }).count(), 0);
 
@@ -1597,7 +1616,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         : accountCases;
       assert.ok(selectedAccountCases.length > 0 || onlyCase.includes("390"), "MT_E2E_ONLY_CASE debe coincidir con un recorrido de cuenta existente.");
       for (const [name, journey] of selectedAccountCases) {
-        await t.test(name, { timeout: name.startsWith("5") ? 600_000 : 240_000 }, async () => {
+        await t.test(name, { timeout: name.startsWith("5") ? 600_000 : 240_000 }, async (caseTest) => {
           const accountContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
           let lastFailure = "";
           let lastApiActivity = "";
@@ -1656,11 +1675,17 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             const sortDiagnostic = sort && knownSort.includes(sort.replace(/^-/, "")) ? `; sort ${sort}` : "";
             lastFailure = `${response.request().method()} ${responseUrl.pathname} HTTP ${response.status()}${typeof code === "string" && /^[A-Za-z0-9.]+$/.test(code) ? ` ${code}` : ""}${fields.length ? `; campos ${fields.join(", ")}` : ""}${sortDiagnostic}`;
           });
+          const reportAbort = () => {
+            const diagnostics = [lastFailure, lastApiActivity && `última Api: ${lastApiActivity}`,
+              lastOidcActivity && `último OIDC: ${lastOidcActivity}`].filter(Boolean).join("; ");
+            console.error(`${name}: cancelado en “${stage}”${diagnostics ? ` (${diagnostics})` : ""}.`);
+          };
+          caseTest.signal.addEventListener("abort", reportAbort, { once: true });
           try {
             await journey(accountPage, (value) => {
               stage = value;
               lastFailure = "";
-              if (name.startsWith("5")) console.info(`E5 ${name.slice(0, 2)}: ${stage}.`);
+              console.info(`E2E ${name}: ${stage}.`);
             });
           }
           catch (error) {
@@ -1688,7 +1713,10 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               : `${name}: falló en “${stage}”${diagnostics ? ` (${diagnostics})` : ""} [${error?.name ?? "Error"}]${safeDetail ? ` ${safeDetail}` : ""}.`;
             console.error(failure);
             throw new Error(failure);
-          } finally { await accountContext.close(); }
+          } finally {
+            caseTest.signal.removeEventListener("abort", reportAbort);
+            await accountContext.close();
+          }
         });
       }
       // Va al final: la puerta de empresa ya pidió un código para el mismo correo y hay que esperar para pedir otro.
@@ -1698,10 +1726,12 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           // Se entra por la puerta de empresa, «Más» lleva a Usuarios (lista con «+») y a Mi cuenta (botones fijos abajo),
           // ‹ vuelve a «Más» y «Salir» cierra la sesión.
           const phoneContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR", viewport: { width: 390, height: 844 } });
+          const setPhoneStage = (value) => { console.info(`E2E 390: ${value}.`); };
           try {
             const phone = await phoneContext.newPage();
+            setPhoneStage("ingresa con el método administrado conservado del mismo Dueño");
             await phone.goto(new URL("/login/empresa", baseUrl).href);
-            await phone.getByRole("textbox", { name: "Correo electrónico" }).fill(businessEmail);
+            await phone.getByRole("textbox", { name: "Correo electrónico" }).fill(managedBusinessEmail);
             const phoneBefore = new Set(await pickupFiles());
             await phone.getByRole("button", { name: "Enviar código" }).click();
             // Si la puerta de empresa pidió un código hace poco, hay que esperar para pedir otro.
@@ -1713,29 +1743,37 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               await phone.getByRole("button", { name: "Enviar código" }).click();
               await sent.waitFor();
             }
-            await enterCode(phone, await codeFromPickup(businessEmail, phoneBefore));
+            await enterCode(phone, await codeFromPickup(managedBusinessEmail, phoneBefore));
             await phone.getByRole("button", { name: "Verificar" }).click();
             await expectPath(phone, "/org", "ingreso de empresa en el teléfono");
             // El recorrido anterior publica términos nuevos: si aparecen, se aceptan antes de seguir.
             const terms = phone.getByRole("heading", { name: "Actualizamos los términos" });
             const sections = phone.getByRole("navigation", { name: "Secciones" });
+            setPhoneStage("acepta los legales vigentes si aparecen antes de continuar");
             await terms.or(sections).first().waitFor({ timeout: 30_000 });
             if (await terms.isVisible()) {
               await phone.getByRole("checkbox", { name: /Leí y acepto/ }).check();
               await phone.getByRole("button", { name: "Aceptar y seguir" }).click();
             }
+            setPhoneStage("abre Más y confirma la misma cuenta y organización activa");
             await sections.getByRole("link", { name: "Más" }).click();
             await expectPath(phone, "/mas", "«Más» en el teléfono");
+            await phone.getByText("Cuenta E2E", { exact: true }).filter({ visible: true }).waitFor();
+            await phone.getByRole("list", { name: "Perfiles", exact: true }).getByRole("button")
+              .filter({ has: phone.getByText(e2eOrganizationName, { exact: true }) }).getByLabel("Perfil actual", { exact: true }).waitFor();
+            setPhoneStage("abre Usuarios como lista y conserva Invitar usuario");
             await phone.getByRole("link", { name: /^Usuarios/ }).click();
             await expectPath(phone, "/org/usuarios", "Usuarios desde «Más»");
             await phone.getByRole("button", { name: "Invitar usuario" }).waitFor();
             assert.equal(await phone.getByRole("table").count(), 0, "a 390 Usuarios es una lista, no una tabla");
+            setPhoneStage("vuelve a Más y abre Mi cuenta con acciones fijas");
             await phone.getByRole("link", { name: "Volver a Más" }).click();
             await expectPath(phone, "/mas", "‹ vuelve a «Más»");
             await phone.getByRole("link", { name: /^Mi cuenta/ }).click();
             await phone.locator("[data-slot='fixed-actions']").getByRole("button", { name: "Guardar cambios" }).waitFor();
             await phone.getByRole("link", { name: "Volver a Más" }).click();
             await expectPath(phone, "/mas", "‹ vuelve a «Más» desde Mi cuenta");
+            setPhoneStage("sale y comprueba que el teléfono abandona la app");
             await phone.getByRole("button", { name: /^Salir/ }).click();
             try {
               await phone.waitForURL((url) => !["/mas", "/org", "/cuenta"].includes(url.pathname), { timeout: 20_000 });
