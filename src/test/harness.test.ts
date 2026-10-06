@@ -111,10 +111,11 @@ describe("arnés de reglas", () => {
     expect(declaration, "HarnessStage debe enumerar etapas para permitir saltos").not.toBeNull();
     const closedStages = [...(declaration?.groups?.stages ?? "").matchAll(/\d+/g)].map((match) => Number(match[0]));
     expect(closedStages).toContain(4);
-    expect(closedStages).not.toContain(5);
+    expect(closedStages).toContain(5);
+    expect(closedStages).toContain(6);
     expect(ClosedStages).toEqual(closedStages);
     expect(HarnessStage).toBe(Math.max(...closedStages));
-    expect(isStageClosed(5)).toBe(false);
+    expect(isStageClosed(5)).toBe(true);
   });
 
   it("pone punteros breves en cada carpeta activa del mapa", () => {
