@@ -81,6 +81,7 @@
     "Suspended": "Suspended",
     "Deleted": "Deleted"
   },
+  "LegalDocumentKind": { "Terms": "Terms and conditions", "Privacy": "Privacy policy" },
   "LoginMethodType": {
     "Email": "Email",
     "Phone": "WhatsApp",

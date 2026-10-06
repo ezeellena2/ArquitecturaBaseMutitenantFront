@@ -57,6 +57,8 @@ export const platformPages: PlatformPages = {
   accounts: lazyPage(() => import("@/areas/platform/accounts/pages/AccountsPage"), (page) => page.AccountsPage),
   account: lazyPage(() => import("@/areas/platform/accounts/pages/AccountPage"), (page) => page.AccountPage),
   recoveries: lazyPage(() => import("@/areas/platform/recoveries/pages/RecoveriesPage"), (page) => page.RecoveriesPage),
+  legal: lazyPage(() => import("@/areas/platform/legal/pages/LegalDocumentsPage"), (page) => page.LegalDocumentsPage),
+  newLegal: lazyPage(() => import("@/areas/platform/legal/pages/PublishLegalVersionPage"), (page) => page.PublishLegalVersionPage),
 };
 
 /// Monta sólo las páginas disponibles, con el permiso del manifiesto. El inicio elige Gestión y luego Administración.

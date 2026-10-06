@@ -9,6 +9,50 @@ import { buildCases, canvas, output } from "./capturar-etapa-5.mjs";
 const groups = ["plataforma-marco", "plataforma-organizaciones", "plataforma-organizacion", "plataforma-cuentas",
   "plataforma-cuenta", "plataforma-recuperaciones", "plataforma-legales", "plataforma-auditoria", "plataforma-configuracion", "recuperar"];
 
+test("T23b recorre Legales real y conserva la referencia móvil base del editor", () => {
+  const cases = buildCases().filter((entry) => entry.group === "plataforma-legales");
+  assert.equal(cases.length, 10);
+  for (const entry of cases) {
+    const params = new URL(entry.app.path, "http://example.test").searchParams;
+    assert.equal(params.get("route"), "/plataforma/legales", entry.id);
+    assert.equal(entry.app.captureMode, "harness", entry.id);
+    assert.match(entry.app.scenario, /Legales real T23b/, entry.id);
+    if (entry.viewport.width === 390 && entry.pair !== "legales-documentos") assert.equal(entry.boardReference.kind, "base", entry.id);
+  }
+});
+
+test("T23b distingue versión vigente de futura con datos y respuesta del contrato", () => {
+  for (const entry of buildCases().filter((item) => item.group === "plataforma-legales")) {
+    const docs = entry.app.responses.find((row) => row.method === "GET" && row.path === "/api/platform/legal-documents").body;
+    assert.equal(docs.length, 2);
+    assert.equal(docs.reduce((sum, doc) => sum + doc.versions.length, 0), 4);
+    const privacy = docs.find((doc) => doc.kind === "Privacy");
+    assert.equal(privacy.currentVersion, 1);
+    assert.equal(privacy.currentEffectiveAtUtc, "2026-01-12T03:00:00Z");
+    assert.equal(privacy.versions.find((row) => row.version === 2).isCurrent, false);
+    assert.equal(privacy.versions.find((row) => row.version === 2).effectiveAtUtc, "2026-11-01T03:00:00Z");
+    const publish = entry.app.responses.find((row) => row.method === "POST" && row.path === "/api/platform/legal-documents");
+    assert.equal(publish.status, 201);
+    assert.equal(publish.body.version, 3);
+    assert.match(publish.body.id, /^[a-f0-9-]{36}$/);
+  }
+});
+
+test("T23b captura validación y confirmación mediante acciones del editor real", () => {
+  for (const entry of buildCases().filter((item) => item.group === "plataforma-legales" && item.pair !== "legales-documentos")) {
+    assert.equal(entry.app.actions[0].name, "Publicar versión nueva", entry.id);
+    assert.equal(entry.app.actions[0].role, "link", entry.id);
+    assert.ok(entry.app.readySelector, entry.id);
+    if (entry.pair === "legales-errores") assert.equal(entry.app.readyText, "Escribí la fecha de vigencia.");
+    if (entry.pair === "legales-fecha-invalida") assert.ok(entry.app.actions.some((action) => action.type === "fill" && action.value === "01/11"));
+    if (entry.pair === "legales-confirmacion") {
+      assert.equal(entry.app.readyText, "¿Publicar la versión 3 de Términos y condiciones?");
+      assert.equal(entry.app.actions.filter((action) => action.type === "fill").length, 3);
+      assert.equal(entry.app.readySelector, '[role="alertdialog"]');
+    }
+  }
+});
+
 test("T23a recorre Recuperaciones real con estados y métodos tapados en ambos tamaños", () => {
   const cases = buildCases().filter((entry) => entry.group === "plataforma-recuperaciones");
   assert.equal(cases.length, 16);

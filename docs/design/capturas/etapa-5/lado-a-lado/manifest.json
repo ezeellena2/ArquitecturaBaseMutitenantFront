@@ -65898,6 +65898,974 @@
       }
     },
     {
+      "id": "legales-documentos-escritorio",
+      "pair": "legales-documentos",
+      "group": "plataforma-legales",
+      "state": "v111: legales-documentos: Legales real T23b",
+      "board": "Legales",
+      "props": {
+        "pantalla": "Documentos"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Flegales",
+        "scenario": "legales-documentos: Legales real T23b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/legal-documents",
+            "status": 200,
+            "body": [
+              {
+                "kind": "Terms",
+                "currentVersion": 2,
+                "currentEffectiveAtUtc": "2026-06-01T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "11111111-1111-4111-8111-111111111102",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-06-01T03:00:00Z",
+                    "isCurrent": true
+                  },
+                  {
+                    "id": "11111111-1111-4111-8111-111111111101",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": false
+                  }
+                ]
+              },
+              {
+                "kind": "Privacy",
+                "currentVersion": 1,
+                "currentEffectiveAtUtc": "2026-01-12T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "22222222-2222-4222-8222-222222222202",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-11-01T03:00:00Z",
+                    "isCurrent": false
+                  },
+                  {
+                    "id": "22222222-2222-4222-8222-222222222201",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/legal-documents",
+            "status": 201,
+            "body": {
+              "id": "11111111-1111-4111-8111-111111111103",
+              "version": 3
+            }
+          }
+        ],
+        "readyText": "Versión 2 desde 01/11/2026",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "legales-documentos-movil",
+      "pair": "legales-documentos",
+      "group": "plataforma-legales",
+      "state": "v111: legales-documentos: Legales real T23b",
+      "board": "M-Legales",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Flegales",
+        "scenario": "legales-documentos: Legales real T23b",
+        "actions": [],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/legal-documents",
+            "status": 200,
+            "body": [
+              {
+                "kind": "Terms",
+                "currentVersion": 2,
+                "currentEffectiveAtUtc": "2026-06-01T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "11111111-1111-4111-8111-111111111102",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-06-01T03:00:00Z",
+                    "isCurrent": true
+                  },
+                  {
+                    "id": "11111111-1111-4111-8111-111111111101",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": false
+                  }
+                ]
+              },
+              {
+                "kind": "Privacy",
+                "currentVersion": 1,
+                "currentEffectiveAtUtc": "2026-01-12T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "22222222-2222-4222-8222-222222222202",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-11-01T03:00:00Z",
+                    "isCurrent": false
+                  },
+                  {
+                    "id": "22222222-2222-4222-8222-222222222201",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/legal-documents",
+            "status": 201,
+            "body": {
+              "id": "11111111-1111-4111-8111-111111111103",
+              "version": 3
+            }
+          }
+        ],
+        "readyText": "Versión 2 desde 01/11/2026",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "legales-publicar-version-nueva-escritorio",
+      "pair": "legales-publicar-version-nueva",
+      "group": "plataforma-legales",
+      "state": "v111: legales-publicar-version-nueva: Legales real T23b",
+      "board": "Legales",
+      "props": {
+        "pantalla": "Publicar versión nueva"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Flegales",
+        "scenario": "legales-publicar-version-nueva: Legales real T23b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "link",
+            "name": "Publicar versión nueva"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/legal-documents",
+            "status": 200,
+            "body": [
+              {
+                "kind": "Terms",
+                "currentVersion": 2,
+                "currentEffectiveAtUtc": "2026-06-01T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "11111111-1111-4111-8111-111111111102",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-06-01T03:00:00Z",
+                    "isCurrent": true
+                  },
+                  {
+                    "id": "11111111-1111-4111-8111-111111111101",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": false
+                  }
+                ]
+              },
+              {
+                "kind": "Privacy",
+                "currentVersion": 1,
+                "currentEffectiveAtUtc": "2026-01-12T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "22222222-2222-4222-8222-222222222202",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-11-01T03:00:00Z",
+                    "isCurrent": false
+                  },
+                  {
+                    "id": "22222222-2222-4222-8222-222222222201",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/legal-documents",
+            "status": 201,
+            "body": {
+              "id": "11111111-1111-4111-8111-111111111103",
+              "version": 3
+            }
+          }
+        ],
+        "readyText": "Al publicarla, todas las cuentas tienen que aceptarla de nuevo para seguir usando el servicio. Una versión publicada no se edita.",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "legales-publicar-version-nueva-movil",
+      "pair": "legales-publicar-version-nueva",
+      "group": "plataforma-legales",
+      "state": "v111: legales-publicar-version-nueva: Legales real T23b",
+      "board": "M-Legales",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Flegales",
+        "scenario": "legales-publicar-version-nueva: Legales real T23b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "link",
+            "name": "Publicar versión nueva"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/legal-documents",
+            "status": 200,
+            "body": [
+              {
+                "kind": "Terms",
+                "currentVersion": 2,
+                "currentEffectiveAtUtc": "2026-06-01T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "11111111-1111-4111-8111-111111111102",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-06-01T03:00:00Z",
+                    "isCurrent": true
+                  },
+                  {
+                    "id": "11111111-1111-4111-8111-111111111101",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": false
+                  }
+                ]
+              },
+              {
+                "kind": "Privacy",
+                "currentVersion": 1,
+                "currentEffectiveAtUtc": "2026-01-12T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "22222222-2222-4222-8222-222222222202",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-11-01T03:00:00Z",
+                    "isCurrent": false
+                  },
+                  {
+                    "id": "22222222-2222-4222-8222-222222222201",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/legal-documents",
+            "status": 201,
+            "body": {
+              "id": "11111111-1111-4111-8111-111111111103",
+              "version": 3
+            }
+          }
+        ],
+        "readyText": "Al publicarla, todas las cuentas tienen que aceptarla de nuevo para seguir usando el servicio. Una versión publicada no se edita.",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "legales-errores-escritorio",
+      "pair": "legales-errores",
+      "group": "plataforma-legales",
+      "state": "v111: legales-errores: Legales real T23b",
+      "board": "Legales",
+      "props": {
+        "pantalla": "Publicar versión nueva"
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Publicar"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Flegales",
+        "scenario": "legales-errores: Legales real T23b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "link",
+            "name": "Publicar versión nueva"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Publicar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/legal-documents",
+            "status": 200,
+            "body": [
+              {
+                "kind": "Terms",
+                "currentVersion": 2,
+                "currentEffectiveAtUtc": "2026-06-01T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "11111111-1111-4111-8111-111111111102",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-06-01T03:00:00Z",
+                    "isCurrent": true
+                  },
+                  {
+                    "id": "11111111-1111-4111-8111-111111111101",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": false
+                  }
+                ]
+              },
+              {
+                "kind": "Privacy",
+                "currentVersion": 1,
+                "currentEffectiveAtUtc": "2026-01-12T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "22222222-2222-4222-8222-222222222202",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-11-01T03:00:00Z",
+                    "isCurrent": false
+                  },
+                  {
+                    "id": "22222222-2222-4222-8222-222222222201",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/legal-documents",
+            "status": 201,
+            "body": {
+              "id": "11111111-1111-4111-8111-111111111103",
+              "version": 3
+            }
+          }
+        ],
+        "readyText": "Escribí la fecha de vigencia.",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "legales-errores-movil",
+      "pair": "legales-errores",
+      "group": "plataforma-legales",
+      "state": "v111: legales-errores: Legales real T23b",
+      "board": "M-Legales",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Flegales",
+        "scenario": "legales-errores: Legales real T23b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "link",
+            "name": "Publicar versión nueva"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Publicar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/legal-documents",
+            "status": 200,
+            "body": [
+              {
+                "kind": "Terms",
+                "currentVersion": 2,
+                "currentEffectiveAtUtc": "2026-06-01T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "11111111-1111-4111-8111-111111111102",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-06-01T03:00:00Z",
+                    "isCurrent": true
+                  },
+                  {
+                    "id": "11111111-1111-4111-8111-111111111101",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": false
+                  }
+                ]
+              },
+              {
+                "kind": "Privacy",
+                "currentVersion": 1,
+                "currentEffectiveAtUtc": "2026-01-12T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "22222222-2222-4222-8222-222222222202",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-11-01T03:00:00Z",
+                    "isCurrent": false
+                  },
+                  {
+                    "id": "22222222-2222-4222-8222-222222222201",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/legal-documents",
+            "status": 201,
+            "body": {
+              "id": "11111111-1111-4111-8111-111111111103",
+              "version": 3
+            }
+          }
+        ],
+        "readyText": "Escribí la fecha de vigencia.",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "legales-fecha-invalida-escritorio",
+      "pair": "legales-fecha-invalida",
+      "group": "plataforma-legales",
+      "state": "v111: legales-fecha-invalida: Legales real T23b",
+      "board": "Legales",
+      "props": {
+        "pantalla": "Publicar versión nueva"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Vigente desde",
+          "value": "01/11"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Publicar"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Flegales",
+        "scenario": "legales-fecha-invalida: Legales real T23b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "link",
+            "name": "Publicar versión nueva"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Vigente desde",
+            "value": "01/11"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Publicar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/legal-documents",
+            "status": 200,
+            "body": [
+              {
+                "kind": "Terms",
+                "currentVersion": 2,
+                "currentEffectiveAtUtc": "2026-06-01T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "11111111-1111-4111-8111-111111111102",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-06-01T03:00:00Z",
+                    "isCurrent": true
+                  },
+                  {
+                    "id": "11111111-1111-4111-8111-111111111101",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": false
+                  }
+                ]
+              },
+              {
+                "kind": "Privacy",
+                "currentVersion": 1,
+                "currentEffectiveAtUtc": "2026-01-12T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "22222222-2222-4222-8222-222222222202",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-11-01T03:00:00Z",
+                    "isCurrent": false
+                  },
+                  {
+                    "id": "22222222-2222-4222-8222-222222222201",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/legal-documents",
+            "status": 201,
+            "body": {
+              "id": "11111111-1111-4111-8111-111111111103",
+              "version": 3
+            }
+          }
+        ],
+        "readyText": "Escribí la fecha como dd/mm/aaaa.",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "legales-fecha-invalida-movil",
+      "pair": "legales-fecha-invalida",
+      "group": "plataforma-legales",
+      "state": "v111: legales-fecha-invalida: Legales real T23b",
+      "board": "M-Legales",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Flegales",
+        "scenario": "legales-fecha-invalida: Legales real T23b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "link",
+            "name": "Publicar versión nueva"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Vigente desde",
+            "value": "01/11"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Publicar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/legal-documents",
+            "status": 200,
+            "body": [
+              {
+                "kind": "Terms",
+                "currentVersion": 2,
+                "currentEffectiveAtUtc": "2026-06-01T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "11111111-1111-4111-8111-111111111102",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-06-01T03:00:00Z",
+                    "isCurrent": true
+                  },
+                  {
+                    "id": "11111111-1111-4111-8111-111111111101",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": false
+                  }
+                ]
+              },
+              {
+                "kind": "Privacy",
+                "currentVersion": 1,
+                "currentEffectiveAtUtc": "2026-01-12T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "22222222-2222-4222-8222-222222222202",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-11-01T03:00:00Z",
+                    "isCurrent": false
+                  },
+                  {
+                    "id": "22222222-2222-4222-8222-222222222201",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/legal-documents",
+            "status": 201,
+            "body": {
+              "id": "11111111-1111-4111-8111-111111111103",
+              "version": 3
+            }
+          }
+        ],
+        "readyText": "Escribí la fecha como dd/mm/aaaa.",
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "legales-confirmacion-escritorio",
+      "pair": "legales-confirmacion",
+      "group": "plataforma-legales",
+      "state": "v111: legales-confirmacion: Legales real T23b",
+      "board": "Legales",
+      "props": {
+        "pantalla": "Publicar versión nueva"
+      },
+      "boardActions": [
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "Vigente desde",
+          "value": "01/11/2026"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "En español",
+          "value": "En español"
+        },
+        {
+          "type": "fill",
+          "role": "textbox",
+          "name": "En inglés",
+          "value": "En inglés"
+        },
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Publicar"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Flegales",
+        "scenario": "legales-confirmacion: Legales real T23b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "link",
+            "name": "Publicar versión nueva"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Vigente desde",
+            "value": "01/11/2026"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "En español",
+            "value": "En español"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "En inglés",
+            "value": "En inglés"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Publicar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/legal-documents",
+            "status": 200,
+            "body": [
+              {
+                "kind": "Terms",
+                "currentVersion": 2,
+                "currentEffectiveAtUtc": "2026-06-01T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "11111111-1111-4111-8111-111111111102",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-06-01T03:00:00Z",
+                    "isCurrent": true
+                  },
+                  {
+                    "id": "11111111-1111-4111-8111-111111111101",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": false
+                  }
+                ]
+              },
+              {
+                "kind": "Privacy",
+                "currentVersion": 1,
+                "currentEffectiveAtUtc": "2026-01-12T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "22222222-2222-4222-8222-222222222202",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-11-01T03:00:00Z",
+                    "isCurrent": false
+                  },
+                  {
+                    "id": "22222222-2222-4222-8222-222222222201",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/legal-documents",
+            "status": 201,
+            "body": {
+              "id": "11111111-1111-4111-8111-111111111103",
+              "version": 3
+            }
+          }
+        ],
+        "readyText": "¿Publicar la versión 3 de Términos y condiciones?",
+        "readySelector": "[role=\"alertdialog\"]"
+      }
+    },
+    {
+      "id": "legales-confirmacion-movil",
+      "pair": "legales-confirmacion",
+      "group": "plataforma-legales",
+      "state": "v111: legales-confirmacion: Legales real T23b",
+      "board": "M-Legales",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-operator&route=%2Fplataforma%2Flegales",
+        "scenario": "legales-confirmacion: Legales real T23b",
+        "actions": [
+          {
+            "type": "click",
+            "role": "link",
+            "name": "Publicar versión nueva"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Vigente desde",
+            "value": "01/11/2026"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "En español",
+            "value": "En español"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "En inglés",
+            "value": "En inglés"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Publicar"
+          }
+        ],
+        "captureMode": "harness",
+        "userFixture": "visual-operator",
+        "now": "2026-09-27T20:35:00Z",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/platform/legal-documents",
+            "status": 200,
+            "body": [
+              {
+                "kind": "Terms",
+                "currentVersion": 2,
+                "currentEffectiveAtUtc": "2026-06-01T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "11111111-1111-4111-8111-111111111102",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-06-01T03:00:00Z",
+                    "isCurrent": true
+                  },
+                  {
+                    "id": "11111111-1111-4111-8111-111111111101",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": false
+                  }
+                ]
+              },
+              {
+                "kind": "Privacy",
+                "currentVersion": 1,
+                "currentEffectiveAtUtc": "2026-01-12T03:00:00Z",
+                "versions": [
+                  {
+                    "id": "22222222-2222-4222-8222-222222222202",
+                    "version": 2,
+                    "effectiveAtUtc": "2026-11-01T03:00:00Z",
+                    "isCurrent": false
+                  },
+                  {
+                    "id": "22222222-2222-4222-8222-222222222201",
+                    "version": 1,
+                    "effectiveAtUtc": "2026-01-12T03:00:00Z",
+                    "isCurrent": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/platform/legal-documents",
+            "status": 201,
+            "body": {
+              "id": "11111111-1111-4111-8111-111111111103",
+              "version": 3
+            }
+          }
+        ],
+        "readyText": "¿Publicar la versión 3 de Términos y condiciones?",
+        "readySelector": "[role=\"alertdialog\"]"
+      }
+    },
+    {
       "id": "recuperar-paso-1-escritorio",
       "pair": "recuperar-paso-1",
       "group": "recuperar",

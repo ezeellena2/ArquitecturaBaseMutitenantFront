@@ -10,6 +10,7 @@ import { platformOrganizationAdministrationCaptureResponses } from "../src/test/
 import { platformAccountRows, platformAccountsCaptureResponses } from "../src/test/mocks/platformAccounts.ts";
 import { platformAccountDetailFixture, platformAccountDetailCaptureResponses } from "../src/test/mocks/platformAccountDetail.ts";
 import { platformRecoveriesCaptureResponses } from "../src/test/mocks/platformRecoveries.ts";
+import { platformLegalCaptureResponses } from "../src/test/mocks/platformLegal.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const canvas = path.join(root, "docs/design/lienzo");
@@ -189,6 +190,28 @@ function recoveriesApp(entry) {
   return { ...entry.app, path: `/src/test/visualApp.html?as=visual-operator&route=${encodeURIComponent("/plataforma/recuperaciones")}`,
     captureMode: "harness", userFixture: "visual-operator", scenario: `${pair}: lista real T23a`, now: "2026-09-27T20:35:00Z",
     responses: platformRecoveriesCaptureResponses({ empty: pair === "recuperaciones-sin-pedidos" }), actions, readyText, readySelector };
+}
+
+function legalApp(entry) {
+  const pair = entry.pair;
+  const actions = [];
+  let readyText = "Versión 2 desde 01/11/2026";
+  let readySelector = "main";
+  if (pair !== "legales-documentos") {
+    actions.push(click("Publicar versión nueva", "link"));
+    readyText = "Al publicarla, todas las cuentas tienen que aceptarla de nuevo para seguir usando el servicio. Una versión publicada no se edita.";
+    if (pair === "legales-errores") {
+      actions.push(click("Publicar")); readyText = "Escribí la fecha de vigencia.";
+    } else if (pair === "legales-fecha-invalida") {
+      actions.push(fill("Vigente desde", "01/11"), click("Publicar")); readyText = "Escribí la fecha como dd/mm/aaaa.";
+    } else if (pair === "legales-confirmacion") {
+      actions.push(fill("Vigente desde", "01/11/2026"), fill("En español", "En español"), fill("En inglés", "En inglés"), click("Publicar"));
+      readyText = "¿Publicar la versión 3 de Términos y condiciones?"; readySelector = '[role="alertdialog"]';
+    }
+  }
+  return { ...entry.app, path: `/src/test/visualApp.html?as=visual-operator&route=${encodeURIComponent("/plataforma/legales")}`,
+    captureMode: "harness", userFixture: "visual-operator", scenario: `${pair}: Legales real T23b`, now: "2026-09-27T20:35:00Z",
+    responses: platformLegalCaptureResponses(), actions, readyText, readySelector };
 }
 
 function accountDetailApp(entry) {
@@ -524,6 +547,7 @@ export function buildCases() {
     if (entry.group === "plataforma-cuentas") return { ...entry, app: accountsApp(entry) };
     if (entry.group === "plataforma-cuenta") return { ...entry, app: accountDetailApp(entry) };
     if (entry.group === "plataforma-recuperaciones") return { ...entry, app: recoveriesApp(entry) };
+    if (entry.group === "plataforma-legales") return { ...entry, app: legalApp(entry) };
     if (isOrganizationDetailCase(entry)) return { ...entry, app: organizationApp(entry) };
     if (isOrganizationAdministrationCase(entry)) return { ...entry, app: organizationAdministrationApp(entry) };
     if (entry.pair in platformReasons) return { ...entry, app: reasonApp(entry) };

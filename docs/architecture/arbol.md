@@ -425,12 +425,24 @@ src/
 │       │       ├── RecoveriesPage.tsx               banda global, filtros y versión propia ante lectura vieja
 │       │       └── RecoveriesPage.test.tsx          estados, filtros, permisos, decisiones, concurrencia y accesibilidad
 │       ├── legal/                                   /plataforma/legales: términos y privacidad (P7)
-│       │   ├── api/legalDocuments.ts                documentos y publicación de una versión nueva
-│       │   ├── columns.tsx                          documento, vigente desde, versión vigente, versiones
-│       │   ├── errors.ts
+│       │   ├── api/
+│       │   │   ├── legalDocuments.ts                GET de grupos y POST201 idempotente de una versión nueva
+│       │   │   └── legalDocuments.test.ts           cuerpo por cultura, fecha civil y clave de publicación
+│       │   ├── components/LegalPublicationOwner.tsx dueño nativo por borrador/confirmación, con formulario afuera
+│       │   ├── lib/
+│       │   │   ├── legalPublication.ts              variables y comparación de cuerpo/vida de la publicación
+│       │   │   ├── legalVersions.ts                 próxima por fecha futura y número máximo más uno
+│       │   │   └── legalVersions.test.ts            vigente distinta de futura, fechas y número independiente
+│       │   ├── errors.ts                            fecha anterior a hoy en su campo; los demás errores en franja
 │       │   └── pages/
-│       │       ├── LegalDocumentsPage.tsx
-│       │       └── PublishLegalVersionPage.tsx      hoja con «‹»: documento, vigente desde, texto en español y en inglés; «Cambios sin guardar» y confirmación antes de publicar (una versión publicada no se edita)
+│       │       ├── LegalDocumentsPage.tsx           resumen, versión vigente, próxima pendiente y menú por documento
+│       │       ├── LegalDocumentsPage.test.tsx      vigente/futura, resumen, menú, permisos, idiomas, 390 y axe
+│       │       ├── LegalRoutes.test.tsx             rutas lazy, permisos y aceptación legal vigente
+│       │       ├── LegalRefetch.test.tsx            relectura fallida con caché conserva lista, borrador y dueño de publicación
+│       │       ├── LegalBack.test.tsx               Atrás conserva una sola decisión, borrador y abandono de respuestas/reintentos
+│       │       ├── PublishLegalVersionPage.lifetime.test.tsx reintentos nativos, claves, borradores y respuestas tardías
+│       │       ├── PublishLegalVersionPage.tsx      ruta propia, fecha civil y textos por cultura habilitada; cambios, salida y confirmación
+│       │       └── PublishLegalVersionPage.test.tsx validación, culturas, publicación, errores, vida y reintentos nativos
 │       ├── audit/                                   /plataforma/auditoria
 │       │   ├── api/securityEvents.ts
 │       │   ├── columns.tsx
@@ -457,6 +469,7 @@ src/
 │   │   ├── platformTenants.json                     [E5/T21b] listado, alta y confirmaciones de organizaciones
 │   │   ├── platformAccounts.json                    [E5/T22a] listado, invitación, acciones y errores de cuentas y operadores
 │   │   ├── platformRecoveries.json                  [E5/T23a] pedidos, revisión, resoluciones y errores
+│   │   ├── platformLegal.json                       [E5/T23b] vigencia actual/futura, editor y confirmación
 │   │   ├── users.json                               [E6]
 │   │   ├── companies.json                           [E6]
 │   │   ├── settings.json                            [E6]
@@ -784,7 +797,8 @@ src/
     │   ├── platformOrganizationAdministration.ts    TestFeatures, dominios y página pública de Organizacion v111, con versiones reales del contrato
     │   ├── platformAccounts.ts                      once cuentas literales v111, fechas UTC y ficha mínima para el bloqueo real de baja en el listado
     │   ├── platformAccountDetail.ts                 ficha Cuenta-Plat: estados, métodos, roles globales, historial y permisos
-    │   └── platformRecoveries.ts                    pedidos v111 tapados y nuevo correo disponible hasta E8
+    │   ├── platformRecoveries.ts                    pedidos v111 tapados y nuevo correo disponible hasta E8
+    │   └── platformLegal.ts                         versiones legales vigentes y futuras v111, fechas UTC y POST201
     ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
     └── utils/
         ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]; devuelve el QueryClient, para una relectura de fondo [E7]
