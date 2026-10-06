@@ -687,6 +687,39 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await reduced.getByRole("heading", { name: "No tenés permiso para ver esta página", exact: true }).waitFor();
           } finally { await reducedContext.close(); }
         }],
+        ["A3: Plataforma y persona conviven en el mismo navegador", async (platformPage, setStage) => {
+          setStage("ingresa como operador por Plataforma");
+          await loginThroughUi(platformPage, "e2e-operator@example.test");
+          await expectProfile(platformPage, "Plataforma", "sesión independiente del operador");
+          const publicPage = await platformPage.context().newPage();
+          publicPage.setDefaultTimeout(30_000);
+          try {
+            setStage("abre otra pestaña pública con sólo la cookie de Plataforma");
+            await publicPage.goto(baseUrl.href);
+            await publicPage.getByRole("link", { name: "Ingresá", exact: true }).first().click();
+            await publicPage.getByRole("textbox", { name: "Correo electrónico" }).fill(signupEmail);
+            const before = new Set(await pickupFiles());
+            await sendLoginCode(publicPage, setStage);
+            await publicPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+            await enterCode(publicPage, await codeFromPickup(signupEmail, before));
+            await publicPage.getByRole("button", { name: "Verificar", exact: true }).click();
+            await expectProfile(publicPage, "Personal", "persona con otra cuenta en la segunda pestaña");
+            setStage("refresca y reabre Plataforma sin pedir otro código");
+            await platformPage.reload();
+            await expectProfile(platformPage, "Plataforma", "la pestaña del operador conserva Plataforma");
+            await platformPage.goto(new URL("/plataforma", baseUrl).href);
+            await expectProfile(platformPage, "Plataforma", "la sesión del operador sigue abierta");
+            await platformPage.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+            setStage("refresca la persona y sale sólo del lado público");
+            await publicPage.reload();
+            await expectProfile(publicPage, "Personal", "la sesión pública sigue abierta");
+            await signOut(publicPage, "Personal");
+            await platformPage.reload();
+            await expectProfile(platformPage, "Plataforma", "salir como persona conserva Plataforma");
+            setStage("sale de Plataforma");
+            await signOut(platformPage, "Plataforma");
+          } finally { await publicPage.close(); }
+        }],
         ["5b: crear, aprobar, reintentar y moderar organizaciones reales", async (platformPage, setStage) => {
           setStage("ingresa el operador para administrar organizaciones");
           await loginThroughUi(platformPage, "e2e-operator@example.test");
