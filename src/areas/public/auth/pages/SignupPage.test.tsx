@@ -54,7 +54,14 @@ describe("SignupPage", () => {
     fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
     await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
     fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
-    fireEvent.click(google);
+    const submitted = vi.fn((event: Event) => { event.preventDefault(); });
+    document.addEventListener("submit", submitted);
+    try {
+      fireEvent.click(google);
+    } finally {
+      document.removeEventListener("submit", submitted);
+    }
+    expect(submitted).not.toHaveBeenCalled();
     expect(await screen.findByRole("alert")).toHaveTextContent("Aceptá los Términos y la Política de privacidad.");
   });
 
@@ -197,17 +204,40 @@ describe("SignupPage", () => {
     expect(screen.queryByRole("button", { name: "Registrarte con Google" })).not.toBeInTheDocument();
   });
 
-  it("arma el challenge Google con aceptación y retorno interno, sin pedir nombre", async () => {
+  it("con los términos aceptados envía Google sin cancelar el envío ni validar el correo vacío", async () => {
+    const emailRequested = vi.fn();
+    server.use(http.post("/api/auth/signup", () => {
+      emailRequested();
+      return HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 });
+    }));
     show("/registro?returnUrl=%2Fcatalogo");
-    await screen.findByRole("button", { name: "Registrarte con Google" });
     fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
     const google = await screen.findByRole("button", { name: "Registrarte con Google" });
     await waitFor(() => expect(google).toBeEnabled());
+    const submitted = vi.fn();
+    const observeSubmit = (event: Event) => {
+      submitted(event.target, event.defaultPrevented);
+      // React ya recibió el evento; sólo cancelamos la navegación que jsdom no implementa.
+      event.preventDefault();
+    };
+    document.addEventListener("submit", observeSubmit);
+    try {
+      await act(async () => { fireEvent.click(google); });
+    } finally {
+      document.removeEventListener("submit", observeSubmit);
+    }
+
     const form = (google as HTMLButtonElement).form!;
+    expect(submitted).toHaveBeenCalledExactlyOnceWith(form, false);
+    expect(emailRequested).not.toHaveBeenCalled();
+    expect(screen.queryByText("Ingresá un correo electrónico válido.")).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Correo electrónico" })).toHaveValue("");
     expect(form).toHaveAttribute("method", "post");
     expect(form).toHaveAttribute("action", "/api/auth/external/google");
-    expect(new FormData(form).get("__RequestVerificationToken")).toBe("test-form-token");
-    expect(new FormData(form).get("returnTo")).toBe("/catalogo");
+    expect(Object.fromEntries(new FormData(form))).toEqual({
+      __RequestVerificationToken: "test-form-token", signup: "true", acceptedTerms: "true", access: "consumer",
+      returnTo: "/catalogo", culture: "es-AR", timeZoneId: "America/Argentina/Buenos_Aires",
+    });
   });
 
   it("tras el callback técnico Google inicia OIDC sin nueva pantalla", async () => {

@@ -259,18 +259,18 @@ export function BusinessSignupPage() {
           actions={<Button asChild variant="outline" size="lg"><Link to="/">{t("businessSignup.backHome")}</Link></Button>} />
           : step === "email" ? <section className="flex flex-col gap-[22px]">
             <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.title")}</h1>
+            <label className="flex items-center gap-2.5 text-[14px] text-[var(--t1)]">
+              <input type="checkbox" {...emailForm.register("acceptedTerms", { onChange: () => emailForm.clearErrors("acceptedTerms") })}
+                className="size-[18px] shrink-0 accent-[var(--marca)]" />
+              <span>{t("businessSignup.accept")} <AuthLink to="/terminos">{t("businessSignup.terms")}</AuthLink> {t("businessSignup.join")} <AuthLink to="/privacidad">{t("businessSignup.privacy")}</AuthLink></span>
+            </label>
+            {termsError ? <p role="alert" className="-mt-4 text-[13px] text-[var(--peligro)]">{termsError}</p> : null}
+            <GoogleButton mode="signup" access="business" acceptedTerms={acceptedTerms} onTermsRequired={requireTerms} returnTo="/registro/empresa" />
+            <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("businessSignup.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
             <form noValidate className="flex flex-col gap-[22px]" onSubmit={(event) => {
               if (!acceptedTerms) { event.preventDefault(); requireTerms(); return; }
               void sendCode(event);
             }}>
-              <label className="flex items-center gap-2.5 text-[14px] text-[var(--t1)]">
-                <input type="checkbox" {...emailForm.register("acceptedTerms", { onChange: () => emailForm.clearErrors("acceptedTerms") })}
-                  className="size-[18px] shrink-0 accent-[var(--marca)]" />
-                <span>{t("businessSignup.accept")} <AuthLink to="/terminos">{t("businessSignup.terms")}</AuthLink> {t("businessSignup.join")} <AuthLink to="/privacidad">{t("businessSignup.privacy")}</AuthLink></span>
-              </label>
-              {termsError ? <p role="alert" className="-mt-4 text-[13px] text-[var(--peligro)]">{termsError}</p> : null}
-              <GoogleButton mode="signup" access="business" acceptedTerms={acceptedTerms} onTermsRequired={requireTerms} returnTo="/registro/empresa" />
-              <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("businessSignup.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
               <Controller control={emailForm.control} name="email" render={({ field }) => <FormField label={t("businessSignup.email")} variant="auth" error={emailForm.formState.errors.email?.message}>
                 <EmailField name={field.name} ref={field.ref} value={field.value} onBlur={field.onBlur} onChange={(value) => field.onChange(value ?? "")} />
               </FormField>} />

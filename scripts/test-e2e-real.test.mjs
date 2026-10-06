@@ -720,6 +720,21 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await signOut(platformPage, "Plataforma");
           } finally { await publicPage.close(); }
         }],
+        ["A4: los registros de persona y empresa navegan a Google", async (signupPage, setStage) => {
+          for (const [route, buttonLabel] of [["/registro", "Registrarte con Google"], ["/registro/empresa", "Seguir con Google"]]) {
+            setStage(`abre ${route} y acepta los términos sin escribir un correo`);
+            await signupPage.goto(new URL(route, baseUrl).href);
+            await signupPage.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+            const challenge = signupPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/external/google"
+              && response.request().method() === "POST");
+            setStage(`toca ${buttonLabel} y espera la navegación al proveedor`);
+            await signupPage.getByRole("button", { name: buttonLabel, exact: true }).click();
+            assert.equal((await challenge).status(), 302, "El formulario Google debe iniciar el desafío OAuth real.");
+            // Sólo comprobamos el host: la URL completa lleva state y otros datos efímeros. No ingresamos a Google.
+            await signupPage.waitForURL((url) => url.hostname === "accounts.google.com", { waitUntil: "commit", timeout: 30_000 });
+            assert.equal(new URL(signupPage.url()).hostname, "accounts.google.com");
+          }
+        }],
         ["5b: crear, aprobar, reintentar y moderar organizaciones reales", async (platformPage, setStage) => {
           setStage("ingresa el operador para administrar organizaciones");
           await loginThroughUi(platformPage, "e2e-operator@example.test");

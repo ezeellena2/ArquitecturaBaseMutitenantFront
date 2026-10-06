@@ -1,5 +1,4 @@
 import { useId } from "react";
-import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shared/ui/button";
@@ -45,8 +44,7 @@ export function GoogleButton(props: GoogleButtonProps) {
     const culture = effectiveCulture() ?? navigator.language;
     const timeZoneId = browserTimeZone();
     return <>
-      {/* Registro ya contiene el formulario de correo; el formulario OAuth vive fuera de él. */}
-      {createPortal(<form id={formId} action="/api/auth/external/google" method="post" hidden>
+      <form id={formId} action="/api/auth/external/google" method="post" hidden>
         <input type="hidden" name="__RequestVerificationToken" value={csrf?.requestToken ?? ""} />
         <input type="hidden" name="signup" value="true" />
         <input type="hidden" name="acceptedTerms" value="true" />
@@ -54,7 +52,7 @@ export function GoogleButton(props: GoogleButtonProps) {
         <input type="hidden" name="returnTo" value={props.returnTo} />
         <input type="hidden" name="culture" value={culture} />
         {timeZoneId ? <input type="hidden" name="timeZoneId" value={timeZoneId} /> : null}
-      </form>, document.body)}
+      </form>
       {/* No se apaga por los términos: sin la casilla, avisa debajo de ella y no sale (tablero Registro). */}
       <Button type="submit" form={formId} variant="outline" size="lg" className={className}
         disabled={!csrf?.requestToken}

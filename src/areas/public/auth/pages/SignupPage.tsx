@@ -110,17 +110,17 @@ export function SignupPage() {
       actions={<Button asChild size="lg"><Link to="/login">{t("signup.backToLogin")}</Link></Button>} />
       : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("signup.title")}</h1>
+      <label className="flex items-center gap-2.5 text-[14px] text-[var(--t1)]">
+        <input type="checkbox" {...register("acceptedTerms", { onChange: () => clearErrors("acceptedTerms") })} className="size-[18px] shrink-0 accent-[var(--marca)]" />
+        <span>{t("signup.acceptPrefix")} <AuthLink to="/terminos">{t("signup.terms")}</AuthLink> {t("signup.acceptJoin")} <AuthLink to="/privacidad">{t("signup.privacy")}</AuthLink></span>
+      </label>
+      {errors.acceptedTerms ? <p role="alert" className="text-[13px] text-[var(--peligro)]">{errors.acceptedTerms.message ?? t("signup.acceptRequired")}</p> : null}
+      <GoogleButton mode="signup" acceptedTerms={acceptedTerms} onTermsRequired={requireTerms} returnTo={returnTo} />
+      <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
       <form noValidate onSubmit={(event) => {
         if (!acceptedTerms) { event.preventDefault(); requireTerms(); return; }
         void handleSubmit(begin)(event);
       }} className="flex flex-col gap-[22px]">
-        <label className="flex items-center gap-2.5 text-[14px] text-[var(--t1)]">
-          <input type="checkbox" {...register("acceptedTerms", { onChange: () => clearErrors("acceptedTerms") })} className="size-[18px] shrink-0 accent-[var(--marca)]" />
-          <span>{t("signup.acceptPrefix")} <AuthLink to="/terminos">{t("signup.terms")}</AuthLink> {t("signup.acceptJoin")} <AuthLink to="/privacidad">{t("signup.privacy")}</AuthLink></span>
-        </label>
-        {errors.acceptedTerms ? <p role="alert" className="text-[13px] text-[var(--peligro)]">{errors.acceptedTerms.message ?? t("signup.acceptRequired")}</p> : null}
-        <GoogleButton mode="signup" acceptedTerms={acceptedTerms} onTermsRequired={requireTerms} returnTo={returnTo} />
-        <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
         <Controller control={control} name="email" render={({ field }) => <FormField label={t("login.emailLabel")} variant="auth" error={errors.email?.type === "server" ? errors.email.message : errors.email ? t("login.emailInvalid") : undefined}>
           <EmailField name={field.name} ref={field.ref} value={field.value} onChange={field.onChange} onBlur={field.onBlur} />
         </FormField>} />

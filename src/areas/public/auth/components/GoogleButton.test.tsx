@@ -63,16 +63,25 @@ describe("GoogleButton", () => {
     const button = await screen.findByRole("button", { name: "Registrarte con Google" });
     await waitFor(() => expect(button).toBeEnabled());
     const submitted = vi.fn();
-    (button as HTMLButtonElement).form!.addEventListener("submit", (event) => { event.preventDefault(); submitted(); });
-    fireEvent.click(button);
-    expect(submitted).toHaveBeenCalledOnce();
-    expect(onTermsRequired).not.toHaveBeenCalled();
+    const observeSubmit = (event: Event) => {
+      submitted(event.target, event.defaultPrevented);
+      event.preventDefault();
+    };
+    document.addEventListener("submit", observeSubmit);
+    try {
+      fireEvent.click(button);
+    } finally {
+      document.removeEventListener("submit", observeSubmit);
+    }
     const form = (button as HTMLButtonElement).form!;
+    expect(submitted).toHaveBeenCalledExactlyOnceWith(form, false);
+    expect(onTermsRequired).not.toHaveBeenCalled();
     expect(form).toHaveAttribute("method", "post");
     expect(form).toHaveAttribute("action", "/api/auth/external/google");
-    expect(new FormData(form).get("__RequestVerificationToken")).toBe("test-form-token");
-    expect(new FormData(form).get("acceptedTerms")).toBe("true");
-    expect(new FormData(form).get("returnTo")).toBe("/catalogo?grupo=1");
+    expect(Object.fromEntries(new FormData(form))).toEqual({
+      __RequestVerificationToken: "test-form-token", signup: "true", acceptedTerms: "true", access: "consumer",
+      returnTo: "/catalogo?grupo=1", culture: "es-AR", timeZoneId: "America/Argentina/Buenos_Aires",
+    });
     expect(screen.queryByRole("link", { name: "Registrarte con Google" })).not.toBeInTheDocument();
   });
 

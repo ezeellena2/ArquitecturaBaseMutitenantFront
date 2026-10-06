@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
 import type { ReactNode } from "react";
 import { AuthContext, type AuthContextProps } from "react-oidc-context";
@@ -82,7 +82,14 @@ describe("BusinessSignupPage", () => {
     fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
     const google = await screen.findByRole("button", { name: "Seguir con Google" });
     await waitFor(() => expect(google).toBeEnabled());
-    fireEvent.click(google);
+    const submitted = vi.fn((event: Event) => { event.preventDefault(); });
+    document.addEventListener("submit", submitted);
+    try {
+      fireEvent.click(google);
+    } finally {
+      document.removeEventListener("submit", submitted);
+    }
+    expect(submitted).not.toHaveBeenCalled();
     expect(await screen.findByRole("alert")).toHaveTextContent("Aceptá los Términos y la Política de privacidad.");
   });
 
@@ -229,17 +236,44 @@ describe("BusinessSignupPage", () => {
     await waitFor(() => expect(created).not.toHaveBeenCalled());
   });
 
-  it("envía a Google con acceso empresarial y retorno a la organización", async () => {
-    server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [
-      { key: "email", countries: [] }, { key: "google", countries: [] },
-    ] })));
+  it("con los términos aceptados envía Google empresarial sin cancelar el envío ni validar el correo vacío", async () => {
+    const emailRequested = vi.fn();
+    server.use(
+      http.get("/api/auth/methods", () => HttpResponse.json({ channels: [
+        { key: "email", countries: [] }, { key: "google", countries: [] },
+      ] })),
+      http.post("/api/auth/business-signup/code", () => {
+        emailRequested();
+        return HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 });
+      }),
+    );
     show();
     fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
     const google = await screen.findByRole("button", { name: "Seguir con Google" });
     await waitFor(() => expect(google).toBeEnabled());
+    const submitted = vi.fn();
+    const observeSubmit = (event: Event) => {
+      submitted(event.target, event.defaultPrevented);
+      // React ya recibió el evento; sólo cancelamos la navegación que jsdom no implementa.
+      event.preventDefault();
+    };
+    document.addEventListener("submit", observeSubmit);
+    try {
+      await act(async () => { fireEvent.click(google); });
+    } finally {
+      document.removeEventListener("submit", observeSubmit);
+    }
+
     const form = (google as HTMLButtonElement).form!;
+    expect(submitted).toHaveBeenCalledExactlyOnceWith(form, false);
+    expect(emailRequested).not.toHaveBeenCalled();
+    expect(screen.queryByText("Ingresá un correo electrónico válido.")).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Tu correo electrónico" })).toHaveValue("");
+    expect(form).toHaveAttribute("method", "post");
     expect(form).toHaveAttribute("action", "/api/auth/external/google");
-    expect(new FormData(form).get("access")).toBe("business");
-    expect(new FormData(form).get("returnTo")).toBe("/registro/empresa");
+    expect(Object.fromEntries(new FormData(form))).toEqual({
+      __RequestVerificationToken: "test-form-token", signup: "true", acceptedTerms: "true", access: "business",
+      returnTo: "/registro/empresa", culture: "es-AR", timeZoneId: "America/Argentina/Buenos_Aires",
+    });
   });
 });
