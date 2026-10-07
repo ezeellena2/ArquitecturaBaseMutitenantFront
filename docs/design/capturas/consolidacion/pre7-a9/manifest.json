@@ -1,0 +1,559 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "ingreso-persona-correo-escritorio",
+      "pair": "ingreso-persona-correo",
+      "group": "ingreso",
+      "state": "Ingreso de persona: pide el correo",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-persona-correo-movil",
+      "pair": "ingreso-persona-correo",
+      "group": "ingreso",
+      "state": "Ingreso de persona: pide el correo",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-empresa-correo-escritorio",
+      "pair": "ingreso-empresa-correo",
+      "group": "ingreso",
+      "state": "Ingreso de empresa: pide el correo",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-empresa-correo-movil",
+      "pair": "ingreso-empresa-correo",
+      "group": "ingreso",
+      "state": "Ingreso de empresa: pide el correo",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "aceptar-ambos-sin-marcar-escritorio",
+      "pair": "aceptar-ambos-sin-marcar",
+      "group": "terminos",
+      "state": "Aceptar términos: cambiaron los dos, sin marcar",
+      "board": "Aceptar-Terminos",
+      "props": {
+        "caso": "Cambiaron los dos"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Faceptar-terminos",
+        "captureMode": "harness",
+        "actions": [],
+        "readyText": "Actualizamos los términos",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": [
+                {
+                  "id": "terms",
+                  "kind": "Terms",
+                  "version": 3
+                },
+                {
+                  "id": "privacy",
+                  "kind": "Privacy",
+                  "version": 2
+                }
+              ],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          }
+        ],
+        "userFixture": "visual-personal"
+      }
+    },
+    {
+      "id": "aceptar-ambos-sin-marcar-movil",
+      "pair": "aceptar-ambos-sin-marcar",
+      "group": "terminos",
+      "state": "Aceptar términos: cambiaron los dos, sin marcar",
+      "board": "M-Aceptar-Terminos",
+      "props": {
+        "caso": "Cambiaron los dos"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Faceptar-terminos",
+        "captureMode": "harness",
+        "actions": [],
+        "readyText": "Actualizamos los términos",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": [
+                {
+                  "id": "terms",
+                  "kind": "Terms",
+                  "version": 3
+                },
+                {
+                  "id": "privacy",
+                  "kind": "Privacy",
+                  "version": 2
+                }
+              ],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          }
+        ],
+        "userFixture": "visual-personal"
+      }
+    },
+    {
+      "id": "aceptar-ambos-marcado-escritorio",
+      "pair": "aceptar-ambos-marcado",
+      "group": "terminos",
+      "state": "Aceptar términos: cambiaron los dos, con la casilla marcada",
+      "board": "Aceptar-Terminos",
+      "props": {
+        "caso": "Cambiaron los dos"
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "selector": "label.chk input"
+        }
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Faceptar-terminos",
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Leí y acepto los Términos y la Política de privacidad"
+          }
+        ],
+        "readyText": "Actualizamos los términos",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": [
+                {
+                  "id": "terms",
+                  "kind": "Terms",
+                  "version": 3
+                },
+                {
+                  "id": "privacy",
+                  "kind": "Privacy",
+                  "version": 2
+                }
+              ],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          }
+        ],
+        "userFixture": "visual-personal"
+      }
+    },
+    {
+      "id": "aceptar-ambos-marcado-movil",
+      "pair": "aceptar-ambos-marcado",
+      "group": "terminos",
+      "state": "Aceptar términos: cambiaron los dos, con la casilla marcada",
+      "board": "M-Aceptar-Terminos",
+      "props": {
+        "caso": "Cambiaron los dos"
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "selector": "label.chk input"
+        }
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Faceptar-terminos",
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Leí y acepto los Términos y la Política de privacidad"
+          }
+        ],
+        "readyText": "Actualizamos los términos",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": [
+                {
+                  "id": "terms",
+                  "kind": "Terms",
+                  "version": 3
+                },
+                {
+                  "id": "privacy",
+                  "kind": "Privacy",
+                  "version": 2
+                }
+              ],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          }
+        ],
+        "userFixture": "visual-personal"
+      }
+    }
+  ]
+}

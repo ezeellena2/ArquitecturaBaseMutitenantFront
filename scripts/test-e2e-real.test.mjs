@@ -8,6 +8,7 @@ import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 import { caseDelay as delay, caseStage, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
+import { pickupCode, plainTextBody } from "./test-e2e-real-mail.mjs";
 import { chromium } from "playwright";
 
 // Esta prueba arranca su propio AppHost y un PostgreSQL efímero, fuera del volumen Development.
@@ -18,7 +19,7 @@ const appHostDirectory = fileURLToPath(new URL("../../ArquitecturaBaseMutitenant
 const appHostProject = path.join(appHostDirectory, "ArquitecturaBaseMultitenant.AppHost.csproj");
 const execFileAsync = promisify(execFile);
 let pickupDirectory;
-const operatorEmails = Object.fromEntries(["a2", "5a", "a1", "a3", "a8", "5b", "5c", "5d"]
+const operatorEmails = Object.fromEntries(["a2", "5a", "a1", "a3", "a8", "a9", "5b", "5c", "5d"]
   .map((key) => [key, `e2e-${key}-operator@example.test`]));
 
 async function aspire(args, env = process.env) {
@@ -88,16 +89,6 @@ async function pickupFiles() {
   }
 }
 
-function plainTextBody(eml) {
-  const start = eml.search(/^Content-Type: text\/plain\b/im);
-  if (start < 0) return null;
-  const headersEnd = eml.indexOf("\r\n\r\n", start);
-  if (headersEnd < 0) return null;
-  const body = eml.slice(headersEnd + 4);
-  const boundary = body.search(/\r?\n--/);
-  return boundary < 0 ? body : body.slice(0, boundary);
-}
-
 async function codeFromPickup(email, before) {
   const deadline = Date.now() + 95_000;
   const newFiles = new Set();
@@ -113,7 +104,7 @@ async function codeFromPickup(email, before) {
       catch (error) { if (error?.code === "ENOENT" || error?.code === "EBUSY") continue; throw error; }
       if (!eml.toLowerCase().includes(email.toLowerCase())) continue;
       recipientFiles.add(name);
-      const code = plainTextBody(eml)?.match(/(?<!\d)\d{6}(?!\d)/)?.[0];
+      const code = pickupCode(eml);
       if (!code) continue; // Los avisos de cuenta comparten pickup con los códigos.
       codeFiles.add(name);
       await unlink(file);
@@ -136,7 +127,7 @@ async function recipientMessages(email, before) {
 }
 
 async function pickupCodeCount(email, before) {
-  return (await recipientMessages(email, before)).filter((eml) => /(?<!\d)\d{6}(?!\d)/.test(plainTextBody(eml) ?? "")).length;
+  return (await recipientMessages(email, before)).filter((eml) => pickupCode(eml) !== null).length;
 }
 
 async function waitForAccountNotice(email, before, text) {
@@ -173,8 +164,14 @@ async function enterCode(page, code) {
     const boxes = page.getByRole("group", { name: "Código" }).locator("input");
     assert.equal(await boxes.count(), 6);
     for (let index = 0; index < 6; index++) await boxes.nth(index).fill(code[index]);
-  } catch {
-    throw new Error("No se pudieron completar las seis casillas del código.");
+  } catch (error) {
+    const state = await page.evaluate(() => ({
+      path: location.pathname,
+      codeInputs: [...document.querySelectorAll('input[autocomplete="one-time-code"]')].map((input) => ({ disabled: input.disabled })),
+    })).catch(() => null);
+    const diagnosticFile = path.join(".local/pre7/a9", `code-input-failure-${randomUUID()}.png`);
+    await page.screenshot({ path: diagnosticFile }).catch(() => {});
+    throw new Error(`No se pudieron completar las seis casillas del código (${error?.name ?? "Error"}; ${JSON.stringify(state)}; captura ${diagnosticFile}).`);
   }
 }
 
@@ -532,6 +529,20 @@ async function openPlatformOrganization(page, name) {
   await page.getByRole("heading", { name, exact: true }).waitFor();
 }
 
+async function createPlatformOrganization(page, name, companyName, ownerEmail) {
+  await platformNavigate(page, "Gestión", "Organizaciones");
+  await page.getByRole("button", { name: "Crear organización", exact: true }).click();
+  const creation = page.getByRole("dialog");
+  await creation.getByRole("textbox", { name: "Nombre de la organización" }).fill(name);
+  await creation.getByRole("textbox", { name: "Primera empresa" }).fill(companyName);
+  await creation.getByRole("textbox", { name: "Correo del Dueño" }).fill(ownerEmail);
+  await creation.getByRole("button", { name: "Crear organización", exact: true }).click();
+  await creation.waitFor({ state: "hidden" });
+  await openPlatformOrganization(page, name);
+  await page.getByRole("tab", { name: /^Dueños/ }).click();
+  await page.getByText("Invitación pendiente", { exact: true }).waitFor();
+}
+
 async function confirmPlatformReason(page, action, confirm = action) {
   const direct = page.getByRole("button", { name: action, exact: true });
   if (await direct.count()) await direct.click();
@@ -715,6 +726,97 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             }
             await signOut(platformPage, "Plataforma");
           } finally { await publicPage.close(); }
+        }],
+        ["A9: el Dueño invitado ingresa con código sin abrir el enlace a 1440 y 390", async (platformPage, setStage) => {
+          await loginThroughUi(platformPage, operatorEmails.a9, "platform", setStage);
+          const invited = await platformPage.context().newPage();
+          invited.setDefaultTimeout(30_000);
+          try {
+            for (const width of [1440, 390]) {
+              for (const door of ["business", "consumer"]) {
+                const ownerEmail = `e2e-invited-login-${randomUUID()}@example.test`;
+                const organization = `Invitada A9 ${randomUUID().slice(0, 8)}`;
+                const company = `Empresa ${organization}`;
+                setStage(`Plataforma crea una organización e invita un Dueño sin cuenta, ${door} a ${width}`);
+                await createPlatformOrganization(platformPage, organization, company, ownerEmail);
+                const otherOrganization = door === "business" && width === 1440 ? `${organization} Segunda` : null;
+                if (otherOrganization) {
+                  setStage("el mismo correo recibe otra invitación vigente de otra organización");
+                  await createPlatformOrganization(platformPage, otherOrganization, `${company} Segunda`, ownerEmail);
+                }
+
+                setStage(`el invitado toca la puerta ${door} y pide el código, sin leer ni abrir el enlace`);
+                await invited.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+                await invited.goto(baseUrl.href);
+                await invited.getByRole("link", { name: door === "business" ? "Ingresá como empresa" : "Ingresar", exact: true }).first().click();
+                await invited.getByRole("textbox", { name: "Correo electrónico" }).fill(ownerEmail);
+                const before = new Set(await pickupFiles());
+                await sendLoginCode(invited, setStage);
+                await invited.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+                await enterCode(invited, await codeFromPickup(ownerEmail, before));
+                const verified = invited.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/login-code/verify"
+                  && response.request().method() === "POST");
+                await invited.getByRole("button", { name: "Verificar", exact: true }).click();
+                const verification = await verified;
+                if (verification.status() !== 200) {
+                  const problem = await verification.json();
+                  const reason = typeof problem.code === "string" && /^[A-Za-z0-9.]+$/.test(problem.code) ? problem.code : "sin código";
+                  throw new Error(`El código del invitado respondió HTTP ${verification.status()} ${reason}.`);
+                }
+
+                setStage("la cuenta y la invitación quedan vinculadas, y pide consentimiento antes de entrar");
+                await expectPath(invited, "/aceptar-terminos", "ingreso invitado sin aceptar términos antes");
+                setStage("muestra la pantalla de términos del invitado");
+                await invited.getByRole("heading", { name: "Actualizamos los términos", exact: true }).waitFor();
+                const agreement = invited.getByRole("checkbox", { name: /Leí y acepto/ });
+                assert.equal(await agreement.isChecked(), false);
+                setStage("sin marcar la casilla exige la aceptación al invitado");
+                await invited.getByRole("button", { name: "Aceptar y seguir", exact: true }).click();
+                await invited.getByRole("alert").filter({ hasText: "Aceptá los Términos y la Política de privacidad." }).waitFor();
+                setStage("acepta explícitamente los términos y entra por su puerta");
+                await agreement.check();
+                await invited.getByRole("button", { name: "Aceptar y seguir", exact: true }).click();
+                await expectPath(invited, door === "business" ? "/org" : "/", "invitado entra después de aceptar los términos");
+                if (width === 390) await invited.getByRole("navigation", { name: "Secciones" }).waitFor();
+                else await expectProfile(invited, door === "business" ? organization : "Personal", "ingreso por la puerta elegida");
+                assert.equal(await invited.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+                const accesses = await invitationCommand(readyFile, { kind: "inspect-accesses", email: ownerEmail });
+                assert.equal(accesses.activeBusinessAccesses, otherOrganization ? 2 : 1, "El código acepta todas las invitaciones vigentes también por Persona.");
+                assert.equal(accesses.personalSpaces, door === "consumer" ? 1 : 0, "Personal nace sólo por su puerta.");
+                if (otherOrganization) {
+                  setStage("las dos organizaciones aceptadas aparecen en Perfiles");
+                  await invited.getByRole("button", { name: new RegExp(`, ${organization}$`) }).click();
+                  await invited.getByRole("menuitemradio", { name: new RegExp(otherOrganization) }).waitFor();
+                  await invited.keyboard.press("Escape");
+                }
+                setStage("F5 conserva el perfil del invitado después de aceptar");
+                await invited.reload();
+                if (width === 390) await invited.getByRole("navigation", { name: "Secciones" }).waitFor();
+                else await expectProfile(invited, door === "business" ? organization : "Personal", "F5 conserva el ingreso del invitado");
+                for (const acceptedOrganization of [organization, ...(otherOrganization ? [otherOrganization] : [])]) {
+                  setStage("Plataforma muestra al Dueño aceptado y activo");
+                  await openPlatformOrganization(platformPage, acceptedOrganization);
+                  // La aceptación ocurrió en otra pestaña: F5 relee la ficha sin reutilizar sus 30 s de caché.
+                  await platformPage.reload();
+                  await platformPage.getByRole("heading", { name: acceptedOrganization, exact: true }).waitFor();
+                  await platformPage.getByRole("tab", { name: /^Dueños/ }).click();
+                  // Tablero Dueños: el correo es el detalle de la fila, no un enlace a Cuentas.
+                  const owner = platformPage.getByRole("row").filter({ hasText: ownerEmail });
+                  await owner.getByText(ownerEmail, { exact: true }).waitFor();
+                  await owner.getByText("Activo", { exact: true }).waitFor();
+                }
+                setStage("el invitado sale antes de probar la otra puerta");
+                await invited.setViewportSize({ width: 1440, height: 900 });
+                await signOut(invited, door === "business" ? organization : "Personal");
+              }
+            }
+          } catch (error) {
+            const diagnosticFile = path.join(".local/pre7/a9", `real-failure-${randomUUID()}.png`);
+            await invited.screenshot({ path: diagnosticFile }).catch(() => {});
+            await platformPage.screenshot({ path: diagnosticFile.replace(/\.png$/, "-plataforma.png") }).catch(() => {});
+            console.info(`A9: ruta del invitado ${new URL(invited.url()).pathname}; captura ${diagnosticFile}.`);
+            throw error;
+          } finally { await invited.close(); }
         }],
         ...[1440, 390].map((width) => [`A6: nombre y apellido independientes y persistentes a ${width}`, async (accountPage, setStage) => {
           const email = await registerPerson(accountPage, undefined, setStage);

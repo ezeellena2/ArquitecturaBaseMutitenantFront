@@ -37,6 +37,7 @@
 - El CI (`npm test`) y `harness.test.ts` (E0), que usa `HarnessStage` para exigir solo los tests de etapas cerradas.
 - `isolation.test.tsx` (E7): el aviso de un test no aparece en el siguiente.
 - `scripts/test-e2e-real.test.mjs` (E3): ninguna etapa desde E3a se cierra si el recorrido real está rojo.
+- `scripts/test-e2e-real-mail.test.mjs`: el pickup reconoce el párrafo del código; números en organizaciones, enlaces o avisos no cuentan como OTP. Corre con `node --test scripts/test-e2e-real-mail.test.mjs`.
 
 ## Detalle
 [frontend.md §4, "Tests"](../architecture/frontend.md#tests)
