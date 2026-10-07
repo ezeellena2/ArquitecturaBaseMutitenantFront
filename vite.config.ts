@@ -51,6 +51,8 @@ export default defineConfig(({ mode }) => ({
     alias: { "@": path.resolve(import.meta.dirname, "./src") },
   },
   server: {
+    // localtest.me y sus subdominios resuelven a IPv4; localhost puede enlazarse sólo a ::1 en Windows.
+    host: "127.0.0.1",
     port: Number(process.env.PORT ?? 5174),
     strictPort: true,
     allowedHosts: [".localtest.me"],

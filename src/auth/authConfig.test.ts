@@ -5,6 +5,8 @@ describe("authConfig", () => {
   it("usa el issuer principal y canjea el código en el origen propio", () => {
     expect(authConfig.authority).toBe("https://localtest.me:5174/");
     expect(authConfig.metadataUrl).toBe(`${location.origin}/.well-known/openid-configuration`);
+    expect(authConfig.metadataSeed?.authorization_endpoint).toBe("https://localtest.me:5174/connect/authorize");
+    expect(authConfig.metadataSeed?.end_session_endpoint).toBe("https://localtest.me:5174/connect/logout");
     expect(authConfig.metadataSeed?.token_endpoint).toBe(`${location.origin}/connect/token`);
     expect(authConfig.metadataSeed?.userinfo_endpoint).toBe(`${location.origin}/connect/userinfo`);
     expect(authConfig.metadataSeed?.revocation_endpoint).toBe(`${location.origin}/connect/revoke`);
@@ -26,6 +28,8 @@ describe("authConfig", () => {
     expect(config.silent_redirect_uri).toBe(`${origin}/silent-renew.html`);
     expect(config.post_logout_redirect_uri).toBe(`${origin}/`);
     expect(config.metadataUrl).toBe(`${origin}/.well-known/openid-configuration`);
+    expect(config.metadataSeed?.authorization_endpoint).toBe("https://localtest.me:5174/connect/authorize");
+    expect(config.metadataSeed?.end_session_endpoint).toBe("https://localtest.me:5174/connect/logout");
     expect(config.metadataSeed?.token_endpoint).toBe(`${origin}/connect/token`);
     expect(config.metadataSeed?.userinfo_endpoint).toBe(`${origin}/connect/userinfo`);
     expect(config.metadataSeed?.revocation_endpoint).toBe(`${origin}/connect/revoke`);

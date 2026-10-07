@@ -7,6 +7,9 @@ export function createAuthConfig(origin = globalThis.location.origin): UserManag
     authority: authIssuer,
     metadataUrl: `${origin}/.well-known/openid-configuration`,
     metadataSeed: {
+      // Discovery se lee sin CORS en el origen propio; la cookie del navegador pertenece al principal.
+      authorization_endpoint: new URL("/connect/authorize", authIssuer).href,
+      end_session_endpoint: new URL("/connect/logout", authIssuer).href,
       token_endpoint: `${origin}/connect/token`,
       userinfo_endpoint: `${origin}/connect/userinfo`,
       revocation_endpoint: `${origin}/connect/revoke`,
