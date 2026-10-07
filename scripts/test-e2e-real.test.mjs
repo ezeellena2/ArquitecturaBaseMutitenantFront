@@ -278,7 +278,7 @@ async function signOut(page, currentProfile) {
   }
 }
 
-async function registerPerson(page, email = `e2e-account-${randomUUID()}@example.test`, onStage = () => {}, { opened = false, mobile = false } = {}) {
+async function registerPerson(page, email = `e2e-account-${randomUUID()}@example.test`, onStage = () => {}, { opened = false, mobile = false, storefront = false } = {}) {
   onStage("abre registro");
   if (!opened) await page.goto(new URL("/registro", baseUrl).href);
   else {
@@ -322,6 +322,7 @@ async function registerPerson(page, email = `e2e-account-${randomUUID()}@example
   assert.equal(verificationResponse.status(), 204,
     `El código de registro respondió HTTP ${verificationResponse.status()}${verificationCode ? ` (${verificationCode})` : ""}.`);
   await expectPath(page, "/", "registro de cuenta 3b");
+  if (storefront) return email;
   if (mobile) await page.getByRole("navigation", { name: "Secciones" }).waitFor();
   else await expectProfile(page, "Personal", "registro de cuenta 3b");
   return email;
@@ -2194,6 +2195,104 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await accountPage.getByRole("button", { name: "Aceptar y seguir" }).click();
           await accountPage.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor();
         }],
+        ...[1440, 390].map((width) => [`7: sitio público, directorio y regreso como persona a ${width}`, async (publicPage, setStage) => {
+          setStage("prepara una cuenta real propia del recorrido");
+          const email = await registerPerson(publicPage, undefined, setStage);
+          await signOut(publicPage, "Personal");
+          await publicPage.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+          const site = new URL(baseUrl);
+          site.hostname = `publica-e2e-etapa7.${baseUrl.hostname}`;
+          const unavailable = new URL(baseUrl);
+          unavailable.hostname = `suspendida-e2e-etapa7.${baseUrl.hostname}`;
+          const continueLink = publicPage.getByRole("button", { name: "Ingresá para continuar", exact: true });
+          const openAccountMenu = async () => {
+            await publicPage.getByRole("button", width === 390
+              ? { name: "Tu cuenta", exact: true } : { name: /, Personal$/ }).click();
+          };
+          const closePublicSession = async () => {
+            await openAccountMenu();
+            await publicPage.getByRole(width === 390 ? "button" : "menuitem", { name: /^Salir/ }).click();
+            await continueLink.waitFor({ timeout: 30_000 });
+            assert.equal(new URL(publicPage.url()).origin, site.origin, "Salir vuelve al origen de esta página pública.");
+          };
+
+          setStage("abre la publicación anónima real del subdominio");
+          await publicPage.goto(site.href);
+          await publicPage.getByRole("heading", { name: "Compañía pública E2E", exact: true }).waitFor();
+          setStage("espera el CTA anónimo después de salir del dominio principal");
+          await continueLink.waitFor();
+          assert.equal(await publicPage.getByRole("button", { name: "Abrir el menú", exact: true }).count(), 0);
+          setStage("ingresa como persona desde la publicación mediante el código real");
+          await continueLink.click();
+          await publicPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
+          assert.equal(new URL(publicPage.url()).origin, baseUrl.origin, "El ingreso vive en el issuer principal.");
+          const before = new Set(await pickupFiles());
+          await sendLoginCode(publicPage, setStage);
+          await publicPage.getByRole("heading", { name: "Revisá tu correo", exact: true }).waitFor();
+          await enterCode(publicPage, await codeFromPickup(email, before));
+          await publicPage.getByRole("button", { name: "Verificar", exact: true }).click();
+          setStage("vuelve a la publicación después de verificar el código");
+          await publicPage.waitForURL((url) => url.origin === site.origin && url.pathname === "/", { timeout: 30_000 });
+          await publicPage.getByRole("heading", { name: "Compañía pública E2E", exact: true }).waitFor();
+          assert.equal(new URL(publicPage.url()).origin, site.origin, "El código vuelve al subdominio que lo inició.");
+          await openAccountMenu();
+          const accountLink = publicPage.getByRole(width === 390 ? "link" : "menuitem", { name: "Mi cuenta", exact: true });
+          assert.equal(await accountLink.getAttribute("href"), new URL("/cuenta", baseUrl).href);
+          await publicPage.keyboard.press("Escape");
+
+          setStage("recarga la publicación y conserva la sesión sin otro código");
+          await publicPage.reload();
+          await publicPage.getByRole("heading", { name: "Compañía pública E2E", exact: true }).waitFor();
+          await publicPage.getByRole("button", width === 390
+            ? { name: "Tu cuenta", exact: true } : { name: /, Personal$/ }).waitFor();
+          assert.equal(await continueLink.count(), 0);
+          setStage("sale y vuelve a ver la publicación sin sesión");
+          await closePublicSession();
+
+          setStage("busca sin acentos en el directorio real del dominio principal");
+          await publicPage.goto(new URL("/empresas", baseUrl).href);
+          await publicPage.getByRole("searchbox", { name: "Buscar por nombre", exact: true }).fill("compania publica");
+          const company = publicPage.getByRole("link", { name: /^Compañía pública E2E/ }).filter({ visible: true });
+          await company.waitFor();
+          assert.equal(await company.getAttribute("href"), site.href);
+          if (width === 390) {
+            await publicPage.getByRole("button", { name: "Abrir el menú", exact: true }).click();
+            await publicPage.getByRole("link", { name: "Empresas", exact: true }).filter({ visible: true }).waitFor();
+            await publicPage.keyboard.press("Escape");
+          }
+          await company.click();
+          await continueLink.waitFor();
+          assert.equal(new URL(publicPage.url()).origin, site.origin);
+          setStage("comprueba el 404 uniforme de la organización publicada y suspendida");
+          await publicPage.goto(unavailable.href);
+          await publicPage.getByRole("heading", { name: "Esta página no está disponible", exact: true }).waitFor();
+          assert.equal(await publicPage.getByRole("link", { name: "Ir a ArquitecturaBase", exact: true }).getAttribute("href"), baseUrl.href);
+          assert.equal(await publicPage.getByText(/suspendida|bloqueada|borrador/i).count(), 0);
+          await publicPage.goto(new URL("/org", site).href);
+          await publicPage.getByRole("heading", { name: "Esta página no está disponible", exact: true }).waitFor();
+
+          setStage("crear una cuenta desde la publicación conserva el regreso");
+          await publicPage.goto(site.href);
+          await continueLink.click();
+          const signupEmail = `e2e-public-signup-${randomUUID()}@example.test`;
+          await publicPage.getByRole("textbox", { name: "Correo electrónico" }).fill(signupEmail);
+          await publicPage.getByRole("button", { name: "Enviar código", exact: true }).click();
+          await publicPage.getByRole("link", { name: "Creá una", exact: true }).click();
+          await registerPerson(publicPage, signupEmail, setStage, { opened: true, storefront: true });
+          await publicPage.getByRole("heading", { name: "Compañía pública E2E", exact: true }).waitFor();
+          assert.equal(new URL(publicPage.url()).origin, site.origin);
+          assert.equal(await continueLink.count(), 0);
+          await closePublicSession();
+          if (width === 390) {
+            setStage("la portada móvil tiene su menú web y la publicación no");
+            await publicPage.goto(baseUrl.href);
+            await publicPage.getByRole("button", { name: "Abrir el menú", exact: true }).click();
+            await publicPage.getByRole("link", { name: "Empresas", exact: true }).filter({ visible: true }).waitFor();
+            assert.equal(await publicPage.getByRole("navigation", { name: "Secciones", exact: true }).count(), 1);
+            assert.equal(await publicPage.getByRole("link", { name: "Más", exact: true }).count(), 0);
+          }
+        }]),
+
       ];
       const onlyCase = process.env.MT_E2E_ONLY_CASE;
       const selectedAccountCases = onlyCase
@@ -2277,6 +2376,12 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             }));
           }
           catch (error) {
+            if (name.startsWith("7: ")) {
+              const diagnosticFile = fileURLToPath(new URL(`../../ArquitecturaBaseMutitenant/.local/etapa7/gate/public-failure-${name.includes("390") ? "390" : "1440"}.png`, import.meta.url));
+              await accountPage.screenshot({ path: diagnosticFile }).catch(() => {});
+              const headings = await accountPage.getByRole("heading").allTextContents().catch(() => []);
+              console.info(`E7 diagnóstico: ruta ${new URL(accountPage.url()).pathname}; títulos ${JSON.stringify(headings)}; captura local en la puerta.`);
+            }
             // Playwright puede incluir valores de controles/URLs; solo publicar el paso.
             const safeDetail = typeof error?.message === "string"
               ? error.message.split(/\r?\n/, 1)[0]
