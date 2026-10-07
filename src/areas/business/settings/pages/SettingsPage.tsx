@@ -6,7 +6,8 @@ import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
-import { useCurrentUser } from "@/auth/useCurrentUser";
+import { currentUserQueryKey, useCurrentUser } from "@/auth/useCurrentUser";
+import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { usePermissions } from "@/auth/usePermissions";
 import { ApiError } from "@/shared/api/ApiError";
 import { tenantDomainStatusTones } from "@/shared/format/statusTones";
@@ -79,6 +80,7 @@ function SettingsEditor({ settings, loadError, reload }: {
 }) {
   const { t } = useTranslation(["settings", "common"]);
   const { data: currentUser } = useCurrentUser();
+  const { data: referenceData } = useReferenceData();
   const { can } = usePermissions();
   const canManage = can("settings.manage");
   const organizationName = activeOrganization(currentUser)?.name ?? "";
@@ -129,6 +131,9 @@ function SettingsEditor({ settings, loadError, reload }: {
     form.reset(values);
     toast.success(t("settings:saved"));
     await client.invalidateQueries({ queryKey: organizationSettingsKey });
+    const country = referenceData?.cultures.find((entry) => entry.code === values.defaultCulture)?.countryCode;
+    if (country && country !== currentUser?.organizationCountryCode)
+      await client.invalidateQueries({ queryKey: currentUserQueryKey });
     wrote(sentVersion, savedVersion, client.getQueryData<OrganizationSettingsResponse>(organizationSettingsKey));
   }
 

@@ -2,8 +2,7 @@ import { useMemo } from "react";
 import type { TaxIdTypeReference } from "./referenceData";
 import { useReferenceData } from "./useReferenceData";
 
-/// El tipo CUIT del catálogo de referencia, habilitado y para empresas: con él se revisa el CUIT de una empresa en el
-/// registro de empresa y en «Crear empresa» y «Editar empresa». Mientras carga el catálogo, no hay.
+/// El acuerdo de Registro-Empresa pide CUIT argentino opcional. Empresas usa useCompanyTaxIdType.
 export function useCuitType(): TaxIdTypeReference | undefined {
   const { data } = useReferenceData();
   return useMemo(() => data?.taxIdTypes

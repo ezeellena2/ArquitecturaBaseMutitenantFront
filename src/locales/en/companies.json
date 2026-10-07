@@ -31,12 +31,9 @@
   },
   "form": {
     "name": "Name",
-    "taxId": "CUIT",
     "timeZone": "Business time zone",
     "create": "Create company",
     "save": "Save changes",
-    "taxIdPlaceholder": "30-12345678-1",
-    "taxIdInvalid": "Check the CUIT: it has 11 digits.",
     "nameRequired": "Enter the company name.",
     "organizationTimeZone": "The organization's"
   },

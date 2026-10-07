@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 import { caseDelay as delay, caseStage, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { pickupCode, plainTextBody } from "./test-e2e-real-mail.mjs";
+import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { chromium } from "playwright";
 
 // Esta prueba arranca su propio AppHost y un PostgreSQL efímero, fuera del volumen Development.
@@ -161,9 +162,7 @@ async function confirmAccountMethod(page, email, action) {
 
 async function enterCode(page, code) {
   try {
-    const boxes = page.getByRole("group", { name: "Código" }).locator("input");
-    assert.equal(await boxes.count(), 6);
-    for (let index = 0; index < 6; index++) await boxes.nth(index).fill(code[index]);
+    await fillOtp(page, code);
   } catch (error) {
     const state = await page.evaluate(() => ({
       path: location.pathname,
@@ -328,7 +327,7 @@ async function registerPerson(page, email = `e2e-account-${randomUUID()}@example
   return email;
 }
 
-async function registerBusinessByEmail(page, readyFile, onStage = () => {}, { email = `e2e-business-signup-${randomUUID()}@example.test`, opened = false, mobile = false } = {}) {
+async function registerBusinessByEmail(page, readyFile, onStage = () => {}, { email = `e2e-business-signup-${randomUUID()}@example.test`, opened = false, mobile = false, checkTaxErrors = false } = {}) {
   const organizationName = `Organización E2E ${randomUUID().slice(0, 8)}`;
   const slug = `e2e-${randomUUID().slice(0, 8)}`;
   onStage("abre registro empresarial");
@@ -369,6 +368,18 @@ async function registerBusinessByEmail(page, readyFile, onStage = () => {}, { em
   await page.getByRole("textbox", { name: /Dirección de tu página/ }).fill(slug);
   await page.getByRole("textbox", { name: "Primera empresa" }).fill(`${organizationName} Centro`);
   await page.getByText("Disponible", { exact: true }).waitFor({ timeout: 10_000 });
+  if (checkTaxErrors) {
+    onStage("el registro distingue largo y verificador del CUIT opcional");
+    const tax = page.getByRole("textbox", { name: "CUIT de la empresa", exact: true });
+    await tax.fill("3333333333");
+    await page.getByRole("button", { name: "Crear organización", exact: true }).click();
+    await page.getByText("Revisá el CUIT: son 11 números.", { exact: true }).waitFor();
+    await tax.fill("33333333333");
+    await page.getByRole("button", { name: "Crear organización", exact: true }).click();
+    await page.getByText("Ese CUIT no es válido: revisá los números.", { exact: true }).waitFor();
+    await page.getByText("Revisá el CUIT: son 11 números.", { exact: true }).waitFor({ state: "detached" });
+    await tax.fill("33333333339");
+  }
   onStage("crea organización y primera empresa");
   const created = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/business-signup"
     && response.request().method() === "POST");
@@ -818,6 +829,90 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             throw error;
           } finally { await invited.close(); }
         }],
+        ...[1440, 390].map((width) => [`A10: CUIT con mensajes por causa y tipo fiscal de la organización a ${width}`, async (accountPage, setStage) => {
+          await accountPage.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+          const business = await registerBusinessByEmail(accountPage, readyFile, setStage, { mobile: width === 390, checkTaxErrors: true });
+          const companyName = `${business.organizationName} Centro`;
+          setStage("la primera empresa guarda el CUIT válido del registro");
+          await accountPage.goto(new URL("/org/empresas", baseUrl).href);
+          // En teléfono el enlace incluye nombre, CUIT, zona y estado de la fila.
+          await accountPage.getByRole("link", { name: companyName }).click();
+          await accountPage.getByRole("heading", { name: companyName, exact: true }).waitFor();
+          const companyPath = new URL(accountPage.url()).pathname;
+          const companyId = companyPath.split("/").at(-1);
+          assert.match(companyId, /^[0-9a-f-]{36}$/i);
+          if (width === 390) {
+            await accountPage.getByRole("button", { name: "Más acciones", exact: true }).click();
+            await accountPage.getByRole("menuitem", { name: "Editar empresa", exact: true }).click();
+          } else await accountPage.getByRole("button", { name: "Editar empresa", exact: true }).click();
+          const edit = accountPage.getByRole("dialog");
+          const tax = edit.getByRole("textbox", { name: "CUIT", exact: true });
+          assert.equal((await tax.inputValue()).replace(/\D/g, ""), "33333333339");
+          setStage("editar distingue diez dígitos de once con verificador incorrecto");
+          await tax.fill("3333333333");
+          await edit.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+          await edit.getByText("Revisá el CUIT: son 11 números.", { exact: true }).waitFor();
+          await tax.fill("33333333333");
+          await edit.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+          await edit.getByText("Ese CUIT no es válido: revisá los números.", { exact: true }).waitFor();
+          await edit.getByText("Revisá el CUIT: son 11 números.", { exact: true }).waitFor({ state: "detached" });
+          await tax.fill("30715554441");
+          const saved = accountPage.waitForResponse((response) => new URL(response.url()).pathname === `/api/companies/${companyId}`
+            && response.request().method() === "PUT");
+          await edit.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+          const savedResponse = await saved;
+          assert.equal(savedResponse.status(), 200);
+          await edit.waitFor({ state: "hidden" });
+          await accountPage.getByText("CUIT 30-71555444-1", { exact: true }).first().waitFor();
+          const companyRead = accountPage.waitForResponse((response) => new URL(response.url()).pathname === `/api/companies/${companyId}`
+            && response.request().method() === "GET").then(response => response.json());
+          await accountPage.reload();
+          assert.deepEqual((await companyRead).taxId, { country: "AR", type: "AR-CUIT", number: "30715554441" });
+          await accountPage.getByText("CUIT 30-71555444-1", { exact: true }).first().waitFor();
+          assert.equal(await accountPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+
+          setStage("cambia sólo la región de la organización, sin cambiar la cultura personal");
+          await accountPage.goto(new URL("/org/configuracion", baseUrl).href);
+          await accountPage.getByRole("combobox", { name: "Idioma y región predeterminados", exact: true }).click();
+          await accountPage.getByRole("option", { name: /^(English|Inglés) \(United States|Estados Unidos/ }).click();
+          const configured = accountPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/organization/settings"
+            && response.request().method() === "PUT");
+          await accountPage.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+          assert.equal((await configured).status(), 200);
+          assert.equal(await accountPage.locator("html").getAttribute("lang"), "es");
+          setStage("sin tipo empresarial del país, Crear empresa oculta el campo fiscal");
+          await accountPage.goto(new URL("/org/empresas", baseUrl).href);
+          await accountPage.getByRole("button", { name: "Crear empresa", exact: true }).click();
+          const create = accountPage.getByRole("dialog");
+          await create.getByRole("textbox", { name: "Nombre", exact: true }).waitFor();
+          await create.getByRole("textbox", { name: "CUIT", exact: true }).waitFor({ state: "detached" });
+          assert.equal(await create.getByRole("textbox").count(), 1);
+          await create.getByRole("button", { name: "Cancelar", exact: true }).click();
+          await create.waitFor({ state: "hidden" });
+          setStage("editar otro dato conserva el CUIT guardado aunque el país ya no lo ofrezca");
+          await accountPage.getByRole("link", { name: companyName }).click();
+          if (width === 390) {
+            await accountPage.getByRole("button", { name: "Más acciones", exact: true }).click();
+            await accountPage.getByRole("menuitem", { name: "Editar empresa", exact: true }).click();
+          } else await accountPage.getByRole("button", { name: "Editar empresa", exact: true }).click();
+          const preserved = accountPage.getByRole("dialog");
+          await preserved.getByRole("textbox", { name: "CUIT", exact: true }).waitFor({ state: "detached" });
+          const updatedName = `${companyName} actualizada`;
+          await preserved.getByRole("textbox", { name: "Nombre", exact: true }).fill(updatedName);
+          const updated = accountPage.waitForResponse((response) => new URL(response.url()).pathname === `/api/companies/${companyId}`
+            && response.request().method() === "PUT");
+          await preserved.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+          const updateResponse = await updated;
+          assert.equal(updateResponse.status(), 200);
+          assert.equal(updateResponse.request().postDataJSON().taxIdNumber, "30715554441");
+          await accountPage.getByRole("heading", { name: updatedName, exact: true }).waitFor();
+          const preservedRead = accountPage.waitForResponse((response) => new URL(response.url()).pathname === `/api/companies/${companyId}`
+            && response.request().method() === "GET").then(response => response.json());
+          await accountPage.reload();
+          assert.deepEqual((await preservedRead).taxId, { country: "AR", type: "AR-CUIT", number: "30715554441" });
+          await accountPage.getByRole("heading", { name: updatedName, exact: true }).waitFor();
+          assert.equal(await accountPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+        }]),
         ...[1440, 390].map((width) => [`A6: nombre y apellido independientes y persistentes a ${width}`, async (accountPage, setStage) => {
           const email = await registerPerson(accountPage, undefined, setStage);
           await openAccount(accountPage);

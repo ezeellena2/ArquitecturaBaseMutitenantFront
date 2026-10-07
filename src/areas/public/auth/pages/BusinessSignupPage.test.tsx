@@ -6,7 +6,7 @@ import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { MemoryRouter } from "react-router";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import { configureI18n } from "@/shared/i18n";
+import { changeCulture, configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { BusinessSignupPage } from "./BusinessSignupPage";
@@ -36,6 +36,41 @@ function show(url = "/registro/empresa", viewport = 390) {
 }
 
 describe("BusinessSignupPage", () => {
+  it.each([
+    ["es-AR", "CUIT de la empresa", "Crear organización", "Revisá el CUIT: son 11 números.", "Ese CUIT no es válido: revisá los números."],
+    ["en-US", "Company tax ID (CUIT)", "Create organization", "Check the CUIT: it has 11 digits.", "That CUIT is invalid: check the numbers."],
+  ])("distingue largo y verificador del CUIT del registro en %s", async (culture, label, submit, lengthError, checksumError) => {
+    await changeCulture(culture);
+    const bodies: unknown[] = [];
+    server.use(
+      http.get("/api/public-site/slug-availability", () => HttpResponse.json({ slug: "a10", availability: "Available" })),
+      http.post("/api/auth/business-signup", async ({ request }) => {
+        bodies.push(await request.json());
+        return HttpResponse.json({ tenantId: "tenant-id", organizationName: "A10", slug: "a10", requiresApproval: true, firstCompanyId: "company-id", status: "PendingApproval", redirectUrl: null });
+      }),
+    );
+    try {
+      const { container } = show("/registro/empresa?google=complete", 390);
+      const input = await screen.findByRole("textbox", { name: label });
+      await waitFor(() => expect(screen.getByRole("button", { name: submit })).toBeEnabled());
+      const textboxes = screen.getAllByRole("textbox");
+      fireEvent.change(textboxes[0], { target: { value: "A10" } });
+      fireEvent.change(textboxes[1], { target: { value: "a10" } });
+      fireEvent.change(textboxes[2], { target: { value: "Empresa A10" } });
+      fireEvent.change(input, { target: { value: "3333333333" } });
+      fireEvent.click(screen.getByRole("button", { name: submit }));
+      await waitFor(() => expect(input).toHaveAccessibleDescription(lengthError));
+      fireEvent.change(input, { target: { value: "33333333333" } });
+      await waitFor(() => expect(input).toHaveAccessibleDescription(checksumError));
+      expect(bodies).toHaveLength(0);
+      expect(await axe(container)).toHaveNoViolations();
+      fireEvent.change(input, { target: { value: "33-33333333-9" } });
+      await waitFor(() => expect(input).not.toHaveAttribute("aria-invalid", "true"));
+      await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent(culture === "es-AR" ? "Disponible" : "Available"));
+      fireEvent.click(screen.getByRole("button", { name: submit }));
+      await waitFor(() => expect(bodies.at(-1)).toMatchObject({ taxId: { type: "AR-CUIT", number: "33333333339" } }));
+    } finally { await changeCulture("es-AR"); }
+  });
   it("después del código del operador reutiliza el estado privado de A1 sin abrir Tu organización", async () => {
     server.use(
       http.post("/api/auth/business-signup/code", () => HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 })),

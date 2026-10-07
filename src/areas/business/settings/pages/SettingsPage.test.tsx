@@ -8,6 +8,9 @@ import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 import { asPhone } from "@/test/utils/phone";
+import { currentUserQueryKey } from "@/auth/useCurrentUser";
+import type { MeResponse } from "@/shared/api/types";
+import { businessE6Admin } from "@/test/mocks/currentUsers";
 
 const settings = {
   name: "Grupo Delta", defaultCulture: "es-AR", defaultTimeZoneId: "America/Argentina/Buenos_Aires", defaultCurrency: "ARS", version: 12,
@@ -28,6 +31,31 @@ beforeEach(async () => {
 });
 
 describe("SettingsPage", () => {
+  it("al guardar otra región relee el país de la organización en el perfil sin cambiar la cultura personal", async () => {
+    let current = settings;
+    server.use(
+      http.get("/api/organization/settings", () => HttpResponse.json(current)),
+      http.get("/api/organization/settings/domains", () => HttpResponse.json([])),
+      http.put("/api/organization/settings", async ({ request }) => {
+        const body = await request.json() as typeof settings;
+        current = { ...body, version: body.version + 1 };
+        return HttpResponse.json({ version: current.version });
+      }),
+    );
+    const { queryClient, container } = renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
+    const selector = await screen.findByRole("combobox", { name: "Idioma y región predeterminados" });
+    server.use(http.get("/api/me", () => HttpResponse.json({
+      ...businessE6Admin, organizationCountryCode: current.defaultCulture === "en-US" ? "US" : "AR",
+    })));
+    const user = userEvent.setup();
+    await user.click(selector);
+    await user.click(await screen.findByRole("option", { name: /English \(United States\)/ }));
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(current.defaultCulture).toBe("en-US"));
+    await waitFor(() => expect(queryClient.getQueryData<MeResponse>(currentUserQueryKey)?.organizationCountryCode).toBe("US"));
+    expect(queryClient.getQueryData<MeResponse>(currentUserQueryKey)?.culture).toBe("es-AR");
+    expect(await axe(container)).toHaveNoViolations();
+  });
   // Tablero M-Configuracion: en el teléfono los datos son campos sueltos sobre blanco, sin título; el dominio va en una
   // tarjeta con «Agregar dominio» en texto, y «Descartar cambios» y «Guardar cambios» fijos abajo.
   it("en el teléfono son campos sueltos y el dominio en una tarjeta", async () => {

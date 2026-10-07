@@ -905,11 +905,37 @@ function b6d4bCases(root) {
   ];
 }
 
+function a10Cases(root) {
+  const edit = (width) => stageCases(root, "etapa-6").find((entry) => entry.pair === "empresa-editar" && entry.viewport.width === width).app;
+  const signup = (width) => stageCases(root, "etapa-6").find((entry) => entry.pair === "registro-empresa" && entry.viewport.width === width).app;
+  const checksum = "Ese CUIT no es válido: revisá los números.";
+  const editApp = (width) => ({ ...edit(width), readySelector: '[role="dialog"] [role="alert"]', readyText: checksum,
+    actions: [...edit(width).actions, appFill("CUIT", "33333333333"), appClick("button", "Guardar cambios")] });
+  const signupApp = (width) => ({ ...signup(width), readySelector: '[role="alert"]', readyText: checksum,
+    responses: [slugAvailable, ...signup(width).responses],
+    actions: [appFill("Nombre de la organización", "Grupo Omega"), appFill("Dirección de tu página", "omega-nueva"),
+      appFill("Primera empresa", "Omega S.A."), appFill("CUIT de la empresa", "33333333333"),
+      appClick("button", "Crear organización", { waitFor: "Disponible" })] });
+  const signupBoardActions = [fill("Nombre de la organización", "Grupo Omega"), fill("Dirección de tu página", "omega-nueva"),
+    fill("Primera empresa", "Omega S.A."), fill("CUIT de la empresa", "33333333333")];
+  // A10 corrige el texto de verificador del tablero v112 sin editar el lienzo de Diseño.
+  const state = "A10: verificador incorrecto; v112 queda antes de enviar porque sólo revisa longitud; app muestra el error del plan";
+  return [
+    ...pairCases(root, { stage: "etapa-6", pair: "empresa-editar", id: "empresa-editar-cuit-verificador", group: "empresas", state,
+      desktop: { boardActions: [click("button.b-sec"), fill("CUIT", "33333333333")] },
+      phone: { props: { estado: "Editar empresa" }, state: "A10: verificador incorrecto en app; M-Empresa conserva su hoja estática aprobada", boardActions: [] }, app: editApp(1440), phoneApp: editApp(390) }),
+    ...pairCases(root, { stage: "etapa-6", pair: "registro-empresa", id: "registro-empresa-cuit-verificador", group: "registro", state,
+      desktop: { boardActions: signupBoardActions },
+      phone: { state, boardActions: signupBoardActions }, app: signupApp(1440), phoneApp: signupApp(390) }),
+  ];
+}
+
 export function catalog(root) {
   const rename ={ board: "Cuenta", boardActions: [fill("Nombre", "Lucía B.")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
   const renameApp = { actions: [appFill("Nombre", "Lucía B.")] };
   return [
+    ...a10Cases(root),
     ...emailAccountCases(root),
     ...[...new Set(stageCases(root, "etapa-5").filter((entry) => entry.app.captureMode === "harness").map((entry) => entry.pair))]
       .flatMap((pair) => {

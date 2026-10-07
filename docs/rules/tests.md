@@ -38,6 +38,7 @@
 - `isolation.test.tsx` (E7): el aviso de un test no aparece en el siguiente.
 - `scripts/test-e2e-real.test.mjs` (E3): ninguna etapa desde E3a se cierra si el recorrido real está rojo.
 - `scripts/test-e2e-real-mail.test.mjs`: el pickup reconoce el párrafo del código; números en organizaciones, enlaces o avisos no cuentan como OTP. Corre con `node --test scripts/test-e2e-real-mail.test.mjs`.
+- `scripts/test-e2e-real-ui.test.mjs`: la entrega del correo no prueba que las casillas estén listas; el helper espera sus seis controles visibles antes de completarlos. El test usa Chromium con un documento local cuyo paso aparece después del título, sin sleeps; el E2E de producto mantiene front/API/correo reales.
 
 ## Detalle
 [frontend.md §4, "Tests"](../architecture/frontend.md#tests)

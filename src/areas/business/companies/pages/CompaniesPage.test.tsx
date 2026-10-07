@@ -105,7 +105,7 @@ describe("CompaniesPage", () => {
     expect(dialog).toHaveClass("bottom-0", "rounded-t-[20px]");
     expect(dialog).not.toHaveClass("min-h-[calc(100dvh-1rem)]");
     expect(within(dialog).getByRole("textbox", { name: "Nombre" }).closest("[data-slot='dialog-body']")).not.toBeNull();
-    expect(within(dialog).getByRole("textbox", { name: "CUIT" })).toHaveAttribute("placeholder", "30-12345678-1");
+    expect(within(dialog).getByRole("textbox", { name: "CUIT" })).toHaveAttribute("placeholder", "99-99999999-9");
     expect(within(dialog).getByRole("combobox", { name: "Zona de negocio" })).toHaveTextContent("La de la organización");
 
     // Solo el nombre: la zona queda la de la organización.
@@ -124,15 +124,15 @@ describe("CompaniesPage", () => {
     await user.click(within(again).getByRole("textbox", { name: "CUIT" }));
     await user.paste("30-12345678-9");
     // «Criterio · Formularios»: el CUIT se revisa al tocar «Crear empresa», no mientras se escribe.
-    expect(within(again).queryByText("Revisá el CUIT: son 11 números.")).not.toBeInTheDocument();
+    expect(within(again).queryByText("Ese CUIT no es válido: revisá los números.")).not.toBeInTheDocument();
     await user.click(within(again).getByRole("button", { name: "Crear empresa" }));
-    expect(await within(again).findByText("Revisá el CUIT: son 11 números.")).toBeVisible();
+    expect(await within(again).findByText("Ese CUIT no es válido: revisá los números.")).toBeVisible();
     expect(bodies).toHaveLength(1);
     // Después del primer error, se corrige mientras escribís.
     await user.clear(within(again).getByRole("textbox", { name: "CUIT" }));
     await user.click(within(again).getByRole("textbox", { name: "CUIT" }));
     await user.paste("30712345671");
-    expect(within(again).queryByText("Revisá el CUIT: son 11 números.")).not.toBeInTheDocument();
+    expect(within(again).queryByText("Ese CUIT no es válido: revisá los números.")).not.toBeInTheDocument();
     await user.click(within(again).getByRole("button", { name: "Crear empresa" }));
     await waitFor(() => expect(bodies.at(-1)).toEqual({ name: "Delta Norte S.A.", taxIdNumber: "30712345671", timeZoneId: null }));
   });

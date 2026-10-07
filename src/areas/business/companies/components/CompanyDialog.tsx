@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -13,10 +13,11 @@ import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import type { TaxIdTypeReference } from "@/shared/referenceData/referenceData";
-import { useCuitType } from "@/shared/referenceData/useCuitType";
+import { companyTaxIdType } from "@/shared/referenceData/companyTaxIdType";
+import { useCompanyTaxIdType } from "@/shared/referenceData/useCompanyTaxIdType";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
-import { isValidTaxId } from "@/shared/ui/fields/TaxIdField";
+import { taxIdValidationMessage } from "@/shared/ui/fields/taxIdValidation";
 import { FormError } from "@/shared/ui/FormError";
 import { companiesQueryRoot, createCompany, updateCompany } from "../api/companies";
 import { companyErrorField } from "../errors";
@@ -26,13 +27,18 @@ import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
 // «Delta S.A.» + «. Quedaste…» no repite el punto final del nombre.
 const sentence = (text: string) => text.replace("..", ".");
 
-/// Lo que se valida antes de mandar: el nombre que falta y el CUIT, que es opcional, con su tipo del catálogo.
+/// El nombre y el número opcional, con el tipo empresarial del país de la organización.
 /// «Criterio · Formularios»: se revisan al tocar el botón, no mientras se escribe; después del primer error, se corrigen
 /// mientras escribís.
-function companyFormSchema(t: TFunction, cuitType: TaxIdTypeReference | undefined) {
+function companyFormSchema(t: TFunction, defaultType: TaxIdTypeReference | undefined, stored: CompanyResponse["taxId"]) {
   return z.object({
     name: z.string().trim().min(1, t("companies:form.nameRequired")),
-    taxNumber: z.string().refine((value) => value === "" || isValidTaxId(cuitType, value), t("companies:form.taxIdInvalid")),
+    taxNumber: z.string().superRefine((number, context) => {
+      // D6 conserva el tipo y número guardados: ni una región nueva ni un tipo deshabilitado invalidan otro cambio.
+      if (stored?.number === number) return;
+      const message = taxIdValidationMessage(t, defaultType, number);
+      if (message) context.addIssue({ code: "custom", message });
+    }),
     timeZoneId: z.string(),
   });
 }
@@ -74,11 +80,13 @@ export function CompanyDialog({ company, inDetail = false, onClose, returnFocusT
   const { t } = useTranslation(["companies", "common"]);
   const queryClient = useQueryClient();
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
-  const cuitType = useCuitType();
-  const schema = useMemo(() => companyFormSchema(t, cuitType), [t, cuitType]);
+  const [storedTaxId] = useState(company?.taxId);
+  const { defaultType, types } = useCompanyTaxIdType();
+  const schema = useMemo(() => companyFormSchema(t, defaultType, storedTaxId), [t, defaultType, storedTaxId]);
   const { form, version } = useEditForm<CompanyResponse | undefined, CompanyForm, CompanyFormValues>({
     read: company, toValues: valuesFromCompany, resolver: zodResolver(schema),
   });
+  const effectiveTaxIdType = companyTaxIdType(types, defaultType, storedTaxId, form.watch("taxNumber"));
   const { failure, clear, fail, close } = useDialogFailure(onClose, companiesQueryRoot);
   const create = useIdempotentMutation((request: CreateCompanyRequest, key) => createCompany(request, key));
   const update = useMutation({ mutationFn: ({ id, request }: { id: string; request: UpdateCompanyRequest }) => updateCompany(id, request) });
@@ -119,7 +127,7 @@ export function CompanyDialog({ company, inDetail = false, onClose, returnFocusT
       <DialogHeader><DialogTitle>{t(company ? "companies:editTitle" : "companies:createTitle")}</DialogTitle></DialogHeader>
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
-          <CompanyFields form={form} onEdit={clear} />
+          <CompanyFields form={form} onEdit={clear} taxIdType={defaultType ? effectiveTaxIdType : undefined} newNumberType={defaultType} />
           {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
           <FormError message={actionErrorMessage(failure, t)} />
         </DialogBody>

@@ -23,7 +23,7 @@ import { FormField } from "@/shared/ui/FormField";
 import { EmailField } from "@/shared/ui/fields/EmailField";
 import { cn } from "@/shared/lib/utils";
 import { Input } from "@/shared/ui/input";
-import { isValidTaxId } from "@/shared/ui/fields/TaxIdField";
+import { taxIdValidationMessage } from "@/shared/ui/fields/taxIdValidation";
 import type { TaxIdTypeReference } from "@/shared/referenceData/referenceData";
 import { useCuitType } from "@/shared/referenceData/useCuitType";
 import { effectiveCulture } from "@/shared/i18n";
@@ -56,7 +56,10 @@ function organizationFormSchema(t: TFunction, cuitType: TaxIdTypeReference | und
     organizationName: z.string().trim().min(1, t("businessSignup.organizationRequired")),
     slug: z.string().min(1, t("businessSignup.slugInvalid")),
     firstCompanyName: z.string().trim().min(1, t("businessSignup.companyRequired")),
-    taxNumber: z.string().refine((value) => value === "" || (cuitType !== undefined && isValidTaxId(cuitType, value)), t("businessSignup.taxIdInvalid")),
+    taxNumber: z.string().superRefine((number, context) => {
+      const message = taxIdValidationMessage(t, cuitType, number);
+      if (message) context.addIssue({ code: "custom", message });
+    }),
   });
 }
 

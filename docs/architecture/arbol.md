@@ -28,6 +28,10 @@ ArquitecturaBaseMutitenantFront/
 │   ├── test-e2e-real.test.mjs                       E2E real: levanta su AppHost y un PostgreSQL efímero; front y API reales, sin mocks
 │   ├── test-e2e-real-case.mjs                       Señal del caso, esperas cancelables y contextos propios
 │   ├── test-e2e-real-case.test.mjs                  tests de test-e2e-real-case
+│   ├── test-e2e-real-mail.mjs                       Lee sólo el párrafo OTP del correo pickup
+│   ├── test-e2e-real-mail.test.mjs                  tests de test-e2e-real-mail
+│   ├── test-e2e-real-ui.mjs                         Espera los controles accesibles antes de completar el OTP
+│   ├── test-e2e-real-ui.test.mjs                    prueba la carga del paso después de su título
 │   ├── capturar-etapa-3a.mjs                        capturas de la 3a: tablero y app lado a lado, a 1440 y a 390
 │   ├── capturar-etapa-3a.test.mjs                   tests de capturar-etapa-3a
 │   ├── capturar-etapa-3b.mjs                        capturas de la 3b (Mi cuenta, términos, baja pedida, inicio y correos) contra el lienzo vigente
@@ -339,8 +343,9 @@ src/
 │   │   │   ├── errors.ts                            el campo donde va lo que el back rechaza de un dato de la empresa o del miembro (también el CUIT repetido; el último administrador, en la franja)
 │   │   │   ├── errors.test.ts                       tests de errors
 │   │   │   ├── components/
-│   │   │   │   ├── CompanyFields.tsx                Nombre, CUIT y «Zona de negocio», atados al formulario de CompanyDialog
+│   │   │   │   ├── CompanyFields.tsx                Nombre, número fiscal del catálogo y «Zona de negocio», atados al formulario de CompanyDialog
 │   │   │   │   ├── CompanyDialog.tsx                crear y editar (Empresas y la ficha): React Hook Form con zod y useEditForm (la versión de cuando se abrió); dueño de lo escrito, su guardado y su error
+│   │   │   │   ├── CompanyDialog.taxId.test.tsx     país empresarial, tipo almacenado, mensajes por causa, 390 y accesibilidad
 │   │   │   │   ├── AddMemberDialog.tsx              «Agregar miembro»: la persona y sus roles en la empresa; React Hook Form con zod
 │   │   │   │   └── MemberRolesDialog.tsx            «Roles de …»: los roles de un miembro en la empresa; React Hook Form con zod
 │   │   │   ├── tabs/
@@ -559,7 +564,10 @@ src/
 │   ├── referenceData/                               [E1] cinco catálogos de GET /api/reference-data
 │   │   ├── referenceData.ts                         cliente tipado; opciones habilitadas y traducidas, ETag
 │   │   ├── useReferenceData.ts                      TanStack Query, staleTime: Infinity; en la cultura efectiva, una carga por cultura
-│   │   ├── useCuitType.ts                           el tipo CUIT del catálogo, para revisar el CUIT de una empresa: el registro de empresa y Empresas
+│   │   ├── useCuitType.ts                           CUIT argentino opcional del catálogo para el acuerdo de Registro-Empresa
+│   │   ├── useCompanyTaxIdType.ts                   tipo empresarial del país de la organización que devuelve /api/me
+│   │   ├── companyTaxIdType.ts                      orden del catálogo y conservación del tipo guardado cuando el número no cambia
+│   │   ├── companyTaxIdType.test.ts                 país, orden ordinal, tipo deshabilitado y número sin cambios
 │   │   └── referenceData.test.ts                    catálogos, ausencia de listas fijas y estado de carga
 │   ├── account/                                     [E3] lo de la cuenta que usan varias áreas (ADR 0033)
 │   │   ├── api/
@@ -667,6 +675,9 @@ src/
 │       │   ├── EmailField.test.tsx                  tests de EmailField
 │       │   ├── TaxIdField.tsx                       P5 { type: TaxIdTypes.Code, number } sin separadores, stdnum en E1
 │       │   ├── TaxIdField.test.tsx                  tests de TaxIdField
+│       │   ├── TaxIdNumberField.tsx                 sólo número: máscara y límite del catálogo; admite separadores al pegar
+│       │   ├── taxIdValidation.ts                   algoritmos conocidos y mensajes de longitud o verificador, con nombre traducido
+│       │   ├── taxIdValidation.test.ts              CUIT válido, longitud, verificador y textos es/en
 │       │   ├── CurrencySelect.tsx                   monedas habilitadas, ordenadas por SortOrder y nombre
 │       │   ├── CurrencySelect.test.tsx              tests de CurrencySelect
 │       │   ├── CountrySelect.tsx                    países habilitados; bandera, nombre traducido y CallingCode

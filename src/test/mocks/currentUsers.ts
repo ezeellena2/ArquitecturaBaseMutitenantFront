@@ -24,6 +24,7 @@ export const consumerWithoutOrganizations: MeResponse = {
   culture: "es-AR",
   timeZoneId: "America/Argentina/Buenos_Aires",
   currencyCode: "ARS",
+  organizationCountryCode: null,
   version: 42,
   needsPersonalLoginMethod: false,
   pendingLegalDocuments: [],
@@ -32,6 +33,7 @@ export const consumerWithoutOrganizations: MeResponse = {
 export const businessUser: MeResponse = withPermissions({
   ...consumerWithoutOrganizations,
   access: "business",
+  organizationCountryCode: "AR",
   activeTenantId: "empresa-a",
   organizations: [{ id: "empresa-a", name: "Empresa A", roleName: null, status: "Active", memberStatus: "Active", isSelectable: true }],
 }, ["users.read", "roles.read"]);
@@ -104,6 +106,7 @@ export const visualPersonal: MeResponse = {
 export const visualBusiness: MeResponse = {
   ...visualPersonal,
   access: "business",
+  organizationCountryCode: "AR",
   activeTenantId: "grupo-delta",
   // Como el back (/api/me, R3c): en una organización, el correo verificado que ella administra, como los tableros.
   email: "lucia.fernandez@delta.ejemplo.com",
@@ -131,6 +134,7 @@ export const visualCompanyAdmin: MeResponse = {
 export const visualUnavailableSuspended: MeResponse = {
   ...visualBusiness,
   activeTenantId: "beta",
+  organizationCountryCode: null,
 };
 
 export const visualUnavailablePending: MeResponse = {

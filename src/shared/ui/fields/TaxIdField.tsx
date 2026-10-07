@@ -1,8 +1,8 @@
-import { stdnum } from "stdnum";
 import { useTranslation } from "react-i18next";
-import { enabledOptions, type TaxIdTypeReference } from "@/shared/referenceData/referenceData";
+import { enabledOptions } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { Input } from "../input";
+import { isValidTaxId } from "./taxIdValidation";
 
 export interface TaxIdDraft {
   type: string;
@@ -22,16 +22,6 @@ interface TaxIdFieldProps {
   appliesTo?: "Person" | "Company";
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
-}
-
-// Registro de algoritmos, no de tipos fiscales: los tipos y su ValidatorKey son datos.
-const validators: Record<string, (number: string) => boolean> = {
-  "ar-cuit-mod11": (number) => stdnum.AR.cuit.validate(number).isValid,
-  "ar-dni-length": (number) => stdnum.AR.dni.validate(number).isValid,
-};
-
-export function isValidTaxId(type: TaxIdTypeReference | undefined, number: string): boolean {
-  return Boolean(type?.isEnabled && number && validators[type.validatorKey]?.(number));
 }
 
 /** Entrada E1: el país se deriva del tipo en Application, sin incluirlo en este contrato. */

@@ -158,6 +158,12 @@
     },
     "signingOut": "Cerrando sesión…"
   },
+  "taxId": {
+    "unavailable": "Ingresá una identificación fiscal válida.",
+    "length": "Revisá el {{type}}: son {{count}} números.",
+    "lengthRange": "Revisá el {{type}}: son entre {{min}} y {{max}} números.",
+    "invalid": "Ese {{type}} no es válido: revisá los números."
+  },
   "reasonDialog": {
     "reason": "Motivo",
     "reasonRequired": "Escribí el motivo.",
