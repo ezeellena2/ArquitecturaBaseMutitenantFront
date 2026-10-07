@@ -56,6 +56,8 @@ export function referenceDataFixture(culture = "es-AR"): ReferenceData {
 }
 
 export const handlers: RequestHandler[] = [
+  // La portada anónima consulta el directorio; cada test con empresas reemplaza esta proyección vacía.
+  http.get("/api/directory", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
   http.get("/api/home", () => HttpResponse.json({ organization: null, companies: [], pending: [] })),
   // Como el back de hoy, sin el módulo de WhatsApp: se entra con correo y con Google.
   http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "google", countries: [] }] })),

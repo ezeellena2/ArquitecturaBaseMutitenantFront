@@ -45,6 +45,7 @@ export type CancelAccountDeletionRequest = ApiSchemas["CancelAccountDeletionHttp
 export type CancelAccountDeletionResponse = ApiSchemas["CancelAccountDeletionHttpResponse"];
 export type PendingDeletionState = ApiSchemas["PendingDeletionState"];
 export type PagedRequest = ApiSchemas["PagedRequest"];
+export type DirectoryEntryRow = ApiSchemas["DirectoryEntryRow"];
 export type RoleResponse = ApiSchemas["RoleResponse"];
 export type PermissionGroupResponse = ApiSchemas["PermissionGroupResponse"];
 export type PermissionItem = ApiSchemas["PermissionItem"];
