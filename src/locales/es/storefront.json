@@ -2,5 +2,11 @@
   "unavailable": {
     "title": "Esta página no está disponible",
     "mainSite": "Ir a ArquitecturaBase"
+  },
+  "footer": {
+    "organization": "© 2026 {{name}} · en ArquitecturaBase"
+  },
+  "menu": {
+    "account": "Tu cuenta"
   }
 }

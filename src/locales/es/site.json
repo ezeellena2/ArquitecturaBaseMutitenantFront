@@ -2,6 +2,7 @@
   "brand": "ArquitecturaBase",
   "navigation": {
     "label": "Secciones",
+    "openMenu": "Abrir el menú",
     "people": "Personas",
     "businesses": "Empresas",
     "getStarted": "Cómo empezar",
