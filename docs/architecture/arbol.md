@@ -26,6 +26,8 @@ ArquitecturaBaseMutitenantFront/
 │   ├── generate-contracts.mjs                       [E1] openapi.json del back → src/shared/api/generated/schema.d.ts
 │   ├── check-contracts.mjs                          [E1] falla si generated/ no coincide con el contrato; sin el repo hermano en CI, avisa y se saltea
 │   ├── test-e2e-real.test.mjs                       E2E real: levanta su AppHost y un PostgreSQL efímero; front y API reales, sin mocks
+│   ├── test-e2e-real-case.mjs                       Señal del caso, esperas cancelables y contextos propios
+│   ├── test-e2e-real-case.test.mjs                  tests de test-e2e-real-case
 │   ├── capturar-etapa-3a.mjs                        capturas de la 3a: tablero y app lado a lado, a 1440 y a 390
 │   ├── capturar-etapa-3a.test.mjs                   tests de capturar-etapa-3a
 │   ├── capturar-etapa-3b.mjs                        capturas de la 3b (Mi cuenta, términos, baja pedida, inicio y correos) contra el lienzo vigente
@@ -210,11 +212,14 @@ src/
 │   │   │   │   ├── returnUrl.test.ts                tests de returnUrl
 │   │   │   │   ├── loginRedirectError.ts            lleva el código de error de Google entre los dos redirects del ingreso, sin datos de identidad ni tokens
 │   │   │   │   ├── loginCodeState.ts                estado del paso del código: destino enmascarado, canal y segundos para reenviar
+│   │   │   │   ├── loginEmail.ts                    Conserva el correo entre registro e ingreso OIDC
+│   │   │   │   ├── loginEmail.test.ts                tests de loginEmail
 │   │   │   │   └── loginCodeState.test.ts           tests de loginCodeState
 │   │   │   ├── errors.ts                            códigos Auth.* → texto o campo; Identity.Account.PendingDeletion pasa LoginPage al estado de baja pedida
 │   │   │   ├── errors.test.ts                       tests de errors
 │   │   │   └── pages/
-│   │   │       ├── LoginPage.tsx                    /login (persona) y /login/empresa (empresa): misma pantalla, otra puerta; el código es un paso de la pantalla (no hay /login/codigo); estados del tablero Ingreso, salvo los de WhatsApp [E8] y los de operador [E9]
+│   │   │       ├── LoginPage.tsx                    /login (persona) y /login/empresa (empresa): misma pantalla, otra puerta; el código es un paso de la pantalla (no hay /login/codigo); correo sin cuenta y operador privado después de probar el correo (v112), salvo WhatsApp [E8]
+│   │   │       ├── EmailAccountStates.test.tsx       tests de estados de correo y transporte OIDC
 │   │   │       ├── LoginPage.test.tsx               tests de LoginPage
 │   │   │       ├── LoginLinkPage.tsx                [E8] /login/enlace: enlace del bot (tablero Enlace)
 │   │   │       ├── SignupPage.tsx                   /registro: crear cuenta de persona
@@ -223,7 +228,7 @@ src/
 │   │   │       ├── BusinessSignupPage.test.tsx      tests de BusinessSignupPage
 │   │   │       ├── InvitationPage.tsx               /invitacion: quién invita, la organización, los roles y el vencimiento (POST /api/invitations/preview, el token en el cuerpo) y aceptar según el caso (tablero Invitacion)
 │   │   │       ├── InvitationPage.test.tsx          tests de InvitationPage
-│   │   │       ├── RecoverAccountPage.tsx           [E5] /recuperar: correo de antes, correo nuevo, código y pedido recibido; sin WhatsApp (v111)
+│   │   │       ├── RecoverAccountPage.tsx           [E5] /recuperar: correo de antes, correo nuevo, código y pedido recibido; errores de cuenta y sin WhatsApp (v112)
 │   │   │       ├── RecoverAccountPage.test.tsx      tests de Recuperar: nonce, idempotencia, errores, espera y vista a 390
 │   │   │       ├── CallbackPage.tsx
 │   │   │       └── CallbackPage.test.tsx            tests de CallbackPage
