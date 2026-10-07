@@ -1,0 +1,1093 @@
+{
+  "version": 1,
+  "stage": "etapa-7",
+  "canvasVersion": "v113",
+  "issuer": "http://localtest.me:5192",
+  "cases": [
+    {
+      "id": "landing-con-empresas-desktop",
+      "pair": "landing-con-empresas",
+      "group": "landing",
+      "label": "Con empresas",
+      "board": "Landing",
+      "props": {
+        "empresas": "Con empresas"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureExtent": "page",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2F",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [
+                {
+                  "slug": "delta",
+                  "name": "Grupo Delta",
+                  "description": "Grupo Delta y sus empresas, en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "omega",
+                  "name": "Omega S.A.",
+                  "description": "Omega S.A., en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "sigma",
+                  "name": "Sigma S.R.L.",
+                  "description": "Sigma S.R.L., en un solo lugar.",
+                  "logoUrl": null
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Para vos",
+        "readyText": "Grupo Delta y sus empresas, en un solo lugar.",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "landing-con-empresas-mobile",
+      "pair": "landing-con-empresas",
+      "group": "landing",
+      "label": "Con empresas",
+      "board": "Landing-Movil",
+      "props": {
+        "empresas": "Con empresas"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "page",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2F",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [
+                {
+                  "slug": "delta",
+                  "name": "Grupo Delta",
+                  "description": "Grupo Delta y sus empresas, en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "omega",
+                  "name": "Omega S.A.",
+                  "description": "Omega S.A., en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "sigma",
+                  "name": "Sigma S.R.L.",
+                  "description": "Sigma S.R.L., en un solo lugar.",
+                  "logoUrl": null
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Para vos",
+        "readyText": "Grupo Delta y sus empresas, en un solo lugar.",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "landing-sin-empresas-desktop",
+      "pair": "landing-sin-empresas",
+      "group": "landing",
+      "label": "Sin empresas",
+      "board": "Landing",
+      "props": {
+        "empresas": "Sin empresas"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureExtent": "page",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2F",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Para vos",
+        "readyText": "Todavía no hay empresas publicadas",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "landing-sin-empresas-mobile",
+      "pair": "landing-sin-empresas",
+      "group": "landing",
+      "label": "Sin empresas",
+      "board": "Landing-Movil",
+      "props": {
+        "empresas": "Sin empresas"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "page",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2F",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Para vos",
+        "readyText": "Todavía no hay empresas publicadas",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "directorio-con-empresas-desktop",
+      "pair": "directorio-con-empresas",
+      "group": "directorio",
+      "label": "Con empresas",
+      "board": "Directorio",
+      "props": {
+        "estado": "Con empresas"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2Fempresas",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [
+                {
+                  "slug": "delta",
+                  "name": "Grupo Delta",
+                  "description": "Grupo Delta y sus empresas, en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "omega",
+                  "name": "Omega S.A.",
+                  "description": "Omega S.A., en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "sigma",
+                  "name": "Sigma S.R.L.",
+                  "description": "Sigma S.R.L., en un solo lugar.",
+                  "logoUrl": null
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Empresas",
+        "readyText": "Grupo Delta",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "directorio-con-empresas-mobile",
+      "pair": "directorio-con-empresas",
+      "group": "directorio",
+      "label": "Con empresas",
+      "board": "M-Directorio",
+      "props": {
+        "estado": "Con empresas"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2Fempresas",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [
+                {
+                  "slug": "delta",
+                  "name": "Grupo Delta",
+                  "description": "Grupo Delta y sus empresas, en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "omega",
+                  "name": "Omega S.A.",
+                  "description": "Omega S.A., en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "sigma",
+                  "name": "Sigma S.R.L.",
+                  "description": "Sigma S.R.L., en un solo lugar.",
+                  "logoUrl": null
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Empresas",
+        "readyText": "Grupo Delta",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "directorio-sin-resultados-desktop",
+      "pair": "directorio-sin-resultados",
+      "group": "directorio",
+      "label": "Sin resultados",
+      "board": "Directorio",
+      "props": {
+        "estado": "Sin resultados"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2Fempresas%3Fsearch%3DZeta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Empresas",
+        "readyText": "Ninguna empresa coincide con la búsqueda",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "directorio-sin-resultados-mobile",
+      "pair": "directorio-sin-resultados",
+      "group": "directorio",
+      "label": "Sin resultados",
+      "board": "M-Directorio",
+      "props": {
+        "estado": "Sin resultados"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2Fempresas%3Fsearch%3DZeta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Empresas",
+        "readyText": "Ninguna empresa coincide con la búsqueda",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "directorio-sin-empresas-desktop",
+      "pair": "directorio-sin-empresas",
+      "group": "directorio",
+      "label": "Todavía no hay empresas",
+      "board": "Directorio",
+      "props": {
+        "estado": "Todavía no hay empresas"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2Fempresas",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Empresas",
+        "readyText": "Todavía no hay empresas publicadas",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "directorio-sin-empresas-mobile",
+      "pair": "directorio-sin-empresas",
+      "group": "directorio",
+      "label": "Todavía no hay empresas",
+      "board": "M-Directorio",
+      "props": {
+        "estado": "Todavía no hay empresas"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2Fempresas",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Empresas",
+        "readyText": "Todavía no hay empresas publicadas",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "pagina-publicada-sin-sesion-desktop",
+      "pair": "pagina-publicada-sin-sesion",
+      "group": "pagina-publica",
+      "label": "Publicada, sin sesión",
+      "board": "Pagina-Publica",
+      "props": {
+        "estado": "Publicada, sin sesión"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "delta",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2F",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/public-site",
+            "body": {
+              "slug": "delta",
+              "name": "Grupo Delta",
+              "description": "Grupo Delta y sus empresas, en un solo lugar.",
+              "logoUrl": null,
+              "address": "Av. Corrientes 1234, piso 5, Buenos Aires",
+              "phone": "+541143215678",
+              "email": "contacto@delta.ejemplo.com",
+              "website": "https://delta.ejemplo.com"
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Grupo Delta",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "pagina-publicada-sin-sesion-mobile",
+      "pair": "pagina-publicada-sin-sesion",
+      "group": "pagina-publica",
+      "label": "Publicada, sin sesión",
+      "board": "M-Pagina-Publica",
+      "props": {
+        "estado": "Publicada, sin sesión"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "delta",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2F",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/public-site",
+            "body": {
+              "slug": "delta",
+              "name": "Grupo Delta",
+              "description": "Grupo Delta y sus empresas, en un solo lugar.",
+              "logoUrl": null,
+              "address": "Av. Corrientes 1234, piso 5, Buenos Aires",
+              "phone": "+541143215678",
+              "email": "contacto@delta.ejemplo.com",
+              "website": "https://delta.ejemplo.com"
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Grupo Delta",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "pagina-publicada-con-sesion-desktop",
+      "pair": "pagina-publicada-con-sesion",
+      "group": "pagina-publica",
+      "label": "Publicada, con sesión",
+      "board": "Pagina-Publica",
+      "props": {
+        "estado": "Publicada, con sesión"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "delta",
+        "path": "/src/test/etapa7VisualApp.html?as=personal&route=%2F",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/public-site",
+            "body": {
+              "slug": "delta",
+              "name": "Grupo Delta",
+              "description": "Grupo Delta y sus empresas, en un solo lugar.",
+              "logoUrl": null,
+              "address": "Av. Corrientes 1234, piso 5, Buenos Aires",
+              "phone": "+541143215678",
+              "email": "contacto@delta.ejemplo.com",
+              "website": "https://delta.ejemplo.com"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "1f47a8b2-4d31-48eb-94c8-9c9b56673fd8",
+              "displayName": "Beto Ramírez",
+              "firstName": "Beto",
+              "lastName": "Ramírez",
+              "email": "beto.ramirez@beta.ejemplo.com",
+              "access": "consumer",
+              "activeTenantId": "b178541c-44f7-4d13-b81d-d5ab6fe2f808",
+              "hasPersonalSpace": true,
+              "organizations": [],
+              "effectivePermissions": {
+                "platform": [],
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": null,
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          }
+        ],
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "press",
+            "role": "button",
+            "name": "Beto Ramírez, Personal",
+            "exact": true,
+            "key": "ArrowDown"
+          }
+        ],
+        "readySelector": "[role=\"menu\"]",
+        "readyText": "beto.ramirez@beta.ejemplo.com"
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "selector": ".um-btn"
+        }
+      ]
+    },
+    {
+      "id": "pagina-publicada-con-sesion-mobile",
+      "pair": "pagina-publicada-con-sesion",
+      "group": "pagina-publica",
+      "label": "Publicada, con sesión",
+      "board": "M-Pagina-Publica",
+      "props": {
+        "estado": "Publicada, con sesión"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "delta",
+        "path": "/src/test/etapa7VisualApp.html?as=personal&route=%2F",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/public-site",
+            "body": {
+              "slug": "delta",
+              "name": "Grupo Delta",
+              "description": "Grupo Delta y sus empresas, en un solo lugar.",
+              "logoUrl": null,
+              "address": "Av. Corrientes 1234, piso 5, Buenos Aires",
+              "phone": "+541143215678",
+              "email": "contacto@delta.ejemplo.com",
+              "website": "https://delta.ejemplo.com"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "1f47a8b2-4d31-48eb-94c8-9c9b56673fd8",
+              "displayName": "Beto Ramírez",
+              "firstName": "Beto",
+              "lastName": "Ramírez",
+              "email": "beto.ramirez@beta.ejemplo.com",
+              "access": "consumer",
+              "activeTenantId": "b178541c-44f7-4d13-b81d-d5ab6fe2f808",
+              "hasPersonalSpace": true,
+              "organizations": [],
+              "effectivePermissions": {
+                "platform": [],
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "organizationCountryCode": null,
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          }
+        ],
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Tu cuenta",
+            "exact": true
+          }
+        ],
+        "readySelector": "[role=\"dialog\"]",
+        "readyText": "beto.ramirez@beta.ejemplo.com"
+      },
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Tu cuenta"
+        }
+      ]
+    },
+    {
+      "id": "pagina-no-disponible-desktop",
+      "pair": "pagina-no-disponible",
+      "group": "pagina-publica",
+      "label": "No disponible",
+      "board": "Pagina-Publica",
+      "props": {
+        "estado": "No disponible"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "delta",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2F",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/public-site",
+            "body": {
+              "type": "about:blank",
+              "title": "Not Found",
+              "status": 404,
+              "code": "PublicSite.PublicPage.NotFound",
+              "traceId": "captura-etapa7"
+            },
+            "status": 404
+          }
+        ],
+        "readyHeading": "Esta página no está disponible",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "pagina-no-disponible-mobile",
+      "pair": "pagina-no-disponible",
+      "group": "pagina-publica",
+      "label": "No disponible",
+      "board": "M-Pagina-Publica",
+      "props": {
+        "estado": "No disponible"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "delta",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2F",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/public-site",
+            "body": {
+              "type": "about:blank",
+              "title": "Not Found",
+              "status": 404,
+              "code": "PublicSite.PublicPage.NotFound",
+              "traceId": "captura-etapa7"
+            },
+            "status": 404
+          }
+        ],
+        "readyHeading": "Esta página no está disponible",
+        "captureMode": "harness"
+      }
+    }
+  ],
+  "supplementalCases": [
+    {
+      "id": "landing-con-empresas-mobile-menu",
+      "pair": "landing-con-empresas",
+      "group": "landing",
+      "label": "Con empresas · Menú abierto",
+      "board": "Landing-Movil",
+      "props": {
+        "empresas": "Con empresas"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2F",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [
+                {
+                  "slug": "delta",
+                  "name": "Grupo Delta",
+                  "description": "Grupo Delta y sus empresas, en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "omega",
+                  "name": "Omega S.A.",
+                  "description": "Omega S.A., en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "sigma",
+                  "name": "Sigma S.R.L.",
+                  "description": "Sigma S.R.L., en un solo lugar.",
+                  "logoUrl": null
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Para vos",
+        "readyText": "Grupo Delta y sus empresas, en un solo lugar.",
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Abrir el menú",
+            "exact": true
+          }
+        ],
+        "readySelector": "nav[aria-label=\"Secciones\"]"
+      },
+      "parentId": "landing-con-empresas-mobile",
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Abrir el menú"
+        }
+      ]
+    },
+    {
+      "id": "landing-sin-empresas-mobile-menu",
+      "pair": "landing-sin-empresas",
+      "group": "landing",
+      "label": "Sin empresas · Menú abierto",
+      "board": "Landing-Movil",
+      "props": {
+        "empresas": "Sin empresas"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2F",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Para vos",
+        "readyText": "Todavía no hay empresas publicadas",
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Abrir el menú",
+            "exact": true
+          }
+        ],
+        "readySelector": "nav[aria-label=\"Secciones\"]"
+      },
+      "parentId": "landing-sin-empresas-mobile",
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Abrir el menú"
+        }
+      ]
+    },
+    {
+      "id": "directorio-con-empresas-mobile-menu",
+      "pair": "directorio-con-empresas",
+      "group": "directorio",
+      "label": "Con empresas · Menú abierto",
+      "board": "M-Directorio",
+      "props": {
+        "estado": "Con empresas"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2Fempresas",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [
+                {
+                  "slug": "delta",
+                  "name": "Grupo Delta",
+                  "description": "Grupo Delta y sus empresas, en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "omega",
+                  "name": "Omega S.A.",
+                  "description": "Omega S.A., en un solo lugar.",
+                  "logoUrl": null
+                },
+                {
+                  "slug": "sigma",
+                  "name": "Sigma S.R.L.",
+                  "description": "Sigma S.R.L., en un solo lugar.",
+                  "logoUrl": null
+                }
+              ],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 3,
+              "totalPages": 1,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Empresas",
+        "readyText": "Grupo Delta",
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Abrir el menú",
+            "exact": true
+          }
+        ],
+        "readySelector": "nav[aria-label=\"Secciones\"]"
+      },
+      "parentId": "directorio-con-empresas-mobile",
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Abrir el menú"
+        }
+      ]
+    },
+    {
+      "id": "directorio-sin-resultados-mobile-menu",
+      "pair": "directorio-sin-resultados",
+      "group": "directorio",
+      "label": "Sin resultados · Menú abierto",
+      "board": "M-Directorio",
+      "props": {
+        "estado": "Sin resultados"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2Fempresas%3Fsearch%3DZeta",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Empresas",
+        "readyText": "Ninguna empresa coincide con la búsqueda",
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Abrir el menú",
+            "exact": true
+          }
+        ],
+        "readySelector": "nav[aria-label=\"Secciones\"]"
+      },
+      "parentId": "directorio-sin-resultados-mobile",
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Abrir el menú"
+        }
+      ]
+    },
+    {
+      "id": "directorio-sin-empresas-mobile-menu",
+      "pair": "directorio-sin-empresas",
+      "group": "directorio",
+      "label": "Todavía no hay empresas · Menú abierto",
+      "board": "M-Directorio",
+      "props": {
+        "estado": "Todavía no hay empresas"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa7VisualApp.html?as=anonymous&route=%2Fempresas",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/directory",
+            "body": {
+              "items": [],
+              "page": 1,
+              "pageSize": 10,
+              "totalCount": 0,
+              "totalPages": 0,
+              "hasPrevious": false,
+              "hasNext": false
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Empresas",
+        "readyText": "Todavía no hay empresas publicadas",
+        "captureMode": "harness",
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Abrir el menú",
+            "exact": true
+          }
+        ],
+        "readySelector": "nav[aria-label=\"Secciones\"]"
+      },
+      "parentId": "directorio-sin-empresas-mobile",
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "Abrir el menú"
+        }
+      ]
+    }
+  ]
+}

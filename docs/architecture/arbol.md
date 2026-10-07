@@ -41,6 +41,8 @@ ArquitecturaBaseMutitenantFront/
 │   ├── capturar-etapa-5.mjs                         [E5] tableros de Plataforma y Recuperar: 1440 y 390
 │   ├── capturar-etapa-5.test.mjs                    [E5] tests de capturar-etapa-5
 │   ├── capturar-etapa-6.mjs                         capturas de la Etapa 6 (Usuarios, Empresas, Configuración, Auditoría y Página pública); sus datos los reusa capturar-f7
+│   ├── capturar-etapa-7.mjs                         [E7] portada, directorio y publicación; incluye menús móviles
+│   ├── generar-galeria-etapa-7.mjs                  [E7] galería local con las comparaciones capturadas
 │   ├── capturar-f7.mjs                              capturas de F7 (edición, «¿Salir sin guardar?», el 409 y el error de guardado): --tableros o --app-url
 │   ├── capturar-relevamiento.mjs                    relevamiento de las etapas 1 a 6 contra el lienzo vigente, a 1440 y a 390
 │   ├── capturar-relevamiento.casos.mjs              los casos del relevamiento: qué tablero, con qué estado y con qué pasos
@@ -820,6 +822,9 @@ src/
     ├── setup.ts                                     [E0] mínimo: jest-dom y vitest-axe, sin i18n; MSW y namespaces se suman en [E1]
     ├── visualApp.html                               la entrada del arnés visual
     ├── visualApp.tsx                                el arnés visual de las capturas: la app con un fixture de /api/me (?as=) y createQueryClient
+    ├── etapa7VisualApp.html                         [E7] entrada aislada para las capturas públicas
+    ├── etapa7VisualApp.tsx                          [E7] monta los árboles reales con sesión visual aislada
+    ├── etapa7VisualFixtures.ts                      [E7] datos aprobados de portada, directorio y publicación
     ├── access-paths.test.ts                         ningún literal «/org» ni «/login/empresa» fuera de tenancy/access.ts
     ├── proxy-prefixes.test.ts                       los prefijos del proxy de Vite son los del back
     ├── submit-buttons.test.ts                       ningún botón de envío se apaga porque falta algo o porque algo está mal; solo «Guardar cambios» sin cambios y lo que espera (formularios.md)
