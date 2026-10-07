@@ -403,6 +403,17 @@ async function registerBusinessByEmail(page, readyFile, onStage = () => {}, { em
   await page.reload();
   if (mobile) await page.getByRole("navigation", { name: "Secciones" }).waitFor();
   else await expectProfile(page, organizationName, "F5 luego del registro empresarial");
+  onStage("el perfil muestra el nombre traducido del rol de sistema");
+  if (mobile) {
+    await page.getByRole("navigation", { name: "Secciones" }).getByRole("link", { name: "Más", exact: true }).click();
+    await page.getByRole("list", { name: "Perfiles", exact: true })
+      .getByRole("button", { name: `${organizationName} Dueño Perfil actual`, exact: true }).waitFor();
+    await page.getByRole("navigation", { name: "Secciones" }).getByRole("link", { name: "Inicio", exact: true }).click();
+  } else {
+    await page.getByRole("button", { name: new RegExp(`, ${organizationName}$`) }).click();
+    await page.getByRole("menuitemradio", { name: `${organizationName} Dueño`, exact: true }).waitFor();
+    await page.keyboard.press("Escape");
+  }
   return { email, organizationName };
 }
 
