@@ -626,6 +626,49 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       let e2eCompanyId;
       await preparePlatform(readyFile);
       const accountCases = [
+        ...[1440, 390].map((width) => [`A6: nombre y apellido independientes y persistentes a ${width}`, async (accountPage, setStage) => {
+          const email = await registerPerson(accountPage, undefined, setStage);
+          await openAccount(accountPage);
+          await accountPage.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+          const parts = [
+            ["María José", "de la Cruz", "María José de la Cruz"],
+            ["", "O’Neill", "O’Neill"],
+            ["李", "", "李"],
+            ["", "", null],
+          ];
+          for (const [firstName, lastName, displayName] of parts) {
+            setStage("guarda las dos partes opcionales desde Tus datos");
+            await accountPage.getByRole("textbox", { name: "Nombre", exact: true }).fill(firstName);
+            await accountPage.getByRole("textbox", { name: "Apellido", exact: true }).fill(lastName);
+            const saved = accountPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/me" && response.request().method() === "PUT");
+            await accountPage.getByRole("button", { name: "Guardar cambios", exact: true }).click();
+            const response = await saved;
+            assert.equal(response.status(), 200);
+            const sent = response.request().postDataJSON();
+            assert.equal(sent.firstName, firstName || null);
+            assert.equal(sent.lastName, lastName || null);
+            assert.equal(Object.hasOwn(sent, "displayName"), false);
+            await accountPage.getByRole("button", { name: "Guardar cambios", exact: true }).waitFor({ state: "visible" });
+            await accountPage.waitForFunction(() => [...document.querySelectorAll("button")].some((button) => button.textContent === "Guardar cambios" && button.disabled));
+            setStage("F5 conserva partes y el nombre armado por la API");
+            const reread = accountPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/me" && response.request().method() === "GET");
+            await accountPage.reload();
+            const profile = await (await reread).json();
+            assert.equal(profile.firstName, firstName || null);
+            assert.equal(profile.lastName, lastName || null);
+            assert.equal(profile.displayName, displayName);
+            assert.equal(await accountPage.getByRole("textbox", { name: "Nombre", exact: true }).inputValue(), firstName);
+            assert.equal(await accountPage.getByRole("textbox", { name: "Apellido", exact: true }).inputValue(), lastName);
+            setStage("el menú muestra DisplayName o el contacto de respaldo");
+            if (width === 390) {
+              await accountPage.getByRole("link", { name: "Volver a Más", exact: true }).click();
+              await accountPage.getByText(displayName ?? email, { exact: true }).first().waitFor();
+              await accountPage.getByRole("link", { name: "Mi cuenta", exact: true }).click();
+            } else {
+              await accountPage.getByRole("button", { name: `${displayName ?? email}, Personal`, exact: true }).waitFor();
+            }
+          }
+        }]),
         ...[1440, 390].map((width) => [`A2: correo sin cuenta, registro ocupado, recuperación y agregar a ${width}`, async (accountPage, setStage) => {
           await accountPage.setViewportSize({ width, height: width === 390 ? 844 : 900 });
           const email = `e2e-a2-${randomUUID()}@example.test`;

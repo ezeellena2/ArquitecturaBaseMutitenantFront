@@ -8,6 +8,16 @@ import { chromium } from "playwright";
 import { startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
 import { buildCases, canvas, mergeManifest, openApp, runBoardActions } from "./capturar-relevamiento.mjs";
 
+test("Cuenta y sus diálogos conservan las dos partes de la preparación aprobada v112", () => {
+  const entries = buildCases().filter((entry) => entry.app.path?.includes("route=%2Fcuenta") && entry.app.responses?.some((response) => response.method === "GET" && response.path === "/api/me" && response.body?.displayName === "Lucía Fernández"));
+  assert.ok(entries.length > 0);
+  for (const entry of entries) {
+    const body = entry.app.responses.find((response) => response.method === "GET" && response.path === "/api/me").body;
+    assert.equal(body.firstName, "Lucía", entry.id);
+    assert.equal(body.lastName, "Fernández", entry.id);
+  }
+});
+
 test("el operador privado conserva ambas puertas, ambos tamaños y el error posterior al código", () => {
   const entries = buildCases().filter((entry) => entry.pair.startsWith("ingreso-operador-"));
   assert.equal(entries.length, 4);

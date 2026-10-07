@@ -22,10 +22,10 @@ describe("clientes de la cuenta", () => {
 
   it("envía la versión y conserva el error real de concurrencia", async () => {
     server.use(http.put("/api/me", async ({ request }) => {
-      expect(await request.json()).toEqual({ displayName: "Persona", culture: "en-US", timeZoneId: "UTC", version: 42 });
+      expect(await request.json()).toEqual({ firstName: "Persona", lastName: null, culture: "en-US", timeZoneId: "UTC", version: 42 });
       return HttpResponse.json({ code: "General.ConcurrencyConflict" }, { status: 409 });
     }));
-    await expect(updateMe({ displayName: "Persona", culture: "en-US", timeZoneId: "UTC", version: 42 })).rejects.toBeInstanceOf(ApiError);
+    await expect(updateMe({ firstName: "Persona", lastName: null, culture: "en-US", timeZoneId: "UTC", version: 42 })).rejects.toBeInstanceOf(ApiError);
   });
 
   it("verifica el correo nuevo con su código propio y cambia métodos y baja sin confirmación", async () => {

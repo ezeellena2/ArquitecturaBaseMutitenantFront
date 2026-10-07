@@ -48,10 +48,10 @@ const boardAction = (selector) => ({ type: "click", selector });
 const scenarios = [];
 function account(id, look, extra = {}) { scenarios.push({ id, group: "cuenta", look, ...extra }); }
 account("cuenta-personal", accountBase());
-account("cuenta-guardada", accountBase("El lienzo vigente no dibuja el aviso «Guardamos tus datos.»: se compara con Mi cuenta."), { actions: [fill("Nombre y apellido", "Lucía Fernández Pérez"), click("button", "$save")], responses: [response("PUT", "/api/me", { version: 1 })], afterName: "Lucía Fernández Pérez", readyText: "Guardamos tus datos." });
+account("cuenta-guardada", accountBase("El lienzo vigente no dibuja el aviso «Guardamos tus datos.»: se compara con Mi cuenta."), { actions: [fill("Apellido", "Fernández Pérez"), click("button", "$save")], responses: [response("PUT", "/api/me", { version: 1 })], afterProfile: { firstName: "Lucía", lastName: "Fernández Pérez", displayName: "Lucía Fernández Pérez" }, readyText: "Guardamos tus datos." });
 account("cuenta-solo-empresa", accountBase("El lienzo vigente no dibuja la cuenta con solo el correo de la empresa: se compara con Mi cuenta."), { methods: [{ ...company, isPrimary: true, canRemove: false, canMakePrimary: false }], needsOwn: true });
-account("cuenta-sucia", { desktop: { board: "Cuenta", props: { whatsapp: noWhatsApp }, boardActions: [{ type: "fill", name: "Nombre y apellido", value: "Lucía Fernández Pérez" }] }, phone: { board: "M-Cuenta", props: { estado: "Cambios sin guardar" } } }, { actions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] });
-account("cuenta-descartada", accountBase(), { actions: [fill("Nombre y apellido", "Lucía Fernández Pérez"), click("button", "$discard")] });
+account("cuenta-sucia", { desktop: { board: "Cuenta", props: { whatsapp: noWhatsApp }, boardActions: [{ type: "fill", name: "Nombre", value: "Lucía B." }] }, phone: { board: "M-Cuenta", props: { estado: "Cambios sin guardar" } } }, { actions: [fill("Nombre", "Lucía B.")] });
+account("cuenta-descartada", accountBase(), { actions: [fill("Nombre", "Lucía B."), click("button", "$discard")] });
 account("cuenta-idiomas", accountBase("El tablero no abre «Idioma y región»: se compara con Mi cuenta."), { actions: [click("combobox", "Idioma y región")] });
 account("cuenta-zonas", accountBase("El tablero no abre «Zona horaria»: se compara con Mi cuenta."), { actions: [click("combobox", "Zona horaria")] });
 // En el teléfono, la cuenta y los perfiles están en «Más» (M-Mas-Personal) y Mi cuenta vuelve a él con el «‹».
@@ -126,7 +126,7 @@ async function capture(browser, canvasUrl, appUrl, entry, { tmp, outputRoot }) {
     } else {
       await board.screenshot({ path: files.board });
       await installApiMocks(context, entry.app.responses, "visual-personal");
-      if (entry.app.afterMethods || entry.app.afterName) {
+      if (entry.app.afterMethods || entry.app.afterProfile) {
         let changed = false;
         await context.route("**/api/me**", async (route) => {
           const request = route.request();
@@ -135,8 +135,8 @@ async function capture(browser, canvasUrl, appUrl, entry, { tmp, outputRoot }) {
           if (changed && pathname === "/api/me/login-methods" && entry.app.afterMethods) {
             await route.fulfill({ json: { methods: entry.app.afterMethods, canLinkGoogle: true, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] } }); return;
           }
-          if (changed && pathname === "/api/me" && entry.app.afterName) {
-            await route.fulfill({ json: { ...visualPersonal, displayName: entry.app.afterName } }); return;
+          if (changed && pathname === "/api/me" && entry.app.afterProfile) {
+            await route.fulfill({ json: { ...visualPersonal, ...entry.app.afterProfile } }); return;
           }
           await route.fallback();
         });
@@ -163,7 +163,7 @@ const cases = scenarios.flatMap((scenario) => [1440, 390].map((width) => {
   const look = width === 390 ? scenario.look.phone : scenario.look.desktop;
   const note = scenario.look.note;
   return { id: `${scenario.id}-${width === 390 ? "movil" : "escritorio"}`, pair: scenario.id, group: scenario.group, state: scenario.id, board: look.board, props: look.props ?? {}, boardActions: look.boardActions ?? [], viewport: { width, height: width === 390 ? 844 : 900 }, ...(note ? { note } : {}),
-    app: { path: `/src/test/visualApp.html?${params}`, captureMode: "harness", actions: scenario.actions, readyText: scenario.readyText, readySelector: scenario.readySelector, afterMethods: byPrimary(scenario.afterMethods), afterName: scenario.afterName, responses: [
+    app: { path: `/src/test/visualApp.html?${params}`, captureMode: "harness", actions: scenario.actions, readyText: scenario.readyText, readySelector: scenario.readySelector, afterMethods: byPrimary(scenario.afterMethods), afterProfile: scenario.afterProfile, responses: [
       response("GET", "/api/me", { ...visualPersonal, needsPersonalLoginMethod: scenario.needsOwn ?? false, pendingLegalDocuments: scenario.legal ?? [] }),
       response("GET", "/api/me/login-methods", { methods: byPrimary(scenario.methods ?? [company, personal]), canLinkGoogle: !scenario.methods?.some((method) => method.type === "Google"), needsPersonalLoginMethod: scenario.needsOwn ?? false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] }), ...(scenario.responses ?? []),
     ] } };

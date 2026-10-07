@@ -262,7 +262,7 @@ src/
 │   │   │   │   ├── deletion.ts                      POST /api/me/deletion: motivo desde la sesión iniciada, con useIdempotentMutation
 │   │   │   │   └── dataExport.ts                    [E10] POST /api/me/data-export, con useIdempotentMutation
 │   │   │   ├── components/
-│   │   │   │   ├── AccountProfileForm.tsx           «Tus datos»: nombre, idioma y región, y zona, en tres columnas; React Hook Form con zod, useEditForm y useEditPage
+│   │   │   │   ├── AccountProfileForm.tsx           «Tus datos»: nombre, apellido, idioma y región, y zona; cuatro columnas iguales, una en teléfono; React Hook Form con zod, useEditForm y useEditPage
 │   │   │   │   ├── LoginMethodsTable.tsx            los métodos de ingreso en su lista, con «Principal» o «Sin verificar» en la segunda línea y su ⋮ (verificar, quitar, hacer principal)
 │   │   │   │   ├── LoginMethodsTable.test.tsx       tests de LoginMethodsTable
 │   │   │   │   ├── VerifyLoginMethodDialog.tsx      verificar un método sin verificar: el diálogo de shared/account/AddLoginMethodDialog
@@ -273,7 +273,8 @@ src/
 │   │   │   │   └── ExportDataDialog.tsx             [E10] «Exportar mis datos»: te llega por correo
 │   │   │   └── pages/
 │   │   │       ├── AccountPage.tsx                  /cuenta: «Tus datos», «Métodos de ingreso» con «Agregar» y «Privacidad» con «Dar de baja mi cuenta» (con ⓘ si la cuenta es la única Dueña de una organización)
-│   │   │       └── AccountPage.test.tsx             tests de AccountPage
+│   │   │       ├── AccountPage.test.tsx             tests de AccountPage
+│   │   │       └── AccountNames.test.tsx            partes opcionales independientes, Unicode, errores, descarte, menú y axe en ambos tamaños (A6)
 │   │   └── <módulo B2C del producto>/               misma forma que business/roles: api · columns · errors · components · pages
 │   │
 │   ├── business/                                    ACCESO B2B (la organización)

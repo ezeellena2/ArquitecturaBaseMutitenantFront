@@ -126,7 +126,7 @@ describe("Mi cuenta", () => {
       const discard = await screen.findByRole("button", { name: "Descartar cambios" });
       expect(discard.closest("[data-slot='fixed-actions']")).not.toBeNull();
       expect(discard).toBeEnabled();
-      const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
+      const name = await screen.findByRole("textbox", { name: "Nombre" });
       await user.type(name, " nuevo");
       expect(screen.getByText("Cambios sin guardar")).toHaveClass("text-[var(--alerta)]");
       expect(screen.getByText("Cambios sin guardar")).not.toHaveClass("rounded-full");
@@ -176,7 +176,7 @@ describe("Mi cuenta", () => {
       return HttpResponse.json({ version: 43 });
     }));
     renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
-    const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
     await user.clear(name);
     await user.type(name, "Nombre nuevo");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
@@ -192,7 +192,7 @@ describe("Mi cuenta", () => {
     const user = userEvent.setup();
     server.use(http.put("/api/me", () => HttpResponse.json({ code: "General.ConcurrencyConflict" }, { status: 409 })));
     renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
-    const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
     await user.clear(name);
     await user.type(name, "Nombre nuevo");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
@@ -218,9 +218,9 @@ describe("Mi cuenta", () => {
           : HttpResponse.json({ code: "General.ConcurrencyConflict" }, { status: 409 });
       }),
     );
-    const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
 
-    current = { ...consumerWithoutOrganizations, displayName: "Ana María", version: 43 };
+    current = { ...consumerWithoutOrganizations, firstName: "Ana María", displayName: "Ana María", version: 43 };
     await act(() => queryClient.invalidateQueries({ queryKey: ["current-user"] }));
     await user.clear(name);
     await user.type(name, "Nombre nuevo");
@@ -228,7 +228,7 @@ describe("Mi cuenta", () => {
 
     expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
     expect(name).toHaveValue("Nombre nuevo");
-    expect(sent).toEqual([expect.objectContaining({ displayName: "Nombre nuevo", version: 42 })]);
+    expect(sent).toEqual([expect.objectContaining({ firstName: "Nombre nuevo", version: 42 })]);
   });
 
   // concurrencia.md (E7): después de guardar «Tus datos», la base es la versión que respondió el guardado. Si otra sesión
@@ -241,15 +241,15 @@ describe("Mi cuenta", () => {
     server.use(
       http.get("/api/me", () => HttpResponse.json(current)),
       http.put("/api/me", async ({ request }) => {
-        const body = await request.json() as { displayName: string; version: number };
+        const body = await request.json() as { firstName: string; lastName: string | null; version: number };
         sent.push(body);
         if (body.version !== current.version) return HttpResponse.json({ code: "General.ConcurrencyConflict" }, { status: 409 });
         // Otra sesión guarda justo después: la relectura ya trae su cambio, con otra versión.
-        current = { ...current, displayName: "Ana María", version: (current.version ?? 0) + 2 };
+        current = { ...current, firstName: "Ana María", displayName: "Ana María", version: (current.version ?? 0) + 2 };
         return HttpResponse.json({ version: 43 });
       }),
     );
-    const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
     await user.clear(name);
     await user.type(name, "Nombre guardado");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
@@ -272,14 +272,14 @@ describe("Mi cuenta", () => {
     server.use(
       http.get("/api/me", () => HttpResponse.json(current)),
       http.put("/api/me", async ({ request }) => {
-        const body = await request.json() as { displayName: string; version: number };
+        const body = await request.json() as { firstName: string; lastName: string | null; version: number };
         sent.push(body);
         if (body.version !== current.version) return HttpResponse.json({ code: "General.ConcurrencyConflict" }, { status: 409 });
-        current = { ...current, displayName: body.displayName, version: current.version + 1 };
+        current = { ...current, firstName: body.firstName, lastName: body.lastName, displayName: body.firstName, version: current.version + 1 };
         return HttpResponse.json({ version: current.version });
       }),
     );
-    const name = await screen.findByRole("textbox", { name: "Nombre y apellido" });
+    const name = await screen.findByRole("textbox", { name: "Nombre" });
     await user.clear(name);
     await user.type(name, "Primer nombre");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));

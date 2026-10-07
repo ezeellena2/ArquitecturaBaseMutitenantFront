@@ -10470,6 +10470,8 @@ export interface components {
             timeZoneId: string;
             currencyCode?: null | string;
             features: string[];
+            firstName?: null | string;
+            lastName?: null | string;
             /** Format: uint32 */
             version?: number;
             needsPersonalLoginMethod?: boolean;
@@ -11325,7 +11327,8 @@ export interface components {
         };
         /** @description Preferencias de la cuenta autenticada, nunca de un id recibido del cliente. */
         UpdateMeHttpRequest: {
-            displayName?: null | string;
+            firstName?: null | string;
+            lastName?: null | string;
             culture?: null | string;
             timeZoneId?: null | string;
             /** Format: uint32 */

@@ -28,16 +28,16 @@ import { updateMe } from "../api/account";
 /// es la de lo que se cargó y se conserva hasta guardar, «Ver lo nuevo» o descartar; después de un 409, el próximo
 /// guardado vuelve a dar 409. Es la versión propia del perfil (`/api/me.version`, 0 si nunca se guardó, y el 0 es una
 /// versión): cambiar un método de ingreso no la mueve.
-const profileFormSchema = z.object({ displayName: z.string(), culture: z.string(), timeZoneId: z.string() });
+const profileFormSchema = z.object({ firstName: z.string(), lastName: z.string(), culture: z.string(), timeZoneId: z.string() });
 type ProfileForm = z.infer<typeof profileFormSchema>;
 
 // Los errores de validación del back, en PascalCase o en camelCase, a su campo.
 const serverFields: Record<string, keyof ProfileForm> = {
-  DisplayName: "displayName", displayName: "displayName", Culture: "culture", culture: "culture", TimeZoneId: "timeZoneId", timeZoneId: "timeZoneId",
+  FirstName: "firstName", firstName: "firstName", LastName: "lastName", lastName: "lastName", Culture: "culture", culture: "culture", TimeZoneId: "timeZoneId", timeZoneId: "timeZoneId",
 };
 
 function valuesFromAccount(account: MeResponse): ProfileForm {
-  return { displayName: account.displayName ?? "", culture: account.culture, timeZoneId: account.timeZoneId };
+  return { firstName: account.firstName ?? "", lastName: account.lastName ?? "", culture: account.culture, timeZoneId: account.timeZoneId };
 }
 
 /// «Tus datos» de Mi cuenta (tableros Cuenta y M-Cuenta), como el editor de Roles: React Hook Form con zod, la versión de
@@ -71,7 +71,7 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
   // relectura va en onSuccess para que «Reintentar» (sin conexión) termine igual que un guardado al primer intento. La
   // ficha queda limpia con lo guardado y la base es la versión que respondió el guardado, también si la relectura falla.
   const update = useMutation({
-    mutationFn: (request: ProfileForm & { version: number | undefined }) => updateMe({ ...request, displayName: request.displayName.trim() || null }),
+    mutationFn: (request: ProfileForm & { version: number | undefined }) => updateMe({ ...request, firstName: request.firstName.trim() || null, lastName: request.lastName.trim() || null }),
     onSuccess: async (result, { version: sentVersion, ...values }) => {
       form.reset(values);
       const adopt = (fresh?: MeResponse) => { if (sentVersion !== undefined) wrote(sentVersion, result.version, fresh); };
@@ -108,9 +108,10 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
       {formError ? <div className="mb-3">{formError}</div> : null}
       <form id="account-profile" noValidate aria-label={t("title")} onSubmit={(event) => { void submit(event); }}>
         <Section title={t("data")}>
-          {/* Tablero Cuenta: nombre, idioma y zona en tres columnas iguales, al ancho de la tarjeta. */}
-          <SectionFields className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 max-md:gap-3.5">
-            <div className="min-w-0"><FormField label={t("name")} error={errors.displayName?.message}><Input {...form.register("displayName")} autoComplete="name" /></FormField></div>
+          {/* Tablero Cuenta v112: nombre, apellido, idioma y zona en cuatro columnas iguales. */}
+          <SectionFields className="grid grid-cols-1 items-start gap-4 lg:grid-cols-4 max-md:gap-3.5">
+            <div className="min-w-0"><FormField label={t("name")} error={errors.firstName?.message}><Input {...form.register("firstName")} autoComplete="given-name" /></FormField></div>
+            <div className="min-w-0"><FormField label={t("lastName")} error={errors.lastName?.message}><Input {...form.register("lastName")} autoComplete="family-name" /></FormField></div>
             <div className="min-w-0"><FormField label={t("culture")} error={errors.culture?.message}><CultureSelect value={culture.field.value} onChange={culture.field.onChange} placeholder={t("culture")} /></FormField></div>
             <div className="min-w-0"><FormField label={t("timeZone")} error={errors.timeZoneId?.message}><TimeZoneSelect value={timeZone.field.value} onChange={timeZone.field.onChange} placeholder={t("timeZone")} /></FormField></div>
           </SectionFields>

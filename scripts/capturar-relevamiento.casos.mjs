@@ -43,6 +43,10 @@ function withCurrentContract(entry) {
     });
   }
   const next = responses.filter((item) => !item.path.startsWith("/api/me/reauth")).map((item) => {
+    // A6: Cuenta conserva las partes del caso aprobado; el nombre del menú sigue siendo DisplayName.
+    if (item.method === "GET" && item.path === "/api/me" && item.body?.displayName === "Lucía Fernández") {
+      return { ...item, body: { ...item.body, firstName: "Lucía", lastName: "Fernández" } };
+    }
     if (item.method === "GET" && currentAudit.has(item.path)) return currentAudit.get(item.path);
     if (item.method === "GET" && item.path === "/api/organization/settings/domains" && Array.isArray(item.body)) {
       return { ...item, body: item.body.map((domain) => ({ managedEmailCount: domain.status === "Verified" ? 10 : 0, ...domain })) };
@@ -902,9 +906,9 @@ function b6d4bCases(root) {
 }
 
 export function catalog(root) {
-  const rename ={ board: "Cuenta", boardActions: [fill("Nombre y apellido", "Lucía Fernández Pérez")] };
+  const rename ={ board: "Cuenta", boardActions: [fill("Nombre", "Lucía B.")] };
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
-  const renameApp = { actions: [appFill("Nombre y apellido", "Lucía Fernández Pérez")] };
+  const renameApp = { actions: [appFill("Nombre", "Lucía B.")] };
   return [
     ...emailAccountCases(root),
     ...[...new Set(stageCases(root, "etapa-5").filter((entry) => entry.app.captureMode === "harness").map((entry) => entry.pair))]

@@ -11,6 +11,8 @@ function withPermissions(user: MeResponse, organization: readonly Permission[]):
 export const consumerWithoutOrganizations: MeResponse = {
   id: "ana",
   displayName: "Ana",
+  firstName: "Ana",
+  lastName: null,
   email: "ana@example.test",
   access: "consumer",
   activeTenantId: null,
@@ -92,6 +94,8 @@ export const visualPersonal: MeResponse = {
   ...consumerWithoutOrganizations,
   id: "lucia",
   displayName: "Lucía Fernández",
+  firstName: "Lucía",
+  lastName: "Fernández",
   // Como el back (/api/me): en el perfil personal, el correo principal (Cuenta y M-Mas-Personal).
   email: "lucia.fer@gmail.com",
   organizations: visualOrganizations,
@@ -147,6 +151,8 @@ export const visualUnavailableClosed: MeResponse = {
 
 export const currentUsers = {
   "consumer-empty": consumerWithoutOrganizations,
+  "consumer-compound-name": { ...consumerWithoutOrganizations, firstName: "María José", lastName: "de la Cruz", displayName: "María José de la Cruz" },
+  "consumer-english-profile": { ...consumerWithoutOrganizations, culture: "en-US" },
   // «Tus datos» nunca se guardó: /api/me trae la versión 0 del perfil (identidad.md).
   "consumer-profile-never-saved": { ...consumerWithoutOrganizations, version: 0 },
   "consumer-needs-personal-method": { ...consumerWithoutOrganizations, needsPersonalLoginMethod: true },

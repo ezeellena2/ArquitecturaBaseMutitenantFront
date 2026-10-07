@@ -31,6 +31,10 @@ describe("contrato funcional de cuenta entre repos", () => {
     expect(openapi.paths["/api/me/external/google"].post?.requestBody).toBeUndefined();
     expect(openapi.paths).not.toHaveProperty("/api/me/reauth");
     expect(openapi.paths).not.toHaveProperty("/api/me/reauth/verify");
+    expect(openapi.components.schemas.UpdateMeHttpRequest.properties).toHaveProperty("firstName");
+    expect(openapi.components.schemas.UpdateMeHttpRequest.properties).toHaveProperty("lastName");
+    expect(openapi.components.schemas.UpdateMeHttpRequest.properties).not.toHaveProperty("displayName");
+    for (const part of ["firstName", "lastName", "displayName"]) expect(openapi.components.schemas.MeResponse.properties).toHaveProperty(part);
     for (const field of ["version", "pendingLegalDocuments", "needsPersonalLoginMethod", "cancelTicket", "scheduledForUtc", "timeZoneId", "returnUrl"]) expect(schema).toContain(`${field}`);
     expect(readBack("src/ArquitecturaBaseMultitenant.Api/Contracts/Account/UpdateMeHttpRequest.cs")).toContain("uint? Version");
     expect(readBack("src/ArquitecturaBaseMultitenant.Api/Contracts/Auth/CancelAccountDeletionHttpRequest.cs")).toContain("RawText");
