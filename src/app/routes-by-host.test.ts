@@ -44,11 +44,13 @@ describe("rutas por host (docs/rules/accesos-y-permisos.md)", () => {
     },
   );
 
-  it("admite loaders futuros de T13/T14 sin imports a pantallas inexistentes ni modificar el árbol principal", () => {
+  it("admite loaders configurables sin modificar el directorio lazy del árbol principal", () => {
+    const defaultDirectory = find(routes, "/empresas")?.lazy;
+    expect(defaultDirectory).toBeTypeOf("function");
     const page: LazyRouteFunction<RouteObject> = async () => ({ Component: Outlet });
     expect(find(createStorefrontRoutes(page), "/")?.lazy).toBe(page);
     expect(find(routesForHost("grupo-delta.localtest.me:5174", { storefront: page }), "/")?.lazy).toBe(page);
     expect(find(routesForHost(mainSiteHost, { directory: page }), "/empresas")?.lazy).toBe(page);
-    expect(find(routes, "/empresas")?.lazy).toBeUndefined();
+    expect(find(routes, "/empresas")?.lazy).toBe(defaultDirectory);
   });
 });

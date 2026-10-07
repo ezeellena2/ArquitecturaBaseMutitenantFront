@@ -6,6 +6,8 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 
 **En el teléfono** (tableros M-*): cada listado declara su fila (`mobileRow` con `ListRow`), de borde a borde y con hasta tres líneas; la lupa y el filtro son íconos de la barra y el filtro abre una hoja con las opciones y su conteo; el paginado es «Cargar más», que pide el tamaño de página siguiente; crear es un «+» flotante ([responsive](responsive.md)).
 
+**El directorio público es web** (Directorio y M-Directorio): comparte `usePagedQuery` y el recurso HTTP con la portada, muestra `CompanyCard` en tarjetas y arma el buscador del tablero con `Input`. Su `Pagination` declara `variant="web"` y `mobile={phone}` desde la pantalla fuera del marco: en el teléfono conserva rango, página y flechas, sin selector de tamaño ni «Cargar más». La variante predeterminada `app` mantiene el paginado privado. `Pagination.test.tsx` verifica ambos recorridos y `DirectoryPage.test.tsx`, la URL, el debounce y la página real del backend.
+
 ## Cómo se hace
 - **Un listado paginado es `usePagedQuery`**: compone `useFilters(keys)`, `usePagination`, la búsqueda con 300 ms de debounce, la consulta con `placeholderData: keepPreviousData`, la corrección de una página fuera de rango y las props de `Pagination`:
   ```ts

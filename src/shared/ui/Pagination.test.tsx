@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import { Pagination } from "./Pagination";
+import { AppChromeProvider } from "./app/AppChrome";
 
 vi.mock("@/shared/format/useFormat", () => ({
   useFormat: () => ({
@@ -17,10 +18,10 @@ beforeAll(async () => {
   ]);
 });
 
-function renderPagination(overrides: Partial<Parameters<typeof Pagination>[0]> = {}) {
+function renderPagination(overrides: Partial<Parameters<typeof Pagination>[0]> = {}, phone = false) {
   const onPageChange = vi.fn();
   const onPageSizeChange = vi.fn();
-  render(<Pagination
+  render(<AppChromeProvider value={{ phone, parent: null, subtitle: null, hideBottomNav: () => {} }}><Pagination
     page={1}
     pageSize={10}
     totalCount={1234}
@@ -30,7 +31,7 @@ function renderPagination(overrides: Partial<Parameters<typeof Pagination>[0]> =
     onPageChange={onPageChange}
     onPageSizeChange={onPageSizeChange}
     {...overrides}
-  />);
+  /></AppChromeProvider>);
   return { onPageChange, onPageSizeChange };
 }
 
@@ -121,5 +122,38 @@ describe("Pagination", () => {
 
     expect(screen.getByText("11 of 11")).toBeInTheDocument();
     await changeCulture("es-AR");
+  });
+
+  it("la forma web móvil conserva rango y página y avanza con flechas, aunque haya contexto de app", async () => {
+    await changeCulture("es-AR");
+    const { onPageChange, onPageSizeChange } = renderPagination({ variant: "web", mobile: true, page: 2, totalCount: 50, totalPages: 5, hasPrevious: true }, true);
+
+    expect(screen.getByText("11–20 de 50")).toBeInTheDocument();
+    expect(screen.getByText("Página 2 de 5")).toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "Filas por página" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Cargar más" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Página siguiente" }));
+    await userEvent.click(screen.getByRole("button", { name: "Página anterior" }));
+    expect(onPageChange.mock.calls).toEqual([[3], [1]]);
+    expect(onPageSizeChange).not.toHaveBeenCalled();
+  });
+
+  it("la variante web de escritorio conserva el selector de tamaño", async () => {
+    await changeCulture("es-AR");
+    const { onPageSizeChange } = renderPagination({ variant: "web", mobile: false });
+    screen.getByRole("combobox", { name: "Filas por página" }).focus();
+    await userEvent.keyboard("{Enter}");
+    await userEvent.click(screen.getByRole("option", { name: "20 por página" }));
+    expect(onPageSizeChange).toHaveBeenCalledWith(20);
+  });
+
+  it("las listas privadas del teléfono conservan Cargar más y su aumento de tamaño", async () => {
+    await changeCulture("es-AR");
+    const { onPageChange, onPageSizeChange } = renderPagination({}, true);
+    expect(screen.queryByRole("navigation", { name: "Paginado" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Página siguiente" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Cargar más" }));
+    expect(onPageSizeChange).toHaveBeenCalledWith(20);
+    expect(onPageChange).not.toHaveBeenCalled();
   });
 });

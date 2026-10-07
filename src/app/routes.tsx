@@ -93,8 +93,7 @@ export const routes: RouteObject[] = [
   { path: "/registro/empresa", lazy: lazyPage(() => import("@/areas/public/auth/pages/BusinessSignupPage"), (page) => page.BusinessSignupPage), errorElement: <AppErrorPage /> },
   { path: "/invitacion", lazy: lazyPage(() => import("@/areas/public/auth/pages/InvitationPage"), (page) => page.InvitationPage), errorElement: <AppErrorPage /> },
   { path: "/auth/callback", lazy: lazyPage(() => import("@/areas/public/auth/pages/CallbackPage"), (page) => page.CallbackPage), errorElement: <AppErrorPage /> },
-  // T13 entrega la página del directorio; T10 reserva su ruta sin importar un módulo inexistente.
-  { path: "/empresas", element: <Outlet />, errorElement: <AppErrorPage /> },
+  { path: "/empresas", lazy: lazyPage(() => import("@/areas/public/site/pages/DirectoryPage"), (page) => page.DirectoryPage), errorElement: <AppErrorPage /> },
   { path: "/terminos", lazy: lazyPage(() => import("@/areas/public/legal/pages/LegalDocumentPage"), (page) => () => <SiteLayout variant="legal"><page.LegalDocumentPage kind="terms" /></SiteLayout>), errorElement: <AppErrorPage /> },
   { path: "/privacidad", lazy: lazyPage(() => import("@/areas/public/legal/pages/LegalDocumentPage"), (page) => () => <SiteLayout variant="legal"><page.LegalDocumentPage kind="privacy" /></SiteLayout>), errorElement: <AppErrorPage /> },
   { path: "/sin-permiso", element: <ForbiddenRoute />, errorElement: <AppErrorPage /> },

@@ -109,7 +109,7 @@ export function SiteLayout({ children, variant = "landing", publicSiteName = nul
         </div>
       </div>
     </header>}
-    <main className={cn(variant !== "landing" ? "flex-1" : "", storefront ? "flex min-h-0 flex-col" : "")}>{children}</main>
+    <main className={cn(variant !== "landing" ? "flex-1" : "", storefront ? "flex min-h-0 flex-col" : "", directory ? "bg-[var(--fondo)]" : "")}>{children}</main>
     <footer className={cn("border-t border-[var(--borde)] text-[var(--t3)]",
       legal ? "py-4 text-[13px] max-md:leading-[1.6] md:py-6 md:text-sm"
         : storefront || directory ? "shrink-0 py-4 text-[13px] md:py-[22px] md:text-sm" : "py-7 text-sm")}>

@@ -10,6 +10,7 @@
     "login": "Sign in"
   },
   "footer": { "copyright": "© 2026 ArquitecturaBase", "terms": "Terms", "privacy": "Privacy", "help": "Help" },
+  "directory": { "title": "Businesses", "searchLabel": "Search businesses", "search": "Search by name", "noResults": "No businesses match your search", "clearSearch": "Clear search" },
   "landing": {
     "hero": { "line1": "For you", "line2": "and for your business.", "detail": "As a person, create your account with email or WhatsApp. If you have a business or a group, register it and invite your team with their roles." },
     "createAccount": "Create my account", "registerBusiness": "Register your business", "login": "Sign in",

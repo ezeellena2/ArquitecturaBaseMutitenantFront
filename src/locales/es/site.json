@@ -10,6 +10,7 @@
     "login": "Ingresar"
   },
   "footer": { "copyright": "© 2026 ArquitecturaBase", "terms": "Términos", "privacy": "Privacidad", "help": "Ayuda" },
+  "directory": { "title": "Empresas", "searchLabel": "Buscar empresas", "search": "Buscar por nombre", "noResults": "Ninguna empresa coincide con la búsqueda", "clearSearch": "Limpiar búsqueda" },
   "landing": {
     "hero": { "line1": "Para vos", "line2": "y para tu empresa.", "detail": "Como persona, creá tu cuenta con tu correo o tu WhatsApp. Si tenés una empresa o un grupo, registralo y sumá a tu equipo con sus roles." },
     "createAccount": "Crear mi cuenta", "registerBusiness": "Registrá tu empresa", "login": "Ingresá",
