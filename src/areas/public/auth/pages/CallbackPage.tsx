@@ -4,15 +4,23 @@ import { useNavigate } from "react-router";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { BusinessAccessResult } from "../components/BusinessAccessResult";
+import { PlatformAccessResult } from "../components/PlatformAccessResult";
+import { accessOfPath, loginPathOf } from "@/tenancy/access";
 import { safeReturnUrl } from "../lib/returnUrl";
 
 interface CallbackState { returnTo?: string }
 
-function businessError(error: Error | undefined) {
+function accessError(error: Error | undefined) {
   if (!error || !("error" in error) || error.error !== "access_denied" ||
     !("error_description" in error) || typeof error.error_description !== "string") return null;
 
   const [code, encodedName] = error.error_description.split("|", 2);
+  if (code === "Tenancy.Access.PlatformOnly") {
+    // ErrorResponse.state es el userState recuperado por OIDC. El código del error no contiene la puerta.
+    const state = "state" in error ? error.state as CallbackState | undefined : undefined;
+    const returnTo = safeReturnUrl(state?.returnTo ?? null, "/");
+    return { status: "platformOnly" as const, access: accessOfPath(returnTo.split(/[?#]/u)[0] ?? returnTo) === "business" ? "business" as const : "consumer" as const };
+  }
   if (code === "Tenancy.Access.NotMember") return { status: "noBusiness" as const };
   if (code !== "Tenancy.Member.Inactive" || !encodedName) return null;
   try {
@@ -34,7 +42,10 @@ export function CallbackPage() {
     navigate(safeReturnUrl(state?.returnTo ?? null, "/"), { replace: true });
   }, [auth.isAuthenticated, auth.user, navigate]);
 
-  const deniedBusiness = businessError(auth.error);
+  const deniedBusiness = accessError(auth.error);
+  if (deniedBusiness?.status === "platformOnly") return <AuthLayout access={deniedBusiness.access}>
+    <PlatformAccessResult access={deniedBusiness.access} onSignedOut={() => { void navigate(loginPathOf(deniedBusiness.access), { replace: true }); }} />
+  </AuthLayout>;
   if (deniedBusiness) return <AuthLayout access="business">
     {deniedBusiness.status === "noBusiness" ? <BusinessAccessResult status="noBusiness" />
       : <BusinessAccessResult status="inactive" organizationName={deniedBusiness.organizationName} />}

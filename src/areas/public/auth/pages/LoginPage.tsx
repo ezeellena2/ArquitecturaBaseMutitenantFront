@@ -15,6 +15,7 @@ import { AlertTriangleIcon, ClockIcon, LockIcon } from "@/shared/ui/icons";
 import { requestLoginCode, verifyLoginCode } from "../api/loginCode";
 import { AuthStatus, type AuthStatusProps } from "../components/AuthStatus";
 import { BusinessAccessResult } from "../components/BusinessAccessResult";
+import { PlatformAccessResult } from "../components/PlatformAccessResult";
 import { AuthCodeStep } from "../components/AuthCodeStep";
 import { AuthLink, AuthLinkRow } from "../components/AuthLink";
 import { EmailCodeForm } from "../components/EmailCodeForm";
@@ -61,7 +62,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const [step, setStep] = useState<CodeStep | null>(null);
   const [code, setCode] = useState("");
   const [error, setError] = useState<ApiError | null>(null);
-  const [result, setResult] = useState<"noBusiness" | "inactive" | UnavailableCode | null>(null);
+  const [result, setResult] = useState<"noBusiness" | "inactive" | "platformOnly" | UnavailableCode | null>(null);
   const resend = useIdempotentMutation((email: string, key) => requestLoginCode(email, key), { meta: { handlesError: true } });
   const verify = useIdempotentMutation((input: { email: string; code: string; returnUrl: string }, key) => verifyLoginCode(input, key), { meta: { handlesError: true } });
   const resendTimer = useCountdown(0);
@@ -147,7 +148,8 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
         resendTimer.restart(0);
       }
       if (caught.code === "Identity.Account.LockedOut") setCode("");
-      if (caught.code === "Tenancy.Access.NotMember") setResult("noBusiness");
+      if (caught.code === "Tenancy.Access.PlatformOnly") setResult("platformOnly");
+      else if (caught.code === "Tenancy.Access.NotMember") setResult("noBusiness");
       else if (caught.code === "Tenancy.Member.Inactive") { setError(caught); setResult("inactive"); }
       else if (isUnavailableCode(caught.code)) { setError(caught); setResult(caught.code); }
       else setError(caught);
@@ -176,6 +178,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
 
   return <AuthLayout access={access}>
     {pending ? <PendingDeletionPanel pending={pending} onCancel={() => { void cancelDeletion(); }} busy={cancel.isPending} failure={cancelFailure} />
+      : result === "platformOnly" ? <PlatformAccessResult access={access} onSignedOut={() => { backToEmail(); dismissGoogleError(); setPending(null); setCancelFailure(null); }} />
       : result === "noBusiness" ? <BusinessAccessResult status="noBusiness" />
         : result === "inactive" ? <BusinessAccessResult status="inactive" organizationName={organizationName} />
           : unavailable ? <AuthStatus icon={unavailable.icon} tone={unavailable.tone}

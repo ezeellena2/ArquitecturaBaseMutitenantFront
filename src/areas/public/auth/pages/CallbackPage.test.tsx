@@ -1,9 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { ErrorResponse } from "oidc-client-ts";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n } from "@/shared/i18n";
 import { CallbackPage } from "./CallbackPage";
@@ -25,6 +25,9 @@ function show(auth: Partial<AuthContextProps>) {
         <Route path="/" element={<p>{"Destino personal"}</p>} />
         <Route path="/org" element={<p>{"Destino empresa"}</p>} />
         <Route path="/catalogo" element={<p>{"Destino catálogo"}</p>} />
+        <Route path="/plataforma" element={<p>{"Destino Plataforma"}</p>} />
+        <Route path="/login" element={<p>{"Otro ingreso personal"}</p>} />
+        <Route path="/login/empresa" element={<p>{"Otro ingreso empresa"}</p>} />
       </Routes>
     </MemoryRouter>
     </QueryClientProvider>
@@ -32,6 +35,35 @@ function show(auth: Partial<AuthContextProps>) {
 }
 
 describe("CallbackPage", () => {
+  it.each([
+    ["/", "Otro ingreso personal", "Sin contraseñas"],
+    ["/org", "Otro ingreso empresa", "Para empresas"],
+  ])("presenta la cuenta exclusiva de Plataforma y conserva la puerta de %s en el state OIDC", async (returnTo, nextLogin, panel) => {
+    const signoutRedirect = vi.fn(async () => null);
+    const { container } = show({ isLoading: false, isAuthenticated: false, signoutRedirect: signoutRedirect as unknown as AuthContextProps["signoutRedirect"],
+      error: Object.assign(new ErrorResponse({ error: "access_denied", error_description: "Tenancy.Access.PlatformOnly", userState: { returnTo } }), { source: "unknown" as const }) });
+    expect(screen.getByRole("heading", { name: "Esta cuenta es de un operador: solo entra a Plataforma" })).toBeVisible();
+    expect(screen.queryByText("No pudimos iniciar tu sesión")).not.toBeInTheDocument();
+    expect(screen.getByText(panel)).toBeInTheDocument();
+    const primary = screen.getByRole("link", { name: "Ir a Plataforma" });
+    expect(primary).toHaveAttribute("href", "/plataforma");
+    expect(primary).toHaveAttribute("data-variant", "default");
+    const leave = screen.getByRole("button", { name: "Salir" });
+    expect(leave).toHaveAttribute("data-variant", "outline");
+    expect(screen.getByRole("main").querySelector("span[aria-hidden='true'] svg path")).toHaveAttribute("d", "M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16");
+    expect(await axe(container)).toHaveNoViolations();
+    fireEvent.click(leave);
+    await waitFor(() => expect(signoutRedirect).toHaveBeenCalledOnce());
+    expect(await screen.findByText(nextLogin)).toBeVisible();
+  });
+
+  it("Ir a Plataforma abre su inicio y un state externo no cambia la puerta pública", async () => {
+    show({ isLoading: false, isAuthenticated: false,
+      error: Object.assign(new ErrorResponse({ error: "access_denied", error_description: "Tenancy.Access.PlatformOnly", userState: { returnTo: "https://externo.test/org" } }), { source: "unknown" as const }) });
+    fireEvent.click(screen.getByRole("link", { name: "Ir a Plataforma" }));
+    expect(await screen.findByText("Destino Plataforma")).toBeVisible();
+  });
+
   it("muestra el estado Sesión mientras OIDC canjea el código", async () => {
     const { container } = show({ isLoading: true, isAuthenticated: false });
     expect(screen.getByRole("heading", { name: "Iniciando sesión…" })).toBeVisible();

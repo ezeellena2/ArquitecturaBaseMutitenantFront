@@ -865,6 +865,21 @@ export function catalog(root) {
           state: `v111: ${source.app.scenario ?? pair}`, phone: { state: `v111: ${mobile.app.scenario ?? pair}` } });
       }),
     ...stage3a.flatMap(([pair, group, state, boards = {}]) => pairCases(root, { stage: "etapa-3a", pair, group, state, ...boards })),
+    ...["Persona", "Empresa"].flatMap((puerta) => {
+      const app = {
+        path: `${puerta === "Persona" ? "/login" : "/login/empresa"}?returnUrl=%2Fconnect%2Fauthorize`,
+        readyText: "Esta cuenta es de un operador: solo entra a Plataforma",
+        actions: [appFill("Correo electrónico", "martin.sosa@arquitecturabase.ejemplo.com"), appClick("button", "Enviar código"), { type: "otp", value: "123456" }, appClick("button", "Verificar")],
+        responses: [api("POST", "/api/auth/login-code", { resendAfterSeconds: 60 }, 202), api("POST", "/api/auth/login-code/verify", { code: "Tenancy.Access.PlatformOnly" }, 403)],
+      };
+      return pairCases(root, {
+        stage: "etapa-3a", pair: "ingreso-empresa-sin-perfil", id: `ingreso-operador-${puerta === "Persona" ? "persona" : "empresa"}`, group: "ingreso",
+        state: `Operador probado en la puerta ${puerta}: sólo entra a Plataforma`,
+        desktop: { board: "Ingreso", props: { estado: "Operador: la cuenta entra por Plataforma", puerta, cuenta: "Martín (operador de la plataforma)" } },
+        phone: { board: "M-Ingreso", props: { estado: "Operador: la cuenta entra por Plataforma", puerta, cuenta: "Martín (operador de la plataforma)" } },
+        app, phoneApp: app,
+      });
+    }),
     ...stage3c.flatMap(([pair, state, app]) => pairCases(root, { stage: "etapa-3c", pair, id: `invitacion-${pair}`, group: "invitacion", state, app: { userFixture: "visual-personal", ...app }, phoneApp: { userFixture: "visual-personal", ...app } })),
     ...invitationV106Cases(root),
     ...stage3b.flatMap(([pair, group, state, board]) => pairCases(root, { stage: "etapa-3b", pair, group, state, desktop: board, phone: board, app: { userFixture: "visual-personal" }, phoneApp: { userFixture: "visual-personal" } })),

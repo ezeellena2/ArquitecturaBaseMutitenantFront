@@ -511,9 +511,14 @@ async function openPlatformAccount(page, name) {
 
 async function sendLoginCode(page, onStage = () => {}) {
   for (let attempt = 0; attempt < 5; attempt++) {
+    const send = page.locator("form button[type=submit]").first();
+    // Después de un 429 también debe terminar la cuenta regresiva de la UI. Se espera la acción con el timeout
+    // normal antes de abrir el listener: sus 30 s miden la respuesta HTTP, no el tiempo de un botón aún apagado.
+    onStage("espera el botón de envío habilitado");
+    await send.click({ trial: true });
     const responsePromise = page.waitForResponse((response) =>
       new URL(response.url()).pathname === "/api/auth/login-code" && response.request().method() === "POST");
-    await page.locator("form button[type=submit]").first().click({ timeout: 120_000 });
+    await send.click();
     const response = await responsePromise;
     if (response.ok()) return;
     const problem = await response.json();
@@ -640,6 +645,65 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await reduced.goto(new URL("/plataforma/configuracion", baseUrl).href);
             await reduced.getByRole("heading", { name: "No tenés permiso para ver esta página", exact: true }).waitFor();
           } finally { await reducedContext.close(); }
+        }],
+        ["A1: operador probado en ambas puertas sale del lado público y conserva Plataforma", async (platformPage, setStage) => {
+          setStage("ingresa el operador a su sesión de Plataforma");
+          await loginThroughUi(platformPage, "e2e-operator@example.test");
+          await expectProfile(platformPage, "Plataforma", "operador en su cookie exclusiva");
+          const publicPage = await platformPage.context().newPage();
+          publicPage.setDefaultTimeout(30_000);
+          const title = "Esta cuenta es de un operador: solo entra a Plataforma";
+          try {
+            for (const [door, entryLink] of [["consumer", "Ingresá"], ["business", "Ingresá como empresa"]]) {
+              setStage(`abre la puerta ${door} con sólo la cookie de Plataforma`);
+              await publicPage.goto(baseUrl.href);
+              await publicPage.getByRole("link", { name: entryLink, exact: true }).first().click();
+              await publicPage.getByRole("textbox", { name: "Correo electrónico" }).waitFor();
+              assert.equal(await publicPage.getByRole("heading", { name: title, exact: true }).count(), 0);
+              assert.equal(await publicPage.getByRole("link", { name: "Ir a Plataforma", exact: true }).count(), 0);
+              await publicPage.getByRole("textbox", { name: "Correo electrónico" }).fill("e2e-operator@example.test");
+              const before = new Set(await pickupFiles());
+              await sendLoginCode(publicPage, setStage);
+              await publicPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+              assert.equal(await publicPage.getByRole("heading", { name: title, exact: true }).count(), 0);
+              await enterCode(publicPage, await codeFromPickup("e2e-operator@example.test", before));
+              const verified = publicPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/login-code/verify" && response.request().method() === "POST");
+              await publicPage.getByRole("button", { name: "Verificar", exact: true }).click();
+              const denial = await verified;
+              assert.equal(denial.status(), 403);
+              assert.equal((await denial.json()).code, "Tenancy.Access.PlatformOnly");
+              await publicPage.getByRole("heading", { name: title, exact: true }).waitFor();
+              for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+                setStage(`estado privado ${door} a ${viewport.width}`);
+                await publicPage.setViewportSize(viewport);
+                assert.equal(await publicPage.getByRole("link", { name: "Ir a Plataforma", exact: true }).isVisible(), true);
+                assert.equal(await publicPage.getByRole("button", { name: "Salir", exact: true }).isVisible(), true);
+                assert.equal(await publicPage.getByRole("heading", { name: "No pudimos iniciar tu sesión", exact: true }).count(), 0);
+                assert.equal(await publicPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, "El estado privado no desborda el teléfono.");
+              }
+              await publicPage.setViewportSize({ width: 1440, height: 900 });
+              if (door === "consumer") {
+                setStage("Ir a Plataforma aprovecha su cookie vigente");
+                await publicPage.getByRole("link", { name: "Ir a Plataforma", exact: true }).click();
+                await expectProfile(publicPage, "Plataforma", "retorno al operador sin crear Personal");
+                await publicPage.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+              }
+            }
+            setStage("sale desde el estado privado de empresa por logout público sin hint Platform");
+            const logout = publicPage.waitForRequest((request) => new URL(request.url()).pathname === "/connect/logout");
+            await publicPage.getByRole("button", { name: "Salir", exact: true }).click();
+            assert.equal(new URL((await logout).url()).searchParams.has("id_token_hint"), false);
+            await publicPage.getByRole("link", { name: "Ingresá", exact: true }).first().waitFor();
+            await platformPage.reload();
+            await expectProfile(platformPage, "Plataforma", "salir de A1 conserva la pestaña de Plataforma");
+            setStage("otra persona ingresa en la misma pestaña pública");
+            await loginThroughUi(publicPage, signupEmail, "consumer");
+            await expectProfile(publicPage, "Personal", "la salida permite usar otra cuenta");
+            await platformPage.reload();
+            await expectProfile(platformPage, "Plataforma", "operador y persona siguen conviviendo");
+            await signOut(publicPage, "Personal");
+            await signOut(platformPage, "Plataforma");
+          } finally { await publicPage.close(); }
         }],
         ["A3: Plataforma y persona conviven en el mismo navegador", async (platformPage, setStage) => {
           setStage("ingresa como operador por Plataforma");

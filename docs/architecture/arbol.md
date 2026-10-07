@@ -198,6 +198,7 @@ src/
 │   │   │   │   ├── AuthLink.tsx                     el enlace de texto del ingreso y los registros, en --marca-tx, y su renglón (AuthLinkRow)
 │   │   │   │   ├── AuthLink.test.tsx                tests de AuthLink
 │   │   │   │   ├── BusinessAccessResult.tsx         la puerta de empresa que no deja entrar (sin empresa o deshabilitado), desde el código o desde authorize
+│   │   │   │   ├── PlatformAccessResult.tsx         operador probado en una puerta pública: Ir a Plataforma o Salir sólo del lado público
 │   │   │   │   ├── EmailCodeForm.tsx                el correo y el paso del código, con AuthCodeStep
 │   │   │   │   ├── EmailCodeForm.test.tsx           tests de EmailCodeForm
 │   │   │   │   ├── WhatsAppCodeForm.tsx             [E8]

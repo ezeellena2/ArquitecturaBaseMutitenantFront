@@ -9,8 +9,10 @@ import { axe } from "vitest-axe";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
 import { LoginPage } from "./LoginPage";
+import { asPhone } from "@/test/utils/phone";
 
 const signinRedirect = vi.fn(() => Promise.resolve());
+const signoutRedirect = vi.fn(async () => null);
 const authorizeUrl = "/connect/authorize?client_id=web&response_type=code";
 const loginUrl = `/login?returnUrl=${encodeURIComponent(authorizeUrl)}`;
 
@@ -41,12 +43,12 @@ beforeAll(async () => {
     { code: "en-US", languageCode: "en", fallbackCulture: "es-AR", isEnabled: true, isDefault: false },
   ]);
 });
-afterEach(async () => { signinRedirect.mockClear(); await changeCulture("es-AR"); });
+afterEach(async () => { signinRedirect.mockClear(); signoutRedirect.mockReset(); signoutRedirect.mockResolvedValue(null); await changeCulture("es-AR"); });
 beforeEach(() => server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "google", countries: [] }] }))));
 
 function show(access: "consumer" | "business", url: string, completeLogin = vi.fn()) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
-  const auth = { isAuthenticated: false, isLoading: false, signinRedirect } as unknown as AuthContextProps;
+  const auth = { isAuthenticated: false, isLoading: false, signinRedirect, signoutRedirect } as unknown as AuthContextProps;
   const wrapper = ({ children }: { children: ReactNode }) => (
     <AuthContext.Provider value={auth}>
       <QueryClientProvider client={client}><MemoryRouter initialEntries={[url]}>{children}</MemoryRouter></QueryClientProvider>
@@ -56,6 +58,64 @@ function show(access: "consumer" | "business", url: string, completeLogin = vi.f
 }
 
 describe("LoginPage", () => {
+  it.each([
+    ["consumer", "es-AR", "Esta cuenta es de un operador: solo entra a Plataforma", "Ir a Plataforma", "Salir"],
+    ["business", "es-AR", "Esta cuenta es de un operador: solo entra a Plataforma", "Ir a Plataforma", "Salir"],
+    ["consumer", "en-US", "This is an operator account: it can only access Platform", "Go to Platform", "Log out"],
+    ["business", "en-US", "This is an operator account: it can only access Platform", "Go to Platform", "Log out"],
+  ] as const)("muestra el estado de operador sólo después del código, puerta %s e idioma %s a 390", async (access, culture, title, go, leave) => {
+    const restore = asPhone();
+    try {
+      await changeCulture(culture);
+      server.use(
+        http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 })),
+        http.post("/api/auth/login-code/verify", () => HttpResponse.json({ code: "Tenancy.Access.PlatformOnly" }, { status: 403 })),
+      );
+      const { container, completeLogin } = show(access, loginUrl);
+      expect(screen.queryByText(title)).not.toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: go })).not.toBeInTheDocument();
+      fireEvent.change(screen.getByRole("textbox", { name: /Correo electrónico|Email address/ }), { target: { value: "operator@example.test" } });
+      fireEvent.click(screen.getByRole("button", { name: /Enviar código|Send code/ }));
+      const first = await screen.findByRole("textbox", { name: /Código 1|Code 1/ });
+      expect(screen.queryByText(title)).not.toBeInTheDocument();
+      fireEvent.paste(first, { clipboardData: { getData: () => "123456" } });
+      fireEvent.click(screen.getByRole("button", { name: /Verificar|Verify/ }));
+      expect(await screen.findByRole("heading", { name: title })).toBeVisible();
+      const primary = screen.getByRole("link", { name: go });
+      expect(primary).toHaveAttribute("href", "/plataforma");
+      expect(primary).toHaveAttribute("data-variant", "default");
+      const secondary = screen.getByRole("button", { name: leave });
+      expect(secondary).toHaveAttribute("data-variant", "outline");
+      expect(primary.compareDocumentPosition(secondary) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(screen.queryByRole("textbox", { name: /Código 1|Code 1/ })).not.toBeInTheDocument();
+      expect(completeLogin).not.toHaveBeenCalled();
+      expect(await axe(container)).toHaveNoViolations();
+      fireEvent.click(secondary);
+      expect(await screen.findByRole("textbox", { name: /Correo electrónico|Email address/ })).toHaveValue("");
+      expect(signoutRedirect).toHaveBeenCalledOnce();
+      expect(screen.queryByText(title)).not.toBeInTheDocument();
+    } finally { restore(); }
+  });
+
+  it("si falla Salir conserva el estado privado y permite repetir el cierre público", async () => {
+    signoutRedirect.mockRejectedValueOnce(new Error("sin conexión"));
+    server.use(
+      http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 })),
+      http.post("/api/auth/login-code/verify", () => HttpResponse.json({ code: "Tenancy.Access.PlatformOnly" }, { status: 403 })),
+    );
+    show("consumer", loginUrl);
+    fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: "operator@example.test" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+    fireEvent.paste(await screen.findByRole("textbox", { name: "Código 1" }), { clipboardData: { getData: () => "123456" } });
+    fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Salir" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Algo salió mal. Probá de nuevo en un rato.");
+    expect(screen.getByRole("heading", { name: "Esta cuenta es de un operador: solo entra a Plataforma" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Salir" }));
+    expect(await screen.findByRole("textbox", { name: "Correo electrónico" })).toHaveValue("");
+    expect(signoutRedirect).toHaveBeenCalledTimes(2);
+  });
+
   it.each(["consumer", "business"] as const)("ofrece recuperar la cuenta desde la puerta %s", async (access) => {
     show(access, loginUrl);
     expect(await screen.findByText("¿No podés entrar?")).toBeVisible();

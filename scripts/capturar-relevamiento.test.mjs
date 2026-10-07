@@ -8,6 +8,19 @@ import { chromium } from "playwright";
 import { startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
 import { buildCases, canvas, mergeManifest, openApp, runBoardActions } from "./capturar-relevamiento.mjs";
 
+test("el operador privado conserva ambas puertas, ambos tamaños y el error posterior al código", () => {
+  const entries = buildCases().filter((entry) => entry.pair.startsWith("ingreso-operador-"));
+  assert.equal(entries.length, 4);
+  for (const entry of entries) {
+    const business = entry.pair === "ingreso-operador-empresa";
+    assert.equal(entry.board, entry.viewport.width === 390 ? "M-Ingreso" : "Ingreso");
+    assert.deepEqual(entry.props, { estado: "Operador: la cuenta entra por Plataforma", puerta: business ? "Empresa" : "Persona", cuenta: "Martín (operador de la plataforma)" });
+    assert.equal(entry.app.path, `${business ? "/login/empresa" : "/login"}?returnUrl=%2Fconnect%2Fauthorize`);
+    assert.equal(entry.app.responses.find((response) => response.path.endsWith("/verify")).body.code, "Tenancy.Access.PlatformOnly");
+    assert.equal(entry.app.actions.at(-1).name, "Verificar");
+  }
+});
+
 test("Cerrar espera la acción exacta de la ficha y no toca Cerrar Gestión durante la carga", { timeout: 15_000 }, async () => {
   const server = createServer((_request, response) => response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" }).end(`
     <main><button onclick="document.querySelector('main').textContent = 'Se cerró Gestión por error'">Cerrar Gestión</button></main>
