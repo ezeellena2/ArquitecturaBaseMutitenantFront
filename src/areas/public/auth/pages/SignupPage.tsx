@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
 import { useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
+import { emailFromNavigation } from "../lib/loginEmail";
 import { z } from "zod";
 import { LockIcon } from "@/shared/ui/icons";
 import { AuthLayout } from "@/layouts/AuthLayout";
@@ -34,6 +35,8 @@ export function SignupPage() {
   const { t } = useTranslation("auth");
   const auth = useAuth();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const [emailTaken, setEmailTaken] = useState(false);
   const returnTo = safeReturnUrl(searchParams.get("returnTo") ?? searchParams.get("returnUrl"), "/");
   const googleComplete = searchParams.get("google") === "complete";
   const startedOidc = useRef(false);
@@ -41,9 +44,9 @@ export function SignupPage() {
   const [closed, setClosed] = useState(searchParams.get("error") === "Auth.Signup.Closed");
   const [code, setCode] = useState("");
   const [error, setError] = useState<ApiError | null>(null);
-  const { control, register, handleSubmit, setError: setFieldError, clearErrors, formState: { errors } } = useForm<SignupFields>({
+  const { control, register, handleSubmit, getValues, setError: setFieldError, clearErrors, formState: { errors } } = useForm<SignupFields>({
     resolver: zodResolver(schema),
-    defaultValues: { email: "", acceptedTerms: false as true },
+    defaultValues: { email: emailFromNavigation(location.state), acceptedTerms: false as true },
   });
   const acceptedTerms = useWatch({ control, name: "acceptedTerms" });
   const request = useIdempotentMutation((email: string, key) => requestSignup({ email, acceptedTerms: true, culture: effectiveCulture() ?? navigator.language, timeZoneId: browserTimeZone() }, key), { meta: { handlesError: true } });
@@ -64,6 +67,7 @@ export function SignupPage() {
 
   async function begin({ email }: SignupFields) {
     setError(null);
+    setEmailTaken(false);
     try {
       const response = await request.mutateAsync(email);
       setStep({ email });
@@ -71,6 +75,7 @@ export function SignupPage() {
       resend.restart(response.resendAfterSeconds);
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
+      setEmailTaken(caught.code === "Auth.Signup.EmailTaken");
       if (caught.code === "Auth.Signup.Closed") { setClosed(true); return; }
       if (!applyApiErrorToForm(caught, setFieldError, { email: "email", acceptedTerms: "acceptedTerms" })) setError(caught);
       retry.startFromError(caught);
@@ -121,9 +126,12 @@ export function SignupPage() {
         if (!acceptedTerms) { event.preventDefault(); requireTerms(); return; }
         void handleSubmit(begin)(event);
       }} className="flex flex-col gap-[22px]">
-        <Controller control={control} name="email" render={({ field }) => <FormField label={t("login.emailLabel")} variant="auth" error={errors.email?.type === "server" ? errors.email.message : errors.email ? t("login.emailInvalid") : undefined}>
-          <EmailField name={field.name} ref={field.ref} value={field.value} onChange={field.onChange} onBlur={field.onBlur} />
-        </FormField>} />
+        <div className="flex flex-col gap-1.5">
+          <Controller control={control} name="email" render={({ field }) => <FormField label={t("login.emailLabel")} variant="auth" error={errors.email?.type === "server" ? errors.email.message : errors.email ? t("login.emailInvalid") : undefined}>
+            <EmailField name={field.name} ref={field.ref} value={field.value} onChange={(value) => { field.onChange(value); clearErrors("email"); setEmailTaken(false); }} onBlur={field.onBlur} />
+          </FormField>} />
+          {emailTaken && errors.email ? <AuthLink className="self-start text-[14px]!" to="/login" state={{ email: getValues("email") }}>{t("signup.enter")}</AuthLink> : null}
+        </div>
         <FormError message={error ? t(loginCodeErrorKey(error)) : null} />
         <Button type="submit" size="lg" className="w-full" disabled={retry.isRunning} pending={request.isPending} pendingLabel={t("common:code.sending")}>{retry.label ?? t("signup.create")}</Button>
       </form>

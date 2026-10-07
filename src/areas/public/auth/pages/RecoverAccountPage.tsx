@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -18,7 +19,7 @@ import { Button } from "@/shared/ui/button";
 import { FormField } from "@/shared/ui/FormField";
 import { EmailField } from "@/shared/ui/fields/EmailField";
 import { CheckIcon } from "@/shared/ui/icons";
-import { requestRecoveryCode, submitAccountRecovery, verifyRecoveryCode } from "../api/recovery";
+import { previewAccountRecovery, requestRecoveryCode, submitAccountRecovery, verifyRecoveryCode } from "../api/recovery";
 import { AuthCodeStep } from "../components/AuthCodeStep";
 import { AuthLink, AuthLinkRow } from "../components/AuthLink";
 import { AuthMessage } from "../components/AuthMessage";
@@ -48,6 +49,7 @@ export function RecoverAccountPage() {
   const resendTimer = useCountdown(0);
   const sendRetry = useRetryAfterCountdown();
   const verifyRetry = useRetryAfterCountdown();
+  const preview = useMutation({ mutationFn: previewAccountRecovery, meta: { handlesError: true } });
   const request = useIdempotentMutation((operation: RecoveryOperation<RequestRecoveryCodeRequest>, key) => requestRecoveryCode(operation.body, key), {
     meta: { handlesError: true },
     sameOperation: (previous, next) => previous.revision === next.revision && previous.body.email === next.body.email && previous.body.nonce === next.body.nonce,
@@ -104,6 +106,20 @@ export function RecoverAccountPage() {
     }
   }
 
+  async function nextStep(previousEmail: string) {
+    const current = revision.current;
+    setError(null);
+    try {
+      await preview.mutateAsync({ previousEmail });
+      if (current === revision.current) setStep("new");
+    } catch (caught) {
+      if (!(caught instanceof ApiError)) throw caught;
+      if (current !== revision.current) return;
+      if (!applyApiErrorToForm(caught, form.setError, { previousEmail: "previousEmail" })) setError(caught);
+      sendRetry.startFromError(caught);
+    }
+  }
+
   async function verifyAndSubmit() {
     const current = revision.current;
     setError(null);
@@ -121,6 +137,16 @@ export function RecoverAccountPage() {
       if (!(caught instanceof ApiError)) throw caught;
       if (current !== revision.current) return;
       verifyRetry.startFromError(caught);
+      if (caught.code === "Platform.AccountRecovery.AccountNotFound" && caught.errors?.previousEmail) {
+        backTo("previous");
+        applyApiErrorToForm(caught, form.setError, { previousEmail: "previousEmail" });
+        return;
+      }
+      if (caught.code === "Platform.AccountRecovery.MethodInUse" && caught.errors?.email) {
+        backTo("new");
+        applyApiErrorToForm(caught, form.setError, { email: "email" });
+        return;
+      }
       if (caught.code === "Validation.Failed" && (caught.errors?.email || caught.errors?.previousEmail)) {
         backTo("new");
         // El back valida la comparación sobre previousEmail; en el tablero se corrige el correo nuevo.
@@ -155,7 +181,7 @@ export function RecoverAccountPage() {
         resendSeconds={resendTimer.seconds} resendRetryLabel={sendRetry.label} resendDisabled={busy} resendPending={request.isPending} />
       : <form noValidate className="flex flex-col gap-[22px]" onSubmit={(event) => {
         void form.handleSubmit((values) => {
-          if (step === "previous") { setStep("new"); return; }
+          if (step === "previous") return nextStep(values.previousEmail);
           return sendCode(values.email);
         })(event);
       }}>
@@ -168,10 +194,10 @@ export function RecoverAccountPage() {
         </div>
         <Controller key={step} control={form.control} name={step === "previous" ? "previousEmail" : "email"} render={({ field, fieldState }) =>
           <FormField label={t(step === "previous" ? "recovery.previousEmail" : "recovery.newEmail")} variant="auth" error={fieldState.error?.message}>
-            <EmailField name={field.name} ref={field.ref} onBlur={field.onBlur} value={field.value} onChange={(value) => { field.onChange(value ?? ""); setError(null); }} />
+            <EmailField name={field.name} ref={field.ref} onBlur={field.onBlur} value={field.value} onChange={(value) => { field.onChange(value ?? ""); form.clearErrors(field.name); setError(null); }} />
           </FormField>} />
         <AuthMessage message={message} />
-        <Button type="submit" size="lg" disabled={step === "new" && sendRetry.isRunning} pending={request.isPending} pendingLabel={t("common:code.sending")}>
+        <Button type="submit" size="lg" disabled={sendRetry.isRunning} pending={request.isPending || preview.isPending} pendingLabel={t("common:code.sending")}>
           {step === "previous" ? t("recovery.continue") : sendRetry.label ?? t("common:code.send")}
         </Button>
         <AuthLinkRow><AuthLink to="/login">{t("recovery.backToLogin")}</AuthLink></AuthLinkRow>

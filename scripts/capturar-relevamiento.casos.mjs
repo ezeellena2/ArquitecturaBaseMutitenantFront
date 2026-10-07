@@ -50,6 +50,9 @@ function withCurrentContract(entry) {
     if (item.method === "PUT" && item.status === 204) return { ...item, status: 200, body: { version: 13 } };
     return item;
   });
+  if (entry.group === "recuperar" && !next.some((item) => item.path === "/api/account-recovery/preview")) {
+    next.push({ method: "POST", path: "/api/account-recovery/preview", status: 204 });
+  }
   const companyId = next.map((item) => item.method === "GET" && item.path.startsWith("/api/companies/company-") && item.path.split("/").length === 4 ? item.path.split("/")[3] : null).find(Boolean);
   const roles = next.find((item) => item.method === "GET" && item.path === "/api/roles/paged" && item.query?.scope === "Company");
   const rolesPath = `/api/companies/${companyId}/roles/paged`;
@@ -265,6 +268,52 @@ function custom({ id, group, state, desktop: onDesktop, phone: onPhone, app, pho
 const api = (method, apiPath, body, status = 200, query) => ({ method, path: apiPath, body, status, ...(query ? { query } : {}) });
 const appClick = (role, name, extra = {}) => ({ type: "click", role, name, ...extra });
 const dialog = { readySelector: '[role="dialog"]' };
+
+function emailAccountCases(root) {
+  const problem = (code, field, detail) => ({ code, detail, traceId: "capture", errors: { [field]: [detail] } });
+  const missing = "No hay una cuenta con ese correo.";
+  const occupied = "Ya tenés una cuenta con ese correo.";
+  const oldEmail = "lucia.fernandez@delta.ejemplo.com";
+  const unknown = "mariana.lopez@gmail.com";
+  const cases = ["Persona", "Empresa"].flatMap((puerta) => {
+    const app = {
+      path: `${puerta === "Persona" ? "/login" : "/login/empresa"}?returnUrl=%2Fconnect%2Fauthorize`, readyText: missing,
+      actions: [appFill("Correo electrónico", unknown), appClick("button", "Enviar código")],
+      responses: [api("POST", "/api/auth/login-code", problem("Auth.LoginCode.AccountNotFound", "email", missing), 400)],
+    };
+    return custom({ id: `ingreso-sin-cuenta-${puerta === "Persona" ? "persona" : "empresa"}`, group: "ingreso", state: `Correo sin cuenta · ${puerta}`,
+      desktop: { board: "Ingreso", props: { estado: "Correo sin cuenta", puerta } },
+      phone: { board: "M-Ingreso", props: { estado: "Correo sin cuenta", puerta } }, app, phoneApp: app });
+  });
+  const signup = { path: "/registro", readyText: occupied,
+    actions: [appFill("Correo electrónico", oldEmail), appClick("checkbox", "Acepto los"), appClick("button", "Crear cuenta")],
+    responses: [api("POST", "/api/auth/signup", problem("Auth.Signup.EmailTaken", "email", occupied), 400)] };
+  cases.push(...custom({ id: "registro-correo-con-cuenta", group: "registro", state: "Correo con cuenta",
+    desktop: { board: "Registro", props: { estado: "Correo con cuenta" } }, phone: { board: "M-Registro", props: { estado: "Correo con cuenta" } }, app: signup, phoneApp: signup }));
+  for (const previous of [true, false]) {
+    const detail = previous ? missing : "Ese correo ya es de otra cuenta.";
+    const app = { path: "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar", captureMode: "harness", userFixture: "visual-personal", readyText: detail,
+      actions: [appFill("Correo electrónico", previous ? unknown : oldEmail), appClick("button", "Seguir"),
+        ...(previous ? [] : [appFill("Correo electrónico nuevo", "beto.ramirez@beta.ejemplo.com"), appClick("button", "Enviar código")])],
+      responses: [api("POST", "/api/account-recovery/preview", previous ? problem("Platform.AccountRecovery.AccountNotFound", "previousEmail", detail) : undefined, previous ? 400 : 204),
+        api("POST", "/api/account-recovery/code", problem("Platform.AccountRecovery.MethodInUse", "email", detail), 400)] };
+    const paso = previous ? "1. Sin cuenta con ese correo" : "2. El correo nuevo ya es de otra cuenta";
+    cases.push(...custom({ id: `recuperar-${previous ? "anterior-sin-cuenta" : "nuevo-con-cuenta"}`, group: "recuperar", state: paso,
+      desktop: { board: "Recuperar", props: { paso } }, phone: { board: "M-Recuperar", props: { paso } }, app, phoneApp: app }));
+  }
+  for (const width of [1440, 390]) {
+    const source = stageCases(root, "etapa-4").find((entry) => entry.pair === "agregar-correo" && entry.viewport.width === width);
+    const detail = "Ese correo ya está asociado a otra cuenta.";
+    const app = { ...source.app, readySelector: '[role="dialog"]', readyText: detail,
+      responses: [...source.app.responses.filter((item) => !(item.path === "/api/me/login-methods" && item.method === "POST")),
+        api("POST", "/api/me/login-methods", problem("Identity.LoginMethod.AlreadyUsed", "email", detail), 400)],
+      actions: [...source.app.actions.map((action) => action.name === "Agregar correo o teléfono" ? { ...action, name: "Agregar correo" } : action),
+        appFill("Correo", "beto.ramirez@beta.ejemplo.com"), appClick("button", "Enviar código")] };
+    cases.push({ id: `agregar-correo-otra-cuenta-${width === 1440 ? "escritorio" : "movil"}`, pair: "agregar-correo-otra-cuenta", group: "cuenta", state: "Correo: ya es de otra cuenta",
+      board: width === 1440 ? "Cuenta-Agregar" : "M-Cuenta-Agregar", props: { estado: "Correo: ya es de otra cuenta" }, boardActions: [], viewport: width === 1440 ? desktop : phone, app });
+  }
+  return cases;
+}
 
 // Las descripciones de los roles del lienzo (tablero Usuario): las de Dueño y Administrador las da el back (roles de
 // sistema); las demás son las que la organización escribió al crear el rol.
@@ -857,6 +906,7 @@ export function catalog(root) {
   const renamePhone = { board: "M-Cuenta", boardActions: [], state: "Mi cuenta en el teléfono con el nombre cambiado (el tablero no dibuja «Cambios sin guardar»)" };
   const renameApp = { actions: [appFill("Nombre y apellido", "Lucía Fernández Pérez")] };
   return [
+    ...emailAccountCases(root),
     ...[...new Set(stageCases(root, "etapa-5").filter((entry) => entry.app.captureMode === "harness").map((entry) => entry.pair))]
       .flatMap((pair) => {
         const source = stageCases(root, "etapa-5").find((entry) => entry.pair === pair);

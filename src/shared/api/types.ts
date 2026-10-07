@@ -13,6 +13,7 @@ export type LoginMethodsResponse = ApiSchemas["LoginMethodsResponse"];
 export type GoogleSignupAntiforgeryResponse = ApiSchemas["GoogleSignupAntiforgeryHttpResponse"];
 export type RequestLoginCodeResponse = ApiSchemas["RequestLoginCodeResponse"];
 export type RequestRecoveryCodeRequest = ApiSchemas["RequestRecoveryCodeHttpRequest"];
+export type PreviewAccountRecoveryRequest = ApiSchemas["PreviewAccountRecoveryHttpRequest"];
 export type VerifyRecoveryCodeRequest = ApiSchemas["VerifyRecoveryCodeHttpRequest"];
 export type SubmitAccountRecoveryRequest = ApiSchemas["SubmitAccountRecoveryHttpRequest"];
 export type VerifyLoginCodeRequest = ApiSchemas["VerifyLoginCodeHttpRequest"];

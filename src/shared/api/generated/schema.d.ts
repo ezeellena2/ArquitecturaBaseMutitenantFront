@@ -7810,6 +7810,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/account-recovery/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PreviewAccountRecoveryHttpRequest"];
+                    "text/json": components["schemas"]["PreviewAccountRecoveryHttpRequest"];
+                    "application/*+json": components["schemas"]["PreviewAccountRecoveryHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/account-recovery/code": {
         parameters: {
             query?: never;
@@ -11070,6 +11136,10 @@ export interface components {
             /** Format: int32 */
             count: number;
         };
+        /** @description Correo con el que se entraba, enviado sólo en el cuerpo. */
+        PreviewAccountRecoveryHttpRequest: {
+            previousEmail?: null | string;
+        };
         /** @description Token opaco recibido en el cuerpo; nunca se expone en la ruta, la query ni el diagnóstico. */
         PreviewInvitationHttpRequest: {
             token?: null | string;
@@ -11141,7 +11211,7 @@ export interface components {
         RequestLoginCodeHttpRequest: {
             email?: null | string;
         };
-        /** @description La misma forma exista o no la cuenta: no revela si el correo está registrado. */
+        /** @description La espera de un pedido de código aceptado, compartida por ingreso y registro. */
         RequestLoginCodeResponse: {
             /** Format: int32 */
             resendAfterSeconds: number;

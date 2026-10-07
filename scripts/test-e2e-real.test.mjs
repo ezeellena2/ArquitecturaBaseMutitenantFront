@@ -270,9 +270,13 @@ async function signOut(page, currentProfile) {
   }
 }
 
-async function registerPerson(page, email = `e2e-account-${randomUUID()}@example.test`, onStage = () => {}) {
+async function registerPerson(page, email = `e2e-account-${randomUUID()}@example.test`, onStage = () => {}, { opened = false, mobile = false } = {}) {
   onStage("abre registro");
-  await page.goto(new URL("/registro", baseUrl).href);
+  if (!opened) await page.goto(new URL("/registro", baseUrl).href);
+  else {
+    assert.equal(await page.getByRole("textbox", { name: "Correo electrónico" }).inputValue(), email);
+    assert.equal(await page.getByRole("checkbox", { name: /Acepto los Términos/ }).isChecked(), false);
+  }
   const terms = page.getByRole("checkbox", { name: /Acepto los Términos/ });
   await terms.check();
   const createAccount = page.getByRole("button", { name: "Crear cuenta", exact: true });
@@ -310,16 +314,20 @@ async function registerPerson(page, email = `e2e-account-${randomUUID()}@example
   assert.equal(verificationResponse.status(), 204,
     `El código de registro respondió HTTP ${verificationResponse.status()}${verificationCode ? ` (${verificationCode})` : ""}.`);
   await expectPath(page, "/", "registro de cuenta 3b");
-  await expectProfile(page, "Personal", "registro de cuenta 3b");
+  if (mobile) await page.getByRole("navigation", { name: "Secciones" }).waitFor();
+  else await expectProfile(page, "Personal", "registro de cuenta 3b");
   return email;
 }
 
-async function registerBusinessByEmail(page, readyFile, onStage = () => {}) {
-  const email = `e2e-business-signup-${randomUUID()}@example.test`;
+async function registerBusinessByEmail(page, readyFile, onStage = () => {}, { email = `e2e-business-signup-${randomUUID()}@example.test`, opened = false, mobile = false } = {}) {
   const organizationName = `Organización E2E ${randomUUID().slice(0, 8)}`;
   const slug = `e2e-${randomUUID().slice(0, 8)}`;
   onStage("abre registro empresarial");
-  await page.goto(new URL("/registro/empresa", baseUrl).href);
+  if (!opened) await page.goto(new URL("/registro/empresa", baseUrl).href);
+  else {
+    assert.equal(await page.getByRole("textbox", { name: "Tu correo electrónico" }).inputValue(), email);
+    assert.equal(await page.getByRole("checkbox", { name: /Acepto los Términos/ }).isChecked(), false);
+  }
   await page.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
   await page.getByRole("textbox", { name: "Tu correo electrónico" }).fill(email);
   const before = new Set(await pickupFiles());
@@ -370,9 +378,12 @@ async function registerBusinessByEmail(page, readyFile, onStage = () => {}) {
   onStage("entra a la organización creada");
   await page.getByRole("button", { name: `Entrar a ${organizationName}`, exact: true }).click();
   await expectPath(page, "/org", "registro empresarial por correo");
-  await expectProfile(page, organizationName, "registro empresarial por correo");
+  if (mobile) await page.getByRole("navigation", { name: "Secciones" }).waitFor();
+  else await expectProfile(page, organizationName, "registro empresarial por correo");
   await page.reload();
-  await expectProfile(page, organizationName, "F5 luego del registro empresarial");
+  if (mobile) await page.getByRole("navigation", { name: "Secciones" }).waitFor();
+  else await expectProfile(page, organizationName, "F5 luego del registro empresarial");
+  return { email, organizationName };
 }
 
 async function openAccount(page, currentProfile = "Personal") {
@@ -519,7 +530,18 @@ async function sendLoginCode(page, onStage = () => {}) {
     const responsePromise = page.waitForResponse((response) =>
       new URL(response.url()).pathname === "/api/auth/login-code" && response.request().method() === "POST");
     await send.click();
-    const response = await responsePromise;
+    let response;
+    try { response = await responsePromise; }
+    catch (error) {
+      const after = await page.evaluate(() => ({
+        path: ["/", "/login", "/login/empresa", "/plataforma", "/auth/callback"].includes(location.pathname) ? location.pathname : "otra",
+        events: window.loginSendEvents,
+        email: [...document.querySelectorAll("input[type=email]")].map((input) => ({ valid: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(input.value), invalid: input.getAttribute("aria-invalid"), focused: document.activeElement === input })),
+        submits: [...document.querySelectorAll("form button[type=submit]")].map((button) => ({ disabled: button.disabled, focused: document.activeElement === button })),
+      }));
+      onStage(`envío sin respuesta diagnóstico ${JSON.stringify(after)}`);
+      throw error;
+    }
     if (response.ok()) return;
     const problem = await response.json();
     if (response.status() !== 429 || typeof problem.retryAfter !== "number")
@@ -604,6 +626,133 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       let e2eCompanyId;
       await preparePlatform(readyFile);
       const accountCases = [
+        ...[1440, 390].map((width) => [`A2: correo sin cuenta, registro ocupado, recuperación y agregar a ${width}`, async (accountPage, setStage) => {
+          await accountPage.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+          const email = `e2e-a2-${randomUUID()}@example.test`;
+          setStage("ingresa un correo sin cuenta y sigue el enlace a registro");
+          await accountPage.goto(new URL("/login", baseUrl).href);
+          await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
+          const before = new Set(await pickupFiles());
+          const rejected = accountPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/login-code" && response.request().method() === "POST");
+          await accountPage.getByRole("button", { name: "Enviar código", exact: true }).click();
+          assert.equal((await rejected).status(), 400);
+          await accountPage.getByText("No hay una cuenta con ese correo.", { exact: true }).waitFor();
+          assert.equal(await accountPage.getByRole("textbox", { name: "Código 1" }).count(), 0);
+          assert.equal((await recipientMessages(email, before)).length, 0);
+          await accountPage.getByRole("link", { name: "Crear mi cuenta", exact: true }).click();
+          await registerPerson(accountPage, email, setStage, { opened: true, mobile: width === 390 });
+          // Mi cuenta se abre desde el menú existente; luego se prueba la hoja al tamaño del caso.
+          await accountPage.setViewportSize({ width: 1440, height: 900 });
+          await openAccount(accountPage);
+          await accountPage.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+          setStage("rechaza otro correo verificado en Agregar sin OTP");
+          await accountPage.getByRole("button", { name: "Agregar correo", exact: true }).click();
+          const dialog = accountPage.getByRole("dialog");
+          await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(businessEmail);
+          const ownedBefore = new Set(await pickupFiles());
+          await dialog.getByRole("button", { name: "Enviar código", exact: true }).click();
+          await dialog.getByText("Ese correo ya está asociado a otra cuenta.", { exact: true }).waitFor();
+          assert.equal(await dialog.getByRole("textbox", { name: "Código 1" }).count(), 0);
+          assert.equal((await recipientMessages(businessEmail, ownedBefore)).length, 0);
+          await dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
+          await accountPage.setViewportSize({ width: 1440, height: 900 });
+          await signOut(accountPage, "Personal");
+          await accountPage.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+          setStage("recuperación rechaza el anterior desconocido y el nuevo ocupado");
+          await accountPage.goto(new URL("/recuperar", baseUrl).href);
+          await accountPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(`e2e-missing-${randomUUID()}@example.test`);
+          await accountPage.getByRole("button", { name: "Seguir", exact: true }).click();
+          await accountPage.getByText("No hay una cuenta con ese correo.", { exact: true }).waitFor();
+          await accountPage.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(email);
+          await accountPage.getByRole("button", { name: "Seguir", exact: true }).click();
+          await accountPage.getByRole("textbox", { name: "Correo electrónico nuevo", exact: true }).fill(businessEmail);
+          await accountPage.getByRole("button", { name: "Enviar código", exact: true }).click();
+          await accountPage.getByText("Ese correo ya es de otra cuenta.", { exact: true }).waitFor();
+          assert.equal(await accountPage.getByRole("textbox", { name: "Código 1" }).count(), 0);
+          setStage("registro ocupado conserva el correo al ingresar por OIDC");
+          await accountPage.goto(new URL("/registro", baseUrl).href);
+          await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
+          await accountPage.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+          await accountPage.getByRole("button", { name: "Crear cuenta", exact: true }).click();
+          await accountPage.getByText("Ya tenés una cuenta con ese correo.", { exact: true }).waitFor();
+          await accountPage.getByRole("link", { name: "Ingresar", exact: true }).click();
+          const login = accountPage.getByRole("textbox", { name: "Correo electrónico", exact: true });
+          await login.waitFor();
+          assert.equal(await login.inputValue(), email);
+          const loginBefore = new Set(await pickupFiles());
+          await sendLoginCode(accountPage, setStage);
+          await accountPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+          await enterCode(accountPage, await codeFromPickup(email, loginBefore));
+          await accountPage.getByRole("button", { name: "Verificar", exact: true }).click();
+          await expectPath(accountPage, "/", "A2 ingresa después del enlace preescrito");
+          if (width === 390) await accountPage.getByRole("navigation", { name: "Secciones" }).waitFor();
+          else await expectProfile(accountPage, "Personal", "A2 ingreso conserva Personal");
+          await accountPage.reload();
+          await expectPath(accountPage, "/", "A2 F5 conserva la cuenta ingresada");
+        }]),
+        ...[1440, 390].map((width) => [`A2: correo nuevo empresarial crea organización a ${width}`, async (accountPage, setStage) => {
+          await accountPage.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+          const email = `e2e-a2-business-${randomUUID()}@example.test`;
+          setStage("puerta empresa ofrece registro con el correo preescrito");
+          await accountPage.goto(new URL("/login/empresa", baseUrl).href);
+          await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
+          await accountPage.getByRole("button", { name: "Enviar código", exact: true }).click();
+          await accountPage.getByText("No hay una cuenta con ese correo.", { exact: true }).waitFor();
+          await accountPage.getByRole("link", { name: "Registrá tu empresa", exact: true }).click();
+          await registerBusinessByEmail(accountPage, readyFile, setStage, { email, opened: true, mobile: width === 390 });
+        }]),
+        ["A2: operador antes y después de probar su correo en registro empresarial", async (platformPage, setStage) => {
+          // El operador real reducido evita compartir los cinco pedidos por destino con las regresiones A1/A3.
+          const email = "e2e-reduced@example.test";
+          await loginThroughUi(platformPage, email);
+          const publicPage = await platformPage.context().newPage();
+          publicPage.setDefaultTimeout(30_000);
+          const title = "Esta cuenta es de un operador: solo entra a Plataforma";
+          try {
+            setStage("registro personal del operador dice cuenta existente sin revelar Plataforma");
+            await publicPage.goto(new URL("/registro", baseUrl).href);
+            await publicPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
+            await publicPage.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+            await publicPage.getByRole("button", { name: "Crear cuenta", exact: true }).click();
+            await publicPage.getByText("Ya tenés una cuenta con ese correo.", { exact: true }).waitFor();
+            assert.equal(await publicPage.getByRole("heading", { name: title, exact: true }).count(), 0);
+            assert.equal(await publicPage.getByRole("link", { name: "Ir a Plataforma", exact: true }).count(), 0);
+            setStage("registro empresarial envía un código público sin revelar al operador");
+            await publicPage.goto(new URL("/registro/empresa", baseUrl).href);
+            await publicPage.getByRole("textbox", { name: "Tu correo electrónico" }).fill(email);
+            await publicPage.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+            const before = new Set(await pickupFiles());
+            for (let attempt = 0; attempt < 5; attempt++) {
+              const send = publicPage.getByRole("button", { name: "Continuar", exact: true });
+              await send.click({ trial: true });
+              const responsePromise = publicPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/business-signup/code" && response.request().method() === "POST");
+              await send.click();
+              const response = await responsePromise;
+              if (response.ok()) break;
+              const problem = await response.json();
+              assert.equal(response.status(), 429);
+              assert.equal(typeof problem.retryAfter, "number");
+              setStage(`respeta cooldown empresarial del operador (${problem.retryAfter}s)`);
+              await delay((problem.retryAfter + 1) * 1000);
+            }
+            await publicPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+            assert.equal(await publicPage.getByRole("heading", { name: title, exact: true }).count(), 0);
+            await enterCode(publicPage, await codeFromPickup(email, before));
+            await publicPage.getByRole("button", { name: "Verificar", exact: true }).click();
+            for (const width of [1440, 390]) {
+              await publicPage.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+              await publicPage.getByRole("heading", { name: title, exact: true }).waitFor();
+              assert.equal(await publicPage.getByRole("heading", { name: "Tu organización", exact: true }).count(), 0);
+            }
+            await publicPage.getByRole("button", { name: "Salir", exact: true }).click();
+            await publicPage.getByRole("link", { name: "Ingresá", exact: true }).first().waitFor();
+            await platformPage.reload();
+            await expectProfile(platformPage, "Plataforma", "A2 registro público conserva Plataforma");
+            const accesses = await invitationCommand(readyFile, { kind: "inspect-accesses", email });
+            assert.equal(accesses.personalSpaces, 0);
+            assert.equal(accesses.activeBusinessAccesses, 0);
+          } finally { await publicPage.close(); }
+        }],
         ["5a: ingresar como operador y consultar Plataforma con permisos reducidos", async (platformPage, setStage) => {
           setStage("abre Plataforma sin sesión");
           await platformPage.goto(new URL("/plataforma", baseUrl).href);
@@ -652,6 +801,29 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await expectProfile(platformPage, "Plataforma", "operador en su cookie exclusiva");
           const publicPage = await platformPage.context().newPage();
           publicPage.setDefaultTimeout(30_000);
+          await publicPage.addInitScript(() => {
+            window.loginSendEvents = { click: 0, submit: 0, invalid: 0, submitPrevented: false };
+            for (const kind of ["click", "submit", "invalid"]) document.addEventListener(kind, (event) => {
+              if (kind !== "click" || event.target.closest?.("form button[type=submit]")) window.loginSendEvents[kind]++;
+              if (kind === "submit") queueMicrotask(() => { window.loginSendEvents.submitPrevented = event.defaultPrevented; });
+            }, true);
+          });
+          publicPage.on("pageerror", (error) => console.info(`A1 pública error: ${error?.name ?? "Error"}`));
+          publicPage.on("request", (request) => {
+            const pathname = new URL(request.url()).pathname;
+            if (["/api/auth/login-code", "/api/auth/login-code/verify", "/connect/authorize", "/connect/token"].includes(pathname))
+              console.info(`A1 pública request: ${request.method()} ${pathname}`);
+          });
+          publicPage.on("requestfailed", (request) => {
+            const pathname = new URL(request.url()).pathname;
+            if (["/api/auth/login-code", "/api/auth/login-code/verify", "/connect/authorize", "/connect/token"].includes(pathname))
+              console.info(`A1 pública request fallido: ${request.method()} ${pathname}`);
+          });
+          publicPage.on("response", (response) => {
+            const pathname = new URL(response.url()).pathname;
+            if (["/api/auth/login-code", "/api/auth/login-code/verify", "/connect/authorize", "/connect/token"].includes(pathname))
+              console.info(`A1 pública HTTP: ${response.request().method()} ${pathname} → ${response.status()}`);
+          });
           const title = "Esta cuenta es de un operador: solo entra a Plataforma";
           try {
             for (const [door, entryLink] of [["consumer", "Ingresá"], ["business", "Ingresá como empresa"]]) {

@@ -45,11 +45,33 @@ test("Cerrar espera la acción exacta de la ficha y no toca Cerrar Gestión dura
   }
 });
 
-test("incluye los trece pares aprobados de Recuperar v111 para comparar la app de T19", () => {
+test("incluye los trece pares de Recuperar y los dos errores aprobados v112", () => {
   const cases = buildCases().filter((entry) => entry.group === "recuperar");
-  assert.equal(cases.length, 26);
+  assert.equal(cases.length, 30);
   assert.ok(cases.every((entry) => entry.state && entry.app.captureMode === "harness"));
   assert.ok(cases.some((entry) => entry.id === "recuperar-paso-3-movil"));
+});
+
+test("A2 incluye seis pares con campo y código backend, en ambos tamaños", () => {
+  const pairs = ["ingreso-sin-cuenta-persona", "ingreso-sin-cuenta-empresa", "registro-correo-con-cuenta", "recuperar-anterior-sin-cuenta", "recuperar-nuevo-con-cuenta", "agregar-correo-otra-cuenta"];
+  const entries = buildCases().filter((entry) => pairs.includes(entry.pair));
+  assert.equal(entries.length, 12);
+  for (const pair of pairs) {
+    const cases = entries.filter((entry) => entry.pair === pair);
+    assert.deepEqual(cases.map((entry) => entry.viewport.width), [1440, 390]);
+    for (const entry of cases) {
+      const rejected = entry.app.responses.find((response) => response.status === 400);
+      assert.ok(rejected?.body.code, entry.id);
+      assert.ok(rejected?.body.errors, entry.id);
+      assert.equal(entry.app.readyText, rejected.body.detail);
+      assert.equal(entry.app.actions.at(-1).type, "click");
+    }
+  }
+});
+
+test("A2 abre Agregar correo con el rótulo actual de escritorio sin WhatsApp", () => {
+  const entry = buildCases().find((item) => item.id === "agregar-correo-otra-cuenta-escritorio");
+  assert.equal(entry.app.actions[0].name, "Agregar correo");
 });
 
 test("los rótulos de Más real de T20c corresponden al tamaño móvil, sin heredar el marco desktop", () => {

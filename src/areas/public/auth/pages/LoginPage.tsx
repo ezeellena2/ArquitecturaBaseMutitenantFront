@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
+import { carriedLoginEmail, carryLoginEmail, emailFromNavigation, forgetLoginEmail } from "../lib/loginEmail";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { takeExpiredSessionNotice } from "@/auth/sessionExpiredNotice";
 import { ApiError } from "@/shared/api/ApiError";
@@ -50,7 +51,9 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const { t } = useTranslation(["auth", "errors"]);
   const auth = useAuth();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const returnUrl = loginReturnUrl(searchParams.get("returnUrl"));
+  const [initialEmail] = useState(() => emailFromNavigation(location.state) || (returnUrl ? carriedLoginEmail() : ""));
   const redirectError = searchParams.get("error");
   const [googleError, setGoogleError] = useState<string | null>(() => redirectError ?? carriedLoginRedirectError() ?? null);
   const [sessionExpired] = useState(() => {
@@ -84,6 +87,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   useEffect(() => {
     if (returnUrl || pending || googlePending || startedOidc.current) return;
     startedOidc.current = true;
+    if (initialEmail) carryLoginEmail(initialEmail);
     if (redirectError && !googleProofExpired) carryLoginRedirectError(redirectError);
     const destination = homeOf(access);
     const returnTo = safeReturnUrl(searchParams.get("returnUrl"), destination);
@@ -95,9 +99,11 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
         ...(searchParams.get("session") === "expired" ? { prompt: "login" } : {}),
       },
     });
-  }, [access, auth, redirectError, returnUrl, searchParams, pending, googlePending, googleProofExpired]);
+  }, [access, auth, redirectError, returnUrl, searchParams, pending, googlePending, googleProofExpired, initialEmail]);
 
-  useEffect(() => { if (returnUrl) forgetLoginRedirectError(); }, [returnUrl]);
+  useEffect(() => {
+    if (returnUrl) { forgetLoginRedirectError(); forgetLoginEmail(); }
+  }, [returnUrl]);
 
   if (!returnUrl && !pending) return null;
 
@@ -191,7 +197,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       {sessionExpired ? <FormError tone="info" icon={ClockIcon} message={t("login.sessionExpired")} /> : null}
       <GoogleButton mode="login" access={access} returnUrl={returnUrl!} />
       <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
-      <EmailCodeForm onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? { text: t("login.googleError"), details: [t("login.googleErrorHelp")] } : undefined} />
+      <EmailCodeForm access={access} initialEmail={initialEmail} onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? { text: t("login.googleError"), details: [t("login.googleErrorHelp")] } : undefined} />
       <div className="flex flex-col gap-2">
         {access === "consumer" ? <>
           <AuthLinkRow>{t("login.noAccount")}<AuthLink to="/registro">{t("login.createOne")}</AuthLink></AuthLinkRow>

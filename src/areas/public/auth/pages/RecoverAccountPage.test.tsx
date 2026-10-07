@@ -1,6 +1,6 @@
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import { server } from "@/test/mocks/server";
@@ -15,6 +15,7 @@ beforeAll(async () => {
   ]);
 });
 afterEach(async () => { vi.useRealTimers(); vi.unstubAllGlobals(); await changeCulture("es-AR"); });
+beforeEach(() => server.use(http.post("/api/account-recovery/preview", () => new HttpResponse(null, { status: 204 }))));
 
 const previousEmail = "ana@old.example.test";
 const email = "ana@new.example.test";
@@ -70,7 +71,7 @@ describe("RecoverAccountPage", () => {
     expect(screen.queryByRole("button", { name: "WhatsApp" })).not.toBeInTheDocument();
   });
 
-  it.each([previousEmail, "unknown@old.example.test"])("usa el mismo nonce y tres claves idempotentes con cualquier cuenta (%s)", async (lostEmail) => {
+  it.each([previousEmail, "otra@old.example.test"])("usa el mismo nonce y tres claves idempotentes con una cuenta existente (%s)", async (lostEmail) => {
     const requests: { path: string; body: Record<string, string>; key: string | null }[] = [];
     for (const path of ["/api/account-recovery/code", "/api/account-recovery/verify", "/api/account-recovery"]) {
       server.use(http.post(path, async ({ request }) => {

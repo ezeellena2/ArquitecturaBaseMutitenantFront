@@ -5,7 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Controller, useController, useForm, useWatch } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
 import { Trans, useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
+import { emailFromNavigation } from "../lib/loginEmail";
+import { PlatformAccessResult } from "../components/PlatformAccessResult";
 import { Check } from "lucide-react";
 import { z } from "zod";
 import { ClockIcon, LockIcon } from "@/shared/ui/icons";
@@ -41,7 +43,7 @@ import { GoogleButton } from "../components/GoogleButton";
 import { businessSignupErrorField, loginCodeErrorKey, loginCodeMessage } from "../errors";
 import { homeOf, loginPathOf } from "@/tenancy/access";
 
-type Step = "email" | "code" | "details" | "success" | "approval" | "closed";
+type Step = "email" | "code" | "details" | "success" | "approval" | "closed" | "platformOnly";
 
 /// El correo, como el registro de personas: sin la casilla, la aceptación se pide antes de revisar el correo.
 function emailFormSchema(t: TFunction) {
@@ -69,6 +71,7 @@ export function BusinessSignupPage() {
   const { t } = useTranslation("auth");
   const auth = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const [step, setStep] = useState<Step>(auth.isAuthenticated ? "details" : "email");
   // El correo al que mandamos el código y, después, el que dice la API para avisar la aprobación: con Google o con sesión
   // no se escribió ninguno.
@@ -86,7 +89,7 @@ export function BusinessSignupPage() {
   const cuitType = useCuitType();
   const emailSchema = useMemo(() => emailFormSchema(t), [t]);
   const organizationSchema = useMemo(() => organizationFormSchema(t, cuitType), [t, cuitType]);
-  const emailForm = useForm<EmailForm, unknown, EmailValues>({ resolver: zodResolver(emailSchema), defaultValues: { email: "", acceptedTerms: auth.isAuthenticated } });
+  const emailForm = useForm<EmailForm, unknown, EmailValues>({ resolver: zodResolver(emailSchema), defaultValues: { email: emailFromNavigation(location.state), acceptedTerms: auth.isAuthenticated } });
   const organizationForm = useForm<OrganizationForm, unknown, OrganizationValues>({
     resolver: zodResolver(organizationSchema), defaultValues: { organizationName: "", slug: "", firstCompanyName: "", taxNumber: "" },
   });
@@ -179,6 +182,7 @@ export function BusinessSignupPage() {
       onSuccess: () => setStep("details"),
       onError: (caught) => {
         if (!(caught instanceof ApiError)) throw caught;
+        if (caught.code === "Tenancy.Access.PlatformOnly") { setStep("platformOnly"); return; }
         if (caught.code === "Auth.BusinessSignup.Closed") { setStep("closed"); return; }
         setRequestError(caught);
       },
@@ -203,6 +207,7 @@ export function BusinessSignupPage() {
 
   function createRejected(caught: unknown) {
     if (!(caught instanceof ApiError)) throw caught;
+    if (caught.code === "Tenancy.Access.PlatformOnly") { setStep("platformOnly"); return; }
     if (caught.code === "Auth.BusinessSignup.Closed") { setStep("closed"); return; }
     if (caught.code === "Tenancy.Organization.LimitReached") {
       setLimitCount(typeof caught.problem.limit === "number" ? caught.problem.limit : null);
@@ -249,7 +254,9 @@ export function BusinessSignupPage() {
   const { errors } = organizationForm.formState;
 
   return <AuthLayout access="business" panelIntro={t("businessSignup.panelIntro")}>
-    {step === "closed" ? <AuthStatus icon={LockIcon} title={t("businessSignup.closedTitle")} detail={t("businessSignup.closedDetail")}
+    {step === "platformOnly" ? <PlatformAccessResult access="business" onSignedOut={() => {
+      setStep("email"); setEmail(""); setCode(""); setRequestError(null); emailForm.reset({ email: "", acceptedTerms: false });
+    }} /> : step === "closed" ? <AuthStatus icon={LockIcon} title={t("businessSignup.closedTitle")} detail={t("businessSignup.closedDetail")}
       actions={<Button asChild variant="outline" size="lg"><Link to="/">{t("businessSignup.backHome")}</Link></Button>} />
       : step === "success" ? <AuthStatus icon={Check} tone="ok" title={t("businessSignup.doneTitle", { organization: organizationName.trim() })}
         detail={t("businessSignup.doneDetail")}

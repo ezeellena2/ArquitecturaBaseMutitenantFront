@@ -36,6 +36,25 @@ function show(url = "/registro/empresa", viewport = 390) {
 }
 
 describe("BusinessSignupPage", () => {
+  it("después del código del operador reutiliza el estado privado de A1 sin abrir Tu organización", async () => {
+    server.use(
+      http.post("/api/auth/business-signup/code", () => HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 })),
+      http.post("/api/auth/business-signup/verify", () => HttpResponse.json({ code: "Tenancy.Access.PlatformOnly" }, { status: 403 })),
+    );
+    const { container } = show();
+    fireEvent.change(screen.getByRole("textbox", { name: "Tu correo electrónico" }), { target: { value: "operator@example.test" } });
+    fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
+    const first = await screen.findByRole("textbox", { name: "Código 1" });
+    expect(screen.queryByRole("link", { name: "Ir a Plataforma" })).not.toBeInTheDocument();
+    fireEvent.change(first, { target: { value: "123456" } });
+    fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
+    expect(await screen.findByRole("heading", { name: "Esta cuenta es de un operador: solo entra a Plataforma" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ir a Plataforma" })).toHaveAttribute("href", "/plataforma");
+    expect(screen.getByRole("button", { name: "Salir" })).toBeVisible();
+    expect(screen.queryByRole("heading", { name: "Tu organización" })).not.toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+  });
   it("muestra la aprobación de términos y el alta por correo en móvil y escritorio", async () => {
     const originalWidth = window.innerWidth;
     try {
