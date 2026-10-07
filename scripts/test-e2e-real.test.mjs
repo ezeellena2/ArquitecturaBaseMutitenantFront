@@ -548,6 +548,8 @@ async function platformNavigate(page, panel, link) {
 
 async function openPlatformOrganization(page, name) {
   await platformNavigate(page, "Gestión", "Organizaciones");
+  // Los recorridos anteriores crean organizaciones: el destino puede estar fuera de la primera página.
+  await page.getByRole("searchbox", { name: "Buscar por nombre o correo", exact: true }).fill(name);
   await page.getByRole("link", { name, exact: true }).click();
   await page.getByRole("heading", { name, exact: true }).waitFor();
 }
