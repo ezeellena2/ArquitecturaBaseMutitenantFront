@@ -25,7 +25,7 @@ Comparaciones de los cinco estados afectados, a 1440 y 390. A5 y la ADR 0045 eli
 | Quitar correo | [Comparación](cuenta/cuenta-quitar-correo-escritorio-1440x900-lado-a-lado.png) | [Comparación](cuenta/cuenta-quitar-correo-movil-390x844-lado-a-lado.png) |
 | Desvincular Google | [Comparación](cuenta/cuenta-desvincular-google-escritorio-1440x900-lado-a-lado.png) | [Comparación](cuenta/cuenta-desvincular-google-movil-390x844-lado-a-lado.png) |
 
-La referencia v112 se conserva completa: `Cuenta-Baja` y `Cuenta-Metodo` todavía dibujan el OTP que la ADR 0045 ordena retirar. La fila de Nombre/Apellido del fondo se implementa en A6 y estas comparaciones se repiten al cerrarlo. La exportación pertenece a E10, según la ficha `identidad.md` del back.
+La referencia v112 se conserva completa: `Cuenta-Baja` y `Cuenta-Metodo` todavía dibujan el OTP que la ADR 0045 ordena retirar. Las diez comparaciones se repitieron con Nombre y Apellido de A6, como se detalla abajo. La exportación pertenece a E10, según la ficha `identidad.md` del back.
 
 ## A1 · El operador probado en una puerta pública
 
@@ -58,7 +58,7 @@ Los seis estados muestran el error de campo de la v112. En ingreso y registro, e
 | Recuperar: nuevo de otra cuenta | [Comparación](recuperar/recuperar-nuevo-con-cuenta-escritorio-1440x900-lado-a-lado.png) | [Comparación](recuperar/recuperar-nuevo-con-cuenta-movil-390x844-lado-a-lado.png) |
 | Agregar correo de otra cuenta | [Comparación](cuenta/agregar-correo-otra-cuenta-escritorio-1440x900-lado-a-lado.png) | [Comparación](cuenta/agregar-correo-otra-cuenta-movil-390x844-lado-a-lado.png) |
 
-El primer capturador produjo 11/12 imágenes: la preparación de escritorio todavía buscaba «Agregar correo o teléfono». El test del catálogo reprodujo ese desacuerdo (1 fallo y 12 verdes), pasó con el nombre actual «Agregar correo» (13/13) y se repitieron las doce comparaciones en verde. Las primeras imágenes y logs se conservan en `.local/pre7/a2/capturas-primeras*`; `capturas-segundas.*` y `capturas-verificar.*` tienen EXIT 0. Después de corregir la pérdida de correo al volver de OIDC en StrictMode, se regeneraron y revisaron las doce imágenes actuales: `capturas-finales.*` y `capturas-verificar-finales.*`, ambos EXIT 0. El fondo de Mi cuenta se repite después de A6.
+El primer capturador produjo 11/12 imágenes: la preparación de escritorio todavía buscaba «Agregar correo o teléfono». El test del catálogo reprodujo ese desacuerdo (1 fallo y 12 verdes), pasó con el nombre actual «Agregar correo» (13/13) y se repitieron las doce comparaciones en verde. Las primeras imágenes y logs se conservan en `.local/pre7/a2/capturas-primeras*`; `capturas-segundas.*` y `capturas-verificar.*` tienen EXIT 0. Después de corregir la pérdida de correo al volver de OIDC en StrictMode, se regeneraron y revisaron las doce imágenes actuales: `capturas-finales.*` y `capturas-verificar-finales.*`, ambos EXIT 0. Las dos imágenes de Agregar correo se repitieron con el fondo de A6, como se detalla abajo.
 
 E2E real combinado A2, A1, A3 y reclamo del correo pendiente: cuarto intento **9/9**, 0 fallos/cancelados/omitidos, EXIT 0, **575,132 s**, `real-fourth.*`. Aspire después del real `[]`, EXIT 0. Los tres intentos fallidos se conservan; se corrigieron la cuota compartida de preparación y la pérdida de correo OIDC con su rojo/verde. El fallo intermitente de A1 del tercero no se reprodujo en cuatro diagnósticos ni en el cuarto combinado; no se atribuye una corrección causal. Detalle y conteos en el plan de arreglos del back.
 
@@ -80,6 +80,27 @@ node scripts/recorrido-lienzo/vivo.mjs consolidacion/pre7/agregar-correo-otra-cu
 ```
 
 Las capturas visuales usan las respuestas de prueba del capturador existente para reproducir estados. El E2E real usa front, API, PostgreSQL y pickup reales, sin interceptar peticiones ni simular sesiones.
+
+## A6 · Nombre y apellido separados
+
+Cuenta usa cuatro columnas iguales en escritorio —Nombre, Apellido, Idioma y región, Zona horaria— y los campos verticales en el teléfono. El tablero y los datos visuales de la app muestran Lucía y Fernández. Las demás lecturas conservan el `DisplayName` armado por el backend.
+
+| Estado | 1440 | 390 |
+|---|---|---|
+| Mi cuenta | [Comparación](cuenta/cuenta-escritorio-1440x900-lado-a-lado.png) | [Comparación](cuenta/cuenta-movil-390x844-lado-a-lado.png) |
+
+Se repitieron también las diez imágenes de A5 y las dos de Agregar correo de otra cuenta (A2). Se conservan los límites de WhatsApp (Etapa 8), exportación (Etapa 10) y la excepción explícita del OTP antiguo que retira A5/ADR0045, sin cambiar el lienzo. Las catorce imágenes se inspeccionaron y enviaron al usuario con sus comandos de vivo.
+
+Evidencia FRONT `.local/pre7/a6/`: `root-capturas-cuenta-a2.*` **4/4**, EXIT 0, 13,021 s; `root-capturas-a5.*` **10/10**, EXIT 0, 30,079 s; `root-capturas-verificar.*` **14/14**, EXIT 0. Los capturadores terminaron antes del E2E real. La galería reúne ahora 32 comparaciones de 16 estados.
+
+E2E real A6 y regresiones A5/idioma: **6/6**, 0 fallos/cancelados/omitidos, EXIT 0, **168,077 s**, FRONT `.local/pre7/a6/real.*`. En ambos tamaños, cuatro combinaciones de nombre y apellido se guardan por sus partes, persisten tras F5 y aparecen como `DisplayName` o el contacto de respaldo en el menú. Las acciones de cuenta y el cambio de idioma siguen pasando con front/API/PostgreSQL/pickup reales. Front dirigido final **34/34** en seis archivos, EXIT 0, 13,70 s; build, lint dirigido y contrato EXIT 0. Backend dirigido **77/77**, unitarios **59/59** y arquitectura **45/45**; build AppHost sin advertencias ni errores. Evidencia y alcance completos en el plan del back.
+
+Implementación BACK `de85e34` (27 rutas propias), FRONT `77a4039` (16), `main`, sin push. Aspire después del recorrido `[]`, EXIT 0 (`aspire-after.*` BACK). La migración e importación de nombres de Google siguen usando la base de A7 (`b3ffa40`), sin una segunda migración.
+
+```powershell
+node scripts/recorrido-lienzo/vivo.mjs consolidacion/pre7/cuenta-escritorio --vite http://127.0.0.1:5191
+node scripts/recorrido-lienzo/vivo.mjs consolidacion/pre7/cuenta-movil --vite http://127.0.0.1:5191
+```
 
 Desde la raíz del front:
 

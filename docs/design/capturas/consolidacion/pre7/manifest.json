@@ -632,7 +632,9 @@
               "currencyCode": "ARS",
               "version": 42,
               "needsPersonalLoginMethod": false,
-              "pendingLegalDocuments": []
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
             },
             "status": 200
           },
@@ -773,7 +775,9 @@
               "currencyCode": "ARS",
               "version": 42,
               "needsPersonalLoginMethod": false,
-              "pendingLegalDocuments": []
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
             },
             "status": 200
           },
@@ -1144,6 +1148,262 @@
       }
     },
     {
+      "id": "cuenta-escritorio",
+      "pair": "cuenta",
+      "group": "cuenta",
+      "state": "Mi cuenta",
+      "board": "Cuenta",
+      "props": {
+        "whatsapp": "Sin el módulo de WhatsApp"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "3",
+                  "type": "Phone",
+                  "value": "011 15-5555-4521",
+                  "isPrimary": false,
+                  "isVerified": false,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          }
+        ],
+        "actions": [],
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "cuenta-movil",
+      "pair": "cuenta",
+      "group": "cuenta",
+      "state": "Mi cuenta",
+      "board": "M-Cuenta",
+      "props": {},
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "3",
+                  "type": "Phone",
+                  "value": "011 15-5555-4521",
+                  "isPrimary": false,
+                  "isVerified": false,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          }
+        ],
+        "actions": [],
+        "readySelector": "main"
+      }
+    },
+    {
+      "id": "registro-empresa-correo-escritorio",
+      "pair": "registro-empresa-correo",
+      "group": "registro",
+      "state": "Registro de empresa: pide el correo",
+      "board": "Registro-Empresa",
+      "props": {
+        "estado": "Correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro/empresa",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "registro-empresa-correo-movil",
+      "pair": "registro-empresa-correo",
+      "group": "registro",
+      "state": "Registro de empresa: pide el correo",
+      "board": "M-Registro-Empresa",
+      "props": {
+        "estado": "Correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro/empresa",
+        "readySelector": "h1"
+      }
+    },
+    {
       "id": "agregar-correo-escritorio",
       "pair": "agregar-correo",
       "group": "cuenta",
@@ -1200,7 +1460,9 @@
               "currencyCode": "ARS",
               "version": 42,
               "needsPersonalLoginMethod": false,
-              "pendingLegalDocuments": []
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
             },
             "status": 200
           },
@@ -1320,7 +1582,9 @@
               "currencyCode": "ARS",
               "version": 42,
               "needsPersonalLoginMethod": false,
-              "pendingLegalDocuments": []
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
             },
             "status": 200
           },
@@ -1438,7 +1702,9 @@
               "currencyCode": "ARS",
               "version": 42,
               "needsPersonalLoginMethod": false,
-              "pendingLegalDocuments": []
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
             },
             "status": 200
           },
@@ -1557,7 +1823,9 @@
               "currencyCode": "ARS",
               "version": 42,
               "needsPersonalLoginMethod": false,
-              "pendingLegalDocuments": []
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
             },
             "status": 200
           },
@@ -1622,44 +1890,6 @@
       "referenceNote": "La v112 aún dibuja el bloque OTP. A5 y la ADR 0045 ordenan retirarlo y conservar el resto del diálogo."
     },
     {
-      "id": "registro-empresa-correo-escritorio",
-      "pair": "registro-empresa-correo",
-      "group": "registro",
-      "state": "Registro de empresa: pide el correo",
-      "board": "Registro-Empresa",
-      "props": {
-        "estado": "Correo"
-      },
-      "boardActions": [],
-      "viewport": {
-        "width": 1440,
-        "height": 900
-      },
-      "app": {
-        "path": "/registro/empresa",
-        "readySelector": "h1"
-      }
-    },
-    {
-      "id": "registro-empresa-correo-movil",
-      "pair": "registro-empresa-correo",
-      "group": "registro",
-      "state": "Registro de empresa: pide el correo",
-      "board": "M-Registro-Empresa",
-      "props": {
-        "estado": "Correo"
-      },
-      "boardActions": [],
-      "viewport": {
-        "width": 390,
-        "height": 844
-      },
-      "app": {
-        "path": "/registro/empresa",
-        "readySelector": "h1"
-      }
-    },
-    {
       "id": "agregar-correo-codigo-escritorio",
       "pair": "agregar-correo-codigo",
       "group": "cuenta",
@@ -1714,7 +1944,9 @@
               "currencyCode": "ARS",
               "version": 42,
               "needsPersonalLoginMethod": false,
-              "pendingLegalDocuments": []
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
             },
             "status": 200
           },
@@ -1846,7 +2078,9 @@
               "currencyCode": "ARS",
               "version": 42,
               "needsPersonalLoginMethod": false,
-              "pendingLegalDocuments": []
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
             },
             "status": 200
           },
@@ -1980,7 +2214,9 @@
               "currencyCode": "ARS",
               "version": 42,
               "needsPersonalLoginMethod": false,
-              "pendingLegalDocuments": []
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
             },
             "status": 200
           },
@@ -2109,7 +2345,9 @@
               "currencyCode": "ARS",
               "version": 42,
               "needsPersonalLoginMethod": false,
-              "pendingLegalDocuments": []
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
             },
             "status": 200
           },
@@ -2238,7 +2476,9 @@
               "currencyCode": "ARS",
               "version": 42,
               "needsPersonalLoginMethod": false,
-              "pendingLegalDocuments": []
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
             },
             "status": 200
           },
@@ -2367,7 +2607,9 @@
               "currencyCode": "ARS",
               "version": 42,
               "needsPersonalLoginMethod": false,
-              "pendingLegalDocuments": []
+              "pendingLegalDocuments": [],
+              "firstName": "Lucía",
+              "lastName": "Fernández"
             },
             "status": 200
           },
