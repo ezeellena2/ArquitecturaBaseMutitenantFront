@@ -42,6 +42,7 @@ import { AuthMessage } from "../components/AuthMessage";
 import { GoogleButton } from "../components/GoogleButton";
 import { businessSignupErrorField, loginCodeErrorKey, loginCodeMessage } from "../errors";
 import { homeOf, loginPathOf } from "@/tenancy/access";
+import { publicSiteSuffix } from "@/tenancy/publicSite";
 
 type Step = "email" | "code" | "details" | "success" | "approval" | "closed" | "platformOnly";
 
@@ -306,7 +307,7 @@ export function BusinessSignupPage() {
                     ?? (slugAvailability === "Reserved" ? t("businessSignup.slugReserved")
                       : slugAvailability === "Taken" ? t("businessSignup.slugTaken")
                         : slugQuery.isError ? t("businessSignup.slugInvalid") : undefined)}>
-                  <SlugInput suffix={t("businessSignup.domainSuffix")} name={slugField.field.name} value={slug} onBlur={slugField.field.onBlur}
+                  <SlugInput suffix={publicSiteSuffix} name={slugField.field.name} value={slug} onBlur={slugField.field.onBlur}
                     onChange={(event) => { slugField.field.onChange(event.target.value.trim().toLowerCase()); setLimitReached(false); }}
                     autoComplete="off" spellCheck={false} />
                 </FormField>

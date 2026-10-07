@@ -15,7 +15,7 @@ import { chromium } from "playwright";
 // Esta prueba arranca su propio AppHost y un PostgreSQL efímero, fuera del volumen Development.
 // No intercepta peticiones ni simula sesiones. A8 conserva una cookie antigua firmada por el preparador aislado.
 // Nunca imprime correos, cookies ni códigos.
-const baseUrl = new URL("https://localhost:5174");
+const baseUrl = new URL("https://localtest.me:5174");
 const appHostDirectory = fileURLToPath(new URL("../../ArquitecturaBaseMutitenant/src/ArquitecturaBaseMultitenant.AppHost/", import.meta.url));
 const appHostProject = path.join(appHostDirectory, "ArquitecturaBaseMultitenant.AppHost.csproj");
 const execFileAsync = promisify(execFile);
@@ -2012,7 +2012,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           const pageAfterPublication = adminPage.waitForResponse((response) =>
             new URL(response.url()).pathname === "/api/organization/public-page" && response.request().method() === "GET");
           // Tablero Pagina-Org: se publica con el interruptor de «Publicación», que se aplica al momento.
-          const publishSwitch = adminPage.getByRole("switch", { name: "Visible en empresa-e2e-etapa6.plataforma.com", exact: true });
+          const publishSwitch = adminPage.getByRole("switch", { name: "Visible en empresa-e2e-etapa6.localtest.me:5174", exact: true });
           await publishSwitch.waitFor({ timeout: 10_000 });
           assert.ok(await publishSwitch.isEnabled(),
             `El borrador debe habilitar el interruptor de Publicación tras refrescar: versión=${refreshedPage.version}.`);

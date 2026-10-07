@@ -20,6 +20,7 @@ import type { AppRoute } from "@/layouts/navigation/types";
 import { ForbiddenRoute, HomeRoute, NotFoundRoute, PlatformHomeRoute } from "./RouteViews";
 import { RequirePermission } from "./RequirePermission";
 import { homeOf, loginPathOf } from "@/tenancy/access";
+import { siteOfHost } from "@/tenancy/publicSite";
 
 /// La pantalla de una ruta, que se carga recién al entrar.
 function lazyPage<TModule>(load: () => Promise<TModule>, page: (module: TModule) => ComponentType): LazyRouteFunction<RouteObject> {
@@ -92,6 +93,8 @@ export const routes: RouteObject[] = [
   { path: "/registro/empresa", lazy: lazyPage(() => import("@/areas/public/auth/pages/BusinessSignupPage"), (page) => page.BusinessSignupPage), errorElement: <AppErrorPage /> },
   { path: "/invitacion", lazy: lazyPage(() => import("@/areas/public/auth/pages/InvitationPage"), (page) => page.InvitationPage), errorElement: <AppErrorPage /> },
   { path: "/auth/callback", lazy: lazyPage(() => import("@/areas/public/auth/pages/CallbackPage"), (page) => page.CallbackPage), errorElement: <AppErrorPage /> },
+  // T13 entrega la página del directorio; T10 reserva su ruta sin importar un módulo inexistente.
+  { path: "/empresas", element: <Outlet />, errorElement: <AppErrorPage /> },
   { path: "/terminos", lazy: lazyPage(() => import("@/areas/public/legal/pages/LegalDocumentPage"), (page) => () => <SiteLayout variant="legal"><page.LegalDocumentPage kind="terms" /></SiteLayout>), errorElement: <AppErrorPage /> },
   { path: "/privacidad", lazy: lazyPage(() => import("@/areas/public/legal/pages/LegalDocumentPage"), (page) => () => <SiteLayout variant="legal"><page.LegalDocumentPage kind="privacy" /></SiteLayout>), errorElement: <AppErrorPage /> },
   { path: "/sin-permiso", element: <ForbiddenRoute />, errorElement: <AppErrorPage /> },
@@ -127,3 +130,41 @@ export const routes: RouteObject[] = [
   { path: "*", element: <NotFoundRoute />, errorElement: <AppErrorPage /> },
   ] },
 ];
+
+export interface HostPages {
+  directory?: LazyRouteFunction<RouteObject>;
+  storefront?: LazyRouteFunction<RouteObject>;
+}
+
+const unavailablePage = lazyPage(
+  () => import("@/areas/storefront/site/pages/StorefrontUnavailablePage"), (page) => page.StorefrontUnavailablePage,
+);
+
+/** El árbol principal exportado mantiene los recorridos y tests anteriores; T13 puede aportar su lazy. */
+export function createMainSiteRoutes(pages: HostPages = {}): RouteObject[] {
+  if (!pages.directory) return routes;
+  return routes.map((route) => route.index ? route : ({ ...route, children: route.children?.map((child) => child.path === "/empresas"
+    ? { path: child.path, lazy: pages.directory, errorElement: child.errorElement }
+    : child) }));
+}
+
+/** T14 aporta la página publicada. Hasta entonces se monta la frontera aprobada, con AppShell y recuperación. */
+export function createStorefrontRoutes(page: LazyRouteFunction<RouteObject> = unavailablePage): RouteObject[] {
+  return [{ element: <AppShell />, errorElement: <AppErrorPage />, children: [
+    { path: "/auth/callback", lazy: lazyPage(() => import("@/areas/public/auth/pages/CallbackPage"), (module) => module.CallbackPage), errorElement: <AppErrorPage /> },
+    { element: <SessionRecovery />, children: [
+      { path: "/", lazy: page, errorElement: <AppErrorPage /> },
+      { path: "*", lazy: unavailablePage, errorElement: <AppErrorPage /> },
+    ] },
+  ] }];
+}
+
+/** Un host desconocido nunca monta ingreso, callback ni rutas privadas. */
+export function routesForHost(host: string, pages: HostPages = {}): RouteObject[] {
+  const site = siteOfHost(host);
+  if (site.kind === "main") return createMainSiteRoutes(pages);
+  if (site.kind === "storefront") return createStorefrontRoutes(pages.storefront);
+  return [{ element: <AppShell />, errorElement: <AppErrorPage />, children: [
+    { path: "*", lazy: unavailablePage, errorElement: <AppErrorPage /> },
+  ] }];
+}

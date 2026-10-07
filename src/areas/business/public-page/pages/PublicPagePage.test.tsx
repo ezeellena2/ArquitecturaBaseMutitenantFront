@@ -73,7 +73,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
       api(page);
       renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
 
-      await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" });
+      await screen.findByRole("switch", { name: "Visible en grupo-delta.localtest.me:5174" });
       const bar = screen.getByRole("heading", { level: 1, name: "Página pública" }).closest("header")!;
       expect(bar).toHaveTextContent("Publicada");
       expect(within(bar).getByRole("link", { name: "Ver página" })).toHaveClass("text-[15.5px]", "text-[var(--marca-tx)]");
@@ -94,7 +94,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     api(page, calls);
     const { container } = renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
 
-    const visible = await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" });
+    const visible = await screen.findByRole("switch", { name: "Visible en grupo-delta.localtest.me:5174" });
     expect(visible).toBeChecked();
     // Tablero Pagina-Org (.w-it, .w-sw y .o-logo-chico): la fila de «Publicación» mide 56 como mínimo; el interruptor, 36
     // por 20, gris claro si está apagado; el logo, 40 con radio 10 y la sigla en 14.
@@ -102,14 +102,14 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(visible).toHaveClass("data-[size=default]:w-9", "data-[size=default]:h-5", "data-[state=unchecked]:bg-[var(--borde2)]");
     expect(screen.getByText("GD")).toHaveClass("size-10", "rounded-[10px]", "text-[14px]");
     expect(subline()).toHaveTextContent(/^Publicada$/);
-    expect(screen.getByRole("link", { name: "Ver página" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ver página" })).toHaveAttribute("href", "https://grupo-delta.localtest.me:5174/");
     expect(screen.queryByRole("button", { name: "Despublicar" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
     expect(await axe(container)).toHaveNoViolations();
 
     await user.click(visible);
     const dialog = await screen.findByRole("dialog", { name: "¿Despublicar la página?" });
-    expect(dialog).toHaveTextContent("Deja de verse en grupo-delta.plataforma.com. La podés volver a publicar cuando quieras.");
+    expect(dialog).toHaveTextContent("Deja de verse en grupo-delta.localtest.me:5174. La podés volver a publicar cuando quieras.");
     await user.click(within(dialog).getByRole("button", { name: "Despublicar" }));
     await waitFor(() => expect(calls).toEqual(["unpublish {\"version\":8}"]));
     expect(await screen.findByText("Despublicamos tu página.")).toBeVisible();
@@ -136,7 +136,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     api({ ...page, isPublished: false }, calls);
     renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
 
-    const visible = await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" });
+    const visible = await screen.findByRole("switch", { name: "Visible en grupo-delta.localtest.me:5174" });
     expect(visible).not.toBeChecked();
     expect(subline()).toHaveTextContent(/^Borrador$/);
     expect(screen.getByRole("button", { name: "Vista previa" })).toBeVisible();
@@ -184,7 +184,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
       api({ ...page, isPublished: false });
       renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
 
-      await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" });
+      await screen.findByRole("switch", { name: "Visible en grupo-delta.localtest.me:5174" });
       const bar = screen.getByRole("heading", { level: 1, name: "Página pública" }).closest("header")!;
       await user.click(within(bar).getByRole("button", { name: "Vista previa" }));
       const sheet = await screen.findByRole("dialog", { name: "Vista previa" });
@@ -214,7 +214,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
 
     // «Criterio · Avisos»: lo que no se puede usar queda apagado y abre lo mismo que el ⓘ; no se apaga del todo, así se
     // puede tocar (y enfocar) para saber por qué.
-    const toggle = await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" });
+    const toggle = await screen.findByRole("switch", { name: "Visible en grupo-delta.localtest.me:5174" });
     expect(toggle).toHaveAttribute("aria-disabled", "true");
     expect(toggle).not.toBeDisabled();
     expect(subline()).toHaveTextContent(/^Despublicada por la plataforma$/);
@@ -222,7 +222,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     // el teléfono la dirección entra entera.
     const info = screen.getByRole("button", { name: "Ver el motivo y qué podés hacer" });
     expect(info.parentElement).toHaveClass("gap-1.5", "min-w-0");
-    expect(info.previousElementSibling).toHaveTextContent("Visible en grupo-delta.plataforma.com");
+    expect(info.previousElementSibling).toHaveTextContent("Visible en grupo-delta.localtest.me:5174");
     await user.click(info);
     const notice = await screen.findByRole("dialog", { name: "Página despublicada" });
     expect(notice).toHaveTextContent("Datos de contacto falsos");
@@ -244,7 +244,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     api({ ...page, isPublished: false, publishBlockedAtUtc: "2026-09-26T15:00:00Z", publishBlockedReason: "Datos de contacto falsos" }, calls);
     renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
 
-    const toggle = await screen.findByRole("switch", { name: "Visible en grupo-delta.plataforma.com" });
+    const toggle = await screen.findByRole("switch", { name: "Visible en grupo-delta.localtest.me:5174" });
     await user.click(toggle);
     const notice = await screen.findByRole("dialog", { name: "Página despublicada" });
     expect(notice).toHaveTextContent("Datos de contacto falsos");
@@ -353,7 +353,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     // Sin imagen, la inicial de cada palabra, como el tablero («GD»).
     expect(within(pageBox).getByText("GD")).toBeVisible();
     expect(within(pageBox).getByText("Subir imagen")).toBeVisible();
-    expect(within(pageBox).getByText(".plataforma.com")).toBeVisible();
+    expect(within(pageBox).getByText(".localtest.me:5174")).toBeVisible();
     expect(screen.getByRole("region", { name: "Contacto" })).toBeVisible();
     expect(screen.queryByRole("region", { name: "Logo" })).not.toBeInTheDocument();
     // Tablero Pagina-Org: la caja de «Descripción» crece con el texto y no tiene el tirador para cambiarle el tamaño.
@@ -404,7 +404,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     await user.clear(name);
     await user.type(name, "Grupo Delta Norte");
 
-    await user.click(screen.getByRole("switch", { name: "Visible en grupo-delta.plataforma.com" }));
+    await user.click(screen.getByRole("switch", { name: "Visible en grupo-delta.localtest.me:5174" }));
     expect(await screen.findByText("Publicamos tu página.")).toBeVisible();
     await waitFor(() => expect(subline()).toHaveTextContent(/^Publicada·Cambios sin guardar$/));
     expect(name).toHaveValue("Grupo Delta Norte");
@@ -448,7 +448,7 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     await user.clear(name);
     await user.type(name, "Grupo Delta Norte");
 
-    await user.click(screen.getByRole("switch", { name: "Visible en grupo-delta.plataforma.com" }));
+    await user.click(screen.getByRole("switch", { name: "Visible en grupo-delta.localtest.me:5174" }));
     expect(await screen.findByText("Publicamos tu página.")).toBeVisible();
     backend.afterWrite = undefined;
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));

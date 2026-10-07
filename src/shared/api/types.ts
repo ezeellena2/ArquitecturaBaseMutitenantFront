@@ -89,6 +89,8 @@ export type OrganizationDomainResponse = ApiSchemas["OrganizationDomainResponse"
 export type TenantDomainStatus = ApiSchemas["TenantDomainStatus"];
 export type RegisterOrganizationDomainRequest = ApiSchemas["RegisterOrganizationDomainHttpRequest"];
 export type PublicPageResponse = ApiSchemas["PublicPageHttpResponse"];
+/** Proyección publicada: sin ids, versión ni estado de moderación. */
+export type PublicSiteResponse = ApiSchemas["PublicSiteHttpResponse"];
 export type UpdatePublicPageRequest = ApiSchemas["UpdatePublicPageHttpRequest"];
 export type SetPublicPagePublicationRequest = ApiSchemas["SetPublicPagePublicationHttpRequest"];
 export type OrganizationAuditEntryResponse = ApiSchemas["OrganizationAuditEntryResponse"];

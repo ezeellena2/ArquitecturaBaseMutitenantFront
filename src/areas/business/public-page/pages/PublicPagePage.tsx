@@ -35,7 +35,7 @@ import { DateText } from "@/shared/ui/format/DateText";
 import { initials } from "@/shared/lib/initials";
 import { cn } from "@/shared/lib/utils";
 import { toastError } from "@/shared/ui/sonner";
-import { publicSiteHost, publicSiteSuffix } from "@/tenancy/publicSite";
+import { publicSiteHost, publicSiteSuffix, publicSiteUrl } from "@/tenancy/publicSite";
 import { checkOrganizationSlug, fetchPublicPage, publicPageQueryKey, setPublicPagePublished, slugAvailabilityQueryKey, updatePublicPage } from "../api/publicPage";
 
 /// La página pública no tiene reglas propias en la pantalla: lo que el back rechaza de un dato va debajo de ese dato, y
@@ -83,18 +83,6 @@ async function readImage(file: File): Promise<{ dataUri: string; base64: string 
     reader.readAsDataURL(file);
   });
   return { dataUri, base64: dataUri.slice(dataUri.indexOf(",") + 1) };
-}
-
-function publicUrl(slug: string): string {
-  const url = new URL(window.location.href);
-  const host = url.hostname;
-  const parts = host.split(".");
-  const root = host === "localhost" || /^[\d.]+$/.test(host) ? "localhost" : parts.slice(-2).join(".");
-  url.hostname = `${slug}.${root}`;
-  url.pathname = "/";
-  url.search = "";
-  url.hash = "";
-  return url.toString();
 }
 
 function slugStateText(state: TenantSlugAvailability | undefined, t: (key: string) => string): string | undefined {
@@ -226,7 +214,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
       phoneSubtitle={summary}
       phoneBody="gray"
       barAction={page.isPublished && page.slug
-        ? { label: t("publicPage:view"), href: publicUrl(page.slug) }
+        ? { label: t("publicPage:view"), href: publicSiteUrl(page.slug) }
         : { label: t("publicPage:preview"), onClick: () => setPreviewOpen(true) }}
       actions={<>
         <Button type="button" variant="outline" onClick={discard}>{t("publicPage:discard")}</Button>

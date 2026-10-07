@@ -186,9 +186,9 @@ describe("BusinessSignupPage", () => {
     fireEvent.change(screen.getByRole("textbox", { name: /Dirección de tu página/ }), { target: { value: "ACME" } });
     fireEvent.change(screen.getByRole("textbox", { name: "Primera empresa" }), { target: { value: "Acme Argentina" } });
     expect(await screen.findByRole("status")).toHaveTextContent("Disponible");
-    expect(screen.getByText(".plataforma.com")).toBeVisible();
+    expect(screen.getByText(".localtest.me:5174")).toBeVisible();
     // Tablero Registro-Empresa: el dominio en una caja gris aparte, no como texto dentro del campo.
-    expect(screen.getByText(".plataforma.com")).toHaveClass("bg-[var(--s2)]", "border-l");
+    expect(screen.getByText(".localtest.me:5174")).toHaveClass("bg-[var(--s2)]", "border-l");
     // Lienzo v104 (.in-pre): el campo mide 44 con radio 10, en la compu y en el teléfono; el texto ocupa todo su alto,
     // sin el alto ni el radio de los campos del teléfono.
     const slugInput = screen.getByRole("textbox", { name: /Dirección de tu página/ });
