@@ -2,7 +2,7 @@
 
 Prueba manual sobre el AppHost normal y su PostgreSQL persistente, en el perfil de Chrome que ya tenía sesiones. No se borraron cookies ni almacenamiento. Los correos `codex-*@example.test` son propios de la prueba; el transporte de correo de este proceso usa un pickup local. No se reemplazan respuestas de la API ni se simula el ingreso.
 
-Las imágenes son JPEG originales del navegador, inspeccionadas en su estado final y verificadas a **1440 × 900** y **390 × 844**. `manifest.json` conserva dimensiones, descripción, paso y SHA256. Las primeras capturas tomadas durante transiciones se conservan fuera de Git en `.local/pre7/browser-viejo/capturas-transicion/` y se repitieron; no cuentan como prueba del estado final.
+Las imágenes son JPEG originales del navegador, inspeccionadas en su estado final y verificadas a **1440 × 900** y **390 × 844**. `recorrido.json` conserva dimensiones, descripción, paso y SHA256. Es un registro manual; el nombre `manifest.json` queda reservado a los casos que consume `vivo.mjs`. Las primeras capturas tomadas durante transiciones se conservan fuera de Git en `.local/pre7/browser-viejo/capturas-transicion/` y se repitieron; no cuentan como prueba del estado final.
 
 ## Estado del recorrido
 
