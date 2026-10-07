@@ -13,6 +13,7 @@ Mismo formato que las del back: **Regla · Cómo se hace · Prohibido · Copiá 
 | [formularios](formularios.md) | diálogo o pantalla, fields, validación |
 | [textos-y-traducciones](textos-y-traducciones.md) | i18n, namespaces, voseo, enums |
 | [accesos-y-permisos](accesos-y-permisos.md) | accesos B2C, B2B y plataforma, rutas por host, `AccessRoute`, `usePermissions`, módulos |
+| [personal](personal.md) | receta de módulos B2C, navegación declarativa y límites de interacción con empresas |
 | [pantallas-y-ui](pantallas-y-ui.md) | `Page`, reglas de pantallas, tokens, shadcn |
 | [tests](tests.md) | Vitest, MSW, qué probar por pantalla |
 | [accesibilidad](accesibilidad.md) | WCAG AA, axe en cada test de pantalla, teclado y foco |

@@ -16,6 +16,7 @@
 | Pantalla de edición | al editar, «Descartar cambios» y «Guardar cambios» en la banda; al crear, «Cancelar» y la acción | igual | los mismos botones, fijos abajo (`FixedActions`) |
 | Avisos | abajo a la derecha; los carteles debajo de la banda | igual | lo pasajero, en una franja oscura abajo; lo que sigue, en una banda debajo de la barra |
 | Pantallas públicas | dos mitades (formulario + panel de la marca) | igual | una columna, sin el panel; el sitio público, web con ☰ (la página de una organización, sin ☰) |
+| Directorio público | tarjetas, buscador web y paginado con rango/página/flechas | igual | misma forma web: sin selector de tamaño, Cargar más ni BottomNav |
 
 - **Cada listado declara su fila del teléfono** con `mobileRow`, y cada columna, si se ve cuando no hay fila propia:
   ```tsx
@@ -27,6 +28,8 @@
   { id: "email", priority: "low" },           // se oculta en la tablet
   ```
   Cada tabla tiene **una** columna `primary`. En la fila del teléfono, el ⋮ va solo si la fila tiene acciones; si no, se toca la fila.
+- **Sitio público:** `SiteLayout` comparte header/footer. Landing-Movil y M-Directorio usan el Sheet del menú ☰ aprobado. M-Pagina-Publica no lleva ☰; con sesión, Tu cuenta abre la hoja del menú existente mediante `PublicAccessMenu`. Conserva marco web, sin barra privada ni otra versión de la tarjeta; `PublicPageCard` y su fondo se comparten con la vista previa.
+- **Personal:** sin `bottomSections` explícitas, la barra toma Inicio + enlaces `feature` ya visibles, hasta cuatro y Más. Más reúne todos los módulos visibles en Secciones, manteniendo Mi cuenta y Salir. Empresa y Plataforma conservan sus manifiestos.
 - **Lo que aclara un dato va en su segunda línea**, en la computadora y en el teléfono: el correo debajo del nombre, el rol debajo de la empresa. Dos datos sin relación nunca van juntos.
 - **Tamaños:** en la computadora, botón normal de 36 px, chico de 32 y campo de 36; en el teléfono, campos de 48 con letra de 16 y botones de 44 a 50. Ingreso y registro usan botones grandes de 44 y campos de 44 con radio 10 y letra de 15 en cualquier ancho (`FormField variant="auth"`). El tablero manda si este resumen difiere.
 - **Cortes:** los de Tailwind (`md` = 768 y `lg` = 1024), sin cortes propios. `useMediaQuery("(max-width: 767px)")` solo en el marco (`PrivateLayoutFrame`, que cuenta en `AppChrome` si es un teléfono) y en las pantallas fuera del marco; las demás piezas leen `useAppChrome()` o usan clases `max-md:`.
@@ -49,6 +52,7 @@
 - `src/shared/ui/app/app.test.tsx` (E5): la barra, la barra de abajo, el «+», los botones fijos y los grupos.
 - `src/shared/ui/RowActions.test.tsx` (E7): en el teléfono, el ⋮ abre la hoja con el dato de la fila y las de peligro al final.
 - `src/layouts/PrivateLayoutFrame.test.tsx` (E7): una pantalla cuyo ‹ vuelve al Inicio marca Inicio en la barra de abajo.
+- `SiteLayout.test.tsx` (E7), `DirectoryPage.test.tsx` (E7) y `PublicPage.session.test.tsx` (E7): marco/Sheet públicos, paginado web móvil y hoja Tu cuenta sin BottomNav; `navigation.test.tsx` (E7) y `MorePage.personal.test.tsx` (E7): módulos Personal visibles y límite de cuatro/Más.
 - `columns-mobile.test.ts` (E1): toda definición de columnas tiene exactamente una `primary`.
 - Los tests «en el teléfono …» de cada pantalla (con `asPhone()`), el recorrido del teléfono del E2E real y las capturas a 390 y 1440 contra el tablero antes de cerrar la etapa.
 

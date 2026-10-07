@@ -20,6 +20,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
   {paginationProps ? <Pagination {...paginationProps} /> : null}
   ```
   `filterKeys` es una constante del módulo; `query` es la consulta ya armada (los conteos toman de ahí la búsqueda y los filtros) y `pagination` da la búsqueda escrita, el orden y sus cambios para `FilterBar` y `DataTable`.
+- `/empresas` usa `usePagedQuery` con `filterKeys: []`, `fetchDirectory` y `directoryQueryKey` de `public/site/api/directory.ts`, sin duplicar HTTP/keys en la portada. La búsqueda aplica 300 ms y vuelve a página 1; el tamaño inicial es 10. `Pagination variant="web"` muestra rango/página/flechas en ambos anchos y omite el selector. El vacío general y el vacío de búsqueda tienen textos distintos; este último ofrece Limpiar búsqueda. Los errores usan `apiErrorMessage` y Reintentar.
 - Las columnas son ordenables con `sortable: true`, y su `id` es el campo del backend.
 - **La segunda línea gris** (lo que aclara la celda: el correo debajo del nombre, los roles debajo de la empresa, «Vence…» debajo del estado) la declara la columna con `detail: (row) => …` y la dibuja `DataTable`, en 12 y `--t3`; sin nada que aclarar, `null`. Si alguna fila la tiene, todas las filas de la tabla miden 52. Debajo de un estado va con `StatusDetail`, bajo la palabra y no bajo el punto. La celda nunca arma su propia segunda línea.
 - Cambiar la búsqueda (con 300 ms de debounce), un filtro, el orden o el tamaño vuelve a la página 1, y lo hace `usePagination`.
@@ -49,6 +50,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 ## Copiá de
 - `src/areas/business/roles/pages/RolesPage.tsx` y `roles/columns.tsx` (E4): `usePagedQuery`, `FilterBar`, `DataTable`, `Pagination`, «Ningún rol coincide con los filtros» y la fila del teléfono
 - `src/areas/platform/tenants/pages/OrganizationsPage.tsx` (E5/T21b): banda con conteos globales y opciones con conteos cruzados; el backend ordena por nombre; fila móvil sin avatar y fecha completa del tablero M-Organizaciones.
+- `src/areas/public/site/pages/DirectoryPage.tsx` y `src/areas/public/site/api/directory.ts` (E7): búsqueda/paginado URL y forma web del directorio; `src/areas/public/site/components/CompanyCard.tsx` (E7): tarjeta compartida con la portada.
 - por cursor: `src/areas/business/audit/pages/AuditPage.tsx` (E7): `useCursorList`, los filtros en la URL y `LoadMore`
 - `src/areas/platform/audit/pages/SecurityAuditPage.tsx` y `src/areas/platform/tenants/tabs/useOrganizationHistory.ts` (E5): filtros en la URL, tandas por cursor opaco y Cargar más sin total.
 
@@ -59,6 +61,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 - Tests de pantalla: sin coincidencias y cambio de página; en el teléfono, la lista y su «+».
 - `OrganizationsPage.test.tsx`, `AccountsPage.test.tsx` y `RecoveriesPage.test.tsx` (E5): banda global, filtros cruzados, búsqueda en URL, vacío/sin coincidencias y 1/50 filas; Recuperaciones no muestra pie con total 0. `SecurityAuditPage.test.tsx` y `OrganizationPage.test.tsx` (E5): cursor, filtros y Cargar más sin total.
 - `src/shared/ui/app/lists.test.tsx` (E5): en el teléfono, filas de lista, filtros en una hoja y «Cargar más».
+- `DirectoryPage.test.tsx` (E7): búsqueda URL/debounce, página/tamaño, reset y aislamiento del paginado web móvil; `LandingPage.test.tsx` (E7): primera página de diez, tres tarjetas y Enter al directorio; `Pagination.test.tsx` (E7): `variant="web"` conserva flechas y omite selector/Cargar más sin alterar el modo privado.
 - `Pagination.test.tsx` (E7): el pie en 12 y «1 de 1» con una sola fila en la página, en es-AR y en-US; `LoadMore.test.tsx` (E7): en la compu, «Cargar más» es el botón normal.
 - `useCursorList.test.tsx` (E7): las tandas por cursor opaco, sin total; con otros filtros vuelve a la primera tanda y muestra la anterior mientras llega la nueva; lleva su `meta`; y es lo único que usa `useInfiniteQuery`. `AuditPage.test.tsx` (E7): «Cargar más» pide la tanda siguiente con el cursor y los mismos filtros, y un 403 del historial muestra «No tenés permiso».
 - `DataTable.test.tsx` (E7): la segunda línea que declara la columna, gris de 12, y las filas de 52 si alguna la tiene; si no, de 40. `UsersPage.test.tsx`, `CompaniesPage.test.tsx`, `CompanyDetailPage.test.tsx` y `RolesPage.test.tsx` (E7): el correo, los roles de la empresa, «Vence…», el CUIT y «De sistema» van en esa línea.

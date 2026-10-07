@@ -1,3 +1,5 @@
-Portada pública del dominio principal. Leé `docs/rules/pantallas-y-ui.md` y `docs/architecture/tema.md`.
-Copiá los tableros Landing y M-Landing; los textos visibles salen de `src/locales/`.
-«Registrá tu empresa» (`/registro/empresa`) está en la portada desde la E6; el directorio de empresas llega en la E7.
+Portada y directorio públicos del dominio principal, dentro de la feature `site`.
+Leé `docs/rules/pantallas-y-ui.md`, `docs/rules/paginado-y-listados.md` y `docs/architecture/tema.md`.
+Copiá Landing, Landing-Movil, Directorio y M-Directorio del lienzo vigente; los textos salen de `src/locales/`.
+La portada y `/empresas` comparten `api/directory.ts` y `components/CompanyCard.tsx`; no importan administración Business.
+Cada tarjeta navega en la misma pestaña al URL de `tenancy/publicSite`; no se construyen hosts a mano.

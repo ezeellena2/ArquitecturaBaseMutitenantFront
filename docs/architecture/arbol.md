@@ -19,7 +19,7 @@ ArquitecturaBaseMutitenantFront/
 │   ├── design/lienzo/                               el lienzo vigente (la versión, en su README): tableros .dc.html, support.js, ds/ y generadores/; fuente de las pantallas
 │   │   └── README.md                                cómo servir el lienzo y ver los estados
 │   ├── design/capturas/                             capturas lado a lado (tablero y app) de cada etapa y tanda, con su manifiesto
-│   └── rules/                                       fichas del arnés: README + 13 temas
+│   └── rules/                                       fichas del arnés: README + 14 temas, incluida personal.md (receta front y ficha funcional del back)
 ├── public/
 │   └── favicon.svg                                 [E0]
 ├── scripts/
@@ -79,26 +79,28 @@ src/
 │
 ├── app/                                             [E0]
 │   ├── providers.tsx                                AppProviders: QueryClientProvider (createQueryClient), i18n con la cultura efectiva, FormatProvider, Toaster y AuthProvider
-│   ├── router.tsx                                   createBrowserRouter
+│   ├── router.tsx                                   createBrowserRouter(routesForHost(location.host))
 │   ├── routes.tsx                                   rutas por acceso dentro del AppShell; las pantallas de la organización salen del manifiesto de layouts/navigation/business.ts, con lazyPage y RequirePermission;
-│   │                                                [E7] árbol por host (dominio principal o subdominio de organización)
+│   │                                                routesForHost: principal, subdominio válido o frontera uniforme; routes exporta el principal por compatibilidad
 │   ├── routes.test.tsx                              [E3] acceso de cada ruta; cada ruta del manifiesto pide su permiso
 │   ├── RouteViews.tsx                               HomeRoute, PlatformHomeRoute (primera pantalla permitida disponible), ForbiddenRoute y NotFoundRoute
-│   ├── RequirePermission.tsx                        [E7] la guarda de una ruta del manifiesto: módulo apagado → 404; sin permiso → «No tenés permiso», dentro del marco; con companyPermission, también ese permiso en la empresa de la ruta (B4)
-│   ├── RequirePermission.test.tsx                   [E7]
+│   ├── RequirePermission.tsx                        la guarda de una ruta del manifiesto: módulo apagado → 404; sin permiso → «No tenés permiso», dentro del marco; con companyPermission, también ese permiso en la empresa de la ruta (B4)
+│   ├── RequirePermission.test.tsx                   
 │   ├── navigationStatus.test.tsx                    la navegación OIDC transitoria («Iniciando sesión…», «Cerrando sesión…»)
-│   └── routes-by-host.test.ts                       [E7] un subdominio no monta /org, /cuenta ni /plataforma
+│   └── routes-by-host.test.ts                       un subdominio no monta /org, /cuenta ni /plataforma
 │
 ├── auth/                                            [E3]
 │   ├── AuthProvider.tsx                             react-oidc-context + puente al httpClient
 │   ├── AuthProvider.test.tsx                        tests de AuthProvider
+│   ├── issuer.ts                                    autoridad fija desde VITE_AUTH_ISSUER; default https://localtest.me:5174/
 │   ├── authConfig.ts                                client_id web, code + PKCE, InMemoryWebStorage; authority = issuer fijo y metadataSeed con token, userinfo y revocation en el origen propio
 │   ├── authConfig.test.ts
 │   ├── silentRenew.test.ts                          la renovación silenciosa (silent-renew.ts)
-│   ├── SessionRecovery.tsx                          signinSilent después de un F5
+│   ├── SessionRecovery.tsx                          signinSilent después de F5; subdominio válido fuerza iframe Consumer sin bloquear el Outlet público
 │   ├── SessionRecovery.test.tsx
 │   ├── sessionRecoveryStatus.ts                     el estado de la recuperación de la sesión, para SessionStatusPage
-│   ├── recoveryAccess.ts                            el acceso que se pide al recuperar la sesión, según la ruta; la autorización sigue en los claims
+│   ├── recoveryAccess.ts                            preferencia de recuperación: primero Consumer del subdominio válido, después ruta/último acceso del principal; autorización en claims
+│   ├── recoveryAccess.test.ts                        host público no toma Business/Platform guardado; principal mantiene su recuerdo
 │   ├── sessionExpiredNotice.ts                      recuerda «Tu sesión venció» para mostrarlo en el ingreso
 │   ├── SessionStatusPage.tsx                        estados de sesión a pantalla completa: «Iniciando sesión…», «Cambiando a …», «Cerrando sesión…» y «No pudimos iniciar tu sesión»
 │   ├── SessionStatusPage.test.tsx                   tests de SessionStatusPage
@@ -116,21 +118,23 @@ src/
 │   ├── useCurrentUser.ts                            GET /api/me, key ["current-user"]
 │   ├── useCurrentUser.test.tsx                      tests de useCurrentUser
 │   ├── usePermissions.ts                            can, canInCompany, canPlatform y hasFeature (P8) sobre effectivePermissions y features de /api/me; los códigos tipados de los catálogos del back
-│   └── usePermissions.test.ts                       [E7]
+│   └── usePermissions.test.ts                       
 │
 ├── tenancy/                                         [E3] accesos (B2C / B2B / plataforma)
 │   ├── access.ts                                    el tipo Access del contrato, homeOf, loginPathOf, accessOfPath, activeOrganization, isSelectable y los estados no disponibles: el único lugar con «/org» y «/login/empresa»
 │   ├── access.test.ts
-│   ├── publicSite.ts                                [E5] publicSiteHost y sufijo público compartidos; E7 los completa desde el issuer
+│   ├── publicSite.ts                                [E5] siteOfHost, mainSiteHost, publicSiteHost/suffix/url y mainSiteUrl desde issuer; puerto/slug exactos, sin IP ni retorno de otro origen
 │   ├── publicSite.test.ts                           tests de publicSite
 │   ├── useAccess.ts                                 acceso activo, organización activa, espacio personal, organizaciones
 │   ├── useAccess.test.tsx                           tests de useAccess
-│   ├── useSwitchAccess.ts                           signinSilent({ access, tenant }) → queryClient.clear() → inicio del acceso
+│   ├── useSwitchAccess.ts                           signinSilent con forceIframeAuth/access/tenant → queryClient.clear() → inicio; desde Storefront, principal y organización elegida
 │   ├── useSwitchAccess.test.tsx                     verifica el clear de la caché
 │   ├── AccessMenu.tsx                               menú de la cuenta, solo en la compu: el botón (nombre y «Personal» o la organización); cabecera con nombre y correo; «Perfiles»: Personal y cada organización con su rol (✓ en el perfil activo; la que no está disponible, en gris, dice por qué); «Mi cuenta»; «Salir». En el teléfono, todo eso está en «Más»
 │   ├── AccessMenu.test.tsx                          en B2C nunca aparece «Registrá tu empresa»
-│   ├── useProfiles.tsx                              perfiles, cambio de acceso y «Salir»: lo comparten AccessMenu y «Más»
-│   └── usePublicSite.ts                             [E7] slug y datos públicos del subdominio (GET /api/public-site, PublicSiteController)
+│   ├── useProfiles.tsx                              perfiles/cambio/salida centralizados; AccessMenu, Más y PublicAccessMenu; Cuenta al principal, organización elegida al principal y Salir a raíz propia
+│   ├── PublicAccessMenu.tsx                         AccessMenu en compu; Tu cuenta en el Sheet aprobado del teléfono, sin duplicar perfiles/salida
+│   ├── usePublicSite.ts                             único HTTP/key por host para GET /api/public-site; sólo 404 PublicSite.PublicPage.NotFound → null
+│   └── usePublicSite.test.tsx                       404 público exacto, otros errores normales y ninguna consulta desde principal/host inválido
 │
 ├── layouts/
 │   ├── AppShell.tsx                                 [E1] las franjas «Sin conexión» y «Hay una versión nueva»; la baja pedida, OrganizationUnavailablePage y el 403 que bloquea la vista (ForbiddenPage); AppErrorBoundary alrededor del contenido
@@ -138,27 +142,28 @@ src/
 │   ├── AppErrorBoundary.tsx                         una pantalla que se rompió al pintarse o no se pudo bajar: la «Pantalla de error» con «Reintentar» (AppErrorPage)
 │   ├── AuthLayout.tsx                               [E3]
 │   ├── AuthLayout.test.tsx                          tests de AuthLayout
-│   ├── PrivateLayoutFrame.tsx                       marco de los tres accesos: en la compu, menú lateral, panel y barra; en el teléfono, AppChrome y BottomNav con las secciones del manifiesto (sin ellas, Inicio/Más)
+│   ├── PrivateLayoutFrame.tsx                       marco de los tres accesos: en la compu, menú lateral, panel y barra; en teléfono AppChrome + hasta cuatro secciones/Más; Personal suma Inicio + módulos visibles, Empresa mantiene Inicio/Más
 │   ├── PrivateLayoutFrame.test.tsx                  tests de PrivateLayoutFrame
 │   ├── PersonalLayout.tsx                           [E3] acceso B2C: Inicio, Mi cuenta + módulos B2C (sin organizaciones)
 │   ├── BusinessLayout.tsx                           [E3] sidebar + AdminPanel + topbar con la organización; en el teléfono, el marco de app de PrivateLayoutFrame
 │   ├── PlatformLayout.tsx                           [E5] marco de Plataforma: Gestión arriba, Administración al pie, un solo panel abierto
 │   ├── PlatformLayout.test.tsx                      permisos, panel activo y axe del marco desktop
 │   ├── AccountLayout.tsx                            /cuenta y /mas dentro del layout del acceso activo
-│   ├── MorePage.tsx                                 «Más» del teléfono (/mas; /plataforma/mas): identidad, Perfiles sólo en Personal/Empresa, Administración por permiso, Mi cuenta y Salir (M-Mas-Personal, M-WA-Menu, M-Mas-Plat); en la compu vuelve al inicio
+│   ├── MorePage.tsx                                 «Más» del teléfono (/mas; /plataforma/mas): identidad, Perfiles sólo en Personal/Empresa, Secciones Personal visibles, Administración por permiso, Mi cuenta y Salir; en la compu vuelve al inicio
 │   ├── MorePage.test.tsx                            tests de MorePage
-│   ├── SiteLayout.tsx                               [E3] portada de la plataforma; en [E7], también el directorio y la página pública del subdominio
+│   ├── MorePage.personal.test.tsx                   módulos visibles en Secciones, sin módulos ficticios en el manifiesto productivo
+│   ├── SiteLayout.tsx                               [E3] header/footer web de portada/directorio/storefront; Sheet móvil del menú y PublicAccessMenu; legales mantienen su marco
 │   ├── SiteLayout.test.tsx                          tests de SiteLayout
 │   ├── navigation/
 │   │   ├── types.ts                                 AppRoute (camino, permiso de organización, empresa o Plataforma, módulo, rótulo e ícono), paneles Gestión/Administración, raíz de las migas y bottomSections por referencia al mismo link
 │   │   ├── administration.ts                        la opción más específica del panel de la que sale una ruta: la usan el panel, las migas y el marco
 │   │   ├── administration.test.ts                   Gestión y Administración de Plataforma, incluido el inicio de Organizaciones
-│   │   ├── personal.ts
+│   │   ├── personal.ts                              Inicio/Mi cuenta; una entrada real con feature suma menú/barra filtrados por visibleNavigation
 │   │   ├── business.ts                              el manifiesto de rutas de la organización (businessRoutes) y el menú que sale de él: arriba Inicio + módulos B2B; abajo «Administración» (AdminPanel): «Gestión de usuarios» ▸ Usuarios, Roles y permisos · Empresas · Configuración · Página pública · Auditoría
 │   │   ├── platform.ts                              Organizaciones (el inicio) · Cuentas · Recuperaciones · Auditoría · Documentos legales · Configuración; barra inferior con Gestión y Más canónico
-│   │   ├── visible.ts                               [E7] el menú que la sesión puede ver (permiso y módulo): lo usan el menú lateral y «Más»; `canOpen`, también las migas
-│   │   ├── visible.test.ts                          [E7] cada enlace es una ruta del manifiesto
-│   │   └── navigation.test.tsx                      los enlaces de cada acceso
+│   │   ├── visible.ts                               el menú que la sesión puede ver (permiso y módulo): lo usan el menú lateral y «Más»; `canOpen`, también las migas
+│   │   ├── visible.test.ts                          cada enlace es una ruta del manifiesto
+│   │   └── navigation.test.tsx                      enlaces por acceso, feature Personal habilitada/apagada y límite de cuatro + Más
 │   └── components/
 │       ├── menuRow.ts                               las opciones del menú lateral y del panel («Criterio · Menús»): 32 de alto, ícono de 18, la activa en blanco con letra petróleo; panelEdgeButtonClass, la flecha del borde
 │       ├── Sidebar.tsx                              solo en la compu: colapsable, con una línea fina entre opciones y otra antes de «Administración», que abre el AdminPanel. En el teléfono no se monta
@@ -176,11 +181,16 @@ src/
 │
 ├── areas/
 │   ├── public/                                      dominio principal, sin sesión o con cualquier acceso
-│   │   ├── site/                                    [E3] portada de la plataforma (dominio principal, sin sesión)
+│   │   ├── site/                                    [E3] portada y directorio del dominio principal (Landing/Landing-Movil, Directorio/M-Directorio)
+│   │   │   ├── api/
+│   │   │   │   └── directory.ts                     HTTP y query keys tipados para GET /api/directory; recurso compartido por portada/directorio
+│   │   │   ├── components/
+│   │   │   │   └── CompanyCard.tsx                  logo/iniciales, nombre/descripcion y host/URL público real, misma pestaña
 │   │   │   └── pages/
-│   │   │       ├── LandingPage.tsx                  / sin sesión: portada con «Para personas» y «Para empresas» y las entradas a «Registrá tu empresa» (tablero Landing)
-│   │   │       ├── LandingPage.test.tsx             tests de LandingPage
-│   │   │       └── DirectoryPage.tsx                [E7] directorio de empresas publicadas (tablero Directorio)
+│   │   │       ├── LandingPage.tsx                  dos lados → Empresas → Cómo empezar; primera página de diez, tres tarjetas; Enter → /empresas?search
+│   │   │       ├── LandingPage.test.tsx             consulta/links compartidos, primeras tres, búsqueda y vacío sin Ver todas
+│   │   │       ├── DirectoryPage.tsx                /empresas: usePagedQuery, URL/debounce 300 ms, 10 inicial; Pagination variant=web también móvil
+│   │   │       └── DirectoryPage.test.tsx            URL/page reset/paginado real y modo web móvil sin selector ni Cargar más
 │   │   ├── auth/                                    [E3]
 │   │   │   ├── api/
 │   │   │   │   ├── loginCode.ts
@@ -255,16 +265,21 @@ src/
 │   │           ├── OrganizationUnavailablePage.tsx  [E3] 403 Tenancy.Tenant.Suspended, PendingApproval o Closed: Suspendida, Espera aprobación o Cerrada (tablero Perfil-Suspendido); «Elegí otro perfil»
 │   │           └── OrganizationUnavailablePage.test.tsx tests de OrganizationUnavailablePage
 │   │
-│   ├── storefront/                                  [E7] SUBDOMINIO de una organización: su página pública
-│   │   ├── pages/PublicPage.tsx                     nombre, logo, descripción, contacto (+ lo que publiquen los módulos): shared/ui/PublicPageCard con `links` y `signInHref`
-│   │   └── <módulo público del producto>/           lo que una persona ve y pide; interactuar pide el acceso B2C
+│   ├── storefront/                                  SUBDOMINIO válido: sólo lo publicado, sin administración; no elige el tenant privado
+│   │   └── site/                                    feature normal; API/keys en tenancy/usePublicSite, sin crossimports
+│   │       └── pages/
+│   │           ├── PublicPage.tsx                   usePublicSite + PublicPageCard/fondo compartidos; logo/contactos/PhoneText; CTA OIDC Consumer con retorno actual, oculta con sesión
+│   │           ├── PublicPage.test.tsx              DTO público/error/retry/404 exacto y tarjeta compartida
+│   │           ├── PublicPage.session.test.tsx      retorno Consumer, CTA oculta, menú/Cuenta principal, perfil Business elegido y salida propia
+│   │           ├── StorefrontUnavailablePage.tsx    No disponible uniforme, sin revelar estado/motivo ni llevar ☰
+│   │           └── StorefrontUnavailablePage.test.tsx frontera uniforme y enlace seguro al principal
 │   │
-│   ├── personal/                                    ACCESO B2C (espacio personal)
+│   ├── personal/                                    ACCESO B2C (espacio personal); receta docs/rules/personal.md → ficha funcional Personal del back
 │   │   ├── home/                                    [E3]
 │   │   │   └── pages/
 │   │   │       ├── PersonalHomePage.tsx             / con acceso B2C (tableros Inicio-Personal y M-Inicio-Personal): la banda «Inicio» y, si falta un método propio, PersonalLoginMethodNotice; lo demás lo define cada producto
 │   │   │       └── PersonalHomePage.test.tsx        tests de PersonalHomePage
-│   │   ├── account/                                 [E3] la cuenta: vale en los dos accesos
+│   │   ├── account/                                 [E3] la cuenta de la identidad: conserva el marco del acceso activo
 │   │   │   ├── api/
 │   │   │   │   ├── account.ts                       el perfil de /api/me: nombre, idioma y región, y zona
 │   │   │   │   ├── account.test.ts                  tests de account
@@ -398,7 +413,7 @@ src/
 │       │   │   ├── OrganizationModulesTab.test.tsx  catálogo vacío, fechas civiles, versiones propias, permisos, errores y vida de la edición
 │       │   │   ├── OrganizationDomainTab.tsx        Dominio verificado: registro TXT, Verificar o Quitar, con motivo
 │       │   │   ├── OrganizationDomainTab.test.tsx   idempotencia por dominio, reintentos nativos, versiones, errores y respuestas abandonadas
-│       │   │   ├── OrganizationPublicPageTab.tsx    Página pública: dirección, publicación/bloqueo y fecha/motivo real; Despublicar o Permitir con POST versionado; Ver página pendiente E7
+│       │   │   ├── OrganizationPublicPageTab.tsx    Página pública: dirección, publicación/bloqueo y fecha/motivo real; Despublicar o Permitir con POST versionado; Ver página publicada usa publicSiteUrl real con esquema/puerto del issuer
 │       │   │   ├── OrganizationPublicPageTab.test.tsx metadatos, moderación, versiones propias y vida del formulario
 │       │   │   └── testSupport.ts                  TestFeatures y respuestas MSW locales de prueba de T21d, sin catálogo productivo
 │       │   └── pages/
@@ -484,7 +499,7 @@ src/
 │   │   ├── auth.json                                [E3]
 │   │   ├── account.json                             [E3]
 │   │   ├── personal.json                            [E3]
-│   │   ├── site.json                                [E3] portada; el directorio se suma en [E7]
+│   │   ├── site.json                                [E3] portada/directorio: empresas, buscador, vacío/sin coincidencias y navegación pública
 │   │   ├── legal.json                               [E3] /terminos, /privacidad y la aceptación bloqueante
 │   │   ├── invitations.json                         la invitación (/invitacion)
 │   │   ├── home.json                                el inicio de la organización: tarjetas, «Tus empresas» y «Para resolver»
@@ -500,7 +515,7 @@ src/
 │   │   ├── settings.json                            [E6]
 │   │   ├── audit.json                               [E6]
 │   │   ├── publicPage.json                          [E6] /org/pagina
-│   │   └── storefront.json                          [E7] página pública del subdominio
+│   │   └── storefront.json                          página pública del subdominio: No disponible, enlace al principal y menú móvil Tu cuenta
 │   ├── en/                                          mismos archivos
 │   ├── keys.test.ts                                 cada clave que usa el código existe en los textos
 │   └── parity.test.ts                               [E1]
@@ -529,11 +544,11 @@ src/
 │   │   ├── accountContract.ts                       rutas y códigos de la cuenta que usan varias áreas (/api/me, /api/legal/accept, /cuenta, /aceptar-terminos)
 │   │   ├── invitationContract.ts                    las rutas de la invitación (/api/invitations/preview y /accept) y sus query keys
 │   │   ├── contracts.test.ts                        los contratos OpenAPI que usa el front
-│   │   ├── types.ts                                 [E1] alias legibles escritos a mano; reexporta tipos de generated/schema.d.ts
+│   │   ├── types.ts                                 [E1] alias legibles sobre generated/schema.d.ts, incluidos PublicSiteResponse y DirectoryEntryRow; sin contratos duplicados
 │   │   └── generated/                               NO SE EDITA A MANO
 │   │       └── schema.d.ts                          [E1] única salida de openapi-typescript
 │   ├── i18n/                                        [E1]
-│   │   ├── index.ts                                 i18next con los textos empaquetados; resolveCulture (cuenta → este navegador → predeterminada) y useEffectiveCulture [E7]
+│   │   ├── index.ts                                 i18next con los textos empaquetados; resolveCulture (cuenta → este navegador → predeterminada) y useEffectiveCulture 
 │   │   └── i18n.test.tsx
 │   ├── format/                                      [E1] ÚNICO lugar que formatea (formatos.md)
 │   │   ├── cultureProfiles.ts                       adapta patrones de Cultures (JSON E1, tabla E2); sin perfiles fijos
@@ -760,7 +775,7 @@ src/
 │       ├── Pagination.test.tsx                      tests de Pagination
 │       ├── PublicPageCard.tsx                       la tarjeta de la página pública de una organización (Pagina-Publica y M-Pagina-Publica): logo o iniciales, nombre,
 │       │                                            descripción, los datos cargados con su ícono e «Ingresá para continuar»; la usan la vista previa de Página pública
-│       │                                            (sin enlaces) y la página del subdominio [E7] (`links`, `signInHref`); `publicPageBackdropClass`, su fondo
+│       │                                            (sin enlaces) y subdominio (`links`, `onSignIn`, showSignIn; signInHref compatible); `publicPageBackdropClass`, su fondo
 │       ├── PublicPageCard.test.tsx                  tests de PublicPageCard
 │       ├── RadioGroupField.tsx                     [E1] de la base, adaptado a los tokens
 │       ├── RadioGroupField.test.tsx                 tests de RadioGroupField
@@ -833,7 +848,7 @@ src/
     │   └── platformSettings.ts                      configuración v111 sin gracia, PUT200 con versión nueva o409
     ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
     └── utils/
-        ├── renderWithProviders.tsx                  [E1] renderWithProviders; as y host se suman con auth [E3] y subdominios [E7]; devuelve el QueryClient, para una relectura de fondo [E7]
+        ├── renderWithProviders.tsx                  [E1] providers/QueryClient nuevo y fixtures as; renderRoute usa routes principales. Host público: routesForHost + PublicSiteHostContext en sus tests
         ├── renderWithProviders.test.tsx             tests de renderWithProviders
         ├── isolation.ts                             resetBetweenTests: lo que una prueba deja en módulos compartidos (el bloqueo de la vista, los avisos) no lo ve la siguiente
         ├── isolation.test.tsx                       tests de isolation

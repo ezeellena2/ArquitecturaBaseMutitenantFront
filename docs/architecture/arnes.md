@@ -18,6 +18,7 @@ Para una pantalla, el **«Copiá de» es el [tablero correspondiente del lienzo 
 | Carpeta | Qué va / qué no | Fichas | Copiá de |
 |---|---|---|---|
 | `src/areas/` | una carpeta por área; ningún área importa de otra | estructura-y-features, accesos-y-permisos | `areas/business/roles/` (E4) |
+| `src/areas/personal/` | acceso Consumer; Inicio y Cuenta, sin módulos de negocio de la plantilla | personal, accesos-y-permisos, estructura-y-features | receta `docs/rules/personal.md` y ficha funcional Personal del back |
 | `src/areas/<área>/<feature>/api/` | query keys + funciones tipadas con `generated/`; sin interfaces a mano | datos-y-api, paginado-y-listados | `business/roles/api/roles.ts` (E4) |
 | `src/areas/<área>/<feature>/pages/` | una pantalla = un `Page`; datos con Query; estado del listado en la URL | pantallas-y-ui, paginado-y-listados, errores | tablero correspondiente de `docs/design/lienzo/`; `business/roles/pages/RolesPage.tsx` y `RoleEditorPage.tsx` (E4) para el código |
 | `src/areas/<área>/<feature>/components/` | diálogos y piezas propias de la feature; nada genérico (eso sube a `shared/ui`) | formularios, pantallas-y-ui | `personal/account/components/AccountDeletionDialog.tsx` (E4) para un diálogo; `business/roles/components/PermissionPicker.tsx` (E4) para una pieza |

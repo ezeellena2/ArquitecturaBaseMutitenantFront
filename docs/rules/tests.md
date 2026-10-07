@@ -3,7 +3,7 @@
 **Regla:** las pantallas con interacción, hooks y formateadores con lógica tienen tests junto al código (`X.test.tsx`); un DTO, texto o delegado simple no necesita un test que refleje su implementación. Por cada cambio coherente con lógica, escribir primero un test focal que falle, hacerlo pasar y verificar el build y lint del alcance afectado antes del commit. Al cerrar una etapa y en CI, ejecutar `npm run build`, `npm run lint`, `npm test` y `npm run contracts:check` completos y limpios.
 
 ## Cómo se hace
-- `renderRouteWithProviders(path, { as: "business-admin" })` y, para el sitio público, `{ host: "empresa-a.localtest.me" }`. Los usuarios de prueba están en `test/mocks/currentUsers.ts`: persona sin organizaciones, persona con organizaciones, empresa admin, empresa sin permisos y operador.
+- `renderRouteWithProviders(path, { as: "business-admin" })` usa las rutas principales y providers reales. Para un host público, montar `routesForHost(host)` con `createMemoryRouter` y el provider de `PublicSiteHostContext`; el host incluye el puerto del issuer, sin cambiar `location` ni inventar un access/tenant. Los usuarios de prueba están en `test/mocks/currentUsers.ts`: persona sin organizaciones, persona con organizaciones, empresa admin, empresa sin permisos y operador.
 - MSW con `onUnhandledRequest: "error"`: toda llamada tiene su handler.
 - **Cada test entra en 5 s, también con la máquina cargada:** una prueba lenta primero se aliviana: la pantalla que la ruta carga con `lazyPage` se importa en un `beforeAll`, un texto largo se pega (`user.paste`) en vez de tipearse letra por letra y un recorrido largo se parte en dos; para salir de una pantalla con cambios se usa un enlace a una pantalla ya cargada («Inicio»). Si igual no entra, el límite se sube en ese test con un comentario que dice por qué.
 - Cada test empieza limpio: `resetBetweenTests` (`test/utils/isolation.ts`, en el setup) desmonta la pantalla, quita el bloqueo de la vista y cierra los avisos, que sonner guarda fuera de React y volvería a mostrar en el test siguiente.
@@ -22,6 +22,7 @@
 - Desde E3a y en cada etapa posterior, ejecutar `npm run test:e2e:real` contra front y Api reales, con una base PostgreSQL propia del E2E, separada del volumen Development de Aspire, y `Email:Delivery=PickupDirectory`. El runner crea en esa base la persona y la organización necesarias. `E2E_PICKUP_DIR` apunta al mismo directorio absoluto temporal que `Email:PickupDirectory`; Playwright lee los códigos de los `.eml` sin imprimirlos y verifica `/registro` → Personal → logout → cuenta propia por `/login/empresa` → `/org` → F5 conserva el acceso empresa → Perfiles/Personal → logout. El test no intercepta red ni simula API, cookie, base, sesión o correo.
 - Al cerrar una etapa, comparar visualmente las pantallas nuevas o modificadas y sus estados afectados con los tableros aprobados del lienzo; resolver o documentar los hallazgos.
 - **Migración de sesiones (A8):** el recorrido real conserva, antes de tocar cada puerta pública, una cookie `Identity.Application` firmada como la versión anterior a A3. La emite `RealE2ESetup` con la cuenta y las claves Data Protection de la base aislada; no es una sesión simulada ni una cookie del usuario. Su archivo local se consume y se elimina sin imprimirlo. El resto del recorrido ingresa por la UI y los códigos reales, y verifica que la cookie independiente de Plataforma siga funcionando.
+- **Público/Personal:** probar la lógica importante, sin un caso por estado visual: clasificación exacta de hosts/puertos, rutas privadas ausentes, scope exacto del 404 público, API/URL/paginado del directorio, retorno OIDC propio, recuperación Consumer sin creación silenciosa, sesión/CTA/menú y gates Personal. La galería y el recorrido real comprueban los tableros aprobados; una prueba visual no sustituye aislamiento backend ni OIDC real.
 
 ## Prohibido
 - `getByTestId` si existe un rol accesible.
@@ -37,8 +38,10 @@
 - El CI (`npm test`) y `harness.test.ts` (E0), que usa `HarnessStage` para exigir solo los tests de etapas cerradas.
 - `isolation.test.tsx` (E7): el aviso de un test no aparece en el siguiente.
 - `scripts/test-e2e-real.test.mjs` (E3): ninguna etapa desde E3a se cierra si el recorrido real está rojo.
-- `scripts/test-e2e-real-mail.test.mjs`: el pickup reconoce el párrafo del código; números en organizaciones, enlaces o avisos no cuentan como OTP. Corre con `node --test scripts/test-e2e-real-mail.test.mjs`.
-- `scripts/test-e2e-real-ui.test.mjs`: la entrega del correo no prueba que las casillas estén listas; el helper espera sus seis controles visibles antes de completarlos. El test usa Chromium con un documento local cuyo paso aparece después del título, sin sleeps; el E2E de producto mantiene front/API/correo reales.
+- `scripts/test-e2e-real-mail.test.mjs` (E6): el pickup reconoce el párrafo del código; números en organizaciones, enlaces o avisos no cuentan como OTP.
+- `scripts/test-e2e-real-ui.test.mjs` (E6): la entrega del correo no prueba que las casillas estén listas; el helper espera sus seis controles visibles antes de completarlos. El test usa Chromium con un documento local cuyo paso aparece después del título, sin sleeps; el E2E de producto mantiene front/API/correo reales.
+- `routes-by-host.test.ts` (E7), `publicSite.test.ts` (E7) y `usePublicSite.test.tsx` (E7): host/rutas, URL segura y 404 público exacto. `LandingPage.test.tsx` (E7), `DirectoryPage.test.tsx` (E7) y `Pagination.test.tsx` (E7): recurso real compartido, URL y modo web móvil.
+- `authConfig.test.ts` (E7), `recoveryAccess.test.ts` (E7), `SessionRecovery.test.tsx` (E7) y `PublicPage.session.test.tsx` (E7): autoridad/retorno, Consumer, CTA/menú y salida. `LoginPage.test.tsx` (E7), `SignupPage.test.tsx` (E7), `navigation.test.tsx` (E7) y `MorePage.personal.test.tsx` (E7): retorno por Registro y gates/límite de navegación Personal.
 
 ## Detalle
 [frontend.md §4, "Tests"](../architecture/frontend.md#tests)

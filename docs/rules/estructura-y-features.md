@@ -14,6 +14,8 @@
 └── pages/               una pantalla por archivo, lazy en routes.tsx
 ```
 Las carpetas que la feature no necesita no se crean (`audit/` tiene solo `api/` y `pages/`).
+- La página del subdominio es `areas/storefront/site/pages/PublicPage.tsx`: `site` es la feature. `pages` no es una feature ni cuelga directamente del área. Portada y directorio comparten `api/directory.ts` y `components/CompanyCard.tsx` dentro de `areas/public/site`.
+- La sesión pública y los helpers de host se comparten desde `tenancy/`; `usePublicSite` tiene una única función HTTP y una única clave de consulta. El núcleo no importa APIs de un área. Un módulo Personal sigue la [receta B2C](personal.md).
 - Una ruta nueva se declara una vez en el manifiesto de su área (`layouts/navigation/<área>.ts`: camino, permiso, módulo y, si va en el menú, rótulo e ícono); `app/routes.tsx` le suma su pantalla con `lazyPage`.
 - Si dos features necesitan lo mismo, se mueve a `shared/` (por ejemplo `shared/account/`, que usan Mi cuenta y el Inicio personal); no se importa de la otra feature.
 - Imports con alias `@/`. `import type` para los tipos.
