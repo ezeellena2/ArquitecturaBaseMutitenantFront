@@ -628,6 +628,9 @@
 </style>
 <style data-vuelta="1004-nombre-apellido">
 </style>
+<style data-vuelta="1004-solo-lectura">
+.ctl.ro { background: var(--s2) !important; color: var(--t2) !important; border-color: var(--borde) !important; }
+</style>
 </helmet>
 
 <div class="crit">
@@ -657,7 +660,7 @@
   <section>
     <h2>Qué control para cada dato</h2>
     <div class="g3c">
-      <div class="ctrl"><div class="dib"><div class="cmp"><span class="rot">Nombre</span><div class="ctl">Lucía</div></div></div><strong>Texto</strong><p>Un dato corto que se escribe.</p></div>
+      <div class="ctrl"><div class="dib"><div class="cmp"><span class="rot">Nombre</span><div class="ctl">Lucía</div></div></div><strong>Texto</strong><p>Un dato corto que se escribe.</p></div> <div class="ctrl"><div class="dib"><div class="cmp"><span class="rot">Vale en</span><div class="ctl ro">Toda la organización</div></div></div><strong>Solo lectura</strong><p>El mismo campo que al editar, deshabilitado: fondo y texto grises. Vale en todo el sistema.</p></div>
       <div class="ctrl"><div class="dib"><div class="cmp"><span class="rot">Motivo <span class="req">*</span></span><div class="ctl area">Ya no uso la cuenta.</div></div></div><strong>Texto largo</strong><p>Un motivo o una descripción. De entrada, tres líneas.</p></div>
       <div class="ctrl"><div class="dib"><div class="cmp"><span class="rot">Buscar</span><div class="ctl bus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 3.5 3.5"/></svg> Buscar por nombre o correo</div></div></div><strong>Buscador</strong><p>Solo en la barra de filtros. El único con texto adentro.</p></div>
       <div class="ctrl">
@@ -732,7 +735,7 @@
       <li>Ayudas o ejemplos debajo de cada campo.</li>
       <li>Campos a medio ancho con el resto de la caja vacío, o filas con columnas distintas en la misma caja.</li>
       <li>Listas de casillas sueltas: van en un desplegable.</li>
-      <li>Campos grises de solo lectura: lo que no se edita se muestra como texto.</li>
+      <li>Rótulo y texto suelto para un dato que no se puede cambiar: va el mismo campo, deshabilitado.</li>
       <li>Avisar un error con un aviso que desaparece.</li>
       <li>Otros altos, bordes o esquinas.</li>
       <li>Un interruptor en un formulario que se guarda: ahí va una casilla.</li>
