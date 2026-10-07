@@ -7,7 +7,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import { test } from "node:test";
-import { setTimeout as delay } from "node:timers/promises";
+import { caseDelay as delay, caseStage, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { chromium } from "playwright";
 
 // Esta prueba arranca su propio AppHost y un PostgreSQL efímero, fuera del volumen Development.
@@ -17,6 +17,8 @@ const appHostDirectory = fileURLToPath(new URL("../../ArquitecturaBaseMutitenant
 const appHostProject = path.join(appHostDirectory, "ArquitecturaBaseMultitenant.AppHost.csproj");
 const execFileAsync = promisify(execFile);
 let pickupDirectory;
+const operatorEmails = Object.fromEntries(["a2", "5a", "a1", "a3", "5b", "5c", "5d"]
+  .map((key) => [key, `e2e-${key}-operator@example.test`]));
 
 async function aspire(args, env = process.env) {
   const command = process.platform === "win32" ? "cmd.exe" : "aspire";
@@ -154,6 +156,15 @@ async function confirmAccountMethod(page, email, action) {
   await dialog.getByRole("button", { name: action, exact: true }).click();
   assert.equal((await changed).status(), 204);
   await dialog.waitFor({ state: "hidden" });
+  const methods = page.getByRole("region", { name: "Cómo entrás", exact: true });
+  if (action === "Hacer principal") {
+    const row = methods.getByRole("listitem").filter({ has: page.getByText(email, { exact: true }) });
+    await row.getByText("Principal", { exact: true }).waitFor();
+  } else {
+    await methods.getByText(email, { exact: true }).waitFor({ state: "detached" });
+    // /api/me relee por separado el correo del menú: tampoco debe quedar allí.
+    await page.getByText(email, { exact: true }).first().waitFor({ state: "detached" });
+  }
 }
 
 async function enterCode(page, code) {
@@ -466,12 +477,12 @@ async function acceptCurrentTerms(page) {
   }
 }
 
-async function loginThroughUi(page, email, access = "platform") {
+async function loginThroughUi(page, email, access = "platform", onStage = () => {}) {
   page.setDefaultTimeout(30_000);
   await page.goto(new URL(access === "platform" ? "/plataforma" : access === "business" ? "/login/empresa" : "/login", baseUrl).href);
   await page.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
   const before = new Set(await pickupFiles());
-  await sendLoginCode(page);
+  await sendLoginCode(page, onStage);
   await page.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
   await enterCode(page, await codeFromPickup(email, before));
   await page.getByRole("button", { name: "Verificar", exact: true }).click();
@@ -580,7 +591,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
 
     const browser = await chromium.launch({ headless: true });
     try {
-      const context = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+      const context = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
       const page = await context.newPage();
       await waitForAlive(context.request);
 
@@ -745,9 +756,9 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await registerBusinessByEmail(accountPage, readyFile, setStage, { email, opened: true, mobile: width === 390 });
         }]),
         ["A2: operador antes y después de probar su correo en registro empresarial", async (platformPage, setStage) => {
-          // El operador real reducido evita compartir los cinco pedidos por destino con las regresiones A1/A3.
-          const email = "e2e-reduced@example.test";
-          await loginThroughUi(platformPage, email);
+          // Cada recorrido prueba su operador real sin consumir la cuota de los otros casos.
+          const email = operatorEmails.a2;
+          await loginThroughUi(platformPage, email, "platform", setStage);
           const publicPage = await platformPage.context().newPage();
           publicPage.setDefaultTimeout(30_000);
           const title = "Esta cuenta es de un operador: solo entra a Plataforma";
@@ -799,11 +810,11 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         ["5a: ingresar como operador y consultar Plataforma con permisos reducidos", async (platformPage, setStage) => {
           setStage("abre Plataforma sin sesión");
           await platformPage.goto(new URL("/plataforma", baseUrl).href);
-          await platformPage.getByRole("textbox", { name: "Correo electrónico" }).fill("e2e-operator@example.test");
+          await platformPage.getByRole("textbox", { name: "Correo electrónico" }).fill(operatorEmails["5a"]);
           const loginBefore = new Set(await pickupFiles());
-          await sendLoginCode(platformPage);
+          await sendLoginCode(platformPage, setStage);
           await platformPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
-          await enterCode(platformPage, await codeFromPickup("e2e-operator@example.test", loginBefore));
+          await enterCode(platformPage, await codeFromPickup(operatorEmails["5a"], loginBefore));
           setStage("verifica el código real del operador");
           await platformPage.getByRole("button", { name: "Verificar", exact: true }).click();
           // El preparador acepta las versiones reales vigentes para este operador aislado.
@@ -822,10 +833,10 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           setStage("consulta Configuración por pantalla");
           await platformNavigate(platformPage, "Administración", "Configuración");
           setStage("ingresa el operador con permisos reducidos");
-          const reducedContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          const reducedContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
           try {
             const reduced = await reducedContext.newPage();
-            await loginThroughUi(reduced, "e2e-reduced@example.test");
+            await loginThroughUi(reduced, "e2e-reduced@example.test", "platform", setStage);
             await reduced.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
             assert.equal(await reduced.getByRole("button", { name: "Crear organización", exact: true }).count(), 0);
             assert.equal(await reduced.getByRole("button", { name: "Administración", exact: true }).count(), 0);
@@ -840,7 +851,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         }],
         ["A1: operador probado en ambas puertas sale del lado público y conserva Plataforma", async (platformPage, setStage) => {
           setStage("ingresa el operador a su sesión de Plataforma");
-          await loginThroughUi(platformPage, "e2e-operator@example.test");
+          await loginThroughUi(platformPage, operatorEmails["a1"], "platform", setStage);
           await expectProfile(platformPage, "Plataforma", "operador en su cookie exclusiva");
           const publicPage = await platformPage.context().newPage();
           publicPage.setDefaultTimeout(30_000);
@@ -876,12 +887,12 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               await publicPage.getByRole("textbox", { name: "Correo electrónico" }).waitFor();
               assert.equal(await publicPage.getByRole("heading", { name: title, exact: true }).count(), 0);
               assert.equal(await publicPage.getByRole("link", { name: "Ir a Plataforma", exact: true }).count(), 0);
-              await publicPage.getByRole("textbox", { name: "Correo electrónico" }).fill("e2e-operator@example.test");
+              await publicPage.getByRole("textbox", { name: "Correo electrónico" }).fill(operatorEmails["a1"]);
               const before = new Set(await pickupFiles());
               await sendLoginCode(publicPage, setStage);
               await publicPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
               assert.equal(await publicPage.getByRole("heading", { name: title, exact: true }).count(), 0);
-              await enterCode(publicPage, await codeFromPickup("e2e-operator@example.test", before));
+              await enterCode(publicPage, await codeFromPickup(operatorEmails["a1"], before));
               const verified = publicPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/login-code/verify" && response.request().method() === "POST");
               await publicPage.getByRole("button", { name: "Verificar", exact: true }).click();
               const denial = await verified;
@@ -912,7 +923,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await platformPage.reload();
             await expectProfile(platformPage, "Plataforma", "salir de A1 conserva la pestaña de Plataforma");
             setStage("otra persona ingresa en la misma pestaña pública");
-            await loginThroughUi(publicPage, signupEmail, "consumer");
+            await loginThroughUi(publicPage, signupEmail, "consumer", setStage);
             await expectProfile(publicPage, "Personal", "la salida permite usar otra cuenta");
             await platformPage.reload();
             await expectProfile(platformPage, "Plataforma", "operador y persona siguen conviviendo");
@@ -922,7 +933,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         }],
         ["A3: Plataforma y persona conviven en el mismo navegador", async (platformPage, setStage) => {
           setStage("ingresa como operador por Plataforma");
-          await loginThroughUi(platformPage, "e2e-operator@example.test");
+          await loginThroughUi(platformPage, operatorEmails["a3"], "platform", setStage);
           await expectProfile(platformPage, "Plataforma", "sesión independiente del operador");
           const publicPage = await platformPage.context().newPage();
           publicPage.setDefaultTimeout(30_000);
@@ -965,6 +976,9 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           setStage("quita el nuevo principal sin código y conserva el original");
           await confirmAccountMethod(accountPage, added, "Quitar");
           assert.equal(await accountPage.getByText(added, { exact: true }).count(), 0);
+          const originalRow = accountPage.getByRole("region", { name: "Cómo entrás", exact: true })
+            .getByRole("listitem").filter({ has: accountPage.getByText(original, { exact: true }) });
+          await originalRow.getByText("Principal", { exact: true }).waitFor();
           await waitForAccountNotice(original, before, /quit/i);
           before = new Set(await pickupFiles());
           setStage("confirma baja sin código");
@@ -980,7 +994,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await accountPage.goto(new URL("/login", baseUrl).href);
           await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(original);
           const loginBefore = new Set(await pickupFiles());
-          await sendLoginCode(accountPage);
+          await sendLoginCode(accountPage, setStage);
           await accountPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
           await enterCode(accountPage, await codeFromPickup(original, loginBefore));
           await accountPage.getByRole("button", { name: "Verificar", exact: true }).click();
@@ -1017,7 +1031,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         }],
         ["5b: crear, aprobar, reintentar y moderar organizaciones reales", async (platformPage, setStage) => {
           setStage("ingresa el operador para administrar organizaciones");
-          await loginThroughUi(platformPage, "e2e-operator@example.test");
+          await loginThroughUi(platformPage, operatorEmails["5b"], "platform", setStage);
           const ownerEmail = `e2e-owner-${randomUUID()}@example.test`;
           const name = "Creada T25";
           setStage("crea una organización con un Dueño sin cuenta");
@@ -1032,7 +1046,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await openPlatformOrganization(platformPage, name);
           await platformPage.getByRole("tab", { name: /^Dueños/ }).click();
           await platformPage.getByText("Invitación pendiente", { exact: true }).waitFor();
-          const ownerContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          const ownerContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
           try {
             setStage("el Dueño acepta la invitación sin crear Personal");
             const owner = await ownerContext.newPage();
@@ -1069,10 +1083,10 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           setStage("suspende Business y conserva el ingreso Personal del Dueño");
           await confirmPlatformReason(platformPage, "Suspender");
           await platformPage.getByText("Suspendida", { exact: true }).first().waitFor();
-          const personContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          const personContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
           try {
             const person = await personContext.newPage();
-            await loginThroughUi(person, businessEmail, "consumer");
+            await loginThroughUi(person, businessEmail, "consumer", setStage);
             await expectProfile(person, "Personal", "el Dueño conserva Personal durante la suspensión");
           } finally {
             await personContext.close();
@@ -1083,10 +1097,10 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           setStage("despublica la página y bloquea la publicación desde Business");
           await platformPage.getByRole("tab", { name: "Página pública", exact: true }).click();
           await confirmPlatformReason(platformPage, "Despublicar");
-          const businessContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          const businessContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
           try {
             const business = await businessContext.newPage();
-            await loginThroughUi(business, businessEmail, "business");
+            await loginThroughUi(business, businessEmail, "business", setStage);
             await business.goto(new URL("/org/pagina", baseUrl).href);
             await business.getByRole("heading", { name: "Página pública", exact: true }).waitFor();
             const publish = business.getByRole("switch");
@@ -1129,7 +1143,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         }],
         ["5c: suspender, reactivar, cerrar sesiones, dar de baja y recuperar cuentas", async (platformPage, setStage) => {
           setStage("ingresa el operador para administrar cuentas");
-          await loginThroughUi(platformPage, "e2e-operator@example.test");
+          await loginThroughUi(platformPage, operatorEmails["5c"], "platform", setStage);
           await openPlatformAccount(platformPage, "Cuenta E2E");
           setStage("suspende y reactiva una cuenta por Plataforma");
           await confirmPlatformReason(platformPage, "Suspender");
@@ -1138,10 +1152,10 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await platformPage.getByRole("heading", { name: "Cuenta E2E", exact: true }).waitFor();
           await confirmPlatformReason(platformPage, "Reactivar");
           await platformPage.getByText("Activa", { exact: true }).first().waitFor();
-          const memberContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          const memberContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
           try {
             const member = await memberContext.newPage();
-            await loginThroughUi(member, businessEmail, "consumer");
+            await loginThroughUi(member, businessEmail, "consumer", setStage);
             setStage("cierra sesiones y comprueba el reingreso después de F5");
             await confirmPlatformReason(platformPage, "Cerrar sesiones");
             await member.reload();
@@ -1155,7 +1169,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             else if (await publicLogin.isVisible()) await publicLogin.click();
             await login.waitFor();
           } finally { await memberContext.close(); }
-          const deletionContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          const deletionContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
           try {
             setStage("registra otra cuenta y solicita su baja desde Plataforma");
             const person = await deletionContext.newPage();
@@ -1172,7 +1186,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await person.reload();
             await person.getByRole("button", { name: /, Personal$/ }).waitFor({ state: "hidden" });
           } finally { await deletionContext.close(); }
-          const recoveryContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          const recoveryContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
           try {
             setStage("pide Recuperar mi cuenta con un correo nuevo verificado");
             const person = await recoveryContext.newPage();
@@ -1202,7 +1216,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await review.waitFor({ state: "hidden" });
             await platformPage.getByText("Aprobado", { exact: true }).waitFor();
             setStage("ingresa con el correo recuperado y comprueba que es Principal en Mi cuenta");
-            await loginThroughUi(person, next, "consumer");
+            await loginThroughUi(person, next, "consumer", setStage);
             await openAccount(person);
             const recoveredMethod = person.getByRole("list", { name: "Cómo entrás", exact: true })
               .getByRole("listitem").filter({ hasText: next });
@@ -1212,7 +1226,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         }],
         ["5d: publicar y aceptar legales, consultar auditoría y guardar configuración", async (platformPage, setStage) => {
           setStage("ingresa el operador para legales y configuración");
-          await loginThroughUi(platformPage, "e2e-operator@example.test");
+          await loginThroughUi(platformPage, operatorEmails["5d"], "platform", setStage);
           setStage("publica por pantalla una versión de Privacidad vigente hoy");
           await platformNavigate(platformPage, "Administración", "Documentos legales");
           await platformPage.getByRole("link", { name: "Publicar versión nueva", exact: true }).click();
@@ -1260,7 +1274,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await rolesPage.goto(new URL("/login/empresa", baseUrl).href);
           await rolesPage.getByRole("textbox", { name: "Correo electrónico" }).fill(businessEmail);
           const loginBefore = new Set(await pickupFiles());
-          await sendLoginCode(rolesPage);
+          await sendLoginCode(rolesPage, setStage);
           await rolesPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
           await enterCode(rolesPage, await codeFromPickup(businessEmail, loginBefore));
           await rolesPage.getByRole("button", { name: "Verificar", exact: true }).click();
@@ -1483,7 +1497,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             const { invitationId, link } = await inviteFromUsersPage(adminPage, email, e2eCompanyName);
             const browser = adminPage.context().browser();
             assert.ok(browser, "El recorrido requiere el navegador real de Playwright.");
-            const recipientContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+            const recipientContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
             const recipientPage = await recipientContext.newPage();
             try {
               setStage("abre la vista previa del enlace recibido por correo");
@@ -1550,7 +1564,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await invitationCommand(readyFile, { kind: "expire", email: expiredEmail, invitationId: expiredInvitationId });
           const companyAdminBrowser = adminPage.context().browser();
           assert.ok(companyAdminBrowser, "El recorrido requiere el navegador real de Playwright.");
-          const companyAdminContext = await companyAdminBrowser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
+          const companyAdminContext = await newCaseContext(companyAdminBrowser, { ignoreHTTPSErrors: true, locale: "es-AR" });
           const companyAdminPage = await companyAdminContext.newPage();
           try {
             setStage("el Administrador de empresa acepta su invitación");
@@ -1763,7 +1777,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
               await invitationPage.getByRole("button", { name: "Ingresá para aceptar", exact: true }).click();
               await invitationPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
               const loginBefore = new Set(await pickupFiles());
-              await sendLoginCode(invitationPage);
+              await sendLoginCode(invitationPage, setStage);
               await invitationPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
               await enterCode(invitationPage, await codeFromPickup(email, loginBefore));
               await invitationPage.getByRole("button", { name: "Verificar", exact: true }).click();
@@ -1815,7 +1829,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await accountPage.goto(new URL("/login", baseUrl).href);
           await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(originalEmail);
           const previousOwnerLogin = new Set(await pickupFiles());
-          await sendLoginCode(accountPage);
+          await sendLoginCode(accountPage, setStage);
           await accountPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
           await enterCode(accountPage, await codeFromPickup(originalEmail, previousOwnerLogin));
           await accountPage.getByRole("button", { name: "Verificar", exact: true }).click();
@@ -1836,23 +1850,12 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           setStage("agrega y verifica el método que va a retirar");
           const addedEmail = await addPersonalEmail(accountPage, originalEmail);
           const before = new Set(await pickupFiles());
-          setStage("abre las acciones del método agregado");
-          await accountPage.getByRole("button", { name: `Acciones de ${addedEmail}`, exact: true }).click();
-          setStage("abre la confirmación sin código");
-          await accountPage.getByRole("menuitem", { name: "Quitar", exact: true }).click();
-          assert.equal(await accountPage.getByRole("dialog").locator('input[inputmode="numeric"]').count(), 0);
-          setStage("confirma la baja del método agregado");
-          const refreshedMethods = accountPage.waitForResponse((response) =>
-            new URL(response.url()).pathname === "/api/me/login-methods" && response.request().method() === "GET");
-          await accountPage.getByRole("dialog").getByRole("button", { name: "Quitar", exact: true }).click();
-          await accountPage.getByRole("dialog").waitFor({ state: "hidden" });
-          setStage("comprueba que el método ya no aparezca en la cuenta");
-          const methodsResponse = await refreshedMethods;
-          assert.equal(methodsResponse.status(), 200, "La cuenta debe actualizar la lista después de retirar el método.");
+          setStage("confirma quitar sin código y espera que la cuenta muestre el cambio");
+          await confirmAccountMethod(accountPage, addedEmail, "Quitar");
           assert.equal(await accountPage.getByText(addedEmail, { exact: true }).count(), 0);
           await waitForAccountNotice(originalEmail, before, /quit/i);
         }],
-        ["3b: pedir baja y cancelarla ingresando durante la gracia", async (accountPage) => {
+        ["3b: pedir baja y cancelarla ingresando durante la gracia", async (accountPage, setStage) => {
           const email = await registerPerson(accountPage);
           await openAccount(accountPage);
           await accountPage.getByRole("button", { name: "Dar de baja", exact: true }).click();
@@ -1864,7 +1867,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await accountPage.goto(new URL("/login", baseUrl).href);
           await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
           const loginBefore = new Set(await pickupFiles());
-          await sendLoginCode(accountPage);
+          await sendLoginCode(accountPage, setStage);
           await accountPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
           await enterCode(accountPage, await codeFromPickup(email, loginBefore));
           await accountPage.getByRole("button", { name: "Verificar", exact: true }).click();
@@ -1911,24 +1914,26 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         : accountCases;
       assert.ok(selectedAccountCases.length > 0 || onlyCase.includes("390"), "MT_E2E_ONLY_CASE debe coincidir con un recorrido de cuenta existente.");
       for (const [name, journey] of selectedAccountCases) {
+        let caseFinished;
         await t.test(name, { timeout: name.startsWith("5") ? 600_000 : 240_000 }, async (caseTest) => {
-          const accountContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR" });
-          let lastFailure = "";
-          let lastApiActivity = "";
-          let lastInvitationState = "";
-          let lastPublicSiteState = "";
-          let lastOidcActivity = "";
-          let pageErrorName = "";
-          let stage = "inicia el recorrido";
-          const accountPage = await accountContext.newPage();
-          accountPage.setDefaultTimeout(30_000);
-          accountPage.on("pageerror", (error) => { pageErrorName = error?.name ?? "Error"; });
-          accountPage.on("request", (request) => {
-            const authorization = request.headers().authorization;
-            const requestUrl = new URL(request.url());
-            if (!requestUrl.pathname.startsWith("/api/")) return;
-            lastApiActivity = `${request.method()} ${requestUrl.pathname}`;
-            if (authorization?.startsWith("Bearer ")) accountTokens.set(accountPage, authorization);
+          caseFinished = runCase(caseTest.signal, async () => {
+            const accountContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
+            let lastFailure = "";
+            let lastApiActivity = "";
+            let lastInvitationState = "";
+            let lastPublicSiteState = "";
+            let lastOidcActivity = "";
+            let pageErrorName = "";
+            let stage = "inicia el recorrido";
+            const accountPage = await accountContext.newPage();
+            accountPage.setDefaultTimeout(30_000);
+            accountPage.on("pageerror", (error) => { pageErrorName = error?.name ?? "Error"; });
+            accountPage.on("request", (request) => {
+              const authorization = request.headers().authorization;
+              const requestUrl = new URL(request.url());
+              if (!requestUrl.pathname.startsWith("/api/")) return;
+              lastApiActivity = `${request.method()} ${requestUrl.pathname}`;
+              if (authorization?.startsWith("Bearer ")) accountTokens.set(accountPage, authorization);
           });
           accountPage.on("response", async (response) => {
             const responseUrl = new URL(response.url());
@@ -1977,11 +1982,11 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           };
           caseTest.signal.addEventListener("abort", reportAbort, { once: true });
           try {
-            await journey(accountPage, (value) => {
+            await journey(accountPage, caseStage((value) => {
               stage = value;
               lastFailure = "";
               console.info(`E2E ${name}: ${stage}.`);
-            });
+            }));
           }
           catch (error) {
             // Playwright puede incluir valores de controles/URLs; solo publicar el paso.
@@ -2009,76 +2014,85 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             throw new Error(failure);
           } finally {
             caseTest.signal.removeEventListener("abort", reportAbort);
-            await accountContext.close();
           }
+          });
+          return caseFinished;
         });
+        // node:test puede declarar el timeout antes de que la función termine.
+        // La limpieza del recorrido debe finalizar antes de iniciar el siguiente.
+        await caseFinished?.catch(() => {});
       }
       // Va al final: la puerta de empresa ya pidió un código para el mismo correo y hay que esperar para pedir otro.
       if (!process.env.MT_E2E_ONLY_CASE || process.env.MT_E2E_ONLY_CASE.includes("390")) {
-        await t.test("390: el teléfono es una app (ingreso de empresa, «Más», Usuarios, Mi cuenta y Salir)", { timeout: 240_000 }, async () => {
-          // Tableros M-* («Criterio · Marco»): a 390 la app es la de un teléfono, con el mismo front, Api y correo reales.
-          // Se entra por la puerta de empresa, «Más» lleva a Usuarios (lista con «+») y a Mi cuenta (botones fijos abajo),
-          // ‹ vuelve a «Más» y «Salir» cierra la sesión.
-          const phoneContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "es-AR", viewport: { width: 390, height: 844 } });
-          const setPhoneStage = (value) => { console.info(`E2E 390: ${value}.`); };
-          try {
-            const phone = await phoneContext.newPage();
-            setPhoneStage("ingresa con el método administrado conservado del mismo Dueño");
-            await phone.goto(new URL("/login/empresa", baseUrl).href);
-            await phone.getByRole("textbox", { name: "Correo electrónico" }).fill(managedBusinessEmail);
-            const phoneBefore = new Set(await pickupFiles());
-            await phone.getByRole("button", { name: "Enviar código" }).click();
-            // Si la puerta de empresa pidió un código hace poco, hay que esperar para pedir otro.
-            const sent = phone.getByRole("heading", { name: "Revisá tu correo" });
-            const retry = phone.getByRole("button", { name: /^Reintentá en/ });
-            await sent.or(retry).first().waitFor({ timeout: 30_000 });
-            if (await retry.isVisible()) {
-              await phone.getByRole("button", { name: "Enviar código" }).waitFor({ timeout: 90_000 });
-              await phone.getByRole("button", { name: "Enviar código" }).click();
-              await sent.waitFor();
-            }
-            await enterCode(phone, await codeFromPickup(managedBusinessEmail, phoneBefore));
-            await phone.getByRole("button", { name: "Verificar" }).click();
-            await expectPath(phone, "/org", "ingreso de empresa en el teléfono");
-            // El recorrido anterior publica términos nuevos: si aparecen, se aceptan antes de seguir.
-            const terms = phone.getByRole("heading", { name: "Actualizamos los términos" });
-            const sections = phone.getByRole("navigation", { name: "Secciones" });
-            setPhoneStage("acepta los legales vigentes si aparecen antes de continuar");
-            await terms.or(sections).first().waitFor({ timeout: 30_000 });
-            if (await terms.isVisible()) {
-              await phone.getByRole("checkbox", { name: /Leí y acepto/ }).check();
-              await phone.getByRole("button", { name: "Aceptar y seguir" }).click();
-            }
-            setPhoneStage("abre Más y confirma la misma cuenta y organización activa");
-            await sections.getByRole("link", { name: "Más" }).click();
-            await expectPath(phone, "/mas", "«Más» en el teléfono");
-            await phone.getByText("Cuenta E2E", { exact: true }).filter({ visible: true }).waitFor();
-            await phone.getByRole("list", { name: "Perfiles", exact: true }).getByRole("button")
-              .filter({ has: phone.getByText(e2eOrganizationName, { exact: true }) }).getByLabel("Perfil actual", { exact: true }).waitFor();
-            setPhoneStage("abre Usuarios como lista y conserva Invitar usuario");
-            await phone.getByRole("link", { name: /^Usuarios/ }).click();
-            await expectPath(phone, "/org/usuarios", "Usuarios desde «Más»");
-            await phone.getByRole("button", { name: "Invitar usuario" }).waitFor();
-            assert.equal(await phone.getByRole("table").count(), 0, "a 390 Usuarios es una lista, no una tabla");
-            setPhoneStage("vuelve a Más y abre Mi cuenta con acciones fijas");
-            await phone.getByRole("link", { name: "Volver a Más" }).click();
-            await expectPath(phone, "/mas", "‹ vuelve a «Más»");
-            await phone.getByRole("link", { name: /^Mi cuenta/ }).click();
-            await phone.locator("[data-slot='fixed-actions']").getByRole("button", { name: "Guardar cambios" }).waitFor();
-            await phone.getByRole("link", { name: "Volver a Más" }).click();
-            await expectPath(phone, "/mas", "‹ vuelve a «Más» desde Mi cuenta");
-            setPhoneStage("sale y comprueba que el teléfono abandona la app");
-            await phone.getByRole("button", { name: /^Salir/ }).click();
+        let phoneFinished;
+        await t.test("390: el teléfono es una app (ingreso de empresa, «Más», Usuarios, Mi cuenta y Salir)", { timeout: 240_000 }, async (phoneTest) => {
+          phoneFinished = runCase(phoneTest.signal, async () => {
+            // Tableros M-* («Criterio · Marco»): a 390 la app es la de un teléfono, con el mismo front, Api y correo reales.
+            // Se entra por la puerta de empresa, «Más» lleva a Usuarios (lista con «+») y a Mi cuenta (botones fijos abajo),
+            // ‹ vuelve a «Más» y «Salir» cierra la sesión.
+            const phoneContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR", viewport: { width: 390, height: 844 } });
+            const setPhoneStage = caseStage((value) => { console.info(`E2E 390: ${value}.`); });
             try {
-              await phone.waitForURL((url) => !["/mas", "/org", "/cuenta"].includes(url.pathname), { timeout: 20_000 });
-              await phone.getByRole("navigation", { name: "Secciones" }).waitFor({ state: "detached", timeout: 20_000 });
-            } catch {
-              throw new Error(`El cierre de sesión en el teléfono no salió de la app; ruta actual ${new URL(phone.url()).pathname}.`);
+              const phone = await phoneContext.newPage();
+              setPhoneStage("ingresa con el método administrado conservado del mismo Dueño");
+              await phone.goto(new URL("/login/empresa", baseUrl).href);
+              await phone.getByRole("textbox", { name: "Correo electrónico" }).fill(managedBusinessEmail);
+              const phoneBefore = new Set(await pickupFiles());
+              await phone.getByRole("button", { name: "Enviar código" }).click();
+              // Si la puerta de empresa pidió un código hace poco, hay que esperar para pedir otro.
+              const sent = phone.getByRole("heading", { name: "Revisá tu correo" });
+              const retry = phone.getByRole("button", { name: /^Reintentá en/ });
+              await sent.or(retry).first().waitFor({ timeout: 30_000 });
+              if (await retry.isVisible()) {
+                await phone.getByRole("button", { name: "Enviar código" }).waitFor({ timeout: 90_000 });
+                await phone.getByRole("button", { name: "Enviar código" }).click();
+                await sent.waitFor();
+              }
+              await enterCode(phone, await codeFromPickup(managedBusinessEmail, phoneBefore));
+              await phone.getByRole("button", { name: "Verificar" }).click();
+              await expectPath(phone, "/org", "ingreso de empresa en el teléfono");
+              // El recorrido anterior publica términos nuevos: si aparecen, se aceptan antes de seguir.
+              const terms = phone.getByRole("heading", { name: "Actualizamos los términos" });
+              const sections = phone.getByRole("navigation", { name: "Secciones" });
+              setPhoneStage("acepta los legales vigentes si aparecen antes de continuar");
+              await terms.or(sections).first().waitFor({ timeout: 30_000 });
+              if (await terms.isVisible()) {
+                await phone.getByRole("checkbox", { name: /Leí y acepto/ }).check();
+                await phone.getByRole("button", { name: "Aceptar y seguir" }).click();
+              }
+              setPhoneStage("abre Más y confirma la misma cuenta y organización activa");
+              await sections.getByRole("link", { name: "Más" }).click();
+              await expectPath(phone, "/mas", "«Más» en el teléfono");
+              await phone.getByText("Cuenta E2E", { exact: true }).filter({ visible: true }).waitFor();
+              await phone.getByRole("list", { name: "Perfiles", exact: true }).getByRole("button")
+                .filter({ has: phone.getByText(e2eOrganizationName, { exact: true }) }).getByLabel("Perfil actual", { exact: true }).waitFor();
+              setPhoneStage("abre Usuarios como lista y conserva Invitar usuario");
+              await phone.getByRole("link", { name: /^Usuarios/ }).click();
+              await expectPath(phone, "/org/usuarios", "Usuarios desde «Más»");
+              await phone.getByRole("button", { name: "Invitar usuario" }).waitFor();
+              assert.equal(await phone.getByRole("table").count(), 0, "a 390 Usuarios es una lista, no una tabla");
+              setPhoneStage("vuelve a Más y abre Mi cuenta con acciones fijas");
+              await phone.getByRole("link", { name: "Volver a Más" }).click();
+              await expectPath(phone, "/mas", "‹ vuelve a «Más»");
+              await phone.getByRole("link", { name: /^Mi cuenta/ }).click();
+              await phone.locator("[data-slot='fixed-actions']").getByRole("button", { name: "Guardar cambios" }).waitFor();
+              await phone.getByRole("link", { name: "Volver a Más" }).click();
+              await expectPath(phone, "/mas", "‹ vuelve a «Más» desde Mi cuenta");
+              setPhoneStage("sale y comprueba que el teléfono abandona la app");
+              await phone.getByRole("button", { name: /^Salir/ }).click();
+              try {
+                await phone.waitForURL((url) => !["/mas", "/org", "/cuenta"].includes(url.pathname), { timeout: 20_000 });
+                await phone.getByRole("navigation", { name: "Secciones" }).waitFor({ state: "detached", timeout: 20_000 });
+              } catch {
+                throw new Error(`El cierre de sesión en el teléfono no salió de la app; ruta actual ${new URL(phone.url()).pathname}.`);
+              }
+            } finally {
+              await phoneContext.close();
             }
-          } finally {
-            await phoneContext.close();
-          }
+          });
+          return phoneFinished;
         });
+        await phoneFinished?.catch(() => {});
       }
     } finally {
       await browser.close();
