@@ -1,0 +1,425 @@
+{
+  "date": "2026-10-07",
+  "environment": "AppHost normal, PostgreSQL persistente y Chrome con sesiones previas",
+  "sessionStorageCleared": false,
+  "cookiesCleared": false,
+  "mockedApi": false,
+  "completedChecks": 12,
+  "totalChecks": 16,
+  "completedSteps": [
+    1,
+    2,
+    4,
+    6,
+    7,
+    8
+  ],
+  "pending": [
+    {
+      "step": 3,
+      "reason": "Falta una cuenta Google propia de prueba; el proveedor reutiliza la sesión personal del usuario."
+    },
+    {
+      "step": 5,
+      "reason": "Falta un operador de prueba en la base normal; los del E2E son aislados."
+    }
+  ],
+  "captures": [
+    {
+      "file": "01-alta-personal-1440.jpg",
+      "step": 1,
+      "state": "Persona: registro completado y llegada al inicio",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "4828adb520022fc56c44023c87852111f26e289b821fe06ef4f3d27cd2f9fcd3",
+      "inspected": true
+    },
+    {
+      "file": "01-alta-personal-390.jpg",
+      "step": 1,
+      "state": "Persona: registro completado y llegada al inicio",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "55309a5d8e27406d8a5c2ed2a66a66af8f1b47ebb676546eba0df8fd4509a041",
+      "inspected": true
+    },
+    {
+      "file": "01-sin-cuenta-1440.jpg",
+      "step": 1,
+      "state": "Persona: correo sin cuenta y enlace de registro",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "8902997dc612c37f92fa37d77986de8074d00f74f6c5b15330812f09b3cd7409",
+      "inspected": true
+    },
+    {
+      "file": "01-sin-cuenta-390.jpg",
+      "step": 1,
+      "state": "Persona: correo sin cuenta y enlace de registro",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "d07e25ac90dbc95573bc1f8b85f594672c60ef7088413469a085cb020d768c49",
+      "inspected": true
+    },
+    {
+      "file": "02-correo-con-cuenta-1440.jpg",
+      "step": 2,
+      "state": "Registro: correo existente y enlace de ingreso",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "607a734dda5a9b61764d9c3633be625760a0dfa038805f86c6a5146a9dec0313",
+      "inspected": true
+    },
+    {
+      "file": "02-correo-con-cuenta-390.jpg",
+      "step": 2,
+      "state": "Registro: correo existente y enlace de ingreso",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "d7861ff1bd5716df7f728f88b11a89876a3188607d70ff53c05bc8b560528d15",
+      "inspected": true
+    },
+    {
+      "file": "02-ingreso-personal-1440.jpg",
+      "step": 2,
+      "state": "Persona: ingreso con código completado",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "4828adb520022fc56c44023c87852111f26e289b821fe06ef4f3d27cd2f9fcd3",
+      "inspected": true
+    },
+    {
+      "file": "02-reingreso-f5-1440.jpg",
+      "step": 2,
+      "state": "Persona: salida, reingreso y recarga conservan la sesión",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "3a03a89bb0a010470a0bd029ac78d73ac3a5b053110c9282bf0a11d9794faadd",
+      "inspected": true
+    },
+    {
+      "file": "02-reingreso-f5-390.jpg",
+      "step": 2,
+      "state": "Persona: salida, reingreso y recarga conservan la sesión",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "55309a5d8e27406d8a5c2ed2a66a66af8f1b47ebb676546eba0df8fd4509a041",
+      "inspected": true
+    },
+    {
+      "file": "04-alta-empresa-f5-1440.jpg",
+      "step": 4,
+      "state": "Empresa: organización creada y sesión conservada después de F5",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "837609e344b80ce4c40d450067ee3d3c77cdc295064e4a5608f8e4d73dcc47ee",
+      "inspected": true
+    },
+    {
+      "file": "04-alta-empresa-f5-390.jpg",
+      "step": 4,
+      "state": "Empresa: organización creada y sesión conservada después de F5",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "774a7ebbb849779f03840b968f0880d4866fc3abe4236c25b7e3f5d618d6ce34",
+      "inspected": true
+    },
+    {
+      "file": "04-cuit-verificador-1440.jpg",
+      "step": 4,
+      "state": "Registro empresarial: CUIT de once números con verificador incorrecto",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "c3ce07f895437c6c5941ad687feab5989e12d7b86fb096f73f93fd13df1e4716",
+      "inspected": true
+    },
+    {
+      "file": "04-cuit-verificador-390.jpg",
+      "step": 4,
+      "state": "Registro empresarial: CUIT de once números con verificador incorrecto",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "fecdda2cbae19efa99a189dd4b4cbddf2e5459976f7c8623ae60bb29b2fc8026",
+      "inspected": true
+    },
+    {
+      "file": "04-perfil-dueno-1440.jpg",
+      "step": 4,
+      "state": "Perfiles: rol de sistema traducido como Dueño",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "6b72dbddf7997ecab58168658e68737b8161bebd5fd09fd7607d6eef7ec565df",
+      "inspected": true
+    },
+    {
+      "file": "04-perfil-dueno-390.jpg",
+      "step": 4,
+      "state": "Perfiles: rol de sistema traducido como Dueño",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "7298859cf24938bdb6d675192d1acb213b84ffa25e464b2ea4de439e911d5036",
+      "inspected": true
+    },
+    {
+      "file": "04-sin-empresa-1440.jpg",
+      "step": 4,
+      "state": "Persona sin organización: estado privado Sin empresa",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "470c61113db2dff1e5b98045f16ab52d9de663d26145e882649a1e5b7e571d1f",
+      "inspected": true
+    },
+    {
+      "file": "04-sin-empresa-390.jpg",
+      "step": 4,
+      "state": "Persona sin organización: estado privado Sin empresa",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "672c7b2527febd00d1c7355bc8eef2e28ce3ac9fbecc6091ba833c24a0070df3",
+      "inspected": true
+    },
+    {
+      "file": "06-correo-ocupado-1440.jpg",
+      "step": 6,
+      "state": "Agregar correo: rechazo del correo de otra cuenta",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "52da07e714f91e21c90f5908570bcdb7b667d53cb584bd22f978bfec1863349b",
+      "inspected": true
+    },
+    {
+      "file": "06-correo-ocupado-390.jpg",
+      "step": 6,
+      "state": "Agregar correo: rechazo del correo de otra cuenta",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "b1cd1fe225215ecc07ea0e95fb5fc09617755a80912fbdef2780d5e3a57979ca",
+      "inspected": true
+    },
+    {
+      "file": "06-cuenta-1440.jpg",
+      "step": 6,
+      "state": "Mi cuenta: datos guardados y nuevo correo principal después de F5",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "90460bc9f310a5f3e4dbb0db6dc14205b89c7d15b8c6b6960ca387d4f6e82d04",
+      "inspected": true
+    },
+    {
+      "file": "06-cuenta-390.jpg",
+      "step": 6,
+      "state": "Mi cuenta: datos guardados y nuevo correo principal después de F5",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "233b6f05eba866bceb2237efdc9f24ccddf0251d4c04a80431df27fc91a1df4a",
+      "inspected": true
+    },
+    {
+      "file": "06-principal-sin-codigo-390.jpg",
+      "step": 6,
+      "state": "Cambiar principal: confirmación sin pedir código",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "09ce070f64f8b0ac01e4d10710b72f0e4f39e0e68836f38cf33ba5cd4251de2e",
+      "inspected": true
+    },
+    {
+      "file": "06-quitar-sin-codigo-390.jpg",
+      "step": 6,
+      "state": "Quitar correo: confirmación sin pedir código",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "2ec2a440e543135b293fa63add53391f3300f7e13d80869ba6385697601d4a28",
+      "inspected": true
+    },
+    {
+      "file": "07-recuperar-ocupado-1440.jpg",
+      "step": 7,
+      "state": "Recuperar: el correo nuevo pertenece a otra cuenta",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "088331c13a70b089cb9e292c41a6e9bf7a61478c1d07a85586cef5200dbe5d03",
+      "inspected": true
+    },
+    {
+      "file": "07-recuperar-ocupado-390.jpg",
+      "step": 7,
+      "state": "Recuperar: el correo nuevo pertenece a otra cuenta",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "d9008c513e36bb74faca8b7d265ca7bc96ec43b9dbdc5ca5850a8a37f7c66a81",
+      "inspected": true
+    },
+    {
+      "file": "07-recuperar-sin-cuenta-1440.jpg",
+      "step": 7,
+      "state": "Recuperar: el correo de origen no tiene cuenta",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "2aeb72805c84e87f122411cd556b993e9eec959f2067969028fa43170ed7dd01",
+      "inspected": true
+    },
+    {
+      "file": "07-recuperar-sin-cuenta-390.jpg",
+      "step": 7,
+      "state": "Recuperar: el correo de origen no tiene cuenta",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "773802d0ffbaa94e8b581863048297a5f02d82f0b4095e3740316d1c9e204a4b",
+      "inspected": true
+    },
+    {
+      "file": "08-codigo-incorrecto-1440.jpg",
+      "step": 8,
+      "state": "Ingreso: código deliberadamente inválido 000000 y cuatro intentos restantes",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "1bb3c58f6491fd5408ffbbe4f3b18de1440c6b9be3e2c426580ded7f76380900",
+      "inspected": true
+    },
+    {
+      "file": "08-codigo-incorrecto-390.jpg",
+      "step": 8,
+      "state": "Ingreso: código deliberadamente inválido 000000 y cuatro intentos restantes",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "2e8e3f2742ec4c0754cdd2c59532c8859f5643610610812a448c6e866f44b4fa",
+      "inspected": true
+    },
+    {
+      "file": "08-codigo-vencido-1440.jpg",
+      "step": 8,
+      "state": "Registro: código vencido tras esperar más de diez minutos reales",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "c5f841e2c38327d3b523585b6655ff8238a8c707b38a36a6f87ffb7eb086fa8f",
+      "inspected": true
+    },
+    {
+      "file": "08-codigo-vencido-390.jpg",
+      "step": 8,
+      "state": "Registro: código vencido tras esperar más de diez minutos reales",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "533d2a358a6479b948eeb6181ff3db7ee0400e40f02b779bcf24e5f3edf04fdd",
+      "inspected": true
+    },
+    {
+      "file": "08-correo-invalido-1440.jpg",
+      "step": 8,
+      "state": "Ingreso: correo con formato inválido",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "4805907ce07f578be46c63c0232a7ebf6b0efbea9744a295811128214d6446fc",
+      "inspected": true
+    },
+    {
+      "file": "08-correo-invalido-390.jpg",
+      "step": 8,
+      "state": "Ingreso: correo con formato inválido",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "593c77f0e29daf21b533de660e17678076296191fae6205475dcb970f5b18ba9",
+      "inspected": true
+    },
+    {
+      "file": "08-ingreso-antes-de-tiempo-390.jpg",
+      "step": 8,
+      "state": "Ingreso: advertencia al pedir otro código antes del plazo",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "30d1afd6aa01bc6e3fe87ce0f83125948a41445013e17fef4989ba2b5bfc6443",
+      "inspected": true
+    },
+    {
+      "file": "08-reenvio-cooldown-1440.jpg",
+      "step": 8,
+      "state": "Reenvío: botón deshabilitado y espera restante visible",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "82eeac22f2ac7fa01e820139c75e4b0df069f5222b8baa34f2887d61d924dfa2",
+      "inspected": true
+    },
+    {
+      "file": "08-reenvio-cooldown-390.jpg",
+      "step": 8,
+      "state": "Reenvío: botón deshabilitado y espera restante visible",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "8f5bdc794319223eb240342efc845254ab6c49199ceda6c372d2f17866148ace",
+      "inspected": true
+    }
+  ]
+}
