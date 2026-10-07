@@ -23,7 +23,7 @@ import { AuthCodeStep } from "../components/AuthCodeStep";
 import { AuthLink, AuthLinkRow } from "../components/AuthLink";
 import { GoogleButton } from "../components/GoogleButton";
 import { loginCodeErrorKey, loginCodeMessage } from "../errors";
-import { safeReturnUrl } from "../lib/returnUrl";
+import { loginReturnUrl, safeReturnUrl } from "../lib/returnUrl";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { effectiveCulture } from "@/shared/i18n";
 import { browserTimeZone } from "@/shared/time/browserTimeZone";
@@ -31,13 +31,20 @@ import { browserTimeZone } from "@/shared/time/browserTimeZone";
 const schema = z.object({ email: z.email(), acceptedTerms: z.literal(true) });
 type SignupFields = z.infer<typeof schema>;
 
-export function SignupPage() {
+const followAuthorize = (url: string) => globalThis.location.assign(url);
+
+export function SignupPage({ completeAuthorization = followAuthorize }: { completeAuthorization?: (url: string) => void }) {
   const { t } = useTranslation("auth");
   const auth = useAuth();
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const [emailTaken, setEmailTaken] = useState(false);
   const returnTo = safeReturnUrl(searchParams.get("returnTo") ?? searchParams.get("returnUrl"), "/");
+  const originalReturn = loginReturnUrl(searchParams.get("returnUrl") ?? searchParams.get("returnTo"));
+  // Se continúa la autorización original para conservar PKCE, state y el callback del subdominio que la inició.
+  const authorizeReturn = originalReturn !== "/invitacion" ? originalReturn : undefined;
+  const loginReturn = authorizeReturn ?? returnTo;
+  const loginHref = loginReturn === "/" ? "/login" : `/login?${new URLSearchParams({ returnUrl: loginReturn })}`;
   const googleComplete = searchParams.get("google") === "complete";
   const startedOidc = useRef(false);
   const [step, setStep] = useState<{ email: string } | null>(null);
@@ -57,8 +64,9 @@ export function SignupPage() {
   useEffect(() => {
     if (!googleComplete || startedOidc.current) return;
     startedOidc.current = true;
-    void auth.signinRedirect({ extraQueryParams: { access: "consumer" }, state: { returnTo } });
-  }, [auth, googleComplete, returnTo]);
+    if (authorizeReturn) completeAuthorization(authorizeReturn);
+    else void auth.signinRedirect({ extraQueryParams: { access: "consumer" }, state: { returnTo } });
+  }, [auth, authorizeReturn, completeAuthorization, googleComplete, returnTo]);
 
   // Como el tablero Registro: los botones no se apagan por los términos; sin la casilla, el aviso va debajo de ella.
   function requireTerms() {
@@ -87,7 +95,8 @@ export function SignupPage() {
     setError(null);
     try {
       await verify.mutateAsync({ email: step.email, code, acceptedTerms: true });
-      await auth.signinRedirect({ extraQueryParams: { access: "consumer" }, state: { returnTo } });
+      if (authorizeReturn) completeAuthorization(authorizeReturn);
+      else await auth.signinRedirect({ extraQueryParams: { access: "consumer" }, state: { returnTo } });
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
       setError(caught);
@@ -112,7 +121,7 @@ export function SignupPage() {
 
   return <AuthLayout access="consumer">
     {closed ? <AuthStatus icon={LockIcon} title={t("signup.closedTitle")} detail={t("signup.closedDetail")}
-      actions={<Button asChild size="lg"><Link to="/login">{t("signup.backToLogin")}</Link></Button>} />
+      actions={<Button asChild size="lg"><Link to={loginHref}>{t("signup.backToLogin")}</Link></Button>} />
       : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("signup.title")}</h1>
       <label className="flex items-center gap-2.5 text-[14px] text-[var(--t1)]">
@@ -120,7 +129,7 @@ export function SignupPage() {
         <span>{t("signup.acceptPrefix")} <AuthLink to="/terminos">{t("signup.terms")}</AuthLink> {t("signup.acceptJoin")} <AuthLink to="/privacidad">{t("signup.privacy")}</AuthLink></span>
       </label>
       {errors.acceptedTerms ? <p role="alert" className="text-[13px] text-[var(--peligro)]">{errors.acceptedTerms.message ?? t("signup.acceptRequired")}</p> : null}
-      <GoogleButton mode="signup" acceptedTerms={acceptedTerms} onTermsRequired={requireTerms} returnTo={returnTo} />
+      <GoogleButton mode="signup" acceptedTerms={acceptedTerms} onTermsRequired={requireTerms} returnTo={authorizeReturn ?? returnTo} />
       <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
       <form noValidate onSubmit={(event) => {
         if (!acceptedTerms) { event.preventDefault(); requireTerms(); return; }
@@ -130,14 +139,14 @@ export function SignupPage() {
           <Controller control={control} name="email" render={({ field }) => <FormField label={t("login.emailLabel")} variant="auth" error={errors.email?.type === "server" ? errors.email.message : errors.email ? t("login.emailInvalid") : undefined}>
             <EmailField name={field.name} ref={field.ref} value={field.value} onChange={(value) => { field.onChange(value); clearErrors("email"); setEmailTaken(false); }} onBlur={field.onBlur} />
           </FormField>} />
-          {emailTaken && errors.email ? <AuthLink className="self-start text-[14px]!" to="/login" state={{ email: getValues("email") }}>{t("signup.enter")}</AuthLink> : null}
+          {emailTaken && errors.email ? <AuthLink className="self-start text-[14px]!" to={loginHref} state={{ email: getValues("email") }}>{t("signup.enter")}</AuthLink> : null}
         </div>
         <FormError message={error ? t(loginCodeErrorKey(error)) : null} />
         <Button type="submit" size="lg" className="w-full" disabled={retry.isRunning} pending={request.isPending} pendingLabel={t("common:code.sending")}>{retry.label ?? t("signup.create")}</Button>
       </form>
       {/* Tablero Registro: los dos enlaces a 22 entre sí, como el resto de la columna (en Ingreso van a 8). */}
       <div className="flex flex-col gap-[22px]">
-        <AuthLinkRow>{t("signup.haveAccount")}<AuthLink to="/login">{t("signup.login")}</AuthLink></AuthLinkRow>
+        <AuthLinkRow>{t("signup.haveAccount")}<AuthLink to={loginHref}>{t("signup.login")}</AuthLink></AuthLinkRow>
         <AuthLinkRow>{t("login.haveBusiness")}<AuthLink to="/registro/empresa">{t("login.registerIt")}</AuthLink></AuthLinkRow>
       </div>
     </div> : <AuthCodeStep destination={step.email} code={code} onBack={() => { setStep(null); setCode(""); setError(null); }}

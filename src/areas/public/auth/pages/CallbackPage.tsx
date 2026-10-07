@@ -1,12 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { BusinessAccessResult } from "../components/BusinessAccessResult";
 import { PlatformAccessResult } from "../components/PlatformAccessResult";
-import { accessOfPath, loginPathOf } from "@/tenancy/access";
+import { accessOfPath, homeOf, loginPathOf } from "@/tenancy/access";
 import { safeReturnUrl } from "../lib/returnUrl";
+import { mainSiteUrl, siteOfHost } from "@/tenancy/publicSite";
+import { PublicSiteHostContext } from "@/tenancy/usePublicSite";
 
 interface CallbackState { returnTo?: string }
 
@@ -34,6 +36,8 @@ export function CallbackPage() {
   const auth = useAuth();
   const navigate = useNavigate();
   const navigated = useRef(false);
+  const host = useContext(PublicSiteHostContext) ?? globalThis.location.host;
+  const storefront = siteOfHost(host).kind === "storefront";
 
   useEffect(() => {
     if (!auth.isAuthenticated || navigated.current) return;
@@ -44,7 +48,8 @@ export function CallbackPage() {
 
   const deniedBusiness = accessError(auth.error);
   if (deniedBusiness?.status === "platformOnly") return <AuthLayout access={deniedBusiness.access}>
-    <PlatformAccessResult access={deniedBusiness.access} onSignedOut={() => { void navigate(loginPathOf(deniedBusiness.access), { replace: true }); }} />
+    <PlatformAccessResult access={deniedBusiness.access} platformHref={storefront ? mainSiteUrl(homeOf("platform")) : undefined}
+      onSignedOut={() => { void navigate(storefront ? "/" : loginPathOf(deniedBusiness.access), { replace: true }); }} />
   </AuthLayout>;
   if (deniedBusiness) return <AuthLayout access="business">
     {deniedBusiness.status === "noBusiness" ? <BusinessAccessResult status="noBusiness" />
@@ -58,6 +63,8 @@ export function CallbackPage() {
   const retryQuery = new URLSearchParams({ prompt: "login", ...(returnTo ? { returnUrl: returnTo } : {}) });
 
   return auth.error
-    ? <SessionStatusPage status="error" loginPath={`${retryDoor}?${retryQuery}`} />
+    ? <SessionStatusPage status="error" loginPath={`${retryDoor}?${retryQuery}`} onRetry={storefront ? () => {
+      void auth.signinRedirect({ extraQueryParams: { access: "consumer", prompt: "login" }, state: { returnTo: returnTo ?? "/" } });
+    } : undefined} />
     : <SessionStatusPage status="starting" />;
 }

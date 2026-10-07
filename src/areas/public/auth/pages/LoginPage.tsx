@@ -53,6 +53,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const returnUrl = loginReturnUrl(searchParams.get("returnUrl"));
+  const signupHref = access === "consumer" && returnUrl ? `/registro?${new URLSearchParams({ returnUrl })}` : undefined;
   const [initialEmail] = useState(() => emailFromNavigation(location.state) || (returnUrl ? carriedLoginEmail() : ""));
   const redirectError = searchParams.get("error");
   const [googleError, setGoogleError] = useState<string | null>(() => redirectError ?? carriedLoginRedirectError() ?? null);
@@ -197,10 +198,10 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       {sessionExpired ? <FormError tone="info" icon={ClockIcon} message={t("login.sessionExpired")} /> : null}
       <GoogleButton mode="login" access={access} returnUrl={returnUrl!} />
       <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
-      <EmailCodeForm access={access} initialEmail={initialEmail} onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? { text: t("login.googleError"), details: [t("login.googleErrorHelp")] } : undefined} />
+      <EmailCodeForm access={access} initialEmail={initialEmail} signupHref={signupHref} onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? { text: t("login.googleError"), details: [t("login.googleErrorHelp")] } : undefined} />
       <div className="flex flex-col gap-2">
         {access === "consumer" ? <>
-          <AuthLinkRow>{t("login.noAccount")}<AuthLink to="/registro">{t("login.createOne")}</AuthLink></AuthLinkRow>
+          <AuthLinkRow>{t("login.noAccount")}<AuthLink to={signupHref ?? "/registro"}>{t("login.createOne")}</AuthLink></AuthLinkRow>
           <AuthLinkRow>{t("login.haveBusiness")}<AuthLink to={loginPathOf("business")}>{t("login.enterAsBusiness")}</AuthLink></AuthLinkRow>
         </> : <>
           <AuthLinkRow>{t("login.businessNotRegistered")}<AuthLink to="/registro/empresa">{t("login.registerIt")}</AuthLink></AuthLinkRow>

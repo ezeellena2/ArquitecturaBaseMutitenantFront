@@ -3,11 +3,12 @@ import { useAuth } from "react-oidc-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { homeOf, type Access } from "./access";
+import { mainSiteUrl } from "./publicSite";
 import { clearAccessError } from "@/shared/api/accessErrorStore";
 
 export type SwitchTarget = { access: Access; tenantId?: string };
 
-export function useSwitchAccess() {
+export function useSwitchAccess({ mainSite = false }: { mainSite?: boolean } = {}) {
   const auth = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -31,7 +32,8 @@ export function useSwitchAccess() {
 
       queryClient.clear();
       clearAccessError();
-      navigate(homeOf(target.access), { replace: true });
+      if (mainSite) globalThis.location.assign(mainSiteUrl(homeOf(target.access)));
+      else navigate(homeOf(target.access), { replace: true });
     } catch {
       setHasError(true);
     } finally {

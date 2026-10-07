@@ -40,14 +40,17 @@ function ContactRow({ icon: Icon, label, children }: { icon: ComponentType<{ cla
 
 /// La tarjeta de la página pública de una organización (tableros Pagina-Publica y M-Pagina-Publica): el logo o las
 /// iniciales, el nombre, la descripción, la dirección, el teléfono, el correo y el sitio web, e «Ingresá para continuar».
-/// No sabe dónde se muestra: sin `links` ni `signInHref`, nada lleva a ningún lado (la vista previa de Página pública);
-/// la página del subdominio (Etapa 7) le pasa los dos.
-export function PublicPageCard({ page, links = false, signInHref }: {
+/// No sabe dónde se muestra: la vista previa conserva el CTA sin acción; la página pública le pasa el ingreso y su visibilidad.
+export function PublicPageCard({ page, links = false, signInHref, onSignIn, showSignIn = true }: {
   page: PublicPageCardData;
   /** El teléfono, el correo y el sitio web como enlaces (`tel:`, `mailto:` y la web). */
   links?: boolean;
   /** A dónde lleva «Ingresá para continuar». Sin él, el botón se ve pero no hace nada. */
   signInHref?: string;
+  /** Inicia el ingreso OIDC en la página pública. */
+  onSignIn?: () => void;
+  /** Con sesión se oculta el CTA; la vista previa lo conserva por defecto. */
+  showSignIn?: boolean;
 }) {
   const { t } = useTranslation();
   const { name, description, logoDataUri, address, contactPhone, contactEmail, website } = page;
@@ -75,6 +78,8 @@ export function PublicPageCard({ page, links = false, signInHref }: {
         {links ? <a href={website.trim()} className={linkClass}>{websiteText(website)}</a> : <span className={linkClass}>{websiteText(website)}</span>}
       </ContactRow> : null}
     </ul> : null}
-    {signInHref ? <a href={signInHref} className={signIn}>{t("publicPageCard.signIn")}</a> : <span className={signIn}>{t("publicPageCard.signIn")}</span>}
+    {showSignIn ? onSignIn ? <button type="button" onClick={onSignIn} className={signIn}>{t("publicPageCard.signIn")}</button>
+      : signInHref ? <a href={signInHref} className={signIn}>{t("publicPageCard.signIn")}</a>
+        : <span className={signIn}>{t("publicPageCard.signIn")}</span> : null}
   </div>;
 }

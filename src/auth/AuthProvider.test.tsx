@@ -6,13 +6,15 @@ import { server } from "@/test/mocks/server";
 import { api, resetHttpClient } from "@/shared/api/httpClient";
 import { queryClient } from "@/shared/api/queryClient";
 import { AppAuthProvider } from "./AuthProvider";
+import { publicSiteHost } from "@/tenancy/publicSite";
 
 const signinSilent = vi.hoisted(() => vi.fn());
 const removeUser = vi.hoisted(() => vi.fn());
+const signinRedirect = vi.hoisted(() => vi.fn());
 
 vi.mock("react-oidc-context", () => ({
   AuthProvider: ({ children }: { children: ReactNode }) => children,
-  useAuth: () => ({ user: { access_token: "test-token", profile: { access: "business" } }, signinSilent, removeUser }),
+  useAuth: () => ({ user: { access_token: "test-token", profile: { access: "business" } }, signinSilent, removeUser, signinRedirect }),
 }));
 
 describe("AppAuthProvider", () => {
@@ -20,6 +22,7 @@ describe("AppAuthProvider", () => {
     resetHttpClient();
     signinSilent.mockReset();
     removeUser.mockReset();
+    signinRedirect.mockReset();
     sessionStorage.removeItem("arquitecturabasemt.sessionExpired");
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
@@ -58,6 +61,7 @@ describe("AppAuthProvider", () => {
     const navigate = vi.fn();
     vi.stubGlobal("location", {
       origin: "http://localhost:3000",
+      host: "localhost:3000",
       pathname: "/org",
       search: "?tab=1",
       href: "http://localhost:3000/org?tab=1",
@@ -76,5 +80,24 @@ describe("AppAuthProvider", () => {
     expect(clear).toHaveBeenCalledOnce();
     expect(sessionStorage.getItem("arquitecturabasemt.sessionExpired")).toBe("1");
     expect(navigate).toHaveBeenCalledWith("/login/empresa?returnUrl=%2Forg%3Ftab%3D1&session=expired");
+  });
+
+  it("al vencer en storefront limpia la sesión y reingresa Consumer con retorno propio sin abrir /login local", async () => {
+    const assign = vi.fn();
+    vi.stubGlobal("location", { host: publicSiteHost("grupo-delta"), origin: `https://${publicSiteHost("grupo-delta")}`,
+      href: `https://${publicSiteHost("grupo-delta")}/?from=directory#contacto`,
+      pathname: "/", search: "?from=directory", hash: "#contacto", assign });
+    signinSilent.mockResolvedValue(null);
+    signinRedirect.mockResolvedValue(undefined);
+    removeUser.mockResolvedValue(undefined);
+    const clear = vi.spyOn(queryClient, "clear");
+    server.use(http.get("*/api/auth-provider", () => HttpResponse.json({ code: "Http.Unauthorized" }, { status: 401 })));
+    render(<AppAuthProvider><div /></AppAuthProvider>);
+    await expect(api.get("/api/auth-provider")).rejects.toMatchObject({ status: 401 });
+    await waitFor(() => expect(signinRedirect).toHaveBeenCalledExactlyOnceWith({ extraQueryParams: { access: "consumer", prompt: "login" },
+      state: { returnTo: "/?from=directory#contacto" } }));
+    expect(removeUser).toHaveBeenCalledOnce();
+    expect(clear).toHaveBeenCalledOnce();
+    expect(assign).not.toHaveBeenCalled();
   });
 });

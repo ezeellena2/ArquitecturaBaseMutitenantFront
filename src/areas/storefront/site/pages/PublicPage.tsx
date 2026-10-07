@@ -1,18 +1,20 @@
 import { useTranslation } from "react-i18next";
+import { useAuth } from "react-oidc-context";
+import { useLocation } from "react-router";
 import { SiteLayout } from "@/layouts/SiteLayout";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
 import { PublicPageCard, publicPageBackdropClass } from "@/shared/ui/PublicPageCard";
-import { loginPathOf } from "@/tenancy/access";
-import { mainSiteUrl } from "@/tenancy/publicSite";
 import { usePublicSite } from "@/tenancy/usePublicSite";
 import { StorefrontUnavailablePage } from "./StorefrontUnavailablePage";
 
 /** Pagina-Publica y M-Pagina-Publica: la misma tarjeta de la vista previa, con los datos publicados del host. */
 export function PublicPage() {
   const { t } = useTranslation("common");
+  const auth = useAuth();
+  const location = useLocation();
   const site = usePublicSite();
   if (site.isUnavailable) return <StorefrontUnavailablePage />;
 
@@ -26,7 +28,10 @@ export function PublicPage() {
       {page ? <PublicPageCard page={{
         name: page.name, description: page.description, logoDataUri: page.logoUrl,
         address: page.address, contactPhone: page.phone, contactEmail: page.email, website: page.website,
-      }} links signInHref={mainSiteUrl(loginPathOf("consumer"))} />
+      }} links showSignIn={!auth.isAuthenticated} onSignIn={() => {
+        void auth.signinRedirect({ extraQueryParams: { access: "consumer" },
+          state: { returnTo: `${location.pathname}${location.search}${location.hash}` } });
+      }} />
         : site.isError ? null : <p role="status" className="text-[13px] text-[var(--t2)]">{t("states.loading")}</p>}
     </section>
   </SiteLayout>;

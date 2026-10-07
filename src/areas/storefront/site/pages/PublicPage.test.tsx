@@ -5,7 +5,6 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import type { PublicSiteResponse } from "@/shared/api/types";
-import { loginPathOf } from "@/tenancy/access";
 import { mainSiteUrl, publicSiteHost } from "@/tenancy/publicSite";
 import { publicSiteQueryKey } from "@/tenancy/usePublicSite";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -54,8 +53,7 @@ describe("PublicPage", () => {
     expect(screen.queryByText(delta.phone ?? "")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: delta.email ?? "" })).toHaveAttribute("href", `mailto:${delta.email}`);
     expect(screen.getByRole("link", { name: "delta.ejemplo.com" })).toHaveAttribute("href", delta.website);
-    // T14 deja la puerta Consumer existente; T15 implementa la sesión y el regreso al subdominio.
-    expect(screen.getByRole("link", { name: locale.signIn })).toHaveAttribute("href", mainSiteUrl(loginPathOf("consumer")));
+    expect(screen.getByRole("button", { name: locale.signIn })).toBeVisible();
     expect(screen.getByRole("link", { name: "ArquitecturaBase" })).toHaveAttribute("href", mainSiteUrl());
     expect(screen.getByRole("link", { name: locale.terms })).toHaveAttribute("href", mainSiteUrl("/terminos"));
     expect(screen.getByRole("link", { name: locale.privacy })).toHaveAttribute("href", mainSiteUrl("/privacidad"));
@@ -95,7 +93,7 @@ describe("PublicPage", () => {
     expect(screen.getByText("© 2026 ArquitecturaBase")).toBeVisible();
     expect(screen.getByRole("link", { name: "Términos" })).toHaveAttribute("href", mainSiteUrl("/terminos"));
     expect(screen.queryByText("Motivo privado que no se debe revelar.")).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Ingresá para continuar" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Ingresá para continuar" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Reintentar" })).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -130,7 +128,7 @@ describe("PublicPage", () => {
       expect(await screen.findByRole("heading", { level: 1, name: delta.name })).toBeVisible();
       expect(await screen.findByRole("link", { name: "011 15-2345-6789" })).toHaveAttribute("href", `tel:${delta.phone}`);
       expect(within(screen.getByRole("main")).getAllByRole("listitem")).toHaveLength(4);
-      expect(screen.getByRole("link", { name: "Ingresá para continuar" })).toBeVisible();
+      expect(screen.getByRole("button", { name: "Ingresá para continuar" })).toBeVisible();
       expect(screen.queryByRole("button", { name: "Abrir el menú" })).not.toBeInTheDocument();
       expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
       expect(screen.queryByRole("link", { name: "Más" })).not.toBeInTheDocument();

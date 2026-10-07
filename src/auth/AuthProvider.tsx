@@ -6,6 +6,7 @@ import { authConfig } from "./authConfig";
 import { rememberExpiredSessionNotice } from "./sessionExpiredNotice";
 import { rememberRecoveryAccess } from "./recoveryAccess";
 import { accessOfPath, loginPathOf, parseAccess } from "@/tenancy/access";
+import { siteOfHost } from "@/tenancy/publicSite";
 
 let session: AuthContextProps | undefined;
 
@@ -14,7 +15,8 @@ const httpClientOptions = {
   getAccessToken: () => session?.user?.access_token,
   renewAccessToken: async () => (await session?.signinSilent())?.access_token,
   onSessionExpired: async () => {
-    const returnUrl = `${globalThis.location.pathname}${globalThis.location.search}`;
+    const returnUrl = `${globalThis.location.pathname}${globalThis.location.search}${globalThis.location.hash ?? ""}`;
+    const storefront = siteOfHost(globalThis.location.host).kind === "storefront";
     // La puerta de empresa si la sesión era de empresa o si estaba en una ruta de empresa; si no, la de la persona.
     const sessionAccess = parseAccess(session?.user?.profile.access);
     const loginPath = loginPathOf(sessionAccess === "business" ? sessionAccess : accessOfPath(globalThis.location.pathname));
@@ -25,7 +27,8 @@ const httpClientOptions = {
     try {
       await session?.removeUser();
     } finally {
-      globalThis.location.assign(`${loginPath}?${query}`);
+      if (storefront) await session?.signinRedirect({ extraQueryParams: { access: "consumer", prompt: "login" }, state: { returnTo: returnUrl } });
+      else globalThis.location.assign(`${loginPath}?${query}`);
     }
   },
 };

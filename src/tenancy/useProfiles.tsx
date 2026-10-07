@@ -1,4 +1,6 @@
-import { useState, type ReactNode } from "react";
+import { useContext, useState, type ReactNode } from "react";
+import { useAuth } from "react-oidc-context";
+import { useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useSignOut } from "@/auth/useSignOut";
@@ -6,6 +8,9 @@ import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { useAccess } from "./useAccess";
 import { useSwitchAccess } from "./useSwitchAccess";
 import { isSelectable, loginPathOf } from "./access";
+import { accountPagePaths } from "@/shared/api/accountContract";
+import { mainSiteUrl, siteOfHost } from "./publicSite";
+import { PublicSiteHostContext } from "./usePublicSite";
 
 export function initials(name: string): string {
   return name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("");
@@ -27,10 +32,18 @@ export interface ProfileEntry {
 /// otro sin volver a ingresar, y Salir. Mientras cambia de perfil o si falla, `status` es la pantalla que va.
 export function useProfiles() {
   const { t } = useTranslation();
-  const signOut = useSignOut();
+  const auth = useAuth();
+  const location = useLocation();
+  const host = useContext(PublicSiteHostContext) ?? globalThis.location.host;
+  const storefront = siteOfHost(host).kind === "storefront";
+  const signOutFromAccess = useSignOut(storefront ? "consumer" : undefined);
+  const signOut = () => storefront
+    ? signOutFromAccess({ post_logout_redirect_uri: `${globalThis.location.origin}/` })
+    : signOutFromAccess();
   const { data: account } = useCurrentUser();
   const { access, activeTenantId, hasPersonalSpace, organizations } = useAccess();
-  const switching = useSwitchAccess();
+  const switching = useSwitchAccess({ mainSite: storefront });
+  const accountHref = storefront ? mainSiteUrl(accountPagePaths.account) : accountPagePaths.account;
   const [targetName, setTargetName] = useState("");
   const name = account?.displayName || account?.email || "";
   const personal = t("accessMenu.personal");
@@ -60,8 +73,11 @@ export function useProfiles() {
   }
 
   const status: ReactNode = switching.isSwitching ? <SessionStatusPage status="switching" targetName={targetName} />
-    : switching.hasError ? <SessionStatusPage status="error" loginPath={loginPathOf(access)} />
+    : switching.hasError ? <SessionStatusPage status="error" loginPath={loginPathOf(access)} onRetry={storefront ? () => {
+      void auth.signinRedirect({ extraQueryParams: { access: "consumer", prompt: "login" },
+        state: { returnTo: `${location.pathname}${location.search}${location.hash}` } });
+    } : undefined} />
       : null;
 
-  return { account, name, email: account?.email ?? null, access, profiles, signOut, status };
+  return { account, name, email: account?.email ?? null, access, profiles, signOut, status, accountHref };
 }

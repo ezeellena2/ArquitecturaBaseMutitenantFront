@@ -25,14 +25,54 @@ beforeEach(() => server.use(
   http.get("/api/auth/external/google/antiforgery", () => HttpResponse.json({ requestToken: "test-form-token" })),
 ));
 
-function show(url = "/registro") {
+function show(url = "/registro", completeAuthorization?: (url: string) => void) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
   const auth = { isAuthenticated: false, isLoading: false, signinRedirect } as unknown as AuthContextProps;
   const wrapper = ({ children }: { children: ReactNode }) => <AuthContext.Provider value={auth}><QueryClientProvider client={client}><MemoryRouter initialEntries={[url]}>{children}</MemoryRouter></QueryClientProvider></AuthContext.Provider>;
-  return render(<SignupPage />, { wrapper });
+  return render(<SignupPage completeAuthorization={completeAuthorization} />, { wrapper });
 }
 
 describe("SignupPage", () => {
+  const authorizeReturn = "/connect/authorize?client_id=web&redirect_uri=https%3A%2F%2Fgrupo-delta.localtest.me%3A5174%2Fauth%2Fcallback&state=public-state&code_challenge=pkce&access=consumer";
+
+  it("tras verificar el registro continúa la autorización original, preservando callback, PKCE y state del subdominio", async () => {
+    const completeAuthorization = vi.fn();
+    signinRedirect.mockClear();
+    server.use(
+      http.post("/api/auth/signup", () => HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 })),
+      http.post("/api/auth/signup/verify", () => new HttpResponse(null, { status: 204 })),
+    );
+    show(`/registro?${new URLSearchParams({ returnUrl: authorizeReturn })}`, completeAuthorization);
+    expect(screen.getByRole("link", { name: "Ingresá" })).toHaveAttribute("href", `/login?${new URLSearchParams({ returnUrl: authorizeReturn })}`);
+    const google = await screen.findByRole("button", { name: "Registrarte con Google" });
+    expect(new FormData((google as HTMLButtonElement).form!).get("returnTo")).toBe(authorizeReturn);
+    fireEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: "nueva@example.test" } });
+    fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
+    const first = await screen.findByRole("textbox", { name: "Código 1" });
+    fireEvent.paste(first, { clipboardData: { getData: () => "123456" } });
+    fireEvent.click(screen.getByRole("button", { name: "Verificar y crear la cuenta" }));
+    await waitFor(() => expect(completeAuthorization).toHaveBeenCalledExactlyOnceWith(authorizeReturn));
+    expect(signinRedirect).not.toHaveBeenCalled();
+  });
+
+  it("el callback técnico Google continúa la misma autorización sin emitir otra ni cambiar el origen del callback", async () => {
+    const completeAuthorization = vi.fn();
+    signinRedirect.mockClear();
+    show(`/registro?${new URLSearchParams({ google: "complete", returnTo: authorizeReturn })}`, completeAuthorization);
+    await waitFor(() => expect(completeAuthorization).toHaveBeenCalledExactlyOnceWith(authorizeReturn));
+    expect(signinRedirect).not.toHaveBeenCalled();
+  });
+
+  it.each(["https://externo.test/connect/authorize", "//externo.test/connect/authorize", "/connect/authorizeevil", "/connect/authorize?state=bad\r\n"])("no continúa una autorización inválida: %s", async (returnTo) => {
+    const completeAuthorization = vi.fn();
+    signinRedirect.mockClear();
+    show(`/registro?${new URLSearchParams({ google: "complete", returnTo })}`, completeAuthorization);
+    await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
+    expect(completeAuthorization).not.toHaveBeenCalled();
+    expect(signinRedirect).toHaveBeenCalledWith(expect.objectContaining({ extraQueryParams: { access: "consumer" } }));
+  });
+
   it("sin aceptar, Google y Crear cuenta quedan habilitados y al tocarlos piden la aceptación", async () => {
     let requests = 0;
     server.use(http.post("/api/auth/signup", () => { requests += 1; return HttpResponse.json({ resendAfterSeconds: 60 }, { status: 202 }); }));

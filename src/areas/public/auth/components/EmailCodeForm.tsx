@@ -24,12 +24,13 @@ export interface EmailCodeFormProps {
   onSubmitStart?: () => void;
   access?: "consumer" | "business";
   initialEmail?: string;
+  signupHref?: string;
 }
 
 const schema = z.object({ email: z.email() });
 type FormValues = z.infer<typeof schema>;
 
-export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart, access = "consumer", initialEmail = "" }: EmailCodeFormProps) {
+export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart, access = "consumer", initialEmail = "", signupHref }: EmailCodeFormProps) {
   const { t } = useTranslation("auth");
   const [formError, setFormError] = useState<AuthMessageContent | null>(null);
   const [accountMissing, setAccountMissing] = useState(false);
@@ -69,7 +70,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart, access =
           }} />
         </FormField>
       )} />
-      {accountMissing && errors.email ? <AuthLink className="self-start text-[14px]!" to={access === "business" ? "/registro/empresa" : "/registro"}
+      {accountMissing && errors.email ? <AuthLink className="self-start text-[14px]!" to={signupHref ?? (access === "business" ? "/registro/empresa" : "/registro")}
         state={{ email: getValues("email") }}>{t(access === "business" ? "login.registerBusiness" : "login.createMyAccount")}</AuthLink> : null}
       </div>
       <AuthMessage message={formError ?? notice} />

@@ -10,10 +10,10 @@ import { LogOutIcon, UserIcon } from "@/shared/ui/icons";
 import { AccessMenu } from "./AccessMenu";
 import { initials, useProfiles } from "./useProfiles";
 
-/** El menú usa la sesión global, nunca los datos de la organización publicada. T15 completa los cruces al principal. */
+/** El menú usa la sesión global, nunca los datos de la organización publicada. */
 function MobilePublicAccessMenu() {
   const { t } = useTranslation(["common", "storefront"]);
-  const { account, name, email, access, profiles, signOut, status } = useProfiles();
+  const { account, name, email, access, profiles, signOut, status, accountHref } = useProfiles();
   const [open, setOpen] = useState(false);
   if (!account) return null;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
@@ -54,7 +54,7 @@ function MobilePublicAccessMenu() {
           </div>
           {separator}
         </> : null}
-        <Link to="/cuenta" onClick={() => setOpen(false)} className={itemClass}><UserIcon className="size-4 text-[var(--t3)]" />{t("accessMenu.myAccount")}</Link>
+        <Link to={accountHref} onClick={() => setOpen(false)} className={itemClass}><UserIcon className="size-4 text-[var(--t3)]" />{t("accessMenu.myAccount")}</Link>
         {separator}
         <button type="button" onClick={() => { setOpen(false); void signOut(); }} className={itemClass}><LogOutIcon className="size-4 text-[var(--t3)]" />{t("accessMenu.signOut")}</button>
       </div>

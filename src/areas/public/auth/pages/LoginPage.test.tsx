@@ -58,6 +58,18 @@ function show(access: "consumer" | "business", url: string, completeLogin = vi.f
 }
 
 describe("LoginPage", () => {
+  it("Creá una y Crear mi cuenta conservan la autorización del subdominio y el correo desconocido", async () => {
+    const original = "/connect/authorize?client_id=web&redirect_uri=https%3A%2F%2Fgrupo-delta.localtest.me%3A5174%2Fauth%2Fcallback&state=public-state&code_challenge=pkce&access=consumer";
+    server.use(http.post("/api/auth/login-code", () => HttpResponse.json({ code: "Auth.LoginCode.AccountNotFound", errors: { email: ["No existe esta cuenta."] } }, { status: 400 })));
+    show("consumer", `/login?${new URLSearchParams({ returnUrl: original })}`);
+    const expected = `/registro?${new URLSearchParams({ returnUrl: original })}`;
+    expect(screen.getByRole("link", { name: "Creá una" })).toHaveAttribute("href", expected);
+    fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: "nueva@example.test" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+    expect(await screen.findByRole("link", { name: "Crear mi cuenta" })).toHaveAttribute("href", expected);
+    expect(signinRedirect).not.toHaveBeenCalled();
+  });
+
   it.each([
     ["consumer", "es-AR", "Esta cuenta es de un operador: solo entra a Plataforma", "Ir a Plataforma", "Salir"],
     ["business", "es-AR", "Esta cuenta es de un operador: solo entra a Plataforma", "Ir a Plataforma", "Salir"],
@@ -209,7 +221,7 @@ describe("LoginPage", () => {
     expect(google.compareDocumentPosition(email) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(email.compareDocumentPosition(send) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     const signupLink = within(main).getByRole("link", { name: "Creá una" });
-    expect(signupLink).toHaveAttribute("href", "/registro");
+    expect(signupLink).toHaveAttribute("href", `/registro?${new URLSearchParams({ returnUrl: authorizeUrl })}`);
     // .fila-links del tablero: el renglón centrado, con 6 entre el texto y el enlace (AuthLinkRow).
     expect(signupLink.parentElement).toHaveClass("flex", "justify-center", "gap-1.5");
     // Los enlaces de texto son la variante link de Button, en --marca-tx (como .lnk del tablero).

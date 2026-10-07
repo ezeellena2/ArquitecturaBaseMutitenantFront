@@ -7,6 +7,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AccessRoute } from "./AccessRoute";
 import { SessionRecovery } from "./SessionRecovery";
+import { publicSiteHost } from "@/tenancy/publicSite";
+import { PublicSiteHostContext } from "@/tenancy/usePublicSite";
 
 const signinSilent = vi.fn<(...args: unknown[]) => Promise<User | null>>();
 const auth = {
@@ -14,6 +16,7 @@ const auth = {
   isLoading: false,
   user: undefined as User | undefined,
   signinSilent,
+  signinRedirect: vi.fn(),
 };
 
 vi.mock("react-oidc-context", () => ({ useAuth: () => auth as unknown as AuthContextProps }));
@@ -45,7 +48,38 @@ describe("SessionRecovery", () => {
     auth.user = undefined;
     auth.isLoading = false;
     signinSilent.mockReset();
+    auth.signinRedirect.mockClear();
     sessionStorage.clear();
+  });
+
+  it.each(["business", "platform"])("en storefront pide Consumer y muestra la página mientras recupera la cookie previa %s", async (lastAccess) => {
+    sessionStorage.setItem("arquitecturabasemt.last-access", lastAccess);
+    let complete!: (user: User) => void;
+    signinSilent.mockImplementation(() => new Promise<User>((resolve) => { complete = resolve; }));
+    const router = createMemoryRouter([{ element: <SessionRecovery />, children: [
+      { path: "/", element: <main aria-label="Página pública" /> },
+    ] }], { initialEntries: ["/?from=directory#contacto"] });
+    render(<PublicSiteHostContext.Provider value={publicSiteHost("grupo-delta")}><RouterProvider router={router} /></PublicSiteHostContext.Provider>);
+    expect(screen.getByRole("main", { name: "Página pública" })).toBeVisible();
+    await waitFor(() => expect(signinSilent).toHaveBeenCalledExactlyOnceWith({ forceIframeAuth: true, extraQueryParams: { access: "consumer" } }));
+    const user = { access_token: "personal", profile: { access: "consumer" } } as unknown as User;
+    await act(async () => { auth.user = user; auth.isAuthenticated = true; complete(user); });
+    expect(router.state.location.pathname + router.state.location.search + router.state.location.hash).toBe("/?from=directory#contacto");
+    expect(screen.getByRole("main", { name: "Página pública" })).toBeVisible();
+  });
+
+  it("sin espacio personal termina anónimo en la página pública sin iniciar ingreso ni registro", async () => {
+    signinSilent.mockRejectedValue(new Error("login_required"));
+    const router = createMemoryRouter([{ element: <SessionRecovery />, children: [{ path: "/", element: <main aria-label="Página pública" /> }] }]);
+    render(<PublicSiteHostContext.Provider value={publicSiteHost("grupo-delta")}><RouterProvider router={router} /></PublicSiteHostContext.Provider>);
+    await waitFor(() => expect(signinSilent).toHaveBeenCalledOnce());
+    await act(async () => { await Promise.resolve(); });
+    expect(auth.isAuthenticated).toBe(false);
+    expect(auth.user).toBeUndefined();
+    expect(auth.signinRedirect).not.toHaveBeenCalled();
+    expect(router.state.location.pathname).toBe("/");
+    expect(screen.getByRole("main", { name: "Página pública" })).toBeVisible();
+    expect(screen.queryByRole("heading", { name: "Iniciando sesión…" })).not.toBeInTheDocument();
   });
 
   it("recupera la puerta previa al recargar la ruta global de cuenta", async () => {

@@ -1,4 +1,5 @@
 import { accessOfPath, parseAccess, type Access } from "@/tenancy/access";
+import { siteOfHost } from "@/tenancy/publicSite";
 
 const key = "arquitecturabasemt.last-access";
 export function rememberRecoveryAccess(value: unknown) {
@@ -7,7 +8,9 @@ export function rememberRecoveryAccess(value: unknown) {
   try { globalThis.sessionStorage?.setItem(key, access); } catch { /* La ruta explícita sigue funcionando. */ }
 }
 /** Preferencia para pedir una sesión nueva. La autorización sigue en los claims emitidos por el backend. */
-export function recoveryAccess(path: string): Access {
+export function recoveryAccess(path: string, host = globalThis.location.host): Access {
+  // El host público no toma el acceso privado guardado: siempre recupera Personal, sin crearlo en silencio.
+  if (siteOfHost(host).kind === "storefront") return "consumer";
   const fromPath = accessOfPath(path);
   if (fromPath) return fromPath;
   // La cuenta y los términos valen en cualquier acceso: se pide el que tenía la sesión.

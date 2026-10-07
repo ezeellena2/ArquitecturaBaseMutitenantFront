@@ -8,9 +8,9 @@ import { FixedActions } from "@/shared/ui/app/FixedActions";
 import { Button } from "@/shared/ui/button";
 
 export type SessionStatusPageProps =
-  | { status: "starting" | "closing"; targetName?: never; loginPath?: never }
-  | { status: "switching"; targetName: string; loginPath?: never }
-  | { status: "error"; targetName?: never; loginPath?: string };
+  | { status: "starting" | "closing"; targetName?: never; loginPath?: never; onRetry?: never }
+  | { status: "switching"; targetName: string; loginPath?: never; onRetry?: never }
+  | { status: "error"; targetName?: never; loginPath?: string; onRetry?: () => void };
 
 export function SessionStatusPage(props: SessionStatusPageProps) {
   const { t } = useTranslation("auth");
@@ -43,7 +43,8 @@ export function SessionStatusPage(props: SessionStatusPageProps) {
     </div>
     {/* M-Sesion (.cb.cb-pri): el botón principal, con su degradé y su sombra. */}
     {isError ? <FixedActions>
-      <Button asChild><Link to={props.loginPath ?? "/login"}>{backToLogin}</Link></Button>
+      {props.onRetry ? <Button type="button" onClick={props.onRetry}>{backToLogin}</Button>
+        : <Button asChild><Link to={props.loginPath ?? "/login"}>{backToLogin}</Link></Button>}
     </FixedActions> : null}
   </main>;
 
@@ -68,7 +69,7 @@ export function SessionStatusPage(props: SessionStatusPageProps) {
         </div>
         {/* Tablero Sesion (.b.b-pri.lg de 280): el botón principal de 44, con el degradé y la sombra. */}
         {isError ? (
-          <Button asChild size="lg" className="w-[280px] max-w-full">
+          props.onRetry ? <Button type="button" size="lg" className="w-[280px] max-w-full" onClick={props.onRetry}>{backToLogin}</Button> : <Button asChild size="lg" className="w-[280px] max-w-full">
             <Link to={props.loginPath ?? "/login"}>{backToLogin}</Link>
           </Button>
         ) : null}

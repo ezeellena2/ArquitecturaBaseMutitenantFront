@@ -7,6 +7,9 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n } from "@/shared/i18n";
 import { CallbackPage } from "./CallbackPage";
+import { mainSiteUrl, publicSiteHost } from "@/tenancy/publicSite";
+import { homeOf } from "@/tenancy/access";
+import { PublicSiteHostContext } from "@/tenancy/usePublicSite";
 
 beforeAll(async () => {
   await configureI18n([
@@ -15,9 +18,9 @@ beforeAll(async () => {
   ]);
 });
 
-function show(auth: Partial<AuthContextProps>) {
+function show(auth: Partial<AuthContextProps>, host?: string) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(<AuthContext.Provider value={auth as AuthContextProps}>
+  return render(<PublicSiteHostContext.Provider value={host}><AuthContext.Provider value={auth as AuthContextProps}>
     <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={["/auth/callback"]}>
       <Routes>
@@ -31,10 +34,30 @@ function show(auth: Partial<AuthContextProps>) {
       </Routes>
     </MemoryRouter>
     </QueryClientProvider>
-  </AuthContext.Provider>);
+  </AuthContext.Provider></PublicSiteHostContext.Provider>);
 }
 
 describe("CallbackPage", () => {
+  it("el operador rechazado en el subdominio tiene su puerta en el principal y Salir vuelve a la raíz pública", async () => {
+    const signoutRedirect = vi.fn(async () => null);
+    const error = Object.assign(new ErrorResponse({ error: "access_denied", error_description: "Tenancy.Access.PlatformOnly", userState: { returnTo: "/" } }), { source: "unknown" as const });
+    show({ isLoading: false, isAuthenticated: false, error, signoutRedirect: signoutRedirect as unknown as AuthContextProps["signoutRedirect"] }, publicSiteHost("grupo-delta"));
+    expect(screen.getByRole("link", { name: "Ir a Plataforma" })).toHaveAttribute("href", mainSiteUrl(homeOf("platform")));
+    fireEvent.click(screen.getByRole("button", { name: "Salir" }));
+    expect(await screen.findByText("Destino personal")).toBeVisible();
+    expect(signoutRedirect).toHaveBeenCalledOnce();
+  });
+
+  it("un error del callback público reintenta Consumer conservando el destino del state, sin navegar al login local", async () => {
+    const signinRedirect = vi.fn(async () => {});
+    const error = Object.assign(new ErrorResponse({ error: "server_error", userState: { returnTo: "/?from=directory#contacto" } }), { source: "unknown" as const });
+    show({ isLoading: false, isAuthenticated: false, error, signinRedirect }, publicSiteHost("grupo-delta"));
+    fireEvent.click(screen.getByRole("button", { name: "Volver a ingresar" }));
+    await waitFor(() => expect(signinRedirect).toHaveBeenCalledExactlyOnceWith({ extraQueryParams: { access: "consumer", prompt: "login" },
+      state: { returnTo: "/?from=directory#contacto" } }));
+    expect(screen.queryByText("Otro ingreso personal")).not.toBeInTheDocument();
+  });
+
   it.each([
     [undefined, "/login?prompt=login"],
     [{ returnTo: "/org" }, "/login/empresa?prompt=login&returnUrl=%2Forg"],

@@ -10,7 +10,9 @@ import { homeOf } from "@/tenancy/access";
 import { AuthStatus } from "./AuthStatus";
 
 // Ingreso/M-Ingreso: estado privado «Operador: la cuenta entra por Plataforma», después de probar el correo.
-export function PlatformAccessResult({ access, onSignedOut }: { access: "consumer" | "business"; onSignedOut: () => void }) {
+export function PlatformAccessResult({ access, onSignedOut, platformHref = homeOf("platform") }: {
+  access: "consumer" | "business"; onSignedOut: () => void; platformHref?: string;
+}) {
   const { t } = useTranslation(["auth", "common", "errors"]);
   const signOut = useSignOut(access);
   const [leaving, setLeaving] = useState(false);
@@ -25,7 +27,7 @@ export function PlatformAccessResult({ access, onSignedOut }: { access: "consume
   }
 
   return <AuthStatus icon={BuildingIcon} title={t("login.platformOnly")} actions={<>
-    <Button asChild size="lg"><Link to={homeOf("platform")}>{t("login.goToPlatform")}</Link></Button>
+    <Button asChild size="lg"><Link to={platformHref}>{t("login.goToPlatform")}</Link></Button>
     <Button type="button" variant="outline" size="lg" disabled={leaving} onClick={() => { void leave(); }}>{t("common:accessMenu.signOut")}</Button>
   </>}>
     <FormError message={failure} />

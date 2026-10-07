@@ -4,16 +4,17 @@ import type { User } from "oidc-client-ts";
 import type { ReactNode } from "react";
 import type { AuthContextProps } from "react-oidc-context";
 import { MemoryRouter, useLocation } from "react-router";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/shared/api/ApiError";
 import { clearAccessError, getAccessError, publishAccessError } from "@/shared/api/accessErrorStore";
 import { homeOf } from "./access";
 import { useSwitchAccess } from "./useSwitchAccess";
+import { mainSiteUrl } from "./publicSite";
 
 const signinSilent = vi.fn<() => Promise<User | null>>();
 vi.mock("react-oidc-context", () => ({ useAuth: () => ({ signinSilent }) as unknown as AuthContextProps }));
 
-function setup() {
+function setup(mainSite = false) {
   const client = new QueryClient();
   client.setQueryData(["private", "empresa-a"], { value: 1 });
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -21,12 +22,41 @@ function setup() {
       <MemoryRouter initialEntries={["/"]}>{children}</MemoryRouter>
     </QueryClientProvider>
   );
-  const hook = renderHook(() => ({ switching: useSwitchAccess(), location: useLocation() }), { wrapper });
+  const hook = renderHook(() => ({ switching: useSwitchAccess({ mainSite }), location: useLocation() }), { wrapper });
   return { client, ...hook };
 }
 
 describe("useSwitchAccess", () => {
   beforeEach(() => { signinSilent.mockReset(); clearAccessError(); });
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("desde storefront selecciona la organización, limpia la caché y luego abre su inicio en el principal", async () => {
+    const assign = vi.fn();
+    vi.stubGlobal("location", { assign });
+    let complete!: (user: User) => void;
+    signinSilent.mockImplementation(() => new Promise<User>((resolve) => { complete = resolve; }));
+    const { client, result } = setup(true);
+    let switching!: Promise<void>;
+    act(() => { switching = result.current.switching.switchAccess({ access: "business", tenantId: "empresa-b" }); });
+    expect(signinSilent).toHaveBeenCalledWith({ forceIframeAuth: true, extraQueryParams: { access: "business", tenant: "empresa-b" } });
+    expect(client.getQueryData(["private", "empresa-a"])).toBeDefined();
+    expect(assign).not.toHaveBeenCalled();
+    await act(async () => { complete({ access_token: "empresa-b" } as User); await switching; });
+    expect(client.getQueryData(["private", "empresa-a"])).toBeUndefined();
+    expect(assign).toHaveBeenCalledExactlyOnceWith(mainSiteUrl(homeOf("business")));
+    expect(result.current.location.pathname).toBe("/");
+  });
+
+  it("si falla la selección desde storefront conserva caché y no cruza al principal", async () => {
+    const assign = vi.fn();
+    vi.stubGlobal("location", { assign });
+    signinSilent.mockRejectedValue(new Error("login_required"));
+    const { client, result } = setup(true);
+    await act(async () => { await result.current.switching.switchAccess({ access: "business", tenantId: "empresa-b" }); });
+    expect(result.current.switching.hasError).toBe(true);
+    expect(client.getQueryData(["private", "empresa-a"])).toBeDefined();
+    expect(assign).not.toHaveBeenCalled();
+  });
 
   it("fuerza authorize con access y tenant, limpia caché y llega al inicio B2B", async () => {
     signinSilent.mockResolvedValue({ access_token: "nuevo" } as User);

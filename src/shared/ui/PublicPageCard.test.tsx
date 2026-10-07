@@ -1,5 +1,5 @@
-import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { fireEvent, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
@@ -19,6 +19,17 @@ beforeEach(async () => {
 });
 
 describe("PublicPageCard (tableros Pagina-Publica y M-Pagina-Publica)", () => {
+  it("permite iniciar OIDC y ocultar el CTA sin cambiar los datos ni la vista previa por defecto", () => {
+    const onSignIn = vi.fn();
+    const { rerender } = renderWithProviders(<PublicPageCard page={delta} onSignIn={onSignIn} />);
+    fireEvent.click(screen.getByRole("button", { name: "Ingresá para continuar" }));
+    expect(onSignIn).toHaveBeenCalledOnce();
+    rerender(<PublicPageCard page={delta} showSignIn={false} onSignIn={onSignIn} />);
+    expect(screen.queryByText("Ingresá para continuar")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: delta.name })).toBeVisible();
+    expect(screen.getAllByRole("listitem")).toHaveLength(4);
+  });
+
   // La tarjeta tal cual: las iniciales si no hay logo, el nombre, la descripción, los cuatro datos con su ícono y su
   // rótulo, e «Ingresá para continuar». Sin enlaces ni a dónde ir, nada lleva a ningún lado (así la usa la vista previa).
   it("muestra las iniciales, el nombre, la descripción, los cuatro datos e «Ingresá para continuar» sin acción", async () => {
