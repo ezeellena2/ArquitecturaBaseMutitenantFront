@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { configureI18n } from "@/shared/i18n";
 import { PersonalLayout } from "../PersonalLayout";
 import { BusinessLayout } from "../BusinessLayout";
@@ -8,17 +8,24 @@ import { PlatformLayout } from "../PlatformLayout";
 import { personalNavigation } from "./personal";
 import { businessNavigation } from "./business";
 import { platformNavigation } from "./platform";
+import { PrivateLayoutFrame } from "../PrivateLayoutFrame";
+import { asPhone } from "@/test/utils/phone";
+import { HomeIcon } from "@/shared/ui/icons";
+import type { NavigationConfig } from "./types";
+
+const session = vi.hoisted(() => ({ features: [] as string[] }));
 
 vi.mock("@/tenancy/AccessMenu", () => ({ AccessMenu: () => <button type="button">{"Cuenta"}</button> }));
 vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: {
   displayName: "Ana", email: "ana@example.com", activeTenantId: "empresa-a",
-  organizations: [{ id: "empresa-a", name: "Empresa A" }], features: [],
+  organizations: [{ id: "empresa-a", name: "Empresa A" }], features: session.features,
   effectivePermissions: { platform: [], organization: ["users.read", "roles.read", "companies.read", "settings.read", "publicpage.manage", "audit.read"], companies: {} },
 } }) }));
 
 beforeAll(async () => {
   await configureI18n([{ code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true }]);
 });
+afterEach(() => { session.features = []; vi.unstubAllGlobals(); });
 
 describe("navegación por acceso en 3a", () => {
   it("Personal muestra Inicio y Mi cuenta cuando existe su ruta en 3b", () => {
@@ -78,5 +85,43 @@ describe("los íconos del menú", () => {
     render(<MemoryRouter initialEntries={["/org/empresas"]}><BusinessLayout><h1>{"Empresas"}</h1></BusinessLayout></MemoryRouter>);
     expect(within(screen.getByRole("complementary", { name: "Navegación principal" })).getByRole("link", { name: "Inicio" }).querySelector("svg")).toHaveClass("size-[18px]");
     expect(screen.getByRole("link", { name: "Empresas" }).querySelector("svg")).toHaveClass("size-[18px]");
+  });
+});
+
+describe("módulos personales declarados con una entrada", () => {
+  const module = { path: "/modulo-prueba", feature: "modulo-prueba", labelKey: "navigation.audit", icon: HomeIcon };
+  const navigation: NavigationConfig = { ...personalNavigation, links: [...personalNavigation.links, module] };
+  function renderNavigation(source = navigation, path = "/") {
+    return render(<MemoryRouter initialEntries={[path]}><PrivateLayoutFrame navigation={source} scope="personal"><h1>{"Módulo de prueba"}</h1></PrivateLayoutFrame></MemoryRouter>);
+  }
+
+  it.each([false, true])("el menú muestra el módulo sólo si está habilitado: %s", (enabled) => {
+    session.features = enabled ? [module.feature] : [];
+    renderNavigation();
+    const menu = within(screen.getByRole("complementary", { name: "Navegación principal" }));
+    expect(Boolean(menu.queryByRole("link", { name: "Auditoría" }))).toBe(enabled);
+    expect(menu.getByRole("link", { name: "Inicio" })).toHaveAttribute("href", "/");
+    expect(menu.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("href", "/cuenta");
+  });
+
+  it.each([false, true])("la barra móvil usa el mismo módulo habilitado: %s", (enabled) => {
+    asPhone();
+    session.features = enabled ? [module.feature] : [];
+    renderNavigation(navigation, enabled ? `${module.path}/detalle` : "/");
+    const bar = within(screen.getByRole("navigation", { name: "Secciones" }));
+    expect(Boolean(bar.queryByRole("link", { name: "Auditoría" }))).toBe(enabled);
+    expect(bar.getByRole("link", { name: enabled ? "Auditoría" : "Inicio" })).toHaveAttribute("aria-current", "page");
+    expect(bar.getByRole("link", { name: "Más" })).toHaveAttribute("href", "/mas");
+    expect(bar.queryByRole("link", { name: "Mi cuenta" })).not.toBeInTheDocument();
+  });
+
+  it("limita la barra a cuatro secciones y Más; un módulo restante marca Más", () => {
+    asPhone();
+    const modules = Array.from({ length: 5 }, (_, index) => ({ ...module, path: `/modulo-prueba-${index}`, feature: `modulo-prueba-${index}` }));
+    session.features = modules.map((entry) => entry.feature);
+    renderNavigation({ ...personalNavigation, links: [...personalNavigation.links, ...modules] }, modules[4].path);
+    const bar = within(screen.getByRole("navigation", { name: "Secciones" }));
+    expect(bar.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/", ...modules.slice(0, 3).map((entry) => entry.path), "/mas"]);
+    expect(bar.getByRole("link", { name: "Más" })).toHaveAttribute("aria-current", "page");
   });
 });

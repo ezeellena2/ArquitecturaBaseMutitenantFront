@@ -12,6 +12,7 @@ import { GroupTitle, SettingsGroup, SettingsItem } from "@/shared/ui/app/Setting
 import { initials, useProfiles } from "@/tenancy/useProfiles";
 import { businessNavigation } from "./navigation/business";
 import { platformNavigation } from "./navigation/platform";
+import { personalNavigation } from "./navigation/personal";
 import { visibleNavigation } from "./navigation/visible";
 import { activeOrganization, homeOf } from "@/tenancy/access";
 
@@ -32,6 +33,7 @@ export function MorePage() {
   const panel = access === "platform" ? visibleNavigation(platformNavigation, permissions).administration
     : access === "business" ? visibleNavigation(businessNavigation, permissions).administration : null;
   const administration = panel ? [...(panel.sections ?? []).flatMap((section) => section.links), ...panel.links] : [];
+  const personalModules = access === "consumer" ? visibleNavigation(personalNavigation, permissions).links.filter((link) => link.feature) : [];
   const subtitle = access === "platform" ? t("navigation.platform")
     : access === "business" ? activeOrganization(user)?.name : t("accessMenu.personal");
 
@@ -53,6 +55,13 @@ export function MorePage() {
           leading={<span aria-hidden="true" className={cn("inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] text-[13px] font-bold",
             profile.checked ? "bg-[var(--marca-t)] text-[var(--marca-tx)]" : "bg-[var(--s3)] text-[var(--t2)]")}>{initials(profile.name)}</span>}
           trailing={profile.checked ? <Check size={18} strokeWidth={2.25} aria-label={t("accessMenu.current")} className="shrink-0 text-[var(--marca)]" /> : <span />} />)}
+      </SettingsGroup>
+    </> : null}
+
+    {personalModules.length > 0 ? <>
+      <GroupTitle>{t("navigation.sections")}</GroupTitle>
+      <SettingsGroup label={t("navigation.sections")}>
+        {personalModules.map((entry) => <SettingsItem key={entry.path} title={t(entry.phoneLabelKey ?? entry.labelKey)} to={entry.path} />)}
       </SettingsGroup>
     </> : null}
 

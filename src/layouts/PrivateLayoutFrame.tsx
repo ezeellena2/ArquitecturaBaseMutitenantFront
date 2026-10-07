@@ -55,13 +55,18 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
     : scope === "business" && organization ? { title: organization.name, detail: t("layout.sidebar.organization") }
       : scope === "platform" ? { title: t("navigation.platform"), detail: t("layout.sidebar.platformDetail") } : null;
 
-  // Tableros M-* («Criterio · Marco»): el manifiesto declara las secciones inferiores; sin ellas, Inicio y Más.
+  // Personal suma sus módulos visibles a Inicio; los demás accesos conservan las secciones del manifiesto.
+  // Hasta cuatro secciones y Más, donde también se abren los módulos que quedan afuera.
   // Las pantallas de Administración se abren desde Más y vuelven a él con ‹.
   const home = navigation.links.at(0);
   // Una pantalla que vuelve al Inicio con ‹ (la ficha de la empresa de quien la administra sola) también es del Inicio.
   const onHome = home?.path === pathname || homeMarked;
   const onMore = navigation.moreTo === pathname;
-  const bottomSection = !onMore ? navigation.bottomSections?.find((section) => section.link === panelEntry?.link || section.link.path === pathname) : undefined;
+  const bottomSections = useMemo(() => shownNavigation.bottomSections?.slice(0, 4) ?? (scope === "personal"
+    ? shownNavigation.links.filter((link) => link === home || link.feature).slice(0, 4)
+      .map((link) => ({ link, icon: link === home ? AppHomeIcon : link.icon })) : undefined), [shownNavigation, scope, home]);
+  const bottomSection = !onMore ? bottomSections?.find((section) => section.link === panelEntry?.link || section.link.path === pathname
+    || (scope === "personal" && pathname.startsWith(`${section.link.path}/`))) : undefined;
   const routePanel = panelEntry ? navigation[panelEntry.panel] : null;
   const chrome = useMemo<AppChrome>(() => ({
     phone: isMobile,
@@ -80,10 +85,10 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
     <div className="flex h-svh flex-col bg-[var(--lado-activo)]">
       <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">{children ?? <Outlet />}</main>
       {navigation.moreTo && !bottomNavHidden ? <BottomNav label={t("navigation.sections")} items={[
-        ...(shownNavigation.bottomSections?.map(({ link, icon: Icon }) => ({
-          key: link.path, label: t(link.labelKey), to: link.path, icon: <Icon className="size-6" />, active: link === bottomSection?.link && !activeSectionHidden,
+        ...(bottomSections?.map(({ link, icon: Icon }) => ({
+          key: link.path, label: t(link.labelKey), to: link.path, icon: <Icon className="size-6" />, active: (link === bottomSection?.link || (link === home && onHome)) && !activeSectionHidden,
         })) ?? (home ? [{ key: "home", label: t(home.labelKey), to: home.path, icon: <AppHomeIcon className="size-6" />, active: onHome && !activeSectionHidden }] : [])),
-        { key: "more", label: t("navigation.more"), to: navigation.moreTo, avatar: name.charAt(0).toUpperCase() || undefined, active: !(navigation.bottomSections ? bottomSection : onHome) && !activeSectionHidden },
+        { key: "more", label: t("navigation.more"), to: navigation.moreTo, avatar: name.charAt(0).toUpperCase() || undefined, active: !(bottomSections ? bottomSection || onHome : onHome) && !activeSectionHidden },
       ]} /> : null}
     </div>
   </AppChromeProvider>;

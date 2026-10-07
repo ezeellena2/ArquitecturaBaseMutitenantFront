@@ -53,7 +53,7 @@ export interface NavigationConfig {
   administration: NavigationPanel | null;
   /** La raíz de las migas cuando el inicio es una opción de un panel, como Organizaciones en Plataforma. */
   breadcrumbRoot?: { path: string; labelKey: string };
-  /** Las secciones del teléfono, antes de Más. Sin esta declaración, usa Inicio y Más. */
+  /** Hasta cuatro secciones antes de Más. Sin esta declaración, Personal usa Inicio + módulos visibles; Empresa, Inicio. */
   bottomSections?: readonly BottomNavigationSection[];
   /** En el teléfono, la pantalla «Más» de la barra de abajo: perfiles, Administración, Mi cuenta y Salir. */
   moreTo?: string;
