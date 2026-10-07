@@ -11,13 +11,14 @@ import { caseDelay as delay, caseStage, newCaseContext, runCase } from "./test-e
 import { chromium } from "playwright";
 
 // Esta prueba arranca su propio AppHost y un PostgreSQL efímero, fuera del volumen Development.
-// No intercepta peticiones, no usa fixtures de sesión y nunca imprime correos ni códigos.
+// No intercepta peticiones ni simula sesiones. A8 conserva una cookie antigua firmada por el preparador aislado.
+// Nunca imprime correos, cookies ni códigos.
 const baseUrl = new URL("https://localhost:5174");
 const appHostDirectory = fileURLToPath(new URL("../../ArquitecturaBaseMutitenant/src/ArquitecturaBaseMultitenant.AppHost/", import.meta.url));
 const appHostProject = path.join(appHostDirectory, "ArquitecturaBaseMultitenant.AppHost.csproj");
 const execFileAsync = promisify(execFile);
 let pickupDirectory;
-const operatorEmails = Object.fromEntries(["a2", "5a", "a1", "a3", "5b", "5c", "5d"]
+const operatorEmails = Object.fromEntries(["a2", "5a", "a1", "a3", "a8", "5b", "5c", "5d"]
   .map((key) => [key, `e2e-${key}-operator@example.test`]));
 
 async function aspire(args, env = process.env) {
@@ -466,6 +467,33 @@ async function preparePlatform(readyFile) {
   throw new Error("El preparador de Plataforma no terminó en la base aislada.");
 }
 
+async function preserveLegacyPublicSession(context, readyFile) {
+  const commandFile = readyFile.replace(/\.ready$/, ".legacy-session.json");
+  const resultFile = `${commandFile}.done`;
+  await rm(commandFile, { force: true });
+  await rm(resultFile, { force: true });
+  await writeFile(commandFile, JSON.stringify({ kind: "issue-public-operator" }), { flag: "wx" });
+  try {
+    for (let attempt = 0; attempt < 120; attempt++) {
+      let result;
+      try { result = await readFile(resultFile, "utf8"); }
+      catch (error) { if (error?.code !== "ENOENT") throw error; }
+      if (result) {
+        const cookie = JSON.parse(result);
+        assert.equal(cookie.name, ".AspNetCore.Identity.Application");
+        assert.equal(typeof cookie.value, "string");
+        await context.addCookies([{ ...cookie, url: baseUrl.origin, httpOnly: true, secure: true, sameSite: "Lax" }]);
+        return;
+      }
+      await delay(250);
+    }
+    throw new Error("El preparador no emitió la cookie antigua firmada de A8.");
+  } finally {
+    await rm(commandFile, { force: true });
+    await rm(resultFile, { force: true });
+  }
+}
+
 async function acceptCurrentTerms(page) {
   const terms = page.getByRole("heading", { name: "Actualizamos los términos" });
   const chrome = page.getByRole("button", { name: /, (Plataforma|Personal|Empresa E2E)$/ });
@@ -637,6 +665,57 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       let e2eCompanyId;
       await preparePlatform(readyFile);
       const accountCases = [
+        ["A8: sesiones antiguas abren ambas puertas y conservan Plataforma a 1440 y 390", async (platformPage, setStage) => {
+          const person = await registerBusinessByEmail(platformPage, readyFile, setStage);
+          await signOut(platformPage, person.organizationName);
+          await loginThroughUi(platformPage, operatorEmails.a8, "platform", setStage);
+          const publicPage = await platformPage.context().newPage();
+          publicPage.setDefaultTimeout(30_000);
+          try {
+            for (const width of [1440, 390]) {
+              for (const [door, link, email, profile] of [
+                ["consumer", "Ingresar", person.email, "Personal"],
+                ["business", "Ingresá como empresa", person.email, person.organizationName],
+              ]) {
+                await publicPage.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+                setStage(`conserva una cookie pública de operador anterior a A3, ${door} a ${width}`);
+                // Esperar la recuperación inicial de la portada antes de conservar el legado:
+                // tiene que descartarlo la puerta que se toca, también la de empresa.
+                await publicPage.goto(baseUrl.href);
+                const entry = publicPage.getByRole("link", { name: link, exact: true }).first();
+                await entry.waitFor();
+                await preserveLegacyPublicSession(publicPage.context(), readyFile);
+                const before = await publicPage.context().cookies(baseUrl.href);
+                assert.ok(before.some((cookie) => cookie.name === ".AspNetCore.Identity.Application"));
+                assert.ok(before.some((cookie) => cookie.name === ".AspNetCore.Identity.Platform"));
+                await entry.click();
+                await publicPage.getByRole("textbox", { name: "Correo electrónico" }).waitFor();
+                const after = await publicPage.context().cookies(baseUrl.href);
+                assert.equal(after.some((cookie) => cookie.name === ".AspNetCore.Identity.Application"), false);
+                assert.ok(after.some((cookie) => cookie.name === ".AspNetCore.Identity.Platform"));
+                assert.equal(await publicPage.getByRole("heading", { name: "No pudimos iniciar tu sesión", exact: true }).count(), 0);
+                assert.equal(await publicPage.getByRole("link", { name: "Ir a Plataforma", exact: true }).count(), 0);
+                setStage(`otra cuenta entra por ${door} con código, después de descartar sólo la cookie antigua`);
+                await publicPage.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
+                const pickupBefore = new Set(await pickupFiles());
+                await sendLoginCode(publicPage, setStage);
+                await publicPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+                await enterCode(publicPage, await codeFromPickup(email, pickupBefore));
+                await publicPage.getByRole("button", { name: "Verificar", exact: true }).click();
+                await expectPath(publicPage, door === "business" ? "/org" : "/", `ingreso ${door} con sesión antigua`);
+                if (width === 390) await publicPage.getByRole("navigation", { name: "Secciones" }).waitFor();
+                else await expectProfile(publicPage, profile, `ingreso ${door} con navegador que conservaba una sesión antigua`);
+                assert.equal(await publicPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+                await platformPage.reload();
+                await expectProfile(platformPage, "Plataforma", "descartar el legado conserva la cookie independiente");
+                await publicPage.setViewportSize({ width: 1440, height: 900 });
+                await expectProfile(publicPage, profile, "confirma la cuenta elegida después de ingresar");
+                await signOut(publicPage, profile);
+              }
+            }
+            await signOut(platformPage, "Plataforma");
+          } finally { await publicPage.close(); }
+        }],
         ...[1440, 390].map((width) => [`A6: nombre y apellido independientes y persistentes a ${width}`, async (accountPage, setStage) => {
           const email = await registerPerson(accountPage, undefined, setStage);
           await openAccount(accountPage);
@@ -1915,7 +1994,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       assert.ok(selectedAccountCases.length > 0 || onlyCase.includes("390"), "MT_E2E_ONLY_CASE debe coincidir con un recorrido de cuenta existente.");
       for (const [name, journey] of selectedAccountCases) {
         let caseFinished;
-        await t.test(name, { timeout: name.startsWith("5") ? 600_000 : 240_000 }, async (caseTest) => {
+        // A8 hace cuatro ingresos del mismo destino y respeta sus cuatro cooldowns de 60 s; comparte el presupuesto de los recorridos largos.
+        await t.test(name, { timeout: name.startsWith("5") || name.startsWith("A8:") ? 600_000 : 240_000 }, async (caseTest) => {
           caseFinished = runCase(caseTest.signal, async () => {
             const accountContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
             let lastFailure = "";

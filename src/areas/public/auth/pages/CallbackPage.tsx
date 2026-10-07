@@ -51,7 +51,13 @@ export function CallbackPage() {
       : <BusinessAccessResult status="inactive" organizationName={deniedBusiness.organizationName} />}
   </AuthLayout>;
 
+  // El retorno viene del estado validado por OIDC, nunca de los parámetros del callback.
+  const state = auth.error && "state" in auth.error ? auth.error.state as CallbackState | undefined : undefined;
+  const returnTo = state ? safeReturnUrl(state.returnTo ?? null, "/") : undefined;
+  const retryDoor = loginPathOf(accessOfPath(returnTo?.split(/[?#]/u)[0] ?? "/") ?? "consumer");
+  const retryQuery = new URLSearchParams({ prompt: "login", ...(returnTo ? { returnUrl: returnTo } : {}) });
+
   return auth.error
-    ? <SessionStatusPage status="error" />
+    ? <SessionStatusPage status="error" loginPath={`${retryDoor}?${retryQuery}`} />
     : <SessionStatusPage status="starting" />;
 }

@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "ingreso-persona-correo-escritorio",
+      "pair": "ingreso-persona-correo",
+      "group": "ingreso",
+      "state": "Ingreso de persona: pide el correo",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-persona-correo-movil",
+      "pair": "ingreso-persona-correo",
+      "group": "ingreso",
+      "state": "Ingreso de persona: pide el correo",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-empresa-correo-escritorio",
+      "pair": "ingreso-empresa-correo",
+      "group": "ingreso",
+      "state": "Ingreso de empresa: pide el correo",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "ingreso-empresa-correo-movil",
+      "pair": "ingreso-empresa-correo",
+      "group": "ingreso",
+      "state": "Ingreso de empresa: pide el correo",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo",
+        "puerta": "Empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "sesion-error-escritorio",
+      "pair": "sesion-error",
+      "group": "sesion",
+      "state": "No pudimos iniciar tu sesión",
+      "board": "Sesion",
+      "props": {
+        "estado": "No pudimos iniciar tu sesión"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "captureMode": "harness",
+        "path": "/src/test/visualApp.html?as=visual-personal&session=error",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "No pudimos iniciar tu sesión"
+      }
+    },
+    {
+      "id": "sesion-error-movil",
+      "pair": "sesion-error",
+      "group": "sesion",
+      "state": "No pudimos iniciar tu sesión",
+      "board": "M-Sesion",
+      "props": {
+        "estado": "No pudimos iniciar tu sesión"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "captureMode": "harness",
+        "path": "/src/test/visualApp.html?as=visual-personal&session=error",
+        "userFixture": "visual-personal",
+        "readySelector": "main",
+        "readyText": "No pudimos iniciar tu sesión"
+      }
+    }
+  ]
+}

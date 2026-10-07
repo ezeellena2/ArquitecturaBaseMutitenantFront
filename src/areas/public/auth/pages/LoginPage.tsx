@@ -96,7 +96,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       state: { returnTo },
       extraQueryParams: {
         access: returnAccess === "platform" ? returnAccess : access,
-        ...(searchParams.get("session") === "expired" ? { prompt: "login" } : {}),
+        ...(searchParams.get("session") === "expired" || searchParams.get("prompt") === "login" ? { prompt: "login" } : {}),
       },
     });
   }, [access, auth, redirectError, returnUrl, searchParams, pending, googlePending, googleProofExpired, initialEmail]);

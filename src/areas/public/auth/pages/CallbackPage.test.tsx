@@ -36,6 +36,16 @@ function show(auth: Partial<AuthContextProps>) {
 
 describe("CallbackPage", () => {
   it.each([
+    [undefined, "/login?prompt=login"],
+    [{ returnTo: "/org" }, "/login/empresa?prompt=login&returnUrl=%2Forg"],
+    [{ returnTo: "https://externo.test/org" }, "/login?prompt=login&returnUrl=%2F"],
+  ])("el error genérico permite pedir otro ingreso sin reutilizar la sesión incompatible", (state, href) => {
+    const error = state ? new ErrorResponse({ error: "server_error", userState: state }) : new Error("No matching state found in storage");
+    show({ isLoading: false, isAuthenticated: false, error: Object.assign(error, { source: "unknown" as const }) });
+    expect(screen.getByRole("link", { name: "Volver a ingresar" })).toHaveAttribute("href", href);
+  });
+
+  it.each([
     ["/", "Otro ingreso personal", "Sin contraseñas"],
     ["/org", "Otro ingreso empresa", "Para empresas"],
   ])("presenta la cuenta exclusiva de Plataforma y conserva la puerta de %s en el state OIDC", async (returnTo, nextLogin, panel) => {

@@ -173,6 +173,15 @@ describe("LoginPage", () => {
     expect(signinRedirect).toHaveBeenCalledWith(expect.objectContaining({ extraQueryParams: { access: "business" } }));
   });
 
+  it.each([
+    ["consumer", "/login", "/"],
+    ["business", "/login/empresa", "/org"],
+  ] as const)("el reintento de %s pide el formulario aunque haya una cookie guardada", async (access, door, returnTo) => {
+    show(access, `${door}?prompt=login`);
+    await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
+    expect(signinRedirect).toHaveBeenCalledWith({ state: { returnTo }, extraQueryParams: { access, prompt: "login" } });
+  });
+
   it.each(["/plataforma", "/plataforma?estado=Active", "/plataforma/cuentas#detalle"])("pide Plataforma para volver a %s desde la puerta compartida", async (returnTo) => {
     show("consumer", `/login?returnUrl=${encodeURIComponent(returnTo)}&session=expired`);
     await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
