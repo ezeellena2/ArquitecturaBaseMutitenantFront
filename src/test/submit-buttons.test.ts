@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
+import * as ts from "typescript";
 import { describe, expect, it } from "vitest";
 
 const srcRoot = path.resolve(import.meta.dirname, "..");
@@ -11,8 +12,6 @@ const srcRoot = path.resolve(import.meta.dirname, "..");
 const allowed: ReadonlyArray<readonly [RegExp, string, string?]> = [
   [/^!(?:form\.formState\.)?isDirty$/, "«Guardar cambios» sin cambios"],
   [/^(?:Boolean\(\w+\)|mode === "roles") && !(?:form\.formState\.)?isDirty$/, "al editar, sin cambios; al crear, nunca"],
-  [/^(?:\w+\.)?retry\.isRunning$/, "la cuenta regresiva de «Reintentá en…»"],
-  [/^step === "new" && sendRetry\.isRunning$/, "la cuenta regresiva de Recuperar sólo en el paso del correo nuevo", "areas/public/auth/pages/RecoverAccountPage.tsx"],
   [/^blocked$/, "un bloqueo de negocio conocido antes de confirmar, explicado en la franja (ReasonDialog)", "shared/platform/ReasonDialog.tsx"],
   [/^isPending$/, "la sesión que se está leyendo"],
   [/^!(?:csrf|antiforgery\.data)\?\.requestToken$/, "la protección del envío que se está cargando"],
@@ -26,51 +25,67 @@ function sourceFiles(directory: string): string[] {
   });
 }
 
-/// La etiqueta de apertura de cada botón (`<Button …>` o `<button …>`), con sus atributos entre llaves completos: termina
-/// en el primer `>` que no está entre llaves ni entre comillas.
-function buttonTags(source: string): string[] {
-  const tags: string[] = [];
-  for (const match of source.matchAll(/<(?:Button|button)\b/g)) {
-    let depth = 0;
-    let quote: string | null = null;
-    for (let index = match.index + match[0].length; index < source.length; index += 1) {
-      const char = source[index];
-      if (quote) {
-        if (char === quote && source[index - 1] !== "\\") quote = null;
-      } else if (char === '"' || char === "'" || char === "`") {
-        quote = char;
-      } else if (char === "{") {
-        depth += 1;
-      } else if (char === "}") {
-        depth -= 1;
-      } else if (char === ">" && depth === 0) {
-        tags.push(source.slice(match.index, index + 1));
-        break;
-      }
-    }
+/// Sólo el isRunning devuelto por el hook de Retry-After: el nombre local no autoriza una guarda de validación.
+/// Los símbolos distinguen aliases, desestructuración y parámetros que sombrean una cuenta regresiva de otra función.
+function isRetryCountdown(expression: ts.Expression, checker: ts.TypeChecker): boolean {
+  let declaration: ts.VariableDeclaration | undefined;
+  if (ts.isPropertyAccessExpression(expression) && expression.name.text === "isRunning" && ts.isIdentifier(expression.expression)) {
+    const binding = checker.getSymbolAtLocation(expression.expression)?.valueDeclaration;
+    if (binding && ts.isVariableDeclaration(binding) && ts.isIdentifier(binding.name)) declaration = binding;
+  } else if (ts.isIdentifier(expression)) {
+    const binding = checker.getSymbolAtLocation(expression)?.valueDeclaration;
+    if (binding && ts.isBindingElement(binding) && !binding.initializer && !binding.dotDotDotToken
+      && (binding.propertyName ?? binding.name).getText() === "isRunning" && ts.isObjectBindingPattern(binding.parent)
+      && ts.isVariableDeclaration(binding.parent.parent)) declaration = binding.parent.parent;
   }
-  return tags;
-}
-
-/// Lo que dice el `disabled` de un botón, en una línea; `true` si va solo, sin valor.
-function disabledOf(tag: string): string | null {
-  const start = tag.search(/\sdisabled=\{/);
-  if (start < 0) return /\sdisabled(?=[\s/>])/.test(tag) ? "true" : null;
-  const open = tag.indexOf("{", start);
-  let depth = 0;
-  for (let index = open; index < tag.length; index += 1) {
-    if (tag[index] === "{") depth += 1;
-    else if (tag[index] === "}" && --depth === 0) return tag.slice(open + 1, index).replace(/\s+/g, " ").trim();
-  }
-  return null;
+  if (!declaration || !(declaration.parent.flags & ts.NodeFlags.Const)) return false;
+  const call = declaration.initializer;
+  if (!call || !ts.isCallExpression(call) || !ts.isIdentifier(call.expression) || call.arguments.length !== 0) return false;
+  const imported = checker.getSymbolAtLocation(call.expression)?.declarations?.[0];
+  if (!imported || !ts.isImportSpecifier(imported) || imported.isTypeOnly
+    || (imported.propertyName ?? imported.name).text !== "useRetryAfterCountdown") return false;
+  const importClause = imported.parent.parent;
+  const importDeclaration = importClause.parent;
+  return !importClause.isTypeOnly && ts.isImportDeclaration(importDeclaration)
+    && ts.isStringLiteral(importDeclaration.moduleSpecifier)
+    && importDeclaration.moduleSpecifier.text === "@/shared/api/useRetryAfterCountdown";
 }
 
 /// Los `disabled` de los botones de envío que no son una de las formas permitidas.
 function violations(source: string, file?: string): string[] {
-  return buttonTags(source).filter((tag) => /\stype="submit"/.test(tag)).flatMap((tag) => {
-    const disabled = disabledOf(tag);
-    return disabled === null || allowed.some(([pattern, , onlyFor]) => pattern.test(disabled) && (!onlyFor || file === onlyFor)) ? [] : [disabled];
+  const fileName = "buttons.tsx";
+  const parsed = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const options: ts.CompilerOptions = { noLib: true, noResolve: true };
+  const program = ts.createProgram([fileName], options, {
+    ...ts.createCompilerHost(options),
+    getSourceFile: (name) => name === fileName ? parsed : undefined,
   });
+  const checker = program.getTypeChecker();
+  const problems: string[] = [];
+  function visit(node: ts.Node): void {
+    if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && /^(Button|button)$/.test(node.tagName.getText(parsed))) {
+      const attributes = node.attributes.properties.filter(ts.isJsxAttribute);
+      const type = attributes.find((attribute) => attribute.name.getText(parsed) === "type")?.initializer;
+      const disabled = attributes.find((attribute) => attribute.name.getText(parsed) === "disabled");
+      if (type && ts.isStringLiteral(type) && type.text === "submit" && disabled) {
+        const expression = disabled.initializer && ts.isJsxExpression(disabled.initializer) ? disabled.initializer.expression : undefined;
+        const text = (expression?.getText(parsed) ?? disabled.initializer?.getText(parsed) ?? "true").replace(/\s+/g, " ").trim();
+        if (!allowed.some(([pattern, , onlyFor]) => pattern.test(text) && (!onlyFor || file === onlyFor))
+          && !(expression && isRetryCountdown(expression, checker))) problems.push(text);
+      }
+    }
+    ts.forEachChild(node, visit);
+  }
+  visit(parsed);
+  return problems;
+}
+
+function retryForm(disabled: string, binding = "const retry = useRetryAfterCountdown();", imported = "useRetryAfterCountdown", module = "@/shared/api/useRetryAfterCountdown"): string {
+  return `import { ${imported} } from "${module}";
+    function SendForm() {
+      ${binding}
+      return <Button type="submit" disabled={${disabled}}>Enviar código</Button>;
+    }`;
 }
 
 describe("botones de envío («Criterio · Botones»)", () => {
@@ -85,14 +100,52 @@ describe("botones de envío («Criterio · Botones»)", () => {
   it("deja apagar «Guardar cambios» sin cambios y lo que espera algo que no depende de lo escrito", () => {
     expect(violations('<Button type="submit" form="x" disabled={!isDirty} pending={save.isPending}>Guardar cambios</Button>')).toEqual([]);
     expect(violations('<Button type="submit" onClick={() => go(a > b)} disabled={Boolean(role) && !isDirty}>Guardar</Button>')).toEqual([]);
-    expect(violations('<Button type="submit" disabled={retry.isRunning} pending={request.isPending}>Enviar código</Button>')).toEqual([]);
+    expect(violations(retryForm("retry.isRunning"))).toEqual([]);
     expect(violations('<Button type="submit" pending={add.isPending}>Siguiente</Button>')).toEqual([]);
     expect(violations('<Button type="button" disabled={!ready}>Cancelar</Button>')).toEqual([]);
   });
 
-  it("admite un bloqueo explicado antes de confirmar y la cuenta regresiva de Recuperar (E5)", () => {
+  it.each(["sendRetry", "verifyRetry", "waitBeforeSending"])("admite la espera del 429 aunque el resultado del hook se llame %s", (name) => {
+    expect(violations(retryForm(`${name}.isRunning`, `const ${name} = useRetryAfterCountdown();`))).toEqual([]);
+  });
+
+  it.each(["isRunning", "sendWaiting"])("admite la espera del 429 desestructurada como %s", (name) => {
+    expect(violations(retryForm(name, `const { isRunning: ${name} } = useRetryAfterCountdown();`))).toEqual([]);
+  });
+
+  it("admite un alias del import del hook compartido", () => {
+    expect(violations(retryForm("sendRetry.isRunning", "const sendRetry = useSendRetry();", "useRetryAfterCountdown as useSendRetry"))).toEqual([]);
+  });
+
+  it.each([
+    "sendRetry.isRunning || !email",
+    "sendRetry.isRunning || !form.formState.isValid",
+    "sendRetry.isRunning && !accepted",
+    "!sendRetry.isRunning",
+    "form.formState.isValid ? false : sendRetry.isRunning",
+    "sendRetry.isRunning ? false : !email",
+  ])("rechaza una guarda de validación o una inversión añadida a la espera: %s", (disabled) => {
+    expect(violations(retryForm(disabled, "const sendRetry = useRetryAfterCountdown();"))).toEqual([disabled]);
+  });
+
+  it.each([
+    ['const retry = { isRunning: !email };', "useRetryAfterCountdown", "@/shared/api/useRetryAfterCountdown"],
+    ["const retry = useValidation();", "useValidation", "@/shared/hooks/useValidation"],
+    ["const retry = useRetryAfterCountdown();", "useRetryAfterCountdown", "@/areas/example/useRetryAfterCountdown"],
+  ])("rechaza un isRunning llamado retry que no procede de la espera compartida: %s", (binding, imported, module) => {
+    expect(violations(retryForm("retry.isRunning", binding, imported, module))).toEqual(["retry.isRunning"]);
+  });
+
+  it("no confunde la espera de otra función con un parámetro local de validación", () => {
+    const source = `${retryForm("retry.isRunning")}
+      function ValidationForm(retry: { isRunning: boolean }) {
+        return <Button type="submit" disabled={retry.isRunning}>Crear</Button>;
+      }`;
+    expect(violations(source)).toEqual(["retry.isRunning"]);
+  });
+
+  it("admite un bloqueo explicado antes de confirmar (E5)", () => {
     expect(violations('<Button type="submit" disabled={blocked}>Dar de baja</Button>', "shared/platform/ReasonDialog.tsx")).toEqual([]);
-    expect(violations('<Button type="submit" disabled={step === "new" && sendRetry.isRunning}>Enviar código</Button>', "areas/public/auth/pages/RecoverAccountPage.tsx")).toEqual([]);
     expect(violations('<Button type="submit" disabled={blocked}>Crear rol</Button>', "areas/business/roles/RoleEditorPage.tsx")).toEqual(["blocked"]);
     expect(violations('<Button type="submit" disabled={blocked || !reason}>Dar de baja</Button>')).toEqual(["blocked || !reason"]);
   });

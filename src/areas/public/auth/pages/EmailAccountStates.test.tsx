@@ -42,6 +42,8 @@ it.each(["consumer", "business"] as const)("sin cuenta en %s ofrece el registro 
     expect(await axe(container)).toHaveNoViolations();
     fireEvent.click(link);
     await waitFor(() => expect(router.state.location.pathname).toBe(access === "consumer" ? "/registro" : "/registro/empresa"));
+    // El router puede publicar la ruta antes del montaje; el correo también existe en el Login que se está dejando.
+    expect(await screen.findByRole("heading", { name: access === "consumer" ? "Creá tu cuenta" : "Registrá tu empresa" })).toBeVisible();
     expect(await screen.findByRole("textbox", { name: access === "consumer" ? "Correo electrónico" : "Tu correo electrónico" })).toHaveValue(email);
     expect(screen.getByRole("checkbox", { name: /Acepto los Términos/ })).not.toBeChecked();
   } finally { restore(); }
