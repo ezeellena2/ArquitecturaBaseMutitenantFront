@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 113 · 7 de octubre de 2026"
+VERSION = "versión 114 · 7 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -104,11 +104,22 @@ CAPITULOS = [
         ("wa-telefonos", "Cargar teléfonos de empleados", "Usuarios › Cargar teléfonos", "no", "11", ["WA-Telefonos"], ["M-WA-Telefonos"], [],
          "Pegar o subir números y ver qué pasa con cada uno, sin revelar quién tiene cuenta."),
     ]),
+    ("asistente", "Le pregunta al asistente", "Un chat que responde solo sobre el sistema, con lo que cada uno ya puede ver. Es un módulo: lo prende la plataforma.", [
+        ("asistente-inicio", "El asistente en el inicio", "/ · /org · /plataforma", "no", "8b", ["Asistente-Org", "Asistente-Personal", "Asistente-Plat"],
+         ["M-Asistente-Org", "M-Asistente-Personal", "M-Asistente-Plat"], [],
+         "En la compu, el inicio es el asistente: el historial que se pliega, las consultas fijas, los adjuntos, los topes y lo de hoy como bienvenida. En el teléfono, una pestaña de la barra de abajo."),
+        ("asistente-config", "Configuración del asistente", "Administración › Asistente", "no", "8b", ["Asistente-Config-Org", "Plat-Asistente-Config"],
+         ["M-Asistente-Config-Org", "M-Plat-Asistente-Config"], [],
+         "Qué clave usa, el modelo con su precio y los topes. En Plataforma, además, los modelos que pueden elegir las organizaciones, las personas y los días para borrar."),
+        ("asistente-uso", "Uso del asistente", "Administración › Asistente › Uso", "no", "8b", ["Asistente-Uso-Org", "Plat-Asistente-Uso"],
+         ["M-Asistente-Uso-Org", "M-Plat-Asistente-Uso"], [],
+         "El tope del mes y el uso por día y por persona; en Plataforma, el costo por organización. Nunca el texto de las conversaciones."),
+    ]),
     ("plataforma", "La plataforma", "Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales y el WhatsApp propio.", [
-        ("organizaciones", "Organizaciones", "/plataforma", "no", "5", ["Organizaciones"], ["M-Organizaciones"], [],
+        ("organizaciones", "Organizaciones", "/plataforma/organizaciones", "no", "5", ["Organizaciones"], ["M-Organizaciones"], [],
          "Todas las organizaciones, con su Dueño, su origen y su estado. Aprobar, rechazar y crear."),
         ("organizacion", "Ficha de una organización", "/plataforma/organizaciones/:id", "no", "5", ["Organizacion"], ["M-Organizacion"], [],
-         "Historial, Dueños, módulos, dominio verificado y página pública."),
+         "Historial, Dueños, módulos (el Asistente dice qué clave usa), dominio verificado y página pública."),
         ("cuentas", "Cuentas y operadores", "/plataforma/cuentas", "no", "5", ["Cuentas"], ["M-Cuentas"], [],
          "Las personas y los operadores, con la invitación que vence a los 7 días."),
         ("cuenta-plat", "Ficha de una cuenta", "/plataforma/cuentas/:id", "no", "5", ["Cuenta-Plat"], ["M-Cuenta-Plat"], [],

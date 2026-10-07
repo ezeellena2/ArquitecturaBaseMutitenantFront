@@ -52,6 +52,8 @@ ESTADOS = {
 
 # Reglas generales que salieron de las decisiones: (regla, tablero donde quedó, fecha).
 REGLAS = [
+    ("Un dato que no se puede cambiar va en el mismo campo que al editar, deshabilitado (fondo y texto grises); nunca rótulo y texto suelto.", "Formularios y campos", "07/10/2026"),
+    ("En el teléfono, la barra de abajo lleva hasta cinco pestañas; lo que no entra pasa a «Más».", "Marco y pantallas", "07/10/2026"),
     ("Un desplegable se abre debajo del campo y del mismo ancho, como los filtros y el ⋮ de una fila.", "Formularios y campos", "05/10/2026"),
     ("En el teléfono, el ⋮ de una fila de cualquier lista abre una hoja desde abajo con el dato de la fila como título.", "Menús y desplegables", "05/10/2026"),
     ("«Guardar cambios» se apaga sin cambios en todas las ediciones, también en los diálogos; ningún botón se apaga porque falta un dato.", "Botones", "05/10/2026"),
@@ -286,6 +288,17 @@ DECISIONES = {
         ("Botones de peligro · teléfono", "", "«Dar de baja», «Quitar» y «Desvincular» en rojo: v107 los había dejado en petróleo.", "Dibujada"),
         ("Desplegables", "A", "Debajo del campo y del mismo ancho; la app lo cambia en una sola pieza.", "Dibujada"),
         ("Invitaciones en la ficha de una empresa", "", "Revocar dice «El enlace deja de funcionar.»; la vencida, «Venció …» (también en Usuarios); «Revocar invitación» abajo, en rojo y después de una franja; «Agregar miembro» con el correo tapado para todos.", "Dibujada"),
+    ],
+    "El usuario · 07/10": [
+        ("Solo lectura", "", "En todo el sistema, el mismo campo que al editar, deshabilitado y gris: Rol, M-Rol y Usuario (v113).", "Dibujada"),
+        ("Inicio · compu", "", "Con el asistente prendido, el inicio de los tres lados es el asistente: el historial a la izquierda, que se pliega con el mismo botón del menú, y lo de hoy («Para resolver» y las tarjetas) como bienvenida.", "Dibujada"),
+        ("Inicio de Plataforma", "", "«Inicio» arriba del menú, con el asistente y un «Para resolver» con las organizaciones por aprobar y las recuperaciones pendientes; Organizaciones sigue en Gestión.", "Dibujada"),
+        ("Barra de abajo · teléfono", "", "«Asistente» en el segundo lugar; Difusiones (organización) y Recuperaciones (Plataforma) pasan a «Más».", "Dibujada"),
+        ("Configuración y Uso del asistente", "", "En Administración › Asistente, como WhatsApp; con la clave de la plataforma, los topes van deshabilitados porque los fija ella.", "Dibujada"),
+        ("Módulos de una organización", "", "«Asistente» dice qué clave usa y el ⋮ permite o quita la clave propia, con motivo.", "Dibujada"),
+        ("Aviso de la primera vez", "", "«Tus consultas las procesa un proveedor de IA; no subas datos sensibles.» con «Entendido», en un diálogo sin cerrar ni cancelar (D22).", "Dibujada"),
+        ("Catálogo de modelos", "", "Una pestaña en Configuración del asistente de Plataforma: modelo, proveedor, ID, precios de entrada y de salida, y activo (D26).", "Dibujada"),
+        ("Correos de alerta del asistente", "", "Al 80 % y al 100 % del tope del mes: al Dueño si usa su clave y a la plataforma si usa la de ella (D23).", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

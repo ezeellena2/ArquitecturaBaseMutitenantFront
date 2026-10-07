@@ -241,7 +241,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Inicio · /org",
+      "title": "Inicio · /org (sin el asistente)",
       "w": 1440,
       "x": 0,
       "y": 260
@@ -251,7 +251,7 @@
       "y": 260,
       "w": 1440,
       "h": 900,
-      "title": "Inicio personal · /",
+      "title": "Inicio personal · / (sin el asistente)",
       "page": "personal",
       "is_interactive": true
     },
@@ -553,7 +553,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Organizaciones · /plataforma",
+      "title": "Organizaciones · /plataforma/organizaciones",
       "w": 1440,
       "x": 0,
       "y": 260
@@ -1654,6 +1654,132 @@
       "title": "Inicio de alguien con roles en una empresa · teléfono",
       "page": "org",
       "is_interactive": true
+    },
+    "Asistente-Org.dc.html": {
+      "x": 0,
+      "y": 6408,
+      "w": 1440,
+      "h": 900,
+      "title": "Asistente · inicio de la organización · /org",
+      "page": "org",
+      "is_interactive": true
+    },
+    "M-Asistente-Org.dc.html": {
+      "x": 1520,
+      "y": 6408,
+      "w": 390,
+      "h": 844,
+      "title": "Asistente · organización · teléfono",
+      "page": "org",
+      "is_interactive": true
+    },
+    "Asistente-Personal.dc.html": {
+      "x": 0,
+      "y": 2440,
+      "w": 1440,
+      "h": 900,
+      "title": "Asistente · inicio personal · /",
+      "page": "personal",
+      "is_interactive": true
+    },
+    "M-Asistente-Personal.dc.html": {
+      "x": 1520,
+      "y": 2440,
+      "w": 390,
+      "h": 844,
+      "title": "Asistente · personal · teléfono",
+      "page": "personal",
+      "is_interactive": true
+    },
+    "M-Asistente-Plat.dc.html": {
+      "x": 1520,
+      "y": 4420,
+      "w": 390,
+      "h": 844,
+      "title": "Asistente · plataforma · teléfono",
+      "page": "plataforma",
+      "is_interactive": true
+    },
+    "Asistente-Config-Org.dc.html": {
+      "x": 1990,
+      "y": 6408,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › Asistente › Configuración",
+      "page": "org",
+      "is_interactive": true
+    },
+    "Asistente-Uso-Org.dc.html": {
+      "x": 3510,
+      "y": 6408,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › Asistente › Uso",
+      "page": "org",
+      "is_interactive": true
+    },
+    "M-Asistente-Config-Org.dc.html": {
+      "x": 5030,
+      "y": 6408,
+      "w": 390,
+      "h": 844,
+      "title": "Asistente › Configuración · teléfono",
+      "page": "org",
+      "is_interactive": true
+    },
+    "M-Asistente-Uso-Org.dc.html": {
+      "x": 5500,
+      "y": 6408,
+      "w": 390,
+      "h": 844,
+      "title": "Asistente › Uso · teléfono",
+      "page": "org",
+      "is_interactive": true
+    },
+    "Plat-Asistente-Config.dc.html": {
+      "x": 1990,
+      "y": 4420,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › Asistente › Configuración",
+      "page": "plataforma",
+      "is_interactive": true
+    },
+    "Plat-Asistente-Uso.dc.html": {
+      "x": 3510,
+      "y": 4420,
+      "w": 1440,
+      "h": 900,
+      "title": "Administración › Asistente › Uso",
+      "page": "plataforma",
+      "is_interactive": true
+    },
+    "M-Plat-Asistente-Config.dc.html": {
+      "x": 5030,
+      "y": 4420,
+      "w": 390,
+      "h": 844,
+      "title": "Asistente › Configuración · teléfono",
+      "page": "plataforma",
+      "is_interactive": true
+    },
+    "M-Plat-Asistente-Uso.dc.html": {
+      "x": 5500,
+      "y": 4420,
+      "w": 390,
+      "h": 844,
+      "title": "Asistente › Uso · teléfono",
+      "page": "plataforma",
+      "is_interactive": true
+    },
+    "Asistente-Plat.dc.html": {
+      "x": 0,
+      "y": 4420,
+      "w": 1440,
+      "h": 900,
+      "title": "Inicio con el asistente · /plataforma",
+      "page": "plataforma",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -2008,7 +2134,21 @@
     "M-Plat-WA-Bot.dc.html",
     "M-Plat-WA-Equipos.dc.html",
     "M-Plat-WA-Plantillas.dc.html",
-    "M-Inicio-Miembro.dc.html"
+    "M-Inicio-Miembro.dc.html",
+    "Asistente-Org.dc.html",
+    "M-Asistente-Org.dc.html",
+    "Asistente-Personal.dc.html",
+    "M-Asistente-Personal.dc.html",
+    "Asistente-Plat.dc.html",
+    "M-Asistente-Plat.dc.html",
+    "Asistente-Config-Org.dc.html",
+    "Asistente-Uso-Org.dc.html",
+    "M-Asistente-Config-Org.dc.html",
+    "M-Asistente-Uso-Org.dc.html",
+    "Plat-Asistente-Config.dc.html",
+    "Plat-Asistente-Uso.dc.html",
+    "M-Plat-Asistente-Config.dc.html",
+    "M-Plat-Asistente-Uso.dc.html"
   ],
   "pages": [
     {

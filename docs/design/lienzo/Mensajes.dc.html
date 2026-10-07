@@ -658,7 +658,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Código para verificar un método","Enlace para entrar (bot)","Invitación a una organización","Invitación como operador","Invitación como operador: sin nombre","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Método de ingreso: ya es de una cuenta","Membresía terminada","Exportación de datos lista","Baja pedida","Baja por la plataforma","Baja por la plataforma: suspendida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: aviso a la cuenta","Recuperación: ya tiene una cuenta","Recuperación: aprobada","Recuperación: rechazada"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Código para verificar un método","Enlace para entrar (bot)","Invitación a una organización","Invitación como operador","Invitación como operador: sin nombre","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Método de ingreso: ya es de una cuenta","Membresía terminada","Exportación de datos lista","Baja pedida","Baja por la plataforma","Baja por la plataforma: suspendida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: aviso a la cuenta","Recuperación: ya tiene una cuenta","Recuperación: aprobada","Recuperación: rechazada","Asistente: 80 % del tope (su clave)","Asistente: tope alcanzado (su clave)","Asistente: 80 % del tope (plataforma)","Asistente: tope alcanzado (plataforma)"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
 // Mensajes que manda el sistema en los flujos de la plantilla. Salen por el outbox, con textos de Notifications.resx
 // (y los del módulo WhatsApp), en la cultura de la persona y con fechas de DisplayFormatter (es-AR, Buenos Aires).
 // Correo: la estructura de _Layout.html, LoginCode.html e Invitation.html de ArquitecturaBase.
@@ -975,6 +975,54 @@ const MENSAJES = [
     },
     // Plantilla `recuperacion_rechazada`: sin variables.
     wa: { plantilla: 'recuperacion_rechazada', texto: [N('Revisamos tu pedido para recuperar tu cuenta de ArquitecturaBase y no pudimos confirmar que sea tuya. Podés hacer un pedido nuevo desde la pantalla de ingreso.')] },
+  },
+  {
+    n: 'Asistente: 80 % del tope (su clave)',
+    // D23: la organización usa su propia clave; le llega al Dueño.
+    correo: {
+      asunto: 'El asistente de Grupo Delta usó el 80 % del tope del mes',
+      para: 'lucia.fernandez@delta.ejemplo.com',
+      titulo: 'El asistente usó el 80 % del tope del mes',
+      parrafos: [P('Hola, Lucía. Grupo Delta ya usó USD 160,00 de los USD 200,00 de tope de octubre.'), P('Si llega al tope, el asistente deja de responder hasta el 1 de noviembre. Podés subir el tope en la configuración del asistente.')],
+      datos: [{ k: 'Organización', v: 'Grupo Delta' }, { k: 'Usado', v: 'USD 160,00 de USD 200,00' }, { k: 'Mes', v: 'Octubre de 2026' }],
+      boton: 'Ver el uso',
+    },
+  },
+  {
+    n: 'Asistente: tope alcanzado (su clave)',
+    // D23: la organización usa su propia clave; le llega al Dueño.
+    correo: {
+      asunto: 'El asistente de Grupo Delta llegó al tope del mes',
+      para: 'lucia.fernandez@delta.ejemplo.com',
+      titulo: 'El asistente llegó al tope del mes',
+      parrafos: [P('Hola, Lucía. Grupo Delta usó los USD 200,00 de tope de octubre y el asistente dejó de responder.'), P('Vuelve a responder el 1 de noviembre, o antes si subís el tope en la configuración del asistente.')],
+      datos: [{ k: 'Organización', v: 'Grupo Delta' }, { k: 'Usado', v: 'USD 200,00 de USD 200,00' }, { k: 'Mes', v: 'Octubre de 2026' }],
+      boton: 'Revisar configuración',
+    },
+  },
+  {
+    n: 'Asistente: 80 % del tope (plataforma)',
+    // D23: la organización usa la clave de la plataforma; le llega al correo de soporte de la plataforma.
+    correo: {
+      asunto: 'Grupo Delta usó el 80 % del tope del asistente',
+      para: 'soporte@ejemplo.com',
+      titulo: 'Grupo Delta usó el 80 % del tope del asistente',
+      parrafos: [P('Grupo Delta, que usa la clave de la plataforma, ya usó USD 80,00 de los USD 100,00 de tope de octubre.'), P('Si llega al tope, su asistente deja de responder hasta el 1 de noviembre.')],
+      datos: [{ k: 'Organización', v: 'Grupo Delta' }, { k: 'Usado', v: 'USD 80,00 de USD 100,00' }, { k: 'Mes', v: 'Octubre de 2026' }],
+      boton: 'Ver el uso',
+    },
+  },
+  {
+    n: 'Asistente: tope alcanzado (plataforma)',
+    // D23: la organización usa la clave de la plataforma; le llega al correo de soporte de la plataforma.
+    correo: {
+      asunto: 'Grupo Delta llegó al tope del asistente',
+      para: 'soporte@ejemplo.com',
+      titulo: 'Grupo Delta llegó al tope del asistente',
+      parrafos: [P('Grupo Delta usó los USD 100,00 de tope de octubre y su asistente dejó de responder hasta el 1 de noviembre.')],
+      datos: [{ k: 'Organización', v: 'Grupo Delta' }, { k: 'Usado', v: 'USD 100,00 de USD 100,00' }, { k: 'Mes', v: 'Octubre de 2026' }],
+      boton: 'Ver el uso',
+    },
   },
 ];
 
