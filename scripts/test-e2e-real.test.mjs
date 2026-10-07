@@ -121,6 +121,41 @@ async function codeFromPickup(email, before) {
   throw new Error(`No llegó el .eml de este paso al pickup de la Api (archivos nuevos ${newFiles.size}, destinatario ${recipientFiles.size}, código legible ${codeFiles.size}).`);
 }
 
+async function recipientMessages(email, before) {
+  const messages = [];
+  for (const file of await pickupFiles()) {
+    if (before.has(file)) continue;
+    const eml = await readFile(path.join(pickupDirectory, file), "utf8");
+    const to = eml.match(/^To: (.*)$/im)?.[1] ?? "";
+    if (to.toLowerCase().includes(email.toLowerCase())) messages.push(eml);
+  }
+  return messages;
+}
+
+async function pickupCodeCount(email, before) {
+  return (await recipientMessages(email, before)).filter((eml) => /(?<!\d)\d{6}(?!\d)/.test(plainTextBody(eml) ?? "")).length;
+}
+
+async function waitForAccountNotice(email, before, text) {
+  for (let attempt = 0; attempt < 120; attempt++) {
+    if ((await recipientMessages(email, before)).some((eml) => text.test(plainTextBody(eml) ?? ""))) return;
+    await delay(250);
+  }
+  throw new Error("No llegó el aviso del cambio de cuenta al otro método verificado.");
+}
+
+async function confirmAccountMethod(page, email, action) {
+  await page.getByRole("button", { name: `Acciones de ${email}`, exact: true }).click();
+  await page.getByRole("menuitem", { name: action, exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  assert.equal(await dialog.locator('input[inputmode="numeric"]').count(), 0, "La confirmación no tiene un paso de código.");
+  const changed = page.waitForResponse((response) => /\/api\/me\/login-methods\/[^/]+(?:\/primary)?$/.test(new URL(response.url()).pathname)
+    && response.request().method() === (action === "Hacer principal" ? "PUT" : "DELETE"));
+  await dialog.getByRole("button", { name: action, exact: true }).click();
+  assert.equal((await changed).status(), 204);
+  await dialog.waitFor({ state: "hidden" });
+}
+
 async function enterCode(page, code) {
   try {
     const boxes = page.getByRole("group", { name: "Código" }).locator("input");
@@ -240,8 +275,7 @@ async function registerPerson(page, email = `e2e-account-${randomUUID()}@example
   await page.goto(new URL("/registro", baseUrl).href);
   const terms = page.getByRole("checkbox", { name: /Acepto los Términos/ });
   await terms.check();
-  const createAccount = page.locator("form").filter({ has: terms })
-    .locator('button[type="submit"]:not([form])');
+  const createAccount = page.getByRole("button", { name: "Crear cuenta", exact: true });
   await page.getByRole("textbox", { name: "Correo electrónico" }).fill(email);
   const before = new Set(await pickupFiles());
   let sentCode = false;
@@ -355,17 +389,8 @@ async function openAccount(page, currentProfile = "Personal") {
 
 async function addPersonalEmail(page, originalEmail, { verify = true, onStage = () => {} } = {}) {
   const email = `e2e-personal-${randomUUID()}@example.test`;
-  onStage("abre reautenticación");
-  const beforeReauthentication = new Set(await pickupFiles());
-  await openReauthDialog(page,
-    () => page.getByRole("button", { name: /^(Agregar correo o teléfono|Agregar correo)$/ }).click(), "Verificar");
-  onStage("espera código de reautenticación");
-  await enterCode(page, await codeFromPickup(originalEmail, beforeReauthentication));
-  onStage("verifica reautenticación");
-  const verifiedReauthentication = page.waitForResponse((response) =>
-    new URL(response.url()).pathname === "/api/me/reauth/verify" && response.request().method() === "POST");
-  await page.getByRole("dialog").getByRole("button", { name: "Verificar", exact: true }).click();
-  assert.equal((await verifiedReauthentication).status(), 200, "La reautenticación debe habilitar la suma del método.");
+  onStage("abre Agregar correo");
+  await page.getByRole("button", { name: /^(Agregar correo o teléfono|Agregar correo)$/ }).click();
   const dialog = page.getByRole("dialog");
   onStage("completa el correo nuevo");
   await dialog.getByRole("textbox", { name: "Correo", exact: true }).waitFor();
@@ -376,21 +401,23 @@ async function addPersonalEmail(page, originalEmail, { verify = true, onStage = 
   await dialog.getByRole("button", { name: "Enviar código", exact: true }).click();
   onStage("espera respuesta al envío del correo nuevo");
   assert.equal((await sent).status(), 202, "La cuenta debe enviar el código al correo nuevo.");
+  const code = await codeFromPickup(email, before);
+  assert.equal(await pickupCodeCount(originalEmail, before), 0, "Agregar manda sólo el código del correo nuevo.");
   if (!verify) {
     onStage("recibe el código del método pendiente");
-    await codeFromPickup(email, before);
     await dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
     await dialog.waitFor({ state: "hidden" });
     return email;
   }
   onStage("espera código del correo nuevo");
-  await enterCode(page, await codeFromPickup(email, before));
+  await enterCode(page, code);
   const verifiedMethod = page.waitForResponse((response) => /\/api\/me\/login-methods\/[^/]+\/verify$/.test(new URL(response.url()).pathname)
     && response.request().method() === "POST");
   await dialog.getByRole("button", { name: "Verificar", exact: true }).click();
   assert.equal((await verifiedMethod).status(), 204, "El correo debe quedar verificado con su propio código.");
   await dialog.waitFor({ state: "hidden" });
   await page.getByText(email, { exact: true }).waitFor();
+  await waitForAccountNotice(originalEmail, before, /agreg/i);
   return email;
 }
 
@@ -500,80 +527,7 @@ async function sendLoginCode(page, onStage = () => {}) {
   throw new Error("El envío de ingreso no terminó después de respetar cinco cooldowns de la API.");
 }
 
-async function openReauthDialog(page, open, confirmLabel) {
-  let proofResponse = page.waitForResponse((response) =>
-    new URL(response.url()).pathname === "/api/me/reauth" && response.request().method() === "POST");
-  let requestObserved = false;
-  const observeRequest = (request) => {
-    if (new URL(request.url()).pathname === "/api/me/reauth" && request.method() === "POST") requestObserved = true;
-  };
-  page.on("request", observeRequest);
-  await open();
-  let response;
-  try { response = await proofResponse; }
-  catch {
-    const titles = await page.getByRole("dialog").getByRole("heading").allTextContents().catch(() => []);
-    throw new Error(`La reautenticación no respondió (solicitud ${requestObserved ? "enviada" : "ausente"}; diálogo ${titles.join("/") || "cerrado"}).`);
-  } finally { page.off("request", observeRequest); }
-  for (let attempt = 0; response.status() === 429 && attempt < 5; attempt++) {
-    const problem = await response.json();
-    assert.equal(typeof problem.retryAfter, "number");
-    await delay((problem.retryAfter + 1) * 1000);
-    proofResponse = page.waitForResponse((reply) =>
-      new URL(reply.url()).pathname === "/api/me/reauth" && reply.request().method() === "POST");
-    await page.getByRole("dialog").getByRole("button", { name: confirmLabel, exact: true }).click();
-    response = await proofResponse;
-  }
-  assert.equal(response.ok(), true, `El pedido de reautenticación debe completarse tras respetar el cooldown (HTTP ${response.status()}).`);
-}
-
-async function requestGoogleLinkWithoutTicket(page) {
-  const googleRequest = page.waitForRequest((request) =>
-    new URL(request.url()).pathname === "/api/me/external/google" && request.method() === "POST");
-  const outcome = await page.evaluate(async (authorization) => {
-    const tokenResponse = await fetch("/api/auth/external/google/antiforgery", {
-      headers: { Authorization: authorization },
-    });
-    if (!tokenResponse.ok) return { status: tokenResponse.status, location: false, code: "Antiforgery.TokenUnavailable" };
-    const { requestToken } = await tokenResponse.json();
-    const response = await fetch("/api/me/external/google", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Authorization: authorization,
-        "Content-Type": "application/json",
-        RequestVerificationToken: requestToken,
-      },
-      body: JSON.stringify({ reauthTicket: "" }),
-      redirect: "manual",
-    });
-    let code = "";
-    let fields = [];
-    if (!response.ok) {
-      try {
-        const problem = await response.json();
-        code = problem.code ?? "";
-        fields = Object.keys(problem.errors ?? {});
-      }
-      catch { /* El status basta para esta comprobación. */ }
-    }
-    return { status: response.status, location: response.headers.has("location"), code, fields,
-      tokenLength: typeof requestToken === "string" ? requestToken.length : 0 };
-  }, accountTokens.get(page));
-  const request = await googleRequest;
-  const requestHeaders = await request.allHeaders();
-  return { ...outcome, antiforgeryHeaderSent: Boolean(requestHeaders.requestverificationtoken) };
-}
-
 const accountTokens = new WeakMap();
-async function accountPost(page, route, data, extraHeaders = {}) {
-  const authorization = accountTokens.get(page);
-  assert.equal(typeof authorization, "string", "El navegador debe haber obtenido su token real.");
-  return page.request.post(new URL(route, baseUrl).href, {
-    headers: { Authorization: authorization, "Idempotency-Key": randomUUID(), ...extraHeaders },
-    ...(data === undefined ? {} : { data }),
-  });
-}
 
 test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pickup sin mocks", { timeout: 2_700_000 }, async (t) => {
   const { stdout } = await aspire(["ps", "--format", "Json", "--non-interactive"]);
@@ -719,6 +673,53 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             setStage("sale de Plataforma");
             await signOut(platformPage, "Plataforma");
           } finally { await publicPage.close(); }
+        }],
+        ["A5: propio correo, principal, quitar, baja y cancelación desde la UI", async (accountPage, setStage) => {
+          const original = await registerPerson(accountPage, undefined, setStage);
+          await openAccount(accountPage);
+          const added = await addPersonalEmail(accountPage, original, { onStage: setStage });
+          let before = new Set(await pickupFiles());
+          setStage("hace principal sin código y recibe aviso");
+          await confirmAccountMethod(accountPage, added, "Hacer principal");
+          await waitForAccountNotice(original, before, /principal/i);
+          before = new Set(await pickupFiles());
+          setStage("quita el nuevo principal sin código y conserva el original");
+          await confirmAccountMethod(accountPage, added, "Quitar");
+          assert.equal(await accountPage.getByText(added, { exact: true }).count(), 0);
+          await waitForAccountNotice(original, before, /quit/i);
+          before = new Set(await pickupFiles());
+          setStage("confirma baja sin código");
+          await accountPage.getByRole("button", { name: "Dar de baja", exact: true }).click();
+          const dialog = accountPage.getByRole("dialog");
+          assert.equal(await dialog.locator('input[inputmode="numeric"]').count(), 0);
+          await dialog.getByRole("textbox", { name: "Motivo" }).fill("Recorrido propio del E2E");
+          await dialog.getByText(/30 días/).waitFor();
+          await dialog.getByRole("button", { name: "Dar de baja", exact: true }).click();
+          await accountPage.getByRole("heading", { name: "Cerramos tu sesión" }).waitFor();
+          await waitForAccountNotice(original, before, /baja/i);
+          setStage("demuestra posesión al ingresar y cancela durante la gracia");
+          await accountPage.goto(new URL("/login", baseUrl).href);
+          await accountPage.getByRole("textbox", { name: "Correo electrónico" }).fill(original);
+          const loginBefore = new Set(await pickupFiles());
+          await sendLoginCode(accountPage);
+          await accountPage.getByRole("heading", { name: "Revisá tu correo" }).waitFor();
+          await enterCode(accountPage, await codeFromPickup(original, loginBefore));
+          await accountPage.getByRole("button", { name: "Verificar", exact: true }).click();
+          await accountPage.getByRole("heading", { name: "Tu cuenta tiene la baja pedida" }).waitFor();
+          await accountPage.getByRole("button", { name: "Cancelar la baja y entrar" }).click();
+          await expectPath(accountPage, "/", "cancelar baja A5");
+          await expectProfile(accountPage, "Personal", "cancelar baja A5");
+        }],
+        ["A5: vincular Google inicia OAuth sin código en 390", async (accountPage, setStage) => {
+          await registerPerson(accountPage, undefined, setStage);
+          await openAccount(accountPage);
+          await accountPage.setViewportSize({ width: 390, height: 844 });
+          setStage("inicia vínculo Google desde el botón de Cuenta");
+          const started = accountPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/me/external/google" && response.request().method() === "POST");
+          await accountPage.getByRole("button", { name: "Vincular Google", exact: true }).click();
+          assert.equal((await started).status(), 200);
+          await accountPage.waitForURL((url) => url.hostname === "accounts.google.com", { waitUntil: "commit", timeout: 30_000 });
+          assert.equal(new URL(accountPage.url()).hostname, "accounts.google.com");
         }],
         ["A4: los registros de persona y empresa navegan a Google", async (signupPage, setStage) => {
           for (const [route, buttonLabel] of [["/registro", "Registrarte con Google"], ["/registro/empresa", "Seguir con Google"]]) {
@@ -1514,38 +1515,10 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await expectProfile(invitationPage, e2eOrganizationName, "F5 luego de aceptar");
           },
         ]),
-        ["3b seguridad: sesión abierta no suma correo ni Google y método nuevo no autoriza el anterior", async (accountPage, setStage) => {
-          setStage("registra la persona");
-          const original = await registerPerson(accountPage);
-          setStage("abre Mi cuenta");
+        ["3b seguridad: sumar correo manda sólo código del nuevo", async (accountPage, setStage) => {
+          const original = await registerPerson(accountPage, undefined, setStage);
           await openAccount(accountPage);
-          setStage("rechaza el alta de correo sin reautenticación");
-          const deniedEmail = await accountPost(accountPage, "/api/me/login-methods", {
-            email: `e2e-unproved-${randomUUID()}@example.test`,
-          });
-          assert.equal(deniedEmail.status(), 403, "Agregar correo debe exigir reautenticación.");
-          setStage("rechaza el vínculo de Google sin reautenticación");
-          const deniedGoogle = await requestGoogleLinkWithoutTicket(accountPage);
-          if (deniedGoogle.status !== 403)
-            throw new Error(`Google sin ticket respondió HTTP ${deniedGoogle.status} (${deniedGoogle.code || "sin código"}; ${deniedGoogle.fields.join(",")}); antiforgery header ${deniedGoogle.antiforgeryHeaderSent}.`);
-          assert.equal(deniedGoogle.location, false, "La ruta no debe iniciar el desafío OAuth sin ticket.");
-          setStage("confirma que no se creó un método");
-          const stillOriginal = await accountPage.request.get(new URL("/api/me/login-methods", baseUrl).href,
-            { headers: { Authorization: accountTokens.get(accountPage) } });
-          assert.equal((await stillOriginal.json()).methods.length, 1,
-            "Los rechazos sin reautenticación no deben crear un método de ingreso.");
-          setStage("suma correo con reautenticación previa");
           await addPersonalEmail(accountPage, original, { onStage: setStage });
-          setStage("intenta reautenticar con el método recién sumado");
-          const listed = await accountPage.request.get(new URL("/api/me/login-methods", baseUrl).href,
-            { headers: { Authorization: accountTokens.get(accountPage) } });
-          const rows = (await listed.json()).methods;
-          const originalMethod = rows.find((row) => row.value === original);
-          assert.ok(originalMethod);
-          const deniedProof = await accountPost(accountPage, "/api/me/reauth",
-            { action: "RemoveMethod", targetMethodId: originalMethod.id });
-          assert.equal(deniedProof.status(), 409, "El método nuevo no sirve como origen en esta sesión.");
-          assert.equal((await deniedProof.json()).code, "Identity.Reauth.OtherMethodRequired");
         }],
         ["3b seguridad: registro con posesión recupera un correo pendiente de otra cuenta", async (accountPage, setStage) => {
           setStage("registra la cuenta anterior");
@@ -1576,7 +1549,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await openAccount(accountPage);
           await addPersonalEmail(accountPage, originalEmail);
         }],
-        ["3b: quitar un método con código enviado a otro", async (accountPage, setStage) => {
+        ["3b: quitar un método sin código adicional", async (accountPage, setStage) => {
           setStage("registra la identidad para retirar un método");
           const originalEmail = await registerPerson(accountPage, undefined, setStage);
           setStage("abre Mi cuenta");
@@ -1586,10 +1559,9 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           const before = new Set(await pickupFiles());
           setStage("abre las acciones del método agregado");
           await accountPage.getByRole("button", { name: `Acciones de ${addedEmail}`, exact: true }).click();
-          setStage("solicita reautenticación para quitar el método");
-          await openReauthDialog(accountPage, () => accountPage.getByRole("menuitem", { name: "Quitar", exact: true }).click(), "Quitar");
-          setStage("lee y verifica el código del método original");
-          await enterCode(accountPage, await codeFromPickup(originalEmail, before));
+          setStage("abre la confirmación sin código");
+          await accountPage.getByRole("menuitem", { name: "Quitar", exact: true }).click();
+          assert.equal(await accountPage.getByRole("dialog").locator('input[inputmode="numeric"]').count(), 0);
           setStage("confirma la baja del método agregado");
           const refreshedMethods = accountPage.waitForResponse((response) =>
             new URL(response.url()).pathname === "/api/me/login-methods" && response.request().method() === "GET");
@@ -1599,19 +1571,15 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           const methodsResponse = await refreshedMethods;
           assert.equal(methodsResponse.status(), 200, "La cuenta debe actualizar la lista después de retirar el método.");
           assert.equal(await accountPage.getByText(addedEmail, { exact: true }).count(), 0);
+          await waitForAccountNotice(originalEmail, before, /quit/i);
         }],
         ["3b: pedir baja y cancelarla ingresando durante la gracia", async (accountPage) => {
           const email = await registerPerson(accountPage);
           await openAccount(accountPage);
-          const before = new Set(await pickupFiles());
-          await openReauthDialog(accountPage, () => accountPage.getByRole("button", { name: "Dar de baja", exact: true }).click(), "Dar de baja");
+          await accountPage.getByRole("button", { name: "Dar de baja", exact: true }).click();
           const dialog = accountPage.getByRole("dialog");
           await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Recorrido propio del E2E");
-          // El rótulo del código de baja incluye el destino enmascarado del lienzo.
-          const code = await codeFromPickup(email, before);
-          const boxes = dialog.locator('input[inputmode="numeric"]');
-          assert.equal(await boxes.count(), 6);
-          for (let index = 0; index < 6; index++) await boxes.nth(index).fill(code[index]);
+          assert.equal(await dialog.locator('input[inputmode="numeric"]').count(), 0);
           await dialog.getByRole("button", { name: "Dar de baja", exact: true }).click();
           await accountPage.getByRole("heading", { name: "Cerramos tu sesión" }).waitFor();
           await accountPage.goto(new URL("/login", baseUrl).href);
@@ -1746,7 +1714,6 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
                 .slice(0, 180)
               : "";
             const known = error?.message?.startsWith("La versión nueva")
-              || error?.message?.startsWith("Google sin ticket")
               || error?.message?.startsWith("No llegó el .eml")
               || error?.message?.startsWith("El código de registro respondió")
               || error?.message?.startsWith("registro de cuenta 3b:");

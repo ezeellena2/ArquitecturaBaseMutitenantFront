@@ -135,26 +135,12 @@ describe("Mi cuenta", () => {
     }
   });
 
-  it.each(["Agregar correo", "Vincular Google"])("pide reautenticación antes de %s", async (label) => {
+  it("abre Agregar correo directamente sin pedir confirmación", async () => {
     const user = userEvent.setup();
-    let additions = 0;
-    let action: unknown;
-    server.use(
-      http.get("/api/me/login-methods", () => HttpResponse.json({ methods: [], canLinkGoogle: true,
-        needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] })),
-      http.post("/api/me/reauth", async ({ request }) => {
-        action = (await request.json() as { action: unknown }).action;
-        return HttpResponse.json({ sourceMethodId: "existing", destination: "a***@example.test", resendAfterSeconds: 60 });
-      }),
-      http.post("/api/me/login-methods", () => { additions++; return HttpResponse.json({ methodId: "new" }); }),
-      http.post("/api/me/external/google", () => { additions++; return HttpResponse.json({ redirectUrl: "/" }); }),
-    );
     renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
-    await user.click(await screen.findByRole("button", { name: label }));
-    expect(await screen.findByRole("textbox", { name: "Código 1" })).toBeVisible();
-    expect(action).toBe(label === "Vincular Google" ? "LinkGoogle" : "AddEmail");
-    expect(additions).toBe(0);
-    expect(screen.queryByRole("textbox", { name: "Correo" })).not.toBeInTheDocument();
+    await user.click(await screen.findByRole("button", { name: "Agregar correo" }));
+    expect(await screen.findByRole("textbox", { name: "Correo" })).toBeVisible();
+    expect(screen.queryByRole("group", { name: "Código" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /^Cancelar$/ }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });

@@ -9159,12 +9159,7 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ChangeLoginMethodHttpRequest"];
-                    "application/*+json": components["schemas"]["ChangeLoginMethodHttpRequest"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {
@@ -9454,13 +9449,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ChangeLoginMethodHttpRequest"];
-                    "text/json": components["schemas"]["ChangeLoginMethodHttpRequest"];
-                    "application/*+json": components["schemas"]["ChangeLoginMethodHttpRequest"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description No Content */
                 204: {
@@ -9468,15 +9457,6 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
                 };
                 /** @description Forbidden */
                 403: {
@@ -9542,13 +9522,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ChangeLoginMethodHttpRequest"];
-                    "text/json": components["schemas"]["ChangeLoginMethodHttpRequest"];
-                    "application/*+json": components["schemas"]["ChangeLoginMethodHttpRequest"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description No Content */
                 204: {
@@ -9556,15 +9530,6 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
                 };
                 /** @description Forbidden */
                 403: {
@@ -9921,155 +9886,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/me/reauth": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["RequestReauthHttpRequest"];
-                    "text/json": components["schemas"]["RequestReauthHttpRequest"];
-                    "application/*+json": components["schemas"]["RequestReauthHttpRequest"];
-                };
-            };
-            responses: {
-                /** @description Accepted */
-                202: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ReauthCodeResponse"];
-                        "application/json": components["schemas"]["ReauthCodeResponse"];
-                        "text/json": components["schemas"]["ReauthCodeResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Conflict */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/me/reauth/verify": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["VerifyReauthHttpRequest"];
-                    "text/json": components["schemas"]["VerifyReauthHttpRequest"];
-                    "application/*+json": components["schemas"]["VerifyReauthHttpRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ReauthResponse"];
-                        "application/json": components["schemas"]["ReauthResponse"];
-                        "text/json": components["schemas"]["ReauthResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -10142,7 +9958,6 @@ export interface components {
          */
         AddLoginEmailHttpRequest: {
             email?: null | string;
-            reauthTicket?: null | string;
         };
         /** @description Recibe los datos de la primera organización y empresa sin imprimir datos fiscales en logs. */
         BusinessSignupHttpRequest: {
@@ -10194,13 +10009,6 @@ export interface components {
             status?: null | components["schemas"]["CompanyStatus"];
             /** Format: uint32 */
             version?: null | number;
-        };
-        /**
-         * @description Recibe la prueba de titularidad para quitar o elegir como principal un método de ingreso. El método
-         *     objetivo llega en la ruta; el ticket se conserva sin normalizar y se oculta en ToString.
-         */
-        ChangeLoginMethodHttpRequest: {
-            reauthTicket?: null | string;
         };
         ChangeOrganizationUserStatusHttpRequest: {
             isActive?: null | boolean;
@@ -11310,20 +11118,6 @@ export interface components {
             effectiveOn?: null | string;
             contents?: null | components["schemas"]["LegalDocumentContentHttpRequest"][];
         };
-        /** @enum {null|string} */
-        ReauthAction: "RemoveMethod" | "MakePrimary" | "DeleteAccount" | "CancelDeletion" | "AddEmail" | "LinkGoogle" | null;
-        /** @description Informa a qué método de respaldo se envió el código, con el destino enmascarado y el tiempo hasta un nuevo pedido. */
-        ReauthCodeResponse: {
-            /** Format: uuid */
-            sourceMethodId: string;
-            destination: string;
-            /** Format: int32 */
-            resendAfterSeconds: number;
-        };
-        /** @description Devuelve el ticket temporal para completar una acción sensible sin mostrarlo en diagnósticos del objeto. */
-        ReauthResponse: {
-            reauthTicket: string;
-        };
         /**
          * @description Adapta los cinco catálogos de referencia al contrato JSON de la API. Cada FromModel copia explícitamente
          *     los datos de Application para mantener separados los modelos internos y HTTP.
@@ -11339,13 +11133,9 @@ export interface components {
         RegisterOrganizationDomainHttpRequest: {
             domain?: null | string;
         };
-        /**
-         * @description Recibe el motivo de baja y la prueba de titularidad necesaria para solicitarla. ToString oculta ambos
-         *     valores para evitar que se registren en logs.
-         */
+        /** @description Recibe el motivo de baja desde una sesión iniciada. ToString oculta el texto para evitar que se registre en logs. */
         RequestAccountDeletionHttpRequest: {
             reason?: null | string;
-            reauthTicket?: null | string;
         };
         /** @description Correo al que se solicita un código para una identidad existente. */
         RequestLoginCodeHttpRequest: {
@@ -11355,15 +11145,6 @@ export interface components {
         RequestLoginCodeResponse: {
             /** Format: int32 */
             resendAfterSeconds: number;
-        };
-        /**
-         * @description Recibe la acción sensible y el método objetivo de una prueba de titularidad. Los campos nullable
-         *     permiten que la validación informe entradas faltantes o inválidas.
-         */
-        RequestReauthHttpRequest: {
-            action?: null | components["schemas"]["ReauthAction"];
-            /** Format: uuid */
-            targetMethodId?: null | string;
         };
         /** @description Correo nuevo y nonce del navegador; el nonce no vuelve en ninguna respuesta. */
         RequestRecoveryCodeHttpRequest: {
@@ -11560,18 +11341,6 @@ export interface components {
          *     validarlo y oculta su valor en ToString.
          */
         VerifyLoginMethodHttpRequest: {
-            code?: null | string;
-        };
-        /**
-         * @description Recibe la acción, los métodos involucrados y el código que demuestra titularidad. RawText conserva el
-         *     código recibido y ToString evita exponerlo en logs.
-         */
-        VerifyReauthHttpRequest: {
-            action?: null | components["schemas"]["ReauthAction"];
-            /** Format: uuid */
-            targetMethodId?: null | string;
-            /** Format: uuid */
-            sourceMethodId?: null | string;
             code?: null | string;
         };
         /** @description Código recibido en el correo nuevo, con el mismo nonce del pedido del código. */

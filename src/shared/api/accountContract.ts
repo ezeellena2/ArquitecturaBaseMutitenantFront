@@ -8,8 +8,6 @@ export const accountPaths = {
   methodCode: "/api/me/login-methods/{methodId}/code",
   methodVerify: "/api/me/login-methods/{methodId}/verify",
   methodPrimary: "/api/me/login-methods/{methodId}/primary",
-  reauth: "/api/me/reauth",
-  reauthVerify: "/api/me/reauth/verify",
   google: "/api/me/external/google",
   acceptLegal: "/api/legal/accept",
   deletion: "/api/me/deletion",

@@ -42,6 +42,6 @@ test("la puerta visual E4 requiere todas las capturas de lienzo y aplicación de
     assertCapturedPairs(cases, output);
     const readme = readFileSync(path.join(output, "README.md"), "utf8");
     assert.match(readme, /marco móvil aprobado M-Cuenta/);
-    assert.match(readme, /reautenticación antes de mostrar el formulario/);
+
   }
 });

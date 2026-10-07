@@ -8,7 +8,7 @@ const readBack = (file: string) => readFileSync(path.join(back, file), "utf8");
 const readFront = (file: string) => readFileSync(path.join(front, file), "utf8");
 
 describe("contrato funcional de cuenta entre repos", () => {
-  it("usa las rutas y cuerpos de métodos, reauth, términos y baja publicados por el back", () => {
+  it("usa las rutas y cuerpos de métodos, términos y baja publicados por el back", () => {
     const contract = readFront("src/shared/api/accountContract.ts");
     const schema = readFront("src/shared/api/generated/schema.d.ts");
     const openapiSource = readBack("docs/contracts/openapi.json");
@@ -16,8 +16,7 @@ describe("contrato funcional de cuenta entre repos", () => {
       paths: Record<string, { post?: { requestBody?: { content?: Record<string, { schema?: { $ref?: string } }> } } }>;
       components: { schemas: Record<string, { properties?: Record<string, unknown>; enum?: unknown[] }> };
     };
-    for (const route of ["/api/me", "/api/me/login-methods", "/api/me/reauth", "/api/me/reauth/verify",
-      "/api/me/external/google", "/api/legal/accept", "/api/me/deletion", "/api/auth/deletion/pending", "/api/auth/deletion/cancel"]) {
+    for (const route of ["/api/me", "/api/me/login-methods", "/api/me/external/google", "/api/legal/accept", "/api/me/deletion", "/api/auth/deletion/pending", "/api/auth/deletion/cancel"]) {
       expect(contract).toContain(`"${route}"`);
       expect(openapiSource).toContain(`"${route}"`);
       expect(schema).toContain(`"${route}"`);
@@ -28,19 +27,11 @@ describe("contrato funcional de cuenta entre repos", () => {
     }
     expect(openapi.paths["/api/me/login-methods"].post?.requestBody?.content?.["application/json"]?.schema?.$ref)
       .toBe("#/components/schemas/AddLoginEmailHttpRequest");
-    expect(openapi.components.schemas.AddLoginEmailHttpRequest.properties).toHaveProperty("reauthTicket");
-    expect(openapi.paths["/api/me/external/google"].post?.requestBody?.content?.["application/json"]?.schema?.$ref)
-      .toBe("#/components/schemas/ChangeLoginMethodHttpRequest");
-    expect(openapi.components.schemas.ChangeLoginMethodHttpRequest.properties).toHaveProperty("reauthTicket");
-    expect(openapi.components.schemas.ReauthAction.enum).toEqual(expect.arrayContaining(["AddEmail", "LinkGoogle"]));
-    expect(readFront("src/shared/account/AddLoginMethodDialog.tsx"))
-      .toContain("addLoginEmail({ email, reauthTicket }, key)");
-    expect(readFront("src/shared/account/api/loginMethods.ts"))
-      .toContain("linkGoogle(request: ChangeLoginMethodRequest)");
-    expect(readFront("src/shared/account/ChangeLoginMethodDialog.tsx"))
-      .toContain('action === "addEmail" ? "AddEmail" : "LinkGoogle"');
-    for (const field of ["version", "pendingLegalDocuments", "needsPersonalLoginMethod", "sourceMethodId", "targetMethodId",
-      "reauthTicket", "cancelTicket", "scheduledForUtc", "timeZoneId", "returnUrl"]) expect(schema).toContain(`${field}`);
+    expect(openapi.components.schemas.AddLoginEmailHttpRequest.properties).not.toHaveProperty("reauthTicket");
+    expect(openapi.paths["/api/me/external/google"].post?.requestBody).toBeUndefined();
+    expect(openapi.paths).not.toHaveProperty("/api/me/reauth");
+    expect(openapi.paths).not.toHaveProperty("/api/me/reauth/verify");
+    for (const field of ["version", "pendingLegalDocuments", "needsPersonalLoginMethod", "cancelTicket", "scheduledForUtc", "timeZoneId", "returnUrl"]) expect(schema).toContain(`${field}`);
     expect(readBack("src/ArquitecturaBaseMultitenant.Api/Contracts/Account/UpdateMeHttpRequest.cs")).toContain("uint? Version");
     expect(readBack("src/ArquitecturaBaseMultitenant.Api/Contracts/Auth/CancelAccountDeletionHttpRequest.cs")).toContain("RawText");
   });

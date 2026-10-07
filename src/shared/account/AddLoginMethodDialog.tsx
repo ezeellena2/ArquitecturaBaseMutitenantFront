@@ -19,7 +19,6 @@ import { EmailField } from "@/shared/ui/fields/EmailField";
 import { OtpInput } from "@/shared/ui/OtpInput";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { addLoginEmail, sendLoginMethodCode, verifyLoginMethod } from "./api/loginMethods";
-import { ChangeLoginMethodDialog } from "./ChangeLoginMethodDialog";
 import { loginMethodErrorField } from "./errors";
 import { useHasLoginChannel } from "./useLoginChannels";
 import { maskEmail } from "@/shared/format/personalData";
@@ -50,7 +49,6 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
   const whatsApp = useHasLoginChannel("whatsapp");
   const [methodId, setMethodId] = useState<string | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
-  const [reauthTicket, setReauthTicket] = useState<string | null>(null);
   const emailSchema = useMemo(() => emailFormSchema(t), [t]);
   const codeSchema = useMemo(() => codeFormSchema(t), [t]);
   const emailForm = useForm<EmailForm>({ resolver: zodResolver(emailSchema), defaultValues: { email: method?.value ?? "" } });
@@ -59,7 +57,7 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
   const code = useController({ control: codeForm.control, name: "code" });
   const codeError = codeForm.formState.errors.code?.message;
   const retry = useRetryAfterCountdown();
-  const request = useIdempotentMutation((email: string, key) => method ? sendLoginMethodCode(method.id, key) : addLoginEmail({ email, reauthTicket }, key), { meta: { handlesError: true } });
+  const request = useIdempotentMutation((email: string, key) => method ? sendLoginMethodCode(method.id, key) : addLoginEmail({ email }, key), { meta: { handlesError: true } });
   const verify = useIdempotentMutation((value: string, key) => verifyLoginMethod(methodId!, { code: value }, key), { meta: { handlesError: true } });
   const busy = request.isPending || verify.isPending;
   const started = useRef(false);
@@ -98,7 +96,6 @@ export function AddLoginMethodDialog({ open, onOpenChange, onComplete, method }:
     });
   }
 
-  if (!method && !reauthTicket && open) return <ChangeLoginMethodDialog action="addEmail" onClose={() => onOpenChange(false)} onAuthorized={setReauthTicket} />;
   const codeStep = methodId !== null;
   return <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent size="sm" onCloseAutoFocus={restoreFocus} aria-describedby={codeStep ? "method-code-hint" : undefined}>

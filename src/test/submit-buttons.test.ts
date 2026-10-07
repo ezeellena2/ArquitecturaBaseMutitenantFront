@@ -14,7 +14,6 @@ const allowed: ReadonlyArray<readonly [RegExp, string, string?]> = [
   [/^(?:\w+\.)?retry\.isRunning$/, "la cuenta regresiva de «Reintentá en…»"],
   [/^step === "new" && sendRetry\.isRunning$/, "la cuenta regresiva de Recuperar sólo en el paso del correo nuevo", "areas/public/auth/pages/RecoverAccountPage.tsx"],
   [/^blocked$/, "un bloqueo de negocio conocido antes de confirmar, explicado en la franja (ReasonDialog)", "shared/platform/ReasonDialog.tsx"],
-  [/^reauth\.retry\.isRunning \|\| \(!reauth\.proof && !reauth\.failure\)$/, "la cuenta regresiva o el código que se pide al abrir"],
   [/^isPending$/, "la sesión que se está leyendo"],
   [/^!(?:csrf|antiforgery\.data)\?\.requestToken$/, "la protección del envío que se está cargando"],
 ];

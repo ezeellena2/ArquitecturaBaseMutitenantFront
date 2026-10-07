@@ -16,16 +16,8 @@ it("suma correo: el título dice el paso, el código incorrecto va debajo de los
   const complete = vi.fn();
   let attempts = 0;
   server.use(
-    http.post("/api/me/reauth", async ({ request }) => {
-      expect(await request.json()).toEqual({ action: "AddEmail" });
-      return HttpResponse.json({ sourceMethodId: "original", destination: "a***@example.test", resendAfterSeconds: 60 });
-    }),
-    http.post("/api/me/reauth/verify", async ({ request }) => {
-      expect(await request.json()).toEqual({ action: "AddEmail", sourceMethodId: "original", code: "123456" });
-      return HttpResponse.json({ reauthTicket: "opaque-ticket" });
-    }),
     http.post("/api/me/login-methods", async ({ request }) => {
-      expect(await request.json()).toEqual({ email: "nuevo@example.test", reauthTicket: "opaque-ticket" });
+      expect(await request.json()).toEqual({ email: "nuevo@example.test" });
       expect(request.headers.get("Idempotency-Key")).toBeTruthy();
       return HttpResponse.json({ methodId: "new", resendAfterSeconds: 60 });
     }),
@@ -39,8 +31,6 @@ it("suma correo: el título dice el paso, el código incorrecto va debajo de los
   );
   renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={complete} />);
   expect(screen.queryByRole("button", { name: "WhatsApp" })).not.toBeInTheDocument();
-  await user.type(await screen.findByRole("textbox", { name: "Código 1" }), "123456");
-  await user.click(screen.getByRole("button", { name: "Verificar" }));
 
   const add = await screen.findByRole("dialog", { name: "Agregar correo" });
   // Cuenta-Agregar «Sin el módulo de WhatsApp»: el correo solo, sin el control de un único segmento.
@@ -83,17 +73,12 @@ it("suma correo: el título dice el paso, el código incorrecto va debajo de los
 // Cuenta-Agregar con el módulo de WhatsApp (el back suma el canal «whatsapp» a /api/auth/methods): «Agregar correo o
 // teléfono», con el control para elegir qué agregar.
 it("con el módulo de WhatsApp dice «Agregar correo o teléfono» y deja elegir qué agregar", async () => {
-  const user = userEvent.setup();
   server.use(
     http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "whatsapp", countries: ["AR"] }] })),
-    http.post("/api/me/reauth", () => HttpResponse.json({ sourceMethodId: "original", destination: "a***@example.test", resendAfterSeconds: 60 })),
-    http.post("/api/me/reauth/verify", () => HttpResponse.json({ reauthTicket: "opaque-ticket" })),
   );
   renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} />);
 
   expect(await screen.findByRole("dialog", { name: "Agregar correo o teléfono" })).toBeVisible();
-  await user.type(await screen.findByRole("textbox", { name: "Código 1" }), "123456");
-  await user.click(screen.getByRole("button", { name: "Verificar" }));
   const add = await screen.findByRole("dialog", { name: "Agregar correo o teléfono" });
   expect(within(add).getByRole("group", { name: "Qué querés agregar" })).toBeVisible();
 });

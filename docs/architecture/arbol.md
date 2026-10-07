@@ -258,15 +258,15 @@ src/
 │   │   │   ├── api/
 │   │   │   │   ├── account.ts                       el perfil de /api/me: nombre, idioma y región, y zona
 │   │   │   │   ├── account.test.ts                  tests de account
-│   │   │   │   ├── deletion.ts                      POST /api/me/deletion: motivo + ReauthTicket, con useIdempotentMutation
+│   │   │   │   ├── deletion.ts                      POST /api/me/deletion: motivo desde la sesión iniciada, con useIdempotentMutation
 │   │   │   │   └── dataExport.ts                    [E10] POST /api/me/data-export, con useIdempotentMutation
 │   │   │   ├── components/
 │   │   │   │   ├── AccountProfileForm.tsx           «Tus datos»: nombre, idioma y región, y zona, en tres columnas; React Hook Form con zod, useEditForm y useEditPage
 │   │   │   │   ├── LoginMethodsTable.tsx            los métodos de ingreso en su lista, con «Principal» o «Sin verificar» en la segunda línea y su ⋮ (verificar, quitar, hacer principal)
 │   │   │   │   ├── LoginMethodsTable.test.tsx       tests de LoginMethodsTable
 │   │   │   │   ├── VerifyLoginMethodDialog.tsx      verificar un método sin verificar: el diálogo de shared/account/AddLoginMethodDialog
-│   │   │   │   ├── AccountGoogleButton.tsx          vincular Google, con reautenticación
-│   │   │   │   ├── AccountDeletionDialog.tsx        «Dar de baja mi cuenta»: motivo + código al método principal (ReauthTicket); se monta al abrirse, devuelve el foco y lleva su error arriba de los botones
+│   │   │   │   ├── AccountGoogleButton.tsx          vincular Google con OAuth directo (ADR 0045)
+│   │   │   │   ├── AccountDeletionDialog.tsx        «Dar de baja mi cuenta»: motivo y confirmación sin código extra; se monta al abrirse, devuelve el foco y lleva su error arriba de los botones
 │   │   │   │   ├── AccountDeletionDialog.test.tsx   tests de AccountDeletionDialog
 │   │   │   │   ├── DeletionRequestedPage.tsx        «Tu cuenta se elimina el dd/mm/aaaa», después de pedir la baja (la muestra el AppShell)
 │   │   │   │   └── ExportDataDialog.tsx             [E10] «Exportar mis datos»: te llega por correo
@@ -558,13 +558,12 @@ src/
 │   │   ├── api/
 │   │   │   ├── loginChannels.ts                     los canales con los que se entra (GET /api/auth/methods): correo, Google y, con su módulo, WhatsApp
 │   │   │   ├── loginMethods.ts                      los métodos de ingreso: leer, agregar un correo, verificar, quitar, hacer principal y vincular Google
-│   │   │   └── reauth.ts                            pedir y verificar el código de reautenticación (ReauthTicket)
 │   │   ├── AddLoginMethodDialog.tsx                 «Agregar correo o teléfono» («Agregar correo» sin el módulo de WhatsApp) y «Verificar tu correo»: el correo tapado, el código en sus casilleros y su error debajo; React Hook Form con zod
 │   │   ├── AddLoginMethodDialog.test.tsx            tests de AddLoginMethodDialog
-│   │   ├── ChangeLoginMethodDialog.tsx              quitar un método (o desvincular Google) o hacerlo principal, con código en otro método verificado (ReauthTicket de 5 min)
+│   │   ├── ChangeLoginMethodDialog.tsx              quitar un método (o desvincular Google) o hacerlo principal, con diálogo de confirmación sin código extra (ADR 0045)
 │   │   ├── ChangeLoginMethodDialog.test.tsx         tests de ChangeLoginMethodDialog
+│   │   ├── AccountSessionActions.test.tsx           posesión propia del correo y confirmaciones sin OTP extra
 │   │   ├── PersonalLoginMethodNotice.tsx            el aviso de método propio, con «Agregar» (Inicio-Personal y Mi cuenta); en el teléfono, la tarjeta de sugerencia
-│   │   ├── useAccountReauth.ts                      la reautenticación: la prueba queda en memoria y se reusa si la mutación final perdió su respuesta
 │   │   ├── useLoginChannels.ts                      si se entra con un canal: sin «whatsapp» (sin el módulo), Mi cuenta ofrece «Agregar correo»
 │   │   ├── errors.ts                                el código que el back rechaza va debajo de los casilleros
 │   │   └── errors.test.ts                           tests de errors

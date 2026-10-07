@@ -32,7 +32,17 @@ function withCurrentRoute(entry) {
 function withCurrentContract(entry) {
   const responses = entry.app?.responses;
   if (!responses) return entry;
-  const next = responses.map((item) => {
+  // Las fotos históricas no se reescriben: A5 retira su confirmación por código al usarlas hoy.
+  const oldConfirmation = responses.some((item) => item.path.startsWith("/api/me/reauth"));
+  let actions = entry.app.actions;
+  if (oldConfirmation && actions) {
+    let beforeEmail = true;
+    actions = actions.filter((action) => {
+      if (action.type === "fill" && action.name === "Correo") beforeEmail = false;
+      return !(beforeEmail && (action.type === "otp" || (action.type === "click" && action.name === "Verificar")));
+    });
+  }
+  const next = responses.filter((item) => !item.path.startsWith("/api/me/reauth")).map((item) => {
     if (item.method === "GET" && currentAudit.has(item.path)) return currentAudit.get(item.path);
     if (item.method === "GET" && item.path === "/api/organization/settings/domains" && Array.isArray(item.body)) {
       return { ...item, body: item.body.map((domain) => ({ managedEmailCount: domain.status === "Verified" ? 10 : 0, ...domain })) };
@@ -47,7 +57,11 @@ function withCurrentContract(entry) {
     const items = roles.body.items.filter((role) => role.scope === "AnyCompany" || role.companyId === companyId);
     next.push({ method: "GET", path: rolesPath, body: { ...roles.body, items, pageSize: 100, totalCount: items.length, totalPages: 1, hasNext: false }, status: 200 });
   }
-  return { ...entry, app: { ...entry.app, responses: next } };
+  const readySelector = oldConfirmation && !actions?.some((action) => action.type === "fill" && action.name === "Correo")
+    && entry.app.readySelector?.includes('input[inputmode="numeric"]')
+    ? entry.pair.startsWith("agregar") ? 'input[type="email"]' : '[role="dialog"]'
+    : entry.app.readySelector;
+  return { ...entry, app: { ...entry.app, responses: next, actions, readySelector } };
 }
 
 // Mi cuenta sin el módulo de WhatsApp (tanda 6d-5): el back de hoy no lo trae y la app ofrece «Agregar correo», sin el
@@ -616,40 +630,11 @@ function b6cCases(root) {
   ];
 }
 
-// Tanda 6d-2 (el pulido final): el error del código al confirmar que sos vos (quitar un correo) y al dar de baja la cuenta,
-// debajo de los casilleros y solo con el borde rojo, como Cuenta-Verificar; y «Sin dominio» de Configuración con el tamaño
+// Tanda 6d-2: A5 retira los estados de código exclusivos de confirmaciones. «Sin dominio» conserva el tamaño
 // de su tablero (en el teléfono, la fila apagada que M-Configuracion-Dominio dibuja detrás de la hoja).
 function b6d2Cases(root) {
-  const stageApp = (pair, width) => stageCases(root, "etapa-4").find((entry) => entry.pair === pair && entry.viewport.width === width).app;
-  const wrongCode = api("POST", "/api/me/reauth/verify", { status: 400, code: "Auth.LoginCode.Invalid", title: "Código", detail: "El código no es válido." }, 400);
-  const deletionWrongCode = (width) => ({
-    responses: [...stageApp("baja-cuenta", width).responses, wrongCode],
-    actions: [...stageApp("baja-cuenta", width).actions, appFill("Motivo", "Ya no la uso."), { type: "otp", value: "482910" }, appClick("button", "Dar de baja")],
-    readySelector: '[role="dialog"] [role="alert"]',
-  });
-  // El correo que quita el tablero (lucia.trabajo@gmail.com) y el código, al WhatsApp (•••• 4521).
-  const removeEmailWrongCode = (width) => {
-    const app = stageApp("cuenta", width);
-    const responses = app.responses.map((item) => item.method === "GET" && item.path === "/api/me/login-methods"
-      ? { ...item, body: { ...item.body, methods: [...item.body.methods, { id: "5", type: "Email", value: "lucia.trabajo@gmail.com", isPrimary: false, isVerified: true, canRemove: true, canMakePrimary: true }] } }
-      : item);
-    return {
-      responses: [...responses, api("POST", "/api/me/reauth", { sourceMethodId: "3", destination: "•••• 4521", resendAfterSeconds: 60 }, 202), wrongCode],
-      actions: [appClick("button", "Acciones de lucia.trabajo@gmail.com"), appClick("menuitem", "Quitar"), { type: "otp", value: "482910" }, appClick("button", "Quitar")],
-      readySelector: '[role="dialog"] [role="alert"]',
-    };
-  };
-  const removeEmailBoard = { props: { estado: "Quitar un correo: el código llega por WhatsApp" } };
   const noDomain = { actions: [], readySelector: "main", readyText: "Sin dominio" };
   return [
-    ...pairCases(root, { stage: "etapa-4", pair: "baja-cuenta", id: "baja-cuenta-codigo-incorrecto", group: "cuenta",
-      state: "«Dar de baja»: el código incorrecto, debajo de los casilleros y solo con el borde rojo",
-      desktop: { board: "Cuenta-Baja", props: { estado: "Código incorrecto" } }, phone: { board: "M-Cuenta-Baja", props: { estado: "Código incorrecto" } },
-      app: deletionWrongCode(1440), phoneApp: deletionWrongCode(390) }),
-    ...pairCases(root, { stage: "etapa-4", pair: "cuenta", id: "quitar-correo-codigo-incorrecto", group: "cuenta",
-      state: "Confirmá que sos vos al quitar un correo: el código incorrecto, debajo de los casilleros, como en Cuenta-Verificar (el tablero dibuja el paso sin error)",
-      desktop: { board: "Cuenta-Metodo", ...removeEmailBoard }, phone: { board: "M-Cuenta-Metodo", ...removeEmailBoard },
-      app: removeEmailWrongCode(1440), phoneApp: removeEmailWrongCode(390) }),
     ...pairCases(root, { stage: "etapa-6", pair: "configuracion-agregar-dominio", id: "configuracion-sin-dominio", group: "configuracion",
       state: "Configuración sin dominio: «Sin dominio» en 13 y gris claro, como .o-dom-vacio",
       desktop: { board: "Configuracion", props: { dominio: "Sin dominio" } },
@@ -694,9 +679,8 @@ function b6d3Cases(root) {
 // Tanda 6d-3b (el pulido final): en el teléfono, «Quitar» un correo y «Desvincular» Google (M-Cuenta-Metodo) confirman con
 // el botón destructivo, en rojo como en la compu (Cuenta-Metodo, al lado). Diseño corrigió que v107 los dibujó en petróleo
 // en el teléfono: la copia limpia de v107 todavía los muestra así. La app no lista los teléfonos entre los métodos, así que
-// «Quitar» va sobre el correo del tablero (lucia.trabajo@gmail.com), con el código al WhatsApp, como en b6d2. «Dar de baja»
-// (M-Cuenta-Baja) es el caso baja-cuenta y el Inicio, inicio-org. El diálogo está listo cuando dice a dónde mandamos el
-// código.
+// «Quitar» va sobre el correo del tablero (lucia.trabajo@gmail.com), sin código adicional (ADR 0045). «Dar de baja»
+// (M-Cuenta-Baja) es el caso baja-cuenta y el Inicio, inicio-org. El diálogo está listo al mostrar su confirmación.
 function b6d3bCases(root) {
   const stageApp = (pair, width) => stageCases(root, "etapa-4").find((entry) => entry.pair === pair && entry.viewport.width === width).app;
   const work = { id: "5", type: "Email", value: "lucia.trabajo@gmail.com", isPrimary: false, isVerified: true, canRemove: true, canMakePrimary: true };
@@ -704,12 +688,11 @@ function b6d3bCases(root) {
   const withMethod = (responses, method, canLinkGoogle = true) => responses.map((item) => item.method === "GET" && item.path === "/api/me/login-methods"
     ? { ...item, body: { ...item.body, canLinkGoogle, methods: [...item.body.methods, method] } }
     : item);
-  const reauth = (sourceMethodId, destination) => api("POST", "/api/me/reauth", { sourceMethodId, destination, resendAfterSeconds: 60 }, 202);
-  const sheet = (width, method, canLinkGoogle, target, action, [sourceMethodId, destination]) => ({
-    responses: [...withMethod(stageApp("cuenta", width).responses, method, canLinkGoogle), reauth(sourceMethodId, destination)],
-    actions: [appClick("button", `Acciones de ${target}`), appClick("menuitem", action)], readySelector: '[role="dialog"]', readyText: destination });
-  const removeEmail = (width) => sheet(width, work, true, "lucia.trabajo@gmail.com", "Quitar", ["3", "•••• 4521"]);
-  const unlinkGoogle = (width) => sheet(width, google, false, "lucia.fer@gmail.com", "Desvincular", ["2", "lu•••@gmail.com"]);
+  const sheet = (width, method, canLinkGoogle, target, action) => ({
+    responses: withMethod(stageApp("cuenta", width).responses, method, canLinkGoogle),
+    actions: [appClick("button", `Acciones de ${target}`), appClick("menuitem", action)], readySelector: '[role="dialog"]', readyText: target });
+  const removeEmail = (width) => sheet(width, work, true, "lucia.trabajo@gmail.com", "Quitar");
+  const unlinkGoogle = (width) => sheet(width, google, false, "lucia.fer@gmail.com", "Desvincular");
   const removeEmailBoard = { props: { estado: "Quitar un correo: el código llega por WhatsApp" } };
   const unlinkGoogleBoard = { props: { estado: "Desvincular Google" } };
   return [
@@ -726,8 +709,8 @@ function b6d3bCases(root) {
 
 // Tanda 6d-4a (decisiones del usuario del 2026-10-05, lienzo v108): «Editar empresa» sin cambios, con «Guardar cambios»
 // apagado como en toda edición; «Quitar» un correo mientras espera, con «Quitando…» y el aro de «Guardando» (Criterio ·
-// Botones › Estados dice los textos de espera; Cuenta-Metodo no dibuja la espera), sobre el correo del tablero y con el
-// código al WhatsApp, como en b6d3b; y la ficha de Empresa como la abre su Administrador de empresa: un solo grupo,
+// Botones › Estados dice los textos de espera; Cuenta-Metodo no dibuja la espera), sobre el correo del tablero y con
+// confirmación sin código adicional (ADR 0045); y la ficha de Empresa como la abre su Administrador de empresa: un solo grupo,
 // Miembros, sin la barra de pestañas («Administra solo la empresa» de Empresa y M-Empresa, con otros datos de prueba).
 function b6d4aCases(root) {
   const stageApp = (stage, pair, width) => stageCases(root, stage).find((entry) => entry.pair === pair && entry.viewport.width === width).app;
@@ -738,9 +721,9 @@ function b6d4aCases(root) {
       ? { ...item, body: { ...item.body, methods: [...item.body.methods, work] } }
       : item);
     return {
-      responses: [...responses, api("POST", "/api/me/reauth", { sourceMethodId: "3", destination: "•••• 4521", resendAfterSeconds: 60 }, 202)],
-      hang: { path: "/api/me/reauth/verify", method: "POST" },
-      actions: [appClick("button", "Acciones de lucia.trabajo@gmail.com"), appClick("menuitem", "Quitar"), { type: "otp", value: "482910" }, appClick("button", "Quitar")],
+      responses,
+      hang: { path: "/api/me/login-methods/5", method: "DELETE" },
+      actions: [appClick("button", "Acciones de lucia.trabajo@gmail.com"), appClick("menuitem", "Quitar"), appClick("button", "Quitar")],
       readySelector: '[role="dialog"]', readyText: "Quitando…",
     };
   };
