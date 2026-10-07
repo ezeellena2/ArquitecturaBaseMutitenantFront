@@ -26,6 +26,9 @@ ArquitecturaBaseMutitenantFront/
 │   ├── generate-contracts.mjs                       [E1] openapi.json del back → src/shared/api/generated/schema.d.ts
 │   ├── check-contracts.mjs                          [E1] falla si generated/ no coincide con el contrato; sin el repo hermano en CI, avisa y se saltea
 │   ├── test-e2e-real.test.mjs                       E2E real: levanta su AppHost y un PostgreSQL efímero; front y API reales, sin mocks
+│   ├── recorrido-usuario.mjs                       [E7] puerta de usuario completa, contexto persistente único y capturas 1440/390
+│   ├── recorrido-usuario-entorno.mjs               [E7] AppHost aislado, pickup y sesión antigua firmada del recorrido
+│   ├── recorrido-usuario.test.mjs                  [E7] fecha, informe incremental y limpieza ante fallos
 │   ├── test-e2e-real-case.mjs                       Señal del caso, esperas cancelables y contextos propios
 │   ├── test-e2e-real-case.test.mjs                  tests de test-e2e-real-case
 │   ├── test-e2e-real-mail.mjs                       Lee sólo el párrafo OTP del correo pickup
