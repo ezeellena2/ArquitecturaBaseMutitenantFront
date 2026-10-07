@@ -56,11 +56,14 @@ function violations(source: string, file?: string): string[] {
   const fileName = "buttons.tsx";
   const parsed = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
   const options: ts.CompilerOptions = { noLib: true, noResolve: true };
-  const program = ts.createProgram([fileName], options, {
-    ...ts.createCompilerHost(options),
-    getSourceFile: (name) => name === fileName ? parsed : undefined,
-  });
-  const checker = program.getTypeChecker();
+  // Sólo los disabled que necesitan resolver el hook requieren símbolos; el resto usa el mismo AST.
+  let checker: ts.TypeChecker | undefined;
+  function typeChecker(): ts.TypeChecker {
+    return checker ??= ts.createProgram([fileName], options, {
+      ...ts.createCompilerHost(options),
+      getSourceFile: (name) => name === fileName ? parsed : undefined,
+    }).getTypeChecker();
+  }
   const problems: string[] = [];
   function visit(node: ts.Node): void {
     if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && /^(Button|button)$/.test(node.tagName.getText(parsed))) {
@@ -71,7 +74,7 @@ function violations(source: string, file?: string): string[] {
         const expression = disabled.initializer && ts.isJsxExpression(disabled.initializer) ? disabled.initializer.expression : undefined;
         const text = (expression?.getText(parsed) ?? disabled.initializer?.getText(parsed) ?? "true").replace(/\s+/g, " ").trim();
         if (!allowed.some(([pattern, , onlyFor]) => pattern.test(text) && (!onlyFor || file === onlyFor))
-          && !(expression && isRetryCountdown(expression, checker))) problems.push(text);
+          && !(expression && isRetryCountdown(expression, typeChecker()))) problems.push(text);
       }
     }
     ts.forEachChild(node, visit);
