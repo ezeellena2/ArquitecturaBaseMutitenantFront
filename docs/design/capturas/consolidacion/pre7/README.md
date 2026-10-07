@@ -27,6 +27,24 @@ Comparaciones de los cinco estados afectados, a 1440 y 390. A5 y la ADR 0045 eli
 
 La referencia v112 se conserva completa: `Cuenta-Baja` y `Cuenta-Metodo` todavía dibujan el OTP que la ADR 0045 ordena retirar. La fila de Nombre/Apellido del fondo se implementa en A6 y estas comparaciones se repiten al cerrarlo. La exportación pertenece a E10, según la ficha `identidad.md` del back.
 
+## A1 · El operador probado en una puerta pública
+
+Ingreso y M-Ingreso, estado «Operador: la cuenta entra por Plataforma», en las puertas Persona y Empresa. El título, el edificio gris y los botones «Ir a Plataforma» y «Salir» salen de la v112. Esta pantalla aparece después de probar el correo; con solo la cookie de Plataforma, el ingreso público muestra su formulario, según la ADR 0044. Salir conserva la cookie de Plataforma.
+
+| Puerta | 1440 | 390 |
+|---|---|---|
+| Persona | [Comparación](ingreso/ingreso-operador-persona-escritorio-1440x900-lado-a-lado.png) | [Comparación](ingreso/ingreso-operador-persona-movil-390x844-lado-a-lado.png) |
+| Empresa | [Comparación](ingreso/ingreso-operador-empresa-escritorio-1440x900-lado-a-lado.png) | [Comparación](ingreso/ingreso-operador-empresa-movil-390x844-lado-a-lado.png) |
+
+Las primeras capturas móviles heredaron la respuesta «Sin empresa» del caso fuente. Se conservan en `.local/pre7/a1/capturas-primeras-incorrectas*`; el test del catálogo reprodujo el fallo y pasó después de compartir la preparación explícita de ambas variantes. Las cuatro comparaciones se repitieron y verificaron, EXIT 0. Pantalla/salida 55/55, auth/traducciones 16/16, catálogo 11/11. E2E real focal A1,A3: segundo intento 3/3, 0 fallos/cancelados/omitidos, EXIT 0, 258,090 s; `real-a1-a3-second.log`. La carrera del helper con el cooldown se corrigió antes de repetir, sin ampliar los tiempos ni los topes. Aspire final `[]`, EXIT 0. Implementación FRONT `a6782b0`, ficha BACK `d15b19b`.
+
+```powershell
+node scripts/recorrido-lienzo/vivo.mjs consolidacion/pre7/ingreso-operador-persona-escritorio --vite http://127.0.0.1:5191
+node scripts/recorrido-lienzo/vivo.mjs consolidacion/pre7/ingreso-operador-persona-movil --vite http://127.0.0.1:5191
+node scripts/recorrido-lienzo/vivo.mjs consolidacion/pre7/ingreso-operador-empresa-escritorio --vite http://127.0.0.1:5191
+node scripts/recorrido-lienzo/vivo.mjs consolidacion/pre7/ingreso-operador-empresa-movil --vite http://127.0.0.1:5191
+```
+
 Las capturas visuales usan las respuestas de prueba del capturador existente para reproducir estados. El E2E real usa front, API, PostgreSQL y pickup reales, sin interceptar peticiones ni simular sesiones.
 
 Desde la raíz del front:

@@ -40,13 +40,15 @@
       }
     },
     {
-      "id": "registro-empresa-correo-escritorio",
-      "pair": "registro-empresa-correo",
-      "group": "registro",
-      "state": "Registro de empresa: pide el correo",
-      "board": "Registro-Empresa",
+      "id": "ingreso-operador-persona-escritorio",
+      "pair": "ingreso-operador-persona",
+      "group": "ingreso",
+      "state": "Operador probado en la puerta Persona: sólo entra a Plataforma",
+      "board": "Ingreso",
       "props": {
-        "estado": "Correo"
+        "estado": "Operador: la cuenta entra por Plataforma",
+        "puerta": "Persona",
+        "cuenta": "Martín (operador de la plataforma)"
       },
       "boardActions": [],
       "viewport": {
@@ -54,18 +56,61 @@
         "height": 900
       },
       "app": {
-        "path": "/registro/empresa",
-        "readySelector": "h1"
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "martin.sosa@arquitecturabase.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "body": {
+              "resendAfterSeconds": 60
+            },
+            "status": 202
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "body": {
+              "code": "Tenancy.Access.PlatformOnly"
+            },
+            "status": 403
+          }
+        ],
+        "readyText": "Esta cuenta es de un operador: solo entra a Plataforma"
       }
     },
     {
-      "id": "registro-empresa-correo-movil",
-      "pair": "registro-empresa-correo",
-      "group": "registro",
-      "state": "Registro de empresa: pide el correo",
-      "board": "M-Registro-Empresa",
+      "id": "ingreso-operador-persona-movil",
+      "pair": "ingreso-operador-persona",
+      "group": "ingreso",
+      "state": "Operador probado en la puerta Persona: sólo entra a Plataforma",
+      "board": "M-Ingreso",
       "props": {
-        "estado": "Correo"
+        "estado": "Operador: la cuenta entra por Plataforma",
+        "puerta": "Persona",
+        "cuenta": "Martín (operador de la plataforma)"
       },
       "boardActions": [],
       "viewport": {
@@ -73,8 +118,173 @@
         "height": 844
       },
       "app": {
-        "path": "/registro/empresa",
-        "readySelector": "h1"
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "martin.sosa@arquitecturabase.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "body": {
+              "resendAfterSeconds": 60
+            },
+            "status": 202
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "body": {
+              "code": "Tenancy.Access.PlatformOnly"
+            },
+            "status": 403
+          }
+        ],
+        "readyText": "Esta cuenta es de un operador: solo entra a Plataforma"
+      }
+    },
+    {
+      "id": "ingreso-operador-empresa-escritorio",
+      "pair": "ingreso-operador-empresa",
+      "group": "ingreso",
+      "state": "Operador probado en la puerta Empresa: sólo entra a Plataforma",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Operador: la cuenta entra por Plataforma",
+        "puerta": "Empresa",
+        "cuenta": "Martín (operador de la plataforma)"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "martin.sosa@arquitecturabase.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "body": {
+              "resendAfterSeconds": 60
+            },
+            "status": 202
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "body": {
+              "code": "Tenancy.Access.PlatformOnly"
+            },
+            "status": 403
+          }
+        ],
+        "readyText": "Esta cuenta es de un operador: solo entra a Plataforma"
+      }
+    },
+    {
+      "id": "ingreso-operador-empresa-movil",
+      "pair": "ingreso-operador-empresa",
+      "group": "ingreso",
+      "state": "Operador probado en la puerta Empresa: sólo entra a Plataforma",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Operador: la cuenta entra por Plataforma",
+        "puerta": "Empresa",
+        "cuenta": "Martín (operador de la plataforma)"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readySelector": "h1",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "martin.sosa@arquitecturabase.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          },
+          {
+            "type": "otp",
+            "value": "123456"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Verificar"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "body": {
+              "resendAfterSeconds": 60
+            },
+            "status": 202
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code/verify",
+            "body": {
+              "code": "Tenancy.Access.PlatformOnly"
+            },
+            "status": 403
+          }
+        ],
+        "readyText": "Esta cuenta es de un operador: solo entra a Plataforma"
       }
     },
     {
@@ -554,6 +764,44 @@
         "readySelector": "[role=\"dialog\"]"
       },
       "referenceNote": "La v112 aún dibuja el bloque OTP. A5 y la ADR 0045 ordenan retirarlo y conservar el resto del diálogo."
+    },
+    {
+      "id": "registro-empresa-correo-escritorio",
+      "pair": "registro-empresa-correo",
+      "group": "registro",
+      "state": "Registro de empresa: pide el correo",
+      "board": "Registro-Empresa",
+      "props": {
+        "estado": "Correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro/empresa",
+        "readySelector": "h1"
+      }
+    },
+    {
+      "id": "registro-empresa-correo-movil",
+      "pair": "registro-empresa-correo",
+      "group": "registro",
+      "state": "Registro de empresa: pide el correo",
+      "board": "M-Registro-Empresa",
+      "props": {
+        "estado": "Correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro/empresa",
+        "readySelector": "h1"
+      }
     },
     {
       "id": "agregar-correo-codigo-escritorio",
