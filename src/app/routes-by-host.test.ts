@@ -35,6 +35,16 @@ describe("rutas por host (docs/rules/accesos-y-permisos.md)", () => {
     expect(paths(routes)).toEqual(expect.arrayContaining(["/", "/org", "/cuenta", "/plataforma", "/login", "/empresas"]));
   });
 
+  it("la raíz del subdominio carga la página publicada y las rutas desconocidas conservan la frontera", () => {
+    const storefront = routesForHost("grupo-delta.localtest.me:5174");
+    const published = find(storefront, "/")?.lazy;
+    const unavailable = find(storefront, "*")?.lazy;
+    expect(published).toBeTypeOf("function");
+    expect(unavailable).toBeTypeOf("function");
+    expect(published).not.toBe(unavailable);
+    expect(find(routesForHost("otra.example.test:5174"), "*")?.lazy).toBe(unavailable);
+  });
+
   it.each(["a.b.localtest.me:5174", "grupo-delta.localtest.me:5175", "otro.example.test:5174", "127.0.0.1:5174", "ab.localtest.me:5174"])(
     "un host desconocido muestra la frontera uniforme y no monta callback: %s", (host) => {
       const tree = routesForHost(host);

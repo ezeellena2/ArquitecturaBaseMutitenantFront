@@ -139,6 +139,10 @@ const unavailablePage = lazyPage(
   () => import("@/areas/storefront/site/pages/StorefrontUnavailablePage"), (page) => page.StorefrontUnavailablePage,
 );
 
+const storefrontPage = lazyPage(
+  () => import("@/areas/storefront/site/pages/PublicPage"), (page) => page.PublicPage,
+);
+
 /** El árbol principal exportado mantiene los recorridos y tests anteriores; T13 puede aportar su lazy. */
 export function createMainSiteRoutes(pages: HostPages = {}): RouteObject[] {
   if (!pages.directory) return routes;
@@ -147,8 +151,8 @@ export function createMainSiteRoutes(pages: HostPages = {}): RouteObject[] {
     : child) }));
 }
 
-/** T14 aporta la página publicada. Hasta entonces se monta la frontera aprobada, con AppShell y recuperación. */
-export function createStorefrontRoutes(page: LazyRouteFunction<RouteObject> = unavailablePage): RouteObject[] {
+/** La página publicada va en la raíz; las demás rutas mantienen No disponible, AppShell y recuperación. */
+export function createStorefrontRoutes(page: LazyRouteFunction<RouteObject> = storefrontPage): RouteObject[] {
   return [{ element: <AppShell />, errorElement: <AppErrorPage />, children: [
     { path: "/auth/callback", lazy: lazyPage(() => import("@/areas/public/auth/pages/CallbackPage"), (module) => module.CallbackPage), errorElement: <AppErrorPage /> },
     { element: <SessionRecovery />, children: [
