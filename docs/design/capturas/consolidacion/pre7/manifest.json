@@ -2,6 +2,862 @@
   "version": 1,
   "cases": [
     {
+      "id": "ingreso-sin-cuenta-persona-escritorio",
+      "pair": "ingreso-sin-cuenta-persona",
+      "group": "ingreso",
+      "state": "Correo sin cuenta · Persona",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo sin cuenta",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readyText": "No hay una cuenta con ese correo.",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "body": {
+              "code": "Auth.LoginCode.AccountNotFound",
+              "detail": "No hay una cuenta con ese correo.",
+              "traceId": "capture",
+              "errors": {
+                "email": [
+                  "No hay una cuenta con ese correo."
+                ]
+              }
+            },
+            "status": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "ingreso-sin-cuenta-persona-movil",
+      "pair": "ingreso-sin-cuenta-persona",
+      "group": "ingreso",
+      "state": "Correo sin cuenta · Persona",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo sin cuenta",
+        "puerta": "Persona"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login?returnUrl=%2Fconnect%2Fauthorize",
+        "readyText": "No hay una cuenta con ese correo.",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "body": {
+              "code": "Auth.LoginCode.AccountNotFound",
+              "detail": "No hay una cuenta con ese correo.",
+              "traceId": "capture",
+              "errors": {
+                "email": [
+                  "No hay una cuenta con ese correo."
+                ]
+              }
+            },
+            "status": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "ingreso-sin-cuenta-empresa-escritorio",
+      "pair": "ingreso-sin-cuenta-empresa",
+      "group": "ingreso",
+      "state": "Correo sin cuenta · Empresa",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Correo sin cuenta",
+        "puerta": "Empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readyText": "No hay una cuenta con ese correo.",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "body": {
+              "code": "Auth.LoginCode.AccountNotFound",
+              "detail": "No hay una cuenta con ese correo.",
+              "traceId": "capture",
+              "errors": {
+                "email": [
+                  "No hay una cuenta con ese correo."
+                ]
+              }
+            },
+            "status": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "ingreso-sin-cuenta-empresa-movil",
+      "pair": "ingreso-sin-cuenta-empresa",
+      "group": "ingreso",
+      "state": "Correo sin cuenta · Empresa",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Correo sin cuenta",
+        "puerta": "Empresa"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/login/empresa?returnUrl=%2Fconnect%2Fauthorize",
+        "readyText": "No hay una cuenta con ese correo.",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/login-code",
+            "body": {
+              "code": "Auth.LoginCode.AccountNotFound",
+              "detail": "No hay una cuenta con ese correo.",
+              "traceId": "capture",
+              "errors": {
+                "email": [
+                  "No hay una cuenta con ese correo."
+                ]
+              }
+            },
+            "status": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "registro-correo-con-cuenta-escritorio",
+      "pair": "registro-correo-con-cuenta",
+      "group": "registro",
+      "state": "Correo con cuenta",
+      "board": "Registro",
+      "props": {
+        "estado": "Correo con cuenta"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/registro",
+        "readyText": "Ya tenés una cuenta con ese correo.",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/signup",
+            "body": {
+              "code": "Auth.Signup.EmailTaken",
+              "detail": "Ya tenés una cuenta con ese correo.",
+              "traceId": "capture",
+              "errors": {
+                "email": [
+                  "Ya tenés una cuenta con ese correo."
+                ]
+              }
+            },
+            "status": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "registro-correo-con-cuenta-movil",
+      "pair": "registro-correo-con-cuenta",
+      "group": "registro",
+      "state": "Correo con cuenta",
+      "board": "M-Registro",
+      "props": {
+        "estado": "Correo con cuenta"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/registro",
+        "readyText": "Ya tenés una cuenta con ese correo.",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "checkbox",
+            "name": "Acepto los"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Crear cuenta"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/auth/signup",
+            "body": {
+              "code": "Auth.Signup.EmailTaken",
+              "detail": "Ya tenés una cuenta con ese correo.",
+              "traceId": "capture",
+              "errors": {
+                "email": [
+                  "Ya tenés una cuenta con ese correo."
+                ]
+              }
+            },
+            "status": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "recuperar-anterior-sin-cuenta-escritorio",
+      "pair": "recuperar-anterior-sin-cuenta",
+      "group": "recuperar",
+      "state": "1. Sin cuenta con ese correo",
+      "board": "Recuperar",
+      "props": {
+        "paso": "1. Sin cuenta con ese correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "readyText": "No hay una cuenta con ese correo.",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/preview",
+            "body": {
+              "code": "Platform.AccountRecovery.AccountNotFound",
+              "detail": "No hay una cuenta con ese correo.",
+              "traceId": "capture",
+              "errors": {
+                "previousEmail": [
+                  "No hay una cuenta con ese correo."
+                ]
+              }
+            },
+            "status": 400
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "body": {
+              "code": "Platform.AccountRecovery.MethodInUse",
+              "detail": "No hay una cuenta con ese correo.",
+              "traceId": "capture",
+              "errors": {
+                "email": [
+                  "No hay una cuenta con ese correo."
+                ]
+              }
+            },
+            "status": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "recuperar-anterior-sin-cuenta-movil",
+      "pair": "recuperar-anterior-sin-cuenta",
+      "group": "recuperar",
+      "state": "1. Sin cuenta con ese correo",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "1. Sin cuenta con ese correo"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "readyText": "No hay una cuenta con ese correo.",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "mariana.lopez@gmail.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/preview",
+            "body": {
+              "code": "Platform.AccountRecovery.AccountNotFound",
+              "detail": "No hay una cuenta con ese correo.",
+              "traceId": "capture",
+              "errors": {
+                "previousEmail": [
+                  "No hay una cuenta con ese correo."
+                ]
+              }
+            },
+            "status": 400
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "body": {
+              "code": "Platform.AccountRecovery.MethodInUse",
+              "detail": "No hay una cuenta con ese correo.",
+              "traceId": "capture",
+              "errors": {
+                "email": [
+                  "No hay una cuenta con ese correo."
+                ]
+              }
+            },
+            "status": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "recuperar-nuevo-con-cuenta-escritorio",
+      "pair": "recuperar-nuevo-con-cuenta",
+      "group": "recuperar",
+      "state": "2. El correo nuevo ya es de otra cuenta",
+      "board": "Recuperar",
+      "props": {
+        "paso": "2. El correo nuevo ya es de otra cuenta"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "readyText": "Ese correo ya es de otra cuenta.",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "beto.ramirez@beta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/preview",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "body": {
+              "code": "Platform.AccountRecovery.MethodInUse",
+              "detail": "Ese correo ya es de otra cuenta.",
+              "traceId": "capture",
+              "errors": {
+                "email": [
+                  "Ese correo ya es de otra cuenta."
+                ]
+              }
+            },
+            "status": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "recuperar-nuevo-con-cuenta-movil",
+      "pair": "recuperar-nuevo-con-cuenta",
+      "group": "recuperar",
+      "state": "2. El correo nuevo ya es de otra cuenta",
+      "board": "M-Recuperar",
+      "props": {
+        "paso": "2. El correo nuevo ya es de otra cuenta"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Frecuperar",
+        "captureMode": "harness",
+        "userFixture": "visual-personal",
+        "readyText": "Ese correo ya es de otra cuenta.",
+        "actions": [
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico",
+            "value": "lucia.fernandez@delta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Seguir"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo electrónico nuevo",
+            "value": "beto.ramirez@beta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "responses": [
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/preview",
+            "status": 204
+          },
+          {
+            "method": "POST",
+            "path": "/api/account-recovery/code",
+            "body": {
+              "code": "Platform.AccountRecovery.MethodInUse",
+              "detail": "Ese correo ya es de otra cuenta.",
+              "traceId": "capture",
+              "errors": {
+                "email": [
+                  "Ese correo ya es de otra cuenta."
+                ]
+              }
+            },
+            "status": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "agregar-correo-otra-cuenta-escritorio",
+      "pair": "agregar-correo-otra-cuenta",
+      "group": "cuenta",
+      "state": "Correo: ya es de otra cuenta",
+      "board": "Cuenta-Agregar",
+      "props": {
+        "estado": "Correo: ya es de otra cuenta"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "3",
+                  "type": "Phone",
+                  "value": "011 15-5555-4521",
+                  "isPrimary": false,
+                  "isVerified": false,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/me/login-methods",
+            "body": {
+              "code": "Identity.LoginMethod.AlreadyUsed",
+              "detail": "Ese correo ya está asociado a otra cuenta.",
+              "traceId": "capture",
+              "errors": {
+                "email": [
+                  "Ese correo ya está asociado a otra cuenta."
+                ]
+              }
+            },
+            "status": 400
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Agregar correo"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo",
+            "value": "beto.ramirez@beta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "readySelector": "[role=\"dialog\"]",
+        "readyText": "Ese correo ya está asociado a otra cuenta."
+      }
+    },
+    {
+      "id": "agregar-correo-otra-cuenta-movil",
+      "pair": "agregar-correo-otra-cuenta",
+      "group": "cuenta",
+      "state": "Correo: ya es de otra cuenta",
+      "board": "M-Cuenta-Agregar",
+      "props": {
+        "estado": "Correo: ya es de otra cuenta"
+      },
+      "boardActions": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "app": {
+        "path": "/src/test/visualApp.html?as=visual-personal&route=%2Fcuenta",
+        "captureMode": "harness",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/me",
+            "body": {
+              "id": "lucia",
+              "displayName": "Lucía Fernández",
+              "email": "lucia.fer@gmail.com",
+              "access": "consumer",
+              "activeTenantId": null,
+              "hasPersonalSpace": true,
+              "organizations": [
+                {
+                  "id": "grupo-delta",
+                  "name": "Grupo Delta",
+                  "roleName": "Dueño",
+                  "status": "Active",
+                  "memberStatus": "Active",
+                  "isSelectable": true
+                },
+                {
+                  "id": "beta",
+                  "name": "Beta S.R.L.",
+                  "roleName": "Miembro",
+                  "status": "Suspended",
+                  "memberStatus": "Active",
+                  "isSelectable": false
+                }
+              ],
+              "effectivePermissions": {
+                "organization": [],
+                "companies": {}
+              },
+              "features": [],
+              "permissions": [],
+              "culture": "es-AR",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "currencyCode": "ARS",
+              "version": 42,
+              "needsPersonalLoginMethod": false,
+              "pendingLegalDocuments": []
+            },
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/me/login-methods",
+            "body": {
+              "methods": [
+                {
+                  "id": "2",
+                  "type": "Email",
+                  "value": "lucia.fer@gmail.com",
+                  "isPrimary": true,
+                  "isVerified": true,
+                  "canRemove": false,
+                  "canMakePrimary": false
+                },
+                {
+                  "id": "1",
+                  "type": "Email",
+                  "value": "lucia.fernandez@delta.ejemplo.com",
+                  "isPrimary": false,
+                  "isVerified": true,
+                  "managedByTenantId": "grupo-delta",
+                  "managedByOrganizationName": "Grupo Delta",
+                  "canRemove": true,
+                  "canMakePrimary": true
+                },
+                {
+                  "id": "3",
+                  "type": "Phone",
+                  "value": "011 15-5555-4521",
+                  "isPrimary": false,
+                  "isVerified": false,
+                  "canRemove": true,
+                  "canMakePrimary": false
+                }
+              ],
+              "canLinkGoogle": true,
+              "needsPersonalLoginMethod": false,
+              "accountDeletionGraceDays": 30,
+              "soleOwnerOrganizations": []
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/me/login-methods",
+            "body": {
+              "code": "Identity.LoginMethod.AlreadyUsed",
+              "detail": "Ese correo ya está asociado a otra cuenta.",
+              "traceId": "capture",
+              "errors": {
+                "email": [
+                  "Ese correo ya está asociado a otra cuenta."
+                ]
+              }
+            },
+            "status": 400
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Agregar"
+          },
+          {
+            "type": "fill",
+            "role": "textbox",
+            "name": "Correo",
+            "value": "beto.ramirez@beta.ejemplo.com"
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Enviar código"
+          }
+        ],
+        "readySelector": "[role=\"dialog\"]",
+        "readyText": "Ese correo ya está asociado a otra cuenta."
+      }
+    },
+    {
       "id": "registro-correo-escritorio",
       "pair": "registro-correo",
       "group": "registro",
