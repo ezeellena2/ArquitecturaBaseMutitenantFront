@@ -51,6 +51,9 @@ export default defineConfig(({ mode }) => ({
     alias: { "@": path.resolve(import.meta.dirname, "./src") },
   },
   server: {
+    // El recorrido genera HTML/capturas mientras navega. HMR y la optimización de dependencias
+    // pueden recargar la pestaña en medio del ingreso o logout; en el E2E se conserva la navegación.
+    hmr: process.env.MT_E2E_ISOLATED === "1" ? false : undefined,
     // localtest.me y sus subdominios resuelven a IPv4; localhost puede enlazarse sólo a ::1 en Windows.
     host: "127.0.0.1",
     port: Number(process.env.PORT ?? 5174),
