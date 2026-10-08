@@ -111,7 +111,11 @@ async function receive(path: string, init: RequestInit, allowNotModified = false
 
   // Solo transporta: qué pantalla muestra un 403 lo decide la consulta que lo pidió (queryClient).
   if (!response.ok && !(allowNotModified && response.status === 304)) {
-    throw new ApiError(response.status, await readProblem(response));
+    const problem = await readProblem(response);
+    const retryAfter = response.headers.get("retry-after");
+    const seconds = retryAfter && /^\d+$/.test(retryAfter) ? Number(retryAfter) : undefined;
+    throw new ApiError(response.status, typeof seconds === "number" && Number.isFinite(seconds)
+      ? { ...problem, retryAfter: seconds } : problem);
   }
 
   return response;

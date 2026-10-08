@@ -11,6 +11,7 @@ interface CountrySelectProps {
   placeholder: string;
   id?: string;
   disabled?: boolean;
+  busy?: boolean;
   allowedCountries?: readonly string[];
   /** Lo que muestra el control para el país elegido; el teléfono muestra «AR +54». */
   renderValue?: (country: CountryReference) => ReactNode;
@@ -24,7 +25,7 @@ function countryLabel(country: CountryReference): string {
 }
 
 /** Países seleccionables, con bandera y prefijo telefónico cuando existe. Se busca por nombre, código o prefijo. */
-export function CountrySelect({ value, onChange, placeholder, id, disabled, allowedCountries, renderValue, className,
+export function CountrySelect({ value, onChange, placeholder, id, disabled, busy, allowedCountries, renderValue, className,
   "aria-invalid": invalid, "aria-describedby": describedBy }: CountrySelectProps) {
   const { t } = useTranslation();
   const { data, isPending, isError } = useReferenceData();
@@ -46,9 +47,9 @@ export function CountrySelect({ value, onChange, placeholder, id, disabled, allo
     : undefined;
 
   return <SearchSelect id={id} options={options} value={value} onChange={onChange} className={className}
-    placeholder={isPending ? t("states.loading") : isError ? t("states.error") : placeholder}
-    searchLabel={t("fields.searchCountry")} title={t("fields.country")} selectedLabel={selected ? countryLabel(selected) : undefined}
+    placeholder={isPending || busy ? t("states.loading") : isError ? t("states.error") : placeholder}
+    searchLabel={t("fields.searchCountry")} title={t("fields.country")} selectedLabel={selected ? (renderValue?.(selected) ?? countryLabel(selected)) : undefined}
     renderValue={() => (selected ? (renderValue?.(selected) ?? countryLabel(selected)) : null)}
-    disabled={disabled || !data} busy={isPending} aria-label={selectedLabel}
+    disabled={disabled || !data} busy={isPending || busy} aria-label={selectedLabel}
     aria-invalid={invalid} aria-describedby={describedBy} />;
 }

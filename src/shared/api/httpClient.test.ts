@@ -119,6 +119,15 @@ describe("httpClient", () => {
     expect(page.totalCount).toBe(1);
   });
 
+  it("transporta Retry-After aunque el error de teléfono no lo repita en el cuerpo", async () => {
+    server.use(http.post("/api/test-client", () => HttpResponse.json({
+      code: "Http.TooManyRequests", errors: { phone: ["Esperá un momento."] },
+    }, { status: 429, headers: { "Retry-After": "35" } })));
+    await expect(api.post("/api/test-client", {})).rejects.toMatchObject({
+      retryAfterSeconds: 35, errors: { phone: ["Esperá un momento."] },
+    });
+  });
+
   it("devuelve el 401 como ApiError si todavía no hay Auth", async () => {
     server.use(http.get("/api/protected", () => HttpResponse.json({
       code: "Http.Unauthorized", detail: "Ingresá de nuevo.", traceId: "trace-401",

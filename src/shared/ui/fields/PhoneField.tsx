@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next";
+import { useLoginChannels } from "@/shared/account/useLoginChannels";
+import type { PhoneDraft } from "@/shared/api/types";
 import { useFormat } from "@/shared/format/useFormat";
 import { CountryFlag } from "@/shared/phone/CountryFlag";
 import { phoneCountryOptions } from "@/shared/phone/countries";
@@ -6,16 +8,14 @@ import { formatPhoneDraft } from "@/shared/phone/phoneInput";
 import { Input } from "../input";
 import { CountrySelect } from "./CountrySelect";
 
-export interface PhoneDraft {
-  country: string;
-  number: string;
-}
+export type { PhoneDraft } from "@/shared/api/types";
 
 interface PhoneFieldProps {
   value: PhoneDraft | null;
   onChange: (value: PhoneDraft | null) => void;
   onValidityChange?: (isValid: boolean) => void;
   allowedCountries?: readonly string[];
+  usage?: "whatsapp" | "mobile" | "any";
   id?: string;
   name?: string;
   disabled?: boolean;
@@ -25,15 +25,21 @@ interface PhoneFieldProps {
 }
 
 /** Selector accesible y número nacional; el backend hace la normalización definitiva. */
-export function PhoneField({ value, onChange, onValidityChange, allowedCountries,
+export function PhoneField({ value, onChange, onValidityChange, allowedCountries, usage = "any",
   id, name, disabled, required, "aria-invalid": invalid, "aria-describedby": describedBy }: PhoneFieldProps) {
   const { t } = useTranslation();
   const format = useFormat();
   const data = format.referenceData;
-  const countries = phoneCountryOptions(data?.countries ?? [], "", allowedCountries);
+  const channels = useLoginChannels(usage === "whatsapp");
+  const channelCountries = usage === "whatsapp"
+    ? channels.data?.channels.find((channel) => channel.key === "whatsapp")?.countries ?? []
+    : undefined;
+  const permitted = channelCountries?.filter((code) => !allowedCountries || allowedCountries.includes(code)) ?? allowedCountries;
+  const countries = phoneCountryOptions(data?.countries ?? [], "", permitted);
   const cultureCountry = data?.cultures.find((item) => item.code === format.culture)?.countryCode;
   const country = value?.country || countries.find((item) => item.code === cultureCountry)?.code || countries[0]?.code || "";
-  const unavailable = disabled || format.isLoading || countries.length === 0;
+  const loading = format.isLoading || (usage === "whatsapp" && channels.isPending);
+  const unavailable = disabled || loading || countries.length === 0;
   const liveInvalid = value?.number ? !formatPhoneDraft(value.number, country, countries).isValid : false;
 
   function changeNumber(raw: string) {
@@ -54,7 +60,7 @@ export function PhoneField({ value, onChange, onValidityChange, allowedCountries
           compu y de 124 en el teléfono (lienzo v99); la lista muestra la bandera y el nombre entero. */}
       <div className="w-[112px] shrink-0 max-md:w-[124px]">
         <CountrySelect value={country} onChange={changeCountry} allowedCountries={countries.map((item) => item.code)}
-          placeholder={t("phone.country", { country: "" })} disabled={unavailable}
+          placeholder={t("phone.country", { country: "" })} disabled={unavailable} busy={loading}
           renderValue={(selected) => <span className="inline-flex items-center gap-1.5">
             <CountryFlag countryCode={selected.code} title={selected.name} className="h-4 w-6 shrink-0" />
             {selected.callingCode ? `+${selected.callingCode}` : selected.code}
@@ -62,7 +68,7 @@ export function PhoneField({ value, onChange, onValidityChange, allowedCountries
       </div>
       <Input id={id} name={name} type="tel" autoComplete="tel-national" inputMode="tel"
         value={value?.number ?? ""} onChange={(event) => changeNumber(event.target.value)}
-        disabled={unavailable} required={required} aria-busy={format.isLoading}
+        disabled={unavailable} required={required} aria-busy={loading}
         aria-invalid={invalid || liveInvalid || undefined} aria-describedby={describedBy} />
     </div>
   );

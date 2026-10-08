@@ -12,11 +12,11 @@ import { AppChromeProvider } from "../app/AppChrome";
 import { FormField } from "../FormField";
 import { PhoneField, type PhoneDraft } from "./PhoneField";
 
-function renderField(props: { allowedCountries?: readonly string[] } = {}, { phone = false } = {}) {
+function renderField(props: { allowedCountries?: readonly string[]; usage?: "whatsapp" | "mobile" | "any"; initialValue?: PhoneDraft } = {}, { phone = false } = {}) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   const onValidityChange = vi.fn();
   function Harness() {
-    const [value, setValue] = useState<PhoneDraft | null>(null);
+    const [value, setValue] = useState<PhoneDraft | null>(props.initialValue ?? null);
     return (
       <FormatProvider>
         <FormField label="Teléfono" hint="Para avisos de la cuenta">
@@ -108,5 +108,73 @@ describe("PhoneField", () => {
     fireEvent.change(input, { target: { value: "11 2" } });
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(onValidityChange).toHaveBeenLastCalledWith(false);
+  });
+
+  it("WhatsApp espera la capacidad y cruza sus países con los nombres y prefijos del catálogo", async () => {
+    let release: (() => void) | undefined;
+    server.use(http.get("/api/auth/methods", async () => {
+      await new Promise<void>((resolve) => { release = resolve; });
+      return HttpResponse.json({ channels: [{ key: "whatsapp", countries: ["UY", "ZZ"] }] });
+    }));
+    renderField({ usage: "whatsapp" });
+    const input = screen.getByRole("textbox", { name: "Teléfono" });
+    expect(input).toBeDisabled();
+    await waitFor(() => expect(release).toBeDefined());
+    release?.();
+    await waitFor(() => expect(input).toBeEnabled());
+    const selector = screen.getByRole("combobox", { name: "País: Uruguay, +598" });
+    selector.focus();
+    await userEvent.setup().keyboard("{Enter}");
+    expect(screen.getAllByRole("option").map((item) => item.textContent)).toEqual(["Uruguay +598"]);
+    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+  });
+
+  it("sin canal WhatsApp no permite cargar un teléfono aunque el catálogo tenga países", async () => {
+    server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }] })));
+    renderField({ usage: "whatsapp" });
+    await waitFor(() => expect(screen.getByRole("combobox")).not.toHaveAttribute("aria-busy", "true"));
+    expect(screen.getByRole("textbox", { name: "Teléfono" })).toBeDisabled();
+    expect(screen.getByRole("combobox")).toBeDisabled();
+  });
+
+  it("conserva visible un país guardado retirado del canal, sin ofrecerlo como opción nueva", async () => {
+    server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "whatsapp", countries: ["UY"] }] })));
+    renderField({ usage: "whatsapp", initialValue: { country: "AR", number: "11 2345-6789" } });
+    const selector = await screen.findByRole("combobox", { name: "País: Argentina, +54" });
+    await waitFor(() => expect(selector).toBeEnabled());
+    expect(selector).toHaveTextContent(/^\+54$/);
+    expect(await within(selector).findByRole("img", { name: "Argentina" })).toBeVisible();
+    selector.focus();
+    await userEvent.setup().keyboard("{Enter}");
+    expect(screen.queryByRole("option", { name: "Argentina +54" })).not.toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Uruguay +598" })).toBeVisible();
+  });
+
+  it.each([10, 11])("WhatsApp con %i países muestra buscador sólo al superar diez", async (count) => {
+    const fixture = referenceDataFixture();
+    const countries = [
+      ["AR", "Argentina", "54"], ["UY", "Uruguay", "598"], ["US", "Estados Unidos", "1"],
+      ["BR", "Brasil", "55"], ["CL", "Chile", "56"], ["MX", "México", "52"],
+      ["ES", "España", "34"], ["FR", "Francia", "33"], ["DE", "Alemania", "49"],
+      ["GB", "Reino Unido", "44"], ["CA", "Canadá", "1"],
+    ].slice(0, count).map(([code, name, callingCode], index) => ({ ...fixture.countries[0], code, name, callingCode, sortOrder: index }));
+    server.use(
+      http.get("/api/reference-data", () => HttpResponse.json({ ...fixture, countries })),
+      http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "whatsapp", countries: countries.map((item) => item.code) }] })),
+    );
+    renderField({ usage: "whatsapp" });
+    const selector = await screen.findByRole("combobox", { name: "País: Argentina, +54" });
+    await waitFor(() => expect(selector).toBeEnabled());
+    selector.focus();
+    const user = userEvent.setup();
+    await user.keyboard("{Enter}");
+    expect(screen.getAllByRole("option")).toHaveLength(count);
+    if (count === 10) expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+    else {
+      const search = screen.getByRole("searchbox", { name: "Buscar país" });
+      await user.type(search, "+598");
+      expect(screen.getAllByRole("option").map((item) => item.textContent)).toEqual(["Uruguay +598"]);
+      expect(selector).toHaveTextContent("+54");
+    }
   });
 });

@@ -1,12 +1,13 @@
 import { api } from "@/shared/api/httpClient";
 import { accountPaths, methodPath } from "@/shared/api/accountContract";
-import type { AccountLoginMethodsResponse, AddLoginEmailRequest, LoginMethodCodeResponse,
+import type { AccountLoginMethodsResponse, AddLoginMethodRequest, LoginMethodCodeResponse,
   VerifyLoginMethodRequest, GoogleChallengeResponse, GoogleSignupAntiforgeryResponse } from "@/shared/api/types";
 
 export const accountMethodsQueryKey = ["account-login-methods"] as const;
 export const fetchLoginMethods = () => api.get<AccountLoginMethodsResponse>(accountPaths.methods);
-export const addLoginEmail = (request: AddLoginEmailRequest, key: string) =>
+export const addLoginMethod = (request: AddLoginMethodRequest, key: string) =>
   api.post<LoginMethodCodeResponse>(accountPaths.methods, request, { headers: { "Idempotency-Key": key } });
+export const addLoginEmail = addLoginMethod;
 export const sendLoginMethodCode = (id: string, key: string) =>
   api.post<LoginMethodCodeResponse>(methodPath(accountPaths.methodCode, id), undefined, { headers: { "Idempotency-Key": key } });
 export const verifyLoginMethod = (id: string, request: VerifyLoginMethodRequest, key: string) =>

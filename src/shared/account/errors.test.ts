@@ -10,6 +10,10 @@ describe("loginMethodErrorField", () => {
     expect(loginMethodErrorField(rejected("Auth.LoginCode.Invalid"))).toBe("code");
   });
 
+  it.each(["Users.Phone.Invalid", "Users.Phone.NotMobile", "WhatsApp.Phone.CountryNotAllowed", "Identity.LoginMethod.PhoneAlreadyUsed"])("%s va bajo el teléfono", (code) => {
+    expect(loginMethodErrorField(rejected(code))).toBe("phone");
+  });
+
   it("el código vencido, el ya usado, los intentos agotados y lo que no es del back no tienen campo", () => {
     expect(loginMethodErrorField(rejected("Auth.LoginCode.Expired"))).toBeNull();
     expect(loginMethodErrorField(rejected("Auth.LoginCode.AlreadyUsed"))).toBeNull();

@@ -12,6 +12,10 @@ export type VersionResponse = ApiSchemas["VersionResponse"];
 export type LoginMethodsResponse = ApiSchemas["LoginMethodsResponse"];
 export type LoginChannelAvailability = ApiSchemas["LoginChannelAvailability"];
 export type PhoneInputRequest = ApiSchemas["PhoneInputHttpRequest"];
+export type PhoneDraft = Required<{ [Key in keyof PhoneInputRequest]: NonNullable<PhoneInputRequest[Key]> }>;
+export type LoginDestination = { type: "email"; email: string } | { type: "phone"; phone: PhoneDraft };
+export type LoginDestinationRequest = { email: string; phone?: never; channel?: "email" }
+  | { phone: PhoneDraft; email?: never; channel: "whatsapp" };
 export type RequestLoginCodeRequest = ApiSchemas["RequestLoginCodeHttpRequest"];
 export type PreviewLoginLinkRequest = ApiSchemas["PreviewLoginLinkHttpRequest"];
 export type LoginLinkPreviewResponse = ApiSchemas["LoginLinkPreviewResponse"];

@@ -29,7 +29,7 @@ interface SearchSelectProps {
   /** Nombre del buscador, que aparece con más de 10 opciones. */
   searchLabel: string;
   /** El texto del control cuando el valor no está entre las opciones (por ejemplo, una zona ya deshabilitada). */
-  selectedLabel?: string;
+  selectedLabel?: ReactNode;
   /** Lo que muestra el control para la opción elegida, si no es su nombre (el teléfono muestra «AR +54»). */
   renderValue?: (option: SearchSelectOption) => ReactNode;
   /** El título de la hoja en el teléfono, si el control no tiene rótulo propio (el país de un teléfono). */
