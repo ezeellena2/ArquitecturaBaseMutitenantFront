@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { chromium } from "playwright";
-import { journeyDate, renderIndex, recordedStep, safeDiagnostic, signOutMobile, waitCodeMessage, withCleanup } from "./recorrido-usuario.mjs";
+import { journeyDate, renderIndex, recordedStep, safeDiagnostic, signOutMobile, waitCodeMessage, waitForTransientNotices, withCleanup } from "./recorrido-usuario.mjs";
 
 test("la carpeta usa la fecha de Buenos Aires aunque UTC ya sea el día siguiente", () => {
   assert.equal(journeyDate(new Date("2026-10-08T01:30:00Z")), "2026-10-07");
@@ -81,5 +81,23 @@ test("la salida móvil usa Volver a Más desde Mi cuenta, que no tiene barra de 
       await signOutMobile(page);
       assert.equal(await page.locator("body").getAttribute("data-signed-out"), "true");
     }
+  } finally { await browser.close(); }
+});
+
+test("la captura espera todos los avisos transitorios y conserva el error persistente", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    page.setDefaultTimeout(500);
+    await page.setContent('<div data-sonner-toast data-type="success">Guardamos</div><div data-sonner-toast data-type="info">Agregamos</div><div data-sonner-toast data-type="error">Error persistente</div>');
+    await page.evaluate(() => {
+      document.addEventListener("mousemove", () => requestAnimationFrame(() => {
+        document.querySelector('[data-type="success"]').remove();
+        requestAnimationFrame(() => document.querySelector('[data-type="info"]').remove());
+      }), { once: true });
+    });
+    await waitForTransientNotices(page);
+    assert.equal(await page.locator('[data-sonner-toast]:not([data-type="error"])').count(), 0);
+    assert.equal(await page.locator('[data-sonner-toast][data-type="error"]').innerText(), "Error persistente");
   } finally { await browser.close(); }
 });

@@ -72,6 +72,12 @@ export async function signOutMobile(page) {
   await page.getByRole("button", { name: "Salir", exact: true }).click();
 }
 
+export async function waitForTransientNotices(page) {
+  // Sonner pausa su vencimiento mientras el puntero queda sobre la franja del último clic.
+  await page.mouse.move(0, 0);
+  await page.locator('[data-sonner-toast]:not([data-type="error"]):not([data-type="loading"])').first().waitFor({ state: "detached" });
+}
+
 const definitions = [
   ["01", "1 · Persona sin cuenta", "Desde la portada, Ingresá rechaza el correo desconocido y ofrece Crear mi cuenta sin enviar código."],
   ["02", "1 · Registro desde el ingreso", "El correo viene escrito; aceptar términos y verificar el .eml lleva al inicio Personal."],
@@ -340,7 +346,7 @@ async function runWidth({ width, context, env, record, output, signal }) {
     assert.equal((await verify(page, await requestCode(page, email))).status(), 200);
     await awaitApp(page);
     await platformPage.reload(); await heading("Organizaciones", platformPage);
-    await platformPage.screenshot({ path: path.join(output, `12-plataforma-${width}.png`), fullPage: true });
+    await platformPage.screenshot({ path: path.join(output, `12-plataforma-${width}.png`), fullPage: true, animations: "disabled" });
     return "La segunda pestaña ingresó a Personal; Plataforma siguió abierta tras F5, sin nuevo código.";
   });
   await step("13", async () => {
@@ -587,8 +593,10 @@ export async function main({ build = true } = {}) {
         console.info(`Paso ${activeStep}: ${entry.title}`);
         await recordedStep({ result, action, diagnostic, persist, capture: async () => {
           const page = getPage();
+          await waitForTransientNotices(page);
           const image = `${id}-${width}.png`;
           await page.screenshot({ path: path.join(output, image), fullPage: true,
+            animations: "disabled",
             maskColor: "#d9d4ca", mask: [page.locator('input[autocomplete="one-time-code"], [role="group"][aria-label="Código"] input')] });
           if (id === "12") result.extraImage = `${id}-plataforma-${width}.png`;
           return image;
