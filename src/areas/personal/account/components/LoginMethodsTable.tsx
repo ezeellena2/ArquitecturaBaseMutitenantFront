@@ -4,8 +4,11 @@ import { useTranslation } from "react-i18next";
 import googleMark from "@/assets/google-mark.svg";
 import type { AccountLoginMethod } from "@/shared/api/types";
 import { Button } from "@/shared/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
-import { MailIcon, MoreVerticalIcon } from "@/shared/ui/icons";
+import { RowActions } from "@/shared/ui/RowActions";
+import { PhoneText } from "@/shared/ui/format/PhoneText";
+import { useFormat } from "@/shared/format/useFormat";
+import { useHasLoginChannel } from "@/shared/account/useLoginChannels";
+import { MailIcon, WhatsAppIcon } from "@/shared/ui/icons";
 import { List, ListItem } from "@/shared/ui/List";
 import { StatusDotMark } from "@/shared/ui/StatusDot";
 import { AccountGoogleButton } from "./AccountGoogleButton";
@@ -14,11 +17,11 @@ export type MethodAction = "verify" | "remove" | "primary";
 interface Props {
   methods: readonly AccountLoginMethod[];
   canLinkGoogle?: boolean;
-  onAction: (action: MethodAction, method: AccountLoginMethod) => void;
+  onAction: (action: MethodAction, method: AccountLoginMethod, trigger?: HTMLButtonElement | null) => void;
 }
 
 function MethodIcon({ method }: { method: AccountLoginMethod }) {
-  return method.type === "Google" ? <img src={googleMark} width="16" height="16" alt="" aria-hidden="true" /> : <MailIcon className="size-4" />;
+  return method.type === "Google" ? <img src={googleMark} width="16" height="16" alt="" aria-hidden="true" /> : method.type === "Phone" ? <WhatsAppIcon className="size-4" /> : <MailIcon className="size-4" />;
 }
 
 /// Tableros Cuenta y Cuenta-Metodo: debajo del dato, «Principal» y «Administrado por…» (las dos, si son las dos), «Sin
@@ -38,27 +41,20 @@ function methodDetail(method: AccountLoginMethod, t: (key: string, options?: Rec
 
 function MethodMenu({ method, onAction }: { method: AccountLoginMethod; onAction: Props["onAction"] }) {
   const { t } = useTranslation("account");
-  return <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      {/* Tableros Cuenta (el ⋮ de 16, gris medio) y M-Cuenta (.ap-it .ap-ib: de 20, casi negro, en un botón de 44, así la
-          fila mide 60). */}
-      <button type="button" aria-label={t("actionsFor", { value: method.value })} className="inline-flex size-8 shrink-0 items-center justify-center rounded-[8px] text-[var(--t2)] hover:bg-[var(--s3)] max-md:size-11 max-md:rounded-full max-md:text-[var(--t1)]">
-        <MoreVerticalIcon className="size-4 max-md:size-5" />
-      </button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent align="end">
-      {method.canMakePrimary ? <DropdownMenuItem onSelect={() => onAction("primary", method)}><Star size={16} />{t("makePrimary")}</DropdownMenuItem> : null}
-      {method.canMakePrimary && method.canRemove ? <DropdownMenuSeparator /> : null}
-      {method.canRemove ? <DropdownMenuItem variant="destructive" onSelect={() => onAction("remove", method)}><Trash2 size={16} />{t(method.type === "Google" ? "unlink" : "remove")}</DropdownMenuItem> : null}
-    </DropdownMenuContent>
-  </DropdownMenu>;
+  const format = useFormat();
+  const value = method.type === "Phone" ? format.formatPhone(method.value ?? "") : method.value;
+  return <RowActions label={t("actionsFor", { value })} title={method.type === "Google" ? t("google") : value ?? undefined} actions={[
+    { label: t("makePrimary"), accessibleName: t("makePrimary"), icon: Star, hidden: !method.canMakePrimary, onSelect: (trigger) => onAction("primary", method, trigger) },
+    { label: t(method.type === "Google" ? "unlink" : "remove"), accessibleName: t(method.type === "Google" ? "unlink" : "remove"), icon: Trash2, destructive: true, hidden: !method.canRemove, onSelect: (trigger) => onAction("remove", method, trigger) },
+  ]} />;
 }
 
 export function LoginMethodsTable({ methods, canLinkGoogle = false, onAction }: Props) {
   const { t } = useTranslation("account");
-  const visible = methods.filter((method) => method.type !== "Phone");
+  const whatsApp = useHasLoginChannel("whatsapp");
+  const visible = methods.filter((method) => method.type !== "Phone" || whatsApp);
   return <List label={t("methods")}>
-    {visible.map((method) => <ListItem key={method.id} className="min-h-14" icon={<MethodIcon method={method} />} title={method.type === "Google" ? t("google") : method.value} detail={methodDetail(method, t)}>
+    {visible.map((method) => <ListItem key={method.id} className="min-h-14" icon={<MethodIcon method={method} />} title={method.type === "Google" ? t("google") : method.type === "Phone" ? <PhoneText value={method.value} /> : method.value} detail={methodDetail(method, t)}>
       {/* Cuenta (.cb-enl de 13) y M-Cuenta (.acc-t de 15, como «Vincular»). */}
       {!method.isVerified ? <Button type="button" variant="link" size="sm" className="px-1 text-[13px] max-md:text-[15px]" onClick={() => onAction("verify", method)}>{t("verify")}</Button> : null}
       {method.canMakePrimary || method.canRemove ? <MethodMenu method={method} onAction={onAction} /> : null}

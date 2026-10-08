@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { configureI18n, changeCulture } from "@/shared/i18n";
@@ -6,6 +6,12 @@ import { referenceDataFixture } from "@/test/mocks/handlers";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import type { AccountLoginMethod } from "@/shared/api/types";
 import { LoginMethodsTable } from "./LoginMethodsTable";
+import { useState } from "react";
+import { HttpResponse, http } from "msw";
+import { server } from "@/test/mocks/server";
+import { AppChromeProvider } from "@/shared/ui/app/AppChrome";
+import { ChangeLoginMethodDialog } from "@/shared/account/ChangeLoginMethodDialog";
+import { axe } from "vitest-axe";
 
 beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); });
 const method: AccountLoginMethod = { id: "only", type: "Email", value: "ana@example.test", isVerified: true, isPrimary: true, canRemove: false, canMakePrimary: false };
@@ -34,14 +40,14 @@ describe("métodos de cuenta", () => {
     // Tableros Cuenta (el ⋮ de 16, gris medio) y M-Cuenta (.ap-it .ap-ib: de 20, casi negro, en un botón de 44, y la fila de
     // 60); es el ⋮ del set, con los puntos rellenos.
     const kebab = screen.getByRole("button", { name: "Acciones de ana@delta.ejemplo.com" });
-    expect(kebab).toHaveClass("size-8", "text-[var(--t2)]", "max-md:size-11", "max-md:rounded-full", "max-md:text-[var(--t1)]");
-    expect(kebab.querySelector("svg")).toHaveClass("size-4", "max-md:size-5");
+    expect(kebab).toHaveClass("size-8", "text-[var(--t3)]", "max-md:size-11", "max-md:rounded-full", "max-md:text-[var(--t1)]");
+    expect(kebab.querySelector("svg")).toHaveClass("size-[18px]", "max-md:size-5");
     expect(kebab.querySelectorAll("svg circle[fill='currentColor']")).toHaveLength(3);
     await user.click(screen.getByRole("button", { name: "Acciones de ana@delta.ejemplo.com" }));
     expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Hacer principal", "Quitar"]);
     expect(screen.getByRole("separator")).toBeInTheDocument();
     await user.click(screen.getByRole("menuitem", { name: "Hacer principal" }));
-    expect(onAction).toHaveBeenCalledWith("primary", managed);
+    expect(onAction).toHaveBeenCalledWith("primary", managed, kebab);
   });
 
   // Tableros Cuenta y Cuenta-Metodo: un método verificado no dice «Verificado» (solo «Principal» o «Administrado por…», o
@@ -89,4 +95,52 @@ describe("métodos de cuenta", () => {
     expect(within(row).getByRole("button", { name: "Vincular Google" })).toHaveClass("h-8", "text-[13px]");
     expect(within(row).getByRole("button", { name: "Vincular Google" })).not.toHaveClass("h-7", "text-[12.5px]");
   });
+});
+
+const phoneMethod: AccountLoginMethod = { ...method, id: "phone", type: "Phone", value: "+5491155554521", isPrimary: false, canMakePrimary: true, canRemove: true };
+
+it("sólo muestra Phone con capacidad disponible y usa el formato central", async () => {
+  let allow: (() => void) | undefined;
+  server.use(http.get("/api/auth/methods", async () => { await new Promise<void>((resolve) => { allow = resolve; }); return HttpResponse.json({ channels: [{ key: "whatsapp", countries: ["AR"] }] }); }));
+  renderWithProviders(<LoginMethodsTable methods={[method, phoneMethod]} onAction={vi.fn()} />);
+  expect(screen.getAllByRole("listitem")).toHaveLength(1);
+  await waitFor(() => expect(allow).toBeDefined()); allow!();
+  expect(await screen.findByText("011 15-5555-4521")).toBeVisible();
+  expect(screen.queryByText("+5491155554521")).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Cambiar número" })).not.toBeInTheDocument();
+});
+
+it("con capacidad apagada omite Phone sin romper Email/Google", async () => {
+  renderWithProviders(<LoginMethodsTable methods={[method, phoneMethod, { ...method, id: "google", type: "Google" }]} onAction={vi.fn()} />);
+  expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  expect(screen.getByText("Google")).toBeVisible();
+  expect(screen.queryByText("011 15-5555-4521")).not.toBeInTheDocument();
+});
+
+function MethodFlow({ phone }: { phone: boolean }) {
+  const [change, setChange] = useState<{ action: "remove" | "primary"; returnFocus?: HTMLButtonElement | null } | null>(null);
+  return <AppChromeProvider value={{ phone, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+    <LoginMethodsTable methods={[phoneMethod]} onAction={(action, _, returnFocus) => { if (action !== "verify") setChange({ action, returnFocus }); }} />
+    {change ? <ChangeLoginMethodDialog {...change} method={phoneMethod} onClose={() => setChange(null)} /> : null}
+  </AppChromeProvider>;
+}
+
+it.each([false, true])("menú Phone y confirmación devuelven el foco a ⋮ (móvil=%s)", async (phone) => {
+  const user = userEvent.setup();
+  server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "whatsapp", countries: ["AR"] }] })));
+  renderWithProviders(<MethodFlow phone={phone} />);
+  const trigger = await screen.findByRole("button", { name: "Acciones de 011 15-5555-4521" });
+  trigger.focus();
+  await user.keyboard("{Enter}");
+  if (phone) {
+    expect(screen.getByRole("dialog", { name: "011 15-5555-4521" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Cerrar" })).not.toBeInTheDocument();
+  }
+  await user.click(await screen.findByRole("menuitem", { name: "Quitar" }));
+  const confirmation = await screen.findByRole("dialog", { name: "¿Quitar este WhatsApp?" });
+  expect(screen.getAllByRole("dialog")).toHaveLength(1);
+  expect(await axe(confirmation)).toHaveNoViolations();
+  expect(screen.queryByRole("group", { name: "Código" })).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Cancelar" }));
+  await waitFor(() => expect(trigger).toHaveFocus());
 });

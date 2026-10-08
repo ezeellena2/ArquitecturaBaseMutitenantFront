@@ -312,3 +312,48 @@ describe("Mi cuenta y el módulo de WhatsApp", () => {
     expect(within(signIn).queryByRole("button", { name: "Agregar correo o teléfono" })).not.toBeInTheDocument();
   });
 });
+
+it.each(["consumer-empty", "business-admin", "platform-operator"] as const)("Phone comparte Mi cuenta como %s sin preparar perfil personal", async (access) => {
+  const user = userEvent.setup();
+  const sent: string[] = [];
+  const track = ({ request }: { request: Request }) => { if (request.method !== "GET") sent.push(new URL(request.url).pathname); };
+  server.events.on("request:start", track);
+  try {
+    server.use(
+      http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "whatsapp", countries: ["AR"] }] })),
+      http.get("/api/me/login-methods", () => HttpResponse.json({ methods: [{ id: "phone", type: "Phone", value: "+5491155554521", isVerified: true, isPrimary: true, canRemove: false, canMakePrimary: false }], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] })),
+    );
+    const { router } = renderRouteWithProviders("/cuenta", { as: access });
+    expect(await screen.findByText("011 15-5555-4521")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Acciones de 011 15-5555-4521" })).not.toBeInTheDocument();
+    await user.click(await screen.findByRole("button", { name: "Agregar correo o teléfono" }));
+    await user.click(await screen.findByRole("button", { name: "WhatsApp" }));
+    expect(screen.getByRole("textbox", { name: "Número" })).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Cancelar" }));
+    expect(router.state.location.pathname).toBe("/cuenta");
+    expect(sent).toEqual([]);
+    expect(screen.getByRole("textbox", { name: "Nombre" })).toBeVisible();
+    expect(screen.getByRole("textbox", { name: "Apellido" })).toBeVisible();
+  } finally { server.events.removeListener("request:start", track); }
+});
+
+it("quitar Phone principal relee la transferencia autoritativa al método restante sin código", async () => {
+  const user = userEvent.setup(); let removed = false;
+  server.use(
+    http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "whatsapp", countries: ["AR"] }] })),
+    http.get("/api/me/login-methods", () => HttpResponse.json({ methods: [
+      ...(!removed ? [{ id: "phone", type: "Phone", value: "+5491155554521", isVerified: true, isPrimary: true, canRemove: true, canMakePrimary: false }] : []),
+      { id: "email", type: "Email", value: "ana@example.test", isVerified: true, isPrimary: removed, canRemove: !removed, canMakePrimary: !removed },
+    ], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] })),
+    http.delete("/api/me/login-methods/phone", () => { removed = true; return new HttpResponse(null, { status: 204 }); }),
+  );
+  renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+  const trigger = await screen.findByRole("button", { name: "Acciones de 011 15-5555-4521" }); trigger.focus(); await user.keyboard("{Enter}");
+  await user.click(await screen.findByRole("menuitem", { name: "Quitar" }));
+  expect(screen.queryByRole("group", { name: "Código" })).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Quitar" }));
+  await waitFor(() => expect(screen.queryByText("011 15-5555-4521")).not.toBeInTheDocument());
+  const row = within(screen.getByRole("list", { name: "Cómo entrás" })).getByRole("listitem");
+  expect(row).toHaveTextContent("ana@example.testPrincipal");
+  expect(within(row).queryByRole("button")).not.toBeInTheDocument();
+});

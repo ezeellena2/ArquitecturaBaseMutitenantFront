@@ -430,6 +430,14 @@ export function MapPinIcon(props: IconProps) {
   );
 }
 
+/// La marca de WhatsApp de Cuenta/Cuenta-Metodo del lienzo; el texto de la fila da el nombre accesible.
+export function WhatsAppIcon(props: IconProps) {
+  return <Icon {...props}>
+    <path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z" />
+    <path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z" />
+  </Icon>;
+}
+
 /// Un tubo de teléfono: el teléfono de contacto, en la tarjeta de la página pública.
 export function PhoneIcon(props: IconProps) {
   return (

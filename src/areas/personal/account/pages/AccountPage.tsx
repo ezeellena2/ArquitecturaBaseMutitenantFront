@@ -39,7 +39,7 @@ export function AccountPage() {
   const [addOpen, setAddOpen] = useState(false);
   const whatsApp = useHasLoginChannel("whatsapp");
   const [verifyMethod, setVerifyMethod] = useState<AccountLoginMethod | null>(null);
-  const [change, setChange] = useState<{ action: "remove" | "primary"; method: AccountLoginMethod } | null>(null);
+  const [change, setChange] = useState<{ action: "remove" | "primary"; method: AccountLoginMethod; returnFocus?: HTMLButtonElement | null } | null>(null);
   const [params, setParams] = useSearchParams();
   const handledGoogle = useRef(false);
   const auth = useAuth();
@@ -77,7 +77,7 @@ export function AccountPage() {
       {methods.data?.needsPersonalLoginMethod ? <div className="border-b border-[var(--borde)] p-3"><PersonalLoginMethodNotice onAdd={() => setAddOpen(true)} /></div> : null}
       {methods.isPending ? <p className="p-4 text-[13px] text-[var(--t2)]" role="status">{t("states.loading")}</p> : null}
       {methods.error ? <div className="p-4"><FormError message={apiErrorMessage(methods.error, t)} /><Button type="button" onClick={() => { void methods.refetch(); }}>{t("actions.retry")}</Button></div> : null}
-      {methods.data ? <LoginMethodsTable methods={methods.data.methods} canLinkGoogle={methods.data.canLinkGoogle} onAction={(action, method) => { if (action === "verify") setVerifyMethod(method); else setChange({ action, method }); }} /> : null}
+      {methods.data ? <LoginMethodsTable methods={methods.data.methods} canLinkGoogle={methods.data.canLinkGoogle} onAction={(action, method, returnFocus) => { if (action === "verify") setVerifyMethod(method); else setChange({ action, method, returnFocus }); }} /> : null}
     </Section>
     <Section title={t("account:privacy")}>
       <List label={t("account:privacy")}>
@@ -91,9 +91,9 @@ export function AccountPage() {
       </List>
     </Section>
   </AccountProfileForm>
-  {addOpen ? <AddLoginMethodDialog open onOpenChange={setAddOpen} onComplete={refresh} /> : null}
-  {verifyMethod ? <VerifyLoginMethodDialog method={verifyMethod} open onOpenChange={(open) => { if (!open) setVerifyMethod(null); }} onComplete={refresh} /> : null}
-  {change ? <ChangeLoginMethodDialog {...change} onClose={() => setChange(null)} onComplete={refresh} /> : null}
+  {addOpen ? <AddLoginMethodDialog open onOpenChange={(open) => { setAddOpen(open); if (!open) refresh(); }} onComplete={refresh} /> : null}
+  {verifyMethod ? <VerifyLoginMethodDialog method={verifyMethod} open onOpenChange={(open) => { if (!open) { setVerifyMethod(null); refresh(); } }} onComplete={refresh} /> : null}
+  {change ? <ChangeLoginMethodDialog {...change} onClose={() => { setChange(null); refresh(); }} onComplete={refresh} /> : null}
   {/* Tablero Cuenta (única Dueña): el aviso importante compartido. */}
   <ImportantNotice open={deletionBlockedOpen} onOpenChange={setDeletionBlockedOpen} title={t("account:deletionBlockedTitle")}
     reason={t("account:deletionBlockedReason", { organizations: soleOwnerOf })}

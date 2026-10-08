@@ -70,5 +70,12 @@
   "googleFailed": "No pudimos completar el ingreso con Google.",
   "nameTooLong": "El nombre es demasiado largo.",
   "googleAlreadyUsed": "Esta cuenta de Google ya está asociada a otra cuenta.",
-  "googleEmailNotVerified": "Tu cuenta de Google no tiene el email verificado."
+  "googleEmailNotVerified": "Tu cuenta de Google no tiene el email verificado.",
+  "phoneNumber": "Número",
+  "verifyPhoneTitle": "Verificar tu WhatsApp",
+  "phoneSentHint": "Te mandamos un código a {{value}}. Vence en 10 minutos.",
+  "phoneAdded": "Agregamos {{value}}. Ya podés entrar con tu WhatsApp.",
+  "removePhoneTitle": "¿Quitar este WhatsApp?",
+  "primaryPhoneTitle": "¿Hacer principal este WhatsApp?",
+  "codeExpired": "El código venció. Pedí uno nuevo."
 }

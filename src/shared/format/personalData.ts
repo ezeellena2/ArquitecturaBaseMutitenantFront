@@ -1,5 +1,11 @@
 const hidden = "•••";
 
+/** PersonalDataMask.Phone del backend: sólo los últimos cuatro dígitos, también si ya está oculto. */
+export function maskPhone(value: string): string {
+  const digits = value.replace(/[^0-9]/g, "");
+  return digits.length < 4 ? "••••" : `•••• ${digits.slice(-4)}`;
+}
+
 /**
  * El correo tapado de los tableros («Te mandamos un código a lu•••@gmail.com», Cuenta-Verificar y Cuenta-Baja): dos letras,
  * «•••» y el dominio; una sola letra si lo de antes de la @ es corto. Es el mismo que arma `PersonalDataMask.Email` en el
