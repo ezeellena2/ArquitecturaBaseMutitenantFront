@@ -12,10 +12,10 @@ export function authDestinationSchema(t: TFunction) {
     phone: z.object({ country: z.string(), number: z.string() }).nullable(),
   }).superRefine((value, context) => {
     if (value.channel === "email" && !z.email().safeParse(value.email.trim()).success) {
-      context.addIssue({ code: "custom", path: ["email"], message: t("login.emailInvalid") });
+      context.addIssue({ code: "custom", path: ["email"], message: t("auth:login.emailInvalid") });
     }
     if (value.channel === "phone" && (!value.phone?.country || !value.phone.number.trim())) {
-      context.addIssue({ code: "custom", path: ["phone"], message: t("login.phoneRequired") });
+      context.addIssue({ code: "custom", path: ["phone"], message: t("auth:login.phoneRequired") });
     }
   });
 }

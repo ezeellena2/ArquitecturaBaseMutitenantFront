@@ -89,6 +89,7 @@ export const routes: RouteObject[] = [
   { path: "/login", lazy: lazyPage(() => import("@/areas/public/auth/pages/LoginPage"), (page) => () => <page.LoginPage access="consumer" />), errorElement: <AppErrorPage /> },
   { path: loginPathOf("business"), lazy: lazyPage(() => import("@/areas/public/auth/pages/LoginPage"), (page) => () => <page.LoginPage access="business" />), errorElement: <AppErrorPage /> },
   { path: "/registro", lazy: lazyPage(() => import("@/areas/public/auth/pages/SignupPage"), (page) => page.SignupPage), errorElement: <AppErrorPage /> },
+  { path: "/login/enlace", lazy: lazyPage(() => import("@/areas/public/auth/pages/LoginLinkPage"), (page) => page.LoginLinkPage), errorElement: <AppErrorPage /> },
   { path: "/recuperar", lazy: lazyPage(() => import("@/areas/public/auth/pages/RecoverAccountPage"), (page) => page.RecoverAccountPage), errorElement: <AppErrorPage /> },
   { path: "/registro/empresa", lazy: lazyPage(() => import("@/areas/public/auth/pages/BusinessSignupPage"), (page) => page.BusinessSignupPage), errorElement: <AppErrorPage /> },
   { path: "/invitacion", lazy: lazyPage(() => import("@/areas/public/auth/pages/InvitationPage"), (page) => page.InvitationPage), errorElement: <AppErrorPage /> },

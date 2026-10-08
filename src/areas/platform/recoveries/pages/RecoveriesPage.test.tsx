@@ -236,3 +236,16 @@ describe("Recuperaciones de Plataforma", () => {
     await open(user); await send(user); await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); expect(calls).toBe(1);
   });
 });
+
+it.each([false, true])("Phone E.164 y máscaras se conservan en lista y revisión (móvil=%s)", async (phone) => {
+  if (phone) asPhone();
+  const recovery: Recovery = { ...pending, previousMethodType: "Phone", previousMethod: "•••• 2204", newMethodType: "Phone", newMethod: "+5491123456789" };
+  server.use(http.get("/api/platform/recoveries/paged", () => HttpResponse.json(list([recovery]))));
+  const user = userEvent.setup(); const { container } = renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" });
+  expect(await screen.findByText("•••• 2204")).toBeVisible(); expect(await screen.findByText("011 15-2345-6789")).toBeVisible();
+  expect(screen.queryByText("+5491123456789")).not.toBeInTheDocument();
+  if (phone) await user.click(screen.getByRole("button", { name: /Pablo Ortiz.*2204/u }));
+  const dialog = phone ? screen.getByRole("dialog") : await open(user);
+  expect(within(dialog).getByText("•••• 2204")).toBeVisible(); expect(within(dialog).getByText("011 15-2345-6789")).toBeVisible();
+  expect(within(dialog).getByRole("button", { name: "Aprobar" })).toBeEnabled(); expect(await axe(container)).toHaveNoViolations();
+});

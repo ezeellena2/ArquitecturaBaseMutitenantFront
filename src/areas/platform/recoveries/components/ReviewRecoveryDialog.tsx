@@ -2,7 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useIsMutating, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
+import { RecoveryMethodText } from "./RecoveryMethodText";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
@@ -84,8 +85,8 @@ export function ReviewRecoveryDialog({ recovery, returnFocusTo, onClose, onResol
     choice.current = action; clear(); setOperation({ id: recovery.id, action, version: base.current, reason: values.reason, draft: draft.current });
   });
   const items = [
-    { key: "previous", label: t("platformRecoveries:review.previous"), value: recovery.previousMethod },
-    { key: "new", label: t("platformRecoveries:columns.new"), value: t("platformRecoveries:review.verified", { method: recovery.newMethod }) },
+    { key: "previous", label: t("platformRecoveries:review.previous"), value: <RecoveryMethodText type={recovery.previousMethodType} value={recovery.previousMethod} /> },
+    { key: "new", label: t("platformRecoveries:columns.new"), value: recovery.newMethodType === "Phone" && recovery.newMethod.startsWith("+") ? <Trans i18nKey="platformRecoveries:review.verifiedPhone" components={{ phone: <RecoveryMethodText type={recovery.newMethodType} value={recovery.newMethod} /> }} /> : t("platformRecoveries:review.verified", { method: recovery.newMethod }) },
     { key: "account", label: t("platformRecoveries:review.account"), value: hasAccount ? recovery.accountName || <EmptyValue /> : t("platformRecoveries:review.none") },
     ...(!pending ? [
       { key: "status", label: t("platformRecoveries:columns.status"), value: <StatusBadge tones={recoveryStatusTones} value={recovery.status} /> },

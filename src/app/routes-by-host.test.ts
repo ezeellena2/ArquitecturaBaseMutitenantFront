@@ -23,7 +23,7 @@ describe("rutas por host (docs/rules/accesos-y-permisos.md)", () => {
   it("en el subdominio solo monta la página y callback, sin administración, cuenta, ingresos ni directorio", () => {
     const tree = routesForHost("grupo-delta.localtest.me:5174");
     expect(paths(tree)).toEqual(["/auth/callback", "/", "*"]);
-    for (const path of ["/org", "/cuenta", "/plataforma", "/login", "/empresas"]) expect(paths(tree)).not.toContain(path);
+    for (const path of ["/org", "/cuenta", "/plataforma", "/login", "/login/enlace", "/empresas"]) expect(paths(tree)).not.toContain(path);
     expect(isValidElement(tree[0].element) && tree[0].element.type).toBe(AppShell);
     const recovery = tree[0].children?.find((route) => route.children?.some((child) => child.path === "/"));
     const element = recovery?.element;
@@ -32,6 +32,7 @@ describe("rutas por host (docs/rules/accesos-y-permisos.md)", () => {
 
   it("en el dominio principal conserva el árbol exportado y suma /empresas", () => {
     expect(routesForHost(mainSiteHost)).toBe(routes);
+    expect(paths(routes).filter((path) => path === "/login/enlace")).toHaveLength(1);
     expect(paths(routes)).toEqual(expect.arrayContaining(["/", "/org", "/cuenta", "/plataforma", "/login", "/empresas"]));
   });
 

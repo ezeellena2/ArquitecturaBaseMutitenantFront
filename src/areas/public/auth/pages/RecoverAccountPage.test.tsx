@@ -421,3 +421,68 @@ describe("RecoverAccountPage", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe("Recuperar por WhatsApp", () => {
+  const oldPhone = { country: "AR", number: "011 15-2345-6789" };
+  const newPhone = { country: "AR", number: "011 15-8765-4321" };
+  beforeEach(() => server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "whatsapp", countries: ["AR"] }] }))));
+  async function previousPhone() {
+    const view = renderRouteWithProviders("/recuperar");
+    fireEvent.click(await screen.findByRole("button", { name: "WhatsApp" }));
+    const input = screen.getByRole("textbox", { name: "Número de WhatsApp" });
+    await waitFor(() => expect(input).toBeEnabled()); fireEvent.change(input, { target: { value: oldPhone.number } });
+    return { ...view, input };
+  }
+  async function newPhoneStep() {
+    const view = await previousPhone(); fireEvent.click(screen.getByRole("button", { name: "Seguir" }));
+    await screen.findByRole("heading", { name: "¿Dónde te escribimos?" });
+    fireEvent.click(screen.getByRole("button", { name: "WhatsApp" }));
+    const input = screen.getByRole("textbox", { name: "Número de WhatsApp nuevo" });
+    await waitFor(() => expect(input).toBeEnabled()); fireEvent.change(input, { target: { value: newPhone.number } });
+    return { ...view, input };
+  }
+  it("número anterior desconocido queda bajo campo antes del código y conserva mensaje específico", async () => {
+    server.use(http.post("/api/account-recovery/preview", () => HttpResponse.json({ code: "Platform.AccountRecovery.PhoneAccountNotFound", detail: "Genérico", errors: { previousPhone: ["No hay una cuenta con ese número."] } }, { status: 400 })));
+    const { input, container } = await previousPhone(); fireEvent.click(screen.getByRole("button", { name: "Seguir" }));
+    await waitFor(() => expect(input).toHaveAccessibleDescription("No hay una cuenta con ese número."));
+    expect(screen.queryByRole("textbox", { name: "Código 1" })).not.toBeInTheDocument(); expect(await axe(container)).toHaveNoViolations();
+  });
+  it("número nuevo ocupado usa campo antes de código y no sobrescribe phone del backend", async () => {
+    server.use(http.post("/api/account-recovery/code", () => HttpResponse.json({ code: "Platform.AccountRecovery.PhoneMethodInUse", detail: "Genérico", errors: { phone: ["Ese número ya es de otra cuenta."] } }, { status: 409 })));
+    const { input } = await newPhoneStep(); fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+    await waitFor(() => expect(input).toHaveAccessibleDescription("Ese número ya es de otra cuenta.")); expect(screen.queryByRole("textbox", { name: "Código 1" })).not.toBeInTheDocument();
+  });
+  it("el mismo número no manda código", async () => {
+    const request = vi.fn(); server.use(http.post("/api/account-recovery/code", () => { request(); return HttpResponse.json({ resendAfterSeconds: 0 }); }));
+    const { input } = await newPhoneStep(); fireEvent.change(input, { target: { value: oldPhone.number } }); fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+    expect(await screen.findByText("Tiene que ser un número distinto del de antes.")).toBeVisible(); expect(request).not.toHaveBeenCalled();
+  });
+  it("Phone libre conserva nonce, channel, prueba verificada y clave tras 5xx; recibido no abre sesión", async () => {
+    const calls: { path: string; body: Record<string, unknown>; key: string | null }[] = []; let submissions = 0;
+    for (const path of ["/api/account-recovery/preview", "/api/account-recovery/code", "/api/account-recovery/verify", "/api/account-recovery"]) server.use(http.post(path, async ({ request }) => {
+      calls.push({ path, body: await request.json() as Record<string, unknown>, key: request.headers.get("Idempotency-Key") });
+      if (path.endsWith("/code")) return HttpResponse.json({ resendAfterSeconds: 0 }, { status: 202 });
+      if (path === "/api/account-recovery" && ++submissions === 1) return HttpResponse.json({ code: "General.Error" }, { status: 503 });
+      return new HttpResponse(null, { status: path === "/api/account-recovery" ? 202 : 204 });
+    }));
+    const storage = vi.spyOn(Storage.prototype, "setItem");
+    const { container, router } = await newPhoneStep(); fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+    expect(await screen.findByRole("heading", { name: "Revisá tu WhatsApp" })).toBeVisible(); verifyCode();
+    expect(await screen.findByRole("alert")).toHaveTextContent("Algo salió mal."); fireEvent.click(screen.getByRole("button", { name: "Verificar" }));
+    expect(await screen.findByRole("heading", { name: "Recibimos tu pedido" })).toBeVisible();
+    expect(calls[0].body).toEqual({ previousPhone: oldPhone });
+    const nonce = calls[1].body.nonce; expect(nonce).toMatch(/^[A-Za-z0-9_-]{43}$/u);
+    expect(calls[1].body).toEqual({ phone: newPhone, channel: "whatsapp", nonce });
+    expect(calls[2].body).toEqual({ phone: newPhone, channel: "whatsapp", nonce, code: "123456" });
+    expect(calls.filter((call) => call.path.endsWith("/verify"))).toHaveLength(1);
+    expect(calls[3].body).toEqual({ previousPhone: oldPhone, phone: newPhone, channel: "whatsapp", nonce }); expect(calls[4]).toEqual(calls[3]);
+    expect(JSON.stringify(storage.mock.calls)).not.toContain(String(nonce)); storage.mockRestore(); expect(router.state.location.pathname).toBe("/recuperar"); expect(await axe(container)).toHaveNoViolations();
+  });
+  it("cambiar canal mientras preview está pendiente abandona la respuesta Phone", async () => {
+    let release: (() => void) | undefined;
+    server.use(http.post("/api/account-recovery/preview", async () => { await new Promise<void>((resolve) => { release = resolve; }); return new HttpResponse(null, { status: 204 }); }));
+    await previousPhone(); fireEvent.click(screen.getByRole("button", { name: "Seguir" })); await waitFor(() => expect(release).toBeDefined());
+    fireEvent.click(screen.getByRole("button", { name: "Correo" })); await act(async () => { release?.(); });
+    expect(screen.getByRole("heading", { name: "Recuperar mi cuenta" })).toBeVisible(); expect(screen.queryByRole("heading", { name: "¿Dónde te escribimos?" })).not.toBeInTheDocument();
+  });
+});
