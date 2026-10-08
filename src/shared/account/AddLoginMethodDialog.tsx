@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useController, useForm, useWatch } from "react-hook-form";
@@ -21,7 +22,8 @@ import { EmailField } from "@/shared/ui/fields/EmailField";
 import { PhoneField } from "@/shared/ui/fields/PhoneField";
 import { OtpInput } from "@/shared/ui/OtpInput";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
-import { addLoginMethod, sendLoginMethodCode, verifyLoginMethod } from "./api/loginMethods";
+import { accountMethodsQueryKey, addLoginMethod, sendLoginMethodCode, verifyLoginMethod } from "./api/loginMethods";
+import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { loginMethodErrorField } from "./errors";
 import { useHasLoginChannel } from "./useLoginChannels";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
@@ -56,6 +58,7 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
   const { t } = useTranslation(["account", "auth", "common", "errors"]);
   const restoreFocus = useRestoreFocusOnClose();
   const whatsApp = useHasLoginChannel("whatsapp");
+  const queryClient = useQueryClient();
   const { phone: isPhone } = useAppChrome();
   const [step, setStep] = useState<SendOperation | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
@@ -72,13 +75,23 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
   const alive = useRef(true);
   const started = useRef(false);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
-  const request = useIdempotentMutation((operation: SendOperation, key) => {
+  function refreshAccount() {
+    void queryClient.invalidateQueries({ queryKey: accountMethodsQueryKey });
+    void queryClient.invalidateQueries({ queryKey: currentUserQueryKey });
+  }
+  const request = useIdempotentMutation(async (operation: SendOperation, key) => {
     if (operation.destination === null) return sendLoginMethodCode(operation.methodId, key);
     if (operation.methodId) return sendLoginMethodCode(operation.methodId, key);
-    return addLoginMethod(operation.destination.type === "phone" ? { phone: operation.destination.phone, channel: "whatsapp" } : { email: operation.destination.email }, key);
+    const result = await addLoginMethod(operation.destination.type === "phone" ? { phone: operation.destination.phone, channel: "whatsapp" } : { email: operation.destination.email }, key);
+    refreshAccount();
+    return result;
   },
   { meta: { handlesError: true }, sameOperation: sameSend });
-  const verify = useIdempotentMutation((operation: VerifyOperation, key) => verifyLoginMethod(operation.methodId, { code: operation.code }, key),
+  const verify = useIdempotentMutation(async (operation: VerifyOperation, key) => {
+    await verifyLoginMethod(operation.methodId, { code: operation.code }, key);
+    // Reconciliar antes de que el helper descarte la respuesta de un diálogo desmontado.
+    refreshAccount();
+  },
     { meta: { handlesError: true }, sameOperation: (a, b) => a.revision === b.revision && a.methodId === b.methodId && a.code === b.code });
   const busy = request.isPending || verify.isPending;
   const phone = method?.type === "Phone" || (step?.destination?.type ?? type) === "phone";
@@ -171,7 +184,7 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
               <EmailField name={field.name} ref={field.ref} value={field.value ?? ""} onChange={(value) => { edit(); field.onChange(value); }} onBlur={field.onBlur} disabled={busy} />
             </FormField>} />}
           </>}
-          <FormError message={expired ? t("account:codeExpired") : failure} />
+          <FormError message={failure ?? (expired ? t("account:codeExpired") : null)} />
         </DialogBody>
         <DialogFooter>
           {!isPhone ? resendAction : null}

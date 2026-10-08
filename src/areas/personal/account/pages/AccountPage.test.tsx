@@ -357,3 +357,100 @@ it("quitar Phone principal relee la transferencia autoritativa al método restan
   expect(row).toHaveTextContent("ana@example.testPrincipal");
   expect(within(row).queryByRole("button")).not.toBeInTheDocument();
 });
+
+it.each(["remove", "primary"] as const)("reconcilia %s Phone si se cancela mientras la escritura sigue pendiente", async (action) => {
+  const user = userEvent.setup(); let completed = false; const reads: boolean[] = [];
+  let release!: () => void; const writing = vi.fn();
+  const write = async () => { writing(); await new Promise<void>((resolve) => { release = resolve; }); completed = true; return new HttpResponse(null, { status: 204 }); };
+  server.use(
+    http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "whatsapp", countries: ["AR"] }] })),
+    http.get("/api/me/login-methods", () => {
+      reads.push(completed);
+      return HttpResponse.json({ methods: [
+        ...(!(completed && action === "remove") ? [{ id: "phone", type: "Phone", value: "+5491155554521", isVerified: true, isPrimary: completed && action === "primary", canRemove: true, canMakePrimary: !(completed && action === "primary") }] : []),
+        { id: "email", type: "Email", value: "ana@example.test", isVerified: true, isPrimary: !(completed && action === "primary"), canRemove: !(completed && action === "remove"), canMakePrimary: completed && action === "primary" },
+      ], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] });
+    }),
+    http.delete("/api/me/login-methods/phone", write),
+    http.put("/api/me/login-methods/phone/primary", write),
+  );
+  renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+  const trigger = await screen.findByRole("button", { name: "Acciones de 011 15-5555-4521" }); trigger.focus(); await user.keyboard("{Enter}");
+  await user.click(await screen.findByRole("menuitem", { name: action === "remove" ? "Quitar" : "Hacer principal" }));
+  await user.click(screen.getByRole("button", { name: action === "remove" ? "Quitar" : "Hacer principal" }));
+  await waitFor(() => expect(writing).toHaveBeenCalledOnce());
+  await user.click(screen.getByRole("button", { name: "Cancelar" }));
+  await waitFor(() => expect(reads).toEqual([false, false]));
+  await act(async () => { release(); });
+  await waitFor(() => expect(reads).toContain(true));
+  const list = screen.getByRole("list", { name: "Cómo entrás" });
+  if (action === "remove") {
+    expect(within(list).queryByText("011 15-5555-4521")).not.toBeInTheDocument();
+    expect(within(list).queryByRole("button")).not.toBeInTheDocument();
+  } else {
+    const row = within(list).getByText("011 15-5555-4521").closest("li"); expect(row).toHaveTextContent("Principal");
+  }
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(screen.queryByText(action === "remove" ? "Quitamos 011 15-5555-4521." : "Desde ahora te avisamos a 011 15-5555-4521.")).not.toBeInTheDocument();
+});
+
+it("verificación Phone cancelada reconcilia el éxito tardío sin cerrar otro diálogo ni avisar", async () => {
+  const user = userEvent.setup(); let verified = false; const reads: boolean[] = [];
+  let release!: () => void; const verifying = vi.fn();
+  server.use(
+    http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "whatsapp", countries: ["AR"] }] })),
+    http.get("/api/me/login-methods", () => {
+      reads.push(verified);
+      return HttpResponse.json({ methods: [
+        { id: "phone", type: "Phone", value: "+5491155554521", isVerified: verified, isPrimary: false, canRemove: true, canMakePrimary: verified },
+        { id: "email", type: "Email", value: "ana@example.test", isVerified: true, isPrimary: true, canRemove: verified, canMakePrimary: false },
+      ], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] });
+    }),
+    http.post("/api/me/login-methods/phone/code", () => HttpResponse.json({ methodId: "phone", resendAfterSeconds: 0 })),
+    http.post("/api/me/login-methods/phone/verify", async () => { verifying(); await new Promise<void>((resolve) => { release = resolve; }); verified = true; return new HttpResponse(null, { status: 204 }); }),
+  );
+  renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+  await user.click(await screen.findByRole("button", { name: "Verificar" }));
+  await user.type(await screen.findByRole("textbox", { name: "Código 1" }), "123456");
+  await user.click(screen.getByRole("button", { name: "Verificar" }));
+  await waitFor(() => expect(verifying).toHaveBeenCalledOnce());
+  await user.click(screen.getByRole("button", { name: "Cancelar" }));
+  await waitFor(() => expect(reads).toEqual([false, false]));
+  await user.click(screen.getByRole("button", { name: "Agregar correo o teléfono" }));
+  const nextDialog = screen.getByRole("dialog", { name: "Agregar correo o teléfono" });
+  await act(async () => { release(); });
+  await waitFor(() => expect(reads).toContain(true));
+  await waitFor(() => expect(screen.queryByText("Sin verificar")).not.toBeInTheDocument());
+  expect(nextDialog).toBeVisible(); expect(screen.getAllByRole("dialog")).toEqual([nextDialog]);
+  expect(screen.queryByText("Verificamos •••• 4521.")).not.toBeInTheDocument();
+});
+
+it("alta Phone cancelada muestra el método pendiente cuando la creación termina después del GET previo", async () => {
+  const user = userEvent.setup(); let added = false; const reads: boolean[] = [];
+  let release!: () => void; const writing = vi.fn();
+  server.use(
+    http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "whatsapp", countries: ["AR"] }] })),
+    http.get("/api/me/login-methods", () => {
+      reads.push(added);
+      return HttpResponse.json({ methods: [
+        { id: "email", type: "Email", value: "ana@example.test", isVerified: true, isPrimary: true, canRemove: false, canMakePrimary: false },
+        ...(added ? [{ id: "phone", type: "Phone", value: "+5491155554521", isVerified: false, isPrimary: false, canRemove: true, canMakePrimary: false }] : []),
+      ], canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [] });
+    }),
+    http.post("/api/me/login-methods", async () => { writing(); await new Promise<void>((resolve) => { release = resolve; }); added = true; return HttpResponse.json({ methodId: "phone", resendAfterSeconds: 60 }); }),
+  );
+  renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
+  await user.click(await screen.findByRole("button", { name: "Agregar correo o teléfono" }));
+  await user.click(screen.getByRole("button", { name: "WhatsApp" }));
+  await user.type(screen.getByRole("textbox", { name: "Número" }), "1155554521");
+  await user.click(screen.getByRole("button", { name: "Enviar código" }));
+  await waitFor(() => expect(writing).toHaveBeenCalledOnce());
+  await user.click(screen.getByRole("button", { name: "Cancelar" }));
+  await waitFor(() => expect(reads).toEqual([false, false]));
+  await act(async () => { release(); });
+  await waitFor(() => expect(reads).toContain(true));
+  expect(await screen.findByText("011 15-5555-4521")).toBeVisible();
+  expect(screen.getByText("Sin verificar")).toBeVisible();
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(screen.queryByRole("group", { name: "Código" })).not.toBeInTheDocument();
+});

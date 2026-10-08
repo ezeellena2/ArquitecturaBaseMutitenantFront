@@ -300,3 +300,36 @@ it("un error de campo mixto conserva phone específico antes del fallback por c�
   expect(screen.getByRole("textbox", { name: "Número" })).toHaveAccessibleDescription("Mensaje específico");
   expect(screen.getByText("Revisá el pedido.")).toBeVisible();
 });
+
+it.each([
+  { kind: "5xx", message: "Algo salió mal. Probá de nuevo en un rato.", failure: () => HttpResponse.json({ code: "General.Unexpected" }, { status: 500 }), sameKey: true },
+  { kind: "red", message: "No pudimos conectarnos. Revisá tu conexión.", failure: () => HttpResponse.error(), sameKey: true },
+  { kind: "negocio", message: "El canal no está disponible.", failure: () => HttpResponse.json({ code: "Auth.LoginMethod.ChannelUnavailable", detail: "El canal no está disponible." }, { status: 400 }), sameKey: false },
+])("muestra el fallo de reenvío %s después de vencer sin perder OTP ni el estado vencido", async ({ message, failure, sameKey }) => {
+  const user = userEvent.setup(); enableWhatsApp(); const keys: string[] = [];
+  server.use(http.post("/api/me/login-methods", () => HttpResponse.json({ methodId: "phone", resendAfterSeconds: 60 })),
+    http.post("/api/me/login-methods/phone/code", ({ request }) => {
+      keys.push(request.headers.get("Idempotency-Key")!);
+      return keys.length <= 2 ? failure() : HttpResponse.json({ methodId: "phone", resendAfterSeconds: 60 });
+    }));
+  renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} />);
+  await chooseWhatsApp(user); await user.click(screen.getByRole("button", { name: "Enviar código" }));
+  const first = await screen.findByRole("textbox", { name: "Código 1" }); await user.type(first, "123456");
+  const clock = vi.spyOn(Date, "now").mockReturnValue(Date.now() + 601_000);
+  try {
+    act(() => window.dispatchEvent(new Event("focus")));
+    expect(screen.getByRole("alert")).toHaveTextContent("El código venció. Pedí uno nuevo.");
+    for (let index = 0; index < 2; index++) {
+      await user.click(screen.getByRole("button", { name: "Reenviar código" }));
+      await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent(message));
+      expect(screen.getAllByRole("alert")).toHaveLength(1);
+      expect(screen.getByRole("button", { name: "Verificar" })).toBeDisabled();
+      expect(first).toBeDisabled(); expect(first).toHaveValue("1");
+    }
+    expect(keys[0] === keys[1]).toBe(sameKey);
+    await user.click(screen.getByRole("button", { name: "Reenviar código" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Verificar" })).toBeEnabled());
+    expect(first).toBeEnabled(); expect(first).toHaveValue("");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  } finally { clock.mockRestore(); }
+});

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import type { AccountLoginMethod } from "@/shared/api/types";
@@ -6,7 +7,8 @@ import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
-import { makeLoginMethodPrimary, removeLoginMethod } from "./api/loginMethods";
+import { accountMethodsQueryKey, makeLoginMethodPrimary, removeLoginMethod } from "./api/loginMethods";
+import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useFormat } from "@/shared/format/useFormat";
@@ -18,6 +20,7 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, r
   const { t } = useTranslation("account");
   const restoreFocus = useRestoreFocusOnClose(true, returnFocus);
   const format = useFormat();
+  const queryClient = useQueryClient();
   const alive = useRef(true);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   const [saving, setSaving] = useState(false);
@@ -34,6 +37,9 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, r
     setFailure(null); setSaving(true);
     try {
       if (action === "primary") await makeLoginMethodPrimary(method.id); else await removeLoginMethod(method.id);
+      // La escritura termina aunque el diálogo haya cerrado. Releer siempre; la UI pertenece sólo al recorrido vivo.
+      void queryClient.invalidateQueries({ queryKey: accountMethodsQueryKey });
+      void queryClient.invalidateQueries({ queryKey: currentUserQueryKey });
       if (!alive.current) return;
       toast.success(t(action === "primary" ? "primaryChanged" : google ? "googleUnlinked" : "removed", { value }));
       onComplete?.(); close();
