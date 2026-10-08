@@ -26,8 +26,9 @@ describe("contrato funcional de cuenta entre repos", () => {
       expect(openapiSource).toContain(`"${route}"`);
     }
     expect(openapi.paths["/api/me/login-methods"].post?.requestBody?.content?.["application/json"]?.schema?.$ref)
-      .toBe("#/components/schemas/AddLoginEmailHttpRequest");
-    expect(openapi.components.schemas.AddLoginEmailHttpRequest.properties).not.toHaveProperty("reauthTicket");
+      .toBe("#/components/schemas/AddLoginMethodHttpRequest");
+    expect(Object.keys(openapi.components.schemas.AddLoginMethodHttpRequest.properties ?? {}).sort()).toEqual(["channel", "email", "phone"]);
+    expect(openapi.components.schemas.AddLoginMethodHttpRequest.properties).not.toHaveProperty("reauthTicket");
     expect(openapi.paths["/api/me/external/google"].post?.requestBody).toBeUndefined();
     expect(openapi.paths).not.toHaveProperty("/api/me/reauth");
     expect(openapi.paths).not.toHaveProperty("/api/me/reauth/verify");

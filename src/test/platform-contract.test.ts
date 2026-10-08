@@ -36,6 +36,14 @@ function generatedRoute(route: string): string {
   return generated.slice(start, end < 0 ? generated.indexOf("\n}\n", start) : end);
 }
 
+// Los destinos de E8 son uniones/intersecciones del contrato, además de objetos.
+function generatedSchema(name: string): string {
+  const start = generated.indexOf(`        ${name}: `);
+  expect(start, name).toBeGreaterThanOrEqual(0);
+  const following = generated.slice(start + 1).search(/\n        [A-Za-z]\w*: /u);
+  return generated.slice(start, following < 0 ? generated.indexOf("\n    };", start) : start + 1 + following);
+}
+
 function referencedProperties(schema: Schema) {
   const reference = schema.$ref ?? [...(schema.anyOf ?? []), ...(schema.oneOf ?? [])].find((candidate) => candidate.$ref)?.$ref;
   expect(reference).toMatch(/^#\/components\/schemas\//u);
@@ -124,7 +132,7 @@ describe("contratos de Plataforma entre back y front", () => {
     if (body) {
       expect(operation.requestBody?.content["application/json"].schema.$ref).toBe(`#/components/schemas/${body}`);
       expect(block).toContain(`components["schemas"]["${body}"]`);
-      expect(generated).toContain(`        ${body}: {`);
+      expect(generated).toContain(`        ${body}: `);
     } else expect(operation.requestBody).toBeUndefined();
     expect(block).toContain(`${status}:`);
     const result = operation.responses[String(status)];
@@ -151,13 +159,12 @@ describe("contratos de Plataforma entre back y front", () => {
     ["PublishLegalDocumentHttpRequest", ["kind", "effectiveOn", "contents"]],
     ["LegalDocumentContentHttpRequest", ["culture", "text"]],
     ["UpdatePlatformSettingsHttpRequest", ["consumerSignup", "businessSignup", "maxOwnedOrganizations", "salesEmail", "supportEmail", "version", "reason"]],
-    ["RequestRecoveryCodeHttpRequest", ["email", "nonce"]],
-    ["VerifyRecoveryCodeHttpRequest", ["email", "nonce", "code"]],
-    ["SubmitAccountRecoveryHttpRequest", ["email", "nonce", "previousEmail", "previousPhone"]],
+    ["RequestRecoveryCodeHttpRequest", ["email", "phone", "channel", "nonce"]],
+    ["VerifyRecoveryCodeHttpRequest", ["email", "phone", "channel", "nonce", "code"]],
+    ["SubmitAccountRecoveryHttpRequest", ["email", "phone", "channel", "nonce", "previousEmail", "previousPhone"]],
   ] as const)("%s mantiene exactamente los campos del cuerpo", (schema, fields) => {
     expect(Object.keys(openApi.components.schemas[schema].properties).sort()).toEqual([...fields].sort());
-    const body = generated.match(new RegExp(`        ${schema}: \\{([\\s\\S]*?)\\n        \\};`, "u"))?.[1];
-    expect(body).toBeDefined();
+    const body = generatedSchema(schema);
     for (const field of fields) expect(body).toMatch(new RegExp(`\\b${field}\\??:`, "u"));
   });
 
