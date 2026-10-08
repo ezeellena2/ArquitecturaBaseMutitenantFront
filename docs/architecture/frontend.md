@@ -203,7 +203,7 @@ El contrato está en `backend.md` §9, "Paginado, orden y búsqueda". Del lado d
 Rige el [lienzo vigente](../design/lienzo/README.md): **mandan los ocho tableros «Criterio»** (Marco y pantallas, Botones, Formularios y campos, Tablas y listas, Diálogos, Menús y desplegables, Avisos y errores, y Decisiones por pantalla) y, para cada pantalla, **solo su tablero validado**; lo marcado «· por refinar» no manda. Los colores y la forma salen del [tema](tema.md). Esta sección resume esos tableros; si algo no coincide, manda el tablero.
 
 **Proceso y contenido**
-- **Toda pantalla nueva se dibuja primero** en el lienzo y se programa después de que el usuario la elige.
+- Una pantalla nueva sin fuente se dibuja primero. Desde E7 se programa directo lo aprobado: tests donde importan, sin aprobación por pantalla ni capturas por avance, con una sola puerta final según [pantallas-y-ui](../rules/pantallas-y-ui.md). ADR/decisiones posteriores prevalecen en conducta; ver [complemento E8/E8b](../design/alineamiento-etapas-8-y-8b.md).
 - **No se inventan datos ni contenido.** Si no se sabe qué va en una pantalla, queda vacía, con la barra y el menú lateral.
 - Los datos de ejemplo usan nombres neutros (Grupo Delta, Delta S.A.) y solo los roles y permisos que existen en la plantilla: nada de rubros, módulos ni roles de negocio que no se pidieron.
 - **Sin textos que explican.** El estado se dice una vez, arriba, en la segunda línea de la banda: un punto de color y pocas palabras. Donde está la acción va solo un ⓘ; lo que no se puede usar queda apagado y abre lo mismo que el ⓘ: el aviso importante, con el motivo y qué hacer. Ningún párrafo en la pantalla, ni ayudas bajo cada campo, ni notas al pie.
