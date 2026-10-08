@@ -6,7 +6,7 @@ import { OtpInput } from "@/shared/ui/OtpInput";
 import { AuthMessage, type AuthMessageContent } from "./AuthMessage";
 import type { PhoneDraft } from "@/shared/api/types";
 import { phoneE164FromDraft } from "@/shared/phone/phoneInput";
-import { PhoneText } from "@/shared/ui/format/PhoneText";
+import { maskPhone } from "@/shared/format/personalData";
 
 const codeLength = 6;
 
@@ -67,7 +67,7 @@ export function AuthCodeStep({ destination, phone, code, onCodeChange, onBack, o
     <div>
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t(phone ? "common:code.checkWhatsApp" : "common:code.checkEmail")}</h1>
       <p id={hintId} className="mt-1.5 text-sm leading-normal text-[var(--t2)] wrap-anywhere">
-        {phone ? <Trans i18nKey="common:code.sentToPhone" components={{ phone: <PhoneText value={phoneE164FromDraft(phone)} className="font-semibold text-[var(--t1)]" /> }} />
+        {phone ? <Trans i18nKey="common:code.sentToPhone" components={{ phone: <strong className="font-semibold text-[var(--t1)]">{maskPhone(phoneE164FromDraft(phone) ?? phone.number)}</strong> }} />
           : <Trans i18nKey="common:code.sentToEmail" values={{ email: destination }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />}
       </p>
     </div>

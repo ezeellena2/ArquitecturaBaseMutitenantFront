@@ -3,6 +3,7 @@ import { useState } from "react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n } from "@/shared/i18n";
+import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { AuthCodeStep, type AuthCodeStepProps } from "./AuthCodeStep";
 
 beforeAll(async () => {
@@ -22,6 +23,17 @@ function Harness(props: Overrides) {
 
 // El paso del código del ingreso y de los dos registros (tableros Ingreso, Registro y Registro-Empresa).
 describe("AuthCodeStep", () => {
+  it("oculta el teléfono del código de posesión dejando sólo sus últimos cuatro dígitos", async () => {
+    renderWithProviders(<Harness phone={{ country: "AR", number: "11 5555-4521" }} />);
+    await screen.findByRole("heading", { name: "Revisá tu WhatsApp" });
+    await screen.findByText(/4521/);
+    const group = screen.getByRole("group", { name: "Código" });
+    const hint = document.getElementById(group.getAttribute("aria-describedby")!);
+    expect(hint).toHaveTextContent("Te mandamos un código por WhatsApp a •••• 4521. Vence en 10 minutos.");
+    expect(hint).not.toHaveTextContent("5555");
+    expect(screen.getByText("•••• 4521").tagName).toBe("STRONG");
+  });
+
   it("arma el paso con «Usar otro correo», el título, a quién mandamos el código y los seis casilleros", async () => {
     const onBack = vi.fn();
     const { container } = render(<Harness onBack={onBack} />);
