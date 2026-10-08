@@ -97,11 +97,13 @@ LADOS = {
         "a2": ('<p>Beta S.R.L. está <b>suspendida</b> desde el 25/09/2026. Mientras siga así, nadie entra como empresa; tus datos se conservan.</p>'
                f'<a class="as-ir" href="Perfil-Suspendido.dc.html">Ver Beta S.R.L. {FLECHA}</a>'),
         "puede": "false", "config": "", "uso": "",
+        "vacio": ("Mis mensajes con empresas", "Todavía no tenés mensajes con empresas."),
         "estados": ["Bienvenida", "Primera vez", "Con adjuntos", "Adjunto de más de 10 MB", "Consultando", "Escribiendo", "Respuesta",
                     "Historial plegado", "Detenida", "Falló la respuesta", "Menú de una conversación", "Renombrar", "Borrar", "Quedan 10 consultas",
-                    "Tope del día", "Sin configurar"],
+                    "Tope del día", "Sin configurar", "Mis mensajes con empresas: sin mensajes"],
         "tel_estados": ["Bienvenida", "Primera vez", "Con adjuntos", "Consultando", "Escribiendo", "Respuesta", "Falló la respuesta", "Historial",
-                        "Acciones de una conversación", "Renombrar", "Borrar", "Quedan 10 consultas", "Tope del día", "Sin configurar"],
+                        "Acciones de una conversación", "Renombrar", "Borrar", "Quedan 10 consultas", "Tope del día", "Sin configurar",
+                        "Mis mensajes con empresas: sin mensajes"],
     },
     "plat": {
         "base": "Organizaciones", "nuevo": "Asistente-Plat", "tel_base": "M-Organizaciones", "tel_nuevo": "M-Asistente-Plat",
@@ -216,8 +218,17 @@ def hilo(d, tel=False):
             f'<button type="button" class="as-ib chico" aria-label="Me sirvió" title="Me sirvió">{ARRIBA}</button>'
             f'<button type="button" class="as-ib chico" aria-label="No me sirvió" title="No me sirvió">{ABAJO}</button></div>')
     av = f'<span class="as-av">{CHISPA}</span>'
+    vacio = ""
+    if d.get("vacio"):
+        q, r = d["vacio"]
+        vacio = ('<sc-if value="{{asVacio}}" hint-placeholder-val="{{no}}"><div class="as-col">'
+                 f'<div class="as-yo"><span class="as-burb"><span class="as-fija" title="Consulta fija">{RAYO}</span>{q}</span></div>'
+                 f'<div class="as-el">{av}<div class="as-cont"><div class="as-md"><p>{r}</p></div>'
+                 f'<div class="as-acts"><button type="button" class="as-ib chico" aria-label="Copiar" title="Copiar">{COPIAR}</button></div></div></div>'
+                 '</div></sc-if>')
     return (
-        '<div class="as-col">'
+        vacio
+        + '<sc-if value="{{asConResultados}}" hint-placeholder-val="{{si}}"><div class="as-col">'
         f'<div class="as-yo"><span class="as-burb"><span class="as-fija" title="Consulta fija">{RAYO}</span>{d["q1"]}</span></div>'
         f'<div class="as-el">{av}<div class="as-cont"><div class="as-md">{d["a1"]}</div>'
         f'<div class="as-acts"><button type="button" class="as-ib chico" aria-label="Copiar" title="Copiar">{COPIAR}</button></div></div></div>'
@@ -230,7 +241,7 @@ def hilo(d, tel=False):
         f'<sc-if value="{{{{asFallo}}}}" hint-placeholder-val="{{{{no}}}}"><div class="as-fallo" role="alert">{ALERTA}<span>El asistente no responde ahora.</span>'
         f'<button type="button" class="{"cb cb-sec" if tel else "b b-sec"} as-reint" onClick="{{{{asReintentar}}}}">Reintentar</button></div></sc-if>'
         f'<sc-if value="{{{{asListo}}}}" hint-placeholder-val="{{{{si}}}}"><div class="as-md">{d["a2"]}</div>{acts}</sc-if>'
-        '</div></div></div>')
+        '</div></div></div></sc-if>')
 
 
 def sin_config(d, tel=False):
@@ -321,7 +332,7 @@ def zona_tel(d):
 
 
 def js(d, tel=False):
-    conv = ["Consultando", "Escribiendo", "Respuesta", "Historial plegado", "Detenida", "Falló la respuesta", "Menú de una conversación", "Renombrar", "Borrar",
+    conv = ["Mis mensajes con empresas: sin mensajes", "Consultando", "Escribiendo", "Respuesta", "Historial plegado", "Detenida", "Falló la respuesta", "Menú de una conversación", "Renombrar", "Borrar",
             "Quedan 10 consultas", "Tope del día", "Tope del mes", "Acciones de una conversación"]
     listo = ["Respuesta", "Historial plegado", "Menú de una conversación", "Renombrar", "Borrar", "Quedan 10 consultas", "Tope del día", "Tope del mes",
              "Acciones de una conversación"]
@@ -345,6 +356,8 @@ def js(d, tel=False):
       asTextoPlegar: pleg ? 'Mostrar las conversaciones' : 'Ocultar las conversaciones',
       asExpHist: pleg ? 'false' : 'true',
       asAlternarHist: () => this.setState({{ asPleg: !pleg }}),
+      asVacio: e === 'Mis mensajes con empresas: sin mensajes',
+      asConResultados: e !== 'Mis mensajes con empresas: sin mensajes',
       asBienvenida: !conv && !sinConf,
       asConv: conv,
       asSinConf: sinConf,
@@ -353,7 +366,7 @@ def js(d, tel=False):
       asAviso: e === 'Primera vez',
       asEntendido: () => ir('Bienvenida'),
       asConHistorial: e !== 'Primera vez',
-      asActiva: conv ? 'on' : '',
+      asActiva: conv && e !== 'Mis mensajes con empresas: sin mensajes' ? 'on' : '',
       asAdjuntos: e === 'Con adjuntos' || e === 'Adjunto de más de 10 MB',
       asAdjMal: e === 'Adjunto de más de 10 MB',
       asAdjClase: e === 'Adjunto de más de 10 MB' ? 'mal' : '',
@@ -377,7 +390,7 @@ def js(d, tel=False):
       asTopeMes: e === 'Tope del mes',
       asConCaja: !tope,
       asConPie: !sinConf,
-      asTextoTope: e === 'Tope del mes' ? 'Grupo Delta llegó al tope del mes del asistente.' : 'Llegaste a las 50 consultas de hoy. Mañana podés seguir.',
+      asTextoTope: e === 'Tope del mes' ? 'Grupo Delta llegó al tope del mes del asistente.' : 'Llegaste a las 50 consultas de hoy. Se renuevan a las 21:00.',
       asNombre: nombre,
       asOnNombre: (ev) => this.setState({{ asNombre: ev.target.value }}),
       asSinCambio: nombre === {json.dumps(d["recientes"][0], ensure_ascii=False)},
@@ -477,7 +490,7 @@ CSS = """.ab-app-shell__main:has(> .as-zona) { display: flex !important; flex-di
 .as-err { font-size: 13px; color: oklch(0.5 0.19 25); padding-left: 4px; }
 .as-quedan { font-size: 13px; color: var(--t2); text-align: center; }
 .as-hilo { flex: 1; min-height: 0; overflow: auto; padding: 24px 32px 8px; display: flex; flex-direction: column-reverse; }
-.as-hilo > .as-col { margin-top: auto; gap: 20px; }
+.as-hilo .as-col { margin-top: auto; gap: 20px; }
 .as-yo { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .as-burb { max-width: 76%; box-sizing: border-box; background: var(--marca-t); color: var(--t1); padding: 10px 14px; border-radius: 16px 16px 4px 16px; font-size: 15px; line-height: 1.5; display: inline-flex; gap: 6px; align-items: center; }
 .as-fija { color: var(--marca-tx); display: inline-flex; flex-shrink: 0; }
@@ -524,7 +537,7 @@ CSS_TEL = """.as-bar { height: 60px; flex-shrink: 0; display: flex; align-items:
 .as-bar .tit .sub { font-size: 13px; color: var(--t2); line-height: 1.3; }
 .as-tb { width: 44px; height: 44px; border: 0; border-radius: 12px; background: transparent; color: var(--t1); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
 .as-tcuerpo { flex: 1; min-height: 0; overflow: auto; padding: 8px 16px 12px; display: flex; flex-direction: column-reverse; background: #fff; }
-.as-tcuerpo > .as-col { margin-top: auto; gap: 18px; max-width: none; }
+.as-tcuerpo .as-col { margin-top: auto; gap: 18px; max-width: none; }
 .as-tbien { margin: auto 0; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; padding: 0 4px; }
 .as-tbien .as-h { font-size: 24px; }
 .as-tbien .as-chip { height: 40px; font-size: 15px; padding: 0 16px; }

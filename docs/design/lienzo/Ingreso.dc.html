@@ -620,6 +620,9 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-cuenta-existe">
 .err-acc { align-self: flex-start; font-size: 14px; font-weight: 600; }
 </style>
+<style data-vuelta="1004-v115">
+.err-acc { align-self: flex-start; font-size: 14px; font-weight: 600; }
+</style>
 </helmet>
 
 <div class="auth">
@@ -651,7 +654,7 @@ textarea.in2 { height: auto; min-height: 84px; }
                 <button type="button" class="in2 lg" aria-label="País: Argentina"><span class="val"><span class="ban-pre"><svg class="bandera" viewBox="0 0 513 342" width="24" height="16" aria-hidden="true"><path fill="#FFF" d="M0 0h512v342H0z"/><path fill="#338AF3" d="M0 0h512v114H0zM0 228h512v114H0z"/><circle fill="#FFDA44" stroke="#d6ab00" stroke-width="5" cx="256.5" cy="171" r="40"/></svg>+54</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
                 <input class="in2 lg {{malCampo}}" id="f-tel" type="tel" autocomplete="tel-national" value="{{tel}}" onChange="{{onTel}}">
               </div>
-              <sc-if value="{{errCampo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errCampo}}</span></sc-if>
+              <sc-if value="{{errCampo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errCampo}}</span></sc-if><sc-if value="{{conEnlace}}" hint-placeholder-val="{{no}}"><a class="lnk err-acc" href="{{hrefEnlace}}">{{textoEnlace}}</a></sc-if>
               
             </div>
           </sc-if>
@@ -822,7 +825,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Correo","WhatsApp","Correo inválido","Correo sin cuenta","Esperá para pedir otro código","Demasiados pedidos","No pudimos entrar con Google","Código enviado","Código enviado por WhatsApp","Código incorrecto","Código vencido","Sin intentos","Cuenta bloqueada","Cuenta suspendida","Operador: segundo factor","Operador: código del autenticador incorrecto","Operador: código de recuperación","Operador: configurar el autenticador","Operador: guardar los códigos","Operador: la cuenta entra por Plataforma","Empresa: la cuenta no está en ninguna empresa","Empresa: acceso deshabilitado","Cuenta con la baja pedida","Tu sesión venció"],"default":"Correo","section":"Estado"},"puerta":{"editor":"enum","options":["Persona","Empresa"],"default":"Persona","section":"Estado"},"cuenta":{"editor":"enum","options":["Lucía (miembro de Grupo Delta)","Beto (sin organizaciones)","Martín (operador de la plataforma)"],"default":"Lucía (miembro de Grupo Delta)","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Correo","WhatsApp","WhatsApp: número sin cuenta","Correo inválido","Correo sin cuenta","Esperá para pedir otro código","Demasiados pedidos","No pudimos entrar con Google","Código enviado","Código enviado por WhatsApp","Código incorrecto","Código vencido","Sin intentos","Cuenta bloqueada","Cuenta suspendida","Operador: segundo factor","Operador: código del autenticador incorrecto","Operador: código de recuperación","Operador: configurar el autenticador","Operador: guardar los códigos","Operador: la cuenta entra por Plataforma","Empresa: la cuenta no está en ninguna empresa","Empresa: acceso deshabilitado","Cuenta con la baja pedida","Tu sesión venció"],"default":"Correo","section":"Estado"},"puerta":{"editor":"enum","options":["Persona","Empresa"],"default":"Persona","section":"Estado"},"cuenta":{"editor":"enum","options":["Lucía (miembro de Grupo Delta)","Beto (sin organizaciones)","Martín (operador de la plataforma)"],"default":"Lucía (miembro de Grupo Delta)","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 const CUENTAS = {
   // Destino después del código, según la puerta: Persona, al inicio personal; Empresa, al inicio de la organización que eligió la última vez.
   'Lucía (miembro de Grupo Delta)': { id: 'lucia', correo: 'lucia.fernandez@delta.ejemplo.com', tel: '11 5555 4521', Persona: 'Inicio-Personal.dc.html', Empresa: 'Inicio-Org.dc.html' },
@@ -837,6 +840,8 @@ const mmss = (n) => Math.floor(n / 60) + ':' + String(n % 60).padStart(2, '0');
 const ESTADOS = {
   'Correo': {},
   'WhatsApp': { medio: 'whatsapp' },
+  // ADR 0043 y 0049: el número sin cuenta lo dice debajo del campo, no manda código y ofrece crearla.
+  'WhatsApp: número sin cuenta': { medio: 'whatsapp', tel: '11 5555-0199', errCampo: 'No hay una cuenta con ese número.', errAccion: 'crear' },
   'Correo inválido': { correo: 'lucia.fernandez@', errCampo: 'Ingresá un correo electrónico válido.' },
   // ADR 0043: sin cuenta no se manda código; el enlace lleva al registro con el correo ya escrito.
   'Correo sin cuenta': { correo: 'mariana.lopez@gmail.com', errCampo: 'No hay una cuenta con ese correo.', errAccion: 'crear' },
@@ -1080,7 +1085,7 @@ class Component extends DCLogic {
 
     return {
       cuenta, puerta: e.puerta ?? props.puerta ?? 'Persona', paso: e.paso ?? 'correo', medio: e.medio ?? 'correo',
-      correo: e.correo ?? (e.paso ? c.correo : ''), tel: e.medio === 'whatsapp' && e.paso ? c.tel : '',
+      correo: e.correo ?? (e.paso ? c.correo : ''), tel: e.tel ?? (e.medio === 'whatsapp' && e.paso ? c.tel : ''),
       errCampo: e.errCampo ?? '', errAccion: e.errAccion ?? '', msj: e.msj ?? null, espera: e.espera ?? 0,
       cod: e.cod ?? [...VACIO], mal: !!e.mal, intentos: e.intentos ?? 5, gastado: !!e.gastado, cerrada: !!e.cerrada, reenviarEn: e.reenviarEn ?? 54,
       vencida: !!e.vencida, cancelandoBaja: false,

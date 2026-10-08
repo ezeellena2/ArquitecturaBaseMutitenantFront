@@ -582,6 +582,9 @@
 </style>
 <style data-vuelta="1004-enmascarado">
 </style>
+<style data-vuelta="1004-v115">
+.err-acc { align-self: flex-start; font-size: 14px; font-weight: 600; }
+</style>
 </helmet>
 
 <div class="msg-root">
@@ -658,7 +661,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Código para verificar un método","Enlace para entrar (bot)","Invitación a una organización","Invitación como operador","Invitación como operador: sin nombre","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Método de ingreso: ya es de una cuenta","Membresía terminada","Exportación de datos lista","Baja pedida","Baja por la plataforma","Baja por la plataforma: suspendida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: aviso a la cuenta","Recuperación: ya tiene una cuenta","Recuperación: aprobada","Recuperación: rechazada","Asistente: 80 % del tope (su clave)","Asistente: tope alcanzado (su clave)","Asistente: 80 % del tope (plataforma)","Asistente: tope alcanzado (plataforma)"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"mensaje":{"editor":"enum","options":["Código de ingreso","Chats esperando","Código para verificar un método","Enlace para entrar (bot)","Bot: número sin cuenta","Bot: número sin cuenta y registro cerrado","Bot: cuenta de operador","Invitación a una organización","Invitación como operador","Invitación como operador: sin nombre","Método de ingreso agregado","Método de ingreso quitado","Método principal cambiado","Membresía terminada","Exportación de datos lista","Baja pedida","Baja por la plataforma","Baja por la plataforma: suspendida","Baja cancelada","Cuenta eliminada","Recuperación: pedido recibido","Recuperación: aviso a la cuenta","Recuperación: aprobada","Recuperación: rechazada","Organización aprobada","Organización rechazada","Página pública: la despublicó la plataforma","Página pública: se puede volver a publicar","Asistente: 80 % del tope (su clave)","Asistente: tope alcanzado (su clave)","Asistente: 80 % del tope (plataforma)","Asistente: tope alcanzado (plataforma)"],"default":"Código de ingreso","section":"Mensaje"},"canal":{"editor":"enum","options":["Correo","WhatsApp"],"default":"Correo","section":"Mensaje"},"$preview":{"width":1440,"height":900}}'>
 // Mensajes que manda el sistema en los flujos de la plantilla. Salen por el outbox, con textos de Notifications.resx
 // (y los del módulo WhatsApp), en la cultura de la persona y con fechas de DisplayFormatter (es-AR, Buenos Aires).
 // Correo: la estructura de _Layout.html, LoginCode.html e Invitation.html de ArquitecturaBase.
@@ -702,6 +705,22 @@ const MENSAJES = [
     // backend.md §15: un mensaje entrante nunca abre una sesión; solo produce un enlace de un solo uso.
     // Mensaje libre: la persona acaba de escribir, así que no hace falta plantilla (ventana de 24 horas).
     wa: { mio: 'Hola', texto: [N('Hola, Lucía. Para entrar a ArquitecturaBase, tocá Entrar. El enlace sirve una vez y vence en 10 minutos.')], pie: 'Por ahora este chat solo sirve para entrar.', botones: [{ t: 'Entrar', url: true }] },
+  },
+  {
+    n: 'Bot: número sin cuenta',
+    // ADR 0049: ofrece el registro personal por WhatsApp en la web, sin el número en el enlace. No crea la cuenta ni acepta términos desde el chat.
+    // Mensaje libre dentro de la ventana de 24 horas: no hace falta plantilla.
+    wa: { mio: 'Hola', texto: [N('Hola. Este número no tiene una cuenta de ArquitecturaBase. Para crear la tuya, tocá Crear mi cuenta: vas a aceptar los términos y confirmar el número con un código.')], pie: 'Por ahora este chat solo sirve para entrar.', botones: [{ t: 'Crear mi cuenta', url: true }] },
+  },
+  {
+    n: 'Bot: número sin cuenta y registro cerrado',
+    // ADR 0049: con el registro de personas cerrado, ofrece ingresar o recuperar la cuenta.
+    wa: { mio: 'Hola', texto: [N('Hola. Este número no tiene una cuenta de ArquitecturaBase y por ahora no se pueden crear cuentas nuevas. Si tenés una cuenta con otro correo o número, ingresá con ese método o recuperá tu cuenta.')], pie: 'Por ahora este chat solo sirve para entrar.', botones: [{ t: 'Ingresar', url: true }, { t: 'Recuperar mi cuenta', url: true }] },
+  },
+  {
+    n: 'Bot: cuenta de operador',
+    // ADR 0049: nunca un enlace para un operador; sin botones y sin mencionar Plataforma ni al operador. Entra por /plataforma con su código.
+    wa: { mio: 'Hola', texto: [N('Para entrar, usá la web.')], botones: [] },
   },
   {
     n: 'Invitación a una organización',
@@ -798,21 +817,6 @@ const MENSAJES = [
       notas: [P(SI_NO_FUISTE)],
     },
     wa: { plantilla: 'aviso_metodo_ingreso', texto: [N('Cambiaron los métodos de ingreso de tu cuenta de ArquitecturaBase: elegiste como principal lu•••@gmail.com el 27/09/2026 a las 14:35. ' + SI_NO_FUISTE)] },
-  },
-  {
-    n: 'Método de ingreso: ya es de una cuenta',
-    // ADR 0041: si alguien quiere sumar a su cuenta un correo o un número que ya es de otra, le llega esto al dueño y no hay código.
-    // La pantalla de quien lo quiso sumar sigue igual: no revela que ese correo o número tiene cuenta.
-    correo: {
-      asunto: 'Ya tenés una cuenta con este correo',
-      para: 'ana.gomez@gmail.com',
-      titulo: 'Ya tenés una cuenta con este correo',
-      parrafos: [P('Alguien quiso agregar este correo para entrar a otra cuenta de ArquitecturaBase. Este correo ya es de una cuenta, así que no lo agregamos y no mandamos ningún código.'),
-        P('Si fuiste vos, entrá con este correo: ya tenés una cuenta.')],
-      notas: [P('Si no fuiste vos, ignorá este mensaje.')],
-    },
-    // Plantilla `metodo_ingreso_en_uso`: sin variables.
-    wa: { plantilla: 'metodo_ingreso_en_uso', texto: [N('Alguien quiso agregar este número para entrar a otra cuenta de ArquitecturaBase, pero este número ya es de una cuenta. Si fuiste vos, entrá con este número: ya tenés una cuenta. Si no fuiste vos, ignorá este mensaje.')] },
   },
   {
     n: 'Membresía terminada',
@@ -936,21 +940,6 @@ const MENSAJES = [
     wa: { plantilla: 'recuperacion_aviso_cuenta', texto: [N('Alguien pidió recuperar tu cuenta de ArquitecturaBase. Una persona de la plataforma revisa el pedido antes de cambiar algo. Si fuiste vos, no tenés que hacer nada. Si no fuiste vos, escribí a soporte@ejemplo.com.')] },
   },
   {
-    n: 'Recuperación: ya tiene una cuenta',
-    // Decisión 16 de la Etapa 5: si el método nuevo de «Recuperar mi cuenta» ya es de otra cuenta, le llega esto en lugar del código.
-    // La pantalla de quien pidió la recuperación no cambia: no revela que ese correo o número tiene cuenta.
-    correo: {
-      asunto: 'Ya tenés una cuenta con este correo',
-      para: 'ana.gomez@gmail.com',
-      titulo: 'Ya tenés una cuenta con este correo',
-      parrafos: [P('Alguien pidió recuperar una cuenta de ArquitecturaBase y nos dio este correo para escribirle. Este correo ya es de una cuenta, así que no mandamos ningún código.'),
-        P('Si fuiste vos, entrá con este correo: no hace falta recuperar nada.')],
-      notas: [P('Si no fuiste vos, ignorá este mensaje.')],
-    },
-    // Plantilla `recuperacion_metodo_en_uso`: sin variables.
-    wa: { plantilla: 'recuperacion_metodo_en_uso', texto: [N('Alguien pidió recuperar una cuenta de ArquitecturaBase con este número, pero este número ya es de una cuenta. Si fuiste vos, entrá con este número: no hace falta recuperar nada. Si no fuiste vos, ignorá este mensaje.')] },
-  },
-  {
     n: 'Recuperación: aprobada',
     // Aprobar suma el método nuevo como principal y saca la cuenta de «Necesita recuperación».
     correo: {
@@ -975,6 +964,50 @@ const MENSAJES = [
     },
     // Plantilla `recuperacion_rechazada`: sin variables.
     wa: { plantilla: 'recuperacion_rechazada', texto: [N('Revisamos tu pedido para recuperar tu cuenta de ArquitecturaBase y no pudimos confirmar que sea tuya. Podés hacer un pedido nuevo desde la pantalla de ingreso.')] },
+  },
+  {
+    n: 'Organización aprobada',
+    // Plantilla `organizacion_aprobada` (ADR 0049): el mismo contenido que el correo, sin botones nuevos.
+    correo: {
+      asunto: 'Aprobamos Gamma S.A.',
+      para: 'julio@gamma.ejemplo.com',
+      titulo: 'Aprobamos Gamma S.A.',
+      parrafos: [P('Hola, Julio. Aprobamos Gamma S.A. y terminamos el alta. Ya podés entrar como Dueño de tu organización.'), P('Ingresá con los métodos de tu cuenta y elegí tu organización.')],
+    },
+    wa: { plantilla: 'organizacion_aprobada', texto: [N('Aprobamos Gamma S.A. y terminamos el alta. Ya podés entrar como Dueño de tu organización. Ingresá con los métodos de tu cuenta y elegí tu organización.')], botones: [] },
+  },
+  {
+    n: 'Organización rechazada',
+    // Plantilla `organizacion_rechazada` (ADR 0049).
+    correo: {
+      asunto: 'No aprobamos el alta de Gamma S.A.',
+      para: 'julio@gamma.ejemplo.com',
+      titulo: 'No aprobamos el alta de Gamma S.A.',
+      parrafos: [P('Hola, Julio. No aprobamos la solicitud de alta de Gamma S.A.'), P('Tu cuenta y tu espacio personal siguen funcionando.')],
+    },
+    wa: { plantilla: 'organizacion_rechazada', texto: [N('No aprobamos la solicitud de alta de Gamma S.A. Tu cuenta y tu espacio personal siguen funcionando.')], botones: [] },
+  },
+  {
+    n: 'Página pública: la despublicó la plataforma',
+    // Plantilla `pagina_publica_moderada` (ADR 0049), con la página bloqueada.
+    correo: {
+      asunto: 'La plataforma despublicó la página de Grupo Delta',
+      para: 'lucia.fernandez@delta.ejemplo.com',
+      titulo: 'La plataforma despublicó tu página pública',
+      parrafos: [P('Hola, Lucía. La plataforma despublicó la página pública de Grupo Delta. Quedó en borrador y no se puede publicar hasta que la plataforma lo permita.'), P('Tu organización y sus accesos siguen funcionando.')],
+    },
+    wa: { plantilla: 'pagina_publica_moderada', texto: [N('La página pública de Grupo Delta: la plataforma la despublicó; quedó en borrador y no se puede publicar hasta que la plataforma lo permita. Tu organización y sus accesos siguen funcionando.')], botones: [] },
+  },
+  {
+    n: 'Página pública: se puede volver a publicar',
+    // Plantilla `pagina_publica_moderada` (ADR 0049), con la página permitida. No la vuelve a publicar sola.
+    correo: {
+      asunto: 'Ya podés volver a publicar la página de Grupo Delta',
+      para: 'lucia.fernandez@delta.ejemplo.com',
+      titulo: 'Ya podés volver a publicar tu página',
+      parrafos: [P('Hola, Lucía. La plataforma permitió volver a publicar la página pública de Grupo Delta. Podés revisarla y publicarla desde tu organización.'), P('Tu organización y sus accesos siguen funcionando.')],
+    },
+    wa: { plantilla: 'pagina_publica_moderada', texto: [N('La página pública de Grupo Delta: la plataforma permitió volver a publicarla; podés revisarla y publicarla desde tu organización. Tu organización y sus accesos siguen funcionando.')], botones: [] },
   },
   {
     n: 'Asistente: 80 % del tope (su clave)',

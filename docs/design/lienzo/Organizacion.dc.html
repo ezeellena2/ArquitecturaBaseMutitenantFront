@@ -627,6 +627,9 @@ textarea.in2 { height: auto; min-height: 84px; }
 .tt-f .dos { display: flex; flex-direction: column; min-width: 0; }
 .tt-f .dos .n2 { font-size: 12.5px; color: var(--t3); }
 </style>
+<style data-vuelta="1004-v115">
+.err-acc { align-self: flex-start; font-size: 14px; font-weight: 600; }
+</style>
 </helmet>
 
 <div class="ab-root ab-app-shell {{plMenuClase}}" style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
@@ -822,6 +825,7 @@ const HISTORIAL = [
 const MODULOS = [
   { id: 'a', n: 'WhatsApp', estado: 'prendido', origen: 'Plan', hasta: '' },
   { id: 'b', n: 'Asistente', estado: 'prendido', origen: 'Manual', hasta: '', clave: false },
+  { id: 'c', n: 'Módulo B', estado: 'prueba', origen: 'Prueba', hasta: '27/10/2026' },
 ];
 const PESTANAS = { 'Historial': 'historial', 'Dueños': 'admins', 'Módulos': 'modulos', 'Dominio verificado': 'dominio', 'Página pública': 'pagina' };
 // Estado de la organización (PendingApproval, Active, Suspended, Closed) y lo que cambia en la ficha con cada uno.

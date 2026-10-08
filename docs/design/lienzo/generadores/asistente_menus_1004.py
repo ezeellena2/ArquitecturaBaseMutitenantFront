@@ -70,6 +70,14 @@ def armar_nav(links):
 
 
 def nav_tel(t):
+    """Todas las barras de abajo del tablero (una por estado), de atrás para adelante."""
+    for m in reversed(list(re.finditer(r'<nav class="ap-nav"[^>]*>.*?</nav>', t, re.S))):
+        t = t[:m.start()] + una_nav(m.group(0)) + t[m.end():]
+    return t
+
+
+def una_nav(nav):
+    t = nav
     m = re.search(r'<nav class="ap-nav"[^>]*>.*?</nav>', t, re.S)
     if not m or "Asistente</a>" in m.group(0):
         return t

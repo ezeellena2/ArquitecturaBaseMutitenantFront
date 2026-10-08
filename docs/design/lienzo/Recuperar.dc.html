@@ -624,6 +624,9 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-cuenta-existe">
 .err-acc { align-self: flex-start; font-size: 14px; font-weight: 600; }
 </style>
+<style data-vuelta="1004-v115">
+.err-acc { align-self: flex-start; font-size: 14px; font-weight: 600; }
+</style>
 </helmet>
 
 <div class="auth">
@@ -736,11 +739,13 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"paso":{"editor":"enum","options":["1. El correo o teléfono de antes","1. Sin cuenta con ese correo","2. Un correo o WhatsApp nuevo","2. El correo nuevo ya es de otra cuenta","3. Pedido recibido"],"default":"1. El correo o teléfono de antes"},"whatsapp":{"editor":"enum","options":["Sin WhatsApp (hasta la Etapa 8)","Con WhatsApp"],"default":"Sin WhatsApp (hasta la Etapa 8)","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"paso":{"editor":"enum","options":["1. El correo o teléfono de antes","1. Sin cuenta con ese correo","1. Sin cuenta con ese número","2. Un correo o WhatsApp nuevo","2. El correo nuevo ya es de otra cuenta","2. El WhatsApp nuevo ya es de otra cuenta","3. Pedido recibido"],"default":"1. El correo o teléfono de antes"},"whatsapp":{"editor":"enum","options":["Sin WhatsApp (hasta la Etapa 8)","Con WhatsApp"],"default":"Sin WhatsApp (hasta la Etapa 8)","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 const PASOS = {
   '1. El correo o teléfono de antes': { paso: 'cuenta', viejo: '' },
   '1. Sin cuenta con ese correo': { paso: 'cuenta', viejo: 'mariana.lopez@gmail.com', errViejo: 'No hay una cuenta con ese correo.' },
+  '1. Sin cuenta con ese número': { paso: 'cuenta', wa: true, viejoTipo: 'tel', viejo: '11 5555-0199', errViejo: 'No hay una cuenta con ese número.' },
   '2. Un correo o WhatsApp nuevo': { paso: 'nuevo', viejo: 'lucia.fernandez@delta.ejemplo.com', nuevo: '' },
+  '2. El WhatsApp nuevo ya es de otra cuenta': { paso: 'nuevo', wa: true, viejo: 'lucia.fernandez@delta.ejemplo.com', nuevoTipo: 'tel', nuevo: '351 555-0142', errNuevo: 'Ese número ya es de otra cuenta.' },
   '2. El correo nuevo ya es de otra cuenta': { paso: 'nuevo', viejo: 'lucia.fernandez@delta.ejemplo.com', nuevo: 'beto.ramirez@beta.ejemplo.com', errNuevo: 'Ese correo ya es de otra cuenta.' },
   '3. Pedido recibido': { paso: 'listo', viejo: 'lucia.fernandez@delta.ejemplo.com', nuevo: 'lucia.fer@gmail.com' },
 };
@@ -814,9 +819,9 @@ class Component extends DCLogic {
     const nuevo = nuevoTel ? s.nuevo.trim() : s.nuevo.trim().toLowerCase();
 
     return {
-      conWa: this.props.whatsapp === 'Con WhatsApp',
-      subViejo: this.props.whatsapp === 'Con WhatsApp' ? 'Escribí el correo o el teléfono con el que entrabas.' : 'Escribí el correo con el que entrabas.',
-      subNuevo: this.props.whatsapp === 'Con WhatsApp' ? 'Decinos un correo o un WhatsApp nuevo donde podamos escribirte.' : 'Decinos un correo nuevo donde podamos escribirte.',
+      conWa: (this.props.whatsapp === 'Con WhatsApp' || !!this.state.wa),
+      subViejo: (this.props.whatsapp === 'Con WhatsApp' || !!this.state.wa) ? 'Escribí el correo o el teléfono con el que entrabas.' : 'Escribí el correo con el que entrabas.',
+      subNuevo: (this.props.whatsapp === 'Con WhatsApp' || !!this.state.wa) ? 'Decinos un correo o un WhatsApp nuevo donde podamos escribirte.' : 'Decinos un correo nuevo donde podamos escribirte.',
       si: true,
       no: false,
       enCuenta: s.paso === 'cuenta',

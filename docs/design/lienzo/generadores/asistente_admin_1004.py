@@ -117,7 +117,8 @@ CONFIG_ORG = (
     banda("Configuración", SUCIO, BOTONES)
     + '<div class="w-body"><div class="w-caja"><div class="w-cab"><span>Clave y modelo</span></div><div class="as-g2">'
     + '<sc-if value="{{puedeElegir}}" hint-placeholder-val="{{si}}"><div class="w-cmp"><span class="rt">Qué clave usa</span>'
-    + seg("Qué clave usa", [("La de la plataforma", "segPlat", "usarPlat"), ("La nuestra", "segPropia", "usarPropia")]) + '</div></sc-if>'
+    + seg("Qué clave usa", [("La de la plataforma", "segPlat", "usarPlat"), ("La nuestra", "segPropia", "usarPropia")])
+    + '<sc-if value="{{sinDueno}}" hint-placeholder-val="{{no}}"><span class="as-err" role="alert">Para usar la clave de Grupo Delta, algún Dueño tiene que tener un correo verificado.</span><a class="as-lnk as-err-l" href="Cuenta-Agregar.dc.html">Agregar un correo</a></sc-if></div></sc-if>'
     + '<sc-if value="{{noPuedeElegir}}" hint-placeholder-val="{{no}}">'
     + campo("Qué clave usa", "La de la plataforma", ro=True, info="La plataforma no habilitó una clave propia para Grupo Delta.") + '</sc-if>'
     + campo("Proveedor", "Anthropic", ro=True)
@@ -141,7 +142,7 @@ CONFIG_ORG = (
     + dinero("Tope del mes", "100", ro=True, info="Lo fija la plataforma.") + '</sc-if>'
     + '</div></div></div>')
 
-JS_CONFIG_ORG = """    const propia = ['Con su clave', 'Cambiar la clave', 'Clave rechazada'].includes(e);
+JS_CONFIG_ORG = """    const propia = ['Con su clave', 'Cambiar la clave', 'Clave rechazada', 'La nuestra: ningún Dueño con correo verificado'].includes(e);
     const abierto = this.state.abierto ?? (e === 'Elegir el modelo');
     const modelo = this.state.modelo ?? (e === 'Cambios sin guardar' ? 'haiku' : propia ? 'opus' : 'sonnet');
     const NOMBRES = { opus: 'Claude Opus 5.5', sonnet: 'Claude Sonnet 5.5', haiku: 'Claude Haiku 5.5' };
@@ -157,7 +158,8 @@ JS_CONFIG_ORG = """    const propia = ['Con su clave', 'Cambiar la clave', 'Clav
       usarPropia: () => this.setState({ e: 'Con su clave', modelo: undefined, abierto: false }),
       propia, noPropia: !propia,
       claveGuardada: e === 'Con su clave',
-      claveNueva: e === 'Cambiar la clave' || e === 'Clave rechazada',
+      claveNueva: e === 'Cambiar la clave' || e === 'Clave rechazada' || e === 'La nuestra: ningún Dueño con correo verificado',
+      sinDueno: e === 'La nuestra: ningún Dueño con correo verificado',
       clave: e === 'Clave rechazada' ? 'sk-ant-api03-xxxxxxxx' : '',
       malClave: e === 'Clave rechazada' ? 'mal' : '',
       errClave: e === 'Clave rechazada' ? 'Anthropic rechazó la clave.' : '',
@@ -173,7 +175,7 @@ JS_CONFIG_ORG = """    const propia = ['Con su clave', 'Cambiar la clave', 'Clav
       guardar: () => this.setState({ modelo: undefined, abierto: false, e: propia ? 'Con su clave' : 'Con la clave de la plataforma' }),
     };"""
 ESTADOS_CONFIG_ORG = ["Con la clave de la plataforma", "Elegir el modelo", "Cambios sin guardar", "Con su clave", "Cambiar la clave",
-                      "Clave rechazada", "La plataforma no habilitó su clave"]
+                      "Clave rechazada", "La nuestra: ningún Dueño con correo verificado", "La plataforma no habilitó su clave"]
 
 # ---------------------------------------------------------------- Organización: Uso
 DIAS = [("07/10/2026", "212", "8", "6,10"), ("06/10/2026", "248", "9", "7,30"), ("05/10/2026", "31", "2", "0,90"),
@@ -385,6 +387,7 @@ CSS = """.as-g2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0,
 .as-din { justify-content: flex-start !important; gap: 8px !important; }
 .as-pre { color: var(--t3); font-weight: 500; }
 .as-err { font-size: 13px; color: oklch(0.5 0.19 25); }
+.as-err-l { align-self: flex-start; font-size: 14px; }
 .as-sucio { color: oklch(0.5 0.12 70); font-weight: 500; }
 .w-body { display: flex; flex-direction: column; gap: 16px; }
 .as-cab-d { display: inline-flex; align-items: center; gap: 4px; padding-right: 12px; font-weight: 500; color: var(--t2); }
@@ -490,11 +493,13 @@ def tit(texto, primero=False):
 T_CONFIG_ORG = (
     tit("Clave y modelo", True)
     + '<sc-if value="{{puedeElegir}}" hint-placeholder-val="{{si}}"><div class="ap-cmp"><span class="rt"><span>Qué clave usa</span></span>'
-    + seg("Qué clave usa", [("La de la plataforma", "segPlat", "usarPlat"), ("La nuestra", "segPropia", "usarPropia")]) + '</div></sc-if>'
+    + seg("Qué clave usa", [("La de la plataforma", "segPlat", "usarPlat"), ("La nuestra", "segPropia", "usarPropia")])
+    + '<sc-if value="{{sinDueno}}" hint-placeholder-val="{{no}}"><span class="as-err" role="alert">Para usar la clave de Grupo Delta, algún Dueño tiene que tener un correo verificado.</span><a class="as-lnk as-err-l" href="M-Cuenta-Agregar.dc.html">Agregar un correo</a></sc-if></div></sc-if>'
     + '<sc-if value="{{noPuedeElegir}}" hint-placeholder-val="{{no}}">' + tcampo("Qué clave usa", "La de la plataforma", ro=True, info="La plataforma no habilitó una clave propia para Grupo Delta.") + '</sc-if>'
     + tcampo("Proveedor", "Anthropic", ro=True)
-    + '<sc-if value="{{propia}}" hint-placeholder-val="{{no}}"><div class="ap-cmp"><span class="rt"><span>Clave de Anthropic <span class="rq">*</span></span></span>'
+    + '<sc-if value="{{claveGuardada}}" hint-placeholder-val="{{no}}"><div class="ap-cmp"><span class="rt"><span>Clave de Anthropic <span class="rq">*</span></span></span>'
       '<div class="ct ro as-clave"><span>•••• 4F2a</span><button type="button" class="as-lnk">Cambiar</button></div></div></sc-if>'
+    + '<sc-if value="{{sinDueno}}" hint-placeholder-val="{{no}}">' + tcampo("Clave de Anthropic", "Pegá la clave de Anthropic", ph=True, req=True) + '</sc-if>'
     + '<sc-if value="{{propia}}" hint-placeholder-val="{{no}}">' + tcampo("Modelo", "Claude Opus 5.5", sel=True) + '</sc-if>'
     + '<sc-if value="{{noPropia}}" hint-placeholder-val="{{si}}">' + tcampo("Modelo", "Claude Sonnet 5.5", sel=True) + '</sc-if>'
     + tit("Topes")
@@ -502,13 +507,13 @@ T_CONFIG_ORG = (
     + '<div class="ap-cmp"><span class="rt"><span>Tope del mes</span></span><div class="ct as-din"><span class="as-pre">USD</span><span>200</span></div></div></sc-if>'
     + '<sc-if value="{{noPropia}}" hint-placeholder-val="{{si}}">' + tcampo("Consultas por persona por día", "50", ro=True, info="Los fija la plataforma.")
     + f'<div class="ap-cmp"><span class="rt"><span>Tope del mes</span>{INFO_I("Lo fija la plataforma.")}</span><div class="ct ro as-din"><span class="as-pre">USD</span><span>100</span></div></div></sc-if>')
-JS_T_CONFIG_ORG = """    const propia = e === 'Con su clave';
+JS_T_CONFIG_ORG = """    const propia = e === 'Con su clave' || e === 'La nuestra: ningún Dueño con correo verificado';
     return {
       si: true, no: false,
       puedeElegir: e !== 'La plataforma no habilitó su clave', noPuedeElegir: e === 'La plataforma no habilitó su clave',
       segPlat: propia ? '' : 'on', segPropia: propia ? 'on' : '',
       usarPlat: () => ir('Con la clave de la plataforma'), usarPropia: () => ir('Con su clave'),
-      propia, noPropia: !propia,
+      propia, noPropia: !propia, sinDueno: e === 'La nuestra: ningún Dueño con correo verificado', claveGuardada: e === 'Con su clave',
     };"""
 
 
@@ -622,7 +627,7 @@ def pagina_tel(nuevo, titulo, sub, volver, contenido, estados, js, botones=True,
 
 
 if pagina_tel("M-Asistente-Config-Org", "Configuración", "Asistente", "M-WA-Menu.dc.html", T_CONFIG_ORG,
-              ["Con la clave de la plataforma", "Con su clave", "La plataforma no habilitó su clave"], JS_T_CONFIG_ORG):
+              ["Con la clave de la plataforma", "Con su clave", "La nuestra: ningún Dueño con correo verificado", "La plataforma no habilitó su clave"], JS_T_CONFIG_ORG):
     hechos.append("M-Asistente-Config-Org")
 if pagina_tel("M-Asistente-Uso-Org", "Uso", "Asistente · octubre de 2026", "M-WA-Menu.dc.html", T_USO_ORG,
               ["Por día", "Por persona", "Cerca del tope"], JS_T_USO_ORG, botones=False):

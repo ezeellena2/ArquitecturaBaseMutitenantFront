@@ -488,7 +488,7 @@
 
   </style><!-- /tema -->
   <style data-criterio="botones">
-.crit { width: 2960px; min-height: 7300px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
+.crit { width: 2960px; min-height: 7800px; box-sizing: border-box; padding: 40px 48px 56px; background: var(--fondo); color: var(--t1); font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 36px; }
 .crit h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .crit .sub { margin: 4px 0 0; font-size: 15px; color: var(--t2); }
 .crit h2 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding-bottom: 10px; border-bottom: 1px solid var(--borde); }
@@ -606,6 +606,7 @@
     <h2>Reglas que salieron de estas decisiones</h2>
     <div class="dec">
       <div class="c" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Regla</span><span>Tablero</span><span>Desde</span></div>
+      <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Un número sin cuenta o que ya es de otra cuenta se avisa debajo del campo, como un correo, y no manda código.</span><span>Formularios y campos</span><span class="gris">08/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Un dato que no se puede cambiar va en el mismo campo que al editar, deshabilitado (fondo y texto grises); nunca rótulo y texto suelto.</span><span>Formularios y campos</span><span class="gris">07/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>En el teléfono, la barra de abajo lleva hasta cinco pestañas; lo que no entra pasa a «Más».</span><span>Marco y pantallas</span><span class="gris">07/10/2026</span></div>
       <div class="f" style="grid-template-columns: minmax(0, 1fr) 300px 120px;"><span>Un desplegable se abre debajo del campo y del mismo ancho, como los filtros y el ⋮ de una fila.</span><span>Formularios y campos</span><span class="gris">05/10/2026</span></div>
@@ -771,6 +772,13 @@
     </div>
   </section>
   <section>
+    <h2>La Guía y el usuario · 08/10</h2>
+    <div class="dec">
+      <div class="c" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><span>Pantalla</span><span>Qué se eligió</span><span>En el lienzo</span></div>
+      <div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Teléfonos: número sin cuenta u ocupado</strong><span>Como el correo (0043): el error debajo del campo y la acción real, sin código ni aviso al dueño. Ingreso, Registro, Recuperar y Mi cuenta.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Mi cuenta sin códigos</strong><span>Quitar, hacer principal y dar de baja sin código (0045); el código queda solo para verificar un método nuevo.</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Bot de WhatsApp</strong><span>A un número sin cuenta, el registro personal en la web, o ingresar y recuperar si el registro está cerrado; a un operador, «Para entrar, usá la web.», sin enlace ni botones (0049).</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Avisos de la organización por WhatsApp</strong><span>Aprobada, rechazada, página despublicada y permitido volver a publicar, con el mismo contenido que el correo (0049).</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Asistente</strong><span>«Todavía no tenés mensajes con empresas»; con su clave, un Dueño con correo verificado o «Agregar un correo»; el tope del día dice a qué hora se renueva (0049).</span><span class="est ok">Dibujada</span></div><div class="f" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><strong>Módulos de una organización</strong><span>El Asistente se suma; vuelve la fila de prueba de «Módulo B».</span><span class="est ok">Dibujada</span></div>
+    </div>
+  </section>
+  <section>
     <h2>Lo que sigue</h2>
     <div class="dec">
       <div class="c" style="grid-template-columns: 220px minmax(0, 1fr) 230px;"><span>Pantalla</span><span>Qué se eligió</span><span>En el lienzo</span></div>
@@ -782,7 +790,7 @@
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2960,"height":7300}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2960,"height":7800}}'>
 class Component extends DCLogic {
   renderVals() {
     return { si: true, no: false };

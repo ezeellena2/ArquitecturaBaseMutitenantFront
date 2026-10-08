@@ -6,7 +6,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 7300
+ALTO = 7800
 ANCHO = 2960
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
@@ -52,6 +52,7 @@ ESTADOS = {
 
 # Reglas generales que salieron de las decisiones: (regla, tablero donde quedó, fecha).
 REGLAS = [
+    ("Un número sin cuenta o que ya es de otra cuenta se avisa debajo del campo, como un correo, y no manda código.", "Formularios y campos", "08/10/2026"),
     ("Un dato que no se puede cambiar va en el mismo campo que al editar, deshabilitado (fondo y texto grises); nunca rótulo y texto suelto.", "Formularios y campos", "07/10/2026"),
     ("En el teléfono, la barra de abajo lleva hasta cinco pestañas; lo que no entra pasa a «Más».", "Marco y pantallas", "07/10/2026"),
     ("Un desplegable se abre debajo del campo y del mismo ancho, como los filtros y el ⋮ de una fila.", "Formularios y campos", "05/10/2026"),
@@ -299,6 +300,14 @@ DECISIONES = {
         ("Aviso de la primera vez", "", "«Tus consultas las procesa un proveedor de IA; no subas datos sensibles.» con «Entendido», en un diálogo sin cerrar ni cancelar (D22).", "Dibujada"),
         ("Catálogo de modelos", "", "Una pestaña en Configuración del asistente de Plataforma: modelo, proveedor, ID, precios de entrada y de salida, y activo (D26).", "Dibujada"),
         ("Correos de alerta del asistente", "", "Al 80 % y al 100 % del tope del mes: al Dueño si usa su clave y a la plataforma si usa la de ella (D23).", "Dibujada"),
+    ],
+    "La Guía y el usuario · 08/10": [
+        ("Teléfonos: número sin cuenta u ocupado", "", "Como el correo (0043): el error debajo del campo y la acción real, sin código ni aviso al dueño. Ingreso, Registro, Recuperar y Mi cuenta.", "Dibujada"),
+        ("Mi cuenta sin códigos", "", "Quitar, hacer principal y dar de baja sin código (0045); el código queda solo para verificar un método nuevo.", "Dibujada"),
+        ("Bot de WhatsApp", "", "A un número sin cuenta, el registro personal en la web, o ingresar y recuperar si el registro está cerrado; a un operador, «Para entrar, usá la web.», sin enlace ni botones (0049).", "Dibujada"),
+        ("Avisos de la organización por WhatsApp", "", "Aprobada, rechazada, página despublicada y permitido volver a publicar, con el mismo contenido que el correo (0049).", "Dibujada"),
+        ("Asistente", "", "«Todavía no tenés mensajes con empresas»; con su clave, un Dueño con correo verificado o «Agregar un correo»; el tope del día dice a qué hora se renueva (0049).", "Dibujada"),
+        ("Módulos de una organización", "", "El Asistente se suma; vuelve la fila de prueba de «Módulo B».", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),

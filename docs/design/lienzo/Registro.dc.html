@@ -621,6 +621,9 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-cuenta-existe">
 .err-acc { align-self: flex-start; font-size: 14px; font-weight: 600; }
 </style>
+<style data-vuelta="1004-v115">
+.err-acc { align-self: flex-start; font-size: 14px; font-weight: 600; }
+</style>
 </helmet>
 
 <div class="auth">
@@ -653,7 +656,7 @@ textarea.in2 { height: auto; min-height: 84px; }
                 <button type="button" class="in2 lg" aria-label="País: Argentina"><span class="val"><span class="ban-pre"><svg class="bandera" viewBox="0 0 513 342" width="24" height="16" aria-hidden="true"><path fill="#FFF" d="M0 0h512v342H0z"/><path fill="#338AF3" d="M0 0h512v114H0zM0 228h512v114H0z"/><circle fill="#FFDA44" stroke="#d6ab00" stroke-width="5" cx="256.5" cy="171" r="40"/></svg>+54</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
                 <input class="in2 lg {{malCampo}}" id="f-tel" type="tel" autocomplete="tel-national" value="{{tel}}" onChange="{{onTel}}">
               </div>
-              <sc-if value="{{errCampo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errCampo}}</span></sc-if>
+              <sc-if value="{{errCampo}}" hint-placeholder-val="{{no}}"><span class="err2" role="alert">{{errCampo}}</span></sc-if><sc-if value="{{conEnlace}}" hint-placeholder-val="{{no}}"><a class="lnk err-acc" href="{{hrefEnlace}}">{{textoEnlace}}</a></sc-if>
               
             </div>
           </sc-if>
@@ -714,11 +717,13 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Correo","WhatsApp","Correo inválido","Correo con cuenta","Registro cerrado","Código enviado","Código incorrecto"],"default":"Correo","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Correo","WhatsApp","WhatsApp: número con cuenta","Correo inválido","Correo con cuenta","Registro cerrado","Código enviado","Código incorrecto"],"default":"Correo","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 const VACIO = ['', '', '', '', '', ''];
 const ESTADOS = {
   'Correo': {},
   'WhatsApp': { medio: 'whatsapp' },
+  // ADR 0043: el número ya tiene cuenta; el enlace lleva al ingreso.
+  'WhatsApp: número con cuenta': { medio: 'whatsapp', acepta: true, tel: '11 5555-4521', errCampo: 'Ya tenés una cuenta con ese número.', errAccion: 'ingresar' },
   'Correo inválido': { acepta: true, correo: 'mariana.lopez@gmail', errCampo: 'Ingresá un correo electrónico válido.' },
   // ADR 0043: el correo ya tiene cuenta (también el de un operador); el enlace lleva al ingreso con el correo ya escrito.
   'Correo con cuenta': { acepta: true, correo: 'lucia.fernandez@delta.ejemplo.com', errCampo: 'Ya tenés una cuenta con ese correo.', errAccion: 'ingresar' },
@@ -939,7 +944,7 @@ class Component extends DCLogic {
   inicial(estado) {
     const e = ESTADOS[estado ?? 'Correo'];
 
-    return { acepta: !!e.acepta, paso: e.paso ?? 'correo', medio: e.medio ?? 'correo', correo: e.correo ?? '', tel: '', errCampo: e.errCampo ?? '', errAccion: e.errAccion ?? '', cod: e.cod ?? [...VACIO], mal: !!e.mal, msj: e.msj ?? null };
+    return { acepta: !!e.acepta, paso: e.paso ?? 'correo', medio: e.medio ?? 'correo', correo: e.correo ?? '', tel: e.tel ?? '', errCampo: e.errCampo ?? '', errAccion: e.errAccion ?? '', cod: e.cod ?? [...VACIO], mal: !!e.mal, msj: e.msj ?? null };
   }
 
   componentDidUpdate() {
