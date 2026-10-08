@@ -635,7 +635,8 @@ src/
 │   │   ├── safeStorage.ts                           las preferencias en localStorage; si el navegador no deja guardar, quedan en memoria durante la sesión
 │   │   ├── safeStorage.test.ts                      tests de safeStorage
 │   │   ├── useMediaQuery.ts                         [E0] de la base
-│   │   └── useCountdown.ts                          [E0] de la base
+│   │   ├── useCountdown.ts                          [E0] espera por vencimiento; recalcula al retomar la pestaña
+│   │   └── useCountdown.test.ts                     [E7] callbacks demorados, foco, visibilidad y reinicio
 │   ├── lib/                                         [E0]
 │   │   ├── initials.ts                              las iniciales de las dos primeras palabras, en mayúscula (Avatar)
 │   │   ├── initials.test.ts                         tests de initials
