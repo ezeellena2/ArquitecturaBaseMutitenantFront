@@ -39,6 +39,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart, access =
   const schema = useMemo(() => authDestinationSchema(t), [t]);
   const [formError, setFormError] = useState<AuthMessageContent | null>(null);
   const [accountMissing, setAccountMissing] = useState(false);
+  const [journey, setJourney] = useState(0);
   const { control, handleSubmit, setError, clearErrors, getValues, setValue, formState: { errors } } = useForm<AuthDestinationFields>({
     resolver: zodResolver(schema),
     defaultValues: { channel: initialPhone ? "phone" : "email", email: initialEmail, phone: initialPhone },
@@ -46,7 +47,8 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart, access =
   const channel = useWatch({ control, name: "channel" });
   const email = useWatch({ control, name: "email" });
   const phone = useWatch({ control, name: "phone" });
-  const request = useIdempotentMutation((destination: LoginDestination, key) => requestLoginCode(toLoginDestinationRequest(destination), key), { meta: { handlesError: true }, sameOperation: sameLoginDestination });
+  const request = useIdempotentMutation((input: { destination: LoginDestination; journey: number }, key) => requestLoginCode(toLoginDestinationRequest(input.destination), key), { meta: { handlesError: true },
+    sameOperation: (previous, next) => sameLoginDestination(previous.destination, next.destination) && previous.journey === next.journey });
   const retry = useRetryAfterCountdown();
 
   async function submit(values: AuthDestinationFields) {
@@ -55,7 +57,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart, access =
     if (values.channel === "phone" && !hasWhatsApp) return;
     const destination = destinationFromFields(values);
     try {
-      const response = await request.mutateAsync(destination);
+      const response = await request.mutateAsync({ destination, journey });
       onCodeRequested(beginCodeStep(destination.type === "email" ? destination.email : "", Date.now(), destination, response.resendAfterSeconds));
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
@@ -75,7 +77,7 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart, access =
     }}>
       <div className="flex flex-col gap-1.5">
       <AuthDestinationField channel={channel} email={email} phone={phone}
-        onChannelChange={(value) => { setValue("channel", value); clearErrors(); setAccountMissing(false); setFormError(null); }}
+        onChannelChange={(value) => { if (value !== channel) setJourney((previous) => previous + 1); setValue("channel", value); clearErrors(); setAccountMissing(false); setFormError(null); }}
         onEmailChange={(value) => { setValue("email", value); clearErrors("email"); setAccountMissing(false); setFormError(null); }}
         onPhoneChange={(value) => { setValue("phone", value); clearErrors("phone"); setAccountMissing(false); setFormError(null); }}
         error={channel === "phone" && hasWhatsApp ? errors.phone?.message : errors.email?.message} />

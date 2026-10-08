@@ -180,6 +180,11 @@ it("tras error 5xx conserva clave al reintentar número, pero corregirlo cambia 
   fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
   await waitFor(() => expect(keys).toHaveLength(3));
   expect(keys[1]).toBe(keys[0]); expect(keys[2]).not.toBe(keys[0]);
+  fireEvent.click(screen.getByRole("button", { name: "Correo" }));
+  fireEvent.click(screen.getByRole("button", { name: "WhatsApp" }));
+  fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+  await waitFor(() => expect(keys).toHaveLength(4));
+  expect(keys[3]).not.toBe(keys[2]);
 });
 
 it("código Phone vencido permite reenviar, seis dígitos son obligatorios y Usar otro número conserva destino", async () => {
@@ -219,7 +224,23 @@ it("ingreso WhatsApp en inglés muestra destino con PhoneText y acciones traduci
   expect(await screen.findByRole("heading", { name: "Check your WhatsApp" })).toBeVisible();
   expect(screen.getByRole("button", { name: "Use another number" })).toBeVisible();
   expect(container).toHaveTextContent("+54 9 11 2345 6789");
+  expect(container).toHaveTextContent("It expires in 10 minutes.");
+  expect(screen.getByText("It arrives on WhatsApp on your phone. It doesn't show up on WhatsApp Web.")).toBeVisible();
   expect(await axe(container)).toHaveNoViolations();
+});
+
+it.each(["/login", "/registro", "/registro/empresa"])("%s anuncia vencimiento Phone y reserva la nota de WhatsApp Web para ingreso", async (path) => {
+  const endpoint = path === "/login" ? "/api/auth/login-code" : path === "/registro" ? "/api/auth/signup" : "/api/auth/business-signup/code";
+  server.use(http.post(endpoint, () => HttpResponse.json({ resendAfterSeconds: 0 }, { status: 202 })));
+  const { container } = show(path === "/login" ? `${path}?${new URLSearchParams({ returnUrl: authorize })}` : path);
+  await fillPhone();
+  if (path !== "/login") fireEvent.click(screen.getByRole("checkbox"));
+  fireEvent.click(screen.getByRole("button", { name: path === "/login" ? "Enviar código" : path === "/registro" ? "Crear cuenta" : "Continuar" }));
+  await screen.findByRole("heading", { name: "Revisá tu WhatsApp" });
+  expect(container).toHaveTextContent("Vence en 10 minutos.");
+  const notice = screen.queryByText("Llega al WhatsApp de tu celular. En WhatsApp Web no se muestra.");
+  if (path === "/login") expect(notice).toBeVisible();
+  else expect(notice).not.toBeInTheDocument();
 });
 
 it.each(["/registro", "/registro/empresa"])("%s conserva clave ante 5xx, distingue destino y abandono del recorrido", async (path) => {

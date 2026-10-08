@@ -231,6 +231,9 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       verifyLabel={verifyRetry.label ?? undefined} verifyDisabled={verifyRetry.isRunning || codeSpent || accountClosed} verifyPending={verify.isPending}
       resendSeconds={accountClosed ? 0 : resendTimer.seconds} resendRetryLabel={accountClosed ? null : resendRetry.label}
       resendDisabled={accountClosed} resendPending={resend.isPending}
-      footer={accountClosed ? <div className="flex justify-center"><Button type="button" variant="link" className="text-[13px] leading-[normal]" onClick={backToEmail}>{t("login.backToLogin")}</Button></div> : null} />}
+      footer={<>
+        {step.loginDestination?.type === "phone" ? <p className="text-[12px] leading-normal text-[var(--t3)]">{t("common:code.whatsappNotice")}</p> : null}
+        {accountClosed ? <div className="flex justify-center"><Button type="button" variant="link" className="text-[13px] leading-[normal]" onClick={backToEmail}>{t("login.backToLogin")}</Button></div> : null}
+      </>} />}
   </AuthLayout>;
 }

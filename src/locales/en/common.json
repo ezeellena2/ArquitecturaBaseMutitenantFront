@@ -86,7 +86,7 @@
     "otherEmail": "Use a different email",
     "otherPhone": "Use another number",
     "sentToEmail": "We sent a code to <strong>{{email}}</strong>. It expires in 10 minutes.",
-    "sentToPhone": "We sent a code via WhatsApp to <phone />.",
+    "sentToPhone": "We sent a code via WhatsApp to <phone />. It expires in 10 minutes.",
     "whatsappNotice": "It arrives on WhatsApp on your phone. It doesn't show up on WhatsApp Web.",
     "checkWhatsApp": "Check your WhatsApp"
   },
