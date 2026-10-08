@@ -12,7 +12,7 @@ import { AppChromeProvider } from "../app/AppChrome";
 import { FormField } from "../FormField";
 import { PhoneField, type PhoneDraft } from "./PhoneField";
 
-function renderField(props: { allowedCountries?: readonly string[]; usage?: "whatsapp" | "mobile" | "any"; initialValue?: PhoneDraft } = {}, { phone = false } = {}) {
+function renderField(props: { allowedCountries?: readonly string[]; usage?: "whatsapp" | "mobile" | "any"; variant?: "default" | "auth"; initialValue?: PhoneDraft } = {}, { phone = false } = {}) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   const onValidityChange = vi.fn();
   function Harness() {
@@ -177,4 +177,14 @@ describe("PhoneField", () => {
       expect(selector).toHaveTextContent("+54");
     }
   });
+});
+
+it("la variante auth conserva el rótulo accesible y las medidas del campo público en móvil", async () => {
+  renderField({ variant: "auth" }, { phone: true });
+  const input = screen.getByRole("textbox", { name: "Teléfono" });
+  await waitFor(() => expect(input).toBeEnabled());
+  expect(input).toHaveClass("h-11", "rounded-[10px]", "text-[15px]", "max-md:h-11");
+  expect(input).toHaveAccessibleDescription("Para avisos de la cuenta");
+  fireEvent.change(input, { target: { value: "1123456789" } });
+  expect(screen.getByRole("status")).toHaveTextContent('"number":"11 2345-6789"');
 });

@@ -23,9 +23,11 @@ import { EmailCodeForm } from "../components/EmailCodeForm";
 import { GoogleButton } from "../components/GoogleButton";
 import { loginCodeMessage } from "../errors";
 import { carriedLoginRedirectError, carryLoginRedirectError, forgetLoginRedirectError } from "../lib/loginRedirectError";
+import { phoneFromNavigation } from "../lib/authDestinationForm";
+import { sameLoginDestination, toLoginDestinationRequest } from "../lib/loginDestination";
 import type { CodeStep } from "../lib/loginCodeState";
 import { loginReturnUrl, safeReturnUrl } from "../lib/returnUrl";
-import type { PendingDeletionState } from "@/shared/api/types";
+import type { LoginDestination, PendingDeletionState } from "@/shared/api/types";
 import { accountErrorCodes, pendingDeletionFromProblem } from "@/shared/api/accountContract";
 import { getPendingDeletion, cancelAccountDeletion } from "../api/deletion";
 import { PendingDeletionPanel } from "../components/PendingDeletionPanel";
@@ -52,7 +54,10 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   const auth = useAuth();
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const returnUrl = loginReturnUrl(searchParams.get("returnUrl"));
+  const [initialPhone] = useState(() => phoneFromNavigation(location.state));
+  const originalReturn = loginReturnUrl(searchParams.get("returnUrl"));
+  // El número conservado por un registro ocupado no cruza OIDC en URL ni storage. Primero probamos posesión.
+  const returnUrl = originalReturn ?? (initialPhone ? homeOf(access) : undefined);
   const signupHref = access === "consumer" && returnUrl ? `/registro?${new URLSearchParams({ returnUrl })}` : undefined;
   const [initialEmail] = useState(() => emailFromNavigation(location.state) || (returnUrl ? carriedLoginEmail() : ""));
   const redirectError = searchParams.get("error");
@@ -64,11 +69,14 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
   });
   const startedOidc = useRef(false);
   const [step, setStep] = useState<CodeStep | null>(null);
+  const [lastDestination, setLastDestination] = useState<LoginDestination | null>(null);
   const [code, setCode] = useState("");
   const [error, setError] = useState<ApiError | null>(null);
   const [result, setResult] = useState<"noBusiness" | "inactive" | "platformOnly" | UnavailableCode | null>(null);
-  const resend = useIdempotentMutation((email: string, key) => requestLoginCode(email, key), { meta: { handlesError: true } });
-  const verify = useIdempotentMutation((input: { email: string; code: string; returnUrl: string }, key) => verifyLoginCode(input, key), { meta: { handlesError: true } });
+  const resend = useIdempotentMutation((input: { destination: LoginDestination; journey: number }, key) => requestLoginCode(toLoginDestinationRequest(input.destination), key), { meta: { handlesError: true },
+    sameOperation: (previous, next) => sameLoginDestination(previous.destination, next.destination) && previous.journey === next.journey });
+  const verify = useIdempotentMutation((input: { destination: LoginDestination; code: string; returnUrl: string; journey: number }, key) => verifyLoginCode({ ...toLoginDestinationRequest(input.destination), code: input.code, returnUrl: input.returnUrl }, key), { meta: { handlesError: true },
+    sameOperation: (previous, next) => sameLoginDestination(previous.destination, next.destination) && previous.code === next.code && previous.returnUrl === next.returnUrl && previous.journey === next.journey });
   const resendTimer = useCountdown(0);
   const verifyRetry = useRetryAfterCountdown();
   const resendRetry = useRetryAfterCountdown();
@@ -108,13 +116,18 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
 
   if (!returnUrl && !pending) return null;
 
+  async function finishLogin(url: string) {
+    if (!originalReturn && initialPhone) await auth.signinRedirect({ extraQueryParams: { access }, state: { returnTo: homeOf(access) } });
+    else completeLogin(url);
+  }
+
   async function cancelDeletion() {
     if (!pending) return;
     setCancelFailure(null);
     try {
       const response = await cancel.mutateAsync(pending.cancelTicket);
       toast.success(t("deletion.cancelled"));
-      completeLogin(response.returnUrl);
+      await finishLogin(response.returnUrl);
     } catch (caught) {
       const message = apiErrorMessage(caught, t);
       if (caught instanceof ApiError && caught.status >= 400 && caught.status < 500) {
@@ -125,9 +138,10 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
 
   function startCode(next: CodeStep) {
     setStep(next);
+    setLastDestination(next.loginDestination ?? { type: "email", email: next.destination });
     setCode("");
     setError(null);
-    resendTimer.restart(60);
+    resendTimer.restart(next.resendAfterSeconds ?? 60);
   }
 
   function dismissGoogleError() { setGoogleError(null); forgetLoginRedirectError(); }
@@ -144,8 +158,8 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     if (!step || !returnUrl) return;
     setError(null);
     try {
-      const response = await verify.mutateAsync({ email: step.destination, code, returnUrl });
-      completeLogin(response.returnUrl);
+      const response = await verify.mutateAsync({ destination: step.loginDestination ?? { type: "email", email: step.destination }, code, returnUrl, journey: step.sentAtMs });
+      await finishLogin(response.returnUrl);
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
       const deletion = pendingDeletionFromProblem(caught.problem);
@@ -167,7 +181,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
     if (!step) return;
     setError(null);
     try {
-      const response = await resend.mutateAsync(step.destination);
+      const response = await resend.mutateAsync({ destination: step.loginDestination ?? { type: "email", email: step.destination }, journey: step.sentAtMs });
       setCode("");
       resendTimer.restart(response.resendAfterSeconds);
     } catch (caught) {
@@ -185,7 +199,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
 
   return <AuthLayout access={access}>
     {pending ? <PendingDeletionPanel pending={pending} onCancel={() => { void cancelDeletion(); }} busy={cancel.isPending} failure={cancelFailure} />
-      : result === "platformOnly" ? <PlatformAccessResult access={access} onSignedOut={() => { backToEmail(); dismissGoogleError(); setPending(null); setCancelFailure(null); }} />
+      : result === "platformOnly" ? <PlatformAccessResult access={access} onSignedOut={() => { backToEmail(); setLastDestination({ type: "email", email: "" }); dismissGoogleError(); setPending(null); setCancelFailure(null); }} />
       : result === "noBusiness" ? <BusinessAccessResult status="noBusiness" />
         : result === "inactive" ? <BusinessAccessResult status="inactive" organizationName={organizationName} />
           : unavailable ? <AuthStatus icon={unavailable.icon} tone={unavailable.tone}
@@ -196,9 +210,9 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{access === "business" ? t("login.businessTitle") : t("login.personalTitle")}</h1>
       {/* Tableros Ingreso y M-Ingreso («Tu sesión venció», .msj.info): la franja de los mensajes, en petróleo y con el reloj. */}
       {sessionExpired ? <FormError tone="info" icon={ClockIcon} message={t("login.sessionExpired")} /> : null}
-      <GoogleButton mode="login" access={access} returnUrl={returnUrl!} />
+      <GoogleButton mode="login" access={access} returnUrl={originalReturn ?? loginPathOf(access)} />
       <div className="flex items-center gap-3 text-[13px] text-[var(--t3)]"><span className="h-px flex-1 bg-[var(--borde)]" /><span>{t("login.or")}</span><span className="h-px flex-1 bg-[var(--borde)]" /></div>
-      <EmailCodeForm access={access} initialEmail={initialEmail} signupHref={signupHref} onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? { text: t("login.googleError"), details: [t("login.googleErrorHelp")] } : undefined} />
+      <EmailCodeForm access={access} initialEmail={lastDestination?.type === "email" ? lastDestination.email : initialEmail} initialPhone={lastDestination?.type === "phone" ? lastDestination.phone : lastDestination ? null : initialPhone} signupHref={signupHref} onCodeRequested={startCode} onSubmitStart={dismissGoogleError} notice={googleError ? { text: t("login.googleError"), details: [t("login.googleErrorHelp")] } : undefined} />
       <div className="flex flex-col gap-2">
         {access === "consumer" ? <>
           <AuthLinkRow>{t("login.noAccount")}<AuthLink to={signupHref ?? "/registro"}>{t("login.createOne")}</AuthLink></AuthLinkRow>
@@ -209,7 +223,7 @@ export function LoginPage({ access, completeLogin = followAuthorize }: LoginPage
         </>}
       </div>
       <AuthLinkRow>{t("recovery.cannotSignIn")}<AuthLink to="/recuperar">{t("recovery.link")}</AuthLink></AuthLinkRow>
-    </div> : <AuthCodeStep destination={step.destination} code={code} onBack={backToEmail}
+    </div> : <AuthCodeStep destination={step.destination} phone={step.loginDestination?.type === "phone" ? step.loginDestination.phone : undefined} code={code} onBack={backToEmail}
       onCodeChange={(next) => { setCode(next); if (wrongCode) setError(null); }}
       onVerify={() => void submitCode()} onResend={() => void resendCode()}
       invalid={wrongCode} locked={verify.isPending || codeSpent || accountClosed}

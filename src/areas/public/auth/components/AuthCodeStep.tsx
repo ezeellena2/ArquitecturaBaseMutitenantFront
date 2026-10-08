@@ -4,12 +4,16 @@ import { Trans, useTranslation } from "react-i18next";
 import { Button } from "@/shared/ui/button";
 import { OtpInput } from "@/shared/ui/OtpInput";
 import { AuthMessage, type AuthMessageContent } from "./AuthMessage";
+import type { PhoneDraft } from "@/shared/api/types";
+import { phoneE164FromDraft } from "@/shared/phone/phoneInput";
+import { PhoneText } from "@/shared/ui/format/PhoneText";
 
 const codeLength = 6;
 
 export interface AuthCodeStepProps {
   /** El correo al que mandamos el código. */
   destination: string;
+  phone?: PhoneDraft;
   code: string;
   onCodeChange: (code: string) => void;
   /** «Usar otro correo». */
@@ -43,7 +47,7 @@ export interface AuthCodeStepProps {
 /// la misma pantalla, sin ruta propia. «Verificar» no se apaga por un código incompleto («Criterio · Botones»): la franja
 /// dice qué falta y un dígito nuevo la saca. El código es el valor controlado de la pantalla, sin React Hook Form: es la
 /// excepción de formularios.md (la pantalla lo borra al pedir otro, al volver y cuando el back lo da por gastado).
-export function AuthCodeStep({ destination, code, onCodeChange, onBack, onVerify, onResend, invalid = false, locked = false, message,
+export function AuthCodeStep({ destination, phone, code, onCodeChange, onBack, onVerify, onResend, invalid = false, locked = false, message,
   verifyLabel, verifyDisabled = false, verifyPending = false, resendSeconds, resendRetryLabel, resendDisabled = false, resendPending = false, footer }: AuthCodeStepProps) {
   const { t } = useTranslation("auth");
   const hintId = useId();
@@ -58,12 +62,13 @@ export function AuthCodeStep({ destination, code, onCodeChange, onBack, onVerify
   return <div className="flex flex-col gap-[22px]">
     {/* .lnk del tablero: un enlace de texto con su flecha, a 4, con la altura normal de su letra. */}
     <Button type="button" variant="link" onClick={onBack} className="gap-1 self-start leading-[normal]">
-      <ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />{t("common:code.otherEmail")}
+      <ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />{t(phone ? "common:code.otherPhone" : "common:code.otherEmail")}
     </Button>
     <div>
-      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("common:code.checkEmail")}</h1>
+      <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t(phone ? "common:code.checkWhatsApp" : "common:code.checkEmail")}</h1>
       <p id={hintId} className="mt-1.5 text-sm leading-normal text-[var(--t2)] wrap-anywhere">
-        <Trans i18nKey="common:code.sentToEmail" values={{ email: destination }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />
+        {phone ? <Trans i18nKey="common:code.sentToPhone" components={{ phone: <PhoneText value={phoneE164FromDraft(phone)} className="font-semibold text-[var(--t1)]" /> }} />
+          : <Trans i18nKey="common:code.sentToEmail" values={{ email: destination }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />}
       </p>
     </div>
     <OtpInput length={codeLength} value={code} variant="auth" label={t("common:code.label")} invalid={invalid} disabled={locked} aria-describedby={hintId}

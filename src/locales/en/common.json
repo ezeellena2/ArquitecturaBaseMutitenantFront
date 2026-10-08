@@ -84,10 +84,11 @@
     "resend": "Resend code",
     "resendIn": "Resend in {{seconds}} s",
     "otherEmail": "Use a different email",
-    "otherPhone": "Use a different number",
+    "otherPhone": "Use another number",
     "sentToEmail": "We sent a code to <strong>{{email}}</strong>. It expires in 10 minutes.",
-    "sentToPhone": "We sent a code to <phone>{{phone}}</phone>. It expires in 10 minutes.",
-    "whatsappNotice": "It arrives on WhatsApp on your phone. It doesn't show up on WhatsApp Web."
+    "sentToPhone": "We sent a code via WhatsApp to <phone />.",
+    "whatsappNotice": "It arrives on WhatsApp on your phone. It doesn't show up on WhatsApp Web.",
+    "checkWhatsApp": "Check your WhatsApp"
   },
   "pagination": {
     "label": "Pagination",

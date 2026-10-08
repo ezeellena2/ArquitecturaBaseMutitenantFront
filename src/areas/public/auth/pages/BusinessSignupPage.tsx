@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
 import { useEffect, useMemo, useState } from "react";
-import { Controller, useController, useForm, useWatch } from "react-hook-form";
+import { useController, useForm, useWatch } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useLocation, useSearchParams } from "react-router";
@@ -20,14 +20,18 @@ import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { EmailField } from "@/shared/ui/fields/EmailField";
+import { AuthDestinationField } from "../components/AuthDestinationField";
+import { authDestinationSchema, destinationFromFields, phoneFromNavigation, signupCodeOperation, signupCodeRequest, sameSignupCodeOperation, type SignupCodeOperation } from "../lib/authDestinationForm";
+import { loginDestinationErrorField } from "../lib/loginDestination";
+import type { LoginDestination } from "@/shared/api/types";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
+import { applyApiErrorToForm } from "@/shared/api/formErrors";
+import { useHasLoginChannel } from "@/shared/account/useLoginChannels";
 import { cn } from "@/shared/lib/utils";
 import { Input } from "@/shared/ui/input";
 import { taxIdValidationMessage } from "@/shared/ui/fields/taxIdValidation";
 import type { TaxIdTypeReference } from "@/shared/referenceData/referenceData";
 import { useCuitType } from "@/shared/referenceData/useCuitType";
-import { effectiveCulture } from "@/shared/i18n";
-import { browserTimeZone } from "@/shared/time/browserTimeZone";
 import { getGoogleSignupAntiforgery, googleSignupAntiforgeryQueryKey } from "../api/googleSignup";
 import {
   checkBusinessSlug,
@@ -40,7 +44,7 @@ import { AuthCodeStep } from "../components/AuthCodeStep";
 import { AuthLink, AuthLinkRow } from "../components/AuthLink";
 import { AuthMessage } from "../components/AuthMessage";
 import { GoogleButton } from "../components/GoogleButton";
-import { businessSignupErrorField, loginCodeErrorKey, loginCodeMessage } from "../errors";
+import { businessSignupErrorField, loginCodeErrorMessage, loginCodeMessage } from "../errors";
 import { homeOf, loginPathOf } from "@/tenancy/access";
 import { publicSiteSuffix } from "@/tenancy/publicSite";
 
@@ -48,7 +52,7 @@ type Step = "email" | "code" | "details" | "success" | "approval" | "closed" | "
 
 /// El correo, como el registro de personas: sin la casilla, la aceptación se pide antes de revisar el correo.
 function emailFormSchema(t: TFunction) {
-  return z.object({ email: z.string().trim().pipe(z.email(t("login.emailInvalid"))), acceptedTerms: z.boolean() });
+  return authDestinationSchema(t).safeExtend({ acceptedTerms: z.boolean() });
 }
 
 /// «Tu organización»: lo obligatorio dice qué falta y el CUIT, que es opcional, se revisa con su tipo del catálogo.
@@ -76,10 +80,13 @@ export function BusinessSignupPage() {
   const auth = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
+  const [journey, setJourney] = useState(0);
   const [step, setStep] = useState<Step>(auth.isAuthenticated ? "details" : "email");
   // El correo al que mandamos el código y, después, el que dice la API para avisar la aprobación: con Google o con sesión
   // no se escribió ninguno.
-  const [email, setEmail] = useState("");
+  const [destination, setDestination] = useState<LoginDestination>({ type: "email", email: "" });
+  const email = destination.type === "email" ? destination.email : "";
+  const hasWhatsApp = useHasLoginChannel("whatsapp");
   const [notificationEmail, setNotificationEmail] = useState("");
   const [code, setCode] = useState("");
   const [requestError, setRequestError] = useState<ApiError | null>(null);
@@ -93,29 +100,22 @@ export function BusinessSignupPage() {
   const cuitType = useCuitType();
   const emailSchema = useMemo(() => emailFormSchema(t), [t]);
   const organizationSchema = useMemo(() => organizationFormSchema(t, cuitType), [t, cuitType]);
-  const emailForm = useForm<EmailForm, unknown, EmailValues>({ resolver: zodResolver(emailSchema), defaultValues: { email: emailFromNavigation(location.state), acceptedTerms: auth.isAuthenticated } });
+  const emailForm = useForm<EmailForm, unknown, EmailValues>({ resolver: zodResolver(emailSchema), defaultValues: { channel: phoneFromNavigation(location.state) ? "phone" : "email", phone: phoneFromNavigation(location.state), email: emailFromNavigation(location.state), acceptedTerms: auth.isAuthenticated } });
   const organizationForm = useForm<OrganizationForm, unknown, OrganizationValues>({
     resolver: zodResolver(organizationSchema), defaultValues: { organizationName: "", slug: "", firstCompanyName: "", taxNumber: "" },
   });
   const acceptedTerms = useWatch({ control: emailForm.control, name: "acceptedTerms" });
+  const channel = useWatch({ control: emailForm.control, name: "channel" });
+  const draftEmail = useWatch({ control: emailForm.control, name: "email" });
+  const phone = useWatch({ control: emailForm.control, name: "phone" });
   const organizationName = useWatch({ control: organizationForm.control, name: "organizationName" });
   const slugField = useController({ control: organizationForm.control, name: "slug" });
   const taxNumberField = useController({ control: organizationForm.control, name: "taxNumber" });
   const slug = slugField.field.value;
   const slugToCheck = useDebouncedValue(slug.trim().toLowerCase());
 
-  const requestCode = useIdempotentMutation((destination: string, key) => requestBusinessSignupCode({
-    email: destination,
-    acceptedTerms: true,
-    culture: effectiveCulture() ?? navigator.language,
-    timeZoneId: browserTimeZone(),
-  }, key), { meta: { handlesError: true } });
-  const verifyCode = useIdempotentMutation((input: { email: string; code: string }, key) => verifyBusinessSignupCode({
-    ...input,
-    acceptedTerms: true,
-    culture: effectiveCulture() ?? navigator.language,
-    timeZoneId: browserTimeZone(),
-  }, key), { meta: { handlesError: true } });
+  const requestCode = useIdempotentMutation((operation: SignupCodeOperation, key) => requestBusinessSignupCode(signupCodeRequest(operation), key), { meta: { handlesError: true }, sameOperation: sameSignupCodeOperation });
+  const verifyCode = useIdempotentMutation((operation: SignupCodeOperation & { code: string }, key) => verifyBusinessSignupCode({ ...signupCodeRequest(operation), code: operation.code }, key), { meta: { handlesError: true }, sameOperation: sameSignupCodeOperation });
   const antiforgery = useQuery({ queryKey: googleSignupAntiforgeryQueryKey,
     queryFn: getGoogleSignupAntiforgery, enabled: step === "details", meta: { silent: true } });
   const slugQuery = useQuery({ queryKey: ["business-signup", "slug", slugToCheck],
@@ -164,9 +164,11 @@ export function BusinessSignupPage() {
 
   const sendCode = emailForm.handleSubmit((values) => {
     setRequestError(null);
-    requestCode.mutate(values.email, {
+    if (values.channel === "phone" && !hasWhatsApp) return;
+    const nextDestination = destinationFromFields(values);
+    requestCode.mutate(signupCodeOperation(nextDestination, journey), {
       onSuccess: (response) => {
-        setEmail(values.email);
+        setDestination(nextDestination);
         setCode("");
         resend.restart(response.resendAfterSeconds);
         setStep("code");
@@ -174,7 +176,8 @@ export function BusinessSignupPage() {
       onError: (caught) => {
         if (!(caught instanceof ApiError)) throw caught;
         if (caught.code === "Auth.BusinessSignup.Closed") { setStep("closed"); return; }
-        setRequestError(caught);
+        if (loginDestinationErrorField(caught)) emailForm.setError("phone", { type: "server", message: apiErrorMessage(caught, t) });
+        else if (!applyApiErrorToForm(caught, emailForm.setError, { email: "email", phone: "phone" })) setRequestError(caught);
         retry.startFromError(caught);
       },
     });
@@ -182,12 +185,14 @@ export function BusinessSignupPage() {
 
   function confirmCode() {
     setRequestError(null);
-    verifyCode.mutate({ email, code }, {
+    verifyCode.mutate({ ...signupCodeOperation(destination, journey), code }, {
       onSuccess: () => setStep("details"),
       onError: (caught) => {
         if (!(caught instanceof ApiError)) throw caught;
         if (caught.code === "Tenancy.Access.PlatformOnly") { setStep("platformOnly"); return; }
         if (caught.code === "Auth.BusinessSignup.Closed") { setStep("closed"); return; }
+        if (caught.code === "Auth.LoginCode.Expired" || caught.code === "Auth.LoginCode.TooManyAttempts") resend.restart(0);
+        retry.startFromError(caught);
         setRequestError(caught);
       },
     });
@@ -195,7 +200,7 @@ export function BusinessSignupPage() {
 
   function resendCode() {
     setRequestError(null);
-    requestCode.mutate(email, {
+    requestCode.mutate(signupCodeOperation(destination, journey), {
       onSuccess: (response) => {
         setCode("");
         resend.restart(response.resendAfterSeconds);
@@ -247,26 +252,26 @@ export function BusinessSignupPage() {
   }
 
   const requestErrorText = requestError
-    ? requestError.code?.startsWith("Auth.LoginCode.") ? t(loginCodeErrorKey(requestError))
-      : t("businessSignup.serverError")
+    ? requestError.code?.startsWith("Auth.LoginCode.") ? loginCodeErrorMessage(requestError, t)
+      : apiErrorMessage(requestError, t)
     : null;
   // El paso del código dice lo mismo que el del ingreso: el texto y los intentos que quedan.
   const codeMessage = requestError
-    ? requestError.code?.startsWith("Auth.LoginCode.") ? loginCodeMessage(requestError, t) : { text: t("businessSignup.serverError") }
+    ? requestError.code?.startsWith("Auth.LoginCode.") ? loginCodeMessage(requestError, t) : { text: apiErrorMessage(requestError, t) }
     : null;
   const termsError = emailForm.formState.errors.acceptedTerms?.message;
   const { errors } = organizationForm.formState;
 
   return <AuthLayout access="business" panelIntro={t("businessSignup.panelIntro")}>
     {step === "platformOnly" ? <PlatformAccessResult access="business" onSignedOut={() => {
-      setStep("email"); setEmail(""); setCode(""); setRequestError(null); emailForm.reset({ email: "", acceptedTerms: false });
+      setStep("email"); setDestination({ type: "email", email: "" }); setCode(""); setRequestError(null); emailForm.reset({ channel: "email", email: "", phone: null, acceptedTerms: false });
     }} /> : step === "closed" ? <AuthStatus icon={LockIcon} title={t("businessSignup.closedTitle")} detail={t("businessSignup.closedDetail")}
       actions={<Button asChild variant="outline" size="lg"><Link to="/">{t("businessSignup.backHome")}</Link></Button>} />
       : step === "success" ? <AuthStatus icon={Check} tone="ok" title={t("businessSignup.doneTitle", { organization: organizationName.trim() })}
         detail={t("businessSignup.doneDetail")}
         actions={<Button type="button" size="lg" onClick={() => void enterOrganization()}>{t("businessSignup.openOrganization", { organization: organizationName.trim() })}</Button>} />
         : step === "approval" ? <AuthStatus icon={ClockIcon} tone="warning" title={t("businessSignup.approvalTitle")}
-          detail={<Trans ns="auth" i18nKey="businessSignup.approvalDetail" values={{ organization: organizationName.trim(), email: notificationEmail }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />}
+          detail={<Trans ns="auth" i18nKey={notificationEmail ? "businessSignup.approvalDetail" : "businessSignup.approvalDetailWithoutEmail"} values={{ organization: organizationName.trim(), email: notificationEmail }} components={{ strong: <strong className="font-semibold text-[var(--t1)]" /> }} />}
           actions={<Button asChild variant="outline" size="lg"><Link to="/">{t("businessSignup.backHome")}</Link></Button>} />
           : step === "email" ? <section className="flex flex-col gap-[22px]">
             <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.title")}</h1>
@@ -282,18 +287,20 @@ export function BusinessSignupPage() {
               if (!acceptedTerms) { event.preventDefault(); requireTerms(); return; }
               void sendCode(event);
             }}>
-              <Controller control={emailForm.control} name="email" render={({ field }) => <FormField label={t("businessSignup.email")} variant="auth" error={emailForm.formState.errors.email?.message}>
-                <EmailField name={field.name} ref={field.ref} value={field.value} onBlur={field.onBlur} onChange={(value) => field.onChange(value ?? "")} />
-              </FormField>} />
+              <AuthDestinationField emailLabel={t("businessSignup.email")} channel={channel} email={draftEmail} phone={phone}
+                onChannelChange={(value) => { setJourney((previous) => previous + 1); emailForm.setValue("channel", value); emailForm.clearErrors(); setRequestError(null); }}
+                onEmailChange={(value) => { emailForm.setValue("email", value); emailForm.clearErrors("email"); setRequestError(null); }}
+                onPhoneChange={(value) => { emailForm.setValue("phone", value); emailForm.clearErrors("phone"); setRequestError(null); }}
+                error={channel === "phone" && hasWhatsApp ? emailForm.formState.errors.phone?.message : emailForm.formState.errors.email?.message} />
               <FormError message={requestErrorText} />
               <Button type="submit" size="lg" className="w-full" disabled={retry.isRunning} pending={requestCode.isPending} pendingLabel={t("common:code.sending")}>{retry.label ?? t("businessSignup.continue")}</Button>
             </form>
             <AuthLinkRow>{t("businessSignup.alreadyRegistered")}<AuthLink to={loginPathOf("business")}>{t("businessSignup.loginBusiness")}</AuthLink></AuthLinkRow>
           </section>
-            : step === "code" ? <AuthCodeStep destination={email} code={code} onBack={() => { setStep("email"); setCode(""); setRequestError(null); }}
+            : step === "code" ? <AuthCodeStep destination={email} phone={destination.type === "phone" ? destination.phone : undefined} code={code} onBack={() => { setJourney((previous) => previous + 1); setStep("email"); setCode(""); setRequestError(null); }}
               onCodeChange={(next) => { setCode(next); setRequestError(null); }} onVerify={confirmCode} onResend={resendCode}
               invalid={requestError?.code === "Auth.LoginCode.Invalid"} locked={verifyCode.isPending} message={codeMessage}
-              verifyPending={verifyCode.isPending} resendSeconds={resend.seconds} resendRetryLabel={retry.label} resendPending={requestCode.isPending} />
+              verifyLabel={retry.label ?? undefined} verifyDisabled={retry.isRunning || requestError?.code === "Auth.LoginCode.TooManyAttempts" || requestError?.code === "Identity.Account.LockedOut"} verifyPending={verifyCode.isPending} resendSeconds={resend.seconds} resendRetryLabel={retry.label} resendPending={requestCode.isPending} />
               : <form noValidate className="flex flex-col gap-[22px]" onSubmit={(event) => { void submitOrganization(event); }}>
                 <div><h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("businessSignup.organizationTitle")}</h1>
                   <p className="mt-1.5 text-sm leading-normal text-[var(--t2)]">{t("businessSignup.ownerNote")}</p></div>

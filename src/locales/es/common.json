@@ -86,8 +86,9 @@
     "otherEmail": "Usar otro correo",
     "otherPhone": "Usar otro número",
     "sentToEmail": "Te mandamos un código a <strong>{{email}}</strong>. Vence en 10 minutos.",
-    "sentToPhone": "Te mandamos un código al <phone>{{phone}}</phone>. Vence en 10 minutos.",
-    "whatsappNotice": "Llega al WhatsApp de tu celular. En WhatsApp Web no se muestra."
+    "sentToPhone": "Te mandamos un código por WhatsApp a <phone />.",
+    "whatsappNotice": "Llega al WhatsApp de tu celular. En WhatsApp Web no se muestra.",
+    "checkWhatsApp": "Revisá tu WhatsApp"
   },
   "pagination": {
     "label": "Paginado",

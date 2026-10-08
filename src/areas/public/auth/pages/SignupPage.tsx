@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useRef, useState } from "react";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { useAuth } from "react-oidc-context";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useSearchParams } from "react-router";
@@ -15,27 +15,36 @@ import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useCountdown } from "@/shared/hooks/useCountdown";
 import { Button } from "@/shared/ui/button";
 import { FormError } from "@/shared/ui/FormError";
-import { FormField } from "@/shared/ui/FormField";
-import { EmailField } from "@/shared/ui/fields/EmailField";
+import { AuthDestinationField } from "../components/AuthDestinationField";
+import { authDestinationSchema, destinationFromFields, destinationNavigationState, phoneFromNavigation, signupCodeOperation, signupCodeRequest, sameSignupCodeOperation, type SignupCodeOperation } from "../lib/authDestinationForm";
+import { loginDestinationErrorField } from "../lib/loginDestination";
+import type { LoginDestination } from "@/shared/api/types";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
+import { useHasLoginChannel } from "@/shared/account/useLoginChannels";
+import { accountErrorCodes } from "@/shared/api/accountContract";
+import { PlatformAccessResult } from "../components/PlatformAccessResult";
 import { requestSignup, verifySignup } from "../api/signup";
 import { AuthStatus } from "../components/AuthStatus";
 import { AuthCodeStep } from "../components/AuthCodeStep";
 import { AuthLink, AuthLinkRow } from "../components/AuthLink";
 import { GoogleButton } from "../components/GoogleButton";
-import { loginCodeErrorKey, loginCodeMessage } from "../errors";
+import { loginCodeErrorMessage, loginCodeMessage } from "../errors";
 import { loginReturnUrl, safeReturnUrl } from "../lib/returnUrl";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
-import { effectiveCulture } from "@/shared/i18n";
-import { browserTimeZone } from "@/shared/time/browserTimeZone";
 
-const schema = z.object({ email: z.email(), acceptedTerms: z.literal(true) });
-type SignupFields = z.infer<typeof schema>;
+function signupSchema(t: Parameters<typeof authDestinationSchema>[0]) {
+  return authDestinationSchema(t).safeExtend({ acceptedTerms: z.boolean() });
+}
+type SignupFields = z.infer<ReturnType<typeof signupSchema>>;
 
 const followAuthorize = (url: string) => globalThis.location.assign(url);
 
 export function SignupPage({ completeAuthorization = followAuthorize }: { completeAuthorization?: (url: string) => void }) {
   const { t } = useTranslation("auth");
   const auth = useAuth();
+  const schema = useMemo(() => signupSchema(t), [t]);
+  const hasWhatsApp = useHasLoginChannel("whatsapp");
+  const [platformOnly, setPlatformOnly] = useState(false);
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const [emailTaken, setEmailTaken] = useState(false);
@@ -47,17 +56,21 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
   const loginHref = loginReturn === "/" ? "/login" : `/login?${new URLSearchParams({ returnUrl: loginReturn })}`;
   const googleComplete = searchParams.get("google") === "complete";
   const startedOidc = useRef(false);
-  const [step, setStep] = useState<{ email: string } | null>(null);
+  const [journey, setJourney] = useState(0);
+  const [step, setStep] = useState<LoginDestination | null>(null);
   const [closed, setClosed] = useState(searchParams.get("error") === "Auth.Signup.Closed");
   const [code, setCode] = useState("");
   const [error, setError] = useState<ApiError | null>(null);
-  const { control, register, handleSubmit, getValues, setError: setFieldError, clearErrors, formState: { errors } } = useForm<SignupFields>({
+  const { control, register, handleSubmit, getValues, setValue, setError: setFieldError, clearErrors, formState: { errors } } = useForm<SignupFields>({
     resolver: zodResolver(schema),
-    defaultValues: { email: emailFromNavigation(location.state), acceptedTerms: false as true },
+    defaultValues: { channel: phoneFromNavigation(location.state) ? "phone" : "email", phone: phoneFromNavigation(location.state), email: emailFromNavigation(location.state), acceptedTerms: false },
   });
   const acceptedTerms = useWatch({ control, name: "acceptedTerms" });
-  const request = useIdempotentMutation((email: string, key) => requestSignup({ email, acceptedTerms: true, culture: effectiveCulture() ?? navigator.language, timeZoneId: browserTimeZone() }, key), { meta: { handlesError: true } });
-  const verify = useIdempotentMutation((input: { email: string; code: string; acceptedTerms: true }, key) => verifySignup({ ...input, culture: effectiveCulture() ?? navigator.language, timeZoneId: browserTimeZone() }, key), { meta: { handlesError: true } });
+  const channel = useWatch({ control, name: "channel" });
+  const email = useWatch({ control, name: "email" });
+  const phone = useWatch({ control, name: "phone" });
+  const request = useIdempotentMutation((operation: SignupCodeOperation, key) => requestSignup(signupCodeRequest(operation), key), { meta: { handlesError: true }, sameOperation: sameSignupCodeOperation });
+  const verify = useIdempotentMutation((operation: SignupCodeOperation & { code: string }, key) => verifySignup({ ...signupCodeRequest(operation), code: operation.code }, key), { meta: { handlesError: true }, sameOperation: sameSignupCodeOperation });
   const resend = useCountdown(0);
   const retry = useRetryAfterCountdown();
 
@@ -73,19 +86,22 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
     setFieldError("acceptedTerms", { type: "required", message: t("signup.acceptRequired") });
   }
 
-  async function begin({ email }: SignupFields) {
+  async function begin(values: SignupFields) {
     setError(null);
     setEmailTaken(false);
+    if (values.channel === "phone" && !hasWhatsApp) return;
+    const destination = destinationFromFields(values);
     try {
-      const response = await request.mutateAsync(email);
-      setStep({ email });
+      const response = await request.mutateAsync(signupCodeOperation(destination, journey));
+      setStep(destination);
       setCode("");
       resend.restart(response.resendAfterSeconds);
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
-      setEmailTaken(caught.code === "Auth.Signup.EmailTaken");
+      setEmailTaken(caught.code === "Auth.Signup.EmailTaken" || caught.code === accountErrorCodes.signupPhoneTaken);
       if (caught.code === "Auth.Signup.Closed") { setClosed(true); return; }
-      if (!applyApiErrorToForm(caught, setFieldError, { email: "email", acceptedTerms: "acceptedTerms" })) setError(caught);
+      if (loginDestinationErrorField(caught)) setFieldError("phone", { type: "server", message: apiErrorMessage(caught, t) });
+      else if (!applyApiErrorToForm(caught, setFieldError, { email: "email", phone: "phone", acceptedTerms: "acceptedTerms" })) setError(caught);
       retry.startFromError(caught);
     }
   }
@@ -94,11 +110,15 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
     if (!step) return;
     setError(null);
     try {
-      await verify.mutateAsync({ email: step.email, code, acceptedTerms: true });
+      await verify.mutateAsync({ ...signupCodeOperation(step, journey), code });
       if (authorizeReturn) completeAuthorization(authorizeReturn);
       else await auth.signinRedirect({ extraQueryParams: { access: "consumer" }, state: { returnTo } });
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
+      if (caught.code === "Tenancy.Access.PlatformOnly") { setPlatformOnly(true); return; }
+      if (caught.code === "Auth.Signup.Closed") { setClosed(true); return; }
+      if (caught.code === "Auth.LoginCode.Expired" || caught.code === "Auth.LoginCode.TooManyAttempts") resend.restart(0);
+      retry.startFromError(caught);
       setError(caught);
     }
   }
@@ -107,11 +127,12 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
     if (!step) return;
     setError(null);
     try {
-      const response = await request.mutateAsync(step.email);
+      const response = await request.mutateAsync(signupCodeOperation(step, journey));
       setCode("");
       resend.restart(response.resendAfterSeconds);
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
+      if (caught.code === "Auth.Signup.Closed") { setClosed(true); return; }
       setError(caught);
       retry.startFromError(caught);
     }
@@ -120,7 +141,7 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
   if (googleComplete) return <SessionStatusPage status="starting" />;
 
   return <AuthLayout access="consumer">
-    {closed ? <AuthStatus icon={LockIcon} title={t("signup.closedTitle")} detail={t("signup.closedDetail")}
+    {platformOnly ? <PlatformAccessResult access="consumer" onSignedOut={() => { setPlatformOnly(false); setStep(null); setCode(""); setError(null); setValue("channel", "email"); setValue("email", ""); setValue("phone", null); setValue("acceptedTerms", false); }} /> : closed ? <AuthStatus icon={LockIcon} title={t("signup.closedTitle")} detail={t("signup.closedDetail")}
       actions={<Button asChild size="lg"><Link to={loginHref}>{t("signup.backToLogin")}</Link></Button>} />
       : step === null ? <div className="flex flex-col gap-[22px]">
       <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("signup.title")}</h1>
@@ -136,12 +157,14 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
         void handleSubmit(begin)(event);
       }} className="flex flex-col gap-[22px]">
         <div className="flex flex-col gap-1.5">
-          <Controller control={control} name="email" render={({ field }) => <FormField label={t("login.emailLabel")} variant="auth" error={errors.email?.type === "server" ? errors.email.message : errors.email ? t("login.emailInvalid") : undefined}>
-            <EmailField name={field.name} ref={field.ref} value={field.value} onChange={(value) => { field.onChange(value); clearErrors("email"); setEmailTaken(false); }} onBlur={field.onBlur} />
-          </FormField>} />
-          {emailTaken && errors.email ? <AuthLink className="self-start text-[14px]!" to={loginHref} state={{ email: getValues("email") }}>{t("signup.enter")}</AuthLink> : null}
+          <AuthDestinationField phoneLabel={t("signup.phoneLabel")} channel={channel} email={email} phone={phone}
+            onChannelChange={(value) => { setJourney((previous) => previous + 1); setValue("channel", value); clearErrors(); setEmailTaken(false); setError(null); }}
+            onEmailChange={(value) => { setValue("email", value); clearErrors("email"); setEmailTaken(false); }}
+            onPhoneChange={(value) => { setValue("phone", value); clearErrors("phone"); setEmailTaken(false); }}
+            error={channel === "phone" && hasWhatsApp ? errors.phone?.message : errors.email?.message} />
+          {emailTaken ? <AuthLink className="self-start text-[14px]!" to={loginHref} state={destinationNavigationState(destinationFromFields(getValues()))}>{t("signup.enter")}</AuthLink> : null}
         </div>
-        <FormError message={error ? t(loginCodeErrorKey(error)) : null} />
+        <FormError message={error ? loginCodeErrorMessage(error, t) : null} />
         <Button type="submit" size="lg" className="w-full" disabled={retry.isRunning} pending={request.isPending} pendingLabel={t("common:code.sending")}>{retry.label ?? t("signup.create")}</Button>
       </form>
       {/* Tablero Registro: los dos enlaces a 22 entre sí, como el resto de la columna (en Ingreso van a 8). */}
@@ -149,11 +172,11 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
         <AuthLinkRow>{t("signup.haveAccount")}<AuthLink to={loginHref}>{t("signup.login")}</AuthLink></AuthLinkRow>
         <AuthLinkRow>{t("login.haveBusiness")}<AuthLink to="/registro/empresa">{t("login.registerIt")}</AuthLink></AuthLinkRow>
       </div>
-    </div> : <AuthCodeStep destination={step.email} code={code} onBack={() => { setStep(null); setCode(""); setError(null); }}
+    </div> : <AuthCodeStep destination={step.type === "email" ? step.email : ""} phone={step.type === "phone" ? step.phone : undefined} code={code} onBack={() => { setJourney((previous) => previous + 1); setStep(null); setCode(""); setError(null); }}
       onCodeChange={(next) => { setCode(next); if (error?.code === "Auth.LoginCode.Invalid") setError(null); }}
       onVerify={() => void verifyCode()} onResend={() => void resendCode()}
       invalid={error?.code === "Auth.LoginCode.Invalid"} locked={verify.isPending} message={error ? loginCodeMessage(error, t) : null}
-      verifyLabel={t("signup.verify")} verifyPending={verify.isPending}
+      verifyLabel={retry.label ?? t("signup.verify")} verifyDisabled={retry.isRunning || error?.code === "Auth.LoginCode.TooManyAttempts" || error?.code === "Identity.Account.LockedOut"} verifyPending={verify.isPending}
       resendSeconds={resend.seconds} resendRetryLabel={retry.label} resendPending={request.isPending} />}
   </AuthLayout>;
 }

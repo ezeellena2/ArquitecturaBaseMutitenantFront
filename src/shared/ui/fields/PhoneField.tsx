@@ -16,6 +16,7 @@ interface PhoneFieldProps {
   onValidityChange?: (isValid: boolean) => void;
   allowedCountries?: readonly string[];
   usage?: "whatsapp" | "mobile" | "any";
+  variant?: "default" | "auth";
   id?: string;
   name?: string;
   disabled?: boolean;
@@ -25,7 +26,7 @@ interface PhoneFieldProps {
 }
 
 /** Selector accesible y número nacional; el backend hace la normalización definitiva. */
-export function PhoneField({ value, onChange, onValidityChange, allowedCountries, usage = "any",
+export function PhoneField({ value, onChange, onValidityChange, allowedCountries, usage = "any", variant = "default",
   id, name, disabled, required, "aria-invalid": invalid, "aria-describedby": describedBy }: PhoneFieldProps) {
   const { t } = useTranslation();
   const format = useFormat();
@@ -55,7 +56,7 @@ export function PhoneField({ value, onChange, onValidityChange, allowedCountries
   }
 
   return (
-    <div className="flex gap-2">
+    <div className={variant === "auth" ? "flex gap-2 [&_[role=combobox]]:h-11 [&_[role=combobox]]:rounded-[10px] [&_[role=combobox]]:text-[15px]" : "flex gap-2"}>
       {/* El país compacto: la bandera y el prefijo («+54»), decisión del usuario del 2026-10-04, en una caja de 112 en la
           compu y de 124 en el teléfono (lienzo v99); la lista muestra la bandera y el nombre entero. */}
       <div className="w-[112px] shrink-0 max-md:w-[124px]">
@@ -67,6 +68,7 @@ export function PhoneField({ value, onChange, onValidityChange, allowedCountries
           </span>} />
       </div>
       <Input id={id} name={name} type="tel" autoComplete="tel-national" inputMode="tel"
+        className={variant === "auth" ? "h-11 rounded-[10px] text-[15px] max-md:h-11 max-md:rounded-[10px] max-md:text-[15px]" : undefined}
         value={value?.number ?? ""} onChange={(event) => changeNumber(event.target.value)}
         disabled={unavailable} required={required} aria-busy={loading}
         aria-invalid={invalid || liveInvalid || undefined} aria-describedby={describedBy} />

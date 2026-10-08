@@ -1,5 +1,6 @@
 import type { TFunction } from "i18next";
 import { ApiError } from "@/shared/api/ApiError";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
 import type { AuthMessageContent } from "./components/AuthMessage";
 
 const errorKeys: Record<string, string> = {
@@ -20,6 +21,10 @@ export function loginCodeErrorKey(error: ApiError): string {
   return (error.code && errorKeys[error.code]) || "errors:server";
 }
 
+export function loginCodeErrorMessage(error: ApiError, t: TFunction): string {
+  return error.code && errorKeys[error.code] ? t(errorKeys[error.code]) : apiErrorMessage(error, t);
+}
+
 /// La franja del paso del código, igual en el ingreso y en los dos registros (tablero Ingreso): el texto del código y,
 /// debajo, los intentos que quedan o lo que se puede hacer.
 export function loginCodeMessage(error: ApiError, t: TFunction): AuthMessageContent {
@@ -28,7 +33,7 @@ export function loginCodeMessage(error: ApiError, t: TFunction): AuthMessageCont
   if (error.code === "Auth.LoginCode.TooManyAttempts") details.push(t("auth:login.requestNewCode"));
   if (error.code === "Identity.Account.LockedOut") details.push(t("auth:login.tryLater"));
   if (error.code === "Identity.Account.Suspended") details.push(t("auth:login.contactSupport"));
-  return { text: t(loginCodeErrorKey(error)), details };
+  return { text: loginCodeErrorMessage(error, t), details };
 }
 
 /// Los datos de «Tu organización» que pueden llevar un error debajo.
