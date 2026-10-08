@@ -9,6 +9,8 @@ export const accountPaths = {
   methodVerify: "/api/me/login-methods/{methodId}/verify",
   methodPrimary: "/api/me/login-methods/{methodId}/primary",
   google: "/api/me/external/google",
+  loginLinkPreview: "/api/auth/login-link/preview",
+  loginLinkRedeem: "/api/auth/login-link/redeem",
   acceptLegal: "/api/legal/accept",
   deletion: "/api/me/deletion",
   pendingDeletion: "/api/auth/deletion/pending",
@@ -21,6 +23,12 @@ export const accountErrorCodes = {
   legalAcceptanceRequired: "Legal.AcceptanceRequired",
   graceExpired: "Legal.AccountDeletion.GraceExpired",
   concurrency: "General.ConcurrencyConflict",
+  phoneAlreadyUsed: "Identity.LoginMethod.PhoneAlreadyUsed",
+  channelUnavailable: "Auth.LoginMethod.ChannelUnavailable",
+  loginLinkInvalid: "Auth.LoginLink.Invalid",
+  loginLinkExpired: "Auth.LoginLink.Expired",
+  loginLinkAlreadyUsed: "Auth.LoginLink.AlreadyUsed",
+  loginLinkTooManyRequests: "Auth.LoginLink.TooManyRequests",
 } as const;
 
 export const methodPath = (template: string, methodId: string) => template.replace("{methodId}", encodeURIComponent(methodId));

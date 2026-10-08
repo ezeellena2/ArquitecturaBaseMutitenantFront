@@ -1,4 +1,180 @@
 export interface paths {
+    "/webhooks/whatsapp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Ruta técnica global condicional. hub.mode=subscribe y VerifyToken correcto: challenge text/plain. Sin configuración/disponibilidad o módulo retirado: 404 común. T01 apagado siempre; T02 aporta disponibilidad y T05 verificación, sin sesión. */
+        get: {
+            parameters: {
+                query?: {
+                    "hub.mode"?: string;
+                    "hub.verify_token"?: string;
+                    "hub.challenge"?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; WhatsApp.Webhook.InvalidSignature */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** @description Meta JSON; X-Hub-Signature-256=sha256=<HMAC> sobre bytes originales, antes de confiar en el JSON. Máximo 5242880 bytes, rate limit del webhook. Sin Idempotency-Key: deduplicar IDs Meta por tipo de evento, responder duplicados 200. 200 solo después de persistir lote; worker durable, sin sesión. T01 apagado siempre; stub 501 si se habilita en prueba. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    "X-Hub-Signature-256"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["WhatsAppWebhookHttpRequest"];
+                    "text/json": components["schemas"]["WhatsAppWebhookHttpRequest"];
+                    "application/*+json": components["schemas"]["WhatsAppWebhookHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request; WhatsApp.Webhook.InvalidPayload */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; WhatsApp.Webhook.InvalidSignature */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large; WhatsApp.Webhook.PayloadTooLarge */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; WhatsApp.Webhook.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/reference-data": {
         parameters: {
             query?: never;
@@ -2994,10 +3170,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Access platform y permiso platform.recoveries.manage vigente. Body reason/version existente, decisión humana con SecurityEvent; conserva VersionResponse y concurrencia. Phone es un tipo de método, nunca se convierte en Email. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path: {
                     id: string;
                 };
@@ -3022,7 +3202,7 @@ export interface paths {
                         "text/json": components["schemas"]["VersionResponse"];
                     };
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Validation.Failed; Platform.AccountRecovery.PhoneMethodInUse; Request.IdempotencyKeyRequired */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -3031,7 +3211,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Unauthorized */
+                /** @description Unauthorized; Http.Unauthorized */
                 401: {
                     headers: {
                         [name: string]: unknown;
@@ -3040,7 +3220,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Http.Forbidden */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -3049,7 +3229,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Found */
+                /** @description Not Found; Platform.AccountRecovery.NotFound */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -3058,7 +3238,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict */
+                /** @description Conflict; Platform.AccountRecovery.AlreadyResolved; Platform.AccountRecovery.NoAccount; Platform.AccountRecovery.MethodInUse; Platform.AccountRecovery.OperatorAccount; General.ConcurrencyConflict; Request.IdempotencyKeyReused; Request.InProgress */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -3067,7 +3247,18 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -3093,10 +3284,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Access platform y permiso platform.recoveries.manage vigente. Body reason/version existente, decisión humana con SecurityEvent; conserva VersionResponse y concurrencia. Phone es un tipo de método, nunca se convierte en Email. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path: {
                     id: string;
                 };
@@ -3121,7 +3316,7 @@ export interface paths {
                         "text/json": components["schemas"]["VersionResponse"];
                     };
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Validation.Failed; Platform.AccountRecovery.PhoneMethodInUse; Request.IdempotencyKeyRequired */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -3130,7 +3325,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Unauthorized */
+                /** @description Unauthorized; Http.Unauthorized */
                 401: {
                     headers: {
                         [name: string]: unknown;
@@ -3139,7 +3334,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Http.Forbidden */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -3148,7 +3343,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Found */
+                /** @description Not Found; Platform.AccountRecovery.NotFound */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -3157,7 +3352,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict */
+                /** @description Conflict; Platform.AccountRecovery.AlreadyResolved; Platform.AccountRecovery.NoAccount; Platform.AccountRecovery.MethodInUse; Platform.AccountRecovery.OperatorAccount; General.ConcurrencyConflict; Request.IdempotencyKeyReused; Request.InProgress */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -3166,7 +3361,18 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -8060,6 +8266,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Exactamente previousEmail o previousPhone; método perdido no exige posesión. 204 cuando existe cuenta recuperable; sin datos de cuenta ni sesión. T01: previousPhone devuelve 501 temporal. */
         post: {
             parameters: {
                 query?: never;
@@ -8082,7 +8289,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Validation.Failed; Platform.AccountRecovery.AccountNotFound; Platform.AccountRecovery.PhoneAccountNotFound */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -8091,8 +8298,19 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests */
+                /** @description Too Many Requests; Http.TooManyRequests */
                 429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8100,8 +8318,8 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
-                500: {
+                /** @description General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8126,10 +8344,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -8152,7 +8374,7 @@ export interface paths {
                         "text/json": components["schemas"]["RequestLoginCodeResponse"];
                     };
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Platform.AccountRecovery.PhoneMethodInUse; Platform.AccountRecovery.MethodInUse; Platform.AccountRecovery.VerificationRequired; Validation.Failed; Users.Phone.Invalid; Users.Phone.NotMobile; Auth.LoginMethod.ChannelUnavailable; Request.IdempotencyKeyRequired; WhatsApp.Phone.CountryNotAllowed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -8161,8 +8383,8 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests */
-                429: {
+                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8170,8 +8392,28 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8196,10 +8438,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -8218,7 +8464,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Platform.AccountRecovery.PhoneMethodInUse; Platform.AccountRecovery.MethodInUse; Platform.AccountRecovery.VerificationRequired; Validation.Failed; Auth.LoginCode.Invalid; Auth.LoginCode.Expired; Auth.LoginCode.AlreadyUsed; Auth.LoginCode.TooManyAttempts; Auth.LoginMethod.ChannelUnavailable; Request.IdempotencyKeyRequired; WhatsApp.Phone.CountryNotAllowed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -8227,8 +8473,8 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests */
-                429: {
+                /** @description Auth.Account.Disabled; Auth.Account.LockedOut; Tenancy.Access.PlatformOnly */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8236,8 +8482,37 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8262,10 +8537,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -8284,7 +8563,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Platform.AccountRecovery.PhoneMethodInUse; Platform.AccountRecovery.MethodInUse; Platform.AccountRecovery.VerificationRequired; Validation.Failed; Users.Phone.Invalid; Users.Phone.NotMobile; Auth.LoginMethod.ChannelUnavailable; Request.IdempotencyKeyRequired; WhatsApp.Phone.CountryNotAllowed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -8293,8 +8572,8 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests */
-                429: {
+                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8302,8 +8581,28 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8328,10 +8627,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.BusinessSignup abierto, independiente de ConsumerSignup; identidad nueva o existente. No crea organización ni PhoneTaken personal. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -8354,7 +8657,7 @@ export interface paths {
                         "text/json": components["schemas"]["RequestLoginCodeResponse"];
                     };
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Validation.Failed; Users.Phone.Invalid; Users.Phone.NotMobile; Auth.LoginMethod.ChannelUnavailable; Request.IdempotencyKeyRequired; WhatsApp.Phone.CountryNotAllowed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -8363,7 +8666,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.BusinessSignup.Closed */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -8372,8 +8675,8 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests */
-                429: {
+                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8381,8 +8684,28 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8407,10 +8730,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs.BusinessSignup abierto, independiente de ConsumerSignup; identidad nueva o existente. No crea organización ni PhoneTaken personal. Cuenta, método, Personal cuando corresponde y legales explícitos atómicos. Operador probado: PlatformOnly y sin cookie pública. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -8425,11 +8752,13 @@ export interface paths {
                 /** @description No Content */
                 204: {
                     headers: {
+                        /** @description Cookie HttpOnly tras prueba válida; nunca se emite desde webhook ni desde preview. Stubs T01 no la emiten. */
+                        "Set-Cookie"?: string;
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Validation.Failed; Auth.LoginCode.Invalid; Auth.LoginCode.Expired; Auth.LoginCode.AlreadyUsed; Auth.LoginCode.TooManyAttempts; Auth.LoginMethod.ChannelUnavailable; Users.Phone.Invalid; Users.Phone.NotMobile; Request.IdempotencyKeyRequired; WhatsApp.Phone.CountryNotAllowed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -8438,7 +8767,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Account.Disabled; Auth.Account.LockedOut; Tenancy.Access.PlatformOnly; Auth.BusinessSignup.Closed */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -8447,8 +8776,8 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests */
-                429: {
+                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8456,8 +8785,28 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8482,10 +8831,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Contrato vigente de Tu organización. Requiere cookie pública probada y antiforgery; no recibe phone ni selecciona consumer. Valida BusinessSignup y límite/estado de organización; 200 BusinessSignupResponse existente. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -8507,7 +8860,7 @@ export interface paths {
                         "text/json": components["schemas"]["BusinessSignupResponse"];
                     };
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -8516,7 +8869,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Unauthorized */
+                /** @description Unauthorized; Auth.BusinessSignup.IdentityRequired */
                 401: {
                     headers: {
                         [name: string]: unknown;
@@ -8525,7 +8878,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.BusinessSignup.Closed; Tenancy.Access.PlatformOnly */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -8534,7 +8887,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict */
+                /** @description Conflict; Request.IdempotencyKeyReused; Request.InProgress */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -8552,7 +8905,18 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -8974,10 +9338,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. Solo método verificado utilizable; conserva invitación por correo de ADR0047. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -9000,7 +9368,7 @@ export interface paths {
                         "text/json": components["schemas"]["RequestLoginCodeResponse"];
                     };
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Auth.LoginCode.AccountNotFound; Auth.LoginCode.PhoneAccountNotFound; Validation.Failed; Users.Phone.Invalid; Users.Phone.NotMobile; Auth.LoginMethod.ChannelUnavailable; Request.IdempotencyKeyRequired */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -9009,8 +9377,8 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests */
-                429: {
+                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9018,8 +9386,28 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9044,10 +9432,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. returnUrl local/OIDC validado conserva access, PKCE y callback. Respuesta returnUrl, sin tokens OIDC en body. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -9062,6 +9454,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Cookie HttpOnly tras prueba válida; nunca se emite desde webhook ni desde preview. Stubs T01 no la emiten. */
+                        "Set-Cookie"?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -9070,7 +9464,194 @@ export interface paths {
                         "text/json": components["schemas"]["VerifyLoginCodeResponse"];
                     };
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Validation.Failed; Auth.LoginCode.Invalid; Auth.LoginCode.Expired; Auth.LoginCode.AlreadyUsed; Auth.LoginCode.TooManyAttempts; Auth.LoginMethod.ChannelUnavailable; Request.IdempotencyKeyRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Auth.Account.Disabled; Auth.Account.LockedOut; Tenancy.Access.PlatformOnly */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/login-link/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Revalidar dueño, método, canal, estado y operador bajo lock; operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Preview no consume ni crea cookie. displayName y maskedPhone nullable. T01 devuelve 501. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PreviewLoginLinkHttpRequest"];
+                    "text/json": components["schemas"]["PreviewLoginLinkHttpRequest"];
+                    "application/*+json": components["schemas"]["PreviewLoginLinkHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["LoginLinkPreviewResponse"];
+                        "application/json": components["schemas"]["LoginLinkPreviewResponse"];
+                        "text/json": components["schemas"]["LoginLinkPreviewResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Auth.LoginLink.Invalid; Auth.LoginLink.Expired; Auth.LoginLink.AlreadyUsed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Auth.LoginLink.TooManyRequests; Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/login-link/redeem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Revalidar dueño, método, canal, estado y operador bajo lock; operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Solo access=consumer. 200 {access:consumer} y cookie pública, sin tokens OIDC. Replay misma key no crea otra sesión; otra key ya usado. Front ejecuta después signinRedirect con su state y PKCE. T01 devuelve 501, sin cookie. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RedeemLoginLinkHttpRequest"];
+                    "text/json": components["schemas"]["RedeemLoginLinkHttpRequest"];
+                    "application/*+json": components["schemas"]["RedeemLoginLinkHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        /** @description Cookie HttpOnly tras prueba válida; nunca se emite desde webhook ni desde preview. Stubs T01 no la emiten. */
+                        "Set-Cookie"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["LoginLinkRedeemResponse"];
+                        "application/json": components["schemas"]["LoginLinkRedeemResponse"];
+                        "text/json": components["schemas"]["LoginLinkRedeemResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Auth.LoginLink.Invalid; Auth.LoginLink.Expired; Auth.LoginLink.AlreadyUsed; Request.IdempotencyKeyRequired */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -9088,8 +9669,8 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests */
-                429: {
+                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9097,8 +9678,28 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Too Many Requests; Auth.LoginLink.TooManyRequests; Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9121,6 +9722,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description Canales registrados disponibles, capacidades globales independientes de features por organización. ContactPhone opcional es número público E.164, nunca ID técnico. */
         get: {
             parameters: {
                 query?: never;
@@ -9141,7 +9743,18 @@ export interface paths {
                         "text/json": components["schemas"]["LoginMethodsResponse"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -9169,10 +9782,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.ConsumerSignup abierto; acepta términos explícitos. Crea Persona, nunca empresa. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -9195,7 +9812,7 @@ export interface paths {
                         "text/json": components["schemas"]["RequestLoginCodeResponse"];
                     };
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Validation.Failed; Users.Phone.Invalid; Users.Phone.NotMobile; Auth.LoginMethod.ChannelUnavailable; Auth.Signup.EmailTaken; Auth.Signup.PhoneTaken; Request.IdempotencyKeyRequired; WhatsApp.Phone.CountryNotAllowed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -9204,7 +9821,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Signup.Closed */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -9213,8 +9830,8 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests */
-                429: {
+                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9222,8 +9839,28 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9248,10 +9885,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs.ConsumerSignup abierto; acepta términos explícitos. Crea Persona, nunca empresa. Cuenta, método, Personal cuando corresponde y legales explícitos atómicos. Operador probado: PlatformOnly y sin cookie pública. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -9270,7 +9911,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Validation.Failed; Auth.LoginCode.Invalid; Auth.LoginCode.Expired; Auth.LoginCode.AlreadyUsed; Auth.LoginCode.TooManyAttempts; Auth.LoginMethod.ChannelUnavailable; Users.Phone.Invalid; Users.Phone.NotMobile; Auth.Signup.EmailTaken; Auth.Signup.PhoneTaken; Request.IdempotencyKeyRequired; WhatsApp.Phone.CountryNotAllowed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -9279,7 +9920,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Auth.Account.Disabled; Auth.Account.LockedOut; Tenancy.Access.PlatformOnly; Auth.Signup.Closed */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -9288,8 +9929,8 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests */
-                429: {
+                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9297,8 +9938,28 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9521,6 +10182,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description Identidad propia consumer/business/platform. DTO vigente, Phone solo utilizable con canal disponible. Sin permiso de organización, sin ReauthTicket. */
         get: {
             parameters: {
                 query?: never;
@@ -9541,7 +10203,36 @@ export interface paths {
                         "text/json": components["schemas"]["AccountLoginMethodsResponse"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Http.Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -9553,18 +10244,22 @@ export interface paths {
             };
         };
         put?: never;
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. Pendiente propio y OTP al destino nuevo; otro dueño falla antes de pendiente, aviso o OTP. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path?: never;
                 cookie?: never;
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["AddLoginEmailHttpRequest"];
-                    "text/json": components["schemas"]["AddLoginEmailHttpRequest"];
-                    "application/*+json": components["schemas"]["AddLoginEmailHttpRequest"];
+                    "application/json": components["schemas"]["AddLoginMethodHttpRequest"];
+                    "text/json": components["schemas"]["AddLoginMethodHttpRequest"];
+                    "application/*+json": components["schemas"]["AddLoginMethodHttpRequest"];
                 };
             };
             responses: {
@@ -9579,7 +10274,7 @@ export interface paths {
                         "text/json": components["schemas"]["LoginMethodCodeResponse"];
                     };
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Identity.LoginMethod.AlreadyUsed; Identity.LoginMethod.PhoneAlreadyUsed; Validation.Failed; Users.Phone.Invalid; Users.Phone.NotMobile; Auth.LoginMethod.ChannelUnavailable; Request.IdempotencyKeyRequired; WhatsApp.Phone.CountryNotAllowed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -9588,7 +10283,16 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -9597,8 +10301,37 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9623,10 +10356,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Reenvío para pendiente propio; recarga propiedad y disponibilidad, sin body. No prueba posesión del método principal. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path: {
                     methodId: string;
                 };
@@ -9645,7 +10382,34 @@ export interface paths {
                         "text/json": components["schemas"]["LoginMethodCodeResponse"];
                     };
                 };
-                /** @description Not Found */
+                /** @description Validation.Failed; Users.Phone.Invalid; Users.Phone.NotMobile; Auth.LoginMethod.ChannelUnavailable; Request.IdempotencyKeyRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Http.Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Identity.LoginMethod.NotFound */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -9654,8 +10418,37 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Identity.LoginMethod.AlreadyVerified; Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9680,10 +10473,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Solo OTP del pendiente propio; vínculo, principal si corresponde y avisos en una UoW. */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
                 path: {
                     methodId: string;
                 };
@@ -9704,7 +10501,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Bad Request */
+                /** @description Bad Request; Identity.LoginMethod.PhoneAlreadyUsed; Validation.Failed; Auth.LoginCode.Invalid; Auth.LoginCode.Expired; Auth.LoginCode.AlreadyUsed; Auth.LoginCode.TooManyAttempts; Auth.LoginMethod.ChannelUnavailable; Request.IdempotencyKeyRequired */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -9713,7 +10510,25 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Found */
+                /** @description Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Auth.Account.Disabled; Auth.Account.LockedOut; Tenancy.Access.PlatformOnly; Http.Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Identity.LoginMethod.NotFound */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -9722,8 +10537,37 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description General.Contract.NotImplemented */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9747,6 +10591,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
+        /** @description Sin body ni código de confirmación (ADR0045). Relee propiedad y métodos utilizables bajo lock, conserva principal/personal y avisos. No usa version de Tus datos. */
         put: {
             parameters: {
                 query?: never;
@@ -9765,7 +10610,16 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Forbidden */
+                /** @description Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -9774,7 +10628,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Found */
+                /** @description Not Found; Identity.LoginMethod.NotFound */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -9783,7 +10637,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict */
+                /** @description Conflict; Identity.LoginMethod.LastMethod; Identity.LoginMethod.LastPersonalMethod; Auth.LoginMethod.NotVerified; General.ConcurrencyConflict */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -9792,7 +10646,18 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -9820,6 +10685,7 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
+        /** @description Sin body ni código de confirmación (ADR0045). Relee propiedad y métodos utilizables bajo lock, conserva principal/personal y avisos. No usa version de Tus datos. */
         delete: {
             parameters: {
                 query?: never;
@@ -9838,7 +10704,16 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Forbidden */
+                /** @description Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -9847,7 +10722,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Found */
+                /** @description Not Found; Identity.LoginMethod.NotFound */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -9856,7 +10731,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict */
+                /** @description Conflict; Identity.LoginMethod.LastMethod; Identity.LoginMethod.LastPersonalMethod; Auth.LoginMethod.NotVerified; General.ConcurrencyConflict */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -9865,7 +10740,18 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
+                /** @description Http.TooManyRequests */
+                429: {
+                    headers: {
+                        /** @description Segundos iguales a retryAfter. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -10259,13 +11145,16 @@ export interface components {
             memberId?: null | string;
             roleIds?: null | string[];
         };
-        /**
-         * @description Recibe el correo que se quiere agregar a la cuenta y lo entrega al flujo de validación. ToString oculta
-         *     los datos sensibles para que no se impriman al registrar la solicitud.
-         */
-        AddLoginEmailHttpRequest: {
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
+        AddLoginMethodHttpRequest: {
             email?: null | string;
-        };
+            phone?: null | components["schemas"]["PhoneInputHttpRequest"];
+            channel?: null | string;
+        } & ({
+            email: string;
+        } | {
+            phone: components["schemas"]["PhoneInputHttpRequest"];
+        });
         /** @description Recibe los datos de la primera organización y empresa sin imprimir datos fiscales en logs. */
         BusinessSignupHttpRequest: {
             organizationName?: null | string;
@@ -10672,6 +11561,16 @@ export interface components {
         LoginChannelAvailability: {
             key: string;
             countries: string[];
+            /** @description Número público E.164 aportado por el canal. Opcional; no es identificador del proveedor. */
+            contactPhone?: null | string;
+        };
+        LoginLinkPreviewResponse: {
+            displayName?: null | string;
+            maskedPhone?: null | string;
+        };
+        LoginLinkRedeemResponse: {
+            /** @enum {string} */
+            access: "consumer";
         };
         /**
          * @description Devuelve el método al que se envió un código y cuánto hay que esperar para reenviarlo. Permite
@@ -11405,9 +12304,18 @@ export interface components {
         /** @description Correo con el que se entraba, enviado sólo en el cuerpo. */
         PreviewAccountRecoveryHttpRequest: {
             previousEmail?: null | string;
-        };
+            previousPhone?: null | components["schemas"]["PhoneInputHttpRequest"];
+        } & ({
+            previousEmail: string;
+        } | {
+            previousPhone: components["schemas"]["PhoneInputHttpRequest"];
+        });
         /** @description Token opaco recibido en el cuerpo; nunca se expone en la ruta, la query ni el diagnóstico. */
         PreviewInvitationHttpRequest: {
+            token?: null | string;
+        };
+        PreviewLoginLinkHttpRequest: {
+            /** @description Secreto de 32 bytes, base64url sin padding. Solo cuerpo/memoria; sin logs. */
             token?: null | string;
         };
         ProblemDetails: {
@@ -11424,6 +12332,8 @@ export interface components {
             };
             /** Format: int32 */
             retryAfter?: null | number;
+            /** Format: int32 */
+            attemptsLeft?: null | number;
         };
         PublicPageHttpResponse: {
             slug?: null | string;
@@ -11465,6 +12375,12 @@ export interface components {
             effectiveOn?: null | string;
             contents?: null | components["schemas"]["LegalDocumentContentHttpRequest"][];
         };
+        RedeemLoginLinkHttpRequest: {
+            /** @description Secreto de 32 bytes, base64url sin padding. Solo cuerpo/memoria; sin logs. */
+            token?: null | string;
+            /** @enum {null|string} */
+            access?: "consumer" | null;
+        };
         /**
          * @description Adapta los cinco catálogos de referencia al contrato JSON de la API. Cada FromModel copia explícitamente
          *     los datos de Application para mantener separados los modelos internos y HTTP.
@@ -11484,20 +12400,33 @@ export interface components {
         RequestAccountDeletionHttpRequest: {
             reason?: null | string;
         };
-        /** @description Correo al que se solicita un código para una identidad existente. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
         RequestLoginCodeHttpRequest: {
             email?: null | string;
-        };
+            phone?: null | components["schemas"]["PhoneInputHttpRequest"];
+            channel?: null | string;
+        } & ({
+            email: string;
+        } | {
+            phone: components["schemas"]["PhoneInputHttpRequest"];
+        });
         /** @description La espera de un pedido de código aceptado, compartida por ingreso y registro. */
         RequestLoginCodeResponse: {
             /** Format: int32 */
             resendAfterSeconds: number;
         };
-        /** @description Correo nuevo y nonce del navegador; el nonce no vuelve en ninguna respuesta. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
         RequestRecoveryCodeHttpRequest: {
             email?: null | string;
+            /** @description Secreto de 32 bytes, base64url sin padding. Solo cuerpo/memoria; sin logs. */
             nonce?: null | string;
-        };
+            phone?: null | components["schemas"]["PhoneInputHttpRequest"];
+            channel?: null | string;
+        } & ({
+            email: string;
+        } | {
+            phone: components["schemas"]["PhoneInputHttpRequest"];
+        });
         /** @description Representación HTTP-independent de un rol; version conserva el xmin de PostgreSQL. */
         RoleResponse: {
             /** Format: uuid */
@@ -11527,20 +12456,37 @@ export interface components {
             /** Format: uint32 */
             version?: null | number;
         };
-        /** @description Solicitud de alta; cultura y zona proceden del navegador, sin campos visibles nuevos. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
         SignupHttpRequest: {
             email?: null | string;
             acceptedTerms: boolean;
             culture?: null | string;
             timeZoneId?: null | string;
-        };
-        /** @description El correo nuevo ya verificado y el método con el que se entraba: un correo o un teléfono. */
-        SubmitAccountRecoveryHttpRequest: {
+            phone?: null | components["schemas"]["PhoneInputHttpRequest"];
+            channel?: null | string;
+        } & ({
+            email: string;
+        } | {
+            phone: components["schemas"]["PhoneInputHttpRequest"];
+        });
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
+        SubmitAccountRecoveryHttpRequest: ({
             email?: null | string;
+            /** @description Secreto de 32 bytes, base64url sin padding. Solo cuerpo/memoria; sin logs. */
             nonce?: null | string;
             previousEmail?: null | string;
             previousPhone?: null | components["schemas"]["PhoneInputHttpRequest"];
-        };
+            phone?: null | components["schemas"]["PhoneInputHttpRequest"];
+            channel?: null | string;
+        } & ({
+            previousEmail: string;
+        } | {
+            previousPhone: components["schemas"]["PhoneInputHttpRequest"];
+        })) & ({
+            email: string;
+        } | {
+            phone: components["schemas"]["PhoneInputHttpRequest"];
+        });
         /** @description Expone un tipo de identificación fiscal con país, máscara y criterio de validación. */
         TaxIdTypeReferenceHttpResponse: {
             code: string;
@@ -11674,12 +12620,19 @@ export interface components {
          * @enum {string}
          */
         UserStatus: "Active" | "Suspended" | "PendingDeletion" | "Deleted";
-        /** @description Verifica el código y vuelve a la autorización local. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
         VerifyLoginCodeHttpRequest: {
             email?: null | string;
+            /** @description Dígitos ASCII; longitud configurada en Authentication:LoginCode (6 por defecto). No normalizar ni registrar. */
             code?: null | string;
             returnUrl?: null | string;
-        };
+            phone?: null | components["schemas"]["PhoneInputHttpRequest"];
+            channel?: null | string;
+        } & ({
+            email: string;
+        } | {
+            phone: components["schemas"]["PhoneInputHttpRequest"];
+        });
         /** @description Authorize original que el SPA vuelve a abrir después de crear la sesión. */
         VerifyLoginCodeResponse: {
             returnUrl: string;
@@ -11689,22 +12642,38 @@ export interface components {
          *     validarlo y oculta su valor en ToString.
          */
         VerifyLoginMethodHttpRequest: {
+            /** @description Dígitos ASCII; longitud configurada en Authentication:LoginCode (6 por defecto). No normalizar ni registrar. */
             code?: null | string;
         };
-        /** @description Código recibido en el correo nuevo, con el mismo nonce del pedido del código. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
         VerifyRecoveryCodeHttpRequest: {
             email?: null | string;
+            /** @description Secreto de 32 bytes, base64url sin padding. Solo cuerpo/memoria; sin logs. */
             nonce?: null | string;
+            /** @description Dígitos ASCII; longitud configurada en Authentication:LoginCode (6 por defecto). No normalizar ni registrar. */
             code?: null | string;
-        };
-        /** @description Verifica el código y registra la aceptación vigente en la misma transacción. */
+            phone?: null | components["schemas"]["PhoneInputHttpRequest"];
+            channel?: null | string;
+        } & ({
+            email: string;
+        } | {
+            phone: components["schemas"]["PhoneInputHttpRequest"];
+        });
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
         VerifySignupHttpRequest: {
             email?: null | string;
+            /** @description Dígitos ASCII; longitud configurada en Authentication:LoginCode (6 por defecto). No normalizar ni registrar. */
             code?: null | string;
             acceptedTerms: boolean;
             culture?: null | string;
             timeZoneId?: null | string;
-        };
+            phone?: null | components["schemas"]["PhoneInputHttpRequest"];
+            channel?: null | string;
+        } & ({
+            email: string;
+        } | {
+            phone: components["schemas"]["PhoneInputHttpRequest"];
+        });
         /**
          * @description La versión que quedó después de un guardado: el xmin que EF trae del mismo UPDATE (o INSERT) que escribió la fila o,
          *     en «Tus datos», la versión propia del perfil. El front la toma como base del próximo guardado, nunca la de una
@@ -11713,6 +12682,11 @@ export interface components {
         VersionResponse: {
             /** Format: uint32 */
             version: number;
+        };
+        /** @description Envelope Meta. Entry conserva su estructura externa; T05 procesa firma sobre los bytes originales. */
+        WhatsAppWebhookHttpRequest: {
+            object?: null | string;
+            entry?: null | unknown[];
         };
     };
     responses: never;

@@ -10,6 +10,13 @@ export type UpdateMeRequest = ApiSchemas["UpdateMeHttpRequest"];
 /** Lo que responde un guardado con versión: la versión que quedó, la base del próximo guardado (concurrencia.md). */
 export type VersionResponse = ApiSchemas["VersionResponse"];
 export type LoginMethodsResponse = ApiSchemas["LoginMethodsResponse"];
+export type LoginChannelAvailability = ApiSchemas["LoginChannelAvailability"];
+export type PhoneInputRequest = ApiSchemas["PhoneInputHttpRequest"];
+export type RequestLoginCodeRequest = ApiSchemas["RequestLoginCodeHttpRequest"];
+export type PreviewLoginLinkRequest = ApiSchemas["PreviewLoginLinkHttpRequest"];
+export type LoginLinkPreviewResponse = ApiSchemas["LoginLinkPreviewResponse"];
+export type RedeemLoginLinkRequest = ApiSchemas["RedeemLoginLinkHttpRequest"];
+export type LoginLinkRedeemResponse = ApiSchemas["LoginLinkRedeemResponse"];
 export type GoogleSignupAntiforgeryResponse = ApiSchemas["GoogleSignupAntiforgeryHttpResponse"];
 export type RequestLoginCodeResponse = ApiSchemas["RequestLoginCodeResponse"];
 export type RequestRecoveryCodeRequest = ApiSchemas["RequestRecoveryCodeHttpRequest"];
@@ -33,7 +40,9 @@ export type PublishLegalDocumentRequest = ApiSchemas["PublishLegalDocumentHttpRe
 export type PublishedLegalDocumentResponse = ApiSchemas["PublishedLegalDocumentResponse"];
 export type AccountLoginMethodsResponse = ApiSchemas["AccountLoginMethodsResponse"];
 export type AccountLoginMethod = ApiSchemas["AccountLoginMethodResponse"];
-export type AddLoginEmailRequest = ApiSchemas["AddLoginEmailHttpRequest"];
+export type AddLoginMethodRequest = ApiSchemas["AddLoginMethodHttpRequest"];
+/** Alias compatible del flujo de correo actual; el contrato permite el nuevo destino Phone. */
+export type AddLoginEmailRequest = AddLoginMethodRequest;
 export type LoginMethodCodeResponse = ApiSchemas["LoginMethodCodeResponse"];
 export type VerifyLoginMethodRequest = ApiSchemas["VerifyLoginMethodHttpRequest"];
 export type GoogleChallengeResponse = ApiSchemas["GoogleChallengeResponse"];
