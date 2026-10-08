@@ -28,18 +28,20 @@ describe("App", () => {
 
     failing = false;
     fireEvent.click(retry);
-    await waitFor(() => expect(screen.queryByRole("button", { name: "Reintentar" })).not.toBeInTheDocument());
-    expect(screen.getByRole("main")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: "Reintentar" })).not.toBeInTheDocument();
+      expect(screen.getByRole("main")).toBeInTheDocument();
+    });
   });
 
-  it("monta la ruta vacía", () => {
+  it("monta la ruta vacía", async () => {
     render(
       <AppProviders>
         <App />
       </AppProviders>,
     );
 
-    expect(screen.getByRole("main")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("main")).toBeInTheDocument());
   });
 
   it("no tiene violaciones de accesibilidad", async () => {
@@ -49,6 +51,7 @@ describe("App", () => {
       </AppProviders>,
     );
 
+    await waitFor(() => expect(screen.getByRole("main")).toBeInTheDocument());
     expect(await axe(container)).toHaveNoViolations();
   });
 });
