@@ -215,7 +215,7 @@ it.each(["cargando", "apagado"])("no ofrece WhatsApp con capacidad %s", async (s
   expect(await axe(container)).toHaveNoViolations();
 });
 
-it("ingreso WhatsApp en inglés muestra destino con PhoneText y acciones traducidas", async () => {
+it("ingreso WhatsApp en inglés muestra destino oculto y acciones traducidas", async () => {
   await changeCulture("en-US");
   server.use(http.post("/api/auth/login-code", () => HttpResponse.json({ resendAfterSeconds: 0 }, { status: 202 })));
   const { container } = show(`/login?${new URLSearchParams({ returnUrl: authorize })}`, { phone });
@@ -223,7 +223,8 @@ it("ingreso WhatsApp en inglés muestra destino con PhoneText y acciones traduci
   fireEvent.click(screen.getByRole("button", { name: "Send code" }));
   expect(await screen.findByRole("heading", { name: "Check your WhatsApp" })).toBeVisible();
   expect(screen.getByRole("button", { name: "Use another number" })).toBeVisible();
-  expect(container).toHaveTextContent("+54 9 11 2345 6789");
+  expect(container).toHaveTextContent("•••• 6789");
+  expect(container).not.toHaveTextContent("2345");
   expect(container).toHaveTextContent("It expires in 10 minutes.");
   expect(screen.getByText("It arrives on WhatsApp on your phone. It doesn't show up on WhatsApp Web.")).toBeVisible();
   expect(await axe(container)).toHaveNoViolations();

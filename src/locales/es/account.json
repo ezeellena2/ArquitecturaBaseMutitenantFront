@@ -1,5 +1,6 @@
 {
   "title": "Mi cuenta",
+  "actionNotAllowed": "No podés hacer ese cambio con este método.",
   "discard": "Descartar cambios",
   "save": "Guardar cambios",
   "data": "Tus datos",

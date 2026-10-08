@@ -189,7 +189,7 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
         <DialogFooter>
           {!isPhone ? resendAction : null}
           <Button type="button" variant="outline" onClick={close}>{t("account:cancel")}</Button>
-          <Button type="submit" disabled={retry.isRunning || expired} pending={busy} pendingLabel={t(step ? "common:code.verifying" : "common:code.sending")}>{retry.label ?? t(step ? "common:code.verify" : "common:code.send")}</Button>
+          <Button type="submit" disabled={retry.isRunning} pending={busy} pendingLabel={t(step ? "common:code.verifying" : "common:code.sending")}>{retry.label ?? t(step ? "common:code.verify" : "common:code.send")}</Button>
         </DialogFooter>
       </form>
     </DialogContent>

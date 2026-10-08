@@ -33,7 +33,8 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, r
   const label = action === "primary" ? "makePrimary" : google ? "unlink" : "remove";
   function close() { alive.current = false; onClose(); }
   async function confirm() {
-    if (saving || !(action === "primary" ? method.canMakePrimary : method.canRemove)) return;
+    if (saving) return;
+    if (!(action === "primary" ? method.canMakePrimary : method.canRemove)) { setFailure(t("actionNotAllowed")); return; }
     setFailure(null); setSaving(true);
     try {
       if (action === "primary") await makeLoginMethodPrimary(method.id); else await removeLoginMethod(method.id);
@@ -57,7 +58,7 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, r
       <DialogDescription>{t(action === "primary" ? "primaryHint" : "removeHint", { value })}</DialogDescription>
       <FormError message={failure} />
       </DialogBody>
-      <DialogFooter><Button type="button" variant="outline" onClick={close}>{t("cancel")}</Button><Button type="submit" variant={action === "remove" ? "destructive" : "default"} disabled={retry.isRunning || !(action === "primary" ? method.canMakePrimary : method.canRemove)} pending={busy} pendingLabel={pendingLabel}>{retry.label ?? t(label)}</Button></DialogFooter>
+      <DialogFooter><Button type="button" variant="outline" onClick={close}>{t("cancel")}</Button><Button type="submit" variant={action === "remove" ? "destructive" : "default"} disabled={retry.isRunning} pending={busy} pendingLabel={pendingLabel}>{retry.label ?? t(label)}</Button></DialogFooter>
     </form>
   </DialogContent></Dialog>;
 }

@@ -1,5 +1,6 @@
 {
   "title": "My account",
+  "actionNotAllowed": "You can't make that change with this sign-in method.",
   "discard": "Discard changes",
   "save": "Save changes",
   "data": "Your details",

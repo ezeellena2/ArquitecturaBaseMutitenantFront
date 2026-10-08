@@ -223,18 +223,24 @@ it("Phone OTP conserva clave en 5xx, cambia con código nuevo y ubica el vencido
 it("vence a los diez minutos al volver a la pestaña, sin reenviar automáticamente", async () => {
   const user = userEvent.setup(); enableWhatsApp();
   const resend = vi.fn();
+  const verify = vi.fn();
   server.use(http.post("/api/me/login-methods", () => HttpResponse.json({ methodId: "phone", resendAfterSeconds: 60 })),
-    http.post("/api/me/login-methods/phone/code", () => { resend(); return HttpResponse.json({ methodId: "phone", resendAfterSeconds: 60 }); }));
+    http.post("/api/me/login-methods/phone/code", () => { resend(); return HttpResponse.json({ methodId: "phone", resendAfterSeconds: 60 }); }),
+    http.post("/api/me/login-methods/phone/verify", () => { verify(); return new HttpResponse(null, { status: 204 }); }));
   renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} />);
   await chooseWhatsApp(user); await user.click(screen.getByRole("button", { name: "Enviar código" }));
   await screen.findByRole("textbox", { name: "Código 1" });
+  await user.type(screen.getByRole("textbox", { name: "Código 1" }), "123456");
   const now = Date.now(); const clock = vi.spyOn(Date, "now").mockReturnValue(now + 601_000);
   try {
     act(() => window.dispatchEvent(new Event("focus")));
     expect(screen.getByRole("alert")).toHaveTextContent("El código venció. Pedí uno nuevo.");
-    expect(screen.getByRole("button", { name: "Verificar" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Verificar" })).toBeEnabled();
+    await user.click(screen.getByRole("button", { name: "Verificar" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("El código venció. Pedí uno nuevo.");
     expect(screen.getByRole("button", { name: "Reenviar código" })).toBeEnabled();
     expect(resend).not.toHaveBeenCalled();
+    expect(verify).not.toHaveBeenCalled();
   } finally { clock.mockRestore(); }
 });
 
@@ -323,7 +329,7 @@ it.each([
       await user.click(screen.getByRole("button", { name: "Reenviar código" }));
       await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent(message));
       expect(screen.getAllByRole("alert")).toHaveLength(1);
-      expect(screen.getByRole("button", { name: "Verificar" })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Verificar" })).toBeEnabled();
       expect(first).toBeDisabled(); expect(first).toHaveValue("1");
     }
     expect(keys[0] === keys[1]).toBe(sameKey);

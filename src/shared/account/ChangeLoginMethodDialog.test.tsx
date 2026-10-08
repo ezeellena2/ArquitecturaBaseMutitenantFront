@@ -109,8 +109,12 @@ it("la concurrencia Phone conserva el error y permite cerrar sin completar", asy
 });
 
 it.each(["remove", "primary"] as const)("no permite %s si el servidor retira su flag", async (action) => {
-  const called = vi.fn(); server.use(http.delete("/api/me/login-methods/target", () => { called(); return new HttpResponse(null, { status: 204 }); }));
-  renderWithProviders(<ChangeLoginMethodDialog action={action} method={{ ...email, type: "Phone", canRemove: false, canMakePrimary: false }} onClose={() => {}} />);
-  expect(screen.getByRole("button", { name: action === "remove" ? "Quitar" : "Hacer principal" })).toBeDisabled();
+  const user = userEvent.setup();
+  const called = vi.fn(); server.use(
+    http.delete("/api/me/login-methods/target", () => { called(); return new HttpResponse(null, { status: 204 }); }),
+    http.put("/api/me/login-methods/target/primary", () => { called(); return new HttpResponse(null, { status: 204 }); }));
+  renderWithProviders(<ChangeLoginMethodDialog action={action} method={{ ...email, type: "Phone", value: "+5491155554521", canRemove: false, canMakePrimary: false }} onClose={() => {}} />);
+  await user.click(screen.getByRole("button", { name: action === "remove" ? "Quitar" : "Hacer principal" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent("No podés hacer ese cambio con este método.");
   expect(called).not.toHaveBeenCalled();
 });
