@@ -176,8 +176,10 @@ export function BusinessSignupPage() {
       onError: (caught) => {
         if (!(caught instanceof ApiError)) throw caught;
         if (caught.code === "Auth.BusinessSignup.Closed") { setStep("closed"); return; }
-        if (loginDestinationErrorField(caught)) emailForm.setError("phone", { type: "server", message: apiErrorMessage(caught, t) });
-        else if (!applyApiErrorToForm(caught, emailForm.setError, { email: "email", phone: "phone" })) setRequestError(caught);
+        if (!applyApiErrorToForm(caught, emailForm.setError, { email: "email", phone: "phone", acceptedTerms: "acceptedTerms" })) {
+          if (!caught.errors?.phone?.[0] && loginDestinationErrorField(caught)) emailForm.setError("phone", { type: "server", message: apiErrorMessage(caught, t) });
+          else setRequestError(caught);
+        }
         retry.startFromError(caught);
       },
     });

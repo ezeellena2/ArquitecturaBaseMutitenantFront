@@ -62,9 +62,9 @@ export function EmailCodeForm({ onCodeRequested, notice, onSubmitStart, access =
     } catch (caught) {
       if (!(caught instanceof ApiError)) throw caught;
       setAccountMissing(caught.code === "Auth.LoginCode.AccountNotFound" || caught.code === accountErrorCodes.phoneAccountNotFound);
-      if (loginDestinationErrorField(caught)) setError("phone", { type: "server", message: apiErrorMessage(caught, t) });
-      else if (!applyApiErrorToForm(caught, setError, { email: "email", phone: "phone" })) {
-        setFormError({ text: loginCodeErrorMessage(caught, t), tone: caught.code === "Auth.LoginCode.ResendTooSoon" ? "warning" : "danger" });
+      if (!applyApiErrorToForm(caught, setError, { email: "email", phone: "phone" })) {
+        if (!caught.errors?.phone?.[0] && loginDestinationErrorField(caught)) setError("phone", { type: "server", message: apiErrorMessage(caught, t) });
+        else setFormError({ text: loginCodeErrorMessage(caught, t), tone: caught.code === "Auth.LoginCode.ResendTooSoon" ? "warning" : "danger" });
       }
       retry.startFromError(caught);
     }

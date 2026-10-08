@@ -100,8 +100,10 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
       if (!(caught instanceof ApiError)) throw caught;
       setEmailTaken(caught.code === "Auth.Signup.EmailTaken" || caught.code === accountErrorCodes.signupPhoneTaken);
       if (caught.code === "Auth.Signup.Closed") { setClosed(true); return; }
-      if (loginDestinationErrorField(caught)) setFieldError("phone", { type: "server", message: apiErrorMessage(caught, t) });
-      else if (!applyApiErrorToForm(caught, setFieldError, { email: "email", phone: "phone", acceptedTerms: "acceptedTerms" })) setError(caught);
+      if (!applyApiErrorToForm(caught, setFieldError, { email: "email", phone: "phone", acceptedTerms: "acceptedTerms" })) {
+        if (!caught.errors?.phone?.[0] && loginDestinationErrorField(caught)) setFieldError("phone", { type: "server", message: apiErrorMessage(caught, t) });
+        else setError(caught);
+      }
       retry.startFromError(caught);
     }
   }

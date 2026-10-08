@@ -355,3 +355,30 @@ it("alta empresarial Phone completa con aprobación y sin correo conserva aviso 
   expect(screen.getByRole("link", { name: "Volver al inicio" })).toHaveAttribute("href", "/");
   expect(await axe(container)).toHaveNoViolations();
 });
+
+it.each([
+  ["/login", undefined], ["/login", "Revisá los datos del formulario."],
+  ["/registro", undefined], ["/registro", "Revisá los datos del formulario."],
+  ["/registro/empresa", undefined], ["/registro/empresa", "Revisá los datos del formulario."],
+] as const)("%s conserva errors.phone específico con detail %s", async (path, detail) => {
+  const endpoint = path === "/login" ? "/api/auth/login-code" : path === "/registro" ? "/api/auth/signup" : "/api/auth/business-signup/code";
+  server.use(http.post(endpoint, () => HttpResponse.json({ code: "Validation.Failed", ...(detail ? { detail } : {}), errors: { phone: ["Revisá el número: faltan dígitos."] } }, { status: 400 })));
+  show(path === "/login" ? `${path}?${new URLSearchParams({ returnUrl: authorize })}` : path);
+  const input = await fillPhone();
+  if (path !== "/login") fireEvent.click(screen.getByRole("checkbox"));
+  fireEvent.click(screen.getByRole("button", { name: path === "/login" ? "Enviar código" : path === "/registro" ? "Crear cuenta" : "Continuar" }));
+  await waitFor(() => expect(input).toHaveAccessibleDescription("Revisá el número: faltan dígitos."));
+  expect(screen.queryByRole("textbox", { name: "Código 1" })).not.toBeInTheDocument();
+});
+
+it.each(["/registro", "/registro/empresa"])("%s aplica errors.phone y acceptedTerms del mismo rechazo sin perder ninguno", async (path) => {
+  const endpoint = path === "/registro" ? "/api/auth/signup" : "/api/auth/business-signup/code";
+  server.use(http.post(endpoint, () => HttpResponse.json({ code: "Validation.Failed", detail: "Revisá los datos del formulario.", errors: {
+    phone: ["Revisá el número: faltan dígitos."], acceptedTerms: ["Aceptá la versión vigente de los términos."],
+  } }, { status: 400 })));
+  show(path); const input = await fillPhone(); fireEvent.click(screen.getByRole("checkbox"));
+  fireEvent.click(screen.getByRole("button", { name: path === "/registro" ? "Crear cuenta" : "Continuar" }));
+  await waitFor(() => expect(input).toHaveAccessibleDescription("Revisá el número: faltan dígitos."));
+  expect(screen.getByText("Aceptá la versión vigente de los términos.")).toBeVisible();
+  expect(screen.queryByText("Revisá los datos del formulario.")).not.toBeInTheDocument();
+});
