@@ -21,6 +21,7 @@ export function journeyDate(now = new Date()) {
 }
 
 export function safeDiagnostic(message) {
+  // eslint-disable-next-line no-control-regex -- ESC es intencional para quitar el formato ANSI del diagnóstico.
   return String(message).replace(/\u001b\[[0-9;]*m/g, "").replace(/https?:\/\/[^\s"'<>]+/g, (url) => {
     try { const value = new URL(url); return `${value.origin}${value.pathname}`; } catch { return "[URL]"; }
   }).replace(/\b\d{6}\b/g, "[código]").replace(/[A-Za-z0-9_.-]{80,}/g, "[dato omitido]").slice(0, 800);
