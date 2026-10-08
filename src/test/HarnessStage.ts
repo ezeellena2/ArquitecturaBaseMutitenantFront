@@ -1,5 +1,5 @@
 // Lista explícita: una etapa posterior puede cerrarse mientras otra queda pendiente.
-export const ClosedStages = [0, 1, 2, 3, 4, 5, 6] as const;
+export const ClosedStages = [0, 1, 2, 3, 4, 5, 6, 7] as const;
 export const HarnessStage = ClosedStages[ClosedStages.length - 1];
 
 export function isStageClosed(stage: number): boolean {
