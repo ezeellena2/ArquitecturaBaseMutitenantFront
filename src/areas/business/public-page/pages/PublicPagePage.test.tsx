@@ -394,6 +394,39 @@ describe("PublicPagePage (tablero Pagina-Org)", () => {
     expect(backend.writes).toEqual([expect.objectContaining({ name: "Grupo Delta Norte", description: "Servicios del grupo", version: 8 })]);
   });
 
+  it.each(["guardar", "publicar"] as const)("espera la relectura de %s antes de permitir otra escritura propia", async (first) => {
+    const user = userEvent.setup();
+    const backend = versionedApi({ ...page, isPublished: false });
+    let release!: () => void;
+    let reading!: () => void;
+    const pendingRead = new Promise<void>((resolve) => { release = resolve; });
+    const readStarted = new Promise<void>((resolve) => { reading = resolve; });
+    server.use(http.get("/api/organization/public-page", async () => {
+      if (backend.current.version > page.version) { reading(); await pendingRead; }
+      return HttpResponse.json(backend.current);
+    }));
+    renderRouteWithProviders("/org/pagina", { as: "business-e6-admin" });
+    const name = await screen.findByRole("textbox", { name: "Nombre de la página" });
+    await user.clear(name);
+    await user.type(name, "Delta Norte");
+    const toggle = screen.getByRole("switch", { name: "Visible en grupo-delta.localtest.me:5174" });
+    try {
+      await user.click(first === "guardar" ? screen.getByRole("button", { name: "Guardar cambios" }) : toggle);
+      await readStarted;
+      expect(toggle).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Guardando…" })).toBeDisabled();
+      expect(backend.writes.map((write) => write.version)).toEqual([8]);
+      release();
+      await waitFor(() => expect(toggle).not.toBeDisabled());
+      await user.click(first === "guardar" ? toggle : screen.getByRole("button", { name: "Guardar cambios" }));
+      await waitFor(() => expect(backend.writes.map((write) => write.version)).toEqual([8, 9]));
+      await waitFor(() => { expect(toggle).not.toBeDisabled(); expect(toggle).toHaveAttribute("aria-checked", "true"); });
+      expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
+    } finally {
+      release();
+    }
+  });
+
   // Publicar se aplica al momento y parte de lo que se está editando: la versión que respondió pasa a ser la base, lo
   // escrito se conserva y «Guardar cambios» no choca con la escritura propia.
   it("publicar con cambios sin guardar no hace chocar después a «Guardar cambios»", async () => {

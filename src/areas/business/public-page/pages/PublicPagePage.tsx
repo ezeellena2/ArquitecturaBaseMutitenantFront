@@ -135,7 +135,11 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
   const [previewOpen, setPreviewOpen] = useState(false);
   const [blockedInfoOpen, setBlockedInfoOpen] = useState(false);
   const [unpublishOpen, setUnpublishOpen] = useState(false);
-  const update = useMutation({ mutationFn: updatePublicPage });
+  const update = useMutation({
+    mutationFn: ({ values, sentVersion }: { values: PageForm; sentVersion: number }) => updatePublicPage(pageRequest(values, sentVersion)),
+    onSuccess: (result, { values, sentVersion }) => saved(values, sentVersion, result.version),
+    onError: rejected,
+  });
   // Tablero Pagina-Org: el interruptor de «Publicación» se aplica al momento, sin esperar a «Guardar cambios», sobre la
   // última lectura; si partió de lo que se está editando, la versión que respondió pasa a ser la base y lo escrito se
   // conserva.
@@ -189,7 +193,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
 
   const submit = form.handleSubmit((values) => {
     setFailure(undefined);
-    update.mutate(pageRequest(values, version), { onSuccess: (result) => { void saved(values, version, result.version); }, onError: rejected });
+    update.mutate({ values, sentVersion: version });
   });
 
   // «Descartar cambios» vuelve a la última lectura de lo guardado, con su versión.
@@ -218,7 +222,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
         : { label: t("publicPage:preview"), onClick: () => setPreviewOpen(true) }}
       actions={<>
         <Button type="button" variant="outline" onClick={discard}>{t("publicPage:discard")}</Button>
-        <Button type="submit" form="public-page-editor" disabled={!isDirty} pending={update.isPending}>{t("publicPage:save")}</Button>
+        <Button type="submit" form="public-page-editor" disabled={!isDirty} pending={update.isPending || publication.isPending}>{t("publicPage:save")}</Button>
       </>}
     >
       {/* Tablero M-Pagina-Org: los campos van adentro de la tarjeta blanca, uno debajo del otro. */}
@@ -237,7 +241,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
               {locked ? <InfoButton label={t("publicPage:blockedInfo")} onClick={() => setBlockedInfoOpen(true)} /> : null}
             </span>
             {/* Trabado, el interruptor se ve apagado pero se puede tocar: abre el aviso, como la ⓘ, y no publica. */}
-            <Switch className="ml-auto" aria-labelledby={visibleId} checked={page.isPublished} disabled={!locked && publication.isPending}
+            <Switch className="ml-auto" aria-labelledby={visibleId} checked={page.isPublished} disabled={!locked && (update.isPending || publication.isPending)}
               aria-disabled={locked || undefined}
               onClick={(event) => { if (!locked) return; event.preventDefault(); setBlockedInfoOpen(true); }}
               onCheckedChange={(checked) => { if (checked) publication.mutate(true); else setUnpublishOpen(true); }} />
