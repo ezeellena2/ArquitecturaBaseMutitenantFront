@@ -1,0 +1,582 @@
+{
+  "date": "2026-10-08",
+  "startedAtUtc": "2026-10-08T11:06:48.273Z",
+  "finished": true,
+  "cleanup": "apagado",
+  "steps": [
+    {
+      "id": "01",
+      "title": "1 · Persona sin cuenta",
+      "expected": "Desde la portada, Ingresá rechaza el correo desconocido y ofrece Crear mi cuenta sin enviar código.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Informó que no hay cuenta, ofreció Crear mi cuenta y descartó el legado público sin enviar correo.",
+          "image": "01-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Informó que no hay cuenta, ofreció Crear mi cuenta y descartó el legado público sin enviar correo.",
+          "image": "01-390.png"
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "title": "1 · Registro desde el ingreso",
+      "expected": "El correo viene escrito; aceptar términos y verificar el .eml lleva al inicio Personal.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Conservó el correo, creó la cuenta con el código del pickup y llegó a Personal.",
+          "image": "02-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Conservó el correo, creó la cuenta con el código del pickup y llegó a Personal.",
+          "image": "02-390.png"
+        }
+      ]
+    },
+    {
+      "id": "03",
+      "title": "2 · Cuenta existente en registro",
+      "expected": "Crear mi cuenta con el mismo correo informa que ya existe y ofrece Ingresar con el correo conservado.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Mostró cuenta existente y el enlace Ingresar.",
+          "image": "03-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Mostró cuenta existente y el enlace Ingresar.",
+          "image": "03-390.png"
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "title": "2 · Ingreso por código",
+      "expected": "El código del pickup lleva al inicio Personal.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "El enlace conservó el correo y el código llevó al inicio Personal.",
+          "image": "04-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "El enlace conservó el correo y el código llevó al inicio Personal.",
+          "image": "04-390.png"
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "title": "2 · Salir y volver a ingresar",
+      "expected": "La salida por UI vuelve a la portada y otro código permite entrar en el mismo contexto.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Salió por UI y volvió a Personal con otro código, conservando el contexto.",
+          "image": "05-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Salió por UI y volvió a Personal con otro código, conservando el contexto.",
+          "image": "05-390.png"
+        }
+      ]
+    },
+    {
+      "id": "06",
+      "title": "3 · Google en registro de persona",
+      "expected": "Sin escribir correo, Registrarte con Google inicia OAuth real hacia accounts.google.com.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Sin completar correo, el desafío OAuth real navegó a accounts.google.com. No se ingresó al proveedor.",
+          "image": "06-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Sin completar correo, el desafío OAuth real navegó a accounts.google.com. No se ingresó al proveedor.",
+          "image": "06-390.png"
+        }
+      ]
+    },
+    {
+      "id": "07",
+      "title": "3 · Google en registro de empresa",
+      "expected": "Sin escribir correo, Seguir con Google inicia OAuth real hacia accounts.google.com.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Sin completar correo, el desafío OAuth real navegó a accounts.google.com. No se ingresó al proveedor.",
+          "image": "07-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Sin completar correo, el desafío OAuth real navegó a accounts.google.com. No se ingresó al proveedor.",
+          "image": "07-390.png"
+        }
+      ]
+    },
+    {
+      "id": "08",
+      "title": "4 · Registrar una empresa",
+      "expected": "Un correo nuevo verifica su .eml, crea organización y primera empresa, y entra a /org.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Creó organización y primera empresa desde la pantalla y entró como Dueño a /org.",
+          "image": "08-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Creó organización y primera empresa desde la pantalla y entró como Dueño a /org.",
+          "image": "08-390.png"
+        }
+      ]
+    },
+    {
+      "id": "09",
+      "title": "4 · Persona sin empresa",
+      "expected": "Ingresá como empresa con la cuenta personal muestra que no está en ninguna empresa y ofrece una salida.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Mostró Sin empresa con explicación y enlace para entrar como persona.",
+          "image": "09-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Mostró Sin empresa con explicación y enlace para entrar como persona.",
+          "image": "09-390.png"
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "title": "4 · Cuenta con empresa",
+      "expected": "Ingresá como empresa lleva a la organización propia y conserva el acceso tras recargar.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Entró a la organización propia y F5 conservó el acceso empresa.",
+          "image": "10-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Entró a la organización propia y F5 conservó el acceso empresa.",
+          "image": "10-390.png"
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "title": "5 · Ingreso del operador",
+      "expected": "El operador ingresa por código a Plataforma.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "El operador ingresó a Plataforma con el código de su .eml; la captura muestra su pestaña.",
+          "image": "11-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "El operador ingresó a Plataforma con el código de su .eml; la captura muestra su pestaña.",
+          "image": "11-390.png"
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "title": "5 · Operador y persona conviven",
+      "expected": "Otra pestaña muestra el ingreso, permite entrar a otra persona y Plataforma sigue abierta tras F5.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "La segunda pestaña ingresó a Personal; Plataforma siguió abierta tras F5, sin nuevo código.",
+          "extraImage": "12-plataforma-1440.png",
+          "image": "12-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "La segunda pestaña ingresó a Personal; Plataforma siguió abierta tras F5, sin nuevo código.",
+          "extraImage": "12-plataforma-390.png",
+          "image": "12-390.png"
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "title": "5 · Operador en puerta personal",
+      "expected": "Antes del código no revela Plataforma; después muestra la pantalla privada y Salir conserva Plataforma.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Pidió el código sin revelar Plataforma y después mostró el estado privado con Ir a Plataforma y Salir.",
+          "image": "13-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Pidió el código sin revelar Plataforma y después mostró el estado privado con Ir a Plataforma y Salir.",
+          "image": "13-390.png"
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "title": "6 · Guardar nombre y apellido",
+      "expected": "Mi cuenta guarda las dos partes y F5 conserva el nombre completo.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Guardó Alex Recorrido; F5 conservó nombre y apellido.",
+          "image": "14-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Guardó Alex Recorrido; F5 conservó nombre y apellido.",
+          "image": "14-390.png"
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "title": "6 · Agregar correo",
+      "expected": "Solo se envía un código al correo nuevo; verificarlo lo agrega a Cómo entrás.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Agregó y verificó el correo con un solo código dirigido al método nuevo; el original no recibió OTP.",
+          "image": "15-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Agregó y verificó el correo con un solo código dirigido al método nuevo; el original no recibió OTP.",
+          "image": "15-390.png"
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "title": "6 · Cambiar principal",
+      "expected": "Hacer principal confirma y guarda sin pedir ni enviar otro código.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "El correo nuevo quedó principal sin pedir ni enviar código.",
+          "image": "16-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "El correo nuevo quedó principal sin pedir ni enviar código.",
+          "image": "16-390.png"
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "title": "6 · Quitar correo",
+      "expected": "Quitar confirma sin código y conserva el otro método como principal.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Quitó el correo sin código y el original volvió a quedar principal.",
+          "image": "17-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Quitó el correo sin código y el original volvió a quedar principal.",
+          "image": "17-390.png"
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "title": "6 · Correo de otra cuenta",
+      "expected": "Agregar un correo verificado ajeno informa que ya está asociado, sin enviar código.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "El diálogo explicó que el correo es de otra cuenta y no envió código.",
+          "image": "18-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "El diálogo explicó que el correo es de otra cuenta y no envió código.",
+          "image": "18-390.png"
+        }
+      ]
+    },
+    {
+      "id": "19",
+      "title": "7 · Recuperación sin cuenta",
+      "expected": "Recuperar mi cuenta informa que el correo anterior no tiene cuenta.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "La recuperación informó que no hay cuenta con ese correo.",
+          "image": "19-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "La recuperación informó que no hay cuenta con ese correo.",
+          "image": "19-390.png"
+        }
+      ]
+    },
+    {
+      "id": "20",
+      "title": "7 · Recuperación con correo ocupado",
+      "expected": "Un correo nuevo que es de otra cuenta se rechaza con explicación concreta.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "La recuperación rechazó el nuevo correo ocupado con su explicación específica.",
+          "image": "20-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "La recuperación rechazó el nuevo correo ocupado con su explicación específica.",
+          "image": "20-390.png"
+        }
+      ]
+    },
+    {
+      "id": "21",
+      "title": "8 · Correo mal escrito",
+      "expected": "El ingreso pide un correo electrónico válido y conserva una acción para corregirlo.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Mostró la validación de correo y conservó el formulario para corregirlo.",
+          "image": "21-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Mostró la validación de correo y conservó el formulario para corregirlo.",
+          "image": "21-390.png"
+        }
+      ]
+    },
+    {
+      "id": "22",
+      "title": "8 · Código equivocado",
+      "expected": "El código incorrecto informa El código no es válido y permite verificar o pedir otro.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Explicó que el código no es válido y conservó la pantalla para corregir o reenviar.",
+          "image": "22-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Explicó que el código no es válido y conservó la pantalla para corregir o reenviar.",
+          "image": "22-390.png"
+        }
+      ]
+    },
+    {
+      "id": "23",
+      "title": "8 · Otro código antes de tiempo",
+      "expected": "Otra solicitud inmediata respeta el cooldown e informa Esperá un momento antes de pedir otro código.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "La solicitud inmediata respondió 429 y mostró Esperá un momento antes de pedir otro código.",
+          "image": "23-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "La solicitud inmediata respondió 429 y mostró Esperá un momento antes de pedir otro código.",
+          "image": "23-390.png"
+        }
+      ]
+    },
+    {
+      "id": "24",
+      "title": "8 · Código vencido",
+      "expected": "Un desafío real vencido informa El código venció. Pedí uno nuevo, con salida para reenviar.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "La API rechazó el desafío real vencido y la pantalla ofreció pedir uno nuevo.",
+          "image": "24-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "La API rechazó el desafío real vencido y la pantalla ofreció pedir uno nuevo.",
+          "image": "24-390.png"
+        }
+      ]
+    },
+    {
+      "id": "25",
+      "title": "E7 · Empresa publica su página",
+      "expected": "El Dueño guarda y publica por UI su página con el interruptor de publicación.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "El Dueño guardó su página y la publicó por UI con la versión actual.",
+          "image": "25-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "El Dueño guardó su página y la publicó por UI con la versión actual.",
+          "image": "25-390.png"
+        }
+      ]
+    },
+    {
+      "id": "26",
+      "title": "E7 · Portada con la empresa",
+      "expected": "La publicación aparece en Empresas en ArquitecturaBase.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "La portada mostró la nueva publicación en Empresas en ArquitecturaBase.",
+          "image": "26-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "La portada mostró la nueva publicación en Empresas en ArquitecturaBase.",
+          "image": "26-390.png"
+        }
+      ]
+    },
+    {
+      "id": "27",
+      "title": "E7 · Directorio y búsqueda",
+      "expected": "Ver todas las empresas abre /empresas y el buscador encuentra la publicación.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Ver todas las empresas abrió el directorio y la búsqueda encontró la publicación.",
+          "image": "27-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Ver todas las empresas abrió el directorio y la búsqueda encontró la publicación.",
+          "image": "27-390.png"
+        }
+      ]
+    },
+    {
+      "id": "28",
+      "title": "E7 · Tarjeta y subdominio",
+      "expected": "La tarjeta abre la publicación en su subdominio y muestra Ingresá para continuar.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "La tarjeta abrió su subdominio publicado con Ingresá para continuar.",
+          "image": "28-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "La tarjeta abrió su subdominio publicado con Ingresá para continuar.",
+          "image": "28-390.png"
+        }
+      ]
+    },
+    {
+      "id": "29",
+      "title": "E7 · Persona vuelve con su menú",
+      "expected": "Ingresar desde la publicación vuelve al mismo subdominio con el menú; F5 conserva la sesión.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "El código volvió al subdominio; F5 conservó Personal y su menú con Mi cuenta en el dominio principal.",
+          "image": "29-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "El código volvió al subdominio; F5 conservó Personal y su menú con Mi cuenta en el dominio principal.",
+          "image": "29-390.png"
+        }
+      ]
+    },
+    {
+      "id": "30",
+      "title": "E7 · Página sin publicar",
+      "expected": "Al despublicar por UI, ese mismo subdominio dice Esta página no está disponible.",
+      "results": [
+        {
+          "width": 1440,
+          "status": "passed",
+          "actual": "Tras despublicar por UI, el mismo subdominio mostró Esta página no está disponible y un regreso al inicio.",
+          "image": "30-1440.png"
+        },
+        {
+          "width": 390,
+          "status": "passed",
+          "actual": "Tras despublicar por UI, el mismo subdominio mostró Esta página no está disponible y un regreso al inicio.",
+          "image": "30-390.png"
+        }
+      ]
+    }
+  ],
+  "finishedAtUtc": "2026-10-08T11:45:30.132Z",
+  "durationMs": 2321859
+}
