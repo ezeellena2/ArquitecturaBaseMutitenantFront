@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { chromium } from "playwright";
-import { journeyDate, renderIndex, recordedStep, safeDiagnostic, waitCodeMessage, withCleanup } from "./recorrido-usuario.mjs";
+import { journeyDate, renderIndex, recordedStep, safeDiagnostic, signOutMobile, waitCodeMessage, withCleanup } from "./recorrido-usuario.mjs";
 
 test("la carpeta usa la fecha de Buenos Aires aunque UTC ya sea el día siguiente", () => {
   assert.equal(journeyDate(new Date("2026-10-08T01:30:00Z")), "2026-10-07");
@@ -60,5 +60,26 @@ test("la comprobación lee el mensaje compuesto del código junto con los intent
     await waitCodeMessage(page, "El código no es válido.");
     await page.setContent('<div role="alert"><span>El código venció. Pedí uno nuevo.</span></div>');
     await waitCodeMessage(page, "El código venció. Pedí uno nuevo.");
+  } finally { await browser.close(); }
+});
+
+test("la salida móvil usa Volver a Más desde Mi cuenta, que no tiene barra de secciones", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    page.setDefaultTimeout(500);
+    for (const door of ['<a href="#" aria-label="Volver a Más">‹</a>', '<nav aria-label="Secciones"><a href="#">Más</a></nav>']) {
+      await page.setContent(`<main>${door}</main>`);
+      await page.evaluate(() => {
+        delete document.body.dataset.signedOut;
+        document.querySelector("a").addEventListener("click", (event) => {
+          event.preventDefault();
+          document.querySelector("main").innerHTML = '<button>Salir</button>';
+          document.querySelector("button").addEventListener("click", () => { document.body.dataset.signedOut = "true"; });
+        });
+      });
+      await signOutMobile(page);
+      assert.equal(await page.locator("body").getAttribute("data-signed-out"), "true");
+    }
   } finally { await browser.close(); }
 });

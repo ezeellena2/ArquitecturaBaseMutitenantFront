@@ -64,6 +64,13 @@ export async function waitCodeMessage(page, text) {
   assert.equal((await alert.innerText()).split("\n")[0].trim(), text);
 }
 
+export async function signOutMobile(page) {
+  const more = page.getByRole("navigation", { name: "Secciones" }).getByRole("link", { name: "Más", exact: true });
+  if (await more.isVisible()) await more.click();
+  else await page.getByRole("link", { name: "Volver a Más", exact: true }).click();
+  await page.getByRole("button", { name: "Salir", exact: true }).click();
+}
+
 const definitions = [
   ["01", "1 · Persona sin cuenta", "Desde la portada, Ingresá rechaza el correo desconocido y ofrece Crear mi cuenta sin enviar código."],
   ["02", "1 · Registro desde el ingreso", "El correo viene escrito; aceptar términos y verificar el .eml lleva al inicio Personal."],
@@ -164,8 +171,7 @@ async function runWidth({ width, context, env, record, output, signal }) {
       await target.getByRole("button", { name: "Tu cuenta", exact: true }).click();
       await target.getByRole("button", { name: /^Salir/ }).click();
     } else if ((await target.viewportSize()).width === 390) {
-      await target.getByRole("navigation", { name: "Secciones" }).getByRole("link", { name: "Más", exact: true }).click();
-      await target.getByRole("button", { name: "Salir", exact: true }).click();
+      await signOutMobile(target);
     } else {
       lastAction = `abrir menú ${profile}`;
       await target.getByRole("button", { name: new RegExp(`, ${profile}$`) }).press("Enter");
@@ -396,8 +402,8 @@ async function runWidth({ width, context, env, record, output, signal }) {
     assert.equal((await env.messages(businessEmail, before)).filter((item) => pickupCode(item.body)).length, 0);
     return "El diálogo explicó que el correo es de otra cuenta y no envió código.";
   });
-  await page.getByRole("dialog").getByRole("button", { name: "Cancelar", exact: true }).click(); await signOut();
   await step("19", async () => {
+    await page.getByRole("dialog").getByRole("button", { name: "Cancelar", exact: true }).click(); await signOut();
     await page.goto(new URL("/recuperar", baseUrl).href);
     await page.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(`e2e-inexistente-${randomUUID()}@example.test`);
     await page.getByRole("button", { name: "Seguir", exact: true }).click();
