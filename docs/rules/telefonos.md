@@ -1,6 +1,6 @@
 # Teléfonos
 
-**Regla:** un teléfono se **carga** siempre con `PhoneField` (país con bandera + número) y se **muestra** siempre con `PhoneText`. El dato que llega de la API está en E.164 (`+5491123456789`). **Quien decide si es válido es el backend.**
+**Regla:** un teléfono se **carga** siempre con `PhoneField` (país con bandera + número) y el número completo se **muestra** con `PhoneText`. El dato completo de la API está en E.164 (`+5491123456789`); una máscara recibida se conserva como texto oculto. **Quien decide si es válido es el backend.**
 
 ## Cómo se hace
 
@@ -11,7 +11,7 @@
 └──────────────────────┘ └──────────────────────────────┘
 ```
 - **Cerrado:** la bandera y el prefijo («+54»), en una caja de 112 (decisión del usuario del 2026-10-04).
-- **Selector de país:** `CountrySelect` vive en `shared/ui/fields` y es un combobox con buscador (por nombre, código ISO o prefijo: "arg", "AR" o "+54"). Cada fila lleva bandera SVG, nombre traducido y prefijo.
+- **Selector de país:** `CountrySelect` vive en `shared/ui/fields` y es un combobox; más de 10 opciones muestra buscador (por nombre, código ISO o prefijo: "arg", "AR" o "+54"), con 10 o menos muestra sólo la lista. Cada fila lleva bandera SVG, nombre traducido y prefijo.
   - Las opciones habilitadas vienen de `shared/referenceData` (`GET /api/reference-data`), con `Name`, `CallingCode` y `SortOrder` del catálogo `Countries`. Las destacadas se ordenan por `SortOrder` y las demás por nombre traducido (`shared/phone/countries.ts`); en el front no hay un archivo de países destacados ni una lista de códigos.
 - `libphonenumber-js` valida y formatea números y prefijos; **no** define la lista de países ni sus nombres de pantalla. Mientras llega el catálogo, el selector muestra estado de carga.
 - **Banderas:** `country-flag-icons` (SVG 3:2), cargadas solo cuando se abre el selector. Si falla la importación, se muestra el código del país con `role="img"` y el nombre traducido como etiqueta accesible, sin derribar el formulario. **Nunca emojis:** Windows no los dibuja.
@@ -20,6 +20,8 @@
 - **Uso:**
   - `usage="whatsapp"` muestra solo los países del canal `whatsapp` que devuelve `GET /api/auth/methods` en `channels` (`[{ key: "whatsapp", countries: [...] }]`; los aporta el módulo de WhatsApp);
   - `usage="mobile"` y `usage="any"` muestran todos.
+- **Capacidad cargando/apagada:** no habilitar altas WhatsApp. Si un método existente pertenece a un país retirado del canal, conservar su país/bandera/prefijo para representarlo, sin ofrecerlo en las opciones de alta.
+- **Ingreso/registro:** `variant="auth"` conserva el campo de 44 px, radio 10 y letra 15 también en móvil; el uso normal mantiene la medida móvil de formularios.
 - **Validación en vivo** (solo guía): `isValidPhoneNumber`. El error definitivo lo manda el backend (`Users.Phone.*`, o el del módulo de WhatsApp sobre el campo `phone` si el país no está habilitado) y lo ubica `applyApiErrorToForm`.
 - **Qué emite:** `{ country: "AR", number: "11 2345-6789" }`, que es lo que espera el contrato.
 - **Accesibilidad:** el selector se anuncia como "País: Argentina, +54", no "AR +54".
@@ -30,6 +32,7 @@
 - Opcional: `link="tel"` o `link="whatsapp"` (`https://wa.me/<dígitos>`), como acción de fila o de ficha.
 - Sin número: `—` (`EmptyValue`).
 - En tablas, `type: "phone"` en la columna.
+- **Destino oculto:** los códigos de posesión usan `maskPhone` de `shared/format/personalData`, igual a `PersonalDataMask.Phone` del back (últimos cuatro dígitos). Una máscara recibida no pasa por el parser de `PhoneText` ni se reconstruye. Copiar `RecoveryMethodText` para el DTO de recuperación que admite máscara o E.164.
 
 ## Prohibido
 - Un `<input type="tel">` suelto, o una lista fija de países, prefijos o prioridades en el código.
@@ -43,10 +46,12 @@
 - [Datos de referencia del back](../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md) §4: origen y orden de las opciones.
 
 ## Lo verifica
-- `PhoneField.test.tsx` (E1): busca por nombre y por prefijo, detecta el país al pegar y formatea mientras se escribe; el filtro de países WhatsApp se prueba desde E8.
+- `PhoneField.test.tsx`: búsqueda por nombre/prefijo, detección al pegar, formato, umbral 10/11, capacidades/carga/apagado y país previo retirado del canal.
 - `countries.test.ts` (E1) y `referenceData.test.ts` (E1): las opciones habilitadas y su orden salen del catálogo, sin códigos fijos.
 - `formatters.test.ts` (E1): los casos de teléfono de `format-cases.json`, los mismos que el back.
 - `format-usage.test.ts` (E1): `libphonenumber-js` solo en su lugar y ningún nombre de país armado con `Intl.DisplayNames` en el front.
+- `personalData.test.ts` y `RecoveriesPage.test.tsx`: máscara compartida, máscaras recibidas y formato E.164 en recuperación.
+- `AuthCodeStep.test.tsx` y `PhoneAuthentication.test.tsx`: código público con teléfono oculto, también en inglés, sin exponer el número completo.
 
 ## Detalle
 [formatos.md](../architecture/formatos.md) · back: `../ArquitecturaBaseMutitenant/docs/rules/telefonos.md`

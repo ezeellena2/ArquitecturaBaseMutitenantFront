@@ -200,7 +200,8 @@ src/
 │   │   │   ├── api/
 │   │   │   │   ├── loginCode.ts
 │   │   │   │   ├── loginCode.test.ts                tests de loginCode
-│   │   │   │   ├── loginLink.ts                     [E8]
+│   │   │   │   ├── loginLink.ts                     [E8] preview y canje por POST; access consumer en el canje
+│   │   │   │   ├── loginLink.test.ts                tests del contrato de enlace
 │   │   │   │   ├── methods.ts                       GET /api/auth/methods: los canales de ingreso habilitados (WhatsApp, desde la Etapa 8)
 │   │   │   │   ├── googleSignup.ts                  el antiforgery del registro con Google
 │   │   │   │   ├── signup.ts                        registro de personas
@@ -220,9 +221,9 @@ src/
 │   │   │   │   ├── AuthLink.test.tsx                tests de AuthLink
 │   │   │   │   ├── BusinessAccessResult.tsx         la puerta de empresa que no deja entrar (sin empresa o deshabilitado), desde el código o desde authorize
 │   │   │   │   ├── PlatformAccessResult.tsx         operador probado en una puerta pública: Ir a Plataforma o Salir sólo del lado público
-│   │   │   │   ├── EmailCodeForm.tsx                el correo y el paso del código, con AuthCodeStep
+│   │   │   │   ├── EmailCodeForm.tsx                destino Correo/WhatsApp y paso del código, con AuthCodeStep
 │   │   │   │   ├── EmailCodeForm.test.tsx           tests de EmailCodeForm
-│   │   │   │   ├── WhatsAppCodeForm.tsx             [E8]
+│   │   │   │   ├── AuthDestinationField.tsx         [E8] selector por capacidad y campo Email/Phone compartido entre puertas públicas
 │   │   │   │   ├── GoogleButton.tsx                 [E3]
 │   │   │   │   ├── GoogleButton.test.tsx            tests de GoogleButton
 │   │   │   │   └── PendingDeletionPanel.tsx         "Tu cuenta tiene la baja pedida · Se elimina el dd/mm/aaaa", con «Cancelar la baja y entrar» y «Salir»
@@ -231,23 +232,30 @@ src/
 │   │   │   │   ├── returnUrl.test.ts                tests de returnUrl
 │   │   │   │   ├── loginRedirectError.ts            lleva el código de error de Google entre los dos redirects del ingreso, sin datos de identidad ni tokens
 │   │   │   │   ├── loginCodeState.ts                estado del paso del código: destino enmascarado, canal y segundos para reenviar
+│   │   │   │   ├── loginDestination.ts              [E8] destino tipado y cuerpos Email/Phone contra contrato generado
+│   │   │   │   ├── loginDestination.test.ts         tests de destinos
+│   │   │   │   ├── authDestinationForm.ts           validación del destino según el canal elegido
+│   │   │   │   ├── loginLinkState.ts                [E8] fragmento, estados neutrales y enlace al número público de WhatsApp
+│   │   │   │   ├── loginLinkState.test.ts           tests de privacidad y estados del enlace
 │   │   │   │   ├── loginEmail.ts                    Conserva el correo entre registro e ingreso OIDC
 │   │   │   │   ├── loginEmail.test.ts                tests de loginEmail
 │   │   │   │   └── loginCodeState.test.ts           tests de loginCodeState
 │   │   │   ├── errors.ts                            códigos Auth.* → texto o campo; Identity.Account.PendingDeletion pasa LoginPage al estado de baja pedida
 │   │   │   ├── errors.test.ts                       tests de errors
 │   │   │   └── pages/
-│   │   │       ├── LoginPage.tsx                    /login (persona) y /login/empresa (empresa): misma pantalla, otra puerta; el código es un paso de la pantalla (no hay /login/codigo); correo sin cuenta y operador privado después de probar el correo (v112), salvo WhatsApp [E8]
+│   │   │       ├── LoginPage.tsx                    /login (persona) y /login/empresa (empresa): Correo/WhatsApp y código en la misma pantalla; cuenta inexistente antes del código y operador privado después de posesión (v115)
 │   │   │       ├── EmailAccountStates.test.tsx       tests de estados de correo y transporte OIDC
 │   │   │       ├── LoginPage.test.tsx               tests de LoginPage
-│   │   │       ├── LoginLinkPage.tsx                [E8] /login/enlace: enlace del bot (tablero Enlace)
+│   │   │       ├── LoginLinkPage.tsx                [E8] /login/enlace: preview sin ingreso; Continuar canjea y empieza OIDC consumer nuevo (ADR 0049)
+│   │   │       ├── LoginLinkPage.test.tsx           tests de preview, canje, privacidad, estados y reintentos
+│   │   │       ├── PhoneAuthentication.test.tsx     [E8] puertas, registro personal/empresarial y posesión Phone con MSW
 │   │   │       ├── SignupPage.tsx                   /registro: crear cuenta de persona
 │   │   │       ├── SignupPage.test.tsx              tests de SignupPage
 │   │   │       ├── BusinessSignupPage.tsx           [E6] /registro/empresa: «Registrá tu empresa», con slug obligatorio y disponibilidad
 │   │   │       ├── BusinessSignupPage.test.tsx      tests de BusinessSignupPage
 │   │   │       ├── InvitationPage.tsx               /invitacion: quién invita, la organización, los roles y el vencimiento (POST /api/invitations/preview, el token en el cuerpo) y aceptar según el caso (tablero Invitacion)
 │   │   │       ├── InvitationPage.test.tsx          tests de InvitationPage
-│   │   │       ├── RecoverAccountPage.tsx           [E5] /recuperar: correo de antes, correo nuevo, código y pedido recibido; errores de cuenta y sin WhatsApp (v112)
+│   │   │       ├── RecoverAccountPage.tsx           [E5/E8] /recuperar: Email/Phone previo y nuevo, posesión con nonce y pedido asistido; errores bajo campo antes del código (ADR 0043, v115)
 │   │   │       ├── RecoverAccountPage.test.tsx      tests de Recuperar: nonce, idempotencia, errores, espera y vista a 390
 │   │   │       ├── CallbackPage.tsx
 │   │   │       └── CallbackPage.test.tsx            tests de CallbackPage
@@ -455,7 +463,9 @@ src/
 │       │   │   └── recoveries.test.ts               consultas, cuerpos, claves y versión respondida
 │       │   ├── columns.tsx                          cuenta nullable, métodos tapados y filas móviles
 │       │   ├── errors.ts                            errores por código y conflicto de estado
-│       │   ├── components/ReviewRecoveryDialog.tsx  grilla, motivo, decisiones y detalle resuelto
+│       │   ├── components/
+│       │   │   ├── ReviewRecoveryDialog.tsx         grilla, motivo, decisiones y detalle resuelto
+│       │   │   └── RecoveryMethodText.tsx           [E8] E.164 por PhoneText o máscara recibida sin reconstruirla
 │       │   └── pages/
 │       │       ├── RecoveriesPage.tsx               banda global, filtros y versión propia ante lectura vieja
 │       │       └── RecoveriesPage.test.tsx          estados, filtros, permisos, decisiones, concurrencia y accesibilidad
@@ -594,7 +604,7 @@ src/
 │   │   ├── api/
 │   │   │   ├── loginChannels.ts                     los canales con los que se entra (GET /api/auth/methods): correo, Google y, con su módulo, WhatsApp
 │   │   │   ├── loginMethods.ts                      los métodos de ingreso: leer, agregar un correo, verificar, quitar, hacer principal y vincular Google
-│   │   ├── AddLoginMethodDialog.tsx                 «Agregar correo o teléfono» («Agregar correo» sin el módulo de WhatsApp) y «Verificar tu correo»: el correo tapado, el código en sus casilleros y su error debajo; React Hook Form con zod
+│   │   ├── AddLoginMethodDialog.tsx                 «Agregar correo o teléfono» («Agregar correo» sin WhatsApp) y verificar Email/Phone: destino tapado y código de posesión; React Hook Form con zod
 │   │   ├── AddLoginMethodDialog.test.tsx            tests de AddLoginMethodDialog
 │   │   ├── ChangeLoginMethodDialog.tsx              quitar un método (o desvincular Google) o hacerlo principal, con diálogo de confirmación sin código extra (ADR 0045)
 │   │   ├── ChangeLoginMethodDialog.test.tsx         tests de ChangeLoginMethodDialog
