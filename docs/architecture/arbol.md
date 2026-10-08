@@ -550,6 +550,7 @@ src/
 │   │   ├── invitationContract.ts                    las rutas de la invitación (/api/invitations/preview y /accept) y sus query keys
 │   │   ├── contracts.test.ts                        los contratos OpenAPI que usa el front
 │   │   ├── types.ts                                 [E1] alias legibles sobre generated/schema.d.ts, incluidos PublicSiteResponse y DirectoryEntryRow; sin contratos duplicados
+│   │   ├── etapa8Contract.test.ts                   tests de etapa8Contract
 │   │   └── generated/                               NO SE EDITA A MANO
 │   │       └── schema.d.ts                          [E1] única salida de openapi-typescript
 │   ├── i18n/                                        [E1]
