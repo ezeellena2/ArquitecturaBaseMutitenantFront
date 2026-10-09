@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { chromium } from "playwright";
-import { recoveryRow, selectRecovery } from "./test-e2e-real-whatsapp-recovery.mjs";
+import { recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 
 const request = { id: "approve-target", previousMethodType: "Phone", newMethodType: "Phone", previousMethod: "•••• 7880", newMethod: "•••• 7882", status: "Pending" };
 const other = { ...request, id: "reject-other", newMethod: "•••• 7884" };
@@ -29,5 +29,18 @@ for (const width of [1440, 390]) test(`elige sólo la fila de recuperación corr
     assert.equal(await row.count(), 1);
     await row.getByRole("button", { name: /^Acciones de/ }).click();
     assert.equal(await page.locator("body").getAttribute("data-selected"), request.id);
+  } finally { await context.close(); }
+});
+
+for (const width of [1440, 390]) test(`la sesión de Plataforma espera la UI privada, no la ruta del formulario, en ${width}`, async () => {
+  const context = await browser.newContext({ viewport: { width, height: 900 } });
+  try {
+    const page = await context.newPage();
+    await page.setContent(`<h1>Ingresá a Plataforma</h1><button onclick="document.querySelector('#private').hidden=false">Terminar autorización</button>
+      <div id="private" hidden><h1>Organizaciones</h1>${width === 390 ? '<nav aria-label="Secciones"><a href="#">Organizaciones</a></nav>' : '<button>Operador E2E, Plataforma</button>'}</div>`);
+    let ready = false; const waiting = waitForPlatformSession(page).then(() => { ready = true; });
+    await page.evaluate(() => document.title); assert.equal(ready, false);
+    await page.getByRole("button", { name: "Terminar autorización", exact: true }).click();
+    await waiting; assert.equal(ready, true);
   } finally { await context.close(); }
 });

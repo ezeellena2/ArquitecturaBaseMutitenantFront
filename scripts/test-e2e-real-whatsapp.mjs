@@ -7,16 +7,18 @@ import { chromium } from "playwright";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
-import { recoveryRow, selectRecovery } from "./test-e2e-real-whatsapp-recovery.mjs";
+import { recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
+import { responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
 
 // Sólo RealE2ESetup en Testing inicia este runner. Front/API/OIDC/PostgreSQL son reales.
 // FIXTURE es IPC privado: el host no publica líneas, respuestas, números ni pruebas.
 const root = path.resolve(import.meta.dirname, "..");
 const base = "https://localtest.me:5176";
 const ipc = fixtureProtocol(process.stdin, process.stdout);
-let server; let browser; let stage = "arranque"; let lastFailure = ""; let completed = 0;
+let server; let browser; let stage = "arranque"; let step = "inicio"; let lastFailure = ""; let completed = 0;
 const check = (label) => process.stdout.write(`CHECK ${label}\n`);
-const start = (label) => { stage = label; lastFailure = ""; check(`INICIO ${label}`); };
+const start = (label) => { stage = label; step = "inicio"; lastFailure = ""; check(`INICIO ${label}`); };
+const detail = (label) => { step = label; check(`INICIO ${stage}; paso ${step}`); };
 const pass = (label) => { completed++; check(`OK ${label}`); };
 const begin = async (scenario, phone) => {
   assert.equal((await ipc.request({ kind: "begin", scenario, phone })).ok, true);
@@ -24,8 +26,8 @@ const begin = async (scenario, phone) => {
 };
 const pathname = (response) => new URL(response.url()).pathname;
 async function clickHttp(page, button, endpoint, status, method = "POST") {
-  const reply = page.waitForResponse((response) => pathname(response) === endpoint && response.request().method() === method);
-  await button.click(); const response = await reply;
+  const [response] = await responsesForAction(page,
+    [(reply) => pathname(reply) === endpoint && reply.request().method() === method], () => button.click());
   assert.equal(response.status(), status);
   return response;
 }
@@ -76,9 +78,11 @@ async function recovery(page, previous, next, scenario) {
   await clickHttp(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/account-recovery/code", 202);
   await page.getByRole("heading", { name: "Revisá tu WhatsApp", exact: true }).waitFor();
   await fillOtp(page, (await fixture("code")).proof);
-  const submitted = page.waitForResponse((response) => pathname(response) === "/api/account-recovery" && response.request().method() === "POST");
-  await clickHttp(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/account-recovery/verify", 204);
-  assert.equal((await submitted).status(), 202);
+  const [verified, submitted] = await responsesForAction(page, [
+    (response) => pathname(response) === "/api/account-recovery/verify" && response.request().method() === "POST",
+    (response) => pathname(response) === "/api/account-recovery" && response.request().method() === "POST",
+  ], () => page.getByRole("button", { name: "Verificar", exact: true }).click());
+  assert.equal(verified.status(), 204); assert.equal(submitted.status(), 202);
   await page.getByRole("heading", { name: "Recibimos tu pedido", exact: true }).waitFor();
 }
 async function platformLogin(page, scenario) {
@@ -89,31 +93,39 @@ async function platformLogin(page, scenario) {
   await page.getByRole("heading", { name: "Revisá tu correo", exact: true }).waitFor();
   await fillOtp(page, (await fixture("operatorCode")).proof);
   await clickHttp(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", 200);
-  await page.waitForURL((url) => url.pathname === "/plataforma");
+  detail("esperar sesión privada de Plataforma");
+  await waitForPlatformSession(page);
 }
 async function reviewRecovery(page, previous, next, action) {
   const mobile = page.viewportSize().width === 390;
-  const initial = page.waitForResponse((response) => pathname(response) === "/api/platform/recoveries/paged");
-  await page.goto(`${base}/plataforma/recuperaciones`);
+  detail("abrir lista de recuperaciones");
+  let [response] = await responsesForAction(page, [(reply) => pathname(reply) === "/api/platform/recoveries/paged"],
+    () => page.goto(`${base}/plataforma/recuperaciones`));
   await page.getByRole("heading", { name: "Recuperaciones", exact: true }).waitFor();
-  let response = await initial;
   if (!mobile) {
-    const searched = page.waitForResponse((reply) => pathname(reply) === "/api/platform/recoveries/paged" && new URL(reply.url()).searchParams.get("search") === next);
-    await page.getByRole("searchbox", { name: "Buscar por cuenta, correo o teléfono" }).fill(next);
-    response = await searched;
+    detail("buscar pedido en escritorio");
+    [response] = await responsesForAction(page,
+      [(reply) => pathname(reply) === "/api/platform/recoveries/paged" && new URL(reply.url()).searchParams.get("search") === next],
+      () => page.getByRole("searchbox", { name: "Buscar por cuenta, correo o teléfono" }).fill(next));
   }
   assert.equal(response.status(), 200);
+  detail("correlacionar pedido Phone");
   const pedido = selectRecovery((await response.json()).items, previous, next); assert.equal(pedido.status, "Pending");
   const target = recoveryRow(page, pedido); await target.waitFor(); assert.equal(await target.count(), 1);
+  detail("abrir acciones del pedido");
   await target.getByRole("button", { name: /^Acciones de/ }).click();
+  detail("abrir revisión humana");
   await page.getByRole("menuitem", { name: "Revisar", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Revisar el pedido", exact: true });
+  detail("completar motivo humano");
   await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Verificación humana del recorrido aislado.");
+  detail("confirmar decisión humana");
   await clickHttp(page, dialog.getByRole("button", { name: action === "approve" ? "Aprobar" : "Rechazar", exact: true }), `/api/platform/recoveries/${pedido.id}/${action}`, 200);
   await dialog.waitFor({ state: "hidden" });
-  const persisted = page.waitForResponse((reply) => pathname(reply) === "/api/platform/recoveries/paged" && (mobile || new URL(reply.url()).searchParams.get("search") === next));
-  await page.reload();
-  const resolved = (await (await persisted).json()).items.find((item) => item.id === pedido.id);
+  detail("leer decisión persistida después de F5");
+  const [persisted] = await responsesForAction(page,
+    [(reply) => pathname(reply) === "/api/platform/recoveries/paged" && (mobile || new URL(reply.url()).searchParams.get("search") === next)], () => page.reload());
+  const resolved = (await persisted.json()).items.find((item) => item.id === pedido.id);
   assert.equal(resolved?.status, action === "approve" ? "Approved" : "Rejected");
   await recoveryRow(page, resolved).getByText(action === "approve" ? "Aprobado" : "Rechazado", { exact: true }).waitFor();
 }
@@ -293,7 +305,7 @@ try {
   check(`FINAL ${completed} grupos reales correctos en 1440/390; Meta Cloud/delivered pendiente`);
 } catch (error) {
   // Playwright y assert pueden incluir URLs/pruebas en sus mensajes. Sólo metadata saneada.
-  check(`FALLO ${stage}; tipo ${/^[A-Za-z]+$/.test(error?.name ?? "") ? error.name : "Error"}; HTTP ${lastFailure || "sin-error"}`);
+  check(`FALLO ${stage}; paso ${step}; tipo ${/^[A-Za-z]+$/.test(error?.name ?? "") ? error.name : "Error"}; HTTP ${lastFailure || "sin-error"}`);
   process.exitCode = 1;
 } finally {
   ipc.close(); await browser?.close(); await server?.close();

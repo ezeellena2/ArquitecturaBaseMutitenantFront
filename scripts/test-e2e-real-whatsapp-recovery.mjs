@@ -13,3 +13,10 @@ export function recoveryRow(page, item) {
     .filter({ has: page.getByText(item.previousMethod, { exact: true }) })
     .filter({ has: page.getByText(item.newMethod, { exact: true }) });
 }
+
+/** /plataforma también es la ruta del ingreso; sólo su interfaz privada demuestra que terminó OIDC. */
+export async function waitForPlatformSession(page) {
+  await page.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
+  await (page.viewportSize().width === 390 ? page.getByRole("navigation", { name: "Secciones", exact: true })
+    : page.getByRole("button", { name: /, Plataforma$/ })).waitFor();
+}
