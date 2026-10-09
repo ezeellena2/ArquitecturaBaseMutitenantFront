@@ -7,7 +7,7 @@ import { chromium } from "playwright";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
-import { recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
+import { newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
 
 // Sólo RealE2ESetup en Testing inicia este runner. Front/API/OIDC/PostgreSQL son reales.
@@ -94,7 +94,11 @@ async function platformLogin(page, scenario) {
   await fillOtp(page, (await fixture("operatorCode")).proof);
   await clickHttp(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", 200);
   detail("esperar sesión privada de Plataforma");
-  await waitForPlatformSession(page);
+  await waitForPlatformSession(page, async () => {
+    detail("aceptar términos del operador por UI");
+    await clickHttp(page, page.getByRole("button", { name: "Aceptar y seguir", exact: true }), "/api/legal/accept", 204);
+    detail("esperar Plataforma después de aceptar términos");
+  });
 }
 async function reviewRecovery(page, previous, next, action) {
   const mobile = page.viewportSize().width === 390;
@@ -256,7 +260,8 @@ async function journey(width, index) {
   await page.getByText("Ese número ya es de otra cuenta.", { exact: true }).waitFor(); pass(`errores sin cuenta/ocupado/recuperación ${width}`);
 
   start(`recuperación asistida Phone ${width}`); await recovery(page, phone, recovered, `recovery-approve-${width}`); pass(`solicitud recuperación Phone/OTP ${width}`);
-  const operator = await context.newPage(); operator.setDefaultTimeout(30_000); observe(operator);
+  const operatorContext = await newPlatformContext(browser, width);
+  const operator = await operatorContext.newPage(); operator.setDefaultTimeout(30_000); observe(operator);
   await platformLogin(operator, `operator-${width}`);
   start(`aprobar recuperación Phone ${width}`); await reviewRecovery(operator, phone, recovered, "approve");
   await login(page, recovered, "consumer", `recovered-login-${width}`); await authenticated(page, width); await page.reload(); await authenticated(page, width);
@@ -265,7 +270,7 @@ async function journey(width, index) {
   start(`rechazar recuperación Phone ${width}`); await recovery(page, phone, rejected, `recovery-reject-${width}`); await reviewRecovery(operator, phone, rejected, "reject");
   await begin(`rejected-login-${width}`, rejected); await page.goto(`${base}/login`); await whatsapp(page, rejected);
   await clickHttp(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 400);
-  await page.getByText("No hay una cuenta con ese número.", { exact: true }).waitFor(); pass(`rechazo humano Phone persistido/sin ingreso ${width}`); await operator.close();
+  await page.getByText("No hay una cuenta con ese número.", { exact: true }).waitFor(); pass(`rechazo humano Phone persistido/sin ingreso ${width}`); await operatorContext.close();
 
   start(`registro empresarial Phone ${width}`); const business = await begin(`business-signup-${width}`, businessPhone); const orgName = `Empresa E8 ${randomUUID().slice(0, 8)}`;
   await page.goto(`${base}/registro/empresa`); await whatsapp(page, businessPhone, /número de WhatsApp$/i); await page.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
