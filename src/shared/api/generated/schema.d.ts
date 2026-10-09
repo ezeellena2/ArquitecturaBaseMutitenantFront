@@ -6,7 +6,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Ruta técnica global condicional. hub.mode=subscribe y VerifyToken correcto: challenge text/plain. Sin configuración/disponibilidad o módulo retirado: 404 común. T01 apagado siempre; T02 aporta disponibilidad y T05 verificación, sin sesión. */
+        /** @description Ruta técnica global condicional. hub.mode=subscribe y VerifyToken correcto: challenge text/plain. Sin configuración/disponibilidad o módulo retirado: 404 común. Sin sesión. */
         get: {
             parameters: {
                 query?: {
@@ -65,19 +65,10 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
-        /** @description Meta JSON; X-Hub-Signature-256=sha256=<HMAC> sobre bytes originales, antes de confiar en el JSON. Máximo 5242880 bytes, rate limit del webhook. Sin Idempotency-Key: deduplicar IDs Meta por tipo de evento, responder duplicados 200. 200 solo después de persistir lote; worker durable, sin sesión. T01 apagado siempre; stub 501 si se habilita en prueba. */
+        /** @description Meta JSON; X-Hub-Signature-256=sha256=<HMAC> sobre bytes originales, antes de confiar en el JSON. Máximo 5242880 bytes, rate limit del webhook. Sin Idempotency-Key: deduplicar IDs Meta por tipo de evento, responder duplicados 200. 200 solo después de persistir lote; worker durable, sin sesión. */
         post: {
             parameters: {
                 query?: never;
@@ -151,15 +142,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8266,7 +8248,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente previousEmail o previousPhone; método perdido no exige posesión. 204 cuando existe cuenta recuperable; sin datos de cuenta ni sesión. T01: previousPhone devuelve 501 temporal. */
+        /** @description Exactamente previousEmail o previousPhone; método perdido no exige posesión. 204 cuando existe cuenta recuperable; sin datos de cuenta ni sesión. */
         post: {
             parameters: {
                 query?: never;
@@ -8318,15 +8300,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -8344,7 +8317,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -8412,15 +8385,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -8438,7 +8402,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -8511,15 +8475,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -8537,7 +8492,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -8601,15 +8556,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -8627,7 +8573,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.BusinessSignup abierto, independiente de ConsumerSignup; identidad nueva o existente. No crea organización ni PhoneTaken personal. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.BusinessSignup abierto, independiente de ConsumerSignup; identidad nueva o existente. No crea organización ni PhoneTaken personal. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -8704,15 +8650,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -8730,7 +8667,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs.BusinessSignup abierto, independiente de ConsumerSignup; identidad nueva o existente. No crea organización ni PhoneTaken personal. Cuenta, método, Personal cuando corresponde y legales explícitos atómicos. Operador probado: PlatformOnly y sin cookie pública. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs.BusinessSignup abierto, independiente de ConsumerSignup; identidad nueva o existente. No crea organización ni PhoneTaken personal. Cuenta, método, Personal cuando corresponde y legales explícitos atómicos. Operador probado: PlatformOnly y sin cookie pública. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -8752,7 +8689,7 @@ export interface paths {
                 /** @description No Content */
                 204: {
                     headers: {
-                        /** @description Cookie HttpOnly tras prueba válida; nunca se emite desde webhook ni desde preview. Stubs T01 no la emiten. */
+                        /** @description Cookie HttpOnly tras prueba válida; nunca se emite desde webhook ni desde preview. */
                         "Set-Cookie"?: string;
                         [name: string]: unknown;
                     };
@@ -8798,15 +8735,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9338,7 +9266,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. Solo método verificado utilizable; conserva invitación por correo de ADR0047. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. Solo método verificado utilizable; conserva invitación por correo de ADR0047. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. */
         post: {
             parameters: {
                 query?: never;
@@ -9406,15 +9334,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -9432,7 +9351,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. returnUrl local/OIDC validado conserva access, PKCE y callback. Respuesta returnUrl, sin tokens OIDC en body. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. returnUrl local/OIDC validado conserva access, PKCE y callback. Respuesta returnUrl, sin tokens OIDC en body. */
         post: {
             parameters: {
                 query?: never;
@@ -9454,7 +9373,7 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
-                        /** @description Cookie HttpOnly tras prueba válida; nunca se emite desde webhook ni desde preview. Stubs T01 no la emiten. */
+                        /** @description Cookie HttpOnly tras prueba válida; nunca se emite desde webhook ni desde preview. */
                         "Set-Cookie"?: string;
                         [name: string]: unknown;
                     };
@@ -9511,15 +9430,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -9537,7 +9447,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Revalidar dueño, método, canal, estado y operador bajo lock; operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Preview no consume ni crea cookie. displayName y maskedPhone nullable. T01 devuelve 501. */
+        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Revalidar dueño, método, canal, estado y operador bajo lock; operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Preview no consume ni crea cookie. displayName y maskedPhone nullable. */
         post: {
             parameters: {
                 query?: never;
@@ -9593,15 +9503,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -9619,7 +9520,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Revalidar dueño, método, canal, estado y operador bajo lock; operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Solo access=consumer. 200 {access:consumer} y cookie pública, sin tokens OIDC. Replay misma key no crea otra sesión; otra key ya usado. Front ejecuta después signinRedirect con su state y PKCE. T01 devuelve 501, sin cookie. */
+        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Revalidar dueño, método, canal, estado y operador bajo lock; operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Solo access=consumer. 200 {access:consumer} y cookie pública, sin tokens OIDC. Replay misma key no crea otra sesión; otra key ya usado. Front ejecuta después signinRedirect con su state y PKCE. */
         post: {
             parameters: {
                 query?: never;
@@ -9641,7 +9542,7 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
-                        /** @description Cookie HttpOnly tras prueba válida; nunca se emite desde webhook ni desde preview. Stubs T01 no la emiten. */
+                        /** @description Cookie HttpOnly tras prueba válida; nunca se emite desde webhook ni desde preview. */
                         "Set-Cookie"?: string;
                         [name: string]: unknown;
                     };
@@ -9691,15 +9592,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9782,7 +9674,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.ConsumerSignup abierto; acepta términos explícitos. Crea Persona, nunca empresa. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.ConsumerSignup abierto; acepta términos explícitos. Crea Persona, nunca empresa. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -9859,15 +9751,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -9885,7 +9768,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs.ConsumerSignup abierto; acepta términos explícitos. Crea Persona, nunca empresa. Cuenta, método, Personal cuando corresponde y legales explícitos atómicos. Operador probado: PlatformOnly y sin cookie pública. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs.ConsumerSignup abierto; acepta términos explícitos. Crea Persona, nunca empresa. Cuenta, método, Personal cuando corresponde y legales explícitos atómicos. Operador probado: PlatformOnly y sin cookie pública. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -9951,15 +9834,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -10244,7 +10118,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. Pendiente propio y OTP al destino nuevo; otro dueño falla antes de pendiente, aviso o OTP. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. Pendiente propio y OTP al destino nuevo; otro dueño falla antes de pendiente, aviso o OTP. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -10323,15 +10197,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -10447,15 +10312,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -10559,15 +10415,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -11145,7 +10992,7 @@ export interface components {
             memberId?: null | string;
             roleIds?: null | string[];
         };
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. */
         AddLoginMethodHttpRequest: {
             email?: null | string;
             phone?: null | components["schemas"]["PhoneInputHttpRequest"];
@@ -12400,7 +12247,7 @@ export interface components {
         RequestAccountDeletionHttpRequest: {
             reason?: null | string;
         };
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. */
         RequestLoginCodeHttpRequest: {
             email?: null | string;
             phone?: null | components["schemas"]["PhoneInputHttpRequest"];
@@ -12415,7 +12262,7 @@ export interface components {
             /** Format: int32 */
             resendAfterSeconds: number;
         };
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. */
         RequestRecoveryCodeHttpRequest: {
             email?: null | string;
             /** @description Secreto de 32 bytes, base64url sin padding. Solo cuerpo/memoria; sin logs. */
@@ -12456,7 +12303,7 @@ export interface components {
             /** Format: uint32 */
             version?: null | number;
         };
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. */
         SignupHttpRequest: {
             email?: null | string;
             acceptedTerms: boolean;
@@ -12469,7 +12316,7 @@ export interface components {
         } | {
             phone: components["schemas"]["PhoneInputHttpRequest"];
         });
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. */
         SubmitAccountRecoveryHttpRequest: ({
             email?: null | string;
             /** @description Secreto de 32 bytes, base64url sin padding. Solo cuerpo/memoria; sin logs. */
@@ -12620,7 +12467,7 @@ export interface components {
          * @enum {string}
          */
         UserStatus: "Active" | "Suspended" | "PendingDeletion" | "Deleted";
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. */
         VerifyLoginCodeHttpRequest: {
             email?: null | string;
             /** @description Dígitos ASCII; longitud configurada en Authentication:LoginCode (6 por defecto). No normalizar ni registrar. */
@@ -12645,7 +12492,7 @@ export interface components {
             /** @description Dígitos ASCII; longitud configurada en Authentication:LoginCode (6 por defecto). No normalizar ni registrar. */
             code?: null | string;
         };
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. */
         VerifyRecoveryCodeHttpRequest: {
             email?: null | string;
             /** @description Secreto de 32 bytes, base64url sin padding. Solo cuerpo/memoria; sin logs. */
@@ -12659,7 +12506,7 @@ export interface components {
         } | {
             phone: components["schemas"]["PhoneInputHttpRequest"];
         });
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. T01: teléfono devuelve 501 temporal, sin envío ni escritura; completar en T04. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. */
         VerifySignupHttpRequest: {
             email?: null | string;
             /** @description Dígitos ASCII; longitud configurada en Authentication:LoginCode (6 por defecto). No normalizar ni registrar. */
