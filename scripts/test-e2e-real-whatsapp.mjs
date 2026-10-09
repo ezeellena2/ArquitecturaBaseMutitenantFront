@@ -7,6 +7,7 @@ import { chromium } from "playwright";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
+import { recoveryRow, selectRecovery } from "./test-e2e-real-whatsapp-recovery.mjs";
 
 // Sólo RealE2ESetup en Testing inicia este runner. Front/API/OIDC/PostgreSQL son reales.
 // FIXTURE es IPC privado: el host no publica líneas, respuestas, números ni pruebas.
@@ -90,25 +91,31 @@ async function platformLogin(page, scenario) {
   await clickHttp(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/login-code/verify", 200);
   await page.waitForURL((url) => url.pathname === "/plataforma");
 }
-async function reviewRecovery(page, next, action) {
+async function reviewRecovery(page, previous, next, action) {
+  const mobile = page.viewportSize().width === 390;
+  const initial = page.waitForResponse((response) => pathname(response) === "/api/platform/recoveries/paged");
   await page.goto(`${base}/plataforma/recuperaciones`);
   await page.getByRole("heading", { name: "Recuperaciones", exact: true }).waitFor();
-  const paged = page.waitForResponse((response) => pathname(response) === "/api/platform/recoveries/paged" && new URL(response.url()).searchParams.get("search") === next);
-  await page.getByRole("textbox", { name: "Buscar por cuenta, correo o teléfono" }).fill(next);
-  const response = await paged; assert.equal(response.status(), 200);
-  const items = (await response.json()).items; assert.equal(items.length, 1);
-  const pedido = items[0]; assert.equal(pedido.newMethodType, "Phone"); assert.equal(pedido.previousMethodType, "Phone"); assert.equal(pedido.status, "Pending");
-  await page.getByRole("button", { name: /^Acciones de/ }).click();
+  let response = await initial;
+  if (!mobile) {
+    const searched = page.waitForResponse((reply) => pathname(reply) === "/api/platform/recoveries/paged" && new URL(reply.url()).searchParams.get("search") === next);
+    await page.getByRole("searchbox", { name: "Buscar por cuenta, correo o teléfono" }).fill(next);
+    response = await searched;
+  }
+  assert.equal(response.status(), 200);
+  const pedido = selectRecovery((await response.json()).items, previous, next); assert.equal(pedido.status, "Pending");
+  const target = recoveryRow(page, pedido); await target.waitFor(); assert.equal(await target.count(), 1);
+  await target.getByRole("button", { name: /^Acciones de/ }).click();
   await page.getByRole("menuitem", { name: "Revisar", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Revisar el pedido", exact: true });
   await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Verificación humana del recorrido aislado.");
   await clickHttp(page, dialog.getByRole("button", { name: action === "approve" ? "Aprobar" : "Rechazar", exact: true }), `/api/platform/recoveries/${pedido.id}/${action}`, 200);
   await dialog.waitFor({ state: "hidden" });
-  const persisted = page.waitForResponse((reply) => pathname(reply) === "/api/platform/recoveries/paged" && new URL(reply.url()).searchParams.get("search") === next);
+  const persisted = page.waitForResponse((reply) => pathname(reply) === "/api/platform/recoveries/paged" && (mobile || new URL(reply.url()).searchParams.get("search") === next));
   await page.reload();
   const resolved = (await (await persisted).json()).items.find((item) => item.id === pedido.id);
   assert.equal(resolved?.status, action === "approve" ? "Approved" : "Rejected");
-  await page.getByText(action === "approve" ? "Aprobado" : "Rechazado", { exact: true }).waitFor();
+  await recoveryRow(page, resolved).getByText(action === "approve" ? "Aprobado" : "Rechazado", { exact: true }).waitFor();
 }
 function observe(page) {
   const oidc = []; const calls = [];
@@ -210,32 +217,40 @@ async function journey(width, index) {
   assert.equal(registration.pathname, "/registro"); assert.deepEqual([...registration.searchParams], [["channel", "whatsapp"]]); assert.equal(registration.hash, "");
   await page.goto(registration.href); const emptyPhone = page.getByRole("textbox", { name: /Número de WhatsApp$/ });
   await emptyPhone.waitFor(); assert.equal(await emptyPhone.inputValue(), ""); await page.reload(); await emptyPhone.waitFor(); assert.equal(await emptyPhone.inputValue(), "");
-  pass(`bot desconocido/registro WhatsApp vacío y F5 ${width}`);
+  // Segunda cuenta existente por alta UI/OTP reales: el error de destino ocupado requiere otro Phone.
+  const botSignup = await begin(`bot-signup-${width}`, unknown); await emptyPhone.fill(unknown);
+  await page.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+  await clickHttp(page, page.getByRole("button", { name: "Crear cuenta", exact: true }), "/api/auth/signup", 202);
+  await fillOtp(page, (await botSignup("code")).proof);
+  await clickHttp(page, page.getByRole("button", { name: "Verificar y crear la cuenta", exact: true }), "/api/auth/signup/verify", 204);
+  await authenticated(page, width); await page.reload(); await authenticated(page, width);
+  pass(`bot desconocido/registro WhatsApp vacío/alta real/F5 ${width}`); await signout(page, width);
 
-  start(`errores Phone ${width}`); await begin(`missing-login-${width}`, unknown); await page.goto(`${base}/login`); await whatsapp(page, unknown);
+  start(`errores Phone ${width}`); await begin(`missing-login-${width}`, next); await page.goto(`${base}/login`); await whatsapp(page, next);
   await clickHttp(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 400);
   await page.getByText("No hay una cuenta con ese número.", { exact: true }).waitFor();
   await page.getByRole("link", { name: "Crear mi cuenta", exact: true }).click();
-  assert.ok((await page.getByRole("textbox", { name: /Número de WhatsApp$/ }).inputValue()).endsWith(unknown.slice(-4)));
+  assert.ok((await page.getByRole("textbox", { name: /Número de WhatsApp$/ }).inputValue()).endsWith(next.slice(-4)));
   await begin(`taken-signup-${width}`, phone); await page.goto(`${base}/registro`); await whatsapp(page, phone); await page.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
   await clickHttp(page, page.getByRole("button", { name: "Crear cuenta", exact: true }), "/api/auth/signup", 400);
   await page.getByText("Ya tenés una cuenta con ese número.", { exact: true }).waitFor();
-  await begin(`missing-recovery-${width}`, unknown); await page.goto(`${base}/recuperar`); await whatsapp(page, unknown, /Número de WhatsApp$/);
+  await begin(`missing-recovery-${width}`, next); await page.goto(`${base}/recuperar`); await whatsapp(page, next, /Número de WhatsApp$/);
   await clickHttp(page, page.getByRole("button", { name: "Seguir", exact: true }), "/api/account-recovery/preview", 400);
   await page.getByText("No hay una cuenta con ese número.", { exact: true }).waitFor();
-  await begin(`taken-recovery-${width}`, phone); await page.goto(`${base}/recuperar`); await whatsapp(page, phone, /Número de WhatsApp$/); await page.getByRole("button", { name: "Seguir", exact: true }).click();
-  await page.getByRole("heading", { name: "¿Dónde te escribimos?", exact: true }).waitFor(); await whatsapp(page, phone, /Número de WhatsApp nuevo$/);
-  await clickHttp(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/account-recovery/code", 400);
+  await begin(`taken-recovery-${width}`, unknown); await page.goto(`${base}/recuperar`); await whatsapp(page, phone, /Número de WhatsApp$/); await page.getByRole("button", { name: "Seguir", exact: true }).click();
+  await page.getByRole("heading", { name: "¿Dónde te escribimos?", exact: true }).waitFor(); await whatsapp(page, unknown, /Número de WhatsApp nuevo$/);
+  const occupiedRecovery = await clickHttp(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/account-recovery/code", 400);
+  assert.equal((await occupiedRecovery.json()).code, "Platform.AccountRecovery.PhoneMethodInUse");
   await page.getByText("Ese número ya es de otra cuenta.", { exact: true }).waitFor(); pass(`errores sin cuenta/ocupado/recuperación ${width}`);
 
   start(`recuperación asistida Phone ${width}`); await recovery(page, phone, recovered, `recovery-approve-${width}`); pass(`solicitud recuperación Phone/OTP ${width}`);
   const operator = await context.newPage(); operator.setDefaultTimeout(30_000); observe(operator);
   await platformLogin(operator, `operator-${width}`);
-  start(`aprobar recuperación Phone ${width}`); await reviewRecovery(operator, recovered, "approve");
+  start(`aprobar recuperación Phone ${width}`); await reviewRecovery(operator, phone, recovered, "approve");
   await login(page, recovered, "consumer", `recovered-login-${width}`); await authenticated(page, width); await page.reload(); await authenticated(page, width);
   await page.goto(`${base}/cuenta`); await page.getByRole("button", { name: new RegExp(`^Acciones de.*${recovered.slice(-4)}`) }).waitFor();
   pass(`aprobación humana Phone persistida/ingreso/F5 ${width}`); await signout(page, width);
-  start(`rechazar recuperación Phone ${width}`); await recovery(page, phone, rejected, `recovery-reject-${width}`); await reviewRecovery(operator, rejected, "reject");
+  start(`rechazar recuperación Phone ${width}`); await recovery(page, phone, rejected, `recovery-reject-${width}`); await reviewRecovery(operator, phone, rejected, "reject");
   await begin(`rejected-login-${width}`, rejected); await page.goto(`${base}/login`); await whatsapp(page, rejected);
   await clickHttp(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 400);
   await page.getByText("No hay una cuenta con ese número.", { exact: true }).waitFor(); pass(`rechazo humano Phone persistido/sin ingreso ${width}`); await operator.close();
