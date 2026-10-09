@@ -8,7 +8,7 @@ import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { caseDelay, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
-import { responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
+import { reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
 
 // Sólo RealE2ESetup en Testing inicia este runner. Front/API/OIDC/PostgreSQL son reales.
 // FIXTURE es IPC privado: el host no publica líneas, respuestas, números ni pruebas.
@@ -127,8 +127,8 @@ async function reviewRecovery(page, previous, next, action) {
   await clickHttp(page, dialog.getByRole("button", { name: action === "approve" ? "Aprobar" : "Rechazar", exact: true }), `/api/platform/recoveries/${pedido.id}/${action}`, 200);
   await dialog.waitFor({ state: "hidden" });
   detail("leer decisión persistida después de F5");
-  const [persisted] = await responsesForAction(page,
-    [(reply) => pathname(reply) === "/api/platform/recoveries/paged" && (mobile || new URL(reply.url()).searchParams.get("search") === next)], () => page.reload());
+  const persisted = await reloadResponse(page,
+    (reply) => pathname(reply) === "/api/platform/recoveries/paged" && (mobile || new URL(reply.url()).searchParams.get("search") === next));
   const resolved = (await persisted.json()).items.find((item) => item.id === pedido.id);
   assert.equal(resolved?.status, action === "approve" ? "Approved" : "Rejected");
   await recoveryRow(page, resolved).getByText(action === "approve" ? "Aprobado" : "Rechazado", { exact: true }).waitFor();
@@ -315,7 +315,7 @@ try {
   check(`FINAL ${completed} grupos reales correctos en 1440/390; Meta Cloud/delivered pendiente`);
 } catch (error) {
   // Playwright y assert pueden incluir URLs/pruebas en sus mensajes. Sólo metadata saneada.
-  check(`FALLO ${stage}; paso ${step}; tipo ${/^[A-Za-z]+$/.test(error?.name ?? "") ? error.name : "Error"}; HTTP ${lastFailure || "sin-error"}`);
+  check(`FALLO ${stage}; paso ${step}; tipo ${/^[A-Za-z]+$/.test(error?.name ?? "") ? error.name : "Error"}; errorKind ${safeActionErrorKind(error)}; HTTP ${lastFailure || "sin-error"}`);
   process.exitCode = 1;
 } finally {
   ipc.close(); await browser?.close(); await server?.close();
