@@ -55,6 +55,8 @@ ArquitecturaBaseMutitenantFront/
 │   ├── capturar-etapa-8.test.mjs                    tests de capturar-etapa-8
 │   ├── test-e2e-real-whatsapp-recovery.test.mjs     tests de test-e2e-real-whatsapp-recovery
 │   ├── test-e2e-real-whatsapp-recovery.mjs          Correlaciona la respuesta observada, sin depender del nombre ni del…
+│   ├── test-e2e-real-whatsapp-action.test.mjs       tests de test-e2e-real-whatsapp-action
+│   ├── test-e2e-real-whatsapp-action.mjs            La acción y todas sus esperas tienen handlers desde el…
 │   └── recorrido-lienzo/                            recorrido del lienzo tablero por tablero (recorrido.mjs) y vista en vivo de una pantalla junto a su tablero (vivo.mjs)
 ├── src/                                             ver abajo
 ├── .gitignore
