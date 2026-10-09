@@ -4517,6 +4517,688 @@
       }
     },
     {
+      "id": "registro-desde-bot-whatsapp-desktop",
+      "pair": "registro-desde-bot-whatsapp",
+      "group": "registro",
+      "label": "Bot · WhatsApp elegido · Número vacío",
+      "board": "Registro",
+      "props": {
+        "estado": "Correo"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureExtent": "viewport",
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "WhatsApp",
+          "exact": true
+        }
+      ],
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Fregistro%3Fchannel%3Dwhatsapp",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Creá tu cuenta",
+        "readySelector": "input[type=\"tel\"]",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "registro-desde-bot-whatsapp-mobile",
+      "pair": "registro-desde-bot-whatsapp",
+      "group": "registro",
+      "label": "Bot · WhatsApp elegido · Número vacío",
+      "board": "M-Registro",
+      "props": {
+        "estado": "Correo"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "boardActions": [
+        {
+          "type": "click",
+          "role": "button",
+          "name": "WhatsApp",
+          "exact": true
+        }
+      ],
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Fregistro%3Fchannel%3Dwhatsapp",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            },
+            "status": 200
+          }
+        ],
+        "readyHeading": "Creá tu cuenta",
+        "readySelector": "input[type=\"tel\"]",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "enlace-baja-pedida-desktop",
+      "pair": "enlace-baja-pedida",
+      "group": "enlace",
+      "label": "Enlace · Cuenta con la baja pedida",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Cuenta con la baja pedida",
+        "puerta": "Persona"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%2Fenlace#t=e8_visual_token_only_aaaaaaaaaaaaaaaaaaaaaaa",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-link/preview",
+            "body": {
+              "displayName": "Lucía Fernández",
+              "maskedPhone": "•••• 4521"
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-link/redeem",
+            "body": {
+              "type": "about:blank",
+              "title": "Bad Request",
+              "status": 400,
+              "code": "Identity.Account.PendingDeletion",
+              "traceId": "visual-e8",
+              "scheduledForUtc": "2026-10-27T12:15:00Z",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "cancelTicket": "e8_visual_cancel_ticket_only",
+              "returnUrl": "/login/enlace",
+              "cancelTicketExpiresAtUtc": "2026-10-09T13:00:00Z"
+            },
+            "status": 403
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Continuar",
+            "exact": true
+          }
+        ],
+        "readyHeading": "Tu cuenta tiene la baja pedida",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "enlace-baja-pedida-mobile",
+      "pair": "enlace-baja-pedida",
+      "group": "enlace",
+      "label": "Enlace · Cuenta con la baja pedida",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Cuenta con la baja pedida",
+        "puerta": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%2Fenlace#t=e8_visual_token_only_aaaaaaaaaaaaaaaaaaaaaaa",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-link/preview",
+            "body": {
+              "displayName": "Lucía Fernández",
+              "maskedPhone": "•••• 4521"
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-link/redeem",
+            "body": {
+              "type": "about:blank",
+              "title": "Bad Request",
+              "status": 400,
+              "code": "Identity.Account.PendingDeletion",
+              "traceId": "visual-e8",
+              "scheduledForUtc": "2026-10-27T12:15:00Z",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "cancelTicket": "e8_visual_cancel_ticket_only",
+              "returnUrl": "/login/enlace",
+              "cancelTicketExpiresAtUtc": "2026-10-09T13:00:00Z"
+            },
+            "status": 403
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Continuar",
+            "exact": true
+          }
+        ],
+        "readyHeading": "Tu cuenta tiene la baja pedida",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "enlace-baja-error-transitorio-desktop",
+      "pair": "enlace-baja-error-transitorio",
+      "group": "enlace",
+      "label": "Enlace · Baja pedida · Error transitorio",
+      "board": "Ingreso",
+      "props": {
+        "estado": "Cuenta con la baja pedida",
+        "puerta": "Persona"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureExtent": "viewport",
+      "note": "El tablero aprobado aporta el panel de baja pendiente; el error transitorio debajo del panel usa el aviso compartido del producto y no tiene un estado propio en el lienzo.",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%2Fenlace#t=e8_visual_token_only_aaaaaaaaaaaaaaaaaaaaaaa",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-link/preview",
+            "body": {
+              "displayName": "Lucía Fernández",
+              "maskedPhone": "•••• 4521"
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-link/redeem",
+            "body": {
+              "type": "about:blank",
+              "title": "Bad Request",
+              "status": 400,
+              "code": "Identity.Account.PendingDeletion",
+              "traceId": "visual-e8",
+              "scheduledForUtc": "2026-10-27T12:15:00Z",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "cancelTicket": "e8_visual_cancel_ticket_only",
+              "returnUrl": "/login/enlace",
+              "cancelTicketExpiresAtUtc": "2026-10-09T13:00:00Z"
+            },
+            "status": 403
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/deletion/cancel",
+            "body": {
+              "type": "about:blank",
+              "title": "Bad Request",
+              "status": 400,
+              "code": "General.Unexpected",
+              "traceId": "visual-e8"
+            },
+            "status": 503
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Continuar",
+            "exact": true
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Cancelar la baja y entrar",
+            "exact": true
+          }
+        ],
+        "readyHeading": "Tu cuenta tiene la baja pedida",
+        "readyText": "Algo salió mal. Probá de nuevo en un rato.",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "enlace-baja-error-transitorio-mobile",
+      "pair": "enlace-baja-error-transitorio",
+      "group": "enlace",
+      "label": "Enlace · Baja pedida · Error transitorio",
+      "board": "M-Ingreso",
+      "props": {
+        "estado": "Cuenta con la baja pedida",
+        "puerta": "Persona"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "note": "El tablero aprobado aporta el panel de baja pendiente; el error transitorio debajo del panel usa el aviso compartido del producto y no tiene un estado propio en el lienzo.",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%2Fenlace#t=e8_visual_token_only_aaaaaaaaaaaaaaaaaaaaaaa",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-link/preview",
+            "body": {
+              "displayName": "Lucía Fernández",
+              "maskedPhone": "•••• 4521"
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-link/redeem",
+            "body": {
+              "type": "about:blank",
+              "title": "Bad Request",
+              "status": 400,
+              "code": "Identity.Account.PendingDeletion",
+              "traceId": "visual-e8",
+              "scheduledForUtc": "2026-10-27T12:15:00Z",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "cancelTicket": "e8_visual_cancel_ticket_only",
+              "returnUrl": "/login/enlace",
+              "cancelTicketExpiresAtUtc": "2026-10-09T13:00:00Z"
+            },
+            "status": 403
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/deletion/cancel",
+            "body": {
+              "type": "about:blank",
+              "title": "Bad Request",
+              "status": 400,
+              "code": "General.Unexpected",
+              "traceId": "visual-e8"
+            },
+            "status": 503
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Continuar",
+            "exact": true
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Cancelar la baja y entrar",
+            "exact": true
+          }
+        ],
+        "readyHeading": "Tu cuenta tiene la baja pedida",
+        "readyText": "Algo salió mal. Probá de nuevo en un rato.",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "enlace-baja-prueba-vencida-desktop",
+      "pair": "enlace-baja-prueba-vencida",
+      "group": "enlace",
+      "label": "Enlace · Prueba de cancelación vencida",
+      "board": "Enlace",
+      "props": {
+        "estado": "Ya no sirve"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "captureExtent": "viewport",
+      "note": "La prueba vencida vuelve al estado aprobado «Ya no sirve» y conserva el aviso del backend sobre la cancelación rechazada.",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%2Fenlace#t=e8_visual_token_only_aaaaaaaaaaaaaaaaaaaaaaa",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-link/preview",
+            "body": {
+              "displayName": "Lucía Fernández",
+              "maskedPhone": "•••• 4521"
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-link/redeem",
+            "body": {
+              "type": "about:blank",
+              "title": "Bad Request",
+              "status": 400,
+              "code": "Identity.Account.PendingDeletion",
+              "traceId": "visual-e8",
+              "scheduledForUtc": "2026-10-27T12:15:00Z",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "cancelTicket": "e8_visual_cancel_ticket_only",
+              "returnUrl": "/login/enlace",
+              "cancelTicketExpiresAtUtc": "2026-10-09T13:00:00Z"
+            },
+            "status": 403
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/deletion/cancel",
+            "body": {
+              "type": "about:blank",
+              "title": "Bad Request",
+              "status": 400,
+              "code": "Legal.AccountDeletion.CancelProofInvalid",
+              "traceId": "visual-e8",
+              "detail": "El comprobante para cancelar la baja no es válido o venció."
+            },
+            "status": 403
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Continuar",
+            "exact": true
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Cancelar la baja y entrar",
+            "exact": true
+          }
+        ],
+        "readyHeading": "Este enlace ya no sirve",
+        "captureMode": "harness"
+      }
+    },
+    {
+      "id": "enlace-baja-prueba-vencida-mobile",
+      "pair": "enlace-baja-prueba-vencida",
+      "group": "enlace",
+      "label": "Enlace · Prueba de cancelación vencida",
+      "board": "M-Enlace",
+      "props": {
+        "estado": "Ya no sirve"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "captureExtent": "viewport",
+      "note": "La prueba vencida vuelve al estado aprobado «Ya no sirve» y conserva el aviso del backend sobre la cancelación rechazada.",
+      "app": {
+        "site": "main",
+        "path": "/src/test/etapa8VisualApp.html?as=anonymous&route=%2Flogin%2Fenlace#t=e8_visual_token_only_aaaaaaaaaaaaaaaaaaaaaaa",
+        "responses": [
+          {
+            "method": "GET",
+            "path": "/api/auth/methods",
+            "body": {
+              "channels": [
+                {
+                  "key": "email",
+                  "countries": []
+                },
+                {
+                  "key": "google",
+                  "countries": []
+                },
+                {
+                  "key": "whatsapp",
+                  "countries": [
+                    "AR"
+                  ],
+                  "contactPhone": "+5491155550000"
+                }
+              ]
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-link/preview",
+            "body": {
+              "displayName": "Lucía Fernández",
+              "maskedPhone": "•••• 4521"
+            },
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/login-link/redeem",
+            "body": {
+              "type": "about:blank",
+              "title": "Bad Request",
+              "status": 400,
+              "code": "Identity.Account.PendingDeletion",
+              "traceId": "visual-e8",
+              "scheduledForUtc": "2026-10-27T12:15:00Z",
+              "timeZoneId": "America/Argentina/Buenos_Aires",
+              "cancelTicket": "e8_visual_cancel_ticket_only",
+              "returnUrl": "/login/enlace",
+              "cancelTicketExpiresAtUtc": "2026-10-09T13:00:00Z"
+            },
+            "status": 403
+          },
+          {
+            "method": "POST",
+            "path": "/api/auth/deletion/cancel",
+            "body": {
+              "type": "about:blank",
+              "title": "Bad Request",
+              "status": 400,
+              "code": "Legal.AccountDeletion.CancelProofInvalid",
+              "traceId": "visual-e8",
+              "detail": "El comprobante para cancelar la baja no es válido o venció."
+            },
+            "status": 403
+          }
+        ],
+        "actions": [
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Continuar",
+            "exact": true
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Cancelar la baja y entrar",
+            "exact": true
+          }
+        ],
+        "readyHeading": "Este enlace ya no sirve",
+        "captureMode": "harness"
+      }
+    },
+    {
       "id": "recuperar-anterior-phone-desktop",
       "pair": "recuperar-anterior-phone",
       "group": "recuperar",

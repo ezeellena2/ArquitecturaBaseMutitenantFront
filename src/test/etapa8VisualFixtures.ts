@@ -1,4 +1,4 @@
-import type { AccountLoginMethodsResponse, BusinessSignupResponse, LoginMethodCodeResponse, LoginMethodsResponse, LoginLinkPreviewResponse, RequestLoginCodeResponse } from "@/shared/api/types";
+import type { AccountLoginMethodsResponse, BusinessSignupResponse, LoginMethodCodeResponse, LoginMethodsResponse, LoginLinkPreviewResponse, PendingDeletionState, RequestLoginCodeResponse } from "@/shared/api/types";
 
 // Datos ficticios que copian los ejemplos del lienzo; sólo el arnés visual los usa.
 export const etapa8Channels: LoginMethodsResponse = { channels: [
@@ -8,6 +8,10 @@ export const etapa8Channels: LoginMethodsResponse = { channels: [
 export const etapa8Code: RequestLoginCodeResponse = { resendAfterSeconds: 60 };
 export const etapa8MethodCode: LoginMethodCodeResponse = { methodId: "phone-lucia", resendAfterSeconds: 60 };
 export const etapa8Link: LoginLinkPreviewResponse = { displayName: "Lucía Fernández", maskedPhone: "•••• 4521" };
+export const etapa8PendingDeletion: PendingDeletionState = {
+  scheduledForUtc: "2026-10-27T12:15:00Z", timeZoneId: "America/Argentina/Buenos_Aires",
+  cancelTicket: "e8_visual_cancel_ticket_only", returnUrl: "/login/enlace", expiresAtUtc: "2026-10-09T13:00:00Z",
+};
 export const etapa8BusinessApproval: BusinessSignupResponse = {
   tenantId: "visual-delta", organizationName: "Grupo Delta", slug: "grupo-delta", requiresApproval: true,
   firstCompanyId: "visual-company", status: "PendingApproval", notificationEmail: null,

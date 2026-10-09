@@ -4,8 +4,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 import { captureEntry, issuer } from "./capturar-etapa-7.mjs";
-import { assertCapturedPairs, startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
-import { assertSideBySide } from "./capturar-relevamiento.mjs";
+import { assertCapturedPairs, capturePaths, startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
+import { assertSideBySide, composeSideBySide, openApp, openBoard, sideBySideFile } from "./capturar-relevamiento.mjs";
 import { output, writeGallery } from "./generar-galeria-etapa-8.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -21,8 +21,34 @@ function problem(code, field, message, extra = {}) {
   return { type: "about:blank", title: "Bad Request", status: 400, code, traceId: "visual-e8", ...(field ? { errors: { [field]: [message] } } : {}), ...extra };
 }
 
+export function expectedServerFailure(responses, method, route, status) {
+  return status >= 500 && responses.some((response) => response.method === method && response.path === route && response.status === status);
+}
+
+// El helper E7 trata todo 5xx como falla. Este caso captura un 503 intencional de cancelación;
+// conserva la guarda contra cualquier otro 5xx y contra errores de JavaScript.
+async function captureServerFailure(browser, entry, canvasUrl, appUrl) {
+  if (appUrl !== issuer) throw new Error(`La captura del error exige ${issuer}`);
+  const files = capturePaths(output, entry); mkdirSync(path.dirname(files.board), { recursive: true });
+  const context = await browser.newContext({ viewport: entry.viewport, deviceScaleFactor: 1, locale: "es-AR" });
+  const failures = []; let observed = false;
+  context.on("page", (page) => page.on("pageerror", (error) => failures.push(error.message)));
+  context.on("response", (response) => {
+    const route = new URL(response.url()).pathname;
+    if (!route.startsWith("/api/") || response.status() < 500) return;
+    if (expectedServerFailure(entry.app.responses, response.request().method(), route, response.status())) observed = true;
+    else failures.push(`API ${response.status()}: ${route}`);
+  });
+  try {
+    const board = await openBoard(context, canvasUrl, entry); const app = await openApp(context, appUrl, entry);
+    if (!observed || failures.length) throw new Error(`${entry.id}: no se reprodujo el error esperado sin otras fallas`);
+    await board.screenshot({ path: files.board }); await app.screenshot({ path: files.app });
+  } finally { await context.close(); }
+  await composeSideBySide(browser, entry, files, sideBySideFile(entry, output));
+}
+
 export async function buildManifest() {
-  const { etapa8Channels, etapa8Code, etapa8Account, etapa8AccountVerified, etapa8MethodCode, etapa8Link, etapa8BusinessApproval } = await import("../src/test/etapa8VisualFixtures.ts");
+  const { etapa8Channels, etapa8Code, etapa8Account, etapa8AccountVerified, etapa8MethodCode, etapa8Link, etapa8PendingDeletion, etapa8BusinessApproval } = await import("../src/test/etapa8VisualFixtures.ts");
   const cases = [];
   const on = api("GET", "/api/auth/methods", etapa8Channels);
   const off = api("GET", "/api/auth/methods", { channels: etapa8Channels.channels.filter((item) => item.key !== "whatsapp") });
@@ -106,6 +132,27 @@ export async function buildManifest() {
   both("enlace-sin-modulo", "enlace", "Enlace", { estado: "Ya no sirve" }, {
     path: linkPath, responses: [off, api("POST", "/api/auth/login-link/preview", problem("Auth.LoginLink.Invalid", null, null), 400)], readyHeading: "Este enlace ya no sirve",
   });
+  both("registro-desde-bot-whatsapp", "registro", "Registro", { estado: "Correo" }, {
+    path: visualPath("/registro?channel=whatsapp"), responses: [on], readyHeading: "Creá tu cuenta", readySelector: 'input[type="tel"]',
+  }, { boardActions: [click("WhatsApp")], label: "Bot · WhatsApp elegido · Número vacío" });
+  const pendingDeletionProblem = problem("Identity.Account.PendingDeletion", null, null, {
+    scheduledForUtc: etapa8PendingDeletion.scheduledForUtc, timeZoneId: etapa8PendingDeletion.timeZoneId,
+    cancelTicket: etapa8PendingDeletion.cancelTicket, returnUrl: etapa8PendingDeletion.returnUrl,
+    cancelTicketExpiresAtUtc: etapa8PendingDeletion.expiresAtUtc,
+  });
+  const pendingResponses = [on, api("POST", "/api/auth/login-link/preview", etapa8Link), api("POST", "/api/auth/login-link/redeem", pendingDeletionProblem, 403)];
+  const pendingProps = { estado: "Cuenta con la baja pedida", puerta: "Persona" };
+  both("enlace-baja-pedida", "enlace", "Ingreso", pendingProps, {
+    path: linkPath, responses: pendingResponses, actions: [click("Continuar")], readyHeading: "Tu cuenta tiene la baja pedida",
+  }, { label: "Enlace · Cuenta con la baja pedida" });
+  both("enlace-baja-error-transitorio", "enlace", "Ingreso", pendingProps, {
+    path: linkPath, responses: [...pendingResponses, api("POST", "/api/auth/deletion/cancel", problem("General.Unexpected", null, null), 503)],
+    actions: [click("Continuar"), click("Cancelar la baja y entrar")], readyHeading: "Tu cuenta tiene la baja pedida", readyText: "Algo salió mal. Probá de nuevo en un rato.",
+  }, { label: "Enlace · Baja pedida · Error transitorio", note: "El tablero aprobado aporta el panel de baja pendiente; el error transitorio debajo del panel usa el aviso compartido del producto y no tiene un estado propio en el lienzo." });
+  both("enlace-baja-prueba-vencida", "enlace", "Enlace", { estado: "Ya no sirve" }, {
+    path: linkPath, responses: [...pendingResponses, api("POST", "/api/auth/deletion/cancel", problem("Legal.AccountDeletion.CancelProofInvalid", null, null, { detail: "El comprobante para cancelar la baja no es válido o venció." }), 403)],
+    actions: [click("Continuar"), click("Cancelar la baja y entrar")], readyHeading: "Este enlace ya no sirve",
+  }, { label: "Enlace · Prueba de cancelación vencida", note: "La prueba vencida vuelve al estado aprobado «Ya no sirve» y conserva el aviso del backend sobre la cancelación rechazada." });
   const previousPhone = [click("WhatsApp"), fill("Número de WhatsApp", "11 5555-4521")];
   const newPhone = [click("WhatsApp"), fill("Número de WhatsApp nuevo", "11 5555-0142")];
   const recoveryPath = visualPath("/recuperar");
@@ -202,7 +249,12 @@ async function main(args) {
   // El HTTP local de captura necesita las APIs de contexto seguro usadas por el producto.
   const browser = await chromium.launch({ headless: true, args: [`--unsafely-treat-insecure-origin-as-secure=${issuer}`], ...(option(args, "--browser-path") ? { executablePath: option(args, "--browser-path") } : { channel: "chrome" }) });
   try {
-    for (const entry of selected) { await captureEntry(browser, entry, server.url, option(args, "--app-url") ?? issuer, output); console.log(entry.id); }
+    for (const entry of selected) {
+      const appUrl = option(args, "--app-url") ?? issuer;
+      if (entry.app.responses.some((response) => response.status >= 500)) await captureServerFailure(browser, entry, server.url, appUrl);
+      else await captureEntry(browser, entry, server.url, appUrl, output);
+      console.log(entry.id);
+    }
     assertCapturedPairs(selected, output); assertSideBySide(selected, output); console.log(writeGallery());
   } finally { await browser.close(); await server.close(); }
 }
