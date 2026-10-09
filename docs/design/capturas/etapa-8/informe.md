@@ -1,5 +1,7 @@
 # E8 · Front · Parte 2b
 
+La entrega inicial del 2026-10-08 se conserva abajo. La [continuación del pase](#continuación-del-pase--2026-10-09) registra los cambios posteriores y la sincronización coordinada del contrato; E8 permanece abierta.
+
 Alcance: T09–T12 del [plan del back](../../../../../ArquitecturaBaseMutitenant/docs/plans/2026-10-07-etapa-8-whatsapp.md), sólo este repositorio. E8 permanece abierta. T13–T14 pertenecen a Integración y no se sustituyen por las respuestas simuladas de los tests o de la galería.
 
 Base: front `83eede09`, contrato T01 front `2c2c7e53` / back `592b964`, lienzo **v115 (`bb7c78de`)**. Se aplican ADR 0043, 0045 y 0049. No se modifica el contrato generado, el backend, el lienzo ni las fuentes de Mensajes; no se agregan TOTP, bandeja o atención E11. Commits en `main`, sin push.
@@ -54,3 +56,25 @@ La primera ejecución completa detectó tres fallos (2320/2323): color literal d
 Contrato congelado: `src/shared/api/generated/schema.d.ts` no tiene diff desde T01 `2c2c7e53`; blob Git `cfcb357b8041752089fbe618320b00fb3cb834e7`. SHA-256 de OpenAPI usado: `9BB3828BCB0EBE4E3217B8B70E3E153BD618E857CBB4223234C5C70967FC4078`. No se ejecuta regeneración ni se modifica el contrato.
 
 Las revisiones independientes de especificación/calidad de T09–T12 y la revisión global están aprobadas. No se declara cerrada E8 ni cumplida la puerta de Integración por estas pruebas.
+
+## Continuación del pase · 2026-10-09
+
+Sobre la entrega `44ef1092`, se atendieron los encajes aprobados en la revisión del pase, sólo en Front, en `main` y sin push. Los cambios ajenos de `docs/design/guia/` y `docs/design/recorridos/` se preservan.
+
+| Cambio | Commit | Verificación dirigida |
+|---|---|---|
+| Marcador público `/registro?channel=whatsapp` | `8b428edfe298e8a06c420b3bfffe0b482aa89cd5` | Marcador 15/15; ingreso Phone 32/32; build y lint correctos; revisiones de requisitos y calidad aprobadas |
+| Etapas originales de cinco referencias en la ficha de teléfonos | `8daca8556001530b4b73f77223779058e369c568` | Arnés documental de tests 7/7 |
+| Ajustes mecánicos del arnés de realineación | `bee02ccc7b36636026fa71f80dc435984a27e4e3` | Verificación del arnés correcta; auto 2→0, modelo 4→4, humano 0 |
+| Tipos regenerados desde la metadata implementada del back | `5dfde077ac3d221661aee550288255596ee42c70` | `contracts:check` y TypeScript código 0; contratos dirigidos 7/7 |
+| Baja pendiente desde el enlace del bot | `9ac6b8bbed42a8e56fbc8854b8894342be847eb4` | 22/22 focales y 81/81 de regresión; revisión independiente 98/98; build y lint correctos; requisitos y calidad aprobados |
+
+El marcador sólo expresa el canal: no lleva número ni secreto. Espera la capacidad de WhatsApp, incluso si llega después del catálogo de referencia, y conserva la navegación interna y las elecciones manuales. No cambia términos, OTP ni registro cerrado.
+
+El enlace reutiliza `PendingDeletionPanel`. La cancelación conserva el ticket sólo en memoria y la clave ante errores de red/servidor; un 429 requiere esperar y volver a tocar el botón. Tras cancelar se elimina el usuario OIDC local, se limpia la caché y se inicia una autorización Consumer nueva, preservando la cookie restaurada por el back. Un reintento de OIDC no vuelve a cancelar ni a canjear el enlace. La prueba vencida lleva al estado existente de enlace inválido; las respuestas tardías después de desmontar no cambian sesión ni navegan.
+
+La coordinación autorizó regenerar desde back `5358f6967f16eb0fc372bc3d6c553a0fa723d3f2`, que limpia exclusivamente metadata de stubs/501. OpenAPI SHA-256 normalizado a LF: `cf80064358a63daa3be361dc4a5308d0ee52e27a31824953061eb1d44b77727d`. Schema generado SHA-256 LF: `70ff361a5c4079f19ffed7e702592eca680f76b9e88ddb3e7647815caf3fac93`. No se editaron tipos a mano ni cuerpos del contrato.
+
+El motor Codex del arnés terminó dos veces sin mensaje final (código 1). La recuperación con `--sin-modelo` verificó e integró los dos ajustes mecánicos. Los cuatro criterios pendientes son las entradas de `capturar-etapa-8.mjs`, `generar-galeria-etapa-8.mjs`, `etapa8VisualApp.tsx` y `etapa8VisualFixtures.ts` en el árbol. Los informes quedaron en `.local/arneses/realinear-docs/20261009-1118-front.md`, `20261009-1121-front.md` y `20261009-1124-front.md`. Este resultado no declara detectores en cero.
+
+La preparación del runner real y la galería de los estados afectados sigue en curso. Las suites completas de esta continuación se registrarán sobre sus commits finales; los resultados de la entrega inicial siguen identificados por sus hashes anteriores. No se levantó Aspire ni se evaluó Meta en esta continuación.
