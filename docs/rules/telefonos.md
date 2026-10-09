@@ -46,12 +46,12 @@
 - [Datos de referencia del back](../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md) §4: origen y orden de las opciones.
 
 ## Lo verifica
-- `PhoneField.test.tsx`: búsqueda por nombre/prefijo, detección al pegar, formato, umbral 10/11, capacidades/carga/apagado y país previo retirado del canal.
+- `PhoneField.test.tsx` (E1): búsqueda por nombre/prefijo, detección al pegar, formato y umbral 10/11; ampliado en E8 con capacidades/carga/apagado y país previo retirado del canal.
 - `countries.test.ts` (E1) y `referenceData.test.ts` (E1): las opciones habilitadas y su orden salen del catálogo, sin códigos fijos.
 - `formatters.test.ts` (E1): los casos de teléfono de `format-cases.json`, los mismos que el back.
 - `format-usage.test.ts` (E1): `libphonenumber-js` solo en su lugar y ningún nombre de país armado con `Intl.DisplayNames` en el front.
-- `personalData.test.ts` y `RecoveriesPage.test.tsx`: máscara compartida, máscaras recibidas y formato E.164 en recuperación.
-- `AuthCodeStep.test.tsx` y `PhoneAuthentication.test.tsx`: código público con teléfono oculto, también en inglés, sin exponer el número completo.
+- `personalData.test.ts` (E3) y `RecoveriesPage.test.tsx` (E5): ampliados en E8 con máscara compartida de teléfono, máscaras recibidas y formato E.164 en recuperación.
+- `AuthCodeStep.test.tsx` (E3) y `PhoneAuthentication.test.tsx` (E8): código público con teléfono oculto, también en inglés, sin exponer el número completo.
 
 ## Detalle
 [formatos.md](../architecture/formatos.md) · back: `../ArquitecturaBaseMutitenant/docs/rules/telefonos.md`
