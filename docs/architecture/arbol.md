@@ -50,6 +50,9 @@ ArquitecturaBaseMutitenantFront/
 │   ├── capturar-relevamiento.mjs                    relevamiento de las etapas 1 a 6 contra el lienzo vigente, a 1440 y a 390
 │   ├── capturar-relevamiento.casos.mjs              los casos del relevamiento: qué tablero, con qué estado y con qué pasos
 │   ├── capturar-relevamiento.test.mjs               tests de capturar-relevamiento
+│   ├── test-e2e-real-whatsapp-ipc.test.mjs          tests de test-e2e-real-whatsapp-ipc
+│   ├── test-e2e-real-whatsapp-ipc.mjs               Sólo los hitos saneados del runner pueden pasar al reporte…
+│   ├── capturar-etapa-8.test.mjs                    tests de capturar-etapa-8
 │   └── recorrido-lienzo/                            recorrido del lienzo tablero por tablero (recorrido.mjs) y vista en vivo de una pantalla junto a su tablero (vivo.mjs)
 ├── src/                                             ver abajo
 ├── .gitignore
