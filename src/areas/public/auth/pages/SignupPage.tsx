@@ -47,6 +47,9 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
   const [platformOnly, setPlatformOnly] = useState(false);
   const [searchParams] = useSearchParams();
   const location = useLocation();
+  // Preferencia pública del bot: espera la capacidad sin pisar el destino interno ni una elección posterior.
+  const preferredWhatsApp = useRef(searchParams.get("channel") === "whatsapp"
+    && !phoneFromNavigation(location.state) && !emailFromNavigation(location.state));
   const [emailTaken, setEmailTaken] = useState(false);
   const returnTo = safeReturnUrl(searchParams.get("returnTo") ?? searchParams.get("returnUrl"), "/");
   const originalReturn = loginReturnUrl(searchParams.get("returnUrl") ?? searchParams.get("returnTo"));
@@ -73,6 +76,12 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
   const verify = useIdempotentMutation((operation: SignupCodeOperation & { code: string }, key) => verifySignup({ ...signupCodeRequest(operation), code: operation.code }, key), { meta: { handlesError: true }, sameOperation: sameSignupCodeOperation });
   const resend = useCountdown(0);
   const retry = useRetryAfterCountdown();
+
+  useEffect(() => {
+    if (!preferredWhatsApp.current || !hasWhatsApp) return;
+    preferredWhatsApp.current = false;
+    setValue("channel", "phone");
+  }, [hasWhatsApp, setValue]);
 
   useEffect(() => {
     if (!googleComplete || startedOidc.current) return;
@@ -160,8 +169,8 @@ export function SignupPage({ completeAuthorization = followAuthorize }: { comple
       }} className="flex flex-col gap-[22px]">
         <div className="flex flex-col gap-1.5">
           <AuthDestinationField phoneLabel={t("signup.phoneLabel")} channel={channel} email={email} phone={phone}
-            onChannelChange={(value) => { setJourney((previous) => previous + 1); setValue("channel", value); clearErrors(); setEmailTaken(false); setError(null); }}
-            onEmailChange={(value) => { setValue("email", value); clearErrors("email"); setEmailTaken(false); }}
+            onChannelChange={(value) => { preferredWhatsApp.current = false; setJourney((previous) => previous + 1); setValue("channel", value); clearErrors(); setEmailTaken(false); setError(null); }}
+            onEmailChange={(value) => { preferredWhatsApp.current = false; setValue("email", value); clearErrors("email"); setEmailTaken(false); }}
             onPhoneChange={(value) => { setValue("phone", value); clearErrors("phone"); setEmailTaken(false); }}
             error={channel === "phone" && hasWhatsApp ? errors.phone?.message : errors.email?.message} />
           {emailTaken ? <AuthLink className="self-start text-[14px]!" to={loginHref} state={destinationNavigationState(destinationFromFields(getValues()))}>{t("signup.enter")}</AuthLink> : null}
