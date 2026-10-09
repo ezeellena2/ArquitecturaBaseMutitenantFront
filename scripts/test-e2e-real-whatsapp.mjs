@@ -5,7 +5,7 @@ import { randomUUID } from "node:crypto";
 import { createServer } from "vite";
 import { chromium } from "playwright";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
-import { newCaseContext, runCase } from "./test-e2e-real-case.mjs";
+import { caseDelay, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
@@ -163,6 +163,11 @@ async function requestDeletion(page) {
   await page.getByRole("heading", { name: "Cerramos tu sesión", exact: true }).waitFor();
 }
 async function pendingLink(page, phone, width, scenario, observed) {
+  // LoginLinkIssuer limita por cuenta durante 60 s, incluso si la recuperación cambió su Phone.
+  // Respetamos el cooldown real de la fixture sin modificar opciones ni adelantar su reloj.
+  detail("esperar ventana real de emisión de enlace");
+  await caseDelay(60_000);
+  detail("generar enlace del bot para baja pendiente");
   const fixture = await begin(scenario, phone); // Cursor anterior al ticket emitido por redeem.
   const link = await botLink(phone, `${scenario}-bot`);
   const since = observed.oidc.length;
