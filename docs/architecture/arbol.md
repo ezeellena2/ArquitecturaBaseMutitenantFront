@@ -209,6 +209,7 @@ src/
 │   │   │   │   ├── businessSignup.ts                [E6] «Registrá tu empresa» + disponibilidad del slug
 │   │   │   │   ├── businessSignup.test.ts           tests de businessSignup
 │   │   │   │   ├── recovery.ts                      [E5] pedir código, verificarlo y registrar recuperación pública con nonce e Idempotency-Key
+│   │   │   │   ├── phoneAuth.test.ts                tests de phoneAuth
 │   │   │   │   └── deletion.ts                      la baja pedida al ingresar: leerla y «Cancelar la baja y entrar» (POST /api/auth/deletion/cancel con el cancelTicket)
 │   │   │   ├── components/
 │   │   │   │   ├── AuthStatus.tsx                   la pantalla de estado del ingreso, los registros y la invitación: círculo de 52, título de 24, bajada y botones de 44
@@ -258,6 +259,7 @@ src/
 │   │   │       ├── RecoverAccountPage.tsx           [E5/E8] /recuperar: Email/Phone previo y nuevo, posesión con nonce y pedido asistido; errores bajo campo antes del código (ADR 0043, v115)
 │   │   │       ├── RecoverAccountPage.test.tsx      tests de Recuperar: nonce, idempotencia, errores, espera y vista a 390
 │   │   │       ├── CallbackPage.tsx
+│   │   │       ├── SignupChannelMarker.test.tsx     tests de SignupChannelMarker
 │   │   │       └── CallbackPage.test.tsx            tests de CallbackPage
 │   │   ├── legal/                                   [E3] P7
 │   │   │   ├── api/
