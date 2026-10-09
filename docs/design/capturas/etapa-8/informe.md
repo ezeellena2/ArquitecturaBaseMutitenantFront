@@ -68,6 +68,10 @@ Sobre la entrega `44ef1092`, se atendieron los encajes aprobados en la revisión
 | Ajustes mecánicos del arnés de realineación | `bee02ccc7b36636026fa71f80dc435984a27e4e3` | Verificación del arnés correcta; auto 2→0, modelo 4→4, humano 0 |
 | Tipos regenerados desde la metadata implementada del back | `5dfde077ac3d221661aee550288255596ee42c70` | `contracts:check` y TypeScript código 0; contratos dirigidos 7/7 |
 | Baja pendiente desde el enlace del bot | `9ac6b8bbed42a8e56fbc8854b8894342be847eb4` | 22/22 focales y 81/81 de regresión; revisión independiente 98/98; build y lint correctos; requisitos y calidad aprobados |
+| Runner aislado y comunicación privada | `3a000026` / `2f9f21e7` | 30 grupos previstos, secuenciales después del recorrido general; API/DB/cookies reales, aún sin ejecutar |
+| Escenarios ocupados y selección real de pedidos | `579fc2c34b920cef7e2ac8cd5ebb6d26b330893e` | 12/12 Node; requisitos, calidad y revisión global estática aprobados |
+| Galería extendida, ícono y recaptura final | `68821751` / `36d15e0f` / `ff972f96` | 108/108 casos y 324 PNG; ocho pares nuevos y cuatro actualizados inspeccionados |
+| Últimos ajustes mecánicos del arnés | `018d8e1a` / `2d991a6e0a407144111c6f56b0a38f875da090b0` | Verificación correcta; se conservan cinco criterios documentales pendientes |
 
 El marcador sólo expresa el canal: no lleva número ni secreto. Espera la capacidad de WhatsApp, incluso si llega después del catálogo de referencia, y conserva la navegación interna y las elecciones manuales. No cambia términos, OTP ni registro cerrado.
 
@@ -75,6 +79,23 @@ El enlace reutiliza `PendingDeletionPanel`. La cancelación conserva el ticket s
 
 La coordinación autorizó regenerar desde back `5358f6967f16eb0fc372bc3d6c553a0fa723d3f2`, que limpia exclusivamente metadata de stubs/501. OpenAPI SHA-256 normalizado a LF: `cf80064358a63daa3be361dc4a5308d0ee52e27a31824953061eb1d44b77727d`. Schema generado SHA-256 LF: `70ff361a5c4079f19ffed7e702592eca680f76b9e88ddb3e7647815caf3fac93`. No se editaron tipos a mano ni cuerpos del contrato.
 
-El motor Codex del arnés terminó dos veces sin mensaje final (código 1). La recuperación con `--sin-modelo` verificó e integró los dos ajustes mecánicos. Los cuatro criterios pendientes son las entradas de `capturar-etapa-8.mjs`, `generar-galeria-etapa-8.mjs`, `etapa8VisualApp.tsx` y `etapa8VisualFixtures.ts` en el árbol. Los informes quedaron en `.local/arneses/realinear-docs/20261009-1118-front.md`, `20261009-1121-front.md` y `20261009-1124-front.md`. Este resultado no declara detectores en cero.
+El motor Codex del arnés terminó dos veces sin mensaje final (código 1). La recuperación con `--sin-modelo` verificó e integró los dos ajustes mecánicos. Una repetición usando el CLI de la app terminó y fusionó `018d8e1a`: auto 3→0, modelo 5→0, humano 0→5; verificación del arnés correcta. Consumo informado: entrada 97652, caché 67968, salida 388, razonamiento 45, costo no disponible. Los cinco criterios quedaron sin resolver y pasaron a revisión humana: entradas de `capturar-etapa-8.mjs`, `generar-galeria-etapa-8.mjs`, `test-e2e-real-whatsapp.mjs`, `etapa8VisualApp.tsx` y `etapa8VisualFixtures.ts` en el árbol. El informe vigente es `.local/arneses/realinear-docs/20261009-1209-front.md`; los intentos previos se conservan. La skill `arnes` impide rehacer manualmente su trabajo. Este resultado no declara detectores en cero.
 
-La preparación del runner real y la galería de los estados afectados sigue en curso. Las suites completas de esta continuación se registrarán sobre sus commits finales; los resultados de la entrega inicial siguen identificados por sus hashes anteriores. No se levantó Aspire ni se evaluó Meta en esta continuación.
+Después del ajuste del runner, una ejecución mecánica final fusionó `2d991a6e`: auto 2→0, modelo 5→5, humano 0→0, verificación correcta y 0 tokens. Informe final: `.local/arneses/realinear-docs/20261009-1220-front.md`. Los mismos cinco criterios quedan sin enviar al modelo y siguen pendientes; el informe anterior conserva su lista para revisión humana. No se abrió ni rehízo el archivo tocado por el arnés.
+
+La preparación del runner real quedó versionada en `3a000026` y su ejecución secuencial después del recorrido general en `2f9f21e7`. El conteo verificado es **30 grupos, 15 por tamaño**, que conservan los 18 grupos iniciales y agregan recuperación humana, CTA del bot y baja por enlace. La revisión de calidad detectó dos escenarios que debían corregirse antes de ejecutarlo: recuperación con el mismo destino anterior/nuevo y selección del pedido con un buscador inexistente en móvil. Ambos se corrigieron en `579fc2c34b920cef7e2ac8cd5ebb6d26b330893e`: el número ocupado pertenece a otra cuenta creada por UI/OTP real; escritorio usa `searchbox` y móvil conserva 390 px, seleccionando la tarjeta por los dos métodos enmascarados del DTO y comprobando unicidad y persistencia después de F5. Pasaron 12/12 pruebas Node dirigidas, build, lint del alcance y sintaxis. Las revisiones independientes de requisitos, calidad y global estática aprobaron el resultado. No se atribuyen resultados reales a esta preparación.
+
+La galería `68821751` amplió el catálogo a **108/108 casos, 324 PNG**. Se revisaron los ocho pares nuevos y se corrigió el ícono de WhatsApp del enlace inválido en `36d15e0f`, con 22/22 tests focales y TypeScript/lint dirigidos correctos. La recaptura `ff972f96` actualizó únicamente ocho PNG de los cuatro casos afectados y verificó 108/108. La [comparación](comparacion.md) registra las diferencias autorizadas y la actualización de las capturas afectadas.
+
+| Verificación completa de esta continuación | Resultado |
+|---|---|
+| `npm run build` | Código 0; TypeScript y Vite completos |
+| `npm run lint` | Código 0; sin errores, advertencias existentes |
+| `npm test -- --maxWorkers=2` | Código 0; **2350/2350 tests, 255 archivos**, sin fallos ni pendientes, 1145,76 s |
+| `npm run contracts:check` | Código 0; schema generado coincide con OpenAPI |
+| Tests Node de IPC, comunicación saneada, captura y selección de recuperación | 12/12; revisión independiente correcta |
+| `node scripts/capturar-etapa-8.mjs --verify` | Código 0; 108/108 casos |
+
+La suite completa ejecutó el código funcional de `9ac6b8bb` con la preparación de galería `68821751`. La corrección posterior del ícono sólo cambia presentación y tiene la regresión dirigida indicada arriba. Los logs completos quedaron en `.local/reviews/e8-front-20261009/`. Los resultados iniciales continúan identificados por sus hashes anteriores.
+
+El fixture real espera el GO coordinado sobre binarios estables del back. No se levantó Aspire ni se evaluó Meta en esta continuación. El informe no declara T13/T14 cumplidos ni cierra E8.

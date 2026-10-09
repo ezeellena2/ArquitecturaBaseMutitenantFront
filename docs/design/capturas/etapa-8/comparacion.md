@@ -44,3 +44,13 @@ Catálogo completo: **100/100 casos**, **300 PNG** (lienzo, app y comparación p
 Se inspeccionaron 13 pares representativos: ingreso Phone y código (persona/empresa), registro ocupado, aprobación empresarial sin correo, enlace previo, recuperación ocupada y recibida, Cuenta y los diálogos de alta, código y principal. La revisión detectó y corrigió el teléfono completo del paso público de código y el avatar/alineación del aviso del enlace. No se detectó contenido crítico fuera de pantalla en esos pares. El desplazamiento vertical, los marcos móviles sin barra del sistema, las máscaras normalizadas y las diferencias de datos/capacidad están explicitados arriba; no se afirma identidad de píxeles ni revisión manual de los 100 pares.
 
 E8 sigue abierta para T13–T14: revisión integral, E2E y recorrido real de Integración.
+
+## Continuación del pase · 2026-10-09
+
+El catálogo se amplió a **108/108 casos y 324 PNG**, con ocho comparaciones nuevas: registro desde el CTA público del bot, baja pendiente desde enlace, error transitorio al cancelar y comprobante vencido, cada uno en 1440 × 900 y 390 × 844. Las cien definiciones anteriores se conservaron. El verificador completo terminó con código 0.
+
+Se inspeccionaron los ocho pares nuevos. El registro muestra WhatsApp elegido y el número vacío. La baja pendiente copia el panel vigente de Ingreso/M-Ingreso, puerta Persona; no introduce un tablero nuevo. El error transitorio agrega el aviso compartido debajo de ese panel. La prueba vencida vuelve a Enlace/M-Enlace «Ya no sirve» y muestra el mensaje compartido de cancelación rechazada. El manifiesto explicita esas dos extensiones de error. No se detectó contenido crítico fuera de pantalla.
+
+La inspección encontró que el botón «Volver a WhatsApp» no mostraba su ícono del tablero. Se corrigió con el ícono compartido en `36d15e0f`, conservando textos, enlace y conducta. Se actualizan exclusivamente los cuatro pares afectados: enlace inválido y comprobante vencido, escritorio y teléfono. Los distintos marcos móviles y las diferencias de datos/capacidad descritas arriba siguen vigentes; no se afirma igualdad de píxeles.
+
+La comparación sigue usando fixtures tipados para presentación. No acredita el recorrido real, persistencia, cookies ni entrega por Meta; E8 permanece abierta.
