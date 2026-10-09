@@ -7,7 +7,7 @@ import { afterEach, beforeAll, beforeEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { AppProviders } from "@/app/providers";
 import { createQueryClient } from "@/shared/api/queryClient";
-import type { PreviewLoginLinkRequest, RedeemLoginLinkRequest } from "@/shared/api/types";
+import type { CancelAccountDeletionRequest, PreviewLoginLinkRequest, RedeemLoginLinkRequest } from "@/shared/api/types";
 import { configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { consumerWithOrganizations } from "@/test/mocks/currentUsers";
@@ -91,4 +91,101 @@ it("un replay al continuar muestra el estado vencido sin cambiar la sesión ante
   server.use(http.post("/api/auth/login-link/redeem", () => HttpResponse.json({ code: "Auth.LoginLink.AlreadyUsed" }, { status: 400 })));
   show(); await screen.findByText("Lucía Fernández"); fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
   await screen.findByRole("heading", { name: "Este enlace ya no sirve" }); expect(removeUser).not.toHaveBeenCalled(); expect(signinRedirect).not.toHaveBeenCalled();
+});
+
+const cancelTicket = "test-opaque-cancel-ticket";
+const pendingDeletion = { code: "Identity.Account.PendingDeletion", scheduledForUtc: "2026-10-30T12:00:00Z", timeZoneId: "America/Argentina/Buenos_Aires", cancelTicket, returnUrl: "/login/enlace", cancelTicketExpiresAtUtc: "2026-10-09T13:00:00Z" };
+const cancelRequests: { body: CancelAccountDeletionRequest; key: string | null }[] = [];
+function pendingAccount() {
+  cancelRequests.length = 0;
+  server.use(http.post<never, RedeemLoginLinkRequest>("/api/auth/login-link/redeem", async ({ request }) => {
+    redeemCalls.push(await request.json()); events.push("redeem"); return HttpResponse.json(pendingDeletion, { status: 403 });
+  }), http.post<never, CancelAccountDeletionRequest>("/api/auth/deletion/cancel", async ({ request }) => {
+    cancelRequests.push({ body: await request.json(), key: request.headers.get("Idempotency-Key") }); events.push("cancel");
+    return HttpResponse.json({ returnUrl: "/login/enlace" });
+  }));
+}
+async function openPendingAccount() {
+  await screen.findByText("Lucía Fernández");
+  fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
+  await screen.findByRole("heading", { name: "Tu cuenta tiene la baja pedida" });
+}
+it("baja pendiente usa el panel existente y doble clic cancela una vez antes de iniciar OIDC Consumer nuevo", async () => {
+  pendingAccount(); const storage = vi.spyOn(Storage.prototype, "setItem");
+  const { client, clear, container } = show(); await openPendingAccount();
+  expect(screen.getByText("30/10/2026", { exact: false })).toBeVisible();
+  expect(removeUser).not.toHaveBeenCalled(); expect(signinRedirect).not.toHaveBeenCalled();
+  expect(JSON.stringify(client.getMutationCache().getAll().map((item) => item.state.variables))).not.toContain(cancelTicket);
+  expect(await axe(container)).toHaveNoViolations();
+  const cancelButton = screen.getByRole("button", { name: "Cancelar la baja y entrar" });
+  fireEvent.click(cancelButton); fireEvent.click(cancelButton);
+  await waitFor(() => expect(signinRedirect).toHaveBeenCalledExactlyOnceWith({ extraQueryParams: { access: "consumer" }, state: { returnTo: "/" } }));
+  expect(events).toEqual(["redeem", "cancel", "removeUser", "clear", "signinRedirect"]); expect(clear).toHaveBeenCalledOnce();
+  expect(cancelRequests).toEqual([{ body: { cancelTicket }, key: expect.any(String) }]); expect(redeemCalls).toHaveLength(1);
+  expect(signoutRedirect).not.toHaveBeenCalled(); expect(location.pathname).toBe("/login/enlace"); expect(location.hash).toBe("");
+  expect(JSON.stringify(client.getMutationCache().getAll().map((item) => item.state.variables))).not.toContain(cancelTicket);
+  expect(JSON.stringify(storage.mock.calls)).not.toContain(cancelTicket); storage.mockRestore();
+});
+it.each(["network", "server"])("cancelación con error %s conserva prueba y clave para el reintento manual", async (failure) => {
+  pendingAccount(); let attempts = 0;
+  server.use(http.post<never, CancelAccountDeletionRequest>("/api/auth/deletion/cancel", async ({ request }) => {
+    cancelRequests.push({ body: await request.json(), key: request.headers.get("Idempotency-Key") });
+    if (++attempts === 1) return failure === "network" ? HttpResponse.error() : HttpResponse.json({ code: "General.Unexpected" }, { status: 503 });
+    return HttpResponse.json({ returnUrl: "/login/enlace" });
+  }));
+  show(); await openPendingAccount(); fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" }));
+  await screen.findByRole("alert"); expect(removeUser).not.toHaveBeenCalled(); expect(signinRedirect).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" }));
+  await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
+  expect(cancelRequests).toHaveLength(2); expect(cancelRequests[0]!.key).toBeTruthy(); expect(cancelRequests[1]).toEqual(cancelRequests[0]); expect(redeemCalls).toHaveLength(1);
+});
+it.each([["Legal.AccountDeletion.GraceExpired", 409], ["Legal.AccountDeletion.CancelProofInvalid", 403]] as const)("%s abandona la prueba sin volver a canjear ni cambiar la sesión", async (code, status) => {
+  pendingAccount(); server.use(http.post("/api/auth/deletion/cancel", () => HttpResponse.json({ code, detail: "Esta prueba ya no sirve." }, { status })));
+  show(); await openPendingAccount(); fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" }));
+  await screen.findByRole("heading", { name: "Este enlace ya no sirve" }); expect(screen.getByRole("link", { name: "Ir al ingreso" })).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Cancelar la baja y entrar" })).not.toBeInTheDocument(); expect(removeUser).not.toHaveBeenCalled(); expect(signinRedirect).not.toHaveBeenCalled(); expect(redeemCalls).toHaveLength(1);
+});
+it("429 de cancelación conserva el panel, cuenta la espera y exige otro clic", async () => {
+  pendingAccount(); let attempts = 0;
+  server.use(http.post("/api/auth/deletion/cancel", () => ++attempts === 1
+    ? HttpResponse.json({ code: "Request.TooManyRequests", retryAfter: 2 }, { status: 429, headers: { "Retry-After": "2" } })
+    : HttpResponse.json({ returnUrl: "/login/enlace" })));
+  show(); await openPendingAccount(); fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" }));
+  expect(await screen.findByRole("button", { name: "Reintentá en 0:02" })).toBeDisabled();
+  vi.useFakeTimers(); await act(async () => { await vi.advanceTimersByTimeAsync(2100); window.dispatchEvent(new Event("focus")); }); vi.useRealTimers();
+  expect(attempts).toBe(1); expect(signinRedirect).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" })); await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce()); expect(redeemCalls).toHaveLength(1);
+});
+it.each(["signinRedirect", "removeUser"])("si %s falla después de cancelar, Continuar no cancela ni canjea de nuevo", async (operation) => {
+  pendingAccount(); (operation === "signinRedirect" ? signinRedirect : removeUser).mockRejectedValueOnce(new Error("network"));
+  show(); await openPendingAccount(); fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" }));
+  await screen.findByRole("alert"); expect(screen.queryByRole("button", { name: "Cancelar la baja y entrar" })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
+  await waitFor(() => expect(signinRedirect).toHaveBeenCalledTimes(operation === "signinRedirect" ? 2 : 1));
+  expect(cancelRequests).toHaveLength(1); expect(redeemCalls).toHaveLength(1); expect(signoutRedirect).not.toHaveBeenCalled();
+});
+it("metadata incompleta de baja pendiente no ofrece una cancelación", async () => {
+  server.use(http.post("/api/auth/login-link/redeem", () => HttpResponse.json({ code: "Identity.Account.PendingDeletion", cancelTicket }, { status: 403 })));
+  show(); await screen.findByText("Lucía Fernández"); fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
+  await screen.findByRole("alert"); expect(screen.queryByRole("button", { name: "Cancelar la baja y entrar" })).not.toBeInTheDocument(); expect(removeUser).not.toHaveBeenCalled();
+});
+it.each([200, 403])("una cancelación que responde %s después de desmontar no cambia sesión ni inicia OIDC", async (status) => {
+  pendingAccount(); let finish: () => void = () => {}; let requested = false;
+  const response = new Promise<void>((resolve) => { finish = resolve; });
+  server.use(http.post("/api/auth/deletion/cancel", async () => {
+    requested = true; await response;
+    return status === 200 ? HttpResponse.json({ returnUrl: "/login/enlace" }) : HttpResponse.json({ code: "Legal.AccountDeletion.CancelProofInvalid" }, { status });
+  }));
+  const { unmount, clear, client } = show(); await openPendingAccount(); fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" }));
+  await waitFor(() => expect(requested).toBe(true)); expect(screen.getByRole("button", { name: "Cancelar la baja y entrar" })).toBeDisabled(); expect(screen.getByRole("button", { name: "Salir" })).toBeDisabled(); unmount();
+  await act(async () => { finish(); await response; });
+  await waitFor(() => expect(client.getMutationCache().getAll().at(-1)?.state.status).toBe("error"));
+  expect(removeUser).not.toHaveBeenCalled(); expect(clear).not.toHaveBeenCalled(); expect(signinRedirect).not.toHaveBeenCalled();
+});
+it("desmontar mientras borra el usuario local después de cancelar impide la continuación tardía", async () => {
+  pendingAccount(); let finish: () => void = () => {};
+  const response = new Promise<void>((resolve) => { finish = resolve; }); removeUser.mockImplementationOnce(() => response);
+  const { unmount, clear } = show(); await openPendingAccount(); fireEvent.click(screen.getByRole("button", { name: "Cancelar la baja y entrar" }));
+  await waitFor(() => expect(removeUser).toHaveBeenCalledOnce()); unmount(); await act(async () => { finish(); await response; });
+  expect(clear).not.toHaveBeenCalled(); expect(signinRedirect).not.toHaveBeenCalled();
 });
