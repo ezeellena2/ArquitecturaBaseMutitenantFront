@@ -53,6 +53,8 @@ ArquitecturaBaseMutitenantFront/
 │   ├── test-e2e-real-whatsapp-ipc.test.mjs          tests de test-e2e-real-whatsapp-ipc
 │   ├── test-e2e-real-whatsapp-ipc.mjs               Sólo los hitos saneados del runner pueden pasar al reporte…
 │   ├── capturar-etapa-8.test.mjs                    tests de capturar-etapa-8
+│   ├── test-e2e-real-whatsapp-recovery.test.mjs     tests de test-e2e-real-whatsapp-recovery
+│   ├── test-e2e-real-whatsapp-recovery.mjs          Correlaciona la respuesta observada, sin depender del nombre ni del…
 │   └── recorrido-lienzo/                            recorrido del lienzo tablero por tablero (recorrido.mjs) y vista en vivo de una pantalla junto a su tablero (vivo.mjs)
 ├── src/                                             ver abajo
 ├── .gitignore
