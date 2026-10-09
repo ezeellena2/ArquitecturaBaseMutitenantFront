@@ -10,6 +10,7 @@ import { test } from "node:test";
 import { caseDelay as delay, caseStage, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { pickupCode, plainTextBody } from "./test-e2e-real-mail.mjs";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
+import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { chromium } from "playwright";
 
 // Esta prueba arranca su propio AppHost y un PostgreSQL efímero, fuera del volumen Development.
@@ -2501,4 +2502,23 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
       }
     }
   }
+});
+
+// Segundo test superior: Node lo ejecuta después del recorrido general y de su finally/aspire stop.
+// Este fixture usa Kestrel/Testcontainers propios y no inicia otro Aspire.
+test("WhatsApp real en 1440 y 390: OTP, recuperación humana, enlaces y baja", { timeout: 1_920_000 }, async (t) => {
+  const backend = fileURLToPath(new URL("../../ArquitecturaBaseMutitenant/", import.meta.url));
+  const runner = fileURLToPath(new URL("./test-e2e-real-whatsapp.mjs", import.meta.url));
+  let stdout;
+  try {
+    ({ stdout } = await execFileAsync("dotnet", ["run", "--project", "tools/ArquitecturaBaseMultitenant.RealE2ESetup", "--", "--whatsapp-browser", runner], {
+      cwd: backend, env: { ...process.env, MT_E2E_ISOLATED: "1" }, timeout: 1_860_000, maxBuffer: 16 * 1024 * 1024,
+    }));
+  } catch (error) {
+    for (const line of fixtureChecks(error?.stdout)) t.diagnostic(line);
+    throw new Error(`Falló el fixture real WhatsApp (código ${typeof error?.code === "number" ? error.code : "proceso"}); sólo se conservan hitos saneados.`);
+  }
+  const checks = fixtureChecks(stdout);
+  for (const line of checks) t.diagnostic(line);
+  assert.ok(checks.some((line) => /^CHECK FINAL 30 grupos reales correctos en 1440\/390; Meta Cloud\/delivered pendiente$/.test(line)), "El runner debe completar sus 30 grupos sin sustituir Meta real.");
 });

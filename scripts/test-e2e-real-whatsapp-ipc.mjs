@@ -1,5 +1,11 @@
 import { createInterface } from "node:readline";
 
+/** Sólo los hitos saneados del runner pueden pasar al reporte node:test. */
+export function fixtureChecks(stdout = "") {
+  return stdout.split(/\r?\n/).filter((line) => /^CHECK (INICIO|OK|FINAL|FALLO) [\p{L}\p{N} .;/,_()-]+$/u.test(line)
+    && !/\d{5}|https?:|@/.test(line));
+}
+
 /** stdout FIXTURE lo consume RealE2ESetup en privado; nunca es evidencia ni un log. */
 export function fixtureProtocol(input, output, { timeoutMs = 60_000 } = {}) {
   const lines = createInterface({ input });

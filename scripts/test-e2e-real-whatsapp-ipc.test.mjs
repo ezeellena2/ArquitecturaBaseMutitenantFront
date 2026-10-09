@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { PassThrough } from "node:stream";
 import { test } from "node:test";
-import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
+import { fixtureChecks, fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
+
+test("el reporte permite sólo hitos y descarta ruido privado, URLs, teléfonos y OTP", () => {
+  const output = 'build output\nFIXTURE {"proof":"secret"}\nCHECK OK OTP 123456\nCHECK OK teléfono +5491134567880\nCHECK OK https://localtest.me/#t=secret\nCHECK OK user@example.test\nCHECK OK registro y OIDC consumer/F5 1440\nCHECK FALLO registro Phone 390; tipo Error; HTTP 403 Identity.Account.PendingDeletion\n';
+  assert.deepEqual(fixtureChecks(output), ["CHECK OK registro y OIDC consumer/F5 1440", "CHECK FALLO registro Phone 390; tipo Error; HTTP 403 Identity.Account.PendingDeletion"]);
+});
 
 test("el canal privado conserva escenario y respuesta sin publicar la prueba", async () => {
   const input = new PassThrough(); const output = new PassThrough();
