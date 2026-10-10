@@ -2,7 +2,7 @@
 
 El recorrido conserva los treinta pasos anteriores y agrega veinticinco pasos E8 por ancho: **55 pasos y 110 comprobaciones previstas**, a 1440 y 390 px. Esta preparación no acredita ejecución, capturas, aprobación de la puerta ni cierre de E8.
 
-La fuente de los guiones es `a306c35fd27294eacf2c967e41121e91d2ffdce0`: `ingresar-por-whatsapp`, `el-bot-y-su-enlace`, `agregar-un-whatsapp` y `atender-una-recuperacion`. La fuente visual aprobada es v116 `21f227bcf6fd7a910272c682d5085338f8e2039c`. El WIP v117 no se consume como aprobación.
+La fuente de los guiones es `a306c35fd27294eacf2c967e41121e91d2ffdce0`: `ingresar-por-whatsapp`, `el-bot-y-su-enlace`, `agregar-un-whatsapp` y `atender-una-recuperacion`. La fuente visual aprobada para la galería E8 sigue fijada en v116 `21f227bcf6fd7a910272c682d5085338f8e2039c`. La publicación v117 `eb5626ea` no adelanta TOTP E9 ni Mensajes E11 en este recorrido.
 
 | Pasos nuevos | Qué comprueban |
 |---|---|
@@ -20,11 +20,11 @@ Los pasos externos de Mensajes se identifican como controlados y capturan la pan
 
 ## Estado del soporte
 
-**Puente conectado contra Back `38febf92702426ef030141b51d14cd7785d47cea`; perfil de cooldown E7 pendiente de publicación.** AppHost aislado usa `RealE2ESetup --recorrido-host` como API Testing sobre su misma base PostgreSQL, mantiene Front 5174, pickup Email y claves Data Protection para la sesión antigua. La fixture WhatsApp independiente en 5176 conserva su objetivo E2E específico; el recorrido no la encadena ni crea otro contexto.
+**Puente conectado contra Back `38febf92702426ef030141b51d14cd7785d47cea`, con el perfil de cooldown E7 publicado en `ed3a44db5c9148639719f88200362a6e11c098df`.** AppHost aislado usa `RealE2ESetup --recorrido-host` como API Testing sobre su misma base PostgreSQL, mantiene Front 5174, pickup Email y claves Data Protection para la sesión antigua. La fixture WhatsApp independiente en 5176 conserva su objetivo E2E específico; el recorrido no la encadena ni crea otro contexto.
 
 `env.whatsapp.begin` publica por `env.command("whatsapp", request)` una orden `.whatsapp.json` atómica y consume `.whatsapp.json.done` lower camelcase, sin endpoint HTTP de control. El adaptador conserva un único cursor por escenario/destino sintético, rechaza órdenes simultáneas y solicitudes WhatsApp de más de 2048 bytes, y elimina request, respuesta y temporales después de consumirlos, también ante falla. El respaldo Email usa el pickup existente. El sender WhatsApp está prohibido y el aviso N1 se dispara sólo con la orden explícita; no se atribuye el IPC como entrega Meta.
 
-El perfil publicado fija cooldown cero. Eso es incompatible con E7-23, que debe comprobar `429 Auth.LoginCode.ResendTooSoon`. Coordinación pidió a Back publicar cooldown real de 60 s sólo en el host unificado, conservando la fixture WhatsApp independiente y los límites productivos. Hasta ese corte el recorrido no se presenta listo para ejecutar. Los envíos E8 ya respetan cada `RetryAfter` que devuelve el servidor; otros 429, errores HTTP y RetryAfter inválidos fallan, y la cancelación interrumpe la espera. No se cambia la configuración ni las cuotas productivas desde Front.
+El host combinado usa ahora cooldown real de 60 s, conservando la fixture WhatsApp independiente en cero y los límites productivos. El correctivo Back verifica E7-22→23: OTP incorrecto y reenvío inmediato rechazado con `429 Auth.LoginCode.ResendTooSoon`, `Retry-After` de 1–60, desafío conservado y ningún Email nuevo. Su focal final pasó 5/5 con builds sin advertencias ni errores; no acredita el recorrido completo. Los envíos E8 ya respetan cada `RetryAfter` que devuelve el servidor; otros 429, errores HTTP y RetryAfter inválidos fallan, y la cancelación interrumpe la espera. El contrato permanece igual y no requiere regenerar tipos ni modificar el código Front.
 
 Google construye el desafío real con un cliente sintético de Testing y verifica sólo la salida a `accounts.google.com`; no acredita autenticación del proveedor ni un cliente válido en Google.
 
@@ -42,7 +42,7 @@ node --check scripts/recorrido-usuario-entorno.test.mjs
 
 Los tests livianos verifican la cobertura de cada paso contra el guion exacto publicado, la separación del informe/manuales, la privacidad del fallo E8, el binding del control, atomicidad/concurrencia/límite/cleanup del IPC, RetryAfter/cancelación, la versión original de N1 y las comprobaciones/cleanup anteriores. Los tests DOM usan Chromium local, sin red, API ni base; los del IPC usan únicamente archivos temporales propios. No ejecutan el recorrido del producto.
 
-Integración ejecutará el recorrido completo una sola vez sobre el par Front/Back fijo, después de publicar y consumir también el perfil que conserva E7-23:
+Integración ejecutará el recorrido completo una sola vez sobre el par Front/Back fijo que incluya el perfil publicado en `ed3a44db`:
 
 ```powershell
 node scripts/recorrido-usuario.mjs --no-build
