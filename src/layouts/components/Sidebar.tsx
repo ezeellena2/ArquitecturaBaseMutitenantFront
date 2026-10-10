@@ -69,7 +69,7 @@ export function Sidebar({ navigation, account, context, collapsed, managementOpe
     {/* «Criterio · Menús»: tu nombre en 13 y negrita y el correo en gris de 12, al lado de tu inicial. */}
     {account ? <div className="flex items-center gap-2.5 border-t border-[var(--lado-borde)] px-3.5 py-2.5">
       <Avatar initials={account.name.charAt(0).toUpperCase()} />
-      {showLabels ? <span className="flex min-w-0 flex-col leading-[1.3]"><span className="truncate text-[13px] font-bold text-[var(--t1)]">{account.name}</span>{account.email ? <span className="truncate text-[12px] text-[var(--t3)]">{account.email}</span> : null}</span> : null}
+      {showLabels ? <span className="flex min-w-0 flex-col leading-[1.3]"><span className="truncate text-[13px] font-bold text-[var(--t1)]">{account.name || t("format:emptyLabel")}</span>{account.email ? <span className="truncate text-[12px] text-[var(--t3)]">{account.email}</span> : null}</span> : null}
     </div> : null}
   </aside>;
 }

@@ -46,6 +46,7 @@ export function useProfiles() {
   const accountHref = storefront ? mainSiteUrl(accountPagePaths.account) : accountPagePaths.account;
   const [targetName, setTargetName] = useState("");
   const name = account?.displayName || account?.email || "";
+  const nameLabel = name || t("format:emptyLabel");
   const personal = t("accessMenu.personal");
 
   function switchTo(target: Parameters<typeof switching.switchAccess>[0], destinationName: string) {
@@ -79,5 +80,5 @@ export function useProfiles() {
     } : undefined} />
       : null;
 
-  return { account, name, email: account?.email ?? null, access, profiles, signOut, status, accountHref };
+  return { account, name, nameLabel, email: account?.email ?? null, access, profiles, signOut, status, accountHref };
 }

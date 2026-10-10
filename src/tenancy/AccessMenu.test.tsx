@@ -6,12 +6,15 @@ import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { MemoryRouter } from "react-router";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
+import { http, HttpResponse } from "msw";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { cancelSignOut } from "@/auth/signOutStatus";
 import { configureI18n } from "@/shared/i18n";
 import type { MeResponse } from "@/shared/api/types";
 import { businessUser, consumerWithoutOrganizations, platformOperator, visualOperator } from "@/test/mocks/currentUsers";
 import { AccessMenu } from "./AccessMenu";
+import { server } from "@/test/mocks/server";
+import { referenceDataFixture } from "@/test/mocks/handlers";
 
 const switchAccess = vi.fn<({ access, tenantId }: { access: string; tenantId?: string }) => Promise<void>>();
 const signoutRedirect = vi.fn(() => new Promise<void>(() => {}));
@@ -24,9 +27,10 @@ beforeAll(async () => {
 });
 afterEach(() => { switchAccess.mockReset(); signoutRedirect.mockClear(); cancelSignOut(); vi.unstubAllGlobals(); });
 
-function setup(account: MeResponse) {
+function setup(account: MeResponse, fetchAccount = false) {
   const client = new QueryClient();
-  client.setQueryData(currentUserQueryKey, account);
+  if (fetchAccount) server.use(http.get("/api/me", () => HttpResponse.json(account)));
+  else client.setQueryData(currentUserQueryKey, account);
   const auth = { isAuthenticated: true, signoutRedirect } as unknown as AuthContextProps;
   const wrapper = ({ children }: { children: ReactNode }) => (
     <MemoryRouter><AuthContext.Provider value={auth}>
@@ -37,6 +41,45 @@ function setup(account: MeResponse) {
 }
 
 describe("AccessMenu", () => {
+  it.each([
+    [consumerWithoutOrganizations, "es-AR", "Sin dato", "Personal"],
+    [businessUser, "es-AR", "Sin dato", "Empresa A"],
+    [consumerWithoutOrganizations, "en-US", "No data", "Personal"],
+    [businessUser, "en-US", "No data", "Empresa A"],
+  ] as const)("sin nombre ni correo principal muestra el vacío accesible en %s / %s", async (account, culture, label, activeName) => {
+    await configureI18n(referenceDataFixture().cultures, culture);
+    const requests: string[] = [];
+    const record = ({ request }: { request: Request }) => { requests.push(new URL(request.url).pathname); };
+    server.events.on("request:start", record);
+    try {
+      // /api/me no expone Phone: una cuenta con ese método principal trae ambos datos nulos.
+      const { user } = setup({ ...account, displayName: null, email: null }, true);
+      const trigger = await screen.findByRole("button", { name: `${label}, ${activeName}` });
+      expect(within(trigger).getByText(label)).toBeVisible();
+      expect(trigger.querySelector("[data-slot='avatar']")).toBeEmptyDOMElement();
+      trigger.focus();
+      await user.keyboard("{Enter}");
+      const menu = screen.getByRole("menu", { name: `${label}, ${activeName}` });
+      expect(menu).toHaveAttribute("aria-label", culture === "es-AR" ? `Menú de ${label}` : `${label}'s menu`);
+      expect(within(menu).getByText(label)).toBeVisible();
+      expect(menu.querySelector("[data-slot='avatar']")).toBeEmptyDOMElement();
+      expect(within(menu).getAllByRole("menuitemradio")).toHaveLength(account.access === "consumer" ? 1 : 2);
+      expect(requests).toEqual(["/api/me"]);
+      expect(await axe(document.body, { rules: { region: { enabled: false } } })).toHaveNoViolations();
+    } finally { server.events.removeListener("request:start", record); }
+  });
+
+  it("en Empresa mantiene el correo principal como nombre y su inicial si falta el nombre", async () => {
+    await configureI18n(referenceDataFixture().cultures, "es-AR");
+    const { user } = setup({ ...businessUser, displayName: null }, true);
+    const trigger = await screen.findByRole("button", { name: "ana@example.test, Empresa A" });
+    expect(trigger.querySelector("[data-slot='avatar']")).toHaveTextContent("A");
+    trigger.focus();
+    await user.keyboard("{Enter}");
+    expect(screen.queryByText("Sin dato")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("menu")).getAllByText("ana@example.test")).toHaveLength(2);
+  });
+
   it("en Plataforma muestra el contexto bajo el nombre y sólo Mi cuenta y Salir", async () => {
     const { user } = setup(visualOperator);
     const trigger = screen.getByRole("button", { name: "Martín Sosa, Plataforma" });

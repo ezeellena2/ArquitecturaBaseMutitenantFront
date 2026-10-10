@@ -37,7 +37,7 @@ function ProfileRow({ profile, onClose }: { profile: ProfileEntry; onClose: () =
 /// cuenta y Salir. En el teléfono lo mismo vive en la pestaña «Más».
 export function AccessMenu() {
   const { t } = useTranslation();
-  const { account, name, email, access, profiles, signOut, status, accountHref } = useProfiles();
+  const { account, name, nameLabel, email, access, profiles, signOut, status, accountHref } = useProfiles();
   const [open, setOpen] = useState(false);
 
   if (!account) return null;
@@ -51,19 +51,19 @@ export function AccessMenu() {
   return <DropdownMenu open={open} onOpenChange={setOpen}>
     <DropdownMenuTrigger asChild>
       {/* «Criterio · Menús»: tu inicial, tu nombre en 13 y negrita y el perfil en gris de 12; abierto, en blanco con borde. */}
-      <button type="button" aria-label={`${name}, ${activeName}`} className="inline-flex h-10 items-center gap-2.5 rounded-[10px] border border-transparent bg-transparent py-0 pl-1 pr-2 text-left hover:border-[var(--borde)] hover:bg-[var(--lado-activo)] data-[state=open]:border-[var(--borde)] data-[state=open]:bg-[var(--lado-activo)]">
+      <button type="button" aria-label={`${nameLabel}, ${activeName}`} className="inline-flex h-10 items-center gap-2.5 rounded-[10px] border border-transparent bg-transparent py-0 pl-1 pr-2 text-left hover:border-[var(--borde)] hover:bg-[var(--lado-activo)] data-[state=open]:border-[var(--borde)] data-[state=open]:bg-[var(--lado-activo)]">
         <Avatar initials={initials(name).slice(0, 1)} />
-        <span className="flex flex-col leading-[1.25]"><span className="text-[13px] font-bold text-[var(--t1)]">{name}</span><span className="text-[12px] text-[var(--t2)]">{activeName}</span></span>
+        <span className="flex flex-col leading-[1.25]"><span className="text-[13px] font-bold text-[var(--t1)]">{nameLabel}</span><span className="text-[12px] text-[var(--t2)]">{activeName}</span></span>
         <ChevronDownIcon strokeWidth={2} className="size-3.5 text-[var(--t3)]" />
       </button>
     </DropdownMenuTrigger>
     {/* Las filas miden 320, como en «Criterio · Menús» y en el tablero Inicio-Personal; la caja suma su margen de 4 y el
         borde, y queda alineada con el botón por la derecha. */}
-    <DropdownMenuContent align="end" sideOffset={6} aria-label={t("accessMenu.menuFor", { name })} className="w-[330px] min-w-0 max-w-[330px] rounded-[10px] border-[var(--borde)] bg-[var(--lado-activo)] p-1 shadow-[var(--shadow-card)]">
+    <DropdownMenuContent align="end" sideOffset={6} aria-label={t("accessMenu.menuFor", { name: nameLabel })} className="w-[330px] min-w-0 max-w-[330px] rounded-[10px] border-[var(--borde)] bg-[var(--lado-activo)] p-1 shadow-[var(--shadow-card)]">
       <div className="flex items-center gap-2.5 p-2.5">
         <Avatar size="medium" initials={initials(name).slice(0, 1)} />
         <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
-          <span className="truncate text-[13px] font-semibold text-[var(--t1)]">{name}</span>
+          <span className="truncate text-[13px] font-semibold text-[var(--t1)]">{nameLabel}</span>
           {email ? <span className="truncate text-[12.5px] text-[var(--t3)]">{email}</span> : null}
         </span>
       </div>

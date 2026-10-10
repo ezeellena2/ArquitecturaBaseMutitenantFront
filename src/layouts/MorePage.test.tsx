@@ -10,7 +10,7 @@ import { routes } from "@/app/routes";
 import { createQueryClient } from "@/shared/api/queryClient";
 import type { MeResponse } from "@/shared/api/types";
 import { fixtureAuth } from "@/test/mocks/authContext";
-import { visualOperator } from "@/test/mocks/currentUsers";
+import { businessUser, consumerWithoutOrganizations, visualOperator } from "@/test/mocks/currentUsers";
 import { meHandlerFor } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { cancelSignOut } from "@/auth/signOutStatus";
@@ -30,6 +30,20 @@ function renderPlatformMore(account: MeResponse = visualOperator, path = "/plata
 
 // Tableros M-Mas-Personal y M-WA-Menu: «Más» junta quién sos, tus perfiles, Administración, Mi cuenta y Salir.
 describe("Más en el teléfono", () => {
+  it.each([consumerWithoutOrganizations, businessUser])("sin nombre ni correo principal conserva la identidad vacía y los perfiles de $access", async (account) => {
+    server.use(meHandlerFor({ ...account, displayName: null, email: null }));
+    const router = createMemoryRouter(routes, { initialEntries: ["/mas"] });
+    const client = createQueryClient({ queries: { retry: false }, mutations: { retry: false } });
+    const auth = fixtureAuth(account.access === "consumer" ? "consumer-empty" : "business-admin");
+    const { container } = render(<AppProviders client={client} authContext={auth}><RouterProvider router={router} /></AppProviders>);
+    expect(await screen.findByText("Sin dato")).toBeVisible();
+    expect(container.querySelector("[data-slot='avatar']")).toBeEmptyDOMElement();
+    expect(within(screen.getByRole("list", { name: "Perfiles" })).getByText("Personal")).toBeVisible();
+    expect(screen.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("href", "/cuenta");
+    expect(screen.getByRole("button", { name: "Salir" })).toBeVisible();
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("en una organización muestra perfiles, Administración según permisos, Mi cuenta y Salir", async () => {
     const { container } = renderRouteWithProviders("/mas", { as: "business-e6-admin" });
 

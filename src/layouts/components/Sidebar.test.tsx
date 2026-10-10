@@ -14,6 +14,13 @@ beforeAll(async () => {
 });
 
 describe("Sidebar", () => {
+  it.each([personalNavigation, businessNavigation])("sin identidad muestra Sin dato sin inventar una inicial", (navigation) => {
+    const { container } = render(<MemoryRouter><Sidebar navigation={navigation} account={{ name: "", email: null }} context={null} collapsed={false}
+      administrationOpen={false} onToggleAdministration={vi.fn()} onToggleCollapsed={vi.fn()} /></MemoryRouter>);
+    expect(screen.getByText("Sin dato")).toBeVisible();
+    expect(container.querySelector("[data-slot='avatar']")).toBeEmptyDOMElement();
+  });
+
   it("en Plataforma Gestión queda arriba y Administración al pie, sin WhatsApp", async () => {
     const toggle = vi.fn();
     render(<MemoryRouter><Sidebar navigation={platformNavigation} account={null} context={null} collapsed={false}

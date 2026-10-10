@@ -24,7 +24,7 @@ export function MorePage() {
   const phone = useMediaQuery("(max-width: 767px)");
   const { data: user } = useCurrentUser();
   const permissions = usePermissions();
-  const { name, email, access, profiles, signOut, status } = useProfiles();
+  const { name, nameLabel, email, access, profiles, signOut, status } = useProfiles();
   const { pathname } = useLocation();
   if (!phone) return <Navigate to={homeOf(access ?? "consumer")} replace />;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
@@ -42,7 +42,7 @@ export function MorePage() {
     <div className="flex items-center gap-3.5 px-5 pt-2 pb-1">
       <Avatar size="profile" initials={name.charAt(0).toUpperCase()} />
       <span className="flex min-w-0 flex-col leading-[normal]">
-        <span className="truncate text-[18px] font-semibold text-[var(--t1)]">{name}</span>
+        <span className="truncate text-[18px] font-semibold text-[var(--t1)]">{nameLabel}</span>
         {email ? <span className="truncate text-[13.5px] text-[var(--t3)]">{email}</span> : null}
       </span>
     </div>
