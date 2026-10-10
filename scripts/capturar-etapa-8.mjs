@@ -1,5 +1,6 @@
 // Comparación final de T09–T12 contra v116. Sólo este arnés simula API/sesión.
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
@@ -9,7 +10,20 @@ import { assertSideBySide, composeSideBySide, openApp, openBoard, sideBySideFile
 import { output, writeGallery } from "./generar-galeria-etapa-8.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const canvas = path.join(root, "docs/design/lienzo");
+export const canvasRevision = "21f227bcf6fd7a910272c682d5085338f8e2039c";
+
+/** Copia sólo la fuente publicada; nunca sirve el lienzo WIP como si fuera v116. */
+export function prepareCanvasSource(revision = canvasRevision) {
+  const approved = [canvasRevision, "bb7c78de"];
+  if (!approved.includes(revision)) throw new Error("La fuente de E8 debe ser una revisión aprobada.");
+  const commit = execFileSync("git", ["rev-parse", `${revision}^{commit}`], { cwd: root, encoding: "utf8" }).trim();
+  const folder = path.join(root, ".local", `canvas-e8-${commit}`);
+  mkdirSync(folder, { recursive: true });
+  const archive = path.join(folder, "source.tar");
+  execFileSync("git", ["archive", "--format=tar", "--output", archive, commit, "docs/design/lienzo"], { cwd: root });
+  execFileSync("tar", ["-xf", archive, "-C", folder], { cwd: root });
+  return path.join(folder, "docs/design/lienzo");
+}
 const api = (method, route, body, status = 200, headers) => ({ method, path: route, body, status, ...(headers ? { headers } : {}) });
 const click = (name) => ({ type: "click", role: "button", name, exact: true });
 const fill = (name, value) => ({ type: "fill", role: "textbox", name, value });
@@ -27,9 +41,9 @@ export function expectedServerFailure(responses, method, route, status) {
 
 // El helper E7 trata todo 5xx como falla. Este caso captura un 503 intencional de cancelación;
 // conserva la guarda contra cualquier otro 5xx y contra errores de JavaScript.
-async function captureServerFailure(browser, entry, canvasUrl, appUrl) {
+async function captureServerFailure(browser, entry, canvasUrl, appUrl, folder = output) {
   if (appUrl !== issuer) throw new Error(`La captura del error exige ${issuer}`);
-  const files = capturePaths(output, entry); mkdirSync(path.dirname(files.board), { recursive: true });
+  const files = capturePaths(folder, entry); mkdirSync(path.dirname(files.board), { recursive: true });
   const context = await browser.newContext({ viewport: entry.viewport, deviceScaleFactor: 1, locale: "es-AR" });
   const failures = []; let observed = false;
   context.on("page", (page) => page.on("pageerror", (error) => failures.push(error.message)));
@@ -44,22 +58,27 @@ async function captureServerFailure(browser, entry, canvasUrl, appUrl) {
     if (!observed || failures.length) throw new Error(`${entry.id}: no se reprodujo el error esperado sin otras fallas`);
     await board.screenshot({ path: files.board }); await app.screenshot({ path: files.app });
   } finally { await context.close(); }
-  await composeSideBySide(browser, entry, files, sideBySideFile(entry, output));
+  await composeSideBySide(browser, entry, files, sideBySideFile(entry, folder));
 }
 
 export async function buildManifest() {
   const { etapa8Channels, etapa8Code, etapa8Account, etapa8AccountVerified, etapa8MethodCode, etapa8Link, etapa8PendingDeletion, etapa8BusinessApproval } = await import("../src/test/etapa8VisualFixtures.ts");
+  const { etapa8IdentityVariants, etapa8IdentityMe, etapa8IdentityMethods, etapa8IdentityAccount, etapa8IdentityAccountDetail } = await import("../src/test/etapa8IdentityVisualFixtures.ts");
+  const { platformAccountRows, platformAccountsCaptureResponses, accountPage, accountCounts } = await import("../src/test/mocks/platformAccounts.ts");
+  const { etapa7PersonalUser, etapa7PublicSite } = await import("../src/test/etapa7VisualFixtures.ts");
   const cases = [];
   const on = api("GET", "/api/auth/methods", etapa8Channels);
   const off = api("GET", "/api/auth/methods", { channels: etapa8Channels.channels.filter((item) => item.key !== "whatsapp") });
   function both(pair, group, board, props, app, extra = {}) {
-    const { mobileProps, ...shared } = extra;
+    const { mobileProps, mobileBoard, mobileApp, mobileBoardActions, ...shared } = extra;
     for (const [suffix, width, height] of [["desktop", 1440, 900], ["mobile", 390, 844]]) {
       const ownProps = suffix === "mobile" ? mobileProps ?? props : props;
       cases.push({
         id: `${pair}-${suffix}`, pair, group, label: Object.values(ownProps).join(" · "), board: suffix === "desktop" ? board : `M-${board}`,
         props: ownProps, viewport: { width, height }, captureExtent: "viewport", ...shared,
-        app: { site: "main", ...app, captureMode: "harness" },
+        ...(suffix === "mobile" && mobileBoard ? { board: mobileBoard } : {}),
+        ...(suffix === "mobile" && mobileBoardActions ? { boardActions: mobileBoardActions } : {}),
+        app: { site: "main", ...(suffix === "mobile" && mobileApp ? mobileApp : app), captureMode: "harness" },
       });
     }
   }
@@ -227,35 +246,86 @@ export async function buildManifest() {
     ...menuApp, responses: [on, api("GET", "/api/me/login-methods", { ...etapa8AccountVerified, methods: etapa8AccountVerified.methods.map((method) => method.type === "Google" ? { ...method, canRemove: false, canMakePrimary: false } : method) })],
     actions: [{ type: "click", role: "button", name: "Acciones de lucia.fer@gmail.com", exact: true }, { type: "click", role: "menuitem", name: "Quitar", exact: true }], readyText: "¿Quitar este correo?",
   });
-  return { version: 1, stage: "etapa-8-front", canvasVersion: "v116 · 21f227bc", issuer, cases };
+  const identityNote = "Fuente v116 aprobada: conserva disposición y componentes. N2/N3 aprueban la prioridad nombre → máscara principal recibida → correo → Sin dato y el avatar apagado con raya cuando falta nombre/identidad. El tablero no tiene Tweak para estas variantes de datos; no se modifica ni se atribuye aprobación a v117. La máscara no se reconstruye ni se formatea como E.164.";
+  const now = "2026-09-27T20:35:00Z";
+  for (const variant of etapa8IdentityVariants) {
+    const label = variant.name || variant.mask || variant.email || "Sin dato";
+    const account = etapa8IdentityAccount(variant);
+    const rows = platformAccountRows.map((row) => row.id === account.id ? account : row);
+    const responses = [api("GET", "/api/platform/accounts/paged", accountPage(rows)), api("GET", "/api/platform/accounts/filter-counts", accountCounts(rows))];
+    const mobileRows = platformAccountsCaptureResponses({ mobile: true }).find((response) => response.path === "/api/platform/accounts/paged" && !response.query).body.items
+      .map((row) => row.id === account.id ? account : row);
+    const list = {
+      path: visualPath("/plataforma/cuentas", "visual-operator"), userFixture: "visual-operator", responses, readyHeading: "Cuentas", now,
+    };
+    both(`n2-cuentas-${variant.key}`, "cuentas-plataforma", "Cuentas", {}, list, {
+      mobileApp: { ...list, responses: [api("GET", "/api/platform/accounts/paged", accountPage(mobileRows)), api("GET", "/api/platform/accounts/filter-counts", accountCounts(mobileRows))] },
+      label: variant.label, note: identityNote,
+    });
+    both(`n2-ficha-${variant.key}`, "cuentas-plataforma", "Cuenta-Plat", { estado: "Activa", cuenta: "Persona", pestana: "Métodos de ingreso" }, {
+      path: visualPath(`/plataforma/cuentas/${account.id}`, "visual-operator"), userFixture: "visual-operator", now,
+      responses: [api("GET", `/api/platform/accounts/${account.id}`, etapa8IdentityAccountDetail(variant))], readyHeading: label,
+    }, { mobileProps: { estado: "Persona" }, label: variant.label, note: identityNote });
+    const consumer = { path: visualPath("/cuenta", "visual-personal"), userFixture: "visual-personal", now,
+      responses: [on, api("GET", "/api/me", etapa8IdentityMe(variant)), api("GET", "/api/me/login-methods", etapa8IdentityMethods(variant))] };
+    const more = { ...consumer, path: visualPath("/mas", "visual-personal"), readyHeading: "Más", readyText: label };
+    both(`n3-menu-personal-${variant.key}`, "identidad", "Cuenta", {}, {
+      ...consumer, actions: [{ type: "press", role: "button", name: `${label}, Personal`, exact: true, key: "ArrowDown" }], readySelector: '[role="menu"]', readyText: label,
+    }, { mobileBoard: "M-Mas-Personal", mobileProps: {}, mobileApp: more, mobileBoardActions: [],
+      boardActions: [{ type: "click", selector: ".um-btn" }], label: `${variant.label} · Menú / Más`, note: identityNote });
+    if (variant.principal !== "Phone") continue;
+    both(`n3-lateral-${variant.key}`, "identidad", "Cuenta", {}, { ...consumer, readyHeading: "Mi cuenta" },
+      { label: `${variant.label} · Lateral / Cuenta y barra móvil`, note: identityNote });
+    const businessMe = etapa8IdentityMe(variant, "business");
+    const business = { ...consumer, path: visualPath("/cuenta", "visual-owner"), userFixture: "visual-owner",
+      responses: [on, api("GET", "/api/me", businessMe), api("GET", "/api/me/login-methods", etapa8IdentityMethods(variant))] };
+    both(`n3-menu-empresa-${variant.key}`, "identidad", "Cuenta", {}, {
+      ...business, actions: [{ type: "press", role: "button", name: `${label}, Grupo Delta`, exact: true, key: "ArrowDown" }], readySelector: '[role="menu"]', readyText: label,
+    }, { mobileBoard: "M-WA-Menu", mobileProps: {}, mobileApp: { ...business, path: visualPath("/mas", "visual-owner"), readyHeading: "Más", readyText: label },
+      mobileBoardActions: [], boardActions: [{ type: "click", selector: ".um-btn" }], label: `${variant.label} · Empresa`,
+      note: `${identityNote} La identidad es global, incluso con el correo administrado de Grupo Delta presente en Me. El marco Persona de Cuenta v116 no modifica los perfiles del acceso Empresa.` });
+    const me = etapa8IdentityMe(variant);
+    const publicMe = { ...etapa7PersonalUser, displayName: me.displayName, firstName: me.firstName, lastName: me.lastName, email: me.email, maskedPrimaryPhone: me.maskedPrimaryPhone };
+    const publicApp = { site: "delta", path: `/src/test/etapa7VisualApp.html?${new URLSearchParams({ as: "personal", route: "/" })}`, now,
+      responses: [api("GET", "/api/public-site", etapa7PublicSite), api("GET", "/api/me", publicMe)] };
+    both(`n3-menu-publico-${variant.key}`, "identidad", "Pagina-Publica", { estado: "Publicada, con sesión" }, {
+      ...publicApp, actions: [{ type: "press", role: "button", name: `${label}, Personal`, exact: true, key: "ArrowDown" }], readySelector: '[role="menu"]', readyText: label,
+    }, { mobileApp: { ...publicApp, actions: [click("Tu cuenta")], readySelector: '[role="dialog"]', readyText: label },
+      boardActions: [{ type: "click", selector: ".um-btn" }], mobileBoardActions: [click("Tu cuenta")],
+      label: `${variant.label} · Página pública`, note: `${identityNote} Se conserva el subdominio y el retorno al dominio principal; la cuenta no se sustituye por la organización publicada.` });
+  }
+  return { version: 1, stage: "etapa-8-front", canvasVersion: "v116 · 21f227bc", canvasRevision, issuer, cases };
 }
 
 function option(args, name) { const index = args.indexOf(name); return index < 0 ? undefined : args[index + 1]; }
 async function main(args) {
-  const manifestFile = path.join(output, "manifest.json");
-  mkdirSync(output, { recursive: true });
+  const folder = path.resolve(option(args, "--output") ?? output);
+  const manifestFile = path.join(folder, "manifest.json");
+  mkdirSync(folder, { recursive: true });
   const manifest = args.includes("--verify") ? JSON.parse(readFileSync(manifestFile, "utf8")) : await buildManifest();
   if (!args.includes("--verify")) writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`);
-  validateManifest(manifestFile, canvas);
+  const revision = manifest.canvasRevision ?? (/^v115\b/.test(manifest.canvasVersion) ? "bb7c78de" : canvasRevision);
+  const source = prepareCanvasSource(revision);
+  validateManifest(manifestFile, source);
   if (args.includes("--manifiesto")) { console.log(`${manifest.cases.length} casos E8 contra ${manifest.canvasVersion}.`); return; }
   if (args.includes("--verify")) {
-    assertCapturedPairs(manifest.cases, output); assertSideBySide(manifest.cases, output); console.log(writeGallery()); return;
+    assertCapturedPairs(manifest.cases, folder); assertSideBySide(manifest.cases, folder); console.log(writeGallery(folder)); return;
   }
   const groups = option(args, "--group")?.split(",");
   const ids = option(args, "--id")?.split(",");
   const selected = manifest.cases.filter((entry) => (!groups || groups.includes(entry.group)) && (!ids || ids.includes(entry.id)));
   if (!selected.length) throw new Error("Filtro de capturas vacío");
-  const server = await startCanvasServer(canvas);
+  const server = await startCanvasServer(source);
   // El HTTP local de captura necesita las APIs de contexto seguro usadas por el producto.
   const browser = await chromium.launch({ headless: true, args: [`--unsafely-treat-insecure-origin-as-secure=${issuer}`], ...(option(args, "--browser-path") ? { executablePath: option(args, "--browser-path") } : { channel: "chrome" }) });
   try {
     for (const entry of selected) {
       const appUrl = option(args, "--app-url") ?? issuer;
-      if (entry.app.responses.some((response) => response.status >= 500)) await captureServerFailure(browser, entry, server.url, appUrl);
-      else await captureEntry(browser, entry, server.url, appUrl, output);
+      if (entry.app.responses.some((response) => response.status >= 500)) await captureServerFailure(browser, entry, server.url, appUrl, folder);
+      else await captureEntry(browser, entry, server.url, appUrl, folder);
       console.log(entry.id);
     }
-    assertCapturedPairs(selected, output); assertSideBySide(selected, output); console.log(writeGallery());
+    assertCapturedPairs(selected, folder); assertSideBySide(selected, folder); console.log(writeGallery(folder));
   } finally { await browser.close(); await server.close(); }
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await main(process.argv.slice(2));

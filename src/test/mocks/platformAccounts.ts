@@ -20,12 +20,12 @@ export const platformAccountRows: Account[] = [
 ];
 
 const mobileIds = new Set(["account-lucia", "account-beto", "account-ana", "account-mariana", "account-pablo", "account-diego", "martin-sosa", "account-julieta"]);
-function accountPage(rows: readonly Account[], page = 1, pageSize = 10): ApiSchemas["PagedResultOfPlatformAccountResponse"] {
+export function accountPage(rows: readonly Account[], page = 1, pageSize = 10): ApiSchemas["PagedResultOfPlatformAccountResponse"] {
   const totalPages = Math.ceil(rows.length / pageSize);
   return { items: rows.slice((page - 1) * pageSize, page * pageSize), page, pageSize, totalCount: rows.length, totalPages, hasPrevious: page > 1, hasNext: page < totalPages };
 }
 
-function accountCounts(rows: readonly Account[]): ApiSchemas["PlatformAccountFilterCounts"] {
+export function accountCounts(rows: readonly Account[]): ApiSchemas["PlatformAccountFilterCounts"] {
   return { total: rows.length,
     states: (["Active", "Invited", "InvitationExpired", "Suspended", "NeedsRecovery", "PendingDeletion", "Deleted"] as const).map((state) => ({ state, count: rows.filter((row) => row.state === state).length })),
     kinds: (["Person", "Operator"] as const).map((kind) => ({ kind, count: rows.filter((row) => row.kind === kind).length })),

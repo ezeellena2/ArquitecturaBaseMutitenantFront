@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 export const output = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../docs/design/capturas/etapa-8");
 const escape = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
-const groups = { ingreso: "Ingreso", registro: "Registro", "registro-empresa": "Registro de empresa", enlace: "Enlace", recuperar: "Recuperar", cuenta: "Mi cuenta" };
+const groups = { ingreso: "Ingreso", registro: "Registro", "registro-empresa": "Registro de empresa", enlace: "Enlace", recuperar: "Recuperar", cuenta: "Mi cuenta", "cuentas-plataforma": "Cuentas de Plataforma", identidad: "Identidad global" };
 
 export function writeGallery(folder = output) {
   const manifest = JSON.parse(readFileSync(path.join(folder, "manifest.json"), "utf8"));
