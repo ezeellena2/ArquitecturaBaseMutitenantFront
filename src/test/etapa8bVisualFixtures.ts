@@ -100,8 +100,8 @@ export function configurationScenario(board: string, state: string): GalleryApp 
       app.actions = platform ? [fill("Consultas por persona por día", "75")] : [open("Modelo"), click(galleryModels[1].name, "option")];
       app.readyText = "Cambios sin guardar"; break;
     case "Con su clave": org.mode = "OwnKey"; break;
-    case "Cambiar la clave": org.mode = "OwnKey"; app.actions = [click("Cambiar")]; app.readySelector = 'input[type="password"]'; break;
-    case "Sin clave": plat.hasKey = false; plat.maskedKeySuffix = null; app.readySelector = 'input[type="password"]'; break;
+    case "Cambiar la clave": org.mode = "OwnKey"; app.actions = [click("Cambiar")]; app.readySelector = 'input[data-1p-ignore="true"]'; break;
+    case "Sin clave": plat.hasKey = false; plat.maskedKeySuffix = null; app.readySelector = 'input[data-1p-ignore="true"]'; break;
     case "Clave rechazada": {
       org.mode = "OwnKey";
       const problem: ApiProblemDetails = { type: "about:blank", title: "Bad Request", status: 400, code: "Assistant.Settings.KeyRejected", traceId: "gallery-e8b" };
@@ -111,11 +111,11 @@ export function configurationScenario(board: string, state: string): GalleryApp 
     }
     case "La nuestra: ningún Dueño con correo verificado":
       org.mode = "OwnKey"; org.hasAlertRecipient = false; org.hasKey = false; org.maskedKeySuffix = null;
-      app.readySelector = 'input[type="password"]'; app.readyText = "algún Dueño tiene que tener un correo verificado"; break;
+      app.readySelector = 'input[data-1p-ignore="true"]'; app.readyText = "algún Dueño tiene que tener un correo verificado"; break;
     case "La plataforma no habilitó su clave": org.allowOwnKey = false; app.readyText = "La de la plataforma"; break;
     case "Catálogo de modelos": case "Agregar un modelo":
       app.path = baseApp(scope, `${route}?tab=catalog`).path;
-      app.readySelector = 'input[aria-label="Buscar modelos"]';
+      app.readySelector = '[role="tabpanel"]'; app.readyTexts = galleryModels.map((model) => model.name);
       if (state === "Agregar un modelo") { app.actions = [click("Agregar modelo")]; app.readySelector = '[role="dialog"] input'; }
       break;
     default: return undefined;
@@ -146,11 +146,11 @@ function createChatScenario(board: string, state: string): GalleryApp | undefine
       app.readySelector = 'h2'; app.readyText = "¿Qué querés consultar?"; break;
     case "Con adjuntos": case "Adjunto de más de 10 MB":
       history = { items: [galleryConversation.conversation], hasMore: false };
-      app.actions = [{ type: "upload", label: "Adjuntar", exact: true, files: [galleryImage] },
-        { type: "upload", label: "Adjuntar", exact: true, files: [state === "Adjunto de más de 10 MB" ? galleryPdfTooLarge : galleryPdf] }];
+      app.actions = [{ type: "upload", label: "Adjuntar imágenes o PDF", exact: true, files: [galleryImage] },
+        { type: "upload", label: "Adjuntar imágenes o PDF", exact: true, files: [state === "Adjunto de más de 10 MB" ? galleryPdfTooLarge : galleryPdf] }];
       app.readySelector = state === "Con adjuntos" ? 'button[aria-label="Quitar planilla-ventas.pdf"]'
         : 'form:has(input[type="file"][aria-invalid="true"]):has(button[aria-label="Quitar captura-usuarios.png"]) li[aria-describedby]:has(button[aria-label="Quitar planilla-ventas.pdf"])';
-      if (state !== "Con adjuntos") app.readyTexts = ["captura-usuarios.png", "planilla-ventas.pdf", "240 KB", "14,8 MB", "planilla-ventas.pdf pesa más de 10 MB."];
+      if (state !== "Con adjuntos") app.readyTexts = ["captura-usuarios.png", "planilla-ventas.pdf", "240 KB", "14,8 MB", "planilla-ventas.pdf pesa más de 10,5 MB."];
       break;
     case "Historial plegado": selectConversation(); app.actions.push(click("Ocultar las conversaciones")); app.readySelector = 'button[aria-label="Mostrar las conversaciones"][aria-expanded="false"]'; break;
     case "Historial":
@@ -182,7 +182,7 @@ function createChatScenario(board: string, state: string): GalleryApp | undefine
       const problem: ApiProblemDetails = { type: "about:blank", title: "Too Many Requests", status: 429, code: "Assistant.Limit.MonthlyReached", traceId: "gallery-e8b" };
       app.responses.push(api("POST", `${prefix}/conversations/gallery-chat/messages`, problem, 429));
       app.actions.push(fill("Tu consulta", "Otra consulta"), click("Enviar"));
-      app.readySelector = '[role="status"]'; app.readyText = "La organización llegó al tope del mes del asistente."; break;
+      app.readySelector = '[role="status"]'; app.readyText = "Grupo Delta llegó al tope del mes del asistente."; break;
     }
     case "Mis mensajes con empresas: sin mensajes": {
       // Quick.InteractionsEmpty del backend y ambos tableros Personal v115.
@@ -318,7 +318,7 @@ export function galleryOpenStreamProbe(board: string, state: "Consultando" | "Es
     { method: "POST", path: messagePath, status: 200, contentType: "text/event-stream; charset=utf-8", openStream: true,
       rawBody: events.map(({ event, data }) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`).join("") });
   app.actions = [...(board.startsWith("M-") ? [click("Conversaciones")] : []), { ...click(source.title), within: { role: board.startsWith("M-") ? "dialog" : "complementary", name: "Conversaciones" } },
-    ...(scope === "business" ? [{ type: "upload", label: "Adjuntar", exact: true, files: [galleryPdf] } satisfies GalleryAction] : []),
+    ...(scope === "business" ? [{ type: "upload", label: "Adjuntar imágenes o PDF", exact: true, files: [galleryPdf] } satisfies GalleryAction] : []),
     fill("Tu consulta", source.query), click("Enviar")];
   const toolLabels = scope === "business" ? state === "Consultando" ? ["Consultó Empresas", "Consultando usuarios…"] : ["Consultó Empresas y Usuarios"]
     : scope === "consumer" ? [state === "Consultando" ? "Consultando tus organizaciones…" : "Consultó tus organizaciones"]

@@ -25,7 +25,7 @@ const chatBoards = ["Asistente-Org", "Asistente-Personal", "Asistente-Plat", "M-
 
 function mount(app: GalleryApp) {
   const calls: string[] = []; const completed = new Set<string>();
-  const opened: { stream: ReadableStream<Uint8Array>; cancelled: boolean; emit: (event: AssistantStreamHttpResponse) => void }[] = [];
+  const opened: { stream: ReadableStream<Uint8Array>; cancelled: boolean; closed: boolean; emit: (event: AssistantStreamHttpResponse) => void }[] = [];
   const ownStreams = new Set<string>();
   const onResponse: Parameters<typeof server.events.on<"response:mocked">>[1] = ({ requestId, request, response }) => {
     if (!ownStreams.delete(requestId) || response.status !== 200) return;
@@ -45,7 +45,14 @@ function mount(app: GalleryApp) {
       const record = { stream: new ReadableStream<Uint8Array>({
         start(value) { controller = value; controller.enqueue(new TextEncoder().encode(response.rawBody!)); },
         cancel() { record.cancelled = true; request.signal.removeEventListener("abort", abort); },
-      }), cancelled: false, emit: (event: AssistantStreamHttpResponse) => controller.enqueue(new TextEncoder().encode(`event: ${event.event}\ndata: ${JSON.stringify(event.data)}\n\n`)) };
+      }), cancelled: false, closed: false, emit: (event: AssistantStreamHttpResponse) => {
+        controller.enqueue(new TextEncoder().encode(`event: ${event.event}\ndata: ${JSON.stringify(event.data)}\n\n`));
+        if (event.event === "done" || event.event === "error") {
+          record.closed = true;
+          controller.close();
+          request.signal.removeEventListener("abort", abort);
+        }
+      } };
       request.signal.addEventListener("abort", abort, { once: true });
       opened.push(record);
       return new HttpResponse(record.stream, { status: response.status, headers: { "Content-Type": response.contentType! } });
@@ -158,6 +165,11 @@ it.each(["Asistente-Org", "Asistente-Personal", "Asistente-Plat"].flatMap((acces
     expect(history.getByRole("button", { name: source.recent[0] })).toHaveAttribute("aria-current", "true");
     if (board.startsWith("M-")) {
       await mounted.user.click(history.getByRole("button", { name: source.recent[0] }));
+      // El SDK ignora seleccionar el hilo que ya está activo: no cancela su turno.
+      expect(screen.getByRole("dialog", { name: "Conversaciones" })).toBeVisible();
+      expect(currentTurn()?.phase).toBe("writing");
+      expect(mounted.opened[0].cancelled).toBe(false);
+      await mounted.user.click(history.getByRole("button", { name: "Cerrar" }));
       expect(screen.queryByRole("dialog", { name: "Conversaciones" })).not.toBeInTheDocument();
       expect(currentTurn()?.phase).toBe("writing");
     }
@@ -230,7 +242,10 @@ it.each(["Complete", "Stopped"] as const)("el mensaje activo pasa de consulta a 
     expect(screen.queryByText("Consultó Empresas y Usuarios")).not.toBeInTheDocument();
     expect(screen.queryByText("Respuesta parcial")).not.toBeInTheDocument();
     expect(mounted.container.querySelector("[data-cursor-state]")).not.toBeInTheDocument();
-    await waitFor(() => expect(mounted!.opened[0].cancelled).toBe(true));
+    // Complete termina el transporte; Stopped aborta el productor todavía abierto.
+    // MSW duplica el stream: reader.cancel no equivale a cancelación de ambas ramas.
+    expect(mounted.opened[0].closed).toBe(terminal === "Complete");
+    expect(mounted.opened[0].cancelled).toBe(terminal === "Stopped");
   } finally { mounted?.unmount(); }
 });
 
@@ -318,8 +333,11 @@ it.each(["Asistente-Config-Org", "M-Asistente-Config-Org"])("%s sin destinatario
     const app = configurationScenario(board, "La nuestra: ningún Dueño con correo verificado")!; const mounted = mount(app);
     await actions(app, mounted.user);
     expect(screen.getByRole("alert")).toHaveTextContent("algún Dueño tiene que tener un correo verificado");
-    expect(screen.getByRole("link", { name: "Agregar o verificar un correo" })).toBeVisible();
-    expect(screen.getByLabelText("Clave de Anthropic", { exact: false })).toHaveAttribute("type", "password");
+    expect(screen.getByRole("button", { name: "Agregar un correo" })).toBeVisible();
+    expect(screen.getByLabelText("Clave de Anthropic", { exact: false })).toHaveAttribute("type", "text");
+    expect(screen.getByLabelText("Clave de Anthropic", { exact: false })).toHaveClass("[-webkit-text-security:disc]");
+    expect(screen.getByLabelText("Clave de Anthropic", { exact: false })).toHaveAttribute("autoComplete", "off");
+    expect(screen.getByLabelText("Clave de Anthropic", { exact: false })).toHaveAttribute("data-1p-ignore", "true");
     expect(screen.getByLabelText("Clave de Anthropic", { exact: false })).toHaveValue("");
     expect(screen.queryByRole("button", { name: "Cambiar" })).not.toBeInTheDocument();
   } finally { restore(); }
@@ -359,10 +377,10 @@ it.each(["Asistente-Org", "M-Asistente-Personal"])("%s conserva adjuntos en el c
 it("la escena de PDF excesivo conserva ambos adjuntos y la alerta nombrada sin subirlos", async () => {
   const app = chatScenario("Asistente-Org", "Adjunto de más de 10 MB")!; const mounted = mount(app);
   await actions(app, mounted.user);
-  expect(screen.getByRole("alert")).toHaveTextContent("planilla-ventas.pdf pesa más de 10 MB.");
+  expect(screen.getByRole("alert")).toHaveTextContent("planilla-ventas.pdf pesa más de 10,5 MB.");
   expect(screen.getByRole("button", { name: "Quitar captura-usuarios.png" })).toBeVisible();
   const pdfChip = screen.getByRole("button", { name: "Quitar planilla-ventas.pdf" }).closest("li")!;
-  expect(pdfChip).toHaveAccessibleDescription("planilla-ventas.pdf pesa más de 10 MB.");
+  expect(pdfChip).toHaveAccessibleDescription("planilla-ventas.pdf pesa más de 10,5 MB.");
   expect(within(pdfChip).getByText("14,8 MB")).toBeVisible();
   expect(screen.getByText("240 KB")).toBeVisible();
   expect(screen.getByRole("button", { name: "Enviar" })).toBeEnabled();
