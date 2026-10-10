@@ -57,6 +57,11 @@ ArquitecturaBaseMutitenantFront/
 │   ├── test-e2e-real-whatsapp-recovery.mjs          Correlaciona la respuesta observada, sin depender del nombre ni del…
 │   ├── test-e2e-real-whatsapp-action.test.mjs       tests de test-e2e-real-whatsapp-action
 │   ├── test-e2e-real-whatsapp-action.mjs            La acción y todas sus esperas tienen handlers desde el…
+│   ├── test-e2e-real-whatsapp-settings.test.mjs     tests de test-e2e-real-whatsapp-settings
+│   ├── test-e2e-real-whatsapp-settings.mjs          La baseline conserva valores raw
+│   ├── capturar-etapa-8.mjs                         capturas de comparación final de etapa 8 contra lienzo v115
+│   ├── generar-galeria-etapa-8.mjs                  galería de comparación final del front de la etapa 8
+│   ├── test-e2e-real-whatsapp.mjs                   runner E2E WhatsApp con front, API, OIDC y PostgreSQL reales
 │   └── recorrido-lienzo/                            recorrido del lienzo tablero por tablero (recorrido.mjs) y vista en vivo de una pantalla junto a su tablero (vivo.mjs)
 ├── src/                                             ver abajo
 ├── .gitignore
@@ -146,6 +151,7 @@ src/
 │   ├── useProfiles.tsx                              perfiles/cambio/salida centralizados; AccessMenu, Más y PublicAccessMenu; Cuenta al principal, organización elegida al principal y Salir a raíz propia
 │   ├── PublicAccessMenu.tsx                         AccessMenu en compu; Tu cuenta en el Sheet aprobado del teléfono, sin duplicar perfiles/salida
 │   ├── usePublicSite.ts                             único HTTP/key por host para GET /api/public-site; sólo 404 PublicSite.PublicPage.NotFound → null
+│   ├── PublicAccessMenu.test.tsx                    tests de PublicAccessMenu
 │   └── usePublicSite.test.tsx                       404 público exacto, otros errores normales y ninguna consulta desde principal/host inválido
 │
 ├── layouts/
@@ -600,6 +606,8 @@ src/
 │   ├── time/                                        [E3] zona efectiva de cuenta/empresa/organización
 │   │   ├── useEffectiveTimeZone.ts                  cuenta → empresa → organización (en B2B)
 │   │   ├── useEffectiveTimeZone.test.tsx            tests de useEffectiveTimeZone
+│   │   ├── parseUtcInstant.ts                       Convierte el instante canónico del backend para SDKs que requieren…
+│   │   ├── parseUtcInstant.test.ts                  tests de parseUtcInstant
 │   │   └── browserTimeZone.ts                       la zona IANA que informa el navegador
 │   ├── referenceData/                               [E1] cinco catálogos de GET /api/reference-data
 │   │   ├── referenceData.ts                         cliente tipado; opciones habilitadas y traducidas, ETag
@@ -876,6 +884,8 @@ src/
     │   ├── platformAudit.ts                         resúmenes del productor, ingresos sin IP, 25 filas y cursor real
     │   └── platformSettings.ts                      configuración v111 sin gracia, PUT200 con versión nueva o409
     ├── PlatformReasonCapture.tsx                    diálogo real aislado, fondo pendiente hasta implementar cada pantalla
+    ├── etapa8VisualApp.tsx                          entrada visual de etapa 8 con componentes y providers reales
+    ├── etapa8VisualFixtures.ts                      datos ficticios del lienzo para el arnés visual E8
     └── utils/
         ├── renderWithProviders.tsx                  [E1] providers/QueryClient nuevo y fixtures as; renderRoute usa routes principales. Host público: routesForHost + PublicSiteHostContext en sus tests
         ├── renderWithProviders.test.tsx             tests de renderWithProviders
