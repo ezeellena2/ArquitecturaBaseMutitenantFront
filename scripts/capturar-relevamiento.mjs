@@ -97,9 +97,10 @@ export async function openBoard(context, canvasUrl, entry) {
 }
 
 /// Abre la app en su estado: datos de prueba, pasos y espera de lo que tiene que verse.
-export async function openApp(context, appUrl, entry) {
+export async function openApp(context, appUrl, entry, openStream) {
   const { app } = entry;
-  await installApiMocks(context, app.responses, app.userFixture);
+  const disposeMocks = await installApiMocks(context, app.responses, app.userFixture, openStream);
+  if (openStream) context.once("close", disposeMocks);
   // `hang`: una ruta de la API que nunca responde (el estado «cargando» o «enviando»). Con `{ path, method }`, solo ese
   // método: la ficha se lee y lo que queda colgado es el guardado.
   if (app.hang) {
@@ -118,6 +119,7 @@ export async function openApp(context, appUrl, entry) {
   await page.locator(app.readySelector ?? "main").first().waitFor();
   if (app.readyHeading) await page.getByRole("heading", { name: app.readyHeading }).first().waitFor();
   if (app.readyText) await page.getByText(app.readyText, { exact: false }).first().waitFor();
+  for (const text of app.readyTexts ?? []) await page.getByText(text, { exact: false }).first().waitFor();
   await page.mouse.move(0, 0);
   await page.waitForTimeout(app.readyText && /^(Guardamos|Agregamos|Quitamos|Desde ahora|Vinculamos|Desvinculamos|Cancelamos)/.test(app.readyText) ? 800 : 300);
   await waitForAppFont(page);

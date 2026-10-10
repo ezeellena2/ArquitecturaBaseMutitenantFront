@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 import { boardChoices, capturePaths, startCanvasServer } from "./capturar-etapa-3a.mjs";
 import { composeSideBySide, openApp, openBoard, sideBySideFile } from "./capturar-relevamiento.mjs";
+import { startAssistantOpenStream } from "./assistant-open-stream.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const canvas = path.join(root, "docs/design/lienzo");
@@ -14,10 +15,12 @@ export const issuer = "http://localtest.me:5192";
 export const output = path.join(root, "docs/design/implementacion/etapa-8b");
 const fixtureFile = path.join(root, "src/test/etapa8bVisualFixtures.ts");
 const uploadFixtureFile = path.join(root, "src/test/galleryUploadFiles.ts");
+const transportFiles = ["scripts/assistant-open-stream.mjs", "scripts/capturar-etapa-3a.mjs", "scripts/capturar-relevamiento.mjs", "scripts/capturar-etapa-8b.mjs"];
 const hash = (content) => createHash("sha256").update(content).digest("hex");
 const slug = (value) => value.normalize("NFD").replace(/[\u0300-\u036f]/gu, "").toLowerCase().replace(/[^a-z0-9]+/gu, "-").replace(/^-|-$/gu, "");
 const jsonHash = (value) => hash(JSON.stringify(value));
 const fixturesHash = () => jsonHash([fixtureFile, uploadFixtureFile].map((file) => ({ path: path.relative(root, file).split(path.sep).join("/"), sha256: hash(readFileSync(file)) })));
+const transportSources = () => transportFiles.map((file) => ({ path: file, sha256: hash(readFileSync(path.join(root, file))) }));
 
 export function inventory(canvasRoot = canvas) {
   // Sólo HTML actual; cada opción usa su viewport propio. No importa .local ni Archivo/generadores.
@@ -44,17 +47,18 @@ export async function buildManifest(canvasRoot = canvas) {
     else pending.push({ ...entry, reason: entry.group === "uso" ? "Uso CC04 pendiente de aprobación y publicación conjunta; sin página ni fixture."
       : entry.state === "Tope del mes" ? "El lienzo exige Ver uso, pero RegisteredAssistant aún no entrega onUsage ni hay ruta Uso autorizada/publicada (T13/CC04). El 429 se prueba como comportamiento; escena completa pendiente."
       : entry.state === "Adjunto de más de 10 MB" ? "La fuente conserva PNG y PDF inválido con chip rojo, peso 14,8 MB y alerta con nombre. La UI actual rechaza y no retiene el PDF, con alerta genérica; completar esa escena exigiría cambio de producto fuera de este corte."
-      : ["Consultando", "Escribiendo"].includes(entry.state) ? "El SSE de route.fulfill termina en EOF y el runtime cambia a reconciliación; falta transporte realmente abierto para conservar herramientas y fase writing. No se declara preparada."
+      : ["Consultando", "Escribiendo"].includes(entry.state) ? "Transporte SSE abierto y probes SDK preparados. ToolStatus ignora labelKey y muestra herramientas genéricas, distintas de Empresas/Usuarios, tus organizaciones o uso exigidas por el HTML. La escena permanece pendiente por fidelidad de producto; sin cambiar UI/copy en este corte."
       : "Escenario/acciones todavía sin preparar en este corte; no se declara cobertura." });
   }
   return { version: 1, stage: "etapa-8b-preparacion", evidence: "API y sesión ficticias del arnés; no E2E/proveedor", issuer,
-    sourceCommit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(), fixtureSha256: fixturesHash(),
+    sourceCommit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(), fixtureSha256: fixturesHash(), transportSources: transportSources(),
     cases, pending, complete: false };
 }
 
 export function validateManifest(manifest, source = inventory()) {
   if (manifest.version !== 1 || manifest.issuer !== issuer || manifest.complete !== false || !/^[a-f0-9]{40}$/u.test(manifest.sourceCommit)
-    || manifest.fixtureSha256 !== fixturesHash() || !Array.isArray(manifest.cases) || !Array.isArray(manifest.pending)) throw new Error("Manifest E8b inválido o fixture cambió");
+    || manifest.fixtureSha256 !== fixturesHash() || JSON.stringify(manifest.transportSources) !== JSON.stringify(transportSources())
+    || !Array.isArray(manifest.cases) || !Array.isArray(manifest.pending)) throw new Error("Manifest E8b inválido o fixture/transporte cambió");
   const expected = new Map(source.map((entry) => [entry.id, entry])); const seen = new Set();
   if (expected.size !== source.length) throw new Error("Inventario repetido");
   for (const [ready, entries] of [[true, manifest.cases], [false, manifest.pending]]) {
@@ -129,13 +133,15 @@ async function captureEntry(browser, entry, canvasUrl, appUrl, outputRoot) {
     if (url.pathname.startsWith("/api/") && status >= 400 && !expectedApiFailure(entry.app.responses, response.request().method(), url, status)) failures.push(`API inesperada ${status}: ${url.pathname}`);
   });
   const files = capturePaths(outputRoot, entry);
+  let openStream;
   try {
-    const board = await openBoard(context, canvasUrl, entry); const app = await openApp(context, appUrl, entry);
+    if (entry.app.responses.some((response) => response.openStream)) openStream = await startAssistantOpenStream(entry.app.responses, issuer);
+    const board = await openBoard(context, canvasUrl, entry); const app = await openApp(context, appUrl, entry, openStream && { url: openStream.url, origin: issuer });
     if (failures.length) throw new Error(`${entry.id}: ${failures.join("; ")}`);
     mkdirSync(path.dirname(files.app), { recursive: true });
     await board.screenshot({ path: files.board }); await app.screenshot({ path: files.app });
     if (failures.length) throw new Error(`${entry.id}: ${failures.join("; ")}`);
-  } finally { await context.close(); }
+  } finally { try { await context.close(); } finally { await openStream?.close(); } }
   await composeSideBySide(browser, entry, files, sideBySideFile(entry, outputRoot));
   return captureEvidence(entry, outputRoot);
 }

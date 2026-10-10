@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { afterEach, beforeAll, beforeEach, expect, it, vi } from "vitest";
@@ -14,20 +14,42 @@ import { server } from "./mocks/server";
 import { asPhone } from "./utils/phone";
 import { galleryUploadBytes } from "./galleryUploadFiles";
 import type { AssistantAttachmentSummaryResponse, AssistantConversationResponse } from "@/shared/api/types";
-import { chatScenario, configurationScenario, galleryConversation, galleryMe, galleryMonthlyLimitProbe, galleryOversizedAttachmentProbe, galleryStream, galleryStreamEvents, type GalleryApp } from "./etapa8bVisualFixtures";
+import { chatScenario, configurationScenario, galleryConversation, galleryMe, galleryMonthlyLimitProbe, galleryOversizedAttachmentProbe, galleryOpenStreamProbe, galleryStream, galleryStreamEvents, type GalleryApp } from "./etapa8bVisualFixtures";
+import type { AssistantTurnState } from "@/modules/assistant/runtime/assistantTurnState";
 
 beforeAll(async () => { await import("@/modules/assistant/settings/OrganizationAssistantSettingsPage"); await import("@/modules/assistant/settings/PlatformAssistantSettingsPage"); await import("@/modules/assistant/pages/RegisteredAssistant"); });
 beforeEach(() => { Element.prototype.scrollTo = vi.fn(); URL.createObjectURL = vi.fn(() => "blob:gallery-fixture"); URL.revokeObjectURL = vi.fn(); });
-afterEach(() => vi.unstubAllGlobals());
+const responseListeners: (() => void)[] = [];
+afterEach(() => { responseListeners.splice(0).forEach((dispose) => dispose()); vi.unstubAllGlobals(); });
 const chatBoards = ["Asistente-Org", "Asistente-Personal", "Asistente-Plat", "M-Asistente-Org", "M-Asistente-Personal", "M-Asistente-Plat"];
 
 function mount(app: GalleryApp) {
   const calls: string[] = []; const completed = new Set<string>();
-  server.use(http.all("/api/*", ({ request }) => {
+  const opened: { stream: ReadableStream<Uint8Array>; cancelled: boolean }[] = [];
+  const ownStreams = new Set<string>();
+  const onResponse: Parameters<typeof server.events.on<"response:mocked">>[1] = ({ requestId, request, response }) => {
+    if (!ownStreams.delete(requestId) || response.status !== 200) return;
+    completed.add(`${request.method} ${new URL(request.url).pathname}`);
+  };
+  server.events.on("response:mocked", onResponse);
+  responseListeners.push(() => server.events.removeListener("response:mocked", onResponse));
+  server.use(http.all("/api/*", ({ request, requestId }) => {
     const url = new URL(request.url); calls.push(`${request.method} ${url.pathname}`);
     const response = app.responses.find((item) => item.method === request.method && item.path === url.pathname && (!item.afterResponse || completed.has(`${item.afterResponse.method} ${item.afterResponse.path}`))
       && Object.entries(item.query ?? {}).every(([key, value]) => url.searchParams.get(key) === value));
     if (!response) throw new Error(`Fixture sin ruta ${request.method} ${url.pathname}`);
+    if (response.openStream) {
+      ownStreams.add(requestId);
+      let controller: ReadableStreamDefaultController<Uint8Array>;
+      const abort = () => { record.cancelled = true; controller.error(new DOMException("", "AbortError")); request.signal.removeEventListener("abort", abort); };
+      const record: { stream: ReadableStream<Uint8Array>; cancelled: boolean } = { stream: new ReadableStream<Uint8Array>({
+        start(value) { controller = value; controller.enqueue(new TextEncoder().encode(response.rawBody!)); },
+        cancel() { record.cancelled = true; request.signal.removeEventListener("abort", abort); },
+      }), cancelled: false };
+      request.signal.addEventListener("abort", abort, { once: true });
+      opened.push(record);
+      return new HttpResponse(record.stream, { status: response.status, headers: { "Content-Type": response.contentType! } });
+    }
     completed.add(`${response.method} ${response.path}`);
     return response.rawBody === undefined ? new HttpResponse(JSON.stringify(response.body), { status: response.status, headers: { "Content-Type": "application/json" } })
       : new HttpResponse(response.rawBody, { status: response.status, headers: { "Content-Type": response.contentType! } });
@@ -36,7 +58,7 @@ function mount(app: GalleryApp) {
   const router = createMemoryRouter(routes, { initialEntries: [route] });
   const client = createQueryClient({ queries: { retry: false }, mutations: { retry: false } });
   const result = render(<StrictMode><AppProviders client={client} authContext={fixtureAuth(app.userFixture)}><RouterProvider router={router} /></AppProviders></StrictMode>);
-  return { ...result, calls, client, user: userEvent.setup() };
+  return { ...result, calls, client, opened, user: userEvent.setup() };
 }
 async function actions(app: GalleryApp, user: ReturnType<typeof userEvent.setup>) {
   for (const action of app.actions) {
@@ -44,14 +66,92 @@ async function actions(app: GalleryApp, user: ReturnType<typeof userEvent.setup>
       await user.upload(await screen.findByLabelText(action.label, { selector: 'input[type="file"]' }), action.files.map((file) => new File([galleryUploadBytes(file)], file.name, { type: file.mimeType })));
       continue;
     }
-    const target = action.label ? await screen.findByLabelText(action.label, { exact: false }) : await screen.findByRole(action.role!, { name: action.name });
+    const surface = action.within ? within(await screen.findByRole(action.within.role, { name: action.within.name })) : screen;
+    const target = action.label ? await surface.findByLabelText(action.label, { exact: false }) : await surface.findByRole(action.role!, { name: action.name });
     if (action.type === "click") await user.click(target);
     else if (action.type === "press") { target.focus(); await user.keyboard(`{${action.key}}`); }
     else fireEvent.change(target, { target: { value: action.value } });
   }
   await waitFor(() => expect(document.querySelector(app.readySelector)).toBeVisible());
   if (app.readyText) await screen.findByText((_, node) => node?.textContent?.includes(app.readyText!) === true && ![...node.children].some((child) => child.textContent?.includes(app.readyText!)));
+  for (const text of app.readyTexts ?? []) await screen.findAllByText(text, { exact: false });
 }
+
+it.each(["Asistente-Org", "Asistente-Personal", "Asistente-Plat"].flatMap((accessBoard) => (["Consultando", "Escribiendo"] as const).map((state) => ({ board: `${state === "Escribiendo" ? "M-" : ""}${accessBoard}`, state }))))("probe $board $state conserva stream abierto, herramientas SDK y selección; no cuenta escena genérica", async ({ board, state }) => {
+  const restore = board.startsWith("M-") ? asPhone() : () => {};
+  let mounted: ReturnType<typeof mount> | undefined;
+  try {
+    const nativeForm = await new Request("http://localhost/form", { method: "POST", headers: { "content-type": "multipart/form-data; boundary=test" }, body: "--test--\r\n" }).formData();
+    vi.stubGlobal("FormData", nativeForm.constructor);
+    vi.stubGlobal("File", FetchFile);
+    const app = galleryOpenStreamProbe(board, state);
+    expect(chatScenario(board, state)).toBeUndefined();
+    mounted = mount(app);
+    for (const action of app.actions) {
+      if (action.type === "upload") {
+        fireEvent.change(await screen.findByLabelText(action.label, { selector: 'input[type="file"]' }), { target: { files: action.files.map((file) => new FetchFile([galleryUploadBytes(file)], file.name, { type: file.mimeType })) } });
+      } else if (action.type === "click" && action.name === "Enviar") fireEvent.click(await screen.findByRole("button", { name: "Enviar" }));
+      else await actions({ ...app, actions: [action], readySelector: "main", readyTexts: undefined }, mounted.user);
+    }
+    await actions({ ...app, actions: [] }, mounted.user);
+    const currentTurn = () => mounted!.client.getQueryCache().getAll().find((query) => query.queryKey.includes("turn") && query.queryKey.includes("gallery-chat"))?.state.data as AssistantTurnState | undefined;
+    await waitFor(() => expect(currentTurn()?.phase).toBe(state === "Consultando" ? "consulting" : "writing"));
+    const keys = board.includes("Personal") ? ["my_organizations"] : board.includes("Plat") ? ["platform_assistant_usage"] : ["org_companies", "org_users"];
+    expect(currentTurn()?.tools.map(({ toolKey, labelKey, state: toolState }) => ({ toolKey, labelKey, state: toolState }))).toEqual(keys.map((toolKey, index) => ({ toolKey, labelKey: `Tool.${toolKey}`, state: state === "Escribiendo" || index < keys.length - 1 ? "complete" : "running" })));
+    expect(currentTurn()?.request).toMatchObject({ conversationVersion: board.includes("Org") ? 3 : 2, attachmentIds: board.includes("Org") ? ["gallery-pdf"] : [] });
+    expect(screen.getByRole("button", { name: "Detener" })).toBeEnabled();
+    expect(screen.queryByRole("heading", { name: "¿Qué querés consultar?" })).not.toBeInTheDocument();
+    // Refetch público: conserva phase efímera junto al activeTurnId/Generating durable real.
+    await mounted.client.invalidateQueries({ predicate: (query) => query.queryKey.includes("detail") });
+    await waitFor(() => expect(currentTurn()?.phase).toBe(state === "Consultando" ? "consulting" : "writing"));
+    const detail = mounted.client.getQueryCache().getAll().find((query) => query.queryKey.includes("detail") && query.queryKey.includes("gallery-chat"))?.state.data as AssistantConversationResponse;
+    expect(detail.activeTurnId).toBe("gallery-turn");
+    expect(detail.conversation.version).toBe(currentTurn()?.start?.conversationVersion);
+    expect(detail.messages.items.at(-1)?.status).toBe("Generating");
+    if (board.includes("Org")) expect(detail.messages.items.at(-2)?.attachments[0]?.fileName).toBe("planilla-ventas.pdf");
+    expect(mounted.calls.filter((call) => call.startsWith("POST") && call.endsWith("/messages"))).toHaveLength(1);
+    expect(mounted.opened).toHaveLength(1);
+    expect(mounted.opened[0].cancelled).toBe(false);
+    expect(screen.getAllByText(state === "Consultando" ? "Consultando información…" : "Información consultada", { exact: true })[0]).toBeVisible();
+    const source = board.includes("Personal") ? {
+      saved: ["Cómo recuperar mi cuenta"], recent: ["Por qué no puedo entrar a Beta", "Mis organizaciones", "Correos de mi cuenta"], link: undefined,
+    } : board.includes("Plat") ? {
+      saved: ["Altas de setiembre"], recent: ["Organizaciones por aprobar", "Recuperaciones de la semana", "Cuentas suspendidas"],
+      link: { name: "Ver organizaciones", to: "/plataforma/organizaciones?status=PendingApproval", permission: "platform.tenants.read", scope: "platform" as const },
+    } : {
+      saved: ["Permisos del rol Auditor"], recent: ["Invitaciones vencidas", "Quién entró esta semana", "Empresas sin administrador", "Cambios de ayer en Roles"],
+      link: { name: "Ver usuarios", to: "/org/usuarios?state=Expired", permission: "users.read", scope: "organization" as const },
+    };
+    if (source.link) {
+      // El texto vigente de producto aún difiere de «Ver en Usuarios/Organizaciones» del HTML.
+      expect.soft(screen.queryByRole("link", { name: source.link.name })).toBeVisible();
+      expect.soft(screen.queryByRole("link", { name: source.link.name })).toHaveAttribute("href", source.link.to);
+      const me = app.responses.find((response) => response.path === "/api/me")?.body as ReturnType<typeof galleryMe>;
+      expect.soft(me.effectivePermissions[source.link.scope]).toContain(source.link.permission);
+      expect(detail.messages.items.find((message) => message.id === "gallery-previous-assistant")?.links).toEqual([{
+        routeKey: board.includes("Plat") ? "platform.organizations" : "business.users", parameters: {},
+        query: { status: board.includes("Plat") ? "Pending" : "Expired" }, labelKey: "Ver",
+      }]);
+    }
+    if (board.startsWith("M-")) await mounted.user.click(screen.getByRole("button", { name: "Conversaciones" }));
+    const history = within(await screen.findByRole(board.startsWith("M-") ? "dialog" : "complementary", { name: "Conversaciones" }));
+    for (const [heading, titles] of [["Guardadas", source.saved], ["Recientes", source.recent]] as const) {
+      const group = within(history.getByRole("heading", { name: heading === "Guardadas" ? heading : /^Recientes/ }).closest("section")!);
+      expect(group.getAllByRole("button").filter((button) => !button.getAttribute("aria-label")).map((button) => button.textContent)).toEqual(titles);
+      for (const title of titles) expect(group.getByRole("button", { name: title })).toBeVisible();
+    }
+    expect(history.getByRole("button", { name: source.recent[0] })).toHaveAttribute("aria-current", "true");
+    if (board.startsWith("M-")) {
+      await mounted.user.click(history.getByRole("button", { name: source.recent[0] }));
+      expect(screen.queryByRole("dialog", { name: "Conversaciones" })).not.toBeInTheDocument();
+      expect(currentTurn()?.phase).toBe("writing");
+    }
+  } finally {
+    mounted?.unmount();
+    if (mounted?.opened.length) await waitFor(() => expect(mounted!.opened[0].cancelled).toBe(true));
+    restore();
+  }
+});
 
 it("todos los eventos SSE tipados los decodifica el codec real", async () => {
   const events = [];

@@ -144,19 +144,20 @@ export async function startCanvasServer(canvasRoot = defaultCanvas) {
 
 export async function runAppActions(page, actions = []) {
   for (const action of actions) {
+    const surface = action.within ? page.getByRole(action.within.role, { name: action.within.name, exact: true }) : page;
     if (action.type === "upload") {
       const { galleryUploadBytes } = await import("../src/test/galleryUploadFiles.ts");
       await page.getByLabel(action.label, { exact: action.exact ?? false }).and(page.locator('input[type="file"]')).setInputFiles(action.files.map((file) => ({
         name: file.name, mimeType: file.mimeType, buffer: Buffer.from(galleryUploadBytes(file)),
       })));
     } else if (action.type === "fill") {
-      const target = action.label ? page.getByLabel(action.label, { exact: action.exact ?? false })
-        : page.getByRole(action.role, { name: action.name, exact: action.exact ?? false });
+      const target = action.label ? surface.getByLabel(action.label, { exact: action.exact ?? false })
+        : surface.getByRole(action.role, { name: action.name, exact: action.exact ?? false });
       await target.fill(action.value);
     } else if (action.type === "click") {
-      await page.getByRole(action.role, { name: action.name, exact: action.exact ?? false }).click({ force: action.force ?? false });
+      await surface.getByRole(action.role, { name: action.name, exact: action.exact ?? false }).click({ force: action.force ?? false });
     } else if (action.type === "press") {
-      const target = page.getByRole(action.role, { name: action.name, exact: action.exact ?? false });
+      const target = surface.getByRole(action.role, { name: action.name, exact: action.exact ?? false });
       await target.focus();
       await target.press(action.key);
     } else if (action.type === "otp") {
@@ -168,9 +169,24 @@ export async function runAppActions(page, actions = []) {
   }
 }
 
-export async function installApiMocks(context, responses = [], userFixture) {
+export async function installApiMocks(context, responses = [], userFixture, openStream) {
   // Sólo el arnés: lecturas antes/después de una acción real, sin modificar DTOs.
+  if (openStream) {
+    const local = new URL(openStream.url);
+    if (openStream.origin !== "http://localtest.me:5192" || local.protocol !== "http:" || local.hostname !== "127.0.0.1"
+      || !local.port || local.pathname !== "/" || local.search || local.hash || local.username || local.password) throw new Error("Transporte SSE debe ser el fixture local efímero");
+  }
   const completed = new Set();
+  const forwarded = new Map();
+  const onResponse = (response) => {
+    const original = forwarded.get(response.request());
+    if (!original) return;
+    forwarded.delete(response.request());
+    if (response.status() === original.status && response.headers()["content-type"] === original.contentType) {
+      completed.add(`${original.method} ${original.path}`);
+    }
+  };
+  if (openStream) context.on("response", onResponse);
   await context.route("**/api/**", async (route) => {
     const request = route.request();
     const requestPath = new URL(request.url()).pathname;
@@ -185,6 +201,17 @@ export async function installApiMocks(context, responses = [], userFixture) {
     if (response) {
       if (response.rawBody !== undefined && (typeof response.rawBody !== "string" || !response.contentType)) {
         throw new Error("rawBody exige texto y contentType explícito en el arnés");
+      }
+      if (response.openStream) {
+        const headers = await request.allHeaders();
+        if (!openStream || requestUrl.origin !== openStream.origin || headers.origin !== openStream.origin) {
+          await route.fulfill({ status: 501, contentType: "application/problem+json", body: JSON.stringify({ code: "Capture.UnmockedRoute", traceId: "capture" }) });
+          return;
+        }
+        forwarded.set(request, response);
+        try { await route.continue({ url: `${openStream.url}${requestUrl.pathname}${requestUrl.search}`, headers }); }
+        catch (error) { forwarded.delete(request); throw error; }
+        return;
       }
       await route.fulfill({
         status: response.status,
@@ -225,6 +252,10 @@ export async function installApiMocks(context, responses = [], userFixture) {
       body: JSON.stringify({ code: "Capture.UnmockedRoute", traceId: "capture" }),
     });
   });
+  return () => {
+    if (openStream) context.off("response", onResponse);
+    forwarded.clear();
+  };
 }
 
 export async function captureCase(browser, entry, { canvasUrl, appUrl, outputRoot = defaultOutput }) {

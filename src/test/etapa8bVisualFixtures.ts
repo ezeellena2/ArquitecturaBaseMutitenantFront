@@ -3,6 +3,7 @@ import type {
   AssistantModelPriceResponse, AssistantStateResponse, AssistantStreamHttpResponse, AssistantTurnResultResponse,
   MeResponse, OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse, ApiProblemDetails,
   AssistantQuickResponse,
+  AssistantAttachmentSummaryResponse, AssistantConversationSummaryResponse, AssistantLinkResponse,
 } from "@/shared/api/types";
 import { galleryImage, galleryPdf, type GalleryUploadFile } from "./galleryUploadFiles.ts";
 import { currentUsers } from "./mocks/currentUsers.ts";
@@ -13,15 +14,17 @@ import { referenceDataFixture } from "./mocks/handlers.ts";
 export interface GalleryApiResponse {
   method: "GET" | "POST" | "PUT"; path: string; status: number; body?: unknown;
   rawBody?: string; contentType?: string; query?: Record<string, string>; afterResponse?: { method: "POST"; path: string };
+  openStream?: true;
 }
-export type GalleryAction = { type: "click" | "press" | "fill"; role?: "button" | "radio" | "combobox" | "textbox" | "option" | "menuitem"; name?: string; label?: string; exact?: boolean; key?: string; value?: string }
+export type GalleryAction = { type: "click" | "press" | "fill"; role?: "button" | "radio" | "combobox" | "textbox" | "option" | "menuitem"; name?: string; label?: string; exact?: boolean; key?: string; value?: string; within?: { role: "complementary" | "dialog"; name: string } }
   | { type: "upload"; label: string; exact: boolean; files: GalleryUploadFile[] };
 export interface GalleryApp {
   path: string; captureMode: "harness"; site: "main"; userFixture: CurrentUserFixture;
   responses: GalleryApiResponse[]; actions: GalleryAction[]; readySelector: string; readyText?: string; now: string;
+  readyTexts?: string[];
 }
 const api = (method: GalleryApiResponse["method"], path: string, body: unknown, status = 200): GalleryApiResponse => ({ method, path, status, body });
-const click = (name: string, role: "button" | "option" | "menuitem" = "button"): GalleryAction => ({ type: "click", role, name, exact: true });
+const click = (name: string, role: "button" | "option" | "menuitem" = "button"): Extract<GalleryAction, { type: "click" | "press" | "fill" }> => ({ type: "click", role, name, exact: true });
 const fill = (name: string, value: string): GalleryAction => ({ type: "fill", role: "textbox", name, value, exact: true });
 const open = (name: string, role: "combobox" | "button" = "combobox"): GalleryAction => ({ type: "press", role, name, exact: true, key: "Enter" });
 const secret = "e8b-fictitious-write-only-key";
@@ -233,4 +236,93 @@ export function galleryMonthlyLimitProbe(board: string): GalleryApp {
 // Valida el rechazo cliente existente; no representa el chip rojo exigido por la fuente.
 export function galleryOversizedAttachmentProbe(board: string): GalleryApp {
   return createChatScenario(board, "Adjunto de más de 10 MB")!;
+}
+
+// Preparación de transporte/SDK: no cuenta como escena hasta corregir ToolStatus.
+export function galleryOpenStreamProbe(board: string, state: "Consultando" | "Escribiendo"): GalleryApp {
+  const scope: Scope = board.includes("Personal") ? "consumer" : board.includes("Plat") ? "platform" : "business";
+  const prefix = `/api/${scope === "consumer" ? "me" : scope === "platform" ? "platform" : "organization"}/assistant`;
+  const route = scope === "consumer" ? "/asistente" : scope === "platform" ? "/plataforma/asistente" : "/org/asistente";
+  const app = baseApp(scope, route);
+  const me = galleryMe(scope);
+  if (scope === "business") {
+    me.permissions = [...(me.permissions ?? []), "users.read"];
+    me.effectivePermissions = { ...me.effectivePermissions, organization: [...me.effectivePermissions.organization, "users.read"] };
+  } else if (scope === "platform") {
+    me.effectivePermissions = { ...me.effectivePermissions, platform: [...me.effectivePermissions.platform, "platform.tenants.read"] };
+  }
+  app.responses[0] = api("GET", "/api/me", me);
+  const source = scope === "business" ? {
+    title: "Invitaciones vencidas", previous: "Invitaciones vencidas",
+    answer: "Hay **2 invitaciones vencidas**:\n\n- carla.bianchi@delta.ejemplo.com · venció el 25/09/2026\n- martin.gomez@delta.ejemplo.com · venció el 30/09/2026",
+    query: "¿Están todos los de esta planilla en Delta Norte?", delta: "En la planilla hay 6 personas. 4 ya son usuarios de Delta Norte; faltan",
+    keys: ["org_companies", "org_users"],
+  } : scope === "consumer" ? {
+    title: "Por qué no puedo entrar a Beta", previous: "Mis organizaciones",
+    answer: "Estás en **2 organizaciones**:\n\n- Grupo Delta · Dueño\n- Beta S.R.L. · suspendida",
+    query: "¿Por qué no puedo entrar a Beta?", delta: "Beta S.R.L. está suspendida desde el 25/09/2026. Mientras", keys: ["my_organizations"],
+  } : {
+    title: "Organizaciones por aprobar", previous: "Organizaciones por aprobar",
+    answer: "Hay **2 organizaciones** que esperan aprobación:\n\n- Gamma S.A. · se registró el 27/09/2026\n- Épsilon S.R.L. · se registró el 26/09/2026",
+    query: "¿Cuánto costó el asistente este mes y quiénes lo usan más?", delta: "En octubre el asistente costó USD 112,40. Las que", keys: ["platform_assistant_usage"],
+  };
+  const previousLinks: AssistantLinkResponse[] = scope === "business" ? [{
+    routeKey: "business.users", parameters: {}, query: { status: "Expired" }, labelKey: "Ver",
+  }] : scope === "platform" ? [{
+    routeKey: "platform.organizations", parameters: {}, query: { status: "Pending" }, labelKey: "Ver",
+  }] : [];
+  const initial: AssistantConversationResponse = { ...galleryConversation, conversation: { ...galleryConversation.conversation, title: source.title },
+    messages: { items: [
+      { ...galleryConversation.messages.items[0], id: "gallery-previous-user", text: source.previous },
+      { ...galleryConversation.messages.items[1], id: "gallery-previous-assistant", text: source.answer, links: previousLinks },
+    ], hasMore: false } };
+  const historyTitles = scope === "business" ? {
+    saved: ["Permisos del rol Auditor"], recent: [source.title, "Quién entró esta semana", "Empresas sin administrador", "Cambios de ayer en Roles"],
+  } : scope === "consumer" ? {
+    saved: ["Cómo recuperar mi cuenta"], recent: [source.title, "Mis organizaciones", "Correos de mi cuenta"],
+  } : {
+    saved: ["Altas de setiembre"], recent: [source.title, "Recuperaciones de la semana", "Cuentas suspendidas"],
+  };
+  const history = (saved: boolean): AssistantConversationSummaryCursorResponse => ({
+    items: (saved ? historyTitles.saved : historyTitles.recent).map((title, index): AssistantConversationSummaryResponse => ({
+      ...initial.conversation, id: !saved && index === 0 ? initial.conversation.id : `gallery-${scope}-${saved ? "saved" : "recent"}-${index}`,
+      title, isSaved: saved,
+    })), hasMore: false,
+  });
+  const attachment: AssistantAttachmentSummaryResponse = { id: "gallery-pdf", fileName: galleryPdf.name, mediaType: galleryPdf.mimeType, byteLength: 1258291, version: 1 };
+  const admittedVersion = scope === "business" ? 4 : 3;
+  const pending: AssistantConversationResponse = { ...initial, conversation: { ...initial.conversation, version: admittedVersion }, activeTurnId: "gallery-turn",
+    messages: { items: [...initial.messages.items,
+      { ...galleryConversation.messages.items[0], text: source.query, attachments: scope === "business" ? [attachment] : [] },
+      { ...galleryConversation.messages.items[1], status: "Generating", text: state === "Escribiendo" ? source.delta : "" },
+    ], hasMore: false } };
+  const messagePath = `${prefix}/conversations/gallery-chat/messages`;
+  const events: AssistantStreamHttpResponse[] = [
+    { event: "start", data: { turnId: "gallery-turn", userMessageId: "gallery-user", assistantMessageId: "gallery-assistant", conversationVersion: admittedVersion } },
+    ...source.keys.map((toolKey, index): AssistantStreamHttpResponse => ({ event: "tool", data: {
+      turnId: "gallery-turn", toolKey, labelKey: `Tool.${toolKey}`, state: state === "Escribiendo" || index < source.keys.length - 1 ? "complete" : "running",
+    } })),
+    ...(state === "Escribiendo" ? [{ event: "delta", data: { turnId: "gallery-turn", sequence: 1, text: source.delta } } satisfies AssistantStreamHttpResponse] : []),
+  ];
+  const afterResponse = { method: "POST" as const, path: messagePath };
+  app.responses.push(api("GET", prefix, galleryState(scope)),
+    { ...api("GET", `${prefix}/conversations`, history(true)), query: { saved: "true" } },
+    { ...api("GET", `${prefix}/conversations`, history(false)), query: { saved: "false" } },
+    { ...api("GET", `${prefix}/conversations/gallery-chat`, pending), afterResponse });
+  if (scope === "business") {
+    const uploaded: AssistantConversationResponse = { ...initial, conversation: { ...initial.conversation, version: 3 } };
+    app.responses.push({ ...api("GET", `${prefix}/conversations/gallery-chat`, uploaded), afterResponse: { method: "POST", path: `${prefix}/conversations/gallery-chat/attachments` } },
+      api("POST", `${prefix}/conversations/gallery-chat/attachments`, attachment));
+  }
+  app.responses.push(api("GET", `${prefix}/conversations/gallery-chat`, initial),
+    { method: "POST", path: messagePath, status: 200, contentType: "text/event-stream; charset=utf-8", openStream: true,
+      rawBody: events.map(({ event, data }) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`).join("") });
+  app.actions = [...(board.startsWith("M-") ? [click("Conversaciones")] : []), { ...click(source.title), within: { role: board.startsWith("M-") ? "dialog" : "complementary", name: "Conversaciones" } },
+    ...(scope === "business" ? [{ type: "upload", label: "Adjuntar", exact: true, files: [galleryPdf] } satisfies GalleryAction] : []),
+    fill("Tu consulta", source.query), click("Enviar")];
+  app.readySelector = '[role="group"][aria-label="Asistente"] [role="status"]';
+  app.readyTexts = state === "Escribiendo" ? [source.delta, "Escribiendo…", "Información consultada"]
+    : ["Consultando…", "Consultando información…", ...(scope === "business" ? ["Información consultada"] : [])];
+  if (scope !== "consumer") app.readyTexts.push(scope === "business" ? "Ver usuarios" : "Ver organizaciones");
+  return app;
 }
