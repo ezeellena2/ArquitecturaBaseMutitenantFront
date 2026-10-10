@@ -1,16 +1,18 @@
 import { useTranslation } from "react-i18next";
+import { ActionBarPrimitive } from "@assistant-ui/react";
 import { Button } from "@/shared/ui/button";
 import type { AssistantMessageResponse } from "@/shared/api/types";
 import { Copy, ThumbsDown, ThumbsUp } from "lucide-react";
 
-export function AssistantMessageActions({ message, text, pending, onCopy, onFeedback }: {
-  message?: AssistantMessageResponse; text: string; pending: boolean;
-  onCopy: (text: string) => void; onFeedback: (message: AssistantMessageResponse, rating: "up" | "down" | null) => void;
+export function AssistantMessageActions({ message, pending }: {
+  message?: AssistantMessageResponse; pending: boolean;
 }) {
   const { t } = useTranslation("assistant");
-  return <div className="flex gap-1">
-    <Button variant="icon" size="icon" disabled={pending} aria-label={t("message.copy")} onClick={() => onCopy(text)}><Copy className="size-4" /></Button>
-    {message ? <>{(["up", "down"] as const).map((rating) => <Button key={rating} variant="icon" size="icon" disabled={pending} aria-label={t(`message.${rating}`)}
-      aria-pressed={message.rating === rating} onClick={() => onFeedback(message, message.rating === rating ? null : rating)}>{rating === "up" ? <ThumbsUp className="size-4" /> : <ThumbsDown className="size-4" />}</Button>)}</> : null}
-  </div>;
+  return <ActionBarPrimitive.Root className="flex gap-1">
+    <ActionBarPrimitive.Copy asChild><Button variant="icon" size="icon" disabled={pending} aria-label={t("message.copy")}><Copy className="size-4" /></Button></ActionBarPrimitive.Copy>
+    {message ? <>
+      <ActionBarPrimitive.FeedbackPositive asChild><Button variant="icon" size="icon" disabled={pending} aria-label={t("message.up")} aria-pressed={message.rating === "up"}><ThumbsUp className="size-4" /></Button></ActionBarPrimitive.FeedbackPositive>
+      <ActionBarPrimitive.FeedbackNegative asChild><Button variant="icon" size="icon" disabled={pending} aria-label={t("message.down")} aria-pressed={message.rating === "down"}><ThumbsDown className="size-4" /></Button></ActionBarPrimitive.FeedbackNegative>
+    </> : null}
+  </ActionBarPrimitive.Root>;
 }

@@ -1,5 +1,5 @@
 import type { Components } from "react-markdown";
-import ReactMarkdown from "react-markdown";
+import { MarkdownTextPrimitive } from "@assistant-ui/react-markdown";
 import remarkGfm from "remark-gfm";
 
 const markdownComponents: Components = {
@@ -12,12 +12,8 @@ const markdownComponents: Components = {
   code: ({ children, className }) => <code className={className ?? "rounded-[4px] bg-[var(--s2)] px-1 [overflow-wrap:anywhere]"}>{children}</code>,
 };
 
-interface AssistantMarkdownProps {
-  text: string;
-}
-
-export function AssistantMarkdown({ text }: AssistantMarkdownProps) {
+export function AssistantMarkdown() {
   return <div className="min-w-0 max-w-full text-[15px] leading-[1.6] text-[var(--t1)] [overflow-wrap:anywhere] max-md:text-[16px] [&_li]:my-[2px] [&_ol]:mb-2 [&_ol]:mt-[2px] [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-[6px] [&_strong]:font-semibold [&_ul]:mb-2 [&_ul]:mt-[2px] [&_ul]:list-disc [&_ul]:pl-5">
-    <ReactMarkdown skipHtml remarkPlugins={[remarkGfm]} components={markdownComponents}>{text}</ReactMarkdown>
+    <MarkdownTextPrimitive smooth={false} skipHtml remarkPlugins={[remarkGfm]} components={{ ...markdownComponents, CodeHeader: () => null }} />
   </div>;
 }

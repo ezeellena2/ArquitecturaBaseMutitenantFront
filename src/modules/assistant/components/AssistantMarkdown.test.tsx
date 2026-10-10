@@ -1,8 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { render, screen } from "@testing-library/react";
+import { AssistantRuntimeProvider, MessagePrimitive, ThreadPrimitive, useExternalStoreRuntime, type ThreadMessageLike } from "@assistant-ui/react";
 import { authIssuer } from "@/auth/issuer";
-import { AssistantMarkdown } from "./AssistantMarkdown";
+import { AssistantMarkdown as MarkdownText } from "./AssistantMarkdown";
+
+function AssistantMarkdown({ text }: { text: string }) {
+  const runtime = useExternalStoreRuntime<ThreadMessageLike>({ messages: [{ id: "answer", role: "assistant", content: text }], convertMessage: (message) => message, onNew: async () => {} });
+  return <AssistantRuntimeProvider runtime={runtime}><ThreadPrimitive.Messages components={{ Message: () => <MessagePrimitive.Parts components={{ Text: MarkdownText }} /> }} /></AssistantRuntimeProvider>;
+}
 
 afterEach(() => vi.restoreAllMocks());
 

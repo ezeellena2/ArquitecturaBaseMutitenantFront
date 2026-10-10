@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 import { useIsMutating, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ExportedMessageRepository, useExternalStoreRuntime, type ThreadMessageLike } from "@assistant-ui/react";
+import { ExportedMessageRepository, MessageNotSentError, useExternalStoreRuntime, type ExternalStoreAdapter, type ThreadMessageLike } from "@assistant-ui/react";
 import type { AssistantConversationResponse, AssistantMessageResponse, SendAssistantMessageRequest } from "@/shared/api/types";
 import { ApiError } from "@/shared/api/ApiError";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
@@ -51,10 +51,11 @@ export interface AssistantRuntimeOptions {
   scope: AssistantScope;
   conversationId: string | null;
   enabled: boolean;
+  ui?: Pick<ExternalStoreAdapter<AssistantMessageResponse | ThreadMessageLike>, "onNew" | "adapters">;
 }
 
 /** UI reutilizable: datos raw de Query, estado efímero y acciones con cuerpos/versiones explícitos. */
-export function useAssistantRuntime({ scope, conversationId, enabled }: AssistantRuntimeOptions) {
+export function useAssistantRuntime({ scope, conversationId, enabled, ui }: AssistantRuntimeOptions) {
   const client = useQueryClient();
   const identity = useMemo(() => ({ access: scope.access, tenantId: scope.tenantId, userId: scope.userId }), [scope.access, scope.tenantId, scope.userId]);
   const root = useMemo(() => assistantQueryKeyRoot(identity), [identity]);
@@ -390,12 +391,14 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
     messages, convertMessage, isRunning: (pendingMutations > 0 || isAssistantTurnPending(turn))
       && !!turn?.start && messages.at(-1)?.id === turn.start.assistantMessageId
       || (!turn && durableGenerating && messages.at(-1)?.role === "assistant"),
-    isLoading: detail.isLoading, isDisabled: !active, isSendDisabled: !canSend,
+    isLoading: detail.isLoading, isDisabled: !active, isSendDisabled: !canSend && (!ui || conversationId !== null),
     unstable_enableToolInvocations: false,
-    onNew: async (message) => {
+    adapters: ui?.adapters,
+    onNew: ui?.onNew ?? (async (message) => {
+      if (message.attachments?.length) throw new MessageNotSentError();
       const text = message.content.filter((part) => part.type === "text").map((part) => part.text).join("\n");
       await send({ text, attachmentIds: [], conversationVersion: detail.data?.conversation.version });
-    },
+    }),
     onCancel: stop,
     // Import limpia sólo la proyección del SDK. Nunca acepta escrituras en la API/caché.
     onImport: () => {},

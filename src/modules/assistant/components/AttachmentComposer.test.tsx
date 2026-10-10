@@ -2,9 +2,16 @@ import { fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
-import { AttachmentComposer } from "./AttachmentComposer";
+import { AssistantRuntimeProvider, useExternalStoreRuntime, type ThreadMessageLike } from "@assistant-ui/react";
+import { AttachmentComposer as Composer } from "./AttachmentComposer";
 
-const props = { files: [], placeholder: "Preguntá algo", unavailable: false, pending: false, canStop: false, onFiles: () => {}, onRemove: () => {}, onSend: async () => true, onStop: () => {} };
+function AttachmentComposer({ onSend, ...value }: typeof props) {
+  const runtime = useExternalStoreRuntime<ThreadMessageLike>({ messages: [], convertMessage: (message) => message, isRunning: value.canStop, isSendDisabled: value.pending || value.unavailable,
+    onNew: async (message) => { await onSend(message.content.filter((part) => part.type === "text").map((part) => part.text).join("\n")); }, onCancel: async () => value.onStop() });
+  return <AssistantRuntimeProvider runtime={runtime}><Composer {...value} /></AssistantRuntimeProvider>;
+}
+
+const props = { files: [], placeholder: "Preguntá algo", unavailable: false, pending: false, canStop: false, onFiles: () => {}, onSend: async (_text: string) => true, onStop: () => {} };
 
 describe("disponibilidad y espera del compositor", () => {
   it("disponible vacío deja enviar y valida sin llamar al envío", async () => {

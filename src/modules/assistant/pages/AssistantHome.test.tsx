@@ -44,6 +44,49 @@ beforeEach(() => { Element.prototype.scrollTo = vi.fn(); URL.createObjectURL = v
 afterEach(() => { resetHttpClient(); vi.unstubAllGlobals(); });
 
 describe("interfaz del asistente", () => {
+  it("el runtime conserva el borrador cuando falla preparar la conversación", async () => {
+    const app = setup();
+    let attempts = 0;
+    server.use(http.post("/api/organization/assistant/conversations", () => { attempts++; return HttpResponse.json({ code: "General.ValidationError", detail: "No se pudo preparar la consulta." }, { status: 400 }); }));
+    const input = await screen.findByRole("textbox", { name: "Tu consulta" });
+    await app.user.type(input, "Borrador privado");
+    await app.user.click(screen.getByRole("button", { name: "Enviar" }));
+    await screen.findByText("No se pudo preparar la consulta.");
+    await waitFor(() => expect(input).toHaveValue("Borrador privado"));
+    expect(attempts).toBe(1);
+    expect(app.requests).toEqual([]);
+  });
+  it("Copiar y valorar usan el SDK con el texto y la versión durables", async () => {
+    const app = setup();
+    const copy = vi.spyOn(navigator.clipboard, "writeText").mockResolvedValue();
+    const ratings: { rating: string | null; version: number }[] = [];
+    server.use(http.put("/api/organization/assistant/conversations/chat/messages/a/feedback", async ({ request }) => {
+      const body = await request.json() as { rating: string | null; version: number };
+      ratings.push(body);
+      app.changeDetail({ ...detail(), conversation: { ...detail().conversation, version: 2 }, messages: { items: [message("u", "user", "Consulta"), { ...message("a", "assistant", "Respuesta **real**"), rating: body.rating as AssistantMessageResponse["rating"], version: body.version + 1 }], hasMore: false } });
+      return HttpResponse.json({ version: body.version + 1 });
+    }));
+    await app.user.type(await screen.findByRole("textbox", { name: "Tu consulta" }), "Consulta");
+    await app.user.click(screen.getByRole("button", { name: "Enviar" }));
+    await screen.findByText("real", { selector: "strong" });
+    await app.user.click(screen.getByRole("button", { name: "Copiar" }));
+    await waitFor(() => expect(copy).toHaveBeenCalledExactlyOnceWith("Respuesta **real**"));
+    const positive = screen.getByRole("button", { name: "Me sirvió" });
+    await app.user.click(positive);
+    await waitFor(() => expect(positive).toHaveAttribute("aria-pressed", "true"));
+    await app.user.click(positive);
+    await waitFor(() => expect(positive).toHaveAttribute("aria-pressed", "false"));
+    expect(ratings).toEqual([{ rating: "up", version: 1 }, { rating: null, version: 2 }]);
+  });
+  it("Enter envía una sola consulta por el runtime oficial con la versión leída", async () => {
+    const app = setup();
+    const input = await screen.findByRole("textbox", { name: "Tu consulta" });
+    await app.user.type(input, "Consulta por teclado");
+    await app.user.keyboard("{Enter}");
+    await waitFor(() => expect(app.requests).toHaveLength(1));
+    expect(app.requests[0]).toMatchObject({ text: "Consulta por teclado", attachmentIds: [], conversationVersion: 1 });
+    expect(await screen.findByText("real")).toBeVisible();
+  });
   it("crea, relee y entrega exactamente una primera consulta al runtime real", async () => {
     const app = setup();
     await app.user.type(await screen.findByRole("textbox", { name: "Tu consulta" }), "Cuántos usuarios hay");

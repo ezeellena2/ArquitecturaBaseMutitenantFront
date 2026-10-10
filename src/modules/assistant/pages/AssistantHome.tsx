@@ -2,6 +2,7 @@ import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type Reac
 import { flushSync } from "react-dom";
 import { Trans, useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
+import { AssistantRuntimeProvider, MessageNotSentError } from "@assistant-ui/react";
 import type { AssistantAttachmentSummaryResponse, AssistantConversationSummaryResponse, AssistantMessageResponse, AssistantRouteKey, SendAssistantMessageRequest } from "@/shared/api/types";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
@@ -76,20 +77,47 @@ function AssistantSession(props: AssistantHomeProps) {
   const dialogRef = useRef(dialog);
   useLayoutEffect(() => { dialogRef.current = dialog; }, [dialog]);
   const [files, setFiles] = useState<PendingAssistantFile[]>([]);
+  const filesRef = useRef(files);
+  function changeFiles(items: PendingAssistantFile[]) { filesRef.current = items; setFiles(items); }
   const [fileError, setFileError] = useState<string | null>(null);
   const fileErrorId = useId();
   const invalidFiles = files.filter((item) => item.invalid);
   const hasAttachmentError = invalidFiles.length > 0 || !!fileError;
-  const runtime = useAssistantRuntime({ scope, conversationId: selectedId, enabled: true });
+  const operations = useAssistantOperations(scope, generation);
+  const runtime = useAssistantRuntime({ scope, conversationId: selectedId, enabled: true, ui: {
+    onNew: async (message) => {
+      const current = latest.current;
+      if (!operations.lifetime.getSnapshot() || !current.state.data?.configured || !current.state.data.noticeAccepted || current.state.data.remainingMessages === 0 || current.isPending || operations.pending) throw new MessageNotSentError();
+      const text = message.content.filter((part) => part.type === "text").map((part) => part.text).join("\n").trim();
+      if (!text || !await send(text, (message.attachments ?? []).map((item) => item.id))) throw new MessageNotSentError();
+    },
+    adapters: {
+      attachments: {
+        accept: assistantAttachmentTypes.join(","),
+        add: async ({ file }) => {
+          operations.lifetime.assertActive();
+          const id = crypto.randomUUID();
+          changeFiles([...filesRef.current, { id, file, ...(validateAssistantFiles([file], 0) === "tooLarge" ? { invalid: "tooLarge" as const } : {}) }]);
+          return { id, file, name: file.name, contentType: file.type, type: file.type.startsWith("image/") ? "image" : "document", status: { type: "requires-action", reason: "composer-send" } };
+        },
+        // Los bytes se suben una sola vez, con la versión releída, en send.
+        send: async (attachment) => ({ ...attachment, status: { type: "complete" }, content: [] }),
+        remove: async (attachment) => { if (operations.lifetime.getSnapshot()) await removeFile(attachment.id); },
+      },
+      feedback: { submit: ({ message, type }) => {
+        const durable = latest.current.messages.find((item) => item.id === message.id);
+        if (durable) { const rating = type === "positive" ? "up" : "down"; feedback(durable, durable.rating === rating ? null : rating); }
+      } },
+    },
+  } });
   const latest = useRef(runtime);
   useLayoutEffect(() => { latest.current = runtime; });
-  const operations = useAssistantOperations(scope, generation);
   const detail = runtime.detail.data;
   const state = runtime.state.data;
   const root = assistantQueryKeyRoot(scope);
   const pendingKey = (id: string) => [...root, "pendingAttachments", id] as const;
   useEffect(() => operations.lifetime.subscribe(() => {
-    if (!operations.lifetime.getSnapshot()) { setFiles([]); setDialog(null); setPhoneActions(null); setFileError(null); }
+    if (!operations.lifetime.getSnapshot()) { changeFiles([]); void latest.current.runtime.thread.composer.reset(); setDialog(null); setPhoneActions(null); setFileError(null); }
   }), [operations.lifetime]);
   useEffect(() => () => { client.removeQueries({ queryKey: assistantQueryKeyRoot(scope) }); }, [client, scope]);
 
@@ -97,7 +125,7 @@ function AssistantSession(props: AssistantHomeProps) {
     operations.lifetime.close();
     setGeneration((value) => value + 1);
     setSelectedId(id);
-    setFiles([]);
+    changeFiles([]);
     setFileError(null);
     setHistoryOpen(false);
     setPhoneActions(null);
@@ -148,15 +176,16 @@ function AssistantSession(props: AssistantHomeProps) {
       await invalidateHistory(context);
     }, selectedId);
   }
-  async function send(text: string): Promise<boolean> {
-    const issue = validateAssistantFiles(files.map((item) => item.file), 0);
+  async function send(text: string, attachmentIds: readonly string[]): Promise<boolean> {
+    const chosen = filesRef.current.filter((item) => attachmentIds.includes(item.id));
+    const issue = validateAssistantFiles(chosen.map((item) => item.file), 0);
     if (issue) { setFileError(invalidFiles.length ? null : t(`attachments.${issue}`)); return false; }
     setFileError(null);
     let id = selectedId;
     let created = false;
     let delivered = false;
     const existing = id ? client.getQueryData<Record<string, AssistantAttachmentSummaryResponse>>(pendingKey(id)) : undefined;
-    const uploads = files.map((item) => ({ ...item, key: crypto.randomUUID(), version: undefined as number | undefined, attachmentId: existing?.[item.id]?.id }));
+    const uploads = chosen.map((item) => ({ ...item, key: crypto.randomUUID(), version: undefined as number | undefined, attachmentId: existing?.[item.id]?.id }));
     try {
       await operations.run(async (context) => {
         if (!id) {
@@ -178,7 +207,7 @@ function AssistantSession(props: AssistantHomeProps) {
         if (!delivered) {
           delivered = true;
           const request: SendAssistantMessageRequest = { text, attachmentIds: uploads.flatMap((item) => item.attachmentId ? [item.attachmentId] : []), conversationVersion: current.conversation.version };
-          setFiles([]);
+          changeFiles([]);
           client.removeQueries({ queryKey: pendingKey(id), exact: true });
           // El envío tiene su propio Retry inmutable en el runtime. El Retry de
           // preparar/adjuntar jamás vuelve a emitir un mensaje ya entregado.
@@ -191,14 +220,14 @@ function AssistantSession(props: AssistantHomeProps) {
       return delivered;
     } catch { return false; }
   }
-  function removeFile(fileId: string) {
+  async function removeFile(fileId: string) {
     const attachment = selectedId ? client.getQueryData<Record<string, AssistantAttachmentSummaryResponse>>(pendingKey(selectedId))?.[fileId] : undefined;
-    if (!attachment || !selectedId) { setFiles((items) => items.filter((item) => item.id !== fileId)); return; }
+    if (!attachment || !selectedId) { changeFiles(filesRef.current.filter((item) => item.id !== fileId)); return; }
     const id = selectedId;
-    fire(async (context) => {
+    await operations.run(async (context) => {
       await deleteAssistantAttachment(scope, id, attachment.id, attachment.version, context.signal);
       context.assertActive();
-      setFiles((items) => items.filter((item) => item.id !== fileId));
+      changeFiles(filesRef.current.filter((item) => item.id !== fileId));
       await read(id, context);
     }, id);
   }
@@ -296,12 +325,11 @@ function AssistantSession(props: AssistantHomeProps) {
       // rechazado que la prioridad tooLarge de la validación de lote ocultó.
       const retainOversized = issue === "tooLarge" && chosen.every((file) => (assistantAttachmentTypes as readonly string[]).includes(file.type));
       setFileError(issue && !retainOversized ? t(`attachments.${issue}`) : null);
-      if (!issue || retainOversized) setFiles((previous) => [...previous, ...chosen.map((file): PendingAssistantFile => ({ file, id: crypto.randomUUID(),
-        ...(validateAssistantFiles([file], 0) === "tooLarge" ? { invalid: "tooLarge" } : {}) }))]);
+      if (!issue || retainOversized) for (const file of chosen) void runtime.runtime.thread.composer.addAttachment(file).catch(() => undefined);
     }}
-    onRemove={removeFile} onSend={send} onStop={() => { void runtime.stop().catch(() => undefined); }} />;
+    onStop={() => { void runtime.stop().catch(() => undefined); }} />;
   const queries = <QuickQueries scope={scope} queries={state.quickQueries} disabled={busy || notice} onSelect={quick} />;
-  return <div className="relative flex min-h-0 flex-1 overflow-hidden text-[var(--t1)]">
+  return <AssistantRuntimeProvider runtime={runtime.runtime}><div className="relative flex min-h-0 flex-1 overflow-hidden text-[var(--t1)]">
     {!phone ? <aside aria-label={t("history.title")} className={`${collapsed ? "w-14" : "w-[264px]"} shrink-0 border-r border-[var(--borde)] bg-[var(--lado-activo)]`}>
       <Button variant="icon" size="icon" className={`absolute top-5 z-10 size-7 rounded-full border border-[var(--borde2)] bg-[var(--lado-activo)] shadow-[var(--sombra-flecha)] ${collapsed ? "left-[42px]" : "left-[250px]"}`} aria-label={t(collapsed ? "history.show" : "history.hide")} aria-expanded={!collapsed} onClick={() => setCollapsed(!collapsed)}><ChevronLeftIcon className={`size-[18px] ${collapsed ? "rotate-180" : ""}`} /></Button>
       {collapsed ? <Button variant="icon" size="icon" className="m-3 mt-14" aria-label={t("history.new")} onClick={() => select(null)}><Plus className="size-[18px]" /></Button> : history}
@@ -310,8 +338,8 @@ function AssistantSession(props: AssistantHomeProps) {
       {props.banner}
       {phone ? <><AppBarTools placement="leading"><AppIconButton ref={historyTrigger} label={t("history.title")} onClick={() => setHistoryOpen(true)}><Menu className="size-[22px]" /></AppIconButton></AppBarTools><AppBarTools><AppIconButton label={t("history.new")} onClick={() => select(null)}><SquarePen className="size-[22px]" /></AppIconButton></AppBarTools></> : null}
       {!configured ? <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5"><NotConfigured canConfigure={state.canConfigure} onConfigure={props.onConfigure} />{props.children}</div></div> : <>
-        {selectedId ? <AssistantThread runtime={runtime.runtime} turn={runtime.turn} turnPending={runtime.isPending} messages={runtime.messages} links={{ scope, hasPermission: props.hasPermission, organizationIds: props.organizationIds, organizationNames: props.organizationNames, onOpenOrganization: props.onOpenOrganization }} canOpenLink={props.canOpenLink} pending={busy}
-          onCopy={(text) => fire(async (context) => { context.assertActive(); await navigator.clipboard.writeText(text); context.assertActive(); }, selectedId)} onFeedback={feedback} onDownload={download} /> : <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5"><div className="mb-1 flex items-center justify-center gap-3 max-md:flex-col"><span className="flex size-9 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><Sparkles className="size-5" aria-hidden="true" /></span><h2 className="text-center text-[26px] font-semibold">{t("welcome")}</h2></div>{props.welcome}{!phone ? limited ? <LimitReached monthly={code === "Assistant.Limit.MonthlyReached"} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer : null}{queries}{props.children}</div></div>}
+        {selectedId ? <AssistantThread turn={runtime.turn} turnPending={runtime.isPending} messages={runtime.messages} links={{ scope, hasPermission: props.hasPermission, organizationIds: props.organizationIds, organizationNames: props.organizationNames, onOpenOrganization: props.onOpenOrganization }} canOpenLink={props.canOpenLink} pending={busy}
+          onDownload={download} /> : <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5"><div className="mb-1 flex items-center justify-center gap-3 max-md:flex-col"><span className="flex size-9 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><Sparkles className="size-5" aria-hidden="true" /></span><h2 className="text-center text-[26px] font-semibold">{t("welcome")}</h2></div>{props.welcome}{!phone ? limited ? <LimitReached monthly={code === "Assistant.Limit.MonthlyReached"} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer : null}{queries}{props.children}</div></div>}
         {selectedId || phone ? <div className="mx-auto flex w-full max-w-[824px] flex-col gap-3 px-5 pb-4 md:px-8">{limited ? <LimitReached monthly={code === "Assistant.Limit.MonthlyReached"} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer}</div> : null}
       </>}
       {state.remainingMessages != null && state.remainingMessages > 0 && state.remainingMessages <= 10 ? <p className="pb-3 text-center text-sm text-[var(--t2)]"><Trans ns="assistant" i18nKey="limit.remaining" components={{ remaining: <NumberText value={state.remainingMessages} /> }} /></p> : null}
@@ -331,5 +359,5 @@ function AssistantSession(props: AssistantHomeProps) {
     </DialogContent></Dialog> : null}
     {notice ? <AssistantNotice pending={operations.pending} error={actionError} onAccept={acceptNotice} onPrivacy={props.onPrivacy} /> : null}
     {dialog && !notice ? <ConversationDialog value={dialog} pending={operations.pending} error={actionError} onClose={closeDialog} onConfirm={confirmDialog} /> : null}
-  </div>;
+  </div></AssistantRuntimeProvider>;
 }
