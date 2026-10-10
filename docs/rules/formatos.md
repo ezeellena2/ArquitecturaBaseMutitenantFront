@@ -19,7 +19,10 @@
 - **Fuera de JSX** (por ejemplo, en el `aria-label` de un gráfico): `const f = useFormat(); f.money(x)`.
 - **Estados:** cada feature registra los tonos de sus estados con el enum del contrato y el color del lienzo para cada valor: `defineStatusTones("CompanyStatus", { Active: "success", Inactive: "neutral" })` (`statusTones.ts`; TypeScript pide un tono por valor). Se muestran con `<StatusBadge tones={companyStatusTones} value={c.status} />` o, en una tabla, con la columna `type: "status"` y sus `tones`: la palabra sale de `enums.<Enum>.<Valor>` y el color de cada tono (`success`, `warning`, `danger`, `neutral` o `pending`), de los tokens de [tema.md](../architecture/tema.md). Cuando la palabra va dentro de otro texto con su letra (el estado de la Página pública en la banda, un dominio de Configuración en el teléfono), va solo el punto: `<StatusMark tones={domainStatusTones} value={domain.status} />`. Un estado que muestran dos features se registra una sola vez, en `shared/format/statusTones.ts`: el de la Página pública (`publicPageStateTones`), que usan su ficha y su tarjeta del Inicio. Ninguna pantalla escribe un color de estado ni elige un tono suelto.
 
+La entrada de tarifas técnicas de IA usa `MoneyField precision="technical-tariff"` (ADR 0051): conserva hasta seis decimales en edición y rechaza siete, siempre con una moneda habilitada del catálogo. El parser y la presentación editable permanecen centrales. El valor predeterminado del field, los presupuestos, `MoneyText` y `DataTable` conservan `MinorUnits`. `MoneyField.test.tsx` verifica blur, escala excesiva y el comportamiento monetario ordinario.
+
 ## Prohibido
+
 - `toLocaleString`, `toLocaleDateString`, `toFixed`, `Intl.*` o `new Date(...)` para mostrar, fuera de `shared/format` y `shared/time`. Los nombres de países vienen del catálogo, no de `Intl.DisplayNames` en el front.
 - Arrays, `switch` o constantes de opciones de moneda, país, zona, cultura o tipo fiscal: son datos de referencia, no código.
 - `"N/A"`, `"-"` o `0` para un dato que falta.

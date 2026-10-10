@@ -82,6 +82,8 @@
     "Deleted": "Deleted"
   },
   "LegalDocumentKind": { "Terms": "Terms and conditions", "Privacy": "Privacy policy" },
+  "AssistantProvider": { "Anthropic": "Anthropic" },
+  "AssistantEffort": { "low": "Low", "medium": "Medium", "high": "High" },
   "LoginMethodType": {
     "Email": "Email",
     "Phone": "WhatsApp",

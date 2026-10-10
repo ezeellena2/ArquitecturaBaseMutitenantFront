@@ -1,5 +1,6 @@
-import { screen } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { RadioGroupField } from "./RadioGroupField";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
@@ -10,6 +11,19 @@ const options = [
 ];
 
 describe("RadioGroupField", () => {
+  it("segmentado usa flechas, salta opciones deshabilitadas y no envía el formulario", async () => {
+    const submit = vi.fn((event) => event.preventDefault());
+    function Segmented() {
+      const [value, setValue] = useState("first");
+      return <form onSubmit={submit}><RadioGroupField variant="segmented" label="Elección" value={value} onValueChange={setValue}
+        options={[{ value: "first", label: "Primera" }, { value: "second", label: "Segunda", disabled: true }, { value: "third", label: "Tercera" }]} /></form>;
+    }
+    renderWithProviders(<Segmented />);
+    const user = userEvent.setup();
+    act(() => screen.getByRole("radio", { name: "Primera" }).focus()); await user.keyboard("{ArrowRight>}");
+    await waitFor(() => expect(screen.getByRole("radio", { name: "Tercera" })).toBeChecked()); await user.keyboard("{/ArrowRight}"); expect(screen.getByRole("radio", { name: "Tercera" })).toHaveFocus();
+    expect(screen.getByRole("radio", { name: "Segunda" })).toBeDisabled(); expect(submit).not.toHaveBeenCalled();
+  });
   it("names the group and each option with its label", () => {
     renderWithProviders(<RadioGroupField label="Por dónde" options={options} value="WhatsApp" onValueChange={vi.fn()} />);
 

@@ -7,7 +7,7 @@ export interface MultiSelectOption {
   value: string;
   label: string;
   /// Línea de ayuda debajo de la opción.
-  description?: string;
+  description?: ReactNode;
 }
 
 interface MultiSelectProps {

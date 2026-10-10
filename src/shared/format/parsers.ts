@@ -48,11 +48,12 @@ export function parseMoney(
   currency: string,
   culture: CultureReference,
   referenceData: ReferenceData,
+  precision: "currency" | "technical-tariff" = "currency",
 ): MoneyValue | null {
   const parsed = numericParts(input, culture);
   if (parsed === null) return null;
   const row = referenceData.currencies.find((item) => item.code === currency && item.isEnabled);
-  if (!row || row.minorUnits === null || parsed.fractionDigits > row.minorUnits) {
+  if (!row || row.minorUnits === null || parsed.fractionDigits > (precision === "technical-tariff" ? 6 : row.minorUnits)) {
     throw new Error("La moneda o su cantidad de decimales no es válida.");
   }
   return { amount: parsed.value, currency };

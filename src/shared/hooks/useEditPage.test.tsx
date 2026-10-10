@@ -20,9 +20,9 @@ const conflict = new ApiError(409, { code: "General.ConcurrencyConflict", detail
 const lastOwner = new ApiError(409, { code: "Tenancy.Member.LastTenantAdmin", detail: "Tiene que quedar al menos un Dueño activo." });
 
 /// Una ficha mínima que arma la banda, el cartel, la franja y la pregunta de salida con el hook, como Configuración.
-function Editor({ error, onSeeNew = () => {}, onContinueEditing = () => {} }: { error?: unknown; onSeeNew?: () => void; onContinueEditing?: () => void }) {
+function Editor({ error, onSeeNew = () => {}, onContinueEditing = () => {}, searchKeys }: { error?: unknown; onSeeNew?: () => void; onContinueEditing?: () => void; searchKeys?: readonly string[] }) {
   const [dirty, setDirty] = useState(false);
-  const edit = useEditPage({ isDirty: dirty, error, onSeeNew, onContinueEditing });
+  const edit = useEditPage({ isDirty: dirty, error, onSeeNew, onContinueEditing, searchKeys });
 
   return <>
     <h1>{"Configuración"}</h1>
@@ -31,6 +31,7 @@ function Editor({ error, onSeeNew = () => {}, onContinueEditing = () => {} }: { 
     {edit.formError}
     <button type="button" onClick={() => setDirty(true)}>{"Cambiar algo"}</button>
     <Link to="/empresas">{"Empresas"}</Link>
+    <Link to="?tab=catalog">{"Catálogo"}</Link>
     {edit.leaveDialog}
   </>;
 }
@@ -45,6 +46,15 @@ function renderEditor(props: Parameters<typeof Editor>[0] = {}) {
 }
 
 describe("useEditPage", () => {
+  it("puede proteger un cambio de grupo en URL sin bloquear filtros ajenos", async () => {
+    const router = renderEditor({ searchKeys: ["tab"] });
+    await userEvent.click(await screen.findByRole("button", { name: "Cambiar algo" }));
+    await userEvent.click(screen.getByRole("link", { name: "Catálogo" }));
+    const dialog = await screen.findByRole("dialog", { name: "¿Salir sin guardar?" });
+    expect(router.state.location.search).toBe("");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Salir sin guardar" }));
+    await waitFor(() => expect(router.state.location.search).toBe("?tab=catalog"));
+  });
   it("sin cambios ni error, no muestra nada y deja salir", async () => {
     const router = renderEditor();
 

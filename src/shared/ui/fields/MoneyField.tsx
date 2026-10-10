@@ -7,6 +7,10 @@ import { Label } from "../label";
 import { CurrencySelect } from "./CurrencySelect";
 
 interface MoneyFieldProps {
+  /** ADR 0051: opt-in exclusivo para tarifas técnicas; presupuestos usan currency. */
+  precision?: "currency" | "technical-tariff";
+  /** Moneda del recurso cuando todavía no hay importe (sin reemplazar la selección del usuario). */
+  currencyCode?: string;
   value: MoneyValue | null;
   onChange: (value: MoneyValue | null) => void;
   onValidityChange?: (isValid: boolean) => void;
@@ -20,7 +24,7 @@ interface MoneyFieldProps {
 }
 
 /** Importe y código ISO viajan juntos; precisión y opciones vienen de Currencies. */
-export function MoneyField({ value, onChange, onValidityChange, id, name, disabled, required, placeholder,
+export function MoneyField({ value, onChange, onValidityChange, id, name, disabled, required, placeholder, precision = "currency", currencyCode,
   "aria-invalid": externalInvalid, "aria-describedby": externalDescription }: MoneyFieldProps) {
   const format = useFormat();
   const { t } = useTranslation();
@@ -32,18 +36,18 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
   const [touched, setTouched] = useState(false);
   const [currencyOverride, setCurrencyOverride] = useState<{ base: string | null; selected: string } | null>(null);
   const currency = currencyOverride?.base === (value?.currency ?? null)
-    ? currencyOverride.selected : value?.currency ?? (format.isLoading ? "" : format.currency ?? "");
+    ? currencyOverride.selected : value?.currency ?? currencyCode ?? (format.isLoading ? "" : format.currency ?? "");
   const currencyRow = format.isLoading ? null
     : format.referenceData.currencies.find((row) => row.code === value?.currency);
   const displayed = !format.isLoading && value !== null && currencyRow?.minorUnits !== null
     && currencyRow?.minorUnits !== undefined
-    ? format.formatDecimal(value.amount, currencyRow.minorUnits) : "";
+    ? format.formatDecimal(value.amount, precision === "technical-tariff" ? 6 : currencyRow.minorUnits) : "";
   const inputValue = draft ?? displayed;
 
   function change(input: string, selected: string) {
     setDraft(input);
     try {
-      const parsed = format.parseMoney(input, selected);
+      const parsed = format.parseMoney(input, selected, precision);
       inputRef.current?.setCustomValidity("");
       setInvalid(false);
       onValidityChange?.(true);

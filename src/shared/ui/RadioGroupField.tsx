@@ -13,6 +13,11 @@ export interface RadioOption {
 }
 
 interface RadioGroupFieldProps {
+  /** Formulario con pocas opciones a la vista (Config Asistente v115); conserva teclado de RadioGroup. */
+  variant?: "list" | "segmented";
+  id?: string;
+  "aria-invalid"?: boolean;
+  "aria-describedby"?: string;
   /// El nombre accesible del grupo. No se dibuja: en el tablero, lo que dice de qué se trata es la casilla de arriba
   /// ("Mandarle una invitación"), y las opciones se leen solas ("Por correo", "Por WhatsApp").
   label: string;
@@ -27,23 +32,32 @@ interface RadioGroupFieldProps {
 /// de la invitación en el alta de un usuario (tablero "WhatsApp · Usuarios: alta con teléfono", punto 2). Es el Radio
 /// Group de Radix, que da el rol `radiogroup`, las flechas para moverse y el foco en la elegida, con la misma fila que
 /// `CheckboxField`.
-export function RadioGroupField({ label, options, value, onValueChange, error }: RadioGroupFieldProps): ReactNode {
+export function RadioGroupField({ label, options, value, onValueChange, error, variant = "list", id: fieldId,
+  "aria-invalid": invalid, "aria-describedby": describedBy }: RadioGroupFieldProps): ReactNode {
   const id = useId();
   const errorId = `${id}-error`;
 
   return (
     <div className="flex flex-col gap-1.5">
       <RadioGroup.Root
+        id={fieldId}
         aria-label={label}
-        aria-describedby={error ? errorId : undefined}
+        aria-invalid={invalid || !!error}
+        aria-describedby={[describedBy, error ? errorId : undefined].filter(Boolean).join(" ") || undefined}
         // Radix toma `undefined` como "no controlado": la cadena vacía no coincide con ninguna opción.
         value={value ?? ""}
         onValueChange={onValueChange}
-        className="flex flex-col gap-1"
+        orientation={variant === "segmented" ? "horizontal" : undefined}
+        className={variant === "segmented" ? "flex h-11 gap-0.5 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] p-[3px] max-md:h-12" : "flex flex-col gap-1"}
       >
         {options.map((option) => {
           const optionId = `${id}-${option.value}`;
           const descriptionId = `${optionId}-description`;
+
+          if (variant === "segmented") return <RadioGroup.Item key={option.value} value={option.value} disabled={option.disabled}
+            className="relative flex-1 rounded-[7px] text-[14px] font-semibold text-[var(--t2)] outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] data-[state=checked]:bg-[var(--lado-activo)] data-[state=checked]:text-[var(--t1)] data-[state=checked]:shadow-sm disabled:cursor-not-allowed disabled:opacity-50">
+            {option.label}
+          </RadioGroup.Item>;
 
           return (
             // `relative`: dentro de un formulario, Radix pone al lado del botón un input escondido y posicionado, para

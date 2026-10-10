@@ -11,6 +11,8 @@ import { AlertCircleIcon } from "@/shared/ui/icons";
 import { useUnsavedChangesGuard } from "./useUnsavedChangesGuard";
 
 export interface EditPageOptions {
+  /** Grupos cuyo cambio en URL abandona el editor (por defecto sólo cambia de ruta). */
+  readonly searchKeys?: readonly string[];
   /** Lo escrito difiere de lo guardado. */
   readonly isDirty: boolean;
   /** El error del último guardado de la pantalla (no el de sus diálogos: esos van arriba de sus botones). */
@@ -41,10 +43,10 @@ export interface EditPage {
 /// Lo común de una pantalla que edita algo que ya existe (tableros Avisos y «Criterio · Avisos y errores»): el cartel
 /// del 409 debajo de la banda, «Cambios sin guardar» en la banda, la franja del error de guardado y la pregunta antes de
 /// salir con cambios. Cada error va en un solo lugar.
-export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, errorMessage }: EditPageOptions): EditPage {
+export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, errorMessage, searchKeys }: EditPageOptions): EditPage {
   const { t } = useTranslation("errors");
   const { phone } = useAppChrome();
-  const guard = useUnsavedChangesGuard(isDirty);
+  const guard = useUnsavedChangesGuard(isDirty, searchKeys);
   const conflict = error instanceof ApiError && error.code === "General.ConcurrencyConflict";
   const message = conflict ? null : errorMessage ? errorMessage(error) : actionErrorMessage(error, t);
 

@@ -15,7 +15,7 @@ export type { DateRangeValue, MoneyValue } from "./formatters";
 type Formatters = ReturnType<typeof createFormatters>;
 type BoundParsers = {
   parseDecimal: (input: string) => number | null;
-  parseMoney: (input: string, currency?: string) => MoneyValue | null;
+  parseMoney: (input: string, currency?: string, precision?: "currency" | "technical-tariff") => MoneyValue | null;
   parsePercent: (input: string) => number | null;
   parseDate: (input: string) => string | null;
   parseDateTime: (input: string) => string | null;
@@ -124,7 +124,7 @@ export function FormatProvider({ children }: { children: ReactNode }) {
         translate: (key, options) => t(key, options),
       }),
       parseDecimal: (input) => parseDecimal(input, profile),
-      parseMoney: (input, selectedCurrency = currency ?? "") => parseMoney(input, selectedCurrency, profile, data),
+      parseMoney: (input, selectedCurrency = currency ?? "", precision) => parseMoney(input, selectedCurrency, profile, data, precision),
       parsePercent: (input) => parsePercent(input, profile),
       parseDate: (input) => parseDate(input, profile),
       parseDateTime: (input) => parseDateTime(input, profile, timeZone),

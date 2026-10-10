@@ -18,9 +18,9 @@ beforeAll(async () => {
 
 /// Una pantalla de edición mínima, que monta el `ConfirmDialog` como lo va a hacer la del rol: abierto
 /// mientras la guarda frena una salida, "Salir sin guardar" sale y cerrarlo de cualquier otra forma se queda.
-function Editor() {
+function Editor({ searchKeys }: { searchKeys?: readonly string[] }) {
   const [dirty, setDirty] = useState(false);
-  const guard = useUnsavedChangesGuard(dirty);
+  const guard = useUnsavedChangesGuard(dirty, searchKeys);
   const navigate = useNavigate();
   const { t } = useTranslation("errors");
 
@@ -60,11 +60,11 @@ function Editor() {
   );
 }
 
-function renderEditor(initialEntries = ["/roles/abc"]) {
+function renderEditor(initialEntries = ["/roles/abc"], searchKeys?: readonly string[]) {
   const router = createMemoryRouter(
     [
       { path: "/roles", element: <h1>{"Listado de roles"}</h1> },
-      { path: "/roles/:roleId", element: <Editor /> },
+      { path: "/roles/:roleId", element: <Editor searchKeys={searchKeys} /> },
     ],
     { initialEntries, initialIndex: initialEntries.length - 1 },
   );
@@ -80,6 +80,15 @@ async function makeAChange() {
 }
 
 describe("useUnsavedChangesGuard", () => {
+  it("bloquea sólo las claves query elegidas también al volver con el historial", async () => {
+    const router = renderEditor(["/roles/abc?seccion=permisos", "/roles/abc?seccion=datos"], ["seccion"]);
+    await makeAChange();
+    await act(() => router.navigate("?seccion=datos&page=2"));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    await act(() => router.navigate(-2));
+    expect(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).toBeVisible();
+    expect(router.state.location.search).toBe("?seccion=datos&page=2");
+  });
   it("leaves right away when there is nothing to lose", async () => {
     const router = renderEditor();
 

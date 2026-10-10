@@ -11,6 +11,8 @@ function RegisteredAssistant({ me, phone, ...content }: ModuleContentProps & { p
   const navigate = useNavigate();
   const { profiles, status } = useProfiles();
   const registry = useModuleRegistry();
+  const configurationPath = me.access === "platform" ? "/plataforma/asistente/configuracion" : "/org/asistente/configuracion";
+  const configurationAvailable = registry.some((module) => module.routes.some((route) => route.path === configurationPath && route.access === me.access && route.guard(me) === "allowed"));
   const usageAvailable = registry.some((module) => module.routes.some((route) => route.path === "/plataforma/asistente/uso" && route.access === me.access && route.guard(me) === "allowed"));
   const permissions = me.access === "platform" ? me.effectivePermissions.platform : me.effectivePermissions.organization;
   const Page = phone ? AssistantPhonePage : AssistantHome;
@@ -21,6 +23,7 @@ function RegisteredAssistant({ me, phone, ...content }: ModuleContentProps & { p
     organizationIds={me.access === "consumer" ? me.organizations.map((organization) => organization.id) : undefined}
     organizationNames={me.access === "consumer" ? Object.fromEntries(me.organizations.map((organization) => [organization.id, organization.name])) : undefined}
     onOpenOrganization={me.access === "consumer" ? (id) => profiles.find((profile) => profile.key === id)?.select() : undefined}
+    onConfigure={configurationAvailable ? () => navigate(configurationPath) : undefined}
     onPrivacy={() => navigate("/privacidad")} />;
 }
 
