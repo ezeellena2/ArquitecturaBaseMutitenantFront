@@ -132,7 +132,7 @@ export interface paths {
                 /** @description Too Many Requests; WhatsApp.Webhook.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -937,7 +937,7 @@ export interface paths {
                 /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -2553,7 +2553,7 @@ export interface paths {
                 /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -4444,7 +4444,7 @@ export interface paths {
                 /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -9067,7 +9067,7 @@ export interface paths {
                         "text/json": components["schemas"]["VersionResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Platform.AccountRecovery.PhoneMethodInUse; Request.IdempotencyKeyRequired */
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -9103,8 +9103,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict; Platform.AccountRecovery.AlreadyResolved; Platform.AccountRecovery.NoAccount; Platform.AccountRecovery.MethodInUse; Platform.AccountRecovery.OperatorAccount; General.ConcurrencyConflict; Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Conflict; Platform.AccountRecovery.AlreadyResolved; General.ConcurrencyConflict; Platform.AccountRecovery.NoAccount; Platform.AccountRecovery.MethodInUse; Platform.AccountRecovery.MethodAlreadyOnAccount; Platform.AccountRecovery.OperatorAccount; Request.InProgress */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9115,7 +9124,7 @@ export interface paths {
                 /** @description Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -9181,7 +9190,7 @@ export interface paths {
                         "text/json": components["schemas"]["VersionResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Platform.AccountRecovery.PhoneMethodInUse; Request.IdempotencyKeyRequired */
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -9217,8 +9226,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict; Platform.AccountRecovery.AlreadyResolved; Platform.AccountRecovery.NoAccount; Platform.AccountRecovery.MethodInUse; Platform.AccountRecovery.OperatorAccount; General.ConcurrencyConflict; Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Conflict; Platform.AccountRecovery.AlreadyResolved; General.ConcurrencyConflict; Request.InProgress */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9229,7 +9247,7 @@ export interface paths {
                 /** @description Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -14166,7 +14184,7 @@ export interface paths {
                 /** @description Too Many Requests; Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -14200,7 +14218,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -14239,8 +14257,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Request.InProgress */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -14251,7 +14278,7 @@ export interface paths {
                 /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -14285,7 +14312,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -14320,8 +14347,8 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Auth.Account.Disabled; Auth.Account.LockedOut; Tenancy.Access.PlatformOnly */
-                403: {
+                /** @description Request.InProgress */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -14329,8 +14356,8 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Request.IdempotencyKeyReused; Request.InProgress */
-                409: {
+                /** @description Request.IdempotencyKeyReused */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -14341,7 +14368,7 @@ export interface paths {
                 /** @description Too Many Requests; Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -14375,7 +14402,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -14410,8 +14437,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Request.InProgress */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -14422,7 +14458,7 @@ export interface paths {
                 /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -14504,8 +14540,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Request.InProgress */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -14516,7 +14561,7 @@ export interface paths {
                 /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -14550,7 +14595,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs.BusinessSignup abierto, independiente de ConsumerSignup; identidad nueva o existente. No crea organización ni PhoneTaken personal. Cuenta, método, Personal cuando corresponde y legales explícitos atómicos. Operador probado: PlatformOnly y sin cookie pública. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs.BusinessSignup abierto, independiente de ConsumerSignup; identidad nueva o existente. No crea organización ni PhoneTaken personal. Cuenta, método, Personal cuando corresponde y legales explícitos atómicos. Operador probado: PlatformOnly y sin cookie pública. Baja pendiente se rechaza sin cancelTicket ni retorno de cancelación. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -14587,7 +14632,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Auth.Account.Disabled; Auth.Account.LockedOut; Tenancy.Access.PlatformOnly; Auth.BusinessSignup.Closed */
+                /** @description Forbidden; Identity.Account.Suspended; Identity.Account.PendingDeletion; Tenancy.Access.PlatformOnly; Auth.BusinessSignup.Closed */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -14596,7 +14641,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Request.InProgress */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -14605,10 +14650,19 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests */
+                /** @description Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Identity.Account.LockedOut; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -14698,7 +14752,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict; Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Conflict; Request.InProgress */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -14707,7 +14761,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Unprocessable Entity */
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
                 422: {
                     headers: {
                         [name: string]: unknown;
@@ -14719,7 +14773,7 @@ export interface paths {
                 /** @description Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -15188,8 +15242,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Request.InProgress */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -15200,7 +15263,7 @@ export interface paths {
                 /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -15234,7 +15297,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. returnUrl OIDC o /invitacion conserva el flujo anterior y exige access ausente/null en el cuerpo. Continuación fija exclusivamente / con access=consumer o /org con access=business, valores literales sin query/fragmento; cualquier discrepancia falla antes de consumir el código. Respuesta returnUrl y cookie de identidad después del commit, sin tokens OIDC en body; el SPA inicia una autorización nueva tras el retorno fijo. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs. returnUrl OIDC o /invitacion conserva el flujo anterior y exige access ausente/null en el cuerpo. Continuación fija exclusivamente / con access=consumer o /org con access=business, valores literales sin query/fragmento; cualquier discrepancia falla antes de consumir el código. Respuesta returnUrl y cookie de identidad después del commit, sin tokens OIDC en body; el SPA inicia una autorización nueva tras el retorno fijo. Baja pendiente: sólo después de probar posesión y dentro de la gracia se emiten cancelTicket, returnUrl validado y fechas de cancelación; con gracia vencida se devuelve Legal.AccountDeletion.GraceExpired, sin ticket. */
         post: {
             parameters: {
                 query?: never;
@@ -15275,7 +15338,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Auth.Account.Disabled; Auth.Account.LockedOut; Tenancy.Access.PlatformOnly */
+                /** @description Forbidden; Identity.Account.Suspended; Identity.Account.PendingDeletion; Tenancy.Access.PlatformOnly */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -15284,7 +15347,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Legal.AccountDeletion.GraceExpired; Request.InProgress */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -15293,10 +15356,19 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Http.TooManyRequests */
+                /** @description Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Identity.Account.LockedOut; Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -15330,7 +15402,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Revalidar dueño, método, canal, estado y operador bajo lock; operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Preview no consume ni crea cookie. displayName y maskedPhone nullable. */
+        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Invalid reúne enlace inexistente, usado, vencido, invalidado, método retirado y cuenta operadora. Preview hace dos lecturas coherentes del enlace y su cuenta, sin UoW ni lock; revalida dueño, método, canal, estado, operador y vigencia antes de responder. No consume ni crea cookie. displayName y maskedPhone nullable. Una baja pendiente permite preview mientras el enlace sea vigente; no emite cancelTicket. */
         post: {
             parameters: {
                 query?: never;
@@ -15357,7 +15429,7 @@ export interface paths {
                         "text/json": components["schemas"]["LoginLinkPreviewResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Auth.LoginLink.Invalid; Auth.LoginLink.Expired; Auth.LoginLink.AlreadyUsed */
+                /** @description Bad Request; Validation.Failed; Auth.LoginLink.Invalid */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -15366,10 +15438,19 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginLink.TooManyRequests; Http.TooManyRequests */
+                /** @description Forbidden; Identity.Account.Suspended */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Identity.Account.LockedOut; Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -15403,7 +15484,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Revalidar dueño, método, canal, estado y operador bajo lock; operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Solo access=consumer. 200 {access:consumer} y cookie pública, sin tokens OIDC. Replay misma key no crea otra sesión; otra key ya usado. Front ejecuta después signinRedirect con su state y PKCE. */
+        /** @description Enlace opaco 256 bits (43 base64url), hash, 10 minutos, un uso y ligado a MethodId Phone verificado. Uno nuevo invalida los previos de ese método. Operador actual devuelve Invalid incluso en replay, sin cookie, datos o motivo revelador. Token via /login/enlace#t=… y solo memoria; jamás query/storage/log. Invalid reúne enlace inexistente, usado, vencido, invalidado, método retirado y cuenta operadora. Revalida dueño, método, canal, estado y operador bajo lock dentro de la UoW. Solo access=consumer. 200 {access:consumer} y cookie pública, sin tokens OIDC. Replay misma key no crea otra sesión; otra key devuelve Invalid si ya fue usado. Baja pendiente: prueba válida y gracia vigente emiten cancelTicket con retorno fijo /login/enlace; gracia vencida devuelve Legal.AccountDeletion.GraceExpired sin ticket. Front ejecuta después signinRedirect con su state y PKCE. */
         post: {
             parameters: {
                 query?: never;
@@ -15435,7 +15516,7 @@ export interface paths {
                         "text/json": components["schemas"]["LoginLinkRedeemResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Auth.LoginLink.Invalid; Auth.LoginLink.Expired; Auth.LoginLink.AlreadyUsed; Request.IdempotencyKeyRequired */
+                /** @description Bad Request; Validation.Failed; Auth.LoginLink.Invalid; Request.IdempotencyKeyRequired */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -15444,7 +15525,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Identity.Account.Suspended; Identity.Account.PendingDeletion */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -15453,7 +15534,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Legal.AccountDeletion.GraceExpired; Request.InProgress */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -15462,10 +15543,19 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginLink.TooManyRequests; Http.TooManyRequests */
+                /** @description Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Identity.Account.LockedOut; Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -15521,7 +15611,7 @@ export interface paths {
                 /** @description Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -15605,8 +15695,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Request.InProgress */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -15617,7 +15716,7 @@ export interface paths {
                 /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -15651,7 +15750,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs.ConsumerSignup abierto; acepta términos explícitos. Crea Persona, nunca empresa. Cuenta, método, Personal cuando corresponde y legales explícitos atómicos. Operador probado: PlatformOnly y sin cookie pública. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs.ConsumerSignup abierto; acepta términos explícitos. Crea Persona, nunca empresa. Cuenta, método, Personal cuando corresponde y legales explícitos atómicos. Operador probado: PlatformOnly y sin cookie pública. Baja pendiente se rechaza sin cancelTicket ni retorno de cancelación. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -15686,7 +15785,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Auth.Account.Disabled; Auth.Account.LockedOut; Tenancy.Access.PlatformOnly; Auth.Signup.Closed */
+                /** @description Forbidden; Identity.Account.Suspended; Identity.Account.PendingDeletion; Tenancy.Access.PlatformOnly; Auth.Signup.Closed */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -15695,7 +15794,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Request.InProgress */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -15704,10 +15803,19 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests */
+                /** @description Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Identity.Account.LockedOut; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -15981,7 +16089,7 @@ export interface paths {
                 /** @description Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -16058,8 +16166,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Request.InProgress */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -16070,7 +16187,7 @@ export interface paths {
                 /** @description Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -16166,8 +16283,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Identity.LoginMethod.AlreadyVerified; Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Identity.LoginMethod.AlreadyVerified; Request.InProgress */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -16178,7 +16304,7 @@ export interface paths {
                 /** @description Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Http.TooManyRequests; WhatsApp.LoginCode.DailyLimit */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -16212,7 +16338,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Intentos y topes actuales; retryAfter son segundos y coincide con Retry-After. No guardar códigos ni enlaces en logs. Solo OTP del pendiente propio; vínculo, principal si corresponde y avisos en una UoW. */
+        /** @description Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs. Solo OTP del pendiente propio; vínculo, principal si corresponde y avisos en una UoW. El servicio rechaza cuenta suspendida o con baja pendiente sin ticket de cancelación; no evalúa bloqueo temporal de cuenta. */
         post: {
             parameters: {
                 query?: never;
@@ -16258,7 +16384,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Auth.Account.Disabled; Auth.Account.LockedOut; Tenancy.Access.PlatformOnly; Http.Forbidden */
+                /** @description Identity.Account.Suspended; Identity.Account.PendingDeletion; Http.Forbidden */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -16276,8 +16402,17 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Request.IdempotencyKeyReused; Request.InProgress */
+                /** @description Identity.LoginMethod.AlreadyVerified; Request.InProgress */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Request.IdempotencyKeyReused */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -16288,7 +16423,7 @@ export interface paths {
                 /** @description Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -16379,7 +16514,7 @@ export interface paths {
                 /** @description Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
@@ -16473,7 +16608,7 @@ export interface paths {
                 /** @description Http.TooManyRequests */
                 429: {
                     headers: {
-                        /** @description Segundos iguales a retryAfter. */
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
                         "Retry-After"?: number;
                         [name: string]: unknown;
                     };
