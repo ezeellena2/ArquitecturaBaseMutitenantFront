@@ -2520,5 +2520,10 @@ test("WhatsApp real en 1440 y 390: OTP, recuperación humana, enlaces y baja", {
   }
   const checks = fixtureChecks(stdout);
   for (const line of checks) t.diagnostic(line);
-  assert.ok(checks.some((line) => /^CHECK FINAL 30 grupos reales correctos en 1440\/390; Meta Cloud\/delivered pendiente$/.test(line)), "El runner debe completar sus 30 grupos sin sustituir Meta real.");
+  assert.ok(checks.some((line) => /^CHECK FINAL 34 grupos reales correctos en 1440\/390; Meta Cloud\/delivered pendiente$/.test(line)), "El runner debe completar sus 34 grupos sin sustituir Meta real.");
+  for (const width of [1440, 390]) {
+    for (const label of ["Registro de personas Cerrado/Alta de organizaciones Abierta persistidos por UI/GET/F5",
+      "registro empresarial con personas cerrado/OIDC/F5", "políticas/límite/contactos restaurables verificados por UI/GET/F5"])
+      assert.ok(checks.includes(`CHECK OK ${label} ${width}`), `Debe verificar ${label} en ${width}.`);
+  }
 });

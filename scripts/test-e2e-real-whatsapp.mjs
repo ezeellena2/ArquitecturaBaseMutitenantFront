@@ -9,6 +9,7 @@ import { caseDelay, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
+import { openPlatformSettings, reloadPlatformSettings, restorableSettings, savePlatformSettings, withRestoredSettings } from "./test-e2e-real-whatsapp-settings.mjs";
 
 // Sólo RealE2ESetup en Testing inicia este runner. Front/API/OIDC/PostgreSQL son reales.
 // FIXTURE es IPC privado: el host no publica líneas, respuestas, números ni pruebas.
@@ -275,21 +276,47 @@ async function journey(width, index) {
   start(`rechazar recuperación Phone ${width}`); await recovery(page, phone, rejected, `recovery-reject-${width}`); await reviewRecovery(operator, phone, rejected, "reject");
   await begin(`rejected-login-${width}`, rejected); await page.goto(`${base}/login`); await whatsapp(page, rejected);
   await clickHttp(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 400);
-  await page.getByText("No hay una cuenta con ese número.", { exact: true }).waitFor(); pass(`rechazo humano Phone persistido/sin ingreso ${width}`); await operatorContext.close();
+  await page.getByText("No hay una cuenta con ese número.", { exact: true }).waitFor(); pass(`rechazo humano Phone persistido/sin ingreso ${width}`);
 
-  start(`registro empresarial Phone ${width}`); const business = await begin(`business-signup-${width}`, businessPhone); const orgName = `Empresa E8 ${randomUUID().slice(0, 8)}`;
-  await page.goto(`${base}/registro/empresa`); await whatsapp(page, businessPhone, /número de WhatsApp$/i); await page.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
-  await clickHttp(page, page.getByRole("button", { name: "Continuar", exact: true }), "/api/auth/business-signup/code", 202); await fillOtp(page, (await business("code")).proof);
-  await clickHttp(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/business-signup/verify", 204);
-  await page.getByRole("heading", { name: "Tu organización", exact: true }).waitFor();
-  await page.getByRole("textbox", { name: "Nombre de la organización", exact: true }).fill(orgName);
-  await page.getByRole("textbox", { name: /Dirección de tu página/ }).fill(`e8-${randomUUID().slice(0, 8)}`);
-  await page.getByRole("textbox", { name: "Primera empresa", exact: true }).fill(`${orgName} Centro`); await page.getByText("Disponible", { exact: true }).waitFor();
-  const created = await clickHttp(page, page.getByRole("button", { name: "Crear organización", exact: true }), "/api/auth/business-signup", 200); assert.equal((await created.json()).requiresApproval, false);
-  await page.getByRole("button", { name: `Entrar a ${orgName}`, exact: true }).click(); await page.waitForURL((url) => url.pathname === "/org");
-  await authenticated(page, width, orgName); await page.reload(); await authenticated(page, width, orgName); pass(`registro empresarial/OIDC/F5 ${width}`); await signout(page, width, orgName);
-  start(`ingreso empresarial Phone ${width}`); await login(page, businessPhone, "business", `business-login-${width}`); await page.waitForURL((url) => url.pathname === "/org");
-  await authenticated(page, width, orgName); await page.reload(); await authenticated(page, width, orgName); pass(`ingreso empresarial Phone/F5 ${width}`); await signout(page, width, orgName);
+  await withRestoredSettings({
+    read: async () => {
+      start(`configuración para alta empresarial con personas cerrado ${width}`);
+      detail("capturar configuración original por UI y GET pasivo");
+      return openPlatformSettings(operator, base);
+    },
+    prepare: async (baseline) => {
+      if (baseline.salesEmail === null || baseline.supportEmail === null)
+        check(`LIMITACIÓN configuración ${width}: contactos null enriquecidos con correos sintéticos; la UI exige contactos válidos para restaurar`);
+      detail("cerrar Registro de personas y abrir Alta de organizaciones por UI");
+      await savePlatformSettings(operator, baseline, { ...restorableSettings(baseline), consumerSignup: "Closed", businessSignup: "Open" },
+        "Verificación humana aislada: alta empresarial independiente del registro de personas.");
+      pass(`Registro de personas Cerrado/Alta de organizaciones Abierta persistidos por UI/GET/F5 ${width}`);
+    },
+    restore: async (baseline) => {
+      start(`restaurar configuración original ${width}`);
+      detail("leer versión actual por F5 antes de restaurar por UI");
+      const current = await reloadPlatformSettings(operator);
+      await savePlatformSettings(operator, current, restorableSettings(baseline),
+        "Restauración humana de políticas originales después del recorrido empresarial aislado.");
+      pass(`políticas/límite/contactos restaurables verificados por UI/GET/F5 ${width}`);
+    },
+    close: () => operatorContext.close(),
+    body: async () => {
+      start(`registro empresarial Phone con personas cerrado ${width}`); const business = await begin(`business-signup-${width}`, businessPhone); const orgName = `Empresa E8 ${randomUUID().slice(0, 8)}`;
+      await page.goto(`${base}/registro/empresa`); await whatsapp(page, businessPhone, /número de WhatsApp$/i); await page.getByRole("checkbox", { name: /Acepto los Términos/ }).check();
+      await clickHttp(page, page.getByRole("button", { name: "Continuar", exact: true }), "/api/auth/business-signup/code", 202); await fillOtp(page, (await business("code")).proof);
+      await clickHttp(page, page.getByRole("button", { name: "Verificar", exact: true }), "/api/auth/business-signup/verify", 204);
+      await page.getByRole("heading", { name: "Tu organización", exact: true }).waitFor();
+      await page.getByRole("textbox", { name: "Nombre de la organización", exact: true }).fill(orgName);
+      await page.getByRole("textbox", { name: /Dirección de tu página/ }).fill(`e8-${randomUUID().slice(0, 8)}`);
+      await page.getByRole("textbox", { name: "Primera empresa", exact: true }).fill(`${orgName} Centro`); await page.getByText("Disponible", { exact: true }).waitFor();
+      const created = await clickHttp(page, page.getByRole("button", { name: "Crear organización", exact: true }), "/api/auth/business-signup", 200); assert.equal((await created.json()).requiresApproval, false);
+      await page.getByRole("button", { name: `Entrar a ${orgName}`, exact: true }).click(); await page.waitForURL((url) => url.pathname === "/org");
+      await authenticated(page, width, orgName); await page.reload(); await authenticated(page, width, orgName); pass(`registro empresarial con personas cerrado/OIDC/F5 ${width}`); await signout(page, width, orgName);
+      start(`ingreso empresarial Phone ${width}`); await login(page, businessPhone, "business", `business-login-${width}`); await page.waitForURL((url) => url.pathname === "/org");
+      await authenticated(page, width, orgName); await page.reload(); await authenticated(page, width, orgName); pass(`ingreso empresarial Phone/F5 ${width}`); await signout(page, width, orgName);
+    },
+  });
 
   start(`baja pendiente por enlace ${width}`); await login(page, recovered, "consumer", `deletion-login-${width}`); await authenticated(page, width);
   await begin(`deletion-${width}`, recovered); await requestDeletion(page); const pending = await pendingLink(page, recovered, width, `pending-${width}`, observed);
@@ -316,6 +343,8 @@ try {
 } catch (error) {
   // Playwright y assert pueden incluir URLs/pruebas en sus mensajes. Sólo metadata saneada.
   check(`FALLO ${stage}; paso ${step}; tipo ${/^[A-Za-z]+$/.test(error?.name ?? "") ? error.name : "Error"}; errorKind ${safeActionErrorKind(error)}; HTTP ${lastFailure || "sin-error"}`);
+  if (error instanceof AggregateError) for (const [index, failure] of error.errors.entries())
+    check(`FALLO fase ${index + 1} de recorrido/restauración/cierre; tipo ${/^[A-Za-z]+$/.test(failure?.name ?? "") ? failure.name : "Error"}; errorKind ${safeActionErrorKind(failure)}`);
   process.exitCode = 1;
 } finally {
   ipc.close(); await browser?.close(); await server?.close();
