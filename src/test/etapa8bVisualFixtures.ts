@@ -2,7 +2,9 @@ import type {
   AssistantConversationResponse, AssistantConversationSummaryCursorResponse, AssistantModelPricePageResponse,
   AssistantModelPriceResponse, AssistantStateResponse, AssistantStreamHttpResponse, AssistantTurnResultResponse,
   MeResponse, OrganizationAssistantSettingsResponse, PlatformAssistantSettingsResponse, ApiProblemDetails,
+  AssistantQuickResponse,
 } from "@/shared/api/types";
+import { galleryImage, galleryPdf, type GalleryUploadFile } from "./galleryUploadFiles.ts";
 import { currentUsers } from "./mocks/currentUsers.ts";
 import type { CurrentUserFixture } from "./mocks/currentUsers.ts";
 import { referenceDataFixture } from "./mocks/handlers.ts";
@@ -12,15 +14,16 @@ export interface GalleryApiResponse {
   method: "GET" | "POST" | "PUT"; path: string; status: number; body?: unknown;
   rawBody?: string; contentType?: string; query?: Record<string, string>; afterResponse?: { method: "POST"; path: string };
 }
-export type GalleryAction = { type: "click" | "press" | "fill"; role?: "button" | "radio" | "combobox" | "textbox" | "option"; name?: string; label?: string; exact?: boolean; key?: string; value?: string };
+export type GalleryAction = { type: "click" | "press" | "fill"; role?: "button" | "radio" | "combobox" | "textbox" | "option" | "menuitem"; name?: string; label?: string; exact?: boolean; key?: string; value?: string }
+  | { type: "upload"; label: string; exact: boolean; files: GalleryUploadFile[] };
 export interface GalleryApp {
   path: string; captureMode: "harness"; site: "main"; userFixture: CurrentUserFixture;
   responses: GalleryApiResponse[]; actions: GalleryAction[]; readySelector: string; readyText?: string; now: string;
 }
 const api = (method: GalleryApiResponse["method"], path: string, body: unknown, status = 200): GalleryApiResponse => ({ method, path, status, body });
-const click = (name: string, role: GalleryAction["role"] = "button"): GalleryAction => ({ type: "click", role, name, exact: true });
+const click = (name: string, role: "button" | "option" | "menuitem" = "button"): GalleryAction => ({ type: "click", role, name, exact: true });
 const fill = (name: string, value: string): GalleryAction => ({ type: "fill", role: "textbox", name, value, exact: true });
-const open = (name: string, role: GalleryAction["role"] = "combobox"): GalleryAction => ({ type: "press", role, name, exact: true, key: "Enter" });
+const open = (name: string, role: "combobox" | "button" = "combobox"): GalleryAction => ({ type: "press", role, name, exact: true, key: "Enter" });
 const secret = "e8b-fictitious-write-only-key";
 const fixtureByScope = { business: "visual-owner", consumer: "visual-personal", platform: "visual-operator" } as const;
 type Scope = keyof typeof fixtureByScope;
@@ -52,7 +55,7 @@ export const galleryPlatformSettings: PlatformAssistantSettingsResponse = {
 export function galleryState(scope: Scope): AssistantStateResponse {
   const keys = scope === "business" ? ["active_users", "expired_invitations", "owners", "recent_changes"] : scope === "consumer" ? ["my_organizations", "my_signin", "my_messages"] : ["pending_organizations", "pending_recoveries", "today_security", "assistant_usage"];
   return { configured: true, canConfigure: scope !== "consumer", models: [], quickQueries: keys.map((key) => ({ key, labelKey: `quick.${key}` })),
-    dailyLimit: 50, dailyResetAtUtc: "2026-10-11T03:00:00Z", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true,
+    dailyLimit: 50, dailyResetAtUtc: "2026-10-11T00:00:00Z", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true,
     retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5 };
 }
 export const galleryConversation: AssistantConversationResponse = {
@@ -118,14 +121,76 @@ export function configurationScenario(board: string, state: string): GalleryApp 
   if (platform) app.responses.push(api("GET", `${prefix}/models`, galleryModelPage));
   return app;
 }
-export function chatScenario(board: string, state: string): GalleryApp | undefined {
+function createChatScenario(board: string, state: string): GalleryApp | undefined {
   const scope: Scope = board.includes("Personal") ? "consumer" : board.includes("Plat") ? "platform" : "business";
   const route = scope === "consumer" ? "/asistente" : scope === "platform" ? "/plataforma/asistente" : "/org/asistente";
   const prefix = `/api/${scope === "consumer" ? "me" : scope === "platform" ? "platform" : "organization"}/assistant`;
   const configure = state !== "Sin configurar (otro rol)" && scope !== "consumer";
   const app = baseApp(scope, route, configure); const initial = galleryState(scope); initial.canConfigure = configure;
   let history: AssistantConversationSummaryCursorResponse = { items: [], hasMore: false };
+  const selectConversation = () => {
+    history = { items: [galleryConversation.conversation], hasMore: false };
+    app.responses.push(api("GET", `${prefix}/conversations/gallery-chat`, galleryConversation));
+    app.actions = [...(board.startsWith("M-") ? [click("Conversaciones")] : []), click("Mi consulta")];
+    app.readySelector = '[role="group"][aria-label="Asistente"] strong';
+  };
   switch (state) {
+    case "Bienvenida":
+      initial.noticeAccepted = false;
+      history = { items: [galleryConversation.conversation], hasMore: false };
+      app.responses.push(api("POST", `${prefix}/notice`, {}), { ...api("GET", prefix, { ...initial, noticeAccepted: true } satisfies AssistantStateResponse), afterResponse: { method: "POST", path: `${prefix}/notice` } });
+      app.actions = [click("Entendido")];
+      app.readySelector = 'h2'; app.readyText = "¿Qué querés consultar?"; break;
+    case "Con adjuntos": case "Adjunto de más de 10 MB":
+      history = { items: [galleryConversation.conversation], hasMore: false };
+      app.actions = [{ type: "upload", label: "Adjuntar", exact: true, files: [galleryImage] },
+        { type: "upload", label: "Adjuntar", exact: true, files: [{ ...galleryPdf, ...(state === "Adjunto de más de 10 MB" ? { byteLength: 10 * 1024 * 1024 + 1 } : {}) }] }];
+      app.readySelector = state === "Con adjuntos" ? 'button[aria-label="Quitar planilla-ventas.pdf"]' : '[role="alert"]';
+      if (state !== "Con adjuntos") app.readyText = "El archivo pesa más de 10 MB.";
+      break;
+    case "Historial plegado": selectConversation(); app.actions.push(click("Ocultar las conversaciones")); app.readySelector = 'button[aria-label="Mostrar las conversaciones"][aria-expanded="false"]'; break;
+    case "Historial":
+      history = { items: [galleryConversation.conversation], hasMore: false };
+      app.responses.push(api("GET", `${prefix}/conversations/gallery-chat`, galleryConversation));
+      app.actions = [click("Conversaciones")]; app.readySelector = '[role="dialog"]'; app.readyText = "Mi consulta"; break;
+    case "Menú de una conversación": case "Acciones de una conversación": case "Renombrar": case "Borrar":
+      selectConversation();
+      if (board.startsWith("M-")) app.actions.push(click("Conversaciones"));
+      app.actions.push(open("Acciones de Mi consulta", "button"));
+      app.readySelector = '[role="menu"]';
+      if (state === "Renombrar" || state === "Borrar") {
+        app.actions.push(click(`${state}: Mi consulta`, "menuitem"));
+        app.readySelector = state === "Renombrar" ? '[role="dialog"] input' : '[role="dialog"]';
+        app.readyText = state === "Renombrar" ? "Renombrar la conversación" : "Se borra para siempre, con sus adjuntos.";
+      }
+      break;
+    case "Detenida": case "Falló la respuesta": {
+      selectConversation();
+      const terminal: AssistantConversationResponse = { ...galleryConversation, messages: { items: [galleryConversation.messages.items[0], {
+        ...galleryConversation.messages.items[1], text: state === "Detenida" ? "Respuesta parcial del arnés." : "", status: state === "Detenida" ? "Stopped" : "Failed",
+      }], hasMore: false } };
+      app.responses[app.responses.length - 1] = api("GET", `${prefix}/conversations/gallery-chat`, terminal);
+      app.readySelector = '[role="group"][aria-label="Asistente"] [role="status"]';
+      app.readyText = state === "Detenida" ? "Detuviste la respuesta." : "El asistente no responde ahora."; break;
+    }
+    case "Tope del mes": {
+      selectConversation();
+      const problem: ApiProblemDetails = { type: "about:blank", title: "Too Many Requests", status: 429, code: "Assistant.Limit.MonthlyReached", traceId: "gallery-e8b" };
+      app.responses.push(api("POST", `${prefix}/conversations/gallery-chat/messages`, problem, 429));
+      app.actions.push(fill("Tu consulta", "Otra consulta"), click("Enviar"));
+      app.readySelector = '[role="status"]'; app.readyText = "La organización llegó al tope del mes del asistente."; break;
+    }
+    case "Mis mensajes con empresas: sin mensajes": {
+      // Quick.InteractionsEmpty del backend y ambos tableros Personal v115.
+      const text = "Todavía no tenés mensajes con empresas.";
+      const empty: AssistantConversationResponse = { ...galleryConversation, conversation: { ...galleryConversation.conversation, title: "Mis mensajes con empresas" }, messages: { items: [
+        { ...galleryConversation.messages.items[0], text: "Mis mensajes con empresas" }, { ...galleryConversation.messages.items[1], text },
+      ], hasMore: false } };
+      const quick: AssistantQuickResponse = { conversation: empty.conversation, messages: empty.messages.items, result: { text, links: [], data: { interactions: { items: [], page: 1, pageSize: 20, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false } } } };
+      app.responses.push(api("POST", `${prefix}/quick/my_messages`, quick), api("GET", `${prefix}/conversations/gallery-chat`, empty),
+        { ...api("GET", `${prefix}/conversations`, { items: [empty.conversation], hasMore: false } satisfies AssistantConversationSummaryCursorResponse), query: { saved: "false" }, afterResponse: { method: "POST", path: `${prefix}/quick/my_messages` } });
+      app.actions = [click("Mis mensajes con empresas")]; app.readySelector = '[role="group"][aria-label="Asistente"]'; app.readyText = text; break;
+    }
     case "Primera vez": initial.noticeAccepted = false; app.readySelector = '[role="dialog"]'; app.readyText = "Antes de tu primera consulta"; break;
     case "Quedan 10 consultas": case "Tope del día":
       initial.remainingMessages = state === "Quedan 10 consultas" ? 10 : 0;
@@ -150,4 +215,22 @@ export function chatScenario(board: string, state: string): GalleryApp | undefin
   app.responses[app.responses.length - 1].query = { saved: "true" };
   app.responses.push({ ...api("GET", `${prefix}/conversations`, history), query: { saved: "false" } });
   return app;
+}
+
+export function chatScenario(board: string, state: string): GalleryApp | undefined {
+  // El lienzo exige Ver uso. RegisteredAssistant todavía no entrega onUsage (T13).
+  if (state === "Tope del mes") return undefined;
+  // La fuente conserva el PDF inválido con chip rojo/peso/nombre. La UI actual lo rechaza.
+  if (state === "Adjunto de más de 10 MB") return undefined;
+  return createChatScenario(board, state);
+}
+
+// Probe dirigido del 429 actual, sin contarlo como escena de galería completa.
+export function galleryMonthlyLimitProbe(board: string): GalleryApp {
+  return createChatScenario(board, "Tope del mes")!;
+}
+
+// Valida el rechazo cliente existente; no representa el chip rojo exigido por la fuente.
+export function galleryOversizedAttachmentProbe(board: string): GalleryApp {
+  return createChatScenario(board, "Adjunto de más de 10 MB")!;
 }

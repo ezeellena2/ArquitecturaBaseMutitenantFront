@@ -1,9 +1,10 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
-import { beforeAll, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, expect, it, vi } from "vitest";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { StrictMode } from "react";
+import { File as FetchFile } from "node:buffer";
 import { AppProviders } from "@/app/providers";
 import { routes } from "@/app/routes";
 import { createQueryClient } from "@/shared/api/queryClient";
@@ -11,10 +12,13 @@ import { decodeAssistantStream } from "@/modules/assistant/api/stream";
 import { fixtureAuth } from "./mocks/authContext";
 import { server } from "./mocks/server";
 import { asPhone } from "./utils/phone";
-import { chatScenario, configurationScenario, galleryMe, galleryStream, galleryStreamEvents, type GalleryApp } from "./etapa8bVisualFixtures";
+import { galleryUploadBytes } from "./galleryUploadFiles";
+import type { AssistantAttachmentSummaryResponse, AssistantConversationResponse } from "@/shared/api/types";
+import { chatScenario, configurationScenario, galleryConversation, galleryMe, galleryMonthlyLimitProbe, galleryOversizedAttachmentProbe, galleryStream, galleryStreamEvents, type GalleryApp } from "./etapa8bVisualFixtures";
 
 beforeAll(async () => { await import("@/modules/assistant/settings/OrganizationAssistantSettingsPage"); await import("@/modules/assistant/settings/PlatformAssistantSettingsPage"); await import("@/modules/assistant/pages/RegisteredAssistant"); });
-beforeEach(() => { Element.prototype.scrollTo = vi.fn(); });
+beforeEach(() => { Element.prototype.scrollTo = vi.fn(); URL.createObjectURL = vi.fn(() => "blob:gallery-fixture"); URL.revokeObjectURL = vi.fn(); });
+afterEach(() => vi.unstubAllGlobals());
 const chatBoards = ["Asistente-Org", "Asistente-Personal", "Asistente-Plat", "M-Asistente-Org", "M-Asistente-Personal", "M-Asistente-Plat"];
 
 function mount(app: GalleryApp) {
@@ -36,6 +40,10 @@ function mount(app: GalleryApp) {
 }
 async function actions(app: GalleryApp, user: ReturnType<typeof userEvent.setup>) {
   for (const action of app.actions) {
+    if (action.type === "upload") {
+      await user.upload(await screen.findByLabelText(action.label, { selector: 'input[type="file"]' }), action.files.map((file) => new File([galleryUploadBytes(file)], file.name, { type: file.mimeType })));
+      continue;
+    }
     const target = action.label ? await screen.findByLabelText(action.label, { exact: false }) : await screen.findByRole(action.role!, { name: action.name });
     if (action.type === "click") await user.click(target);
     else if (action.type === "press") { target.focus(); await user.keyboard(`{${action.key}}`); }
@@ -144,4 +152,148 @@ it.each(["Asistente-Org", "M-Asistente-Personal", "Asistente-Plat"])("%s consume
     expect(screen.getByText("de prueba", { selector: "strong" })).toBeVisible();
     expect(mounted.calls.filter((call) => call.includes("POST") && call.endsWith("/messages"))).toHaveLength(1);
   } finally { restore(); }
+});
+
+it("Bienvenida acepta el aviso por POST y conserva consultas fijas e historial", async () => {
+  const app = chatScenario("Asistente-Org", "Bienvenida")!; const mounted = mount(app);
+  await actions(app, mounted.user);
+  expect(screen.getByRole("heading", { name: "¿Qué querés consultar?" })).toBeVisible();
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Usuarios activos" })).toBeEnabled();
+  expect(screen.getByRole("button", { name: "Mi consulta" })).toBeVisible();
+  expect(mounted.calls).toContain("POST /api/organization/assistant/notice");
+});
+
+it.each(["Asistente-Org", "M-Asistente-Personal"])("%s conserva adjuntos en el compositor sin subirlos antes de Enviar", async (board) => {
+  const restore = board.startsWith("M-") ? asPhone() : () => {};
+  try {
+    const app = chatScenario(board, "Con adjuntos")!; const mounted = mount(app);
+    await actions(app, mounted.user);
+    expect(screen.getByRole("button", { name: "Quitar captura-usuarios.png" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Quitar planilla-ventas.pdf" })).toBeVisible();
+    expect(mounted.calls.some((call) => call.startsWith("POST"))).toBe(false);
+  } finally { restore(); }
+});
+
+it("un PDF mayor a 10 MiB muestra validación cliente sin subirlo", async () => {
+  expect(chatScenario("Asistente-Org", "Adjunto de más de 10 MB")).toBeUndefined();
+  const app = galleryOversizedAttachmentProbe("Asistente-Org"); const mounted = mount(app);
+  await actions(app, mounted.user);
+  expect(screen.getByRole("alert")).toHaveTextContent("El archivo pesa más de 10 MB.");
+  expect(screen.queryByRole("button", { name: "Quitar planilla-ventas.pdf" })).not.toBeInTheDocument();
+  expect(mounted.calls.some((call) => call.startsWith("POST"))).toBe(false);
+});
+
+it.each(["Detenida", "Falló la respuesta"])("%s viene del DTO durable y deja el SDK terminal", async (state) => {
+  const app = chatScenario("Asistente-Org", state)!; const mounted = mount(app);
+  await actions(app, mounted.user);
+  expect(screen.queryByRole("button", { name: "Detener" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Enviar" })).toBeEnabled();
+  if (state === "Falló la respuesta") {
+    expect(screen.getByRole("button", { name: "Reintentar" })).toBeVisible();
+    expect(screen.queryByText("Respuesta parcial del arnés.")).not.toBeInTheDocument();
+  } else {
+    expect(screen.queryByRole("button", { name: "Reintentar" })).not.toBeInTheDocument();
+    expect(screen.getByText("Respuesta parcial del arnés.")).toBeVisible();
+  }
+});
+
+it.each(["Asistente-Org", "M-Asistente-Personal"])("%s abre acciones, renombrar y borrar con una sola capa", async (board) => {
+  const restore = board.startsWith("M-") ? asPhone() : () => {};
+  try {
+    const app = chatScenario(board, "Renombrar")!; const mounted = mount(app);
+    await actions(app, mounted.user);
+    expect(screen.getAllByRole("dialog")).toHaveLength(1);
+    expect(screen.getByRole("textbox", { name: "Nombre" })).toHaveValue("Mi consulta");
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
+    await mounted.user.click(screen.getByRole("button", { name: "Cancelar" }));
+    if (board.startsWith("M-")) await mounted.user.click(screen.getByRole("button", { name: "Conversaciones" }));
+    await mounted.user.click(screen.getByRole("button", { name: "Acciones de Mi consulta" }));
+    await mounted.user.click(await screen.findByRole("menuitem", { name: "Borrar: Mi consulta" }));
+    expect(screen.getAllByRole("dialog")).toHaveLength(1);
+    expect(screen.getByRole("dialog", { name: "¿Borrar «Mi consulta»?" })).toBeVisible();
+  } finally { restore(); }
+});
+
+it("Historial móvil conserva bienvenida bajo la hoja y permite seleccionar", async () => {
+  const restore = asPhone();
+  try {
+    const app = chatScenario("M-Asistente-Org", "Historial")!; const mounted = mount(app);
+    await actions(app, mounted.user);
+    expect(screen.getByRole("dialog", { name: "Conversaciones" })).toBeVisible();
+    await mounted.user.click(screen.getByRole("button", { name: "Mi consulta" }));
+    expect(await screen.findByText("de prueba", { selector: "strong" })).toBeVisible();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  } finally { restore(); }
+});
+
+it("Tope del mes se obtiene de HTTP 429 y conserva conversación sin enviar otra vez", async () => {
+  expect(chatScenario("Asistente-Org", "Tope del mes")).toBeUndefined();
+  const app = galleryMonthlyLimitProbe("Asistente-Org"); const mounted = mount(app);
+  await actions(app, mounted.user);
+  expect(screen.getByText("de prueba", { selector: "strong" })).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Enviar" })).not.toBeInTheDocument();
+  expect(mounted.calls.filter((call) => call.endsWith("/messages"))).toHaveLength(1);
+  expect(screen.getByRole("button", { name: "Mi consulta" })).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Ver uso" })).not.toBeInTheDocument();
+});
+
+it.each(["Asistente-Personal", "M-Asistente-Personal"])("%s my_messages vacío usa Quick gratis y adopta su detalle sin llamar Messages", async (board) => {
+  const restore = board.startsWith("M-") ? asPhone() : () => {};
+  try {
+    const app = chatScenario(board, "Mis mensajes con empresas: sin mensajes")!; const mounted = mount(app);
+    await actions(app, mounted.user);
+    expect(screen.getByText("Todavía no tenés mensajes con empresas.")).toBeVisible();
+    expect(mounted.calls).toContain("POST /api/me/assistant/quick/my_messages");
+    expect(mounted.calls.some((call) => call.endsWith("/messages"))).toBe(false);
+  } finally { restore(); }
+});
+
+it("Historial plegado conserva la conversación y puede volver a mostrarla", async () => {
+  const app = chatScenario("Asistente-Org", "Historial plegado")!; const mounted = mount(app);
+  await actions(app, mounted.user);
+  expect(screen.getByText("de prueba", { selector: "strong" })).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Mi consulta" })).not.toBeInTheDocument();
+  await mounted.user.click(screen.getByRole("button", { name: "Mostrar las conversaciones" }));
+  expect(await screen.findByRole("button", { name: "Mi consulta" })).toHaveAttribute("aria-current", "true");
+});
+
+it("Enviar sube el PDF por multipart, relee la versión y usa el id de adjunto", async () => {
+  const nativeForm = await new Request("http://localhost/form", { method: "POST", headers: { "content-type": "multipart/form-data; boundary=test" }, body: "--test--\r\n" }).formData();
+  vi.stubGlobal("FormData", nativeForm.constructor);
+  vi.stubGlobal("File", FetchFile);
+  const app = chatScenario("Asistente-Org", "Con adjuntos")!;
+  const path = "/api/organization/assistant/conversations/gallery-chat";
+  const empty: AssistantConversationResponse = { ...galleryConversation, messages: { items: [], hasMore: false } };
+  const uploaded: AssistantConversationResponse = { ...empty, conversation: { ...empty.conversation, version: 3 } };
+  const attachment: AssistantAttachmentSummaryResponse = { id: "gallery-pdf", fileName: "planilla-ventas.pdf", mediaType: "application/pdf", byteLength: 1258291, version: 1 };
+  const final: AssistantConversationResponse = { ...galleryConversation, conversation: { ...galleryConversation.conversation, version: 4 }, messages: { items: [
+    { ...galleryConversation.messages.items[0], attachments: [attachment] }, galleryConversation.messages.items[1],
+  ], hasMore: false } };
+  const stream = galleryStreamEvents.map((event) => event.event === "start" || event.event === "done" ? { ...event, data: { ...event.data, conversationVersion: 4 } } : event)
+    .map(({ event, data }) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`).join("");
+  app.responses.unshift({ method: "GET", path, status: 200, body: uploaded, afterResponse: { method: "POST", path: `${path}/attachments` } }, { method: "GET", path, status: 200, body: empty });
+  app.actions.unshift({ type: "click", role: "button", name: "Mi consulta", exact: true });
+  const mounted = mount(app);
+  await actions(app, mounted.user);
+  let uploadedFile: File | null = null; let uploadedVersion = ""; let sent: unknown;
+  server.use(
+    http.post(`${path}/attachments`, async ({ request }) => {
+      const data = await request.formData(); uploadedFile = data.get("file") as File; uploadedVersion = String(data.get("conversationVersion"));
+      return HttpResponse.json(attachment);
+    }),
+    http.get(path, () => HttpResponse.json(uploadedFile ? uploaded : empty)),
+    http.post(`${path}/messages`, async ({ request }) => {
+      sent = await request.json();
+      server.use(http.get(path, () => HttpResponse.json(final)));
+      return new HttpResponse(stream, { headers: { "Content-Type": "text/event-stream" } });
+    }),
+  );
+  await mounted.user.click(screen.getByRole("button", { name: "Quitar captura-usuarios.png" }));
+  fireEvent.change(screen.getByRole("textbox", { name: "Tu consulta" }), { target: { value: "Cuántos usuarios hay" } });
+  await mounted.user.click(screen.getByRole("button", { name: "Enviar" }));
+  expect(await screen.findByText("de prueba", { selector: "strong" })).toBeVisible();
+  expect(uploadedVersion).toBe("2");
+  expect(uploadedFile).toMatchObject({ name: "planilla-ventas.pdf", type: "application/pdf", size: 1258291 });
+  expect(sent).toEqual({ text: "Cuántos usuarios hay", attachmentIds: ["gallery-pdf"], conversationVersion: 3 });
 });

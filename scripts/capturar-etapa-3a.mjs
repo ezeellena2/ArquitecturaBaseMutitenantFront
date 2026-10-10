@@ -144,7 +144,12 @@ export async function startCanvasServer(canvasRoot = defaultCanvas) {
 
 export async function runAppActions(page, actions = []) {
   for (const action of actions) {
-    if (action.type === "fill") {
+    if (action.type === "upload") {
+      const { galleryUploadBytes } = await import("../src/test/galleryUploadFiles.ts");
+      await page.getByLabel(action.label, { exact: action.exact ?? false }).and(page.locator('input[type="file"]')).setInputFiles(action.files.map((file) => ({
+        name: file.name, mimeType: file.mimeType, buffer: Buffer.from(galleryUploadBytes(file)),
+      })));
+    } else if (action.type === "fill") {
       const target = action.label ? page.getByLabel(action.label, { exact: action.exact ?? false })
         : page.getByRole(action.role, { name: action.name, exact: action.exact ?? false });
       await target.fill(action.value);

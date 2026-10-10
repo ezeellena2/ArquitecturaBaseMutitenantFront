@@ -13,9 +13,11 @@ export const canvas = path.join(root, "docs/design/lienzo");
 export const issuer = "http://localtest.me:5192";
 export const output = path.join(root, "docs/design/implementacion/etapa-8b");
 const fixtureFile = path.join(root, "src/test/etapa8bVisualFixtures.ts");
+const uploadFixtureFile = path.join(root, "src/test/galleryUploadFiles.ts");
 const hash = (content) => createHash("sha256").update(content).digest("hex");
 const slug = (value) => value.normalize("NFD").replace(/[\u0300-\u036f]/gu, "").toLowerCase().replace(/[^a-z0-9]+/gu, "-").replace(/^-|-$/gu, "");
 const jsonHash = (value) => hash(JSON.stringify(value));
+const fixturesHash = () => jsonHash([fixtureFile, uploadFixtureFile].map((file) => ({ path: path.relative(root, file).split(path.sep).join("/"), sha256: hash(readFileSync(file)) })));
 
 export function inventory(canvasRoot = canvas) {
   // Sólo HTML actual; cada opción usa su viewport propio. No importa .local ni Archivo/generadores.
@@ -40,16 +42,19 @@ export async function buildManifest(canvasRoot = canvas) {
       : entry.group === "chat" ? fixtures.chatScenario(entry.board, entry.state) : undefined;
     if (app) cases.push({ ...entry, label: entry.state, captureExtent: "viewport", app, scenarioSha256: jsonHash(app) });
     else pending.push({ ...entry, reason: entry.group === "uso" ? "Uso CC04 pendiente de aprobación y publicación conjunta; sin página ni fixture."
+      : entry.state === "Tope del mes" ? "El lienzo exige Ver uso, pero RegisteredAssistant aún no entrega onUsage ni hay ruta Uso autorizada/publicada (T13/CC04). El 429 se prueba como comportamiento; escena completa pendiente."
+      : entry.state === "Adjunto de más de 10 MB" ? "La fuente conserva PNG y PDF inválido con chip rojo, peso 14,8 MB y alerta con nombre. La UI actual rechaza y no retiene el PDF, con alerta genérica; completar esa escena exigiría cambio de producto fuera de este corte."
+      : ["Consultando", "Escribiendo"].includes(entry.state) ? "El SSE de route.fulfill termina en EOF y el runtime cambia a reconciliación; falta transporte realmente abierto para conservar herramientas y fase writing. No se declara preparada."
       : "Escenario/acciones todavía sin preparar en este corte; no se declara cobertura." });
   }
   return { version: 1, stage: "etapa-8b-preparacion", evidence: "API y sesión ficticias del arnés; no E2E/proveedor", issuer,
-    sourceCommit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(), fixtureSha256: hash(readFileSync(fixtureFile)),
+    sourceCommit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(), fixtureSha256: fixturesHash(),
     cases, pending, complete: false };
 }
 
 export function validateManifest(manifest, source = inventory()) {
   if (manifest.version !== 1 || manifest.issuer !== issuer || manifest.complete !== false || !/^[a-f0-9]{40}$/u.test(manifest.sourceCommit)
-    || manifest.fixtureSha256 !== hash(readFileSync(fixtureFile)) || !Array.isArray(manifest.cases) || !Array.isArray(manifest.pending)) throw new Error("Manifest E8b inválido o fixture cambió");
+    || manifest.fixtureSha256 !== fixturesHash() || !Array.isArray(manifest.cases) || !Array.isArray(manifest.pending)) throw new Error("Manifest E8b inválido o fixture cambió");
   const expected = new Map(source.map((entry) => [entry.id, entry])); const seen = new Set();
   if (expected.size !== source.length) throw new Error("Inventario repetido");
   for (const [ready, entries] of [[true, manifest.cases], [false, manifest.pending]]) {
