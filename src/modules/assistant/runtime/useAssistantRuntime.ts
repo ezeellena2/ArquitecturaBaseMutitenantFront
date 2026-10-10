@@ -59,7 +59,8 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
   const root = useMemo(() => assistantQueryKeyRoot(identity), [identity]);
   const turnKey = useMemo(() => [...root, "turn", conversationId] as const, [root, conversationId]);
   const detailKey = useMemo(() => assistantConversationQueryKey(identity, conversationId ?? ""), [identity, conversationId]);
-  const lifetime = useMemo(() => new AssistantLifetime(client, [...root, "lifetime", conversationId]), [client, root, conversationId]);
+  // Cada activación es un ciclo nuevo: una operación vieja nunca revive con el módulo.
+  const lifetime = useMemo(() => new AssistantLifetime(client, [...root, "lifetime", conversationId, enabled]), [client, root, conversationId, enabled]);
   const active = useSyncExternalStore(lifetime.subscribe, lifetime.getSnapshot, lifetime.getSnapshot) && enabled;
   const subscribeCache = (listener: () => void) => client.getQueryCache().subscribe(listener);
   const readTurn = () => client.getQueryData<AssistantTurnState>(turnKey) ?? null;
@@ -225,7 +226,11 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
   }, { meta: { assistantOwner: owner }, sameOperation: (a, b) => a.operationId === b.operationId });
 
   const durableGenerating = detail.data?.messages.items.some((message) => message.status === "Generating") === true;
-  const sendErrorCode = sendMutation.variables?.lifetime === lifetime ? sendMutation.error?.code ?? turn?.error?.code : undefined;
+  // useMutation conserva el último resultado al cambiar las props. El error
+  // pertenece al scope/conversación de su operación, igual que sus datos privados.
+  const sendError = active && sendMutation.variables?.lifetime === lifetime ? sendMutation.error : null;
+  const stopError = active && stopMutation.variables?.lifetime === lifetime ? stopMutation.error : null;
+  const sendErrorCode = active ? sendError?.code ?? turn?.error?.code : undefined;
   const blockedCode = sendErrorCode && ["Assistant.Limit.DailyReached", "Assistant.Limit.MonthlyReached",
     "Assistant.Settings.NotConfigured", "Assistant.Notice.AcceptanceRequired", "Legal.AcceptanceRequired"].includes(sendErrorCode)
     ? sendErrorCode : null;
@@ -234,7 +239,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
     && !durableGenerating && !blockedCode;
 
   const send = (request: SendAssistantMessageRequest) => {
-    if (!canSend || !conversationId || flightRef.current?.lifetime === lifetime) return Promise.reject(new ApiError(409, { code: "Assistant.Runtime.SendDisabled" }));
+    if (!lifetime.getSnapshot() || !canSend || !conversationId || flightRef.current?.lifetime === lifetime) return Promise.reject(new ApiError(409, { code: "Assistant.Runtime.SendDisabled" }));
     const operation: SendOperation = {
       operationId: globalThis.crypto.randomUUID(), scope: identity, conversationId, lifetime,
       request: { ...request, attachmentIds: request.attachmentIds ? [...request.attachmentIds] : request.attachmentIds },
@@ -318,6 +323,6 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
   return { runtime, state, detail, turn, canSend,
     canStop: active && isAssistantTurnPending(turn) && (!!turn?.start || turn?.phase === "sending"),
     isPending: pendingMutations > 0 || isAssistantTurnPending(turn) || durableGenerating,
-    error: stopMutation.error ?? sendMutation.error ?? turn?.error ?? null,
+    error: active ? stopError ?? sendError ?? turn?.error ?? null : null,
     blockedCode, send, retryNetwork, retryFailed, stop, refreshState };
 }

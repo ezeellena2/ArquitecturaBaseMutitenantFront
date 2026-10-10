@@ -39,8 +39,9 @@ function setup(initialState = state, strict = false) {
   server.use(http.get("/api/organization/assistant", () => HttpResponse.json(initialState)),
     http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.json(durable)));
   const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={client}>{strict ? <StrictMode>{children}</StrictMode> : children}</QueryClientProvider>;
-  const hook = renderHook(({ currentScope = scope, enabled = true }) => useAssistantRuntime({ scope: currentScope, conversationId: "chat", enabled }), {
-    wrapper, initialProps: { currentScope: scope, enabled: true },
+  const initialProps: { currentScope?: AssistantScope; currentConversationId?: string; enabled?: boolean } = { currentScope: scope, enabled: true };
+  const hook = renderHook(({ currentScope = scope, currentConversationId = "chat", enabled = true }) => useAssistantRuntime({ scope: currentScope, conversationId: currentConversationId, enabled }), {
+    wrapper, initialProps,
   });
   return { ...hook, client, setDurable: (next: AssistantConversationResponse) => { durable = next; } };
 }
@@ -54,6 +55,60 @@ const start = { turnId: "turn", userMessageId: "u", assistantMessageId: "a", con
 afterEach(resetHttpClient);
 
 describe("Assistant runtime HTTP + Query + SDK", () => {
+  it.each([
+    ["send", "scope"], ["send", "conversation"], ["send", "cycle"],
+    ["stop", "scope"], ["stop", "conversation"], ["stop", "cycle"],
+  ] as const)("error de %s pertenece sólo al lifetime actual al cambiar %s", async (action, change) => {
+    const source = stream();
+    const hook = setup();
+    let sendRequests = 0;
+    let stopRequests = 0;
+    const code = action === "send" ? "Assistant.Settings.NotConfigured" : "Assistant.Turn.NotGenerating";
+    server.use(http.get("/api/organization/assistant/conversations/other-chat", () => HttpResponse.json({
+      ...conversation(), conversation: { ...conversation().conversation, id: "other-chat" },
+    })), http.post("/api/organization/assistant/conversations/chat/messages", () => {
+      sendRequests++;
+      return action === "send" ? HttpResponse.json({ code, traceId: "private-old-trace" }, { status: 409 })
+        : new HttpResponse(source.body, { headers: { "Content-Type": "text/event-stream" } });
+    }), http.post("/api/organization/assistant/conversations/chat/turns/turn/stop", () => {
+      stopRequests++;
+      return HttpResponse.json({ code, traceId: "private-old-trace" }, { status: 409 });
+    }));
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    if (action === "send") {
+      await act(async () => { await hook.result.current.send({ text: "Consulta", conversationVersion: 3 }).catch(() => {}); });
+    } else {
+      let operation!: Promise<AssistantConversationResponse>;
+      act(() => { operation = hook.result.current.send({ text: "Consulta", conversationVersion: 3 }); source.event("start", start); });
+      await waitFor(() => expect(hook.result.current.turn?.start?.turnId).toBe("turn"));
+      await act(async () => { await hook.result.current.stop().catch(() => {}); });
+      hook.setDurable(conversation([message("u", "user"), terminal.message]));
+      await act(async () => { source.event("done", terminal); source.close(); await operation; });
+    }
+    await waitFor(() => expect(hook.result.current.error).toMatchObject({ code, traceId: "private-old-trace" }));
+    const oldMutation = hook.client.getMutationCache().getAll().find((mutation) => mutation.state.status === "error");
+    const oldSend = hook.result.current.send;
+    expect(oldMutation).toBeDefined();
+    if (change === "cycle") {
+      hook.setDurable(conversation());
+      hook.rerender({ enabled: false });
+      expect(hook.result.current.error).toBeNull();
+      hook.rerender({ enabled: true });
+    } else hook.rerender(change === "scope" ? { currentScope: { ...scope, userId: "other" } } : { currentConversationId: "other-chat" });
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    expect(hook.result.current.blockedCode).toBeNull();
+    expect(hook.result.current.error).toBeNull();
+    await act(async () => {
+      await expect(oldMutation!.execute(oldMutation!.state.variables)).rejects.toMatchObject({ name: "AbortError" });
+      await expect(oldSend({ text: "Tardío", conversationVersion: 3 })).rejects.toMatchObject({ code: "Assistant.Runtime.SendDisabled" });
+    });
+    expect(sendRequests).toBe(1);
+    expect(stopRequests).toBe(action === "stop" ? 1 : 0);
+    expect(hook.result.current.canSend).toBe(true);
+    expect(hook.result.current.error).toBeNull();
+    hook.unmount();
+  });
+
   it("StrictMode y enabled false→true reactivan el mismo scope/id", async () => {
     const hook = setup(state, true);
     await waitFor(() => expect(hook.result.current.canSend).toBe(true));
