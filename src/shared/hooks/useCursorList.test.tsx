@@ -25,6 +25,46 @@ function wrapperWithClient() {
 }
 
 describe("useCursorList", () => {
+  it("no lee hasta habilitar y entrega la señal cancelable a cada página", async () => {
+    const fetchPage = vi.fn(async (_after: string | null, signal: AbortSignal) => ({ items: [{ id: signal.aborted ? "cancelado" : "primera" }], hasMore: false }));
+    const { client, Wrapper } = wrapperWithClient();
+    const hook = renderHook(({ enabled }) => useCursorList(["privado"], fetchPage, { enabled }), { wrapper: Wrapper, initialProps: { enabled: false } });
+    expect(fetchPage).not.toHaveBeenCalled();
+    hook.rerender({ enabled: true });
+    await waitFor(() => expect(hook.result.current.items).toEqual([{ id: "primera" }]));
+    expect(fetchPage.mock.calls[0]?.[0]).toBeNull();
+    expect(fetchPage.mock.calls[0]?.[1]).toBeInstanceOf(AbortSignal);
+    client.clear();
+  });
+  it("al cambiar de dueño puede retirar las filas anteriores durante la lectura", async () => {
+    let release!: () => void;
+    const fetchPage = vi.fn((owner: string) => owner === "anterior"
+      ? Promise.resolve({ items: [{ id: "privado-anterior" }], hasMore: false })
+      : new Promise<CursorTestPage>((resolve) => { release = () => resolve({ items: [{ id: "nuevo" }], nextCursor: null, hasMore: false }); }));
+    const { client, Wrapper } = wrapperWithClient();
+    const hook = renderHook(({ owner }) => useCursorList(["privado", owner], () => fetchPage(owner), { retainPreviousData: false }),
+      { wrapper: Wrapper, initialProps: { owner: "anterior" } });
+    await waitFor(() => expect(hook.result.current.items).toEqual([{ id: "privado-anterior" }]));
+    hook.rerender({ owner: "nuevo" });
+    await waitFor(() => expect(fetchPage).toHaveBeenCalledTimes(2));
+    expect(hook.result.current.items).toEqual([]);
+    expect(hook.result.current.isPlaceholderData).toBe(false);
+    act(() => release());
+    await waitFor(() => expect(hook.result.current.items).toEqual([{ id: "nuevo" }]));
+    client.clear();
+  });
+  it("desmontar cancela la lectura pendiente mediante la señal", async () => {
+    let received!: AbortSignal;
+    const { client, Wrapper } = wrapperWithClient();
+    const hook = renderHook(() => useCursorList(["privado"], (_after, signal) => {
+      received = signal;
+      return new Promise<CursorTestPage>((_resolve, reject) => signal.addEventListener("abort", () => reject(new DOMException("", "AbortError")), { once: true }));
+    }), { wrapper: Wrapper });
+    await waitFor(() => expect(received).toBeInstanceOf(AbortSignal));
+    hook.unmount();
+    expect(received.aborted).toBe(true);
+    client.clear();
+  });
   it("carga páginas por cursor opaco, sin total ni número de página", async () => {
     const fetchPage = vi.fn(async (after: string | null) => after === null
       ? { items: [{ id: "nuevo" }], nextCursor: "cursor-opaco", hasMore: true }

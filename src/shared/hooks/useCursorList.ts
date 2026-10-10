@@ -11,6 +11,9 @@ interface CursorPage<T> {
 interface CursorListOptions {
   /** Lo que la consulta le dice al manejo global de errores (`silent`, `blocksView`), como en `usePagedQuery`. */
   readonly meta?: QueryMeta;
+  readonly enabled?: boolean;
+  /** Una lista privada de otro dueño nunca se usa como placeholder. Los filtros conservan el valor habitual. */
+  readonly retainPreviousData?: boolean;
 }
 
 /// La única forma de listar por cursor (paginado-y-listados.md): lo que solo crece, como la auditoría, de a tandas con el
@@ -19,15 +22,16 @@ interface CursorListOptions {
 /// anterior mientras llega la nueva (`placeholderData: keepPreviousData`, como `usePagedQuery`).
 export function useCursorList<T>(
   queryKey: QueryKey,
-  fetchPage: (after: string | null) => Promise<CursorPage<T>>,
-  { meta }: CursorListOptions = {},
+  fetchPage: (after: string | null, signal: AbortSignal) => Promise<CursorPage<T>>,
+  { meta, enabled, retainPreviousData = true }: CursorListOptions = {},
 ) {
   const query = useInfiniteQuery({
     queryKey,
     initialPageParam: null as string | null,
-    queryFn: ({ pageParam }) => fetchPage(pageParam),
+    queryFn: ({ pageParam, signal }) => fetchPage(pageParam, signal),
     getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextCursor ?? undefined : undefined,
-    placeholderData: keepPreviousData,
+    placeholderData: retainPreviousData ? keepPreviousData : undefined,
+    enabled,
     meta,
   });
   const items = useMemo(() => query.data?.pages.flatMap((page) => page.items) ?? [], [query.data]);

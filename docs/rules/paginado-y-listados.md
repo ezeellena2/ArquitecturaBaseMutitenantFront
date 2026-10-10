@@ -38,6 +38,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
   <LoadMore hasMore={audit.hasNextPage} isLoading={audit.isFetchingNextPage} onLoadMore={() => { void audit.fetchNextPage(); }} />
   ```
 - **El pie** de `Pagination` va en letra de 12: «1–10 de 11» o, con una sola fila en la página, «1 de 1» (`pagination.single`), y el tamaño de página en una píldora de 28. «Cargar más» es siempre `LoadMore`: en la compu, el botón normal (36 y letra de 14); en el teléfono, el de 44, también como paginado de `Pagination`.
+  - `useCursorList` entrega también la señal de cancelación al callback y acepta `enabled`. Las listas privadas cuya clave cambia de dueño usan `retainPreviousData: false`: no muestran filas del dueño anterior durante la lectura nueva. El historial del Asistente conserva la lista pública de assistant-ui, pero lee sus grupos Guardadas/Recientes exclusivamente con este helper y sus señales de acceso.
 - Vacío, sin coincidencias, carga y error: los resuelve `DataTable` (`emptyTitle`, `emptyAction`).
 
 ## Prohibido
