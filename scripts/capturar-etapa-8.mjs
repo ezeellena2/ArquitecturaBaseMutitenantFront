@@ -35,6 +35,13 @@ function problem(code, field, message, extra = {}) {
   return { type: "about:blank", title: "Bad Request", status: 400, code, traceId: "visual-e8", ...(field ? { errors: { [field]: [message] } } : {}), ...extra };
 }
 
+// Ejemplos es de OpenAPI b8412d22: sólo Invalid de una prueba activa informa intentos.
+const loginProofProblems = {
+  "Auth.LoginCode.Invalid": problem("Auth.LoginCode.Invalid", null, null, { title: "Solicitud rechazada", detail: "El código no es válido.", attemptsLeft: 3 }),
+  "Auth.LoginCode.Expired": problem("Auth.LoginCode.Expired", null, null, { title: "Solicitud rechazada", detail: "El código venció. Pedí uno nuevo." }),
+  "Identity.Account.Suspended": problem("Identity.Account.Suspended", null, null, { title: "Solicitud rechazada", status: 403, detail: "Tu cuenta está suspendida." }),
+};
+
 export function expectedServerFailure(responses, method, route, status) {
   return status >= 500 && responses.some((response) => response.method === method && response.path === route && response.status === status);
 }
@@ -95,7 +102,7 @@ export async function buildManifest() {
     });
     for (const [suffix, estado, errorCode] of [["codigo", "Código enviado por WhatsApp", null], ["codigo-incorrecto", "Código incorrecto", "Auth.LoginCode.Invalid"], ["codigo-vencido", "Código vencido", "Auth.LoginCode.Expired"], ["cuenta-suspendida", "Cuenta suspendida", "Identity.Account.Suspended"]]) {
       both(`ingreso-${access}-${suffix}`, "ingreso", "Ingreso", { estado, puerta }, {
-        path: app.path, responses: [on, api("POST", "/api/auth/login-code", etapa8Code, 202), ...(errorCode ? [api("POST", "/api/auth/login-code/verify", problem(errorCode, null, null, { attemptsLeft: 3 }), errorCode === "Identity.Account.Suspended" ? 403 : 400)] : [])],
+        path: app.path, responses: [on, api("POST", "/api/auth/login-code", etapa8Code, 202), ...(errorCode ? [api("POST", "/api/auth/login-code/verify", loginProofProblems[errorCode], loginProofProblems[errorCode].status)] : [])],
         actions: [...phoneForm, click("Enviar código"), ...(errorCode ? code : [])], readyHeading: "Revisá tu WhatsApp",
       });
     }
@@ -141,7 +148,7 @@ export async function buildManifest() {
     const redeem = suffix === "iniciando" || suffix === "limite";
     both(`enlace-${suffix}`, "enlace", "Enlace", { estado }, {
       path: linkPath, responses: [on,
-        api("POST", "/api/auth/login-link/preview", redeem || !failure ? etapa8Link : problem(failure, null, null), redeem || !failure ? 200 : status),
+        api("POST", "/api/auth/login-link/preview", redeem || !failure ? etapa8Link : failure === "Identity.Account.Suspended" ? loginProofProblems[failure] : problem(failure, null, null), redeem || !failure ? 200 : status),
         ...(suffix === "limite" ? [api("POST", "/api/auth/login-link/redeem", problem(failure, null, null, { retryAfter: 38 }), 429, { "Retry-After": "38" })] : [])],
       ...(redeem ? { actions: [click("Continuar")] } : {}),
       ...(suffix === "iniciando" ? { hang: { method: "POST", path: "/api/auth/login-link/redeem" } } : {}),

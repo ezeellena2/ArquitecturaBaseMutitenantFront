@@ -12,6 +12,25 @@ import { writeGallery } from "./generar-galeria-etapa-8.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 
+test("los rechazos de ingreso y enlace copian el HTTP publicado sin intentos en vencido o suspendido", async () => {
+  const manifest = await buildManifest();
+  const entries = manifest.cases.filter((entry) => /^(ingreso-(consumer|business)-(codigo-incorrecto|codigo-vencido|cuenta-suspendida)|enlace-suspendida)-(desktop|mobile)$/.test(entry.id));
+  assert.equal(entries.length, 14);
+  for (const entry of entries) {
+    const response = entry.app.responses.find((item) => item.path.endsWith("/verify") || item.path.endsWith("/preview"));
+    const body = response.body;
+    assert.equal(body.title, "Solicitud rechazada", entry.id);
+    assert.equal(body.status, response.status, entry.id);
+    if (body.code === "Auth.LoginCode.Invalid") {
+      assert.equal(body.detail, "El código no es válido.", entry.id);
+      assert.equal(body.attemptsLeft, 3, entry.id); // prueba activa creada por la acción previa.
+    } else {
+      assert.equal(body.detail, body.code === "Auth.LoginCode.Expired" ? "El código venció. Pedí uno nuevo." : "Tu cuenta está suspendida.", entry.id);
+      assert.equal(Object.hasOwn(body, "attemptsLeft"), false, entry.id);
+    }
+  }
+});
+
 test("N3 abre todos los menús desktop sobre el DOM real de la fuente v116", { timeout: 30_000 }, async () => {
   const manifest = await buildManifest();
   assert.equal(manifest.canvasRevision, "21f227bcf6fd7a910272c682d5085338f8e2039c");
@@ -41,13 +60,24 @@ test("N3 abre todos los menús desktop sobre el DOM real de la fuente v116", { t
   }
 });
 
-test("N2/N3 preservan las 108 definiciones históricas y añaden 36 comparaciones pertinentes", async () => {
+test("N2/N3 preservan las 108 escenas, corrigen sólo 14 mocks HTTP y añaden 36 comparaciones pertinentes", async () => {
   const previous = JSON.parse(execFileSync("git", ["show", "9e1e4b9c:docs/design/capturas/etapa-8/manifest.json"], { encoding: "utf8", cwd: root }));
   const current = await buildManifest();
   assert.equal(current.canvasVersion, "v116 · 21f227bc");
   assert.equal(current.canvasRevision, canvasRevision);
   assert.equal(previous.cases.length, 108); assert.equal(current.cases.length, 144);
-  for (const entry of previous.cases) assert.deepEqual(current.cases.find((candidate) => candidate.id === entry.id), entry);
+  for (const entry of previous.cases) {
+    const expected = structuredClone(entry);
+    if (/^(ingreso-(consumer|business)-(codigo-incorrecto|codigo-vencido|cuenta-suspendida)|enlace-suspendida)-(desktop|mobile)$/.test(entry.id)) {
+      const response = expected.app.responses.find((item) => item.path.endsWith("/verify") || item.path.endsWith("/preview"));
+      const code = response.body.code;
+      response.body = { type: "about:blank", title: "Solicitud rechazada", status: response.status, code, traceId: "visual-e8",
+        detail: code === "Auth.LoginCode.Invalid" ? "El código no es válido." : code === "Auth.LoginCode.Expired" ? "El código venció. Pedí uno nuevo." : "Tu cuenta está suspendida.",
+        ...(code === "Auth.LoginCode.Invalid" ? { attemptsLeft: 3 } : {}),
+      };
+    }
+    assert.deepEqual(current.cases.find((candidate) => candidate.id === entry.id), expected, entry.id);
+  }
   const added = current.cases.filter((entry) => !previous.cases.some((candidate) => candidate.id === entry.id));
   assert.equal(added.filter((entry) => entry.group === "cuentas-plataforma").length, 16);
   assert.equal(added.filter((entry) => entry.group === "identidad").length, 20);
