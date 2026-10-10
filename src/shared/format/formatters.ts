@@ -2,6 +2,7 @@ import { parsePhoneNumberFromString } from "libphonenumber-js";
 import type { CultureReference, ReferenceData } from "@/shared/referenceData/referenceData";
 import { getCultureProfile } from "./cultureProfiles";
 import { shiftDecimal } from "./decimalScale";
+import { parseMonth } from "./parsers";
 
 type Translate = (key: string, options?: { count?: number }) => string;
 
@@ -143,6 +144,46 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   function formatDateTime(value: string): string { return date(value, profile.dateTimePattern); }
   function formatTime(value: string): string { return date(value, profile.timePattern); }
   function formatDateLong(value: string): string { return date(value, profile.longDatePattern); }
+
+  function monthDate(value: string): Date {
+    if (parseMonth(value) === null) throw new Error("El período mensual no puede estar vacío.");
+    const parsed = new Date(0);
+    parsed.setUTCFullYear(Number(value.slice(0, 4)), Number(value.slice(5)) - 1, 1);
+    return parsed;
+  }
+
+  function monthLabel(value: string, includeYear: boolean): string {
+    const parts = new Intl.DateTimeFormat(culture, {
+      timeZone: "UTC", calendar: "gregory", numberingSystem: "latn", month: "long",
+      ...(includeYear ? { year: "numeric" } as const : {}),
+    }).formatToParts(monthDate(value));
+    const label = parts.map((part) => part.type === "year" ? value.slice(0, 4) : part.value).join("");
+    return label.charAt(0).toLocaleUpperCase(culture) + label.slice(1);
+  }
+
+  /** Mes civil, sin conversión por zona; nombres localizados, año completo del contrato. */
+  function formatMonth(value: string): string { return monthLabel(value, true); }
+
+  function getMonthOptions(value: string): { value: string; label: string }[] {
+    monthDate(value);
+    return Array.from({ length: 12 }, (_, index) => {
+      const month = `${value.slice(0, 4)}-${String(index + 1).padStart(2, "0")}`;
+      return { value: month, label: monthLabel(month, false) };
+    });
+  }
+
+  function getAdjacentMonthYear(value: string, direction: -1 | 1): string | null {
+    const year = monthDate(value).getUTCFullYear() + direction;
+    return year < 1 || year > 9999 ? null : `${String(year).padStart(4, "0")}${value.slice(4)}`;
+  }
+
+  /** Contexto de presentación de la persona; no define períodos de facturación ni cuotas. */
+  function getCurrentMonth(): string {
+    const parts = parseCivil(clock().toISOString(), timeZone, culture);
+    const value = `${String(parts.year).padStart(4, "0")}-${String(parts.month).padStart(2, "0")}`;
+    if (parseMonth(value) === null) throw new Error("El mes actual no es válido.");
+    return value;
+  }
 
   /** «Fecha corta» (lienzo v99): sin el año si es del año en curso en la zona de la persona; si no, completa. */
   function short(value: string, pattern: string): string {
@@ -321,6 +362,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   function formatText(value: string): string { return value; }
 
   return {
+    formatMonth, getMonthOptions, getAdjacentMonthYear, getCurrentMonth,
     formatDate, formatDateTime, formatShortDate, formatShortDateTime, formatTime, formatDateLong, formatRelative,
     formatCalendar, formatDateRange,
     formatInteger, formatDecimal, formatQuantity, formatPercent, formatMoney, formatCompact,

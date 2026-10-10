@@ -29,6 +29,13 @@
     "error": "Something went wrong"
   },
   "fields": {
+    "month": "Month",
+    "chooseMonth": "Choose a month",
+    "invalidMonth": "Enter a valid month.",
+    "year": "Year",
+    "invalidYear": "Enter a year between 0001 and 9999.",
+    "previousYear": "Previous year",
+    "nextYear": "Next year",
     "currency": "Currency",
     "selectCurrency": "Choose a currency",
     "country": "Country",

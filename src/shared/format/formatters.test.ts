@@ -261,6 +261,8 @@ describe.skipIf(!backendPresent)("referencias históricas", () => {
     expect(taxIdType).toBeDefined();
     const data = parseReferenceData({
       ...source,
+      currencies: source.currencies.map((item) => item.code === "USD" ? { ...item, isEnabled: false } : item),
+      timeZones: source.timeZones.map((item) => item.id === "America/New_York" ? { ...item, isEnabled: false } : item),
       cultures: source.cultures.map((item) => item.code === "es-AR" ? { ...item, isEnabled: false } : item),
       taxIdTypes: source.taxIdTypes.map((item) => item.code === "AR-CUIT" ? { ...item, isEnabled: false } : item),
     });

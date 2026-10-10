@@ -29,6 +29,13 @@
     "error": "Algo salió mal"
   },
   "fields": {
+    "month": "Mes",
+    "chooseMonth": "Elegí un mes",
+    "invalidMonth": "Ingresá un mes válido.",
+    "year": "Año",
+    "invalidYear": "Ingresá un año entre 0001 y 9999.",
+    "previousYear": "Año anterior",
+    "nextYear": "Año siguiente",
     "currency": "Moneda",
     "selectCurrency": "Elegí una moneda",
     "country": "País",

@@ -7,13 +7,14 @@ import { useCurrentUser } from "@/auth/useCurrentUser";
 import type { MeResponse } from "@/shared/api/types";
 import { getDefaultCultureProfile } from "./cultureProfiles";
 import { createFormatters } from "./formatters";
-import { parseDate, parseDateTime, parseDecimal, parseMoney, parsePercent, parseTime } from "./parsers";
+import { parseDate, parseDateTime, parseDecimal, parseMoney, parseMonth, parsePercent, parseTime } from "./parsers";
 import type { MoneyValue } from "./formatters";
 
 export type { DateRangeValue, MoneyValue } from "./formatters";
 
 type Formatters = ReturnType<typeof createFormatters>;
 type BoundParsers = {
+  parseMonth: (input: string) => string | null;
   parseDecimal: (input: string) => number | null;
   parseMoney: (input: string, currency?: string, precision?: "currency" | "technical-tariff") => MoneyValue | null;
   parsePercent: (input: string) => number | null;
@@ -29,6 +30,10 @@ export type FormatState = Formatters & BoundParsers & (
 
 const emptyText = (): string => "";
 const unavailableFormatters: Formatters = {
+  formatMonth: emptyText,
+  getMonthOptions: () => [],
+  getAdjacentMonthYear: () => null,
+  getCurrentMonth: emptyText,
   formatDate: emptyText,
   formatDateTime: emptyText,
   formatShortDate: emptyText,
@@ -64,6 +69,7 @@ const loadingState: FormatState = {
   currency: null,
   referenceData: null,
   ...unavailableFormatters,
+  parseMonth,
   parseDecimal: () => null,
   parseMoney: () => null,
   parsePercent: () => null,
@@ -124,6 +130,7 @@ export function FormatProvider({ children }: { children: ReactNode }) {
         translate: (key, options) => t(key, options),
       }),
       parseDecimal: (input) => parseDecimal(input, profile),
+      parseMonth,
       parseMoney: (input, selectedCurrency = currency ?? "", precision) => parseMoney(input, selectedCurrency, profile, data, precision),
       parsePercent: (input) => parsePercent(input, profile),
       parseDate: (input) => parseDate(input, profile),

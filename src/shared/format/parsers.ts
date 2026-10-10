@@ -2,6 +2,16 @@ import type { CultureReference, ReferenceData } from "@/shared/referenceData/ref
 import type { MoneyValue } from "./formatters";
 import { shiftDecimal } from "./decimalScale";
 
+/** Período civil del contrato: vacío es null; cualquier otro texto exige YYYY-MM exacto. */
+export function parseMonth(input: string): string | null {
+  if (input === "") return null;
+  const match = /^(\d{4})-(\d{2})$/.exec(input);
+  if (!match || Number(match[1]) < 1 || Number(match[2]) < 1 || Number(match[2]) > 12) {
+    throw new Error("El período mensual no es válido.");
+  }
+  return input;
+}
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
