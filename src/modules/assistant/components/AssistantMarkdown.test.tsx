@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { authIssuer } from "@/auth/issuer";
 import { AssistantMarkdown } from "./AssistantMarkdown";
 
@@ -59,25 +58,19 @@ describe("AssistantMarkdown", () => {
     expect(screen.getByText("Autoridad")).toBeVisible();
   });
 
-  it("deja los enlaces externos como navegación manual segura y enfocables", async () => {
-    const user = userEvent.setup();
+  it.each([
+    "[Documentación](https://docs.example.org/guide)",
+    "[Documentación](http://docs.example.org/guide)",
+    "<https://docs.example.org/guide>",
+    "https://docs.example.org/guide",
+    "www.docs.example.org/guide",
+    "[Documentación][guide]\n\n[guide]: https://docs.example.org/guide",
+  ])("ningún enlace escrito por el modelo queda clicable: %s", (text) => {
     const fetchSpy = vi.spyOn(globalThis, "fetch");
-    render(<AssistantMarkdown text="[Documentación](https://docs.example.org/guide)" />);
-    const link = screen.getByRole("link", { name: "Documentación" });
-
-    expect(link).toHaveAttribute("href", "https://docs.example.org/guide");
-    expect(link).toHaveProperty("href", "https://docs.example.org/guide");
-    expect(link).toHaveAttribute("target", "_blank");
-    expect(link).toHaveAttribute("rel", "noopener noreferrer");
-    expect(link).not.toHaveAttribute("download");
-    expect(link).not.toHaveAttribute("ping");
-    expect(link).toHaveClass("focus-visible:outline-2", "focus-visible:outline-[var(--foco)]");
-    await user.tab();
-    expect(link).toHaveFocus();
-    const clickSpy = vi.fn((event: MouseEvent) => event.preventDefault());
-    link.addEventListener("click", clickSpy);
-    await user.keyboard("{Enter}");
-    expect(clickSpy).toHaveBeenCalledTimes(1);
+    const { container } = render(<AssistantMarkdown text={text} />);
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(container.querySelector("a, [href], [tabindex]")).not.toBeInTheDocument();
+    expect(container.textContent).toMatch(/Documentación|docs.example.org/u);
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 

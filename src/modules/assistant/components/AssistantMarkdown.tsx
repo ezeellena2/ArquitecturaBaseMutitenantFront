@@ -1,37 +1,9 @@
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { authIssuer } from "@/auth/issuer";
-
-function isExternalHttpLink(href: string | undefined): href is string {
-  if (typeof window === "undefined" || !href || !/^https?:\/\//i.test(href) || href !== href.trim()) return false;
-
-  let destination: URL;
-  let issuer: URL;
-  try {
-    destination = new URL(href);
-    issuer = new URL(authIssuer);
-  } catch {
-    return false;
-  }
-
-  if ((destination.protocol !== "http:" && destination.protocol !== "https:") ||
-    destination.username.length > 0 || destination.password.length > 0) return false;
-
-  const currentLocation = new URL(window.location.href);
-  const issuerHost = issuer.hostname.toLowerCase();
-  const destinationHost = destination.hostname.toLowerCase();
-  const belongsToIssuerDomain = destinationHost === issuerHost || destinationHost.endsWith(`.${issuerHost}`);
-
-  return destination.origin !== currentLocation.origin &&
-    destination.origin !== issuer.origin &&
-    !belongsToIssuerDomain;
-}
 
 const markdownComponents: Components = {
-  a: ({ href, children }) => isExternalHttpLink(href)
-    ? <a className="text-[var(--marca-tx)] underline underline-offset-2 hover:text-[var(--marca)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]" href={href} target="_blank" rel="noopener noreferrer">{children}</a>
-    : <span>{children}</span>,
+  a: ({ children }) => <span>{children}</span>,
   img: ({ alt }) => <>{alt}</>,
   table: ({ children }) => <div className="my-2 max-w-full"><table className="w-full max-w-full table-fixed border-collapse text-left">{children}</table></div>,
   th: ({ children }) => <th className="border border-[var(--borde)] px-2 py-1 font-semibold [overflow-wrap:anywhere]">{children}</th>,
