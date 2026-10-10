@@ -33,9 +33,9 @@ function Group({ saved, ...props }: ConversationListProps & { saved: boolean }) 
     meta: { silent: true },
   });
   return <section className="flex flex-col gap-1">
-    <h3 className="flex items-center gap-1.5 px-2.5 pt-3.5 pb-1.5 text-[12.5px] font-semibold text-[var(--t3)]">{t(saved ? "history.saved" : "history.recent")}
+    <h2 className="flex items-center gap-1.5 px-2.5 pt-3.5 pb-1.5 text-[12.5px] font-semibold text-[var(--t3)]">{t(saved ? "history.saved" : "history.recent")}
       {!saved ? <span role="img" tabIndex={0} aria-label={t("history.retention", { days: format.formatInteger(props.retentionDays) })} title={t("history.retention", { days: format.formatInteger(props.retentionDays) })}><InfoIcon className="size-3.5" /></span> : null}
-    </h3>
+    </h2>
     {query.data?.pages.flatMap((page) => page.items).map((conversation) => <div key={conversation.id} className={`flex min-w-0 items-center rounded-lg ${props.selectedId === conversation.id ? "bg-[var(--s2)]" : "hover:bg-[var(--s2)]"}`}>
       <button type="button" aria-current={props.selectedId === conversation.id ? "true" : undefined} onClick={() => props.onSelect(conversation.id)}
         className="min-w-0 flex-1 truncate px-2.5 py-2 text-left text-sm focus-visible:outline-2 focus-visible:outline-[var(--foco)]">{conversation.title ?? t("history.untitled")}</button>

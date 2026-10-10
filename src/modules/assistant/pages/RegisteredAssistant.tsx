@@ -1,8 +1,11 @@
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { useProfiles } from "@/tenancy/useProfiles";
 import { activeOrganization } from "@/tenancy/access";
 import type { ModuleContentProps } from "@/shared/modules/types";
 import { useModuleRegistry } from "@/shared/modules/useModules";
+import { Page } from "@/shared/ui/Page";
+import { HomeIcon } from "@/shared/ui/icons";
 import { AssistantHome } from "./AssistantHome";
 import { AssistantPhonePage } from "./AssistantPhonePage";
 
@@ -28,7 +31,10 @@ function RegisteredAssistant({ me, phone, ...content }: ModuleContentProps & { p
 }
 
 export function RegisteredAssistantHome(props: ModuleContentProps) {
-  return <div className="flex h-full min-h-0 flex-col"><RegisteredAssistant {...props} phone={false} /></div>;
+  const { t } = useTranslation();
+  const summary = props.me.access === "platform" ? t("navigation.platform") : activeOrganization(props.me)?.name;
+  return <div className="flex h-full min-h-0 flex-col"><Page icon={HomeIcon} title={t("home.title")} summary={summary}
+    bodyClassName="flex min-h-0 flex-1 flex-col"><RegisteredAssistant {...props} phone={false} /></Page></div>;
 }
 
 export function RegisteredAssistantPhone(props: ModuleContentProps) {

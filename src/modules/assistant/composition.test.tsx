@@ -48,6 +48,14 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("composición real de accesos e inicios", () => {
+  it.each([["/", personal, null], ["/org", business, "Empresa A"], ["/plataforma", platform, "Plataforma"]] as const)("%s con módulo conserva la banda de Inicio en escritorio", async (path, me, summary) => {
+    const app = mount(path, me);
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    const band = screen.getByRole("heading", { name: "Inicio" }).closest("header")!;
+    expect(band).toBeVisible();
+    if (summary) expect(within(band).getByText(summary)).toBeVisible();
+    expect(await axe(app.container)).toHaveNoViolations();
+  });
   it.each([["/asistente", personal], ["/org/asistente", business], ["/plataforma/asistente", platform]] as const)("%s apagado y desinstalado no consulta Assistant", async (path, me) => {
     for (const modules of [[], moduleComposition]) {
       const off = { ...me, features: [], moduleCapabilities: [] };
