@@ -10,6 +10,7 @@ import { chromium } from "playwright";
 import { baseUrl, createEnvironment } from "./recorrido-usuario-entorno.mjs";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { pickupCode } from "./test-e2e-real-mail.mjs";
+import { e8Definitions, e8ManualChecks, e8SourceRevision, runE8Journey } from "./recorrido-usuario-whatsapp.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const widths = [1440, 390];
@@ -27,15 +28,25 @@ export function safeDiagnostic(message) {
   }).replace(/\b\d{6}\b/g, "[código]").replace(/[A-Za-z0-9_.-]{80,}/g, "[dato omitido]").slice(0, 800);
 }
 
+export function journeyFailure(activeStep, errors) {
+  // Assert y Playwright pueden incluir un OTP, fragmento o cuerpo HTTP en su mensaje.
+  const detail = activeStep.startsWith("E8-")
+    ? errors.map((error) => /^[A-Za-z]+$/.test(error.name) ? error.name : "Error").join("; ")
+    : safeDiagnostic(errors.map((error) => error.message).join("; "));
+  return `Falló ${activeStep}; ${detail}. Los pasos pendientes no cuentan como aprobados.`;
+}
+
 export function renderIndex(report) {
   const passed = report.steps.reduce((count, step) => count + step.results.filter((item) => item.status === "passed").length, 0);
   const total = report.steps.length * widths.length;
   const accepted = report.finished && report.cleanup === "apagado" && passed === total;
-  const sections = report.steps.map((step) => `<section id="paso-${escape(step.id)}"><h2>${escape(step.id)} · ${escape(step.title)}</h2><p><strong>Esperado:</strong> ${escape(step.expected)}</p><div class="pair">${widths.map((width) => {
+  const manual = report.manual ?? [];
+  const sections = report.steps.map((step) => `<section id="paso-${escape(step.id)}"><h2>${escape(step.id)} · ${escape(step.title)}</h2><p><strong>Esperado:</strong> ${escape(step.expected)}</p>${step.controlled ? "<p>OTP controlado o canal privado de Testing. La recepción en WhatsApp real sigue pendiente.</p>" : ""}${step.guion ? `<p>Guion ${escape(step.guion)} · paso ${escape(step.paso)} · fuente ${escape(e8SourceRevision)}.</p>` : ""}<div class="pair">${widths.map((width) => {
     const result = step.results.find((item) => item.width === width) ?? { status: "pending", actual: "Pendiente" };
     return `<article><h3>${width} px · ${escape({ passed: "Pasó", failed: "Falló", pending: "Pendiente" }[result.status])}</h3><p><strong>Resultado:</strong> ${escape(result.actual ?? "Pendiente")}</p>${result.image ? `<a href="${escape(result.image)}"><img loading="lazy" src="${escape(result.image)}" alt="${escape(step.title)} a ${width} px"></a>` : ""}${result.extraImage ? `<p>La pestaña de Plataforma siguió abierta:</p><a href="${escape(result.extraImage)}"><img loading="lazy" src="${escape(result.extraImage)}" alt="Plataforma conservada a ${width} px"></a>` : ""}</article>`;
   }).join("")}</div></section>`).join("\n");
-  return `<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Recorrido de usuario · ${escape(report.date)}</title><style>body{font:16px/1.5 system-ui;margin:0;background:#f4f5f6;color:#182026}header,main{max-width:1500px;margin:auto;padding:24px}section{background:white;padding:24px;margin:24px 0;border-radius:12px;border:1px solid #ccd3d8}.pair{display:grid;grid-template-columns:2fr 1fr;gap:24px}img{display:block;width:100%;height:auto;border:1px solid #ccd3d8}h2{margin-top:0}article{min-width:0}nav a{margin-right:12px}a{color:#194b78}@media(max-width:800px){.pair{grid-template-columns:1fr}header,main{padding:12px}}</style><header><h1>Recorrido de usuario · Etapa 7</h1><p>${escape(report.date)} · ${accepted ? "Recorrido aprobado" : "Recorrido pendiente o fallido"} · ${passed}/${total} comprobaciones</p><p>Entorno: ${escape(report.cleanup)}. Un contexto Chromium persistente, sesión antigua firmada antes de navegar, sin limpiar cookies. PostgreSQL y correo .eml aislados. Google: solo destino accounts.google.com.</p><nav>${report.steps.map((step) => `<a href="#paso-${escape(step.id)}">${escape(step.id)}</a>`).join(" ")}</nav></header><main>${sections}</main></html>`;
+  const status = accepted ? (manual.length ? "Comprobaciones automatizadas aprobadas; recorrido manual pendiente" : "Recorrido aprobado") : "Recorrido pendiente o fallido";
+  return `<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Recorrido de usuario · ${escape(report.date)}</title><style>body{font:16px/1.5 system-ui;margin:0;background:#f4f5f6;color:#182026}header,main{max-width:1500px;margin:auto;padding:24px}section{background:white;padding:24px;margin:24px 0;border-radius:12px;border:1px solid #ccd3d8}.pair{display:grid;grid-template-columns:2fr 1fr;gap:24px}img{display:block;width:100%;height:auto;border:1px solid #ccd3d8}h2{margin-top:0}article{min-width:0}nav a{margin-right:12px}a{color:#194b78}@media(max-width:800px){.pair{grid-template-columns:1fr}header,main{padding:12px}}</style><header><h1>Recorrido de usuario · ${escape(report.stage ?? "Etapa 7")}</h1><p>${escape(report.date)} · ${status} · ${passed}/${total} comprobaciones</p><p>Entorno: ${escape(report.cleanup)}. Un contexto Chromium persistente, sesión antigua firmada antes de navegar, sin limpiar cookies. PostgreSQL y correo .eml aislados. Google: solo destino accounts.google.com.</p><nav>${report.steps.map((step) => `<a href="#paso-${escape(step.id)}">${escape(step.id)}</a>`).join(" ")}</nav></header><main>${sections}${manual.length ? `<section><h2>Para probar a mano</h2><ul>${manual.map((item) => `<li>Pendiente · ${escape(item)}</li>`).join("")}</ul></section>` : ""}</main></html>`;
 }
 
 export async function recordedStep({ result, action, capture, persist, diagnostic = () => "" }) {
@@ -228,7 +239,14 @@ async function runWidth({ width, context, env, record, output, signal }) {
       await page.getByRole("menuitem", { name: "Mi cuenta", exact: true }).click();
     }
     await heading("Mi cuenta");
-    await page.getByRole("button", { name: "Agregar correo", exact: true }).waitFor();
+    await page.getByRole("button", { name: /^Agregar correo(?: o teléfono)?$/ }).waitFor();
+  };
+  const addEmail = async () => {
+    await page.getByRole("button", { name: /^Agregar correo(?: o teléfono)?$/ }).click();
+    const dialog = page.getByRole("dialog");
+    const channel = dialog.getByRole("button", { name: "Correo", exact: true });
+    if (await channel.isVisible()) await channel.click();
+    return dialog;
   };
   const confirmMethod = async (destination, action) => {
     const before = new Set(await env.files());
@@ -374,8 +392,7 @@ async function runWidth({ width, context, env, record, output, signal }) {
   });
   await step("15", async () => {
     added = `e2e-recorrido-agregado-${randomUUID()}@example.test`;
-    await page.getByRole("button", { name: "Agregar correo", exact: true }).click();
-    const dialog = page.getByRole("dialog");
+    const dialog = await addEmail();
     await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(added);
     const before = new Set(await env.files());
     assert.equal((await clickResponse(page, dialog.getByRole("button", { name: "Enviar código", exact: true }), "/api/me/login-methods")).status(), 202);
@@ -400,8 +417,7 @@ async function runWidth({ width, context, env, record, output, signal }) {
     return "Quitó el correo sin código y el original volvió a quedar principal.";
   });
   await step("18", async () => {
-    await page.getByRole("button", { name: "Agregar correo", exact: true }).click();
-    const dialog = page.getByRole("dialog");
+    const dialog = await addEmail();
     await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(businessEmail);
     const before = new Set(await env.files());
     await clickResponse(page, dialog.getByRole("button", { name: "Enviar código", exact: true }), "/api/me/login-methods");
@@ -536,6 +552,8 @@ async function runWidth({ width, context, env, record, output, signal }) {
     return "El código volvió al subdominio; F5 conservó Personal y su menú con Mi cuenta en el dominio principal.";
   });
   await page.keyboard.press("Escape"); await signOut();
+  // La publicación E7 aún está visible; E8 usa las mismas pestañas y sesiones.
+  await runE8Journey({ page, platformPage, width, env, base: baseUrl, site, record, signOut, awaitApp, signal });
   await step("30", async () => {
     await login(businessEmail, "business");
     await page.goto(new URL("/org/pagina", baseUrl).href);
@@ -555,7 +573,9 @@ export async function main({ build = true } = {}) {
   const date = journeyDate();
   const output = path.join(root, "docs/design/capturas/recorrido", date);
   await mkdir(output, { recursive: true });
-  const report = { date, startedAtUtc: new Date(started).toISOString(), finished: false, cleanup: "pendiente", steps: definitions.map(([id, title, expected]) => ({ id, title, expected, results: widths.map((width) => ({ width, status: "pending", actual: "Pendiente" })) })) };
+  const steps = definitions.map(([id, title, expected]) => ({ id, title, expected }));
+  steps.splice(29, 0, ...e8Definitions);
+  const report = { date, stage: "Etapas 7 y 8", sourceRevision: e8SourceRevision, manual: e8ManualChecks, startedAtUtc: new Date(started).toISOString(), finished: false, cleanup: "pendiente", steps: steps.map((step) => ({ ...step, results: widths.map((width) => ({ width, status: "pending", actual: "Pendiente" })) })) };
   const persist = async () => {
     await writeFile(path.join(output, "resultados.json"), `${JSON.stringify(report, null, 2)}\n`);
     await writeFile(path.join(output, "index.html"), renderIndex(report));
@@ -611,7 +631,7 @@ export async function main({ build = true } = {}) {
     ]);
   } catch (error) {
     const errors = error instanceof AggregateError ? error.errors : [error];
-    report.failure = `Falló ${activeStep}; ${safeDiagnostic(errors.map((caught) => caught.message).join("; "))}. Los pasos pendientes no cuentan como aprobados.`;
+    report.failure = journeyFailure(activeStep, errors);
     console.error(report.failure);
     process.exitCode = 1;
   } finally {
@@ -620,7 +640,8 @@ export async function main({ build = true } = {}) {
     report.durationMs = Date.now() - started;
     await persist();
     console.info(`Índice: ${path.join(output, "index.html")}`);
-    console.info(`Resultado: ${report.finished && report.cleanup === "apagado" ? "60/60 PASÓ" : "FALLÓ"}; entorno ${report.cleanup}.`);
+    const passed = report.steps.reduce((count, step) => count + step.results.filter((item) => item.status === "passed").length, 0);
+    console.info(`Resultado: ${passed}/${report.steps.length * widths.length}; ${report.finished && report.cleanup === "apagado" ? "automatizado completo; manual pendiente" : "FALLÓ"}; entorno ${report.cleanup}.`);
   }
   return report;
 }

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { mkdtemp, readdir, readFile, rm, unlink, writeFile } from "node:fs/promises";
+import { mkdtemp, readdir, readFile, rename, rm, unlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -31,6 +31,55 @@ async function waitFile(file, timeout = 240_000) {
     await delay(250);
   }
   throw new Error("El preparador aislado no completó la orden local.");
+}
+
+/** IPC publicado por Back: una orden local, respuesta atómica y pruebas sólo en memoria. */
+export function createPrivateCommand(readyFile, { wait = (file) => waitFile(file, 30_000) } = {}) {
+  assert.ok(path.isAbsolute(readyFile), "La ruta de readiness debe ser absoluta.");
+  assert.match(path.basename(readyFile), /^mt-e2e-[A-Za-z0-9-]+\.ready$/);
+  let pending = false;
+  return async (suffix, data) => {
+    assert.ok(/^[a-z][a-z-]*$/.test(suffix), "El sufijo de la orden no es válido.");
+    assert.ok(!pending, "El preparador tiene una orden pendiente.");
+    const payload = JSON.stringify(data);
+    assert.ok(suffix !== "whatsapp" || Buffer.byteLength(payload, "utf8") <= 2048, "La orden WhatsApp supera 2048 bytes.");
+    pending = true;
+    const file = readyFile.replace(/\.ready$/, `.${suffix}.json`);
+    const temporary = `${file}.tmp`;
+    try {
+      await rm(file, { force: true }); await rm(`${file}.done`, { force: true });
+      await writeFile(temporary, payload, { flag: "wx" });
+      await rename(temporary, file);
+      let result;
+      try { result = await wait(`${file}.done`); }
+      catch { throw new Error("El preparador no completó la orden privada."); }
+      try { return result ? JSON.parse(result) : null; }
+      catch { throw new Error("El preparador no devolvió JSON válido."); }
+    } finally {
+      try { await Promise.all([file, `${file}.done`, temporary].map((item) => rm(item, { force: true }))); }
+      finally { pending = false; }
+    }
+  };
+}
+
+/** Binding del control publicado: nunca reinicia ni sustituye el destinatario de un cursor. */
+export function createWhatsAppControl(command) {
+  const started = new Set();
+  return {
+    async begin(scenario, phone) {
+      assert.ok(/^[A-Za-z0-9_-]{1,80}$/.test(scenario), "El escenario privado no es válido.");
+      assert.ok(/^\+54911345678\d{2}$/.test(phone), "El destino debe ser sintético de la fixture.");
+      assert.ok(!started.has(scenario), "El escenario ya iniciado no se reinicia.");
+      started.add(scenario);
+      const reply = await command("whatsapp", { kind: "begin", scenario, phone });
+      assert.ok(reply?.ok === true, "El preparador no pudo iniciar el escenario privado.");
+      return async (kind, extra = {}) => {
+        assert.ok(["code", "inbound", "bot", "events", "recoveryNotice"].includes(kind), "La orden privada no está admitida por el recorrido.");
+        assert.ok(Object.keys(extra).every((key) => kind === "recoveryNotice" && key === "recoveryId"), "Los parámetros no pueden sustituir el cursor ni el destino.");
+        return command("whatsapp", { kind, ...extra, scenario, phone });
+      };
+    },
+  };
 }
 
 /** Usa exactamente el AppHost/base efímera/pickup del E2E real; jamás detiene un AppHost ajeno. */
@@ -79,24 +128,8 @@ export async function createEnvironment({ build = true } = {}) {
       }
       return items;
     };
-    const command = async (suffix, data) => {
-      const file = readyFile.replace(/\.ready$/, `.${suffix}.json`);
-      await rm(file, { force: true });
-      await rm(`${file}.done`, { force: true });
-      // Publicación atómica: el preparador nunca lee un JSON escrito a medias.
-      const temporary = `${file}.tmp`;
-      await writeFile(temporary, JSON.stringify(data), { flag: "wx" });
-      const { rename } = await import("node:fs/promises");
-      await rename(temporary, file);
-      try {
-        const result = await waitFile(`${file}.done`, 30_000);
-        return result ? JSON.parse(result) : null;
-      } finally {
-        await rm(file, { force: true });
-        await rm(`${file}.done`, { force: true });
-      }
-    };
-    return { directory, businessEmail, stop, files, messages, command,
+    const command = createPrivateCommand(readyFile);
+    return { directory, businessEmail, stop, files, messages, command, whatsapp: createWhatsAppControl(command),
       async code(email, before) {
         const deadline = Date.now() + 95_000;
         while (Date.now() < deadline) {

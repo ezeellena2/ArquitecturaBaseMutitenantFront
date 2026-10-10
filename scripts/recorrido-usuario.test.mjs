@@ -1,7 +1,91 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { chromium } from "playwright";
-import { journeyDate, renderIndex, recordedStep, safeDiagnostic, signOutMobile, waitCodeMessage, waitForTransientNotices, withCleanup } from "./recorrido-usuario.mjs";
+import { journeyDate, journeyFailure, renderIndex, recordedStep, safeDiagnostic, signOutMobile, waitCodeMessage, waitForTransientNotices, withCleanup } from "./recorrido-usuario.mjs";
+import { execFileSync } from "node:child_process";
+import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
+import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
+
+test("el reenvío WhatsApp respeta cada RetryAfter del servidor y conserva la respuesta aceptada", async () => {
+  const events = [];
+  const replies = [
+    { status: () => 429, json: async () => ({ code: "Auth.LoginCode.ResendTooSoon", retryAfter: 3 }) },
+    { status: () => 429, json: async () => ({ code: "Auth.LoginCode.ResendTooSoon", retryAfter: 1 }) },
+    { status: () => 202 },
+  ];
+  const accepted = replies[2];
+  const response = await whatsappJourney.sendWithCooldown(async () => { events.push("enviar"); return replies.shift(); },
+    { wait: async (milliseconds) => { events.push(milliseconds); } });
+  assert.equal(response, accepted);
+  assert.deepEqual(events, ["enviar", 3000, "enviar", 1000, "enviar"]);
+});
+
+test("el reenvío no oculta una cuota diaria, un fallo HTTP ni un RetryAfter inválido", async () => {
+  for (const [status, problem] of [[429, { code: "WhatsApp.LoginCode.DailyLimit", retryAfter: 3600 }], [500, {}], [429, { code: "Auth.LoginCode.ResendTooSoon", retryAfter: -1 }]]) {
+    let waits = 0; let sends = 0;
+    await assert.rejects(whatsappJourney.sendWithCooldown(async () => { sends++; return { status: () => status, json: async () => problem }; },
+      { wait: async () => { waits++; } }));
+    assert.equal(sends, 1); assert.equal(waits, 0);
+  }
+});
+
+test("el reenvío se corta si el servidor nunca levanta el cooldown", async () => {
+  let sends = 0; let waits = 0;
+  await assert.rejects(whatsappJourney.sendWithCooldown(async () => {
+    sends++; return { status: () => 429, json: async () => ({ code: "Auth.LoginCode.ResendTooSoon", retryAfter: 2 }) };
+  }, { wait: async () => { waits++; } }), /cinco/);
+  assert.equal(sends, 5); assert.equal(waits, 4);
+});
+
+test("cancelar el recorrido interrumpe RetryAfter sin enviar otro código", async () => {
+  let sends = 0;
+  await assert.rejects(whatsappJourney.sendWithCooldown(async () => {
+    sends++; return { status: () => 429, json: async () => ({ code: "Auth.LoginCode.ResendTooSoon", retryAfter: 60 }) };
+  }, { signal: AbortSignal.abort() }), { name: "AbortError" });
+  assert.equal(sends, 1);
+});
+
+test("el recorrido E8 cubre cada paso de los guiones publicados y declara los externos controlados", () => {
+  const ids = e8Definitions.map((step) => step.id);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const name of ["ingresar-por-whatsapp", "el-bot-y-su-enlace", "agregar-un-whatsapp", "atender-una-recuperacion"]) {
+    const source = JSON.parse(execFileSync("git", ["show", `${e8SourceRevision}:docs/design/recorridos/${name}.json`], { encoding: "utf8" }));
+    for (const [index, published] of source.pasos.entries()) {
+      const step = e8Definitions.find((item) => item.guion === name && item.paso === index + 1);
+      assert.ok(step, `${name}, paso ${index + 1}`);
+      assert.equal(step.route, published.ruta);
+      if (published.ruta === "—") assert.equal(step.controlled, true);
+    }
+  }
+  for (const milestone of ["A1", "N1", "N2", "N3"]) assert.ok(e8Definitions.some((step) => step.milestones?.includes(milestone)), milestone);
+  for (const step of e8Definitions) assert.ok(step.expected && step.title);
+  assert.ok(e8ManualChecks.some((item) => /Google/.test(item)));
+  assert.ok(e8ManualChecks.some((item) => /WhatsApp real/.test(item)));
+});
+
+test("sin control publicado el recorrido no ejecuta UI ni se declara aprobado", () => {
+  assert.throws(() => requireE8Control({}), /soporte privado.*mismo entorno/);
+  const begin = async () => {};
+  assert.equal(requireE8Control({ whatsapp: { begin } }), begin);
+});
+
+test("el fallo E8 sólo publica el tipo y conserva privados todos los mensajes del error", () => {
+  const privateText = "123456 +5491134567880 privado@example.test https://localtest.me:5174/login/enlace#ticket-secreto";
+  const result = journeyFailure("E8-04 a 390", [new TypeError(privateText), new Error(privateText)]);
+  assert.ok(result.includes("TypeError; Error"));
+  assert.ok(result.includes("pendientes no cuentan como aprobados"));
+  for (const value of privateText.split(" ")) assert.ok(!result.includes(value));
+});
+
+test("el índice E8 separa aprobación automatizada, OTP controlado y pruebas manuales", () => {
+  const html = renderIndex({ date: "2026-10-10", stage: "Etapas 7 y 8", finished: true, cleanup: "apagado", manual: e8ManualChecks,
+    steps: [{ ...e8Definitions.find((step) => step.controlled && step.guion), results: [1440, 390].map((width) => ({ width, status: "passed", actual: "OTP leído por canal privado; no entrega Meta." })) }],
+  });
+  assert.ok(html.includes("Etapas 7 y 8"));
+  assert.ok(html.includes("Comprobaciones automatizadas aprobadas"));
+  assert.ok(!html.includes("Recorrido aprobado"));
+  for (const text of ["Para probar a mano", "OTP controlado", "WhatsApp real", "Google", e8SourceRevision]) assert.ok(html.includes(text), text);
+});
 
 test("la carpeta usa la fecha de Buenos Aires aunque UTC ya sea el día siguiente", () => {
   assert.equal(journeyDate(new Date("2026-10-08T01:30:00Z")), "2026-10-07");
