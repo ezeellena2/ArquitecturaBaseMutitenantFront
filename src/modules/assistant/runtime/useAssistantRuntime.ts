@@ -7,7 +7,7 @@ import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { parseUtcInstant } from "@/shared/time/parseUtcInstant";
 import { assistantConversationQueryKey, assistantQueryKeyRoot, assistantStateQueryKey, fetchAssistantConversation, fetchAssistantState, sendAssistantMessageResponse, stopAssistantTurn, type AssistantScope } from "../api/assistant";
 import { decodeAssistantStream } from "../api/stream";
-import { AssistantLifetime, waitForAssistantTerminal } from "./assistantLifetime";
+import { AssistantLifetime, isAssistantConversationPending, waitForAssistantTerminal } from "./assistantLifetime";
 import { beginAssistantTurn, isAssistantTurnPending, reduceAssistantTurn, type AssistantTurnState } from "./assistantTurnState";
 
 interface SendOperation {
@@ -25,6 +25,7 @@ interface StopOperation {
   conversationId: string;
   turnId: string;
   lifetime: AssistantLifetime;
+  localSend?: SendOperation;
   idempotencyKey?: string;
 }
 
@@ -68,6 +69,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
   const readerRef = useRef<{ controller: AbortController; operation: SendOperation } | null>(null);
   const lastOperation = useRef<SendOperation | null>(null);
   const flightRef = useRef<SendOperation | null>(null);
+  const reconciliationControllers = useRef(new Set<AbortController>());
   const stopBeforeStart = useRef<{ resolve: () => void; reject: (error: unknown) => void } | null>(null);
   const owner = useMemo(() => ({ lifetime, id: globalThis.crypto.randomUUID() }), [lifetime]).id;
   useEffect(() => {
@@ -93,6 +95,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
     stopBeforeStart.current = null;
   }, [active]);
   const pendingMutations = useIsMutating({ predicate: (mutation) => mutation.meta?.assistantOwner === owner });
+  const localSendOwner = (ownerLifetime: AssistantLifetime) => lastOperation.current?.lifetime === ownerLifetime ? lastOperation.current : undefined;
 
   const readDetail = async (id: string, querySignal: AbortSignal, ownerLifetime = lifetime, requestScope = identity) => {
     const controller = ownerLifetime.controller();
@@ -123,9 +126,44 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
     queryKey: detailKey,
     enabled: active && conversationId !== null,
     queryFn: ({ signal }) => readDetail(conversationId!, signal),
-    refetchInterval: (query) => query.state.data?.messages.items.some((message) => message.status === "Generating") ? 1_000 : false,
+    refetchInterval: (query) => isAssistantConversationPending(query.state.data) ? 1_000 : false,
     meta: { blocksView: true, silent: true },
   });
+
+  async function reconcile(operation: SendOperation | StopOperation, signal: AbortSignal): Promise<AssistantConversationResponse> {
+    const expectedOwner = "operationId" in operation ? operation : operation.localSend;
+    const controller = operation.lifetime.controller();
+    reconciliationControllers.current.add(controller);
+    const reconciliationSignal = AbortSignal.any([signal, controller.signal]);
+    const assertOwner = () => {
+      reconciliationSignal.throwIfAborted();
+      operation.lifetime.assertActive();
+      if (localSendOwner(operation.lifetime) !== expectedOwner) throw new DOMException("", "AbortError");
+    };
+    try {
+      assertOwner();
+      const operationTurnKey = [...assistantQueryKeyRoot(operation.scope), "turn", operation.conversationId];
+      const current = client.getQueryData<AssistantTurnState>(operationTurnKey);
+      if (current && isAssistantTurnPending(current)) client.setQueryData(operationTurnKey, { ...current, phase: "reconciling" });
+      // Una señal nueva permite la relectura después de abortar el lector por Detener.
+      const result = await waitForAssistantTerminal(client, assistantConversationQueryKey(operation.scope, operation.conversationId), async (querySignal) => {
+        assertOwner();
+        const result = await readDetail(operation.conversationId, querySignal, operation.lifetime, operation.scope);
+        assertOwner();
+        return result;
+      }, reconciliationSignal);
+      assertOwner();
+      const message = result.messages.items.find((item) => item.id === current?.start?.assistantMessageId)
+        ?? result.messages.items.findLast((item) => item.role === "assistant");
+      if (current && message) client.setQueryData(operationTurnKey, { ...current, text: message.text, phase: message.status === "Generating" ? "reconciling" : message.status });
+      await client.invalidateQueries({ queryKey: assistantStateQueryKey(operation.scope) });
+      assertOwner();
+      return result;
+    } finally {
+      reconciliationControllers.current.delete(controller);
+      operation.lifetime.release(controller);
+    }
+  }
 
   const stopMutation = useIdempotentMutation(async (operation: StopOperation, key) => {
     operation.idempotencyKey ??= key;
@@ -134,31 +172,26 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
       await stopAssistantTurn(operation.scope, operation.conversationId, operation.turnId, {}, operation.idempotencyKey, controller.signal);
       controller.signal.throwIfAborted();
       operation.lifetime.assertActive();
+      if (localSendOwner(operation.lifetime) !== operation.localSend) return;
       const reader = readerRef.current;
       const current = client.getQueryData<AssistantTurnState>([...assistantQueryKeyRoot(operation.scope), "turn", operation.conversationId]);
-      if (current?.start?.turnId === operation.turnId) {
-        if (reader?.operation.lifetime === operation.lifetime) reader.controller.abort();
-        await reconcile(operation, controller.signal);
-      }
+      const durable = client.getQueryData<AssistantConversationResponse>(assistantConversationQueryKey(operation.scope, operation.conversationId));
+      // Un Retry tardío conserva su ruta/clave, pero no cancela ni reconcilia otro turno.
+      const localPending = isAssistantTurnPending(current);
+      if (localPending && current?.start) {
+        if (current.start.turnId !== operation.turnId) return;
+      } else if (localPending && flightRef.current?.lifetime === operation.lifetime) {
+        if (flightRef.current !== operation.localSend) return;
+      } else if (durable?.activeTurnId && durable.activeTurnId !== operation.turnId) return;
+      if (reader?.operation.lifetime === operation.lifetime
+        && (current?.start?.turnId === operation.turnId || reader.operation === operation.localSend)) reader.controller.abort();
+      await reconcile(operation, controller.signal);
+    } catch (error) {
+      operation.lifetime.assertActive();
+      if (localSendOwner(operation.lifetime) !== operation.localSend) throw new DOMException("", "AbortError");
+      throw error;
     } finally { operation.lifetime.release(controller); }
   }, { meta: { assistantOwner: owner }, sameOperation: (a, b) => a.lifetime === b.lifetime && a.turnId === b.turnId });
-
-  const reconcile = async (operation: Pick<SendOperation, "scope" | "conversationId" | "lifetime">, signal: AbortSignal): Promise<AssistantConversationResponse> => {
-    signal.throwIfAborted();
-    operation.lifetime.assertActive();
-    const current = client.getQueryData<AssistantTurnState>(turnKey);
-    if (current && isAssistantTurnPending(current)) client.setQueryData(turnKey, { ...current, phase: "reconciling" });
-    // Una señal nueva permite la relectura después de abortar el lector por Detener.
-    const result = await waitForAssistantTerminal(client, assistantConversationQueryKey(operation.scope, operation.conversationId),
-      (querySignal) => readDetail(operation.conversationId, querySignal, operation.lifetime, operation.scope), signal);
-    signal.throwIfAborted();
-    operation.lifetime.assertActive();
-    const message = result.messages.items.find((item) => item.id === current?.start?.assistantMessageId)
-      ?? result.messages.items.findLast((item) => item.role === "assistant");
-    if (current && message) client.setQueryData(turnKey, { ...current, text: message.text, phase: message.status === "Generating" ? "reconciling" : message.status });
-    await client.invalidateQueries({ queryKey: assistantStateQueryKey(operation.scope) });
-    return result;
-  };
 
   const sendMutation = useIdempotentMutation(async (operation: SendOperation, key) => {
     operation.idempotencyKey ??= key;
@@ -176,6 +209,11 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
         if (flightRef.current === operation) flightRef.current = null;
       }
     }
+    // Cancelar por Query antes de abrir otro envío evita que una relectura del
+    // dueño anterior publique datos o errores tardíos sobre la ficha actual.
+    await client.cancelQueries({ queryKey: assistantConversationQueryKey(operation.scope, operation.conversationId), exact: true });
+    operation.lifetime.assertActive();
+    if (lastOperation.current !== operation) throw new DOMException("", "AbortError");
     const controller = operation.lifetime.controller();
     const reconciliation = operation.lifetime.controller();
     readerRef.current = { controller, operation };
@@ -195,7 +233,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
           const waiting = stopBeforeStart.current;
           stopBeforeStart.current = null;
           // El error queda en la mutación de Stop y en el Promise del caller; no se pierde la lectura.
-          void stopMutation.mutateAsync({ scope: operation.scope, conversationId: operation.conversationId, turnId: event.data.turnId, lifetime: operation.lifetime }).then(waiting.resolve, waiting.reject);
+          void stopMutation.mutateAsync({ scope: operation.scope, conversationId: operation.conversationId, turnId: event.data.turnId, lifetime: operation.lifetime, localSend: operation }).then(waiting.resolve, waiting.reject);
         }
       }
     } catch (error) {
@@ -226,17 +264,20 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
   }, { meta: { assistantOwner: owner }, sameOperation: (a, b) => a.operationId === b.operationId });
 
   const durableGenerating = detail.data?.messages.items.some((message) => message.status === "Generating") === true;
+  const durablePending = isAssistantConversationPending(detail.data);
+  const activeTurnId = detail.data?.activeTurnId;
   // useMutation conserva el último resultado al cambiar las props. El error
   // pertenece al scope/conversación de su operación, igual que sus datos privados.
   const sendError = active && sendMutation.variables?.lifetime === lifetime ? sendMutation.error : null;
-  const stopError = active && stopMutation.variables?.lifetime === lifetime ? stopMutation.error : null;
+  const stopError = active && stopMutation.variables?.lifetime === lifetime
+    && !(stopMutation.error instanceof DOMException && stopMutation.error.name === "AbortError") ? stopMutation.error : null;
   const sendErrorCode = active ? sendError?.code ?? turn?.error?.code : undefined;
   const blockedCode = sendErrorCode && ["Assistant.Limit.DailyReached", "Assistant.Limit.MonthlyReached",
     "Assistant.Settings.NotConfigured", "Assistant.Notice.AcceptanceRequired", "Legal.AcceptanceRequired"].includes(sendErrorCode)
     ? sendErrorCode : null;
   const canSend = active && !!conversationId && !!detail.data && state.data?.configured === true && state.data.noticeAccepted
     && state.data.remainingMessages !== 0 && !pendingMutations && !isAssistantTurnPending(turn)
-    && !durableGenerating && !blockedCode;
+    && !durablePending && !blockedCode;
 
   const send = (request: SendAssistantMessageRequest) => {
     if (!lifetime.getSnapshot() || !canSend || !conversationId || flightRef.current?.lifetime === lifetime) return Promise.reject(new ApiError(409, { code: "Assistant.Runtime.SendDisabled" }));
@@ -245,6 +286,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
       request: { ...request, attachmentIds: request.attachmentIds ? [...request.attachmentIds] : request.attachmentIds },
     };
     lastOperation.current = operation;
+    for (const controller of reconciliationControllers.current) controller.abort();
     flightRef.current = operation;
     stopMutation.reset();
     return sendMutation.mutateAsync(operation);
@@ -259,8 +301,13 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
   const stop = (): Promise<void> => {
     lifetime.assertActive();
     const current = readTurn();
+    // El dueño viaja con Stop: un Retry no captura el envío que esté activo después.
+    const localSend = localSendOwner(lifetime);
     if (current?.start && isAssistantTurnPending(current)) {
-      return stopMutation.mutateAsync({ scope: identity, conversationId: current.conversationId, turnId: current.start.turnId, lifetime });
+      return stopMutation.mutateAsync({ scope: identity, conversationId: current.conversationId, turnId: current.start.turnId, lifetime, localSend });
+    }
+    if (conversationId && activeTurnId) {
+      return stopMutation.mutateAsync({ scope: identity, conversationId, turnId: activeTurnId, lifetime, localSend });
     }
     if (current?.phase === "sending" && !stopBeforeStart.current) {
       return new Promise<void>((resolve, reject) => { stopBeforeStart.current = { resolve, reject }; });
@@ -321,8 +368,8 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
   }, [runtime, lifetime, enabled]);
 
   return { runtime, state, detail, turn, canSend,
-    canStop: active && isAssistantTurnPending(turn) && (!!turn?.start || turn?.phase === "sending"),
-    isPending: pendingMutations > 0 || isAssistantTurnPending(turn) || durableGenerating,
+    canStop: active && (!!activeTurnId || isAssistantTurnPending(turn) && (!!turn?.start || turn?.phase === "sending")),
+    isPending: active && (pendingMutations > 0 || isAssistantTurnPending(turn) || durablePending),
     error: active ? stopError ?? sendError ?? turn?.error ?? null : null,
     blockedCode, send, retryNetwork, retryFailed, stop, refreshState };
 }

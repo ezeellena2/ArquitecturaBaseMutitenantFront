@@ -52,7 +52,12 @@ export class AssistantLifetime {
   }
 }
 
-/** El observer de Query posee el polling; el envío sigue pendiente mientras el back dice Generating. */
+export function isAssistantConversationPending(conversation: AssistantConversationResponse | undefined): boolean {
+  return !!conversation && (conversation.activeTurnId !== null
+    || conversation.messages.items.some((message) => message.status === "Generating"));
+}
+
+/** Query sigue pendiente durante la admisión y mientras hay un mensaje Generating. */
 export function waitForAssistantTerminal(
   client: QueryClient,
   queryKey: QueryKey,
@@ -77,7 +82,7 @@ export function waitForAssistantTerminal(
     unsubscribe = observer.subscribe((result) => {
       if (signal.aborted) return;
       if (result.isError && !result.isFetching) { cleanup(); reject(result.error); }
-      else if (result.data && !result.isFetching && !result.data.messages.items.some((message) => message.status === "Generating")) {
+      else if (result.data && !result.isFetching && !isAssistantConversationPending(result.data)) {
         cleanup(); resolve(result.data);
       }
     });

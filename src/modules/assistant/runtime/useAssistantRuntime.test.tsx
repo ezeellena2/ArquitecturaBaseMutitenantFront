@@ -2,7 +2,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider, QueryObserver } from "@tanstack/react-query";
 import { HttpResponse, http } from "msw";
 import { StrictMode, type PropsWithChildren } from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { server } from "@/test/mocks/server";
 import { resetHttpClient } from "@/shared/api/httpClient";
 import type { AssistantConversationResponse, AssistantMessageResponse, AssistantStateResponse, AssistantTurnResultResponse } from "@/shared/api/types";
@@ -34,8 +34,8 @@ function deferred<T>() {
   return { promise, resolve };
 }
 
-function setup(initialState = state, strict = false) {
-  let durable = conversation();
+function setup(initialState = state, strict = false, initialDurable = conversation()) {
+  let durable = initialDurable;
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
   server.use(http.get("/api/organization/assistant", () => HttpResponse.json(initialState)),
     http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.json(durable)));
@@ -53,9 +53,295 @@ function stream() {
   return { body, event: (event: string, data: unknown) => controller.enqueue(new TextEncoder().encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)), close: () => controller.close() };
 }
 const start = { turnId: "turn", userMessageId: "u", assistantMessageId: "a", conversationVersion: 4 };
-afterEach(resetHttpClient);
+afterEach(() => { vi.useRealTimers(); resetHttpClient(); });
 
 describe("Assistant runtime HTTP + Query + SDK", () => {
+  it.each(["Generating", "admitted"] as const)("reabre %s con activeTurnId y Stop relee ficha/version y Estado", async (phase) => {
+    const initial = { ...conversation(phase === "Generating" ? [message("u", "user"), message("a", "assistant", "Generating", "Parcial")] : [message("u", "user")]), activeTurnId: "durable-turn" };
+    const hook = setup(state, false, initial);
+    let savedKey: string | null = null;
+    let stateReads = 0;
+    server.use(http.get("/api/organization/assistant", () => { stateReads++; return HttpResponse.json({ ...state, remainingMessages: 79 }); }),
+      http.post("/api/organization/assistant/conversations/chat/turns/durable-turn/stop", ({ request }) => {
+        savedKey = request.headers.get("idempotency-key");
+        hook.setDurable({ ...conversation([message("u", "user"), message("a", "assistant", "Stopped", "Parcial")]), conversation: { ...initial.conversation, version: 5 } });
+        return new HttpResponse(null, { status: 204 });
+      }));
+    await waitFor(() => expect(hook.result.current.detail.data).toEqual(initial));
+    expect(hook.result.current.turn).toBeNull();
+    expect(hook.result.current.canStop).toBe(true);
+    expect(hook.result.current.isPending).toBe(true);
+    expect(hook.result.current.canSend).toBe(false);
+    expect(hook.result.current.runtime.thread.getState().messages.map((item) => item.id)).toEqual(phase === "Generating" ? ["u", "a"] : ["u"]);
+    const before = stateReads;
+    await act(async () => { await hook.result.current.stop(); });
+    expect(savedKey).toBeTruthy();
+    expect(stateReads).toBeGreaterThan(before);
+    await waitFor(() => expect(hook.result.current.detail.data?.conversation.version).toBe(5));
+    expect(hook.result.current.detail.data?.activeTurnId).toBeNull();
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    expect(hook.result.current.runtime.thread.getState().messages.at(-1)?.status).toEqual({ type: "incomplete", reason: "cancelled" });
+    expect(hook.result.current.canStop).toBe(false);
+    expect(hook.result.current.isPending).toBe(false);
+    hook.unmount();
+  });
+
+  it("admitted sin assistant sigue polling hasta activeTurnId null sin inventar mensajes", async () => {
+    const initial = { ...conversation(), activeTurnId: "durable-turn" };
+    const hook = setup(state, false, initial);
+    await waitFor(() => expect(hook.result.current.detail.data).toEqual(initial));
+    vi.useFakeTimers();
+    // Reprograma el observer bajo el reloj falso después de la carga HTTP inicial.
+    await act(async () => { await hook.result.current.detail.refetch(); });
+    let reads = 0;
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => {
+      reads++;
+      return HttpResponse.json(reads === 1 ? initial : conversation([message("u", "user"), terminal.message]));
+    }));
+    await act(async () => { await vi.advanceTimersByTimeAsync(1_000); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(10); });
+    expect(reads).toBe(1);
+    expect(hook.result.current.canStop).toBe(true);
+    expect(hook.result.current.canSend).toBe(false);
+    expect(hook.result.current.isPending).toBe(true);
+    expect(hook.result.current.runtime.thread.getState().messages.map((item) => item.id)).toEqual([]);
+    await act(async () => { await vi.advanceTimersByTimeAsync(1_000); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(10); });
+    expect(reads).toBe(2);
+    expect(hook.result.current.canStop).toBe(false);
+    expect(hook.result.current.isPending).toBe(false);
+    expect(hook.result.current.canSend).toBe(true);
+    await act(async () => { await vi.advanceTimersByTimeAsync(2_000); });
+    expect(reads).toBe(2);
+    hook.unmount();
+  });
+
+  it("Stop fallido al reabrir conserva pending/polling y Retry conserva la clave", async () => {
+    const initial = { ...conversation([message("a", "assistant", "Generating", "Parcial")]), activeTurnId: "durable-turn" };
+    const hook = setup(state, false, initial);
+    const keys: Array<string | null> = [];
+    server.use(http.post("/api/organization/assistant/conversations/chat/turns/durable-turn/stop", ({ request }) => {
+      keys.push(request.headers.get("idempotency-key"));
+      if (keys.length === 1) return HttpResponse.error();
+      hook.setDurable(conversation([message("a", "assistant", "Stopped", "Parcial") ]));
+      return new HttpResponse(null, { status: 204 });
+    }));
+    await waitFor(() => expect(hook.result.current.detail.data).toEqual(initial));
+    await act(async () => { await hook.result.current.stop().catch(() => {}); });
+    expect(hook.result.current.isPending).toBe(true);
+    expect(hook.result.current.canStop).toBe(true);
+    expect(hook.result.current.canSend).toBe(false);
+    expect(hook.result.current.runtime.thread.getState().messages.at(-1)?.status).toEqual({ type: "running" });
+    const lost = hook.client.getMutationCache().getAll().find((mutation) => mutation.state.status === "error");
+    vi.useFakeTimers();
+    await act(async () => { await hook.result.current.detail.refetch(); });
+    let reads = 0;
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => { reads++; return HttpResponse.json(initial); }));
+    await act(async () => { await vi.advanceTimersByTimeAsync(1_000); });
+    expect(reads).toBe(1);
+    vi.useRealTimers();
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.json(conversation([message("a", "assistant", "Stopped", "Parcial")]))));
+    await act(async () => { await lost!.execute(lost!.state.variables); });
+    expect(keys[1]).toBe(keys[0]);
+    await waitFor(() => expect(hook.result.current.isPending).toBe(false));
+    hook.unmount();
+  });
+
+  it("Stop espera activeTurnId null aunque ya no haya mensaje Generating", async () => {
+    const initial = { ...conversation([message("u", "user")]), activeTurnId: "durable-turn" };
+    const hook = setup(state, false, initial);
+    server.use(http.post("/api/organization/assistant/conversations/chat/turns/durable-turn/stop", () => new HttpResponse(null, { status: 204 })));
+    await waitFor(() => expect(hook.result.current.detail.data).toEqual(initial));
+    let reads = 0;
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => {
+      reads++; return HttpResponse.json(initial);
+    }));
+    let settled = false;
+    let operation!: Promise<void>;
+    act(() => { operation = hook.result.current.stop().then(() => { settled = true; }); });
+    await waitFor(() => {
+      expect(reads).toBeGreaterThan(0);
+      expect(hook.result.current.detail.isFetching).toBe(false);
+    });
+    expect(settled).toBe(false);
+    expect(hook.result.current.isPending).toBe(true);
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.json(conversation([message("u", "user"), message("a", "assistant", "Stopped")]))));
+    hook.setDurable(conversation([message("u", "user"), message("a", "assistant", "Stopped")]));
+    await act(async () => { await hook.result.current.detail.refetch(); await operation; });
+    expect(settled).toBe(true);
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    hook.unmount();
+  });
+
+  it("null terminal no permite Stop ni inventa un turno", async () => {
+    const hook = setup(state, false, conversation([terminal.message]));
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    expect(hook.result.current.canStop).toBe(false);
+    expect(hook.result.current.isPending).toBe(false);
+    await expect(hook.result.current.stop()).rejects.toMatchObject({ code: "Assistant.Turn.NotGenerating" });
+    hook.unmount();
+  });
+
+  it("SSE start vivo prioriza su turnId sobre una ficha durable atrasada para Stop", async () => {
+    const source = stream();
+    const hook = setup();
+    const stopped = deferred<void>();
+    server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => new HttpResponse(source.body, { headers: { "Content-Type": "text/event-stream" } })),
+      http.post("/api/organization/assistant/conversations/chat/turns/turn/stop", () => {
+        hook.setDurable(conversation([message("u", "user"), message("a", "assistant", "Stopped")]));
+        stopped.resolve();
+        return new HttpResponse(null, { status: 204 });
+      }));
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    let operation!: Promise<AssistantConversationResponse>;
+    act(() => { operation = hook.result.current.send({ text: "Actual", conversationVersion: 3 }); source.event("start", start); });
+    await waitFor(() => expect(hook.result.current.turn?.start?.turnId).toBe("turn"));
+    hook.setDurable({ ...conversation([message("old-a", "assistant", "Generating")]), activeTurnId: "old-turn" });
+    await act(async () => { await hook.result.current.detail.refetch(); });
+    await act(async () => { await hook.result.current.stop(); });
+    await stopped.promise;
+    await waitFor(() => expect(hook.result.current.turn?.phase).toBe("Stopped"));
+    await act(async () => { await operation; });
+    hook.unmount();
+  });
+
+  it.each([false, true])("Stop con ID durable antes de start reconcilia su lector, pedido previo igual=%s", async (sameBody) => {
+    const source = stream();
+    const hook = setup();
+    let posts = 0;
+    server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => {
+      posts++;
+      if (sameBody && posts === 1) return HttpResponse.error();
+      return new HttpResponse(source.body, { headers: { "Content-Type": "text/event-stream" } });
+    }));
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    if (sameBody) {
+      await act(async () => { await hook.result.current.send({ text: "Admitido", conversationVersion: 3 }).catch(() => {}); });
+      await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    }
+    let operation!: Promise<AssistantConversationResponse | undefined>;
+    act(() => {
+      operation = hook.result.current.send({ text: "Admitido", conversationVersion: 3 }).catch(() => undefined);
+      source.event("title", { conversationId: "chat", title: "Admitido", version: 4 });
+    });
+    await waitFor(() => expect(hook.result.current.turn?.title?.version).toBe(4));
+    let durable: AssistantConversationResponse = { ...conversation([message("u", "user")]), activeTurnId: "durable-turn" };
+    let reads = 0;
+    let stateReads = 0;
+    let stopKey: string | null = null;
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => { reads++; return HttpResponse.json(durable); }),
+      http.get("/api/organization/assistant", () => { stateReads++; return HttpResponse.json({ ...state, remainingMessages: 79 }); }),
+      http.post("/api/organization/assistant/conversations/chat/turns/durable-turn/stop", ({ request }) => {
+        stopKey = request.headers.get("idempotency-key");
+        durable = conversation([message("u", "user"), message("a", "assistant", "Stopped")]);
+        return new HttpResponse(null, { status: 204 });
+      }));
+    // La ficha es el único origen del ID; todavía no llegó start por SSE.
+    await act(async () => { await hook.result.current.detail.refetch(); });
+    await waitFor(() => expect(hook.result.current.detail.data?.activeTurnId).toBe("durable-turn"));
+    expect(hook.result.current.turn?.start).toBeUndefined();
+    const before = reads;
+    try {
+      await act(async () => { await hook.result.current.stop(); });
+      await waitFor(() => expect(hook.result.current.turn?.phase).toBe("Stopped"));
+      expect(reads).toBeGreaterThan(before);
+      expect(stateReads).toBeGreaterThan(0);
+      expect(stopKey).toBeTruthy();
+      await act(async () => { expect(await operation).toEqual(durable); });
+      await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+      expect(hook.result.current.isPending).toBe(false);
+      expect(hook.result.current.canStop).toBe(false);
+      expect(hook.result.current.runtime.thread.getState().messages.map((item) => item.id)).toEqual(["u", "a"]);
+      expect(posts).toBe(sameBody ? 2 : 1);
+    } finally { source.close(); hook.unmount(); await operation; }
+  });
+
+  it("Stop durable después de EOF sin start y relectura fallida reconcilia sin dueño en vuelo", async () => {
+    const source = stream();
+    const hook = setup();
+    let posts = 0;
+    server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => {
+      posts++; return new HttpResponse(source.body, { headers: { "Content-Type": "text/event-stream" } });
+    }));
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    let operation!: Promise<unknown>;
+    act(() => {
+      operation = hook.result.current.send({ text: "Admitido", conversationVersion: 3 }).catch((error: unknown) => error);
+      source.event("title", { conversationId: "chat", title: "Admitido", version: 4 });
+    });
+    await waitFor(() => expect(hook.result.current.turn?.title?.version).toBe(4));
+    hook.setDurable({ ...conversation([message("u", "user")]), activeTurnId: "durable-turn" });
+    await act(async () => { await hook.result.current.detail.refetch(); });
+    await waitFor(() => expect(hook.result.current.detail.data?.activeTurnId).toBe("durable-turn"));
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.error()));
+    await act(async () => { source.close(); expect(await operation).toMatchObject({ isNetworkError: true }); });
+    expect(hook.result.current.turn?.phase).toBe("reconciling");
+    expect(hook.result.current.turn?.start).toBeUndefined();
+    let reads = 0;
+    let stateReads = 0;
+    const stopped = conversation([message("u", "user"), message("a", "assistant", "Stopped")]);
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => { reads++; return HttpResponse.json(stopped); }),
+      http.get("/api/organization/assistant", () => { stateReads++; return HttpResponse.json(state); }),
+      http.post("/api/organization/assistant/conversations/chat/turns/durable-turn/stop", () => new HttpResponse(null, { status: 204 })));
+    try {
+      await act(async () => { await hook.result.current.stop(); });
+      await waitFor(() => expect(hook.result.current.turn?.phase).toBe("Stopped"));
+      expect(reads).toBeGreaterThan(0);
+      expect(stateReads).toBeGreaterThan(0);
+      await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+      expect(hook.result.current.isPending).toBe(false);
+      expect(posts).toBe(1);
+    } finally { hook.unmount(); }
+  });
+
+  it.each((["scope", "conversation", "cycle", "clear", "unmount"] as const).flatMap((change) => [false, true].map((failure) => ({ change, failure }))))("Stop durable diferido tras $change (failure=$failure) no relee ni resucita/error en otra vida", async ({ change, failure }) => {
+    const initial = { ...conversation([message("private-a", "assistant", "Generating")]), activeTurnId: "durable-turn" };
+    const hook = setup(state, false, initial);
+    const release = deferred<void>();
+    const entered = deferred<void>();
+    let posts = 0;
+    let reads = 0;
+    server.use(http.post("/api/organization/assistant/conversations/chat/turns/durable-turn/stop", async () => {
+      posts++; entered.resolve(); await release.promise;
+      return failure ? HttpResponse.json({ code: "Assistant.Turn.NotGenerating", traceId: "private-old-trace" }, { status: 409 }) : new HttpResponse(null, { status: 204 });
+    }), http.get("/api/organization/assistant/conversations/other-chat", () => {
+      reads++; return HttpResponse.json({ ...conversation([message("other-a", "assistant")]), conversation: { ...initial.conversation, id: "other-chat" } });
+    }));
+    await waitFor(() => expect(hook.result.current.canStop).toBe(true));
+    const oldStop = hook.result.current.stop;
+    let operation!: Promise<unknown>;
+    act(() => { operation = oldStop().catch((error: unknown) => error); });
+    await entered.promise;
+    const oldMutation = hook.client.getMutationCache().getAll().find((mutation) => mutation.state.status === "pending");
+    hook.setDurable(conversation([message("new-a", "assistant")]));
+    act(() => {
+      if (change === "scope") hook.rerender({ currentScope: { ...scope, userId: "other" } });
+      else if (change === "conversation") hook.rerender({ currentConversationId: "other-chat" });
+      else if (change === "cycle") hook.rerender({ enabled: false });
+      else if (change === "clear") hook.client.clear();
+      else hook.unmount();
+    });
+    if (change === "cycle") hook.rerender({ enabled: true });
+    if (["scope", "conversation", "cycle"].includes(change)) await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => { reads++; return HttpResponse.json(initial); }),
+      http.get("/api/organization/assistant", () => { reads++; return HttpResponse.json(state); }));
+    const afterClose = reads;
+    await act(async () => { release.resolve(); expect(await operation).toMatchObject({ name: "AbortError" }); });
+    expect(reads).toBe(afterClose);
+    await act(async () => {
+      await expect(oldMutation!.execute(oldMutation!.state.variables)).rejects.toMatchObject({ name: "AbortError" });
+      await expect(Promise.resolve().then(oldStop)).rejects.toMatchObject({ name: "AbortError" });
+    });
+    expect(posts).toBe(1);
+    if (change !== "unmount") {
+      expect(hook.result.current.error).toBeNull();
+      const ids = hook.result.current.runtime.thread.getState().messages.map((item) => item.id);
+      expect(ids).toEqual(change === "clear" ? [] : change === "conversation" ? ["other-a"] : ["new-a"]);
+      expect(hook.result.current.canStop).toBe(false);
+    }
+    if (change !== "cycle") expect(hook.client.getQueryData(assistantConversationQueryKey(scope, "chat"))).toBeUndefined();
+    hook.unmount();
+  });
   it.each([
     ["send", "scope"], ["send", "conversation"], ["send", "cycle"],
     ["stop", "scope"], ["stop", "conversation"], ["stop", "cycle"],
@@ -249,7 +535,7 @@ describe("Assistant runtime HTTP + Query + SDK", () => {
     hook.unmount();
   });
 
-  it("Retry global de Stop viejo conserva key y no aborta el lector de un turno nuevo", async () => {
+  it.each(["before-start", "after-start"] as const)("Retry global de Stop viejo conserva key y no aborta el lector nuevo %s", async (stage) => {
     const first = stream();
     const second = stream();
     let posts = 0;
@@ -273,16 +559,137 @@ describe("Assistant runtime HTTP + Query + SDK", () => {
     await act(async () => { first.event("done", terminal); first.close(); await oldOperation; });
     await waitFor(() => expect(hook.result.current.canSend).toBe(true));
     let operation!: Promise<AssistantConversationResponse>;
-    act(() => { operation = hook.result.current.send({ text: "Dos", conversationVersion: 4 }); second.event("start", { ...start, turnId: "new-turn", userMessageId: "new-u", assistantMessageId: "new-a" }); });
-    await waitFor(() => expect(hook.result.current.turn?.start?.turnId).toBe("new-turn"));
+    act(() => {
+      operation = hook.result.current.send({ text: "Dos", conversationVersion: 4 });
+      if (stage === "after-start") second.event("start", { ...start, turnId: "new-turn", userMessageId: "new-u", assistantMessageId: "new-a" });
+      else second.event("title", { conversationId: "chat", title: "Dos", version: 5 });
+    });
+    await waitFor(() => stage === "after-start" ? expect(hook.result.current.turn?.start?.turnId).toBe("new-turn") : expect(hook.result.current.turn?.title?.version).toBe(5));
     await act(async () => { await lostStop!.execute(lostStop!.state.variables); });
     expect(keys[1]).toBe(keys[0]);
+    if (stage === "before-start") {
+      expect(hook.result.current.turn?.phase).toBe("sending");
+      expect(hook.result.current.turn?.start).toBeUndefined();
+      act(() => { second.event("start", { ...start, turnId: "new-turn", userMessageId: "new-u", assistantMessageId: "new-a" }); });
+    }
     act(() => { second.event("delta", { turnId: "new-turn", sequence: 1, text: "Sigue" }); });
     await waitFor(() => expect(hook.result.current.turn?.text).toBe("Sigue"));
     const nextTerminal = { ...terminal, turnId: "new-turn", message: { ...terminal.message, id: "new-a" } };
     hook.setDurable(conversation([message("new-u", "user"), nextTerminal.message]));
     await act(async () => { second.event("done", nextTerminal); second.close(); await operation; });
     hook.unmount();
+  });
+
+  it.each([false, true])("Retry Stop viejo no reconcilia el envío nuevo tras EOF fallido, cuerpo igual=%s", async (sameBody) => {
+    const first = stream();
+    const second = stream();
+    const hook = setup();
+    let posts = 0;
+    const keys: Array<string | null> = [];
+    server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => {
+      posts++; return new HttpResponse(posts === 1 ? first.body : second.body, { headers: { "Content-Type": "text/event-stream" } });
+    }), http.post("/api/organization/assistant/conversations/chat/turns/turn/stop", ({ request }) => {
+      keys.push(request.headers.get("idempotency-key"));
+      return keys.length === 1 ? HttpResponse.error() : new HttpResponse(null, { status: 204 });
+    }));
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    let firstOperation!: Promise<AssistantConversationResponse>;
+    act(() => { firstOperation = hook.result.current.send({ text: "Uno", conversationVersion: 3 }); first.event("start", start); });
+    await waitFor(() => expect(hook.result.current.turn?.start?.turnId).toBe("turn"));
+    await act(async () => { await hook.result.current.stop().catch(() => {}); });
+    const lostStop = hook.client.getMutationCache().getAll().find((mutation) => mutation.state.status === "error");
+    hook.setDurable(conversation([message("u", "user"), terminal.message]));
+    await act(async () => { first.event("done", terminal); first.close(); await firstOperation; });
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    let secondOperation!: Promise<unknown>;
+    act(() => {
+      secondOperation = hook.result.current.send({ text: sameBody ? "Uno" : "Dos", conversationVersion: 3 }).catch((error: unknown) => error);
+      second.event("title", { conversationId: "chat", title: "Nuevo", version: 5 });
+    });
+    await waitFor(() => expect(hook.result.current.turn?.title?.version).toBe(5));
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.error()));
+    await act(async () => { second.close(); expect(await secondOperation).toMatchObject({ isNetworkError: true }); });
+    expect(hook.result.current.turn?.phase).toBe("reconciling");
+    expect(hook.result.current.turn?.start).toBeUndefined();
+    expect(hook.result.current.detail.data?.activeTurnId).toBeNull();
+    let reads = 0;
+    let stateReads = 0;
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => { reads++; return HttpResponse.json(conversation([terminal.message])); }),
+      http.get("/api/organization/assistant", () => { stateReads++; return HttpResponse.json(state); }));
+    try {
+      await act(async () => { await lostStop!.execute(lostStop!.state.variables); });
+      expect(keys[1]).toBe(keys[0]);
+      expect(reads).toBe(0);
+      expect(stateReads).toBe(0);
+      expect(hook.result.current.turn?.phase).toBe("reconciling");
+      expect(hook.result.current.turn?.title?.title).toBe("Nuevo");
+      expect(hook.result.current.isPending).toBe(true);
+      expect(hook.result.current.canSend).toBe(false);
+      expect(hook.result.current.error).toMatchObject({ isNetworkError: true });
+      expect(posts).toBe(2);
+    } finally { hook.unmount(); }
+  });
+
+  it.each([false, true].flatMap((failure) => ["none", "terminal", "pending"].map((cacheUpdate) => ({ failure, cacheUpdate }))))("Stop GET tardío no contamina Query nueva (failure=$failure, cacheUpdate=$cacheUpdate)", async ({ failure, cacheUpdate }) => {
+    const first = stream();
+    const second = stream();
+    const hook = setup();
+    let posts = 0;
+    let stops = 0;
+    server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => {
+      posts++; return new HttpResponse(posts === 1 ? first.body : second.body, { headers: { "Content-Type": "text/event-stream" } });
+    }), http.post("/api/organization/assistant/conversations/chat/turns/turn/stop", () => {
+      stops++; return stops === 1 ? HttpResponse.error() : new HttpResponse(null, { status: 204 });
+    }));
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    let firstOperation!: Promise<AssistantConversationResponse>;
+    act(() => { firstOperation = hook.result.current.send({ text: "Uno", conversationVersion: 3 }); first.event("start", start); });
+    await waitFor(() => expect(hook.result.current.turn?.start?.turnId).toBe("turn"));
+    await act(async () => { await hook.result.current.stop().catch(() => {}); });
+    const lostStop = hook.client.getMutationCache().getAll().find((mutation) => mutation.state.status === "error");
+    const before = conversation([message("u", "user"), terminal.message]);
+    hook.setDurable(before);
+    await act(async () => { first.event("done", terminal); first.close(); await firstOperation; });
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    // Una acción ya capturada conserva el recorrido original mientras llega el GET de Stop.
+    const queuedSend = hook.result.current.send;
+    const entered = deferred<void>();
+    const release = deferred<void>();
+    let stateReads = 0;
+    server.use(http.get("/api/organization/assistant/conversations/chat", async () => {
+      entered.resolve(); await release.promise;
+      return failure ? HttpResponse.json({ code: "Private.Old.Error", traceId: "private-old-trace" }, { status: 400 })
+        : HttpResponse.json(conversation([message("stale-private", "assistant", "Complete", "Viejo") ]));
+    }), http.get("/api/organization/assistant", () => { stateReads++; return HttpResponse.json(state); }));
+    let oldStop!: Promise<unknown>;
+    let oldStopSettled = false;
+    act(() => { oldStop = lostStop!.execute(lostStop!.state.variables).catch((error: unknown) => error).finally(() => { oldStopSettled = true; }); });
+    await entered.promise;
+    const currentDetail = cacheUpdate === "none" ? before : { ...before, conversation: { ...before.conversation, version: 7 }, activeTurnId: cacheUpdate === "pending" ? "new-durable-turn" : null, messages: { ...before.messages, items: [message("current-durable", "assistant", cacheUpdate === "pending" ? "Generating" : "Complete")] } };
+    if (cacheUpdate !== "none") act(() => { hook.client.setQueryData(assistantConversationQueryKey(scope, "chat"), currentDetail); });
+    let secondOperation!: Promise<unknown>;
+    act(() => {
+      secondOperation = queuedSend({ text: "Dos", conversationVersion: 3 }).catch((error: unknown) => error);
+      second.event("title", { conversationId: "chat", title: "Nuevo", version: 5 });
+    });
+    await waitFor(() => expect(hook.result.current.turn?.title?.version).toBe(5));
+    try {
+      await waitFor(() => expect(oldStopSettled).toBe(true), { timeout: 500 });
+      expect(hook.client.getQueryCache().find({ queryKey: assistantConversationQueryKey(scope, "chat"), exact: true })?.getObserversCount()).toBe(1);
+      await act(async () => { release.resolve(); expect(await oldStop).toMatchObject({ name: "AbortError" }); });
+      await waitFor(() => expect(hook.result.current.detail.isFetching).toBe(false));
+      expect(hook.result.current.detail.data).toEqual(currentDetail);
+      expect(hook.result.current.detail.isError).toBe(false);
+      expect(hook.result.current.detail.error).toBeNull();
+      expect(hook.result.current.detail.status).toBe("success");
+      expect(hook.client.getQueryState(assistantConversationQueryKey(scope, "chat"))).toMatchObject({ status: "success", error: null, fetchStatus: "idle", data: currentDetail });
+      expect(hook.result.current.turn?.phase).toBe("sending");
+      expect(hook.result.current.turn?.title?.title).toBe("Nuevo");
+      expect(stateReads).toBe(0);
+      expect(hook.result.current.error).toBeNull();
+      expect(hook.result.current.isPending).toBe(true);
+      expect(posts).toBe(2);
+    } finally { release.resolve(); hook.unmount(); second.close(); await secondOperation; }
   });
 
   it("Detener antes de start espera el turnId real y relee el resultado sin borrar usuario", async () => {
@@ -416,15 +823,23 @@ describe("Assistant runtime HTTP + Query + SDK", () => {
   });
 
   it("reabrir Generating relee por Query, conserva ids durables y no inventa turnId para Stop", async () => {
-    const hook = setup();
-    hook.setDurable(conversation([message("u", "user"), message("a", "assistant", "Generating", "Parcial")]));
+    const hook = setup(state, false, conversation([message("u", "user"), message("a", "assistant", "Generating", "Parcial")]));
     await waitFor(() => expect(hook.result.current.detail.data?.messages.items).toHaveLength(2));
     expect(hook.result.current.isPending).toBe(true);
     expect(hook.result.current.canSend).toBe(false);
     expect(hook.result.current.canStop).toBe(false);
+    await expect(hook.result.current.stop()).rejects.toMatchObject({ code: "Assistant.Turn.NotGenerating" });
     await waitFor(() => expect(hook.result.current.runtime.thread.getState().messages.map((item) => item.id)).toEqual(["u", "a"]));
-    hook.setDurable(conversation([message("u", "user"), terminal.message]));
+    vi.useFakeTimers();
     await act(async () => { await hook.result.current.detail.refetch(); });
+    let reads = 0;
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => {
+      reads++; return HttpResponse.json(conversation([message("u", "user"), terminal.message]));
+    }));
+    await act(async () => { await vi.advanceTimersByTimeAsync(1_010); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(10); });
+    expect(reads).toBe(1);
+    vi.useRealTimers();
     await waitFor(() => expect(hook.result.current.isPending).toBe(false));
     hook.unmount();
   });
