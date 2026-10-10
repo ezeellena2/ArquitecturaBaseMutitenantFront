@@ -44,6 +44,29 @@ beforeEach(() => { Element.prototype.scrollTo = vi.fn(); URL.createObjectURL = v
 afterEach(() => { resetHttpClient(); vi.unstubAllGlobals(); });
 
 describe("interfaz del asistente", () => {
+  it("el 429 mensual muestra el tope sin el aviso global de muchos pedidos", async () => {
+    const app = setup();
+    server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => HttpResponse.json({ code: "Assistant.Limit.MonthlyReached", detail: "Llegaste al tope del mes." }, { status: 429 })));
+    await app.user.type(await screen.findByRole("textbox", { name: "Tu consulta" }), "Consulta");
+    await app.user.click(screen.getByRole("button", { name: "Enviar" }));
+    await screen.findByText("La organización llegó al tope del mes del asistente.");
+    expect(screen.queryByText("Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos.")).not.toBeInTheDocument();
+  });
+  it.each(["send", "stop"] as const)("el 5xx de %s se muestra una sola vez en el asistente", async (action) => {
+    const app = setup();
+    if (action === "stop") {
+      app.changeDetail({ ...detail(), activeTurnId: "turn", messages: { items: [message("u", "user", "Consulta"), message("a", "assistant", "Parcial", "Generating")], hasMore: false } });
+      server.use(http.post("/api/organization/assistant/conversations/chat/turns/turn/stop", () => HttpResponse.json({ code: "Assistant.Turn.StopFailed", traceId: "report" }, { status: 500 })));
+      await app.user.click(await screen.findByRole("button", { name: "Mi consulta" }));
+      await app.user.click(await screen.findByRole("button", { name: "Detener" }));
+    } else {
+      server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => HttpResponse.json({ code: "Assistant.Provider.Unavailable", traceId: "report" }, { status: 503 })));
+      await app.user.type(await screen.findByRole("textbox", { name: "Tu consulta" }), "Consulta");
+      await app.user.click(screen.getByRole("button", { name: "Enviar" }));
+    }
+    await waitFor(() => expect(app.queryClient.getMutationCache().getAll().some((mutation) => mutation.state.status === "error")).toBe(true));
+    expect(screen.getAllByText("Algo salió mal. Probá de nuevo en un rato.")).toHaveLength(1);
+  });
   it("un rechazo antes de la admisión conserva texto y adjunto subido para corregir sin volver a subir", async () => {
     const nativeForm = await new Request("http://localhost/form", { method: "POST", headers: { "content-type": "multipart/form-data; boundary=test" }, body: "--test--\r\n" }).formData();
     vi.stubGlobal("FormData", nativeForm.constructor); vi.stubGlobal("File", FetchFile);
@@ -414,10 +437,9 @@ describe("interfaz del asistente", () => {
     await app.user.type(await screen.findByRole("textbox", { name: "Tu consulta" }), "Consulta original");
     await app.user.click(screen.getByRole("button", { name: "Enviar" }));
     await waitFor(() => expect(keys).toHaveLength(1));
-    // Es el mismo mecanismo del aviso global: MutationCache ejecuta sus variables originales.
-    const failedNetwork = app.queryClient.getMutationCache().getAll().find((mutation) => mutation.state.status === "error");
-    expect(failedNetwork).toBeDefined();
-    await act(async () => { await failedNetwork!.execute(failedNetwork!.state.variables); });
+    const assistant = within(screen.getByRole("region", { name: "Asistente" }));
+    await app.user.click(await assistant.findByRole("button", { name: "Reintentar" }));
+    await waitFor(() => expect(keys).toHaveLength(2));
     expect(keys[1]).toBe(keys[0]); expect(bodies[1]).toEqual(bodies[0]);
     await screen.findByText("No se pudo terminar");
     await app.user.click(within(screen.getByRole("region", { name: "Asistente" })).getByRole("button", { name: "Reintentar" }));

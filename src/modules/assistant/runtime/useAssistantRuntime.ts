@@ -229,7 +229,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
       if (localSendOwner(operation.lifetime) !== operation.localSend) throw new DOMException("", "AbortError");
       throw error;
     } finally { operation.lifetime.release(controller); }
-  }, { meta: { assistantOwner: owner }, sameOperation: (a, b) => a.lifetime === b.lifetime && a.turnId === b.turnId });
+  }, { meta: { assistantOwner: owner, handlesError: true }, sameOperation: (a, b) => a.lifetime === b.lifetime && a.turnId === b.turnId });
 
   const sendMutation = useIdempotentMutation(async (operation: SendOperation, key) => {
     operation.idempotencyKey ??= key;
@@ -305,7 +305,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
       stopBeforeStart.current = null;
       waiting?.reject(new ApiError(409, { code: "Assistant.Turn.NotGenerating" }));
     }
-  }, { meta: { assistantOwner: owner }, sameOperation: (a, b) => a.operationId === b.operationId });
+  }, { meta: { assistantOwner: owner, handlesError: true }, sameOperation: (a, b) => a.operationId === b.operationId });
 
   const durableMessages = pagedMessages ?? detail.data?.messages.items ?? [];
   const durableGenerating = durableMessages.some((message) => message.status === "Generating");
@@ -413,7 +413,9 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
       const text = message.content.filter((part) => part.type === "text").map((part) => part.text).join("\n");
       await send({ text, attachmentIds: [], conversationVersion: detail.data?.conversation.version });
     }),
-    onCancel: stop,
+    // La mutación ya publica su error en la UI; evita que el SDK vuelva a
+    // registrarlo (incluido el ProblemDetails) como un rechazo sin manejar.
+    onCancel: async () => { await stop().catch(() => undefined); },
     // Import limpia sólo la proyección del SDK. Nunca acepta escrituras en la API/caché.
     onImport: () => {},
   });
