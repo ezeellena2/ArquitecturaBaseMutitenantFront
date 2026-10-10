@@ -1,4 +1,4 @@
-// Comparación final de T09–T12 contra v115. Sólo este arnés simula API/sesión.
+// Comparación final de T09–T12 contra v116. Sólo este arnés simula API/sesión.
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -227,7 +227,7 @@ export async function buildManifest() {
     ...menuApp, responses: [on, api("GET", "/api/me/login-methods", { ...etapa8AccountVerified, methods: etapa8AccountVerified.methods.map((method) => method.type === "Google" ? { ...method, canRemove: false, canMakePrimary: false } : method) })],
     actions: [{ type: "click", role: "button", name: "Acciones de lucia.fer@gmail.com", exact: true }, { type: "click", role: "menuitem", name: "Quitar", exact: true }], readyText: "¿Quitar este correo?",
   });
-  return { version: 1, stage: "etapa-8-front", canvasVersion: "v115 · bb7c78de", issuer, cases };
+  return { version: 1, stage: "etapa-8-front", canvasVersion: "v116 · 21f227bc", issuer, cases };
 }
 
 function option(args, name) { const index = args.indexOf(name); return index < 0 ? undefined : args[index + 1]; }
@@ -237,7 +237,7 @@ async function main(args) {
   const manifest = args.includes("--verify") ? JSON.parse(readFileSync(manifestFile, "utf8")) : await buildManifest();
   if (!args.includes("--verify")) writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`);
   validateManifest(manifestFile, canvas);
-  if (args.includes("--manifiesto")) { console.log(`${manifest.cases.length} casos E8 contra v115.`); return; }
+  if (args.includes("--manifiesto")) { console.log(`${manifest.cases.length} casos E8 contra ${manifest.canvasVersion}.`); return; }
   if (args.includes("--verify")) {
     assertCapturedPairs(manifest.cases, output); assertSideBySide(manifest.cases, output); console.log(writeGallery()); return;
   }
