@@ -16903,9 +16903,19 @@ export interface components {
             /** Format: date-time */
             createdAtUtc: string;
         };
+        /** @description Registered monthly cost divided by the budget snapshot; reservations are excluded and the fraction is not capped. */
+        AssistantBudgetProgressResponse: {
+            /** Format: decimal */
+            fraction: number;
+            status: components["schemas"]["AssistantBudgetStatus"];
+        };
+        /** @enum {string} */
+        AssistantBudgetStatus: "WithinLimit" | "NearLimit" | "LimitReached";
         AssistantConversationResponse: {
             conversation: components["schemas"]["AssistantConversationSummaryResponse"];
             messages: components["schemas"]["CursorResultOfAssistantMessageResponse"];
+            /** Format: uuid */
+            activeTurnId: null | string;
         };
         AssistantConversationSummaryResponse: {
             /** Format: uuid */
@@ -16924,6 +16934,19 @@ export interface components {
             id: string;
             /** Format: uint32 */
             version: number;
+        };
+        /** @description Consumed UTC-day queries; admission exhaustion also includes reservations. PlatformKey is shared by user, OwnKey by organization and user. */
+        AssistantDailyUsageResponse: {
+            /** Format: date */
+            dayUtc: string;
+            /** Format: date-time */
+            resetAtUtc: string;
+            scope: components["schemas"]["AssistantMode"];
+            /** Format: int32 */
+            queries: number;
+            /** Format: int32 */
+            limit: number;
+            limitReached: boolean;
         };
         AssistantDeltaEventResponse: {
             /** Format: uuid */
@@ -17282,6 +17305,7 @@ export interface components {
             /** Format: int32 */
             peopleCount: number;
             rows: components["schemas"]["PagedResultOfAssistantUsageRowResponse"];
+            budgetProgress: null | components["schemas"]["AssistantBudgetProgressResponse"];
         };
         /** @enum {string} */
         AssistantUsageRowKind: "organization" | "person" | "day" | "personal" | "operator";
@@ -17308,6 +17332,7 @@ export interface components {
             /** Format: int32 */
             dailyLimit?: null | number;
             monthlyBudget?: null | components["schemas"]["AssistantMoney"];
+            dailyUsage: null | components["schemas"]["AssistantDailyUsageResponse"];
         };
         /** @description Recibe los datos de la primera organización y empresa sin imprimir datos fiscales en logs. */
         BusinessSignupHttpRequest: {
@@ -17840,6 +17865,8 @@ export interface components {
             maskedKeySuffix?: null | string;
             /** Format: uint32 */
             version: number;
+            platformKeyModels: components["schemas"]["AssistantModelPriceResponse"][];
+            ownKeyModels: components["schemas"]["AssistantModelPriceResponse"][];
         };
         OrganizationAuditActorResponse: {
             /** Format: uuid */
