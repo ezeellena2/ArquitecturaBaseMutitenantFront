@@ -15,6 +15,8 @@ import { canOpen } from "@/layouts/navigation/visible";
 import { activeOrganization, homeOf, parseAccess } from "@/tenancy/access";
 import { useModuleHome } from "@/shared/modules/useModules";
 import { PlatformHomePage } from "@/areas/platform/home/pages/PlatformHomePage";
+import { useNavigation } from "@/layouts/navigation/useNavigation";
+import { useAppChrome } from "@/shared/ui/app/AppChrome";
 
 export function HomeRoute() {
   const auth = useAuth();
@@ -31,7 +33,13 @@ export function PlatformHomeRoute({ availableRoutes, pendingPages }: { available
   const { data: me } = useCurrentUser();
   const permissions = usePermissions();
   const moduleHome = useModuleHome("platform");
+  const navigation = useNavigation("platform");
+  const { phone } = useAppChrome();
   if (!me) return null;
+  if (moduleHome && phone) {
+    const firstSection = navigation.bottomSections?.find((section) => canOpen(section.link, permissions));
+    if (firstSection && firstSection.link.path !== homeOf("platform")) return <Navigate to={firstSection.link.path} replace />;
+  }
   if (moduleHome) return <PlatformHomePage />;
   const first = availableRoutes.find((route) => canOpen(route, permissions));
   if (!first) return <ForbiddenPage homePath={homeOf("platform")} />;

@@ -1,4 +1,4 @@
-import { AppAccountsIcon, AppHomeIcon, AppOrganizationsIcon, AppRecoveriesIcon, BuildingIcon, ClipboardIcon, DocumentIcon, GridIcon, HomeIcon, KeyIcon, ShieldCheckIcon, SlidersHorizontalIcon, UsersIcon } from "@/shared/ui/icons";
+import { AppAccountsIcon, AppOrganizationsIcon, AppRecoveriesIcon, BuildingIcon, ClipboardIcon, DocumentIcon, GridIcon, HomeIcon, KeyIcon, ShieldCheckIcon, SlidersHorizontalIcon, UsersIcon } from "@/shared/ui/icons";
 import { homeOf } from "@/tenancy/access";
 import type { AppRoute, NavigationConfig } from "./types";
 
@@ -43,7 +43,6 @@ export const platformNavigationWithHome: NavigationConfig = {
   links: [platformHome],
   moreLinks: [platformRoutes.recoveries],
   bottomSections: [
-    { link: platformHome, icon: AppHomeIcon },
     { link: platformOrganizationsRoute, icon: AppOrganizationsIcon },
     { link: platformRoutes.accounts, icon: AppAccountsIcon },
   ],

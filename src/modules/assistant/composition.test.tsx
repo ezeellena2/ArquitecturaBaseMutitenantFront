@@ -99,16 +99,29 @@ describe("composición real de accesos e inicios", () => {
     await waitFor(() => expect(history).toHaveFocus());
     expect(await axe(app.container)).toHaveNoViolations();
   });
-  it("Plataforma usa Inicio con chat y separa el listado; en teléfono Recuperaciones sigue en Más", async () => {
+  it("Plataforma abre Organizaciones con replace en el teléfono y conserva Recuperaciones en Más", async () => {
     asPhone();
     const app = mount("/plataforma", platform);
-    await screen.findByRole("heading", { name: "Inicio" });
+    await screen.findByRole("heading", { name: "Organizaciones" });
+    expect(app.router.state.location.pathname).toBe("/plataforma/organizaciones");
+    expect(app.router.state.historyAction).toBe("REPLACE");
     const nav = screen.getByRole("navigation", { name: "Secciones" });
-    expect(within(nav).getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/plataforma", "/plataforma/asistente", "/plataforma/organizaciones", "/plataforma/cuentas", "/plataforma/mas"]);
+    expect(within(nav).getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/plataforma/organizaciones", "/plataforma/asistente", "/plataforma/cuentas", "/plataforma/mas"]);
+    expect(within(nav).getByRole("link", { name: "Organizaciones" })).toHaveAttribute("aria-current", "page");
     expect(assistantRequests).toHaveLength(0);
     await app.user.click(within(nav).getByRole("link", { name: "Más" }));
     expect(await screen.findByRole("link", { name: "Recuperaciones" })).toHaveAttribute("href", "/plataforma/recuperaciones");
     expect(screen.queryByText("Perfiles")).not.toBeInTheDocument();
+  });
+  it("Plataforma móvil sin tenants.read abre la primera sección permitida del módulo", async () => {
+    asPhone();
+    const app = mount("/plataforma", { ...platform, effectivePermissions: { organization: [], companies: {}, platform: ["platform.assistant.use"] } });
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    expect(app.router.state.location.pathname).toBe("/plataforma/asistente");
+    expect(app.router.state.historyAction).toBe("REPLACE");
+    const nav = screen.getByRole("navigation", { name: "Secciones" });
+    expect(within(nav).getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/plataforma/asistente", "/plataforma/mas"]);
+    expect(within(nav).getByRole("link", { name: "Asistente" })).toHaveAttribute("aria-current", "page");
   });
   it("sin assistant.use conserva organizaciones legacy y el alias listado funciona con registro vacío", async () => {
     const first = mount("/plataforma", platformOperator);

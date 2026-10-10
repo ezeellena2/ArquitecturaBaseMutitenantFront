@@ -15,10 +15,10 @@ const management: ModuleRegistration = {
   ],
 };
 describe("navegación compuesta", () => {
-  it("deja Asistente segundo, cuatro secciones y Recuperaciones en Más; escritorio conserva sólo Inicio", () => {
+  it("deja Organizaciones, Asistente y Cuentas en el teléfono; escritorio conserva sólo Inicio", () => {
     const me = { ...platformOperator, effectivePermissions: { ...platformOperator.effectivePermissions, platform: [...platformOperator.effectivePermissions.platform, "platform.assistant.use"] }, moduleCapabilities: [{ key: "assistant", available: true, canConfigure: false, canReadUsage: false }] };
     const nav = composeNavigation(platformNavigationWithHome, "platform", me, permissionsOf(me), [assistantRegistration]);
-    expect(nav.bottomSections?.map((section) => section.link.path)).toEqual(["/plataforma", "/plataforma/asistente", "/plataforma/organizaciones", "/plataforma/cuentas"]);
+    expect(nav.bottomSections?.map((section) => section.link.path)).toEqual(["/plataforma/organizaciones", "/plataforma/asistente", "/plataforma/cuentas"]);
     expect(nav.moreLinks?.map((link) => link.path)).toContain("/plataforma/recuperaciones");
     expect(nav.links.map((link) => link.path)).toEqual(["/plataforma"]);
   });

@@ -34,6 +34,8 @@
 - **La cuenta** (`/cuenta`) es de la identidad y conserva el acceso actual: persona, empresa o plataforma.
 - El `companyId` sale de la URL (`/org/empresas/:companyId`, con `useParams`, como `RequirePermission` y `CompanyDetailPage`); nunca hay una "empresa activa" guardada.
 
+- **Inicio de Plataforma con módulo (E8b A2):** la compu conserva Inicio en `/plataforma`. En el teléfono, la barra usa Organizaciones (`/plataforma/organizaciones`), Asistente y Cuentas según permisos, más Más; `/plataforma` lleva con `replace` a la primera sección permitida de esa barra. El registro neutral decide qué módulos contribuyen; no se agrega una pestaña Inicio vacía ni se adelantan las Consultas de E11. Sin contribución de Inicio se conserva la entrada histórica y su selección por permiso.
+
 ## Prohibido
 - Mostrar "crear una empresa" en el acceso B2C, o mostrar organizaciones en el espacio personal.
 - Usar el subdominio para mostrar algo de la administración de la organización (esa vive en `/org`).
