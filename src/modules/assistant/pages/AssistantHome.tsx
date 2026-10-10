@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useEffectEvent, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { flushSync } from "react-dom";
 import { Trans, useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
@@ -6,6 +6,7 @@ import { AssistantRuntimeProvider, MessageNotSentError } from "@assistant-ui/rea
 import type { AssistantAttachmentSummaryResponse, AssistantConversationSummaryResponse, AssistantMessageResponse, AssistantRouteKey, SendAssistantMessageRequest } from "@/shared/api/types";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
+import { toastError } from "@/shared/ui/sonner";
 import { Button } from "@/shared/ui/button";
 import type { RowAction } from "@/shared/ui/RowActions";
 import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
@@ -50,6 +51,7 @@ export interface AssistantHomeProps {
   onConfigure?: () => void;
   onUsage?: () => void;
   onPrivacy: () => void;
+  onUnavailable?: () => void;
   organizationName?: string;
   organizationIds?: readonly string[];
   organizationNames?: Readonly<Record<string, string>>;
@@ -313,7 +315,23 @@ function AssistantSession(props: AssistantHomeProps) {
       fire(async (context) => { await invalidateHistory(context); if (selectedId) { await latest.current.detail.refetch(); context.assertActive(); } });
     }
   }
+  const recoverUnavailable = useEffectEvent(() => { props.onUnavailable?.(); });
+  const recoverConversation = useEffectEvent((queryKey: readonly unknown[], error: unknown) => {
+    const expected = assistantConversationQueryKey(scope, selectedId ?? "");
+    if (expected.slice(0, 6).some((part, index) => part !== queryKey[index])) return;
+    if (!selectedId || !operations.lifetime.getSnapshot() || !(error instanceof ApiError) || error.status !== 404) return;
+    toastError(apiErrorMessage(error, t));
+    // El historial nuevo debe tener su dueño activo antes de la relectura.
+    flushSync(() => select(null));
+    void client.invalidateQueries({ queryKey: [...root, "conversations"] });
+  });
+  const unavailable = runtime.state.error instanceof ApiError && [403, 404].includes(runtime.state.error.status);
+  useEffect(() => { if (unavailable) recoverUnavailable(); }, [unavailable]);
+  useEffect(() => client.getQueryCache().subscribe((event) => {
+    if (event.type === "updated" && event.action.type === "error") recoverConversation(event.query.queryKey, event.query.state.error);
+  }), [client]);
   if (!operations.active) return null;
+  if (unavailable && props.onUnavailable) return null;
   const error = runtime.state.error ?? runtime.detail.error;
   if (error instanceof ApiError && error.status === 403) return <ForbiddenPage homePath={homeOf(scope.access)} />;
   if (error instanceof ApiError && error.status === 404) return <NotFoundPage homePath={homeOf(scope.access)} />;

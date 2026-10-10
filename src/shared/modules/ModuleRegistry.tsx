@@ -1,9 +1,10 @@
-import { Suspense, type ReactNode } from "react";
-import { useCurrentUser } from "@/auth/useCurrentUser";
+import { Suspense, useState, type ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { currentUserQueryKey, useCurrentUser } from "@/auth/useCurrentUser";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { homeOf, type Access } from "@/tenancy/access";
-import type { ModuleContentProps, ModuleOrganizationUiProps } from "./types";
+import type { ModuleContentProps, ModuleOrganizationUiProps, ModuleRegistration } from "./types";
 import { ModuleRegistryContext, useModuleHome, useModuleRegistry } from "./useModules";
 
 export const ModuleRegistryProvider = ModuleRegistryContext.Provider;
@@ -25,8 +26,18 @@ export function ModuleHome({ access, fallback, ...content }: Omit<ModuleContentP
   const home = useModuleHome(access);
   const { data: me } = useCurrentUser();
   if (!home || !me) return fallback;
+  return <AvailableModuleHome key={`${me.access}:${me.activeTenantId}:${me.id}`} home={home} me={me} fallback={fallback} {...content} />;
+}
+
+function AvailableModuleHome({ home, fallback, ...content }: ModuleContentProps & { home: NonNullable<ModuleRegistration["home"]>; fallback: ReactNode }) {
+  const [unavailable, setUnavailable] = useState(false);
+  const client = useQueryClient();
+  if (unavailable) return fallback;
   const Content = home.Content;
-  return <Suspense fallback={null}><Content key={`${me.access}:${me.activeTenantId}:${me.id}`} me={me} {...content} /></Suspense>;
+  return <Suspense fallback={null}><Content {...content} onUnavailable={() => {
+    setUnavailable(true);
+    void client.invalidateQueries({ queryKey: currentUserQueryKey });
+  }} /></Suspense>;
 }
 
 export function ModuleRoutePage({ moduleId, path }: { moduleId: string; path: string }) {

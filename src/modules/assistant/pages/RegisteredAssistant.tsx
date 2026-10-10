@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
+import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { useProfiles } from "@/tenancy/useProfiles";
-import { activeOrganization } from "@/tenancy/access";
+import { activeOrganization, homeOf } from "@/tenancy/access";
 import type { ModuleContentProps } from "@/shared/modules/types";
 import { useModuleRegistry } from "@/shared/modules/useModules";
 import { Page } from "@/shared/ui/Page";
@@ -12,6 +14,7 @@ import { AssistantPhonePage } from "./AssistantPhonePage";
 /** Adaptador del registro: el cambio de perfil conserva el recorrido OIDC del núcleo. */
 function RegisteredAssistant({ me, phone, ...content }: ModuleContentProps & { phone: boolean }) {
   const navigate = useNavigate();
+  const client = useQueryClient();
   const { profiles, status } = useProfiles();
   const registry = useModuleRegistry();
   const configurationPath = me.access === "platform" ? "/plataforma/asistente/configuracion" : "/org/asistente/configuracion";
@@ -21,6 +24,7 @@ function RegisteredAssistant({ me, phone, ...content }: ModuleContentProps & { p
   const Page = phone ? AssistantPhonePage : AssistantHome;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
   return <Page {...content} enabled scope={{ access: me.access, userId: me.id, tenantId: me.activeTenantId ?? null }}
+    onUnavailable={content.onUnavailable ?? (() => { void client.invalidateQueries({ queryKey: currentUserQueryKey }); void navigate(homeOf(me.access), { replace: true }); })}
     organizationName={activeOrganization(me)?.name} hasPermission={(permission) => permissions.includes(permission)}
     canOpenLink={(routeKey) => routeKey !== "platform.assistant.usage" || usageAvailable}
     organizationIds={me.access === "consumer" ? me.organizations.map((organization) => organization.id) : undefined}

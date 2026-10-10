@@ -156,7 +156,8 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
         return result;
       } finally { lifetime.release(controller); }
     },
-    meta: { blocksView: true, silent: true },
+    // Un State revocado vuelve al núcleo; no bloquea todo el acceso.
+    meta: { silent: true },
   });
   const detail = useQuery({
     queryKey: detailKey,

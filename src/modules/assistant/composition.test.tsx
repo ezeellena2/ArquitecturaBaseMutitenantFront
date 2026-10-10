@@ -49,6 +49,27 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("composición real de accesos e inicios", () => {
+  it.each(([404, 403] as const).flatMap((status) => [
+    { path: "/", account: personal, status }, { path: "/org", account: business, status }, { path: "/plataforma", account: platform, status },
+  ]))("$path State $status conserva Inicio del núcleo y revalida Me", async ({ path, account, status }) => {
+    const app = mount(path, account);
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    let reads = 0;
+    server.use(http.get("/api/:scope/assistant", () => HttpResponse.json({ code: status === 404 ? "Http.NotFound" : "Http.Forbidden" }, { status })),
+      http.get("/api/me", async () => { reads++; await gate; return HttpResponse.json({ ...account, features: [], moduleCapabilities: [] }); }));
+    try {
+      await act(async () => { await app.client.invalidateQueries({ queryKey: ["assistant", account.access, account.activeTenantId ?? null, account.id, "state"] }); });
+      await waitFor(() => expect(reads).toBe(1));
+      expect(screen.getAllByRole("heading", { name: "Inicio" })).toHaveLength(1);
+      expect(screen.queryByRole("textbox", { name: "Tu consulta" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("heading", { name: /No encontramos esta página|No tenés permiso/u })).not.toBeInTheDocument();
+    } finally { await act(async () => { release(); await gate; }); }
+    await waitFor(() => expect(app.client.getQueryData<MeResponse>(currentUserQueryKey)?.features).toEqual([]));
+    expect(reads).toBe(1);
+    expect(app.client.getQueryCache().findAll({ queryKey: ["assistant"] })).toHaveLength(0);
+  });
   it.each([["/", personal, null], ["/org", business, "Empresa A"], ["/plataforma", platform, "Plataforma"]] as const)("%s con módulo conserva la banda de Inicio en escritorio", async (path, me, summary) => {
     const app = mount(path, me);
     await screen.findByRole("textbox", { name: "Tu consulta" });

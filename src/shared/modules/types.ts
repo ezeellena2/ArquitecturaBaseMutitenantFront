@@ -10,6 +10,8 @@ export interface ModuleContentProps {
   me: MeResponse;
   welcome?: ReactNode;
   banner?: ReactNode;
+  /** Devuelve al núcleo si el módulo dejó de estar disponible durante la sesión. */
+  onUnavailable?: () => void;
   children?: ReactNode;
 }
 export interface ModuleRoute {

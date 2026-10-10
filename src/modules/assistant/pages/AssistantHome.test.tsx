@@ -44,6 +44,21 @@ beforeEach(() => { Element.prototype.scrollTo = vi.fn(); URL.createObjectURL = v
 afterEach(() => { resetHttpClient(); vi.unstubAllGlobals(); });
 
 describe("interfaz del asistente", () => {
+  it("un detalle 404 vuelve a bienvenida, avisa y relee historial sin dejar Inicio atrapado", async () => {
+    const app = setup();
+    app.changeDetail(detail());
+    await act(async () => { await app.queryClient.invalidateQueries({ queryKey: ["assistant", "business", "org", "user", "conversations"] }); });
+    await app.user.click(await screen.findByRole("button", { name: "Mi consulta" }));
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "Tu consulta" })).toBeEnabled());
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.json({ code: "Assistant.Conversation.NotFound", detail: "No encontramos esa conversación." }, { status: 404 })),
+      http.get("/api/organization/assistant/conversations", () => HttpResponse.json({ items: [], hasMore: false })));
+    await act(async () => { await app.queryClient.invalidateQueries({ queryKey: ["assistant", "business", "org", "user", "detail", "chat"] }); });
+    expect(await screen.findByRole("heading", { name: "¿Qué querés consultar?" })).toBeVisible();
+    expect(await screen.findByText("No encontramos esa conversación.")).toBeVisible();
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Mi consulta" })).not.toBeInTheDocument());
+    expect(screen.queryByRole("heading", { name: "No encontramos esta página" })).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Tu consulta" })).toBeEnabled();
+  });
   it.each([
     { code: "Assistant.Provider.ContextTooLarge", text: "La conversación o los adjuntos son demasiado grandes. Empezá una nueva.", retry: false },
     { code: "Assistant.Provider.Unavailable", text: "El asistente no responde ahora.", retry: true },
