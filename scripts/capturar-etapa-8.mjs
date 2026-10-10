@@ -272,7 +272,7 @@ export async function buildManifest() {
     both(`n3-menu-personal-${variant.key}`, "identidad", "Cuenta", {}, {
       ...consumer, actions: [{ type: "press", role: "button", name: `${label}, Personal`, exact: true, key: "ArrowDown" }], readySelector: '[role="menu"]', readyText: label,
     }, { mobileBoard: "M-Mas-Personal", mobileProps: {}, mobileApp: more, mobileBoardActions: [],
-      boardActions: [{ type: "click", selector: ".um-btn" }], label: `${variant.label} · Menú / Más`, note: identityNote });
+      boardActions: [{ type: "click", selector: 'summary[aria-label="Abrir tu menú"]' }], label: `${variant.label} · Menú / Más`, note: identityNote });
     if (variant.principal !== "Phone") continue;
     both(`n3-lateral-${variant.key}`, "identidad", "Cuenta", {}, { ...consumer, readyHeading: "Mi cuenta" },
       { label: `${variant.label} · Lateral / Cuenta y barra móvil`, note: identityNote });
@@ -282,7 +282,7 @@ export async function buildManifest() {
     both(`n3-menu-empresa-${variant.key}`, "identidad", "Cuenta", {}, {
       ...business, actions: [{ type: "press", role: "button", name: `${label}, Grupo Delta`, exact: true, key: "ArrowDown" }], readySelector: '[role="menu"]', readyText: label,
     }, { mobileBoard: "M-WA-Menu", mobileProps: {}, mobileApp: { ...business, path: visualPath("/mas", "visual-owner"), readyHeading: "Más", readyText: label },
-      mobileBoardActions: [], boardActions: [{ type: "click", selector: ".um-btn" }], label: `${variant.label} · Empresa`,
+      mobileBoardActions: [], boardActions: [{ type: "click", selector: 'summary[aria-label="Abrir tu menú"]' }], label: `${variant.label} · Empresa`,
       note: `${identityNote} La identidad es global, incluso con el correo administrado de Grupo Delta presente en Me. El marco Persona de Cuenta v116 no modifica los perfiles del acceso Empresa.` });
     const me = etapa8IdentityMe(variant);
     const publicMe = { ...etapa7PersonalUser, displayName: me.displayName, firstName: me.firstName, lastName: me.lastName, email: me.email, maskedPrimaryPhone: me.maskedPrimaryPhone };

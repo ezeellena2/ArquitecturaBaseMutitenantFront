@@ -4,11 +4,42 @@ import { mkdtempSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { test } from "node:test";
+import { chromium } from "playwright";
 import { buildManifest, canvasRevision, expectedServerFailure, prepareCanvasSource } from "./capturar-etapa-8.mjs";
-import { validateManifest } from "./capturar-etapa-3a.mjs";
+import { startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
+import { openBoard } from "./capturar-relevamiento.mjs";
 import { writeGallery } from "./generar-galeria-etapa-8.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
+
+test("N3 abre todos los menús desktop sobre el DOM real de la fuente v116", { timeout: 30_000 }, async () => {
+  const manifest = await buildManifest();
+  assert.equal(manifest.canvasRevision, "21f227bcf6fd7a910272c682d5085338f8e2039c");
+  const entries = manifest.cases.filter((entry) => /^n3-menu-/.test(entry.id) && entry.viewport.width === 1440);
+  assert.equal(entries.length, 8);
+  const canvas = await startCanvasServer(prepareCanvasSource());
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true, channel: "chrome" });
+    const context = await browser.newContext();
+    context.setDefaultTimeout(2_000);
+    for (const entry of entries) {
+      const page = await openBoard(context, canvas.url, entry);
+      try {
+        assert.equal(await page.getByRole("menu").count(), 1, entry.id);
+        assert.equal(await page.getByRole("menu").isVisible(), true, entry.id);
+        if (entry.board === "Cuenta") {
+          assert.equal(await page.locator("details.w-umd").getAttribute("open"), "", entry.id);
+          // v116 conserva CSS .um-btn de otros marcos, pero Cuenta no tiene ese control en el DOM.
+          assert.equal(await page.locator(".um-btn").count(), 0, entry.id);
+        }
+      } finally { await page.close(); }
+    }
+  } finally {
+    await browser?.close();
+    await canvas.close();
+  }
+});
 
 test("N2/N3 preservan las 108 definiciones históricas y añaden 36 comparaciones pertinentes", async () => {
   const previous = JSON.parse(execFileSync("git", ["show", "9e1e4b9c:docs/design/capturas/etapa-8/manifest.json"], { encoding: "utf8", cwd: root }));
