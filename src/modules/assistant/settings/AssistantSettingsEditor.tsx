@@ -4,7 +4,7 @@ import { Sparkles } from "lucide-react";
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { Controller, useWatch } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router";
+import { useNavigation, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { ApiError } from "@/shared/api/ApiError";
 import { AddLoginMethodDialog } from "@/shared/account/AddLoginMethodDialog";
@@ -53,7 +53,8 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   const platform = "defaultModelId" in settings;
   const scope = { access: me.access, tenantId: me.activeTenantId ?? null, userId: me.id };
   const settingsKey = assistantSettingsKey(scope);
-  const path = platform ? "/plataforma/asistente/configuracion" : "/org/asistente/configuracion";
+  const navigation = useNavigation();
+  const [navigationOwner, setNavigationOwner] = useState(() => new AbortController());
   const [params, setParams] = useSearchParams(); const tab = platform && params.get("tab") === "catalog" ? "catalog" : "general";
   const catalog = useQuery({ queryKey: [...assistantModelsRoot(scope), "options"], queryFn: ({ signal }) => fetchAssistantModelOptions(signal), enabled: platform, meta: { silent: true } });
   const schema = useMemo(() => settingsSchema(t, platform), [t, platform]);
@@ -91,7 +92,7 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
     if ("defaultModelId" in live) return true;
     return (sent?.values.mode ?? form.getValues("mode")) !== "OwnKey" || (live.allowOwnKey && live.hasAlertRecipient);
   }
-  const { password, pending, submit: sendSettings, abandon, eligible } = usePrivateSettingsOperation<SettingsOperation>({ scope, path, queryRoot: settingsKey, allowed: policyAllows,
+  const { password, pending, submit: sendSettings, abandon, eligible } = usePrivateSettingsOperation<SettingsOperation>({ scope, cancellationSignal: navigationOwner.signal, queryRoot: settingsKey, allowed: policyAllows,
     execute: (sent, key, signal) => updateAssistantSettings(scope, sent.request, key, signal),
     success: (sent, response) => {
       // La respuesta propia fija la base ANTES del refetch. No se adopta una versión ajena.
@@ -142,7 +143,12 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
     if (!eligible() || at !== revision.current || !fresh) return;
     adoptRead(fresh); setChangingKey(false); resetFields();
   }
-  const edit = useEditPage({ isDirty: form.formState.isDirty, error: failure, searchKeys: tabKeys, onSeeNew: () => { void seeNew(); }, onContinueEditing: () => { changed(); } });
+  const edit = useEditPage({ isDirty: form.formState.isDirty, error: failure, searchKeys: tabKeys, onSeeNew: () => { void seeNew(); }, onContinueEditing: () => { changed(); },
+    onNavigationAttempt: () => { revision.current++; navigationOwner.abort(); },
+  });
+  if (!edit.isBlocked && navigation.state === "idle" && navigationOwner.signal.aborted) {
+    setNavigationOwner(new AbortController());
+  }
   function submit(event: React.FormEvent<HTMLFormElement>) {
     const at = revision.current;
     void form.handleSubmit((sent) => {
@@ -228,7 +234,7 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
     {edit.leaveDialog}
     {addEmailOpen ? <AddLoginMethodDialog open onOpenChange={setAddEmailOpen} onComplete={() => { void client.invalidateQueries({ queryKey: settingsKey }); }} /> : null}
     {info ? <SettingsInfo title={t(info === "ownKey" ? "assistant:settings.mode" : "assistant:settings.limits")} description={t(info === "ownKey" ? "assistant:settings.ownKeyUnavailable" : "assistant:settings.platformLimits", { organization: activeOrganization(me)?.name })} onClose={() => setInfo(null)} /> : null}
-    {modelDialog && platform ? <ModelEditorDialog scope={scope} model={modelDialog.model} currency={settings.monthlyOrganizationBudget.currency} trigger={modelDialog.trigger} onClose={() => setModelDialog(null)} /> : null}
+    {modelDialog && platform ? <ModelEditorDialog scope={scope} cancellationSignal={navigationOwner.signal} model={modelDialog.model} currency={settings.monthlyOrganizationBudget.currency} trigger={modelDialog.trigger} onClose={() => setModelDialog(null)} /> : null}
   </>;
 }
 

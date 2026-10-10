@@ -15,11 +15,12 @@ afterEach(() => { vi.useRealTimers(); vi.clearAllMocks(); });
 it.each([false, true])("agotamiento avisa una vez y Retry conserva el original o respeta abandono=%s", async (abandoned) => {
   vi.useFakeTimers();
   const client = createQueryClient(); client.setQueryData(currentUserQueryKey, businessManager);
+  const owner = new AbortController();
   const failure = vi.fn(); const success = vi.fn(); const wire: Array<{ body: { apiKey: string; version: number }; key: string }> = [];
   let finished = false;
   const hook = renderHook(() => usePrivateSettingsOperation({
     scope: { access: "business", tenantId: businessManager.activeTenantId ?? null, userId: businessManager.id },
-    path: "/org/asistente/configuracion", queryRoot: ["owned"], allowed: () => true,
+    cancellationSignal: owner.signal, queryRoot: ["owned"], allowed: () => true,
     execute: async (body: { apiKey: string; version: number }, key) => {
       wire.push({ body: structuredClone(body), key });
       if (!finished) throw new ApiError(409, { code: "Request.InProgress", detail: "La solicitud sigue en curso.", retryAfter: 1 });
@@ -38,7 +39,7 @@ it.each([false, true])("agotamiento avisa una vez y Retry conserva el original o
   expect(vi.mocked(toastError).mock.calls[0][0]).toBe("La solicitud sigue en curso.");
   const action = vi.mocked(toastError).mock.calls[0][1]?.action;
   expect(action).toMatchObject({ label: "Reintentar" });
-  if (abandoned) act(() => hook.result.current.abandon());
+  if (abandoned) act(() => owner.abort());
   finished = true;
   await act(async () => { if (action && typeof action === "object" && "onClick" in action) action.onClick({} as never); await vi.advanceTimersByTimeAsync(0); });
   expect(wire).toHaveLength(abandoned ? 31 : 32);

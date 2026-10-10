@@ -215,6 +215,35 @@ describe("configuración real de gestión", () => {
     await act(async () => { await expect(mutation.execute(mutation.state.variables)).rejects.toMatchObject({ name: "AbortError" }); });
     expect(requests).toBe(1); expect(publicCaches(app)).not.toContain(secret);
   });
+  it.each([200, 503])("salida bloqueada retira respuesta tardía %s y permite otro guardado al quedarse", async (status) => {
+    let release!: () => void;
+    const held = new Promise<void>((resolve) => { release = resolve; });
+    const sent: Array<{ body: UpdateOrganizationAssistantSettingsRequest; key: string | null }> = [];
+    server.use(http.put("/api/organization/assistant/settings", async ({ request }) => {
+      sent.push({ body: await request.json() as UpdateOrganizationAssistantSettingsRequest, key: request.headers.get("Idempotency-Key") });
+      if (sent.length > 1) return HttpResponse.json({ version: 12 });
+      await held;
+      return status === 200 ? HttpResponse.json({ version: 99 }) : HttpResponse.json({ detail: "private-provider-detail" }, { status });
+    }));
+    const app = mountSettings(); await ownKey(app);
+    await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(sent).toHaveLength(1));
+    const invalidate = vi.spyOn(app.client, "invalidateQueries");
+    await act(async () => { void app.router.navigate("/cuenta"); release(); });
+    expect(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).toBeVisible();
+    await waitFor(() => expect(app.client.getMutationCache().getAll().at(-1)?.state.status).toBe("error"));
+    expect(invalidate).not.toHaveBeenCalled();
+    expect(screen.queryByText("private-provider-detail")).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/Clave de Anthropic/)).toHaveValue("");
+    await app.user.click(screen.getByRole("button", { name: "Seguir editando" }));
+    fireEvent.change(screen.getByLabelText(/Clave de Anthropic/), { target: { value: "fresh-private-key" } });
+    await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(sent).toHaveLength(2));
+    expect(sent[1].body).toMatchObject({ version: 10, apiKey: "fresh-private-key" });
+    expect(sent[1].key).not.toBe(sent[0].key);
+    expect(publicCaches(app)).not.toContain(secret);
+    expect(publicCaches(app)).not.toContain("fresh-private-key");
+  });
   it("KeyRejected limpia secreto, mantiene error y permite escribir una clave nueva", async () => {
     const requests: UpdateOrganizationAssistantSettingsRequest[] = [];
     server.use(http.put("/api/organization/assistant/settings", async ({ request }) => { requests.push(await request.json() as UpdateOrganizationAssistantSettingsRequest); return requests.length === 1 ? HttpResponse.json({ code: "Assistant.Settings.KeyRejected" }, { status: 400 }) : HttpResponse.json({ version: 11 }); }));

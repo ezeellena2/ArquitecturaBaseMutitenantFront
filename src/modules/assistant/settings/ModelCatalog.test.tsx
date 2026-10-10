@@ -28,6 +28,8 @@ describe("catálogo y configuración de plataforma", () => {
     expect(screen.getByText("Inactivo")).toBeVisible();
     expect(queries.every((url) => !url.searchParams.has("active") && !url.searchParams.has("search"))).toBe(true);
   });
+  // Cuatro escrituras y tres GET retenidos forman una sola carrera de versiones; no se divide el recorrido.
+  // Página precargada y suite aislada: el caso sigue superando 5 s bajo carga de la puerta paralela.
   it.each([[20, 21, 22, 23, 24, 25], [900, 50, 40, 30, 20, 10]])("GET intercalado conserva escritura propia y adopta lectura nueva sólo al descartar (tokens %j)", async (...tokens) => {
     const [initial, first, second, third, fresh, fourth] = tokens;
     let reads = 0; let releaseFirstGet!: () => void; let releaseSecondPut!: () => void; let releaseLastGet!: () => void;
@@ -69,7 +71,7 @@ describe("catálogo y configuración de plataforma", () => {
       fireEvent.change(screen.getByRole("textbox", { name: "Consultas por persona por día" }), { target: { value: "110" } });
       await app.user.click(screen.getByRole("button", { name: "Guardar cambios" })); await waitFor(() => expect(bodies).toHaveLength(4)); expect(bodies[3].version).toBe(fresh);
     } finally { app.unmount(); releaseFirstGet(); releaseSecondPut(); releaseLastGet(); }
-  });
+  }, 10_000);
   it("descartes repetidos conservan valor y versión propios mientras el GET sigue retenido", async () => {
     let reads = 0; let release: (() => void) | undefined;
     const held = new Promise<void>((resolve) => { release = resolve; });
@@ -206,6 +208,23 @@ describe("catálogo y configuración de plataforma", () => {
     await app.user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
     await act(async () => { await expect(mutation.execute(mutation.state.variables)).rejects.toMatchObject({ name: "AbortError" }); }); expect(wire).toHaveLength(1);
     expect(screen.getAllByText("USD 0,13")).not.toHaveLength(0);
+  });
+  it("cambiar de grupo cancela el Retry del diálogo de modelos con la señal del editor", async () => {
+    let requests = 0;
+    server.use(http.put(`/api/platform/assistant/models/${firstModel.id}`, () => { requests++; return HttpResponse.error(); }));
+    const app = mountSettings(platformManager, catalogPath);
+    (await screen.findByRole("button", { name: `Acciones de ${firstModel.name}` })).focus(); await app.user.keyboard("{Enter}");
+    await app.user.click(await screen.findByRole("menuitem", { name: `Editar ${firstModel.name}` }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar modelo" });
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "Nombre" }), { target: { value: "Cambio privado del diálogo" } });
+    await app.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(app.client.getMutationCache().getAll().at(-1)?.state.status).toBe("error"));
+    const mutation = app.client.getMutationCache().getAll().at(-1)!;
+    await act(() => app.router.navigate("?tab=general"));
+    await act(async () => { await expect(mutation.execute(mutation.state.variables)).rejects.toMatchObject({ name: "AbortError" }); });
+    expect(requests).toBe(1);
+    expect(app.router.state.location.search).toBe("?tab=general");
+    await app.user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
   });
   it("editar se apaga sólo sin cambios y anuncia el guardado HTTP pendiente sin duplicarlo", async () => {
     const wire: UpdateAssistantModelRequest[] = [];

@@ -25,8 +25,8 @@ import { assistantModelsRoot, createAssistantModel, updateAssistantModel } from 
 import { assistantDescriptionMaxLength, assistantMoneySchema } from "./settingsForm";
 import { usePrivateSettingsOperation } from "./usePrivateSettingsOperation";
 
-export function ModelEditorDialog({ scope, model, currency, trigger, onClose }: {
-  scope: AssistantScope; model?: AssistantModelPriceResponse; currency: string; trigger: HTMLElement | null; onClose: () => void;
+export function ModelEditorDialog({ scope, cancellationSignal, model, currency, trigger, onClose }: {
+  scope: AssistantScope; cancellationSignal: AbortSignal; model?: AssistantModelPriceResponse; currency: string; trigger: HTMLElement | null; onClose: () => void;
 }) {
   const { t } = useTranslation(["assistant", "common", "enums"]); const client = useQueryClient(); const format = useFormat();
   const restoreFocus = useRestoreFocusOnClose(true, trigger); const [failure, setFailure] = useState<unknown>(); const conflict = useRef(false);
@@ -37,7 +37,7 @@ export function ModelEditorDialog({ scope, model, currency, trigger, onClose }: 
   type Values = z.input<typeof schema>;
   const { form, version, wrote } = useEditForm<AssistantModelPriceResponse | undefined, Values, z.output<typeof schema>>({ read: model, resolver: zodResolver(schema), toValues: (read): Values => ({ name: read?.name ?? "", providerModelId: read?.providerModelId ?? "",
     inputPricePerMillion: read?.inputPricePerMillion ?? null, outputPricePerMillion: read?.outputPricePerMillion ?? null, isActive: read?.isActive ?? true }) });
-  const operation = usePrivateSettingsOperation<CreateAssistantModelRequest | UpdateAssistantModelRequest>({ scope, path: "/plataforma/asistente/configuracion", queryRoot: assistantModelsRoot(scope), allowed: () => true,
+  const operation = usePrivateSettingsOperation<CreateAssistantModelRequest | UpdateAssistantModelRequest>({ scope, cancellationSignal, queryRoot: assistantModelsRoot(scope), allowed: () => true,
     execute: (body, key, signal) => model ? updateAssistantModel(model.id, body, signal) : createAssistantModel(body, key, signal),
     success: (body, response) => {
       if (model) wrote((body as UpdateAssistantModelRequest).version!, response.version, undefined);

@@ -11,6 +11,8 @@ import { AlertCircleIcon } from "@/shared/ui/icons";
 import { useUnsavedChangesGuard } from "./useUnsavedChangesGuard";
 
 export interface EditPageOptions {
+  /** Retira operaciones del editor al intentar salir, aunque la guarda frene la navegación. */
+  readonly onNavigationAttempt?: () => void;
   /** Grupos cuyo cambio en URL abandona el editor (por defecto sólo cambia de ruta). */
   readonly searchKeys?: readonly string[];
   /** Lo escrito difiere de lo guardado. */
@@ -26,6 +28,7 @@ export interface EditPageOptions {
 }
 
 export interface EditPage {
+  readonly isBlocked: boolean;
   /** El cartel del 409 `General.ConcurrencyConflict`, para el `banner` de `Page`; en el teléfono, también la banda del
    * error de guardado, debajo de la barra (M-Usuario y M-Pagina-Org, v106). */
   readonly banner: ReactNode;
@@ -43,14 +46,15 @@ export interface EditPage {
 /// Lo común de una pantalla que edita algo que ya existe (tableros Avisos y «Criterio · Avisos y errores»): el cartel
 /// del 409 debajo de la banda, «Cambios sin guardar» en la banda, la franja del error de guardado y la pregunta antes de
 /// salir con cambios. Cada error va en un solo lugar.
-export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, errorMessage, searchKeys }: EditPageOptions): EditPage {
+export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, errorMessage, searchKeys, onNavigationAttempt }: EditPageOptions): EditPage {
   const { t } = useTranslation("errors");
   const { phone } = useAppChrome();
-  const guard = useUnsavedChangesGuard(isDirty, searchKeys);
+  const guard = useUnsavedChangesGuard(isDirty, searchKeys, onNavigationAttempt);
   const conflict = error instanceof ApiError && error.code === "General.ConcurrencyConflict";
   const message = conflict ? null : errorMessage ? errorMessage(error) : actionErrorMessage(error, t);
 
   return {
+    isBlocked: guard.isBlocked,
     banner: <>
       <ConcurrencyBanner error={error} isDirty={isDirty} onSeeNew={onSeeNew} onContinueEditing={onContinueEditing} />
       {/* Tableros M-Usuario y M-Pagina-Org («Error al guardar»): en el teléfono, el error con el texto del back va en la

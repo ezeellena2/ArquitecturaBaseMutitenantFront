@@ -19,22 +19,25 @@ export interface UnsavedChangesGuard {
 /// cerrar la pestaña no pasan por el router, así que ahí pregunta el navegador (`useBeforeUnload`).
 ///
 /// Solo frena el cambio de `pathname`: en la misma ruta, un cambio de la query string no se lleva lo escrito.
-export function useUnsavedChangesGuard(isDirty: boolean, searchKeys?: readonly string[]): UnsavedChangesGuard {
+export function useUnsavedChangesGuard(isDirty: boolean, searchKeys?: readonly string[], onNavigationAttempt?: () => void): UnsavedChangesGuard {
   const allowNextRef = useRef(false);
   const leavingRef = useRef(false);
 
   const shouldBlock = useCallback<BlockerFunction>(
     ({ currentLocation, nextLocation }) => {
+      const leaving = currentLocation.pathname !== nextLocation.pathname || (searchKeys?.some((key) =>
+        new URLSearchParams(currentLocation.search).get(key) !== new URLSearchParams(nextLocation.search).get(key)) ?? false);
+      // Retira operaciones privadas antes de que la navegación continúe o quede bloqueada.
+      if (leaving) onNavigationAttempt?.();
       if (allowNextRef.current) {
         allowNextRef.current = false;
 
         return false;
       }
 
-      return isDirty && (currentLocation.pathname !== nextLocation.pathname || (searchKeys?.some((key) =>
-        new URLSearchParams(currentLocation.search).get(key) !== new URLSearchParams(nextLocation.search).get(key)) ?? false));
+      return isDirty && leaving;
     },
-    [isDirty, searchKeys],
+    [isDirty, searchKeys, onNavigationAttempt],
   );
 
   const blocker = useBlocker(shouldBlock);

@@ -1,6 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { UNSAFE_DataRouterContext } from "react-router";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
@@ -12,14 +11,13 @@ import type { AssistantScope } from "../api/assistant";
 import { assistantAccess } from "../registration";
 
 /** Sólo este dueño local retiene cuerpos. Query/MutationCache ven exclusivamente un identificador opaco. */
-export function usePrivateSettingsOperation<TBody>({ scope, path, queryRoot, allowed, execute, success, failure }: {
-  scope: AssistantScope; path: string; queryRoot: readonly unknown[]; allowed: (body?: TBody) => boolean;
+export function usePrivateSettingsOperation<TBody>({ scope, cancellationSignal, queryRoot, allowed, execute, success, failure }: {
+  scope: AssistantScope; cancellationSignal: AbortSignal; queryRoot: readonly unknown[]; allowed: (body?: TBody) => boolean;
   execute: (body: TBody, key: string, signal: AbortSignal) => Promise<VersionResponse>;
   success: (body: TBody, response: VersionResponse) => void;
   failure: (error: unknown) => void;
 }) {
   const client = useQueryClient();
-  const router = useContext(UNSAFE_DataRouterContext)?.router;
   const password = useRef<HTMLInputElement>(null);
   const active = useRef(true);
   const operation = useRef<{ handle: string; body: TBody; key?: string; controller: AbortController } | null>(null);
@@ -30,21 +28,26 @@ export function usePrivateSettingsOperation<TBody>({ scope, path, queryRoot, all
     const me = client.getQueryData<MeResponse>(currentUserQueryKey);
     return active.current && !!me && me.id === scope.userId && me.access === scope.access
       && (me.activeTenantId ?? null) === scope.tenantId && assistantAccess(me, "configure") === "allowed"
-      && (!router || (router.state.location.pathname === path && ![...router.state.blockers.values()].some((blocker) => blocker.state === "blocked")));
-  }, [client, path, router, scope.access, scope.tenantId, scope.userId]);
+      && !cancellationSignal.aborted;
+  }, [cancellationSignal, client, scope.access, scope.tenantId, scope.userId]);
   const abandon = useCallback((clearPassword = true) => {
     operation.current?.controller.abort(); operation.current = null;
     if (clearPassword && password.current) password.current.value = "";
     if (active.current) setPending(false);
   }, []);
-  useEffect(() => { active.current = true; return () => { active.current = false; abandon(); }; }, [abandon]);
+  useLayoutEffect(() => { active.current = true; return () => { active.current = false; abandon(); }; }, [abandon]);
+  useLayoutEffect(() => {
+    const cancel = () => abandon();
+    if (cancellationSignal.aborted) cancel();
+    cancellationSignal.addEventListener("abort", cancel);
+    return () => cancellationSignal.removeEventListener("abort", cancel);
+  }, [abandon, cancellationSignal]);
   useEffect(() => client.getQueryCache().subscribe((event) => {
     const key = event.query.queryKey;
     const removedOwner = event.type === "removed" && (currentUserQueryKey.every((part, index) => key[index] === part)
       || callbacks.current.queryRoot.every((part, index) => key[index] === part));
     if (removedOwner || !eligible() || !callbacks.current.allowed(operation.current?.body)) abandon();
   }), [abandon, client, eligible]);
-  useEffect(() => router?.subscribe(() => { if (!eligible()) abandon(); }), [abandon, eligible, router]);
   useEffect(() => client.getMutationCache().subscribe((event) => {
     if (event.type === "removed" && event.mutation.state.variables === operation.current?.handle) abandon();
     // El evento final incluye agotamiento aun sin observer; los intentos internos no generan avisos.

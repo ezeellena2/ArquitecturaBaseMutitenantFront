@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { Link, RouterProvider, createMemoryRouter, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { useUnsavedChangesGuard } from "./useUnsavedChangesGuard";
 import { configureI18n } from "@/shared/i18n";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
@@ -18,9 +18,9 @@ beforeAll(async () => {
 
 /// Una pantalla de edición mínima, que monta el `ConfirmDialog` como lo va a hacer la del rol: abierto
 /// mientras la guarda frena una salida, "Salir sin guardar" sale y cerrarlo de cualquier otra forma se queda.
-function Editor({ searchKeys }: { searchKeys?: readonly string[] }) {
+function Editor({ searchKeys, onNavigationAttempt }: { searchKeys?: readonly string[]; onNavigationAttempt?: () => void }) {
   const [dirty, setDirty] = useState(false);
-  const guard = useUnsavedChangesGuard(dirty, searchKeys);
+  const guard = useUnsavedChangesGuard(dirty, searchKeys, onNavigationAttempt);
   const navigate = useNavigate();
   const { t } = useTranslation("errors");
 
@@ -60,11 +60,11 @@ function Editor({ searchKeys }: { searchKeys?: readonly string[] }) {
   );
 }
 
-function renderEditor(initialEntries = ["/roles/abc"], searchKeys?: readonly string[]) {
+function renderEditor(initialEntries = ["/roles/abc"], searchKeys?: readonly string[], onNavigationAttempt?: () => void) {
   const router = createMemoryRouter(
     [
       { path: "/roles", element: <h1>{"Listado de roles"}</h1> },
-      { path: "/roles/:roleId", element: <Editor searchKeys={searchKeys} /> },
+      { path: "/roles/:roleId", element: <Editor searchKeys={searchKeys} onNavigationAttempt={onNavigationAttempt} /> },
     ],
     { initialEntries, initialIndex: initialEntries.length - 1 },
   );
@@ -80,6 +80,27 @@ async function makeAChange() {
 }
 
 describe("useUnsavedChangesGuard", () => {
+  it.each([false, true])("notifica la salida antes de cambiar o bloquear la ruta, dirty=%s", async (dirty) => {
+    const observed: string[] = [];
+    const notify = vi.fn(() => observed.push(router.state.location.pathname));
+    const router = renderEditor(undefined, undefined, notify);
+    await screen.findByRole("button", { name: "Cambiar algo" });
+    if (dirty) await makeAChange();
+    await act(() => router.navigate("/roles"));
+    expect(notify).toHaveBeenCalledOnce();
+    expect(observed).toEqual(["/roles/abc"]);
+    expect(router.state.location.pathname).toBe(dirty ? "/roles/abc" : "/roles");
+  });
+  it("notifica sólo la query que abandona el grupo elegido", async () => {
+    const notify = vi.fn();
+    const router = renderEditor(undefined, ["seccion"], notify);
+    await makeAChange();
+    await act(() => router.navigate("?page=2"));
+    expect(notify).not.toHaveBeenCalled();
+    await act(() => router.navigate("?seccion=permisos"));
+    expect(notify).toHaveBeenCalledOnce();
+    expect(await screen.findByRole("dialog", { name: "¿Salir sin guardar?" })).toBeVisible();
+  });
   it("bloquea sólo las claves query elegidas también al volver con el historial", async () => {
     const router = renderEditor(["/roles/abc?seccion=permisos", "/roles/abc?seccion=datos"], ["seccion"]);
     await makeAChange();
