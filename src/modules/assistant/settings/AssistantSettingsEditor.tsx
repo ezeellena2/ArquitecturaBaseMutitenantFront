@@ -105,7 +105,7 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
       if (error instanceof ApiError) {
         if (error.code === "Assistant.Settings.KeyRejected") { fieldError("keyAction", t("assistant:settings.validation.keyRejected")); return; }
         if (error.code === "Assistant.Settings.AlertRecipientRequired") { form.setError("mode", { type: "alertRecipient", message: t("assistant:settings.recipientRequired", { organization: activeOrganization(me)?.name }) }); return; }
-        if (error.code === "Assistant.Settings.ModelNotAllowed") { fieldError("modelId", t("assistant:settings.validation.model")); return; }
+        if (error.code === "Assistant.Model.NotAllowed") { fieldError("modelId", t("assistant:settings.validation.model")); return; }
         if (applyApiErrorToForm(error, form.setError, fieldMap)) return;
       }
       setFailure(error);

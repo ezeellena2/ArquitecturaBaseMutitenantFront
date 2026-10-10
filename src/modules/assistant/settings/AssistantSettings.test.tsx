@@ -225,7 +225,7 @@ describe("configuración real de gestión", () => {
     await waitFor(() => expect(requests).toHaveLength(2)); expect(requests[1].apiKey).toBe("another-private-key");
   });
   it.each([
-    ["Assistant.Settings.ModelNotAllowed", "Modelo", "Elegí un modelo activo permitido."],
+    ["Assistant.Model.NotAllowed", "Modelo", "Elegí un modelo activo permitido."],
     ["Validation.Failed", "Consultas por persona por día", "Tope rechazado por servidor"],
     ["Assistant.Settings.AlertRecipientRequired", "Clave", businessManager.organizations.find((row) => row.id === businessManager.activeTenantId)!.name],
   ])("%s conserva error de campo y revoca el Retry terminal", async (code, label, message) => {
