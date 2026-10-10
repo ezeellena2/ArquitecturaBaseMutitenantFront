@@ -19,7 +19,7 @@ let data: Detail;
 let reads: number;
 const open = () => renderRouteWithProviders(`/plataforma/cuentas/${data.id}`, { as: "platform-operator" });
 async function menu(user: ReturnType<typeof userEvent.setup>, label: string) {
-  const trigger = await screen.findByRole("button", { name: `Acciones de ${data.displayName || data.primaryEmail}` });
+  const trigger = await screen.findByRole("button", { name: `Acciones de ${data.displayName || data.primaryEmail || "Sin dato"}` });
   trigger.focus(); await user.keyboard("{ArrowDown}"); await user.click(await screen.findByRole("menuitem", { name: label }));
 }
 async function reason(user: ReturnType<typeof userEvent.setup>, label: string) {
@@ -36,6 +36,51 @@ beforeEach(async () => {
 afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); });
 
 describe("Ficha de Cuenta de Plataforma", () => {
+  it.each([
+    ["Persona", "Cerrar sesiones", "¿Cerrar las sesiones de Sin dato?"],
+    ["Persona", "Dar de baja", "¿Dar de baja la cuenta de Sin dato?"],
+    ["Persona suspendida", "Reactivar", "¿Reactivar la cuenta de Sin dato?"],
+    ["Operador", "Cambiar permisos", "Cambiar permisos de Sin dato"],
+    ["Operador", "Quitar operador", "¿Quitar a Sin dato como operador?"],
+    ["Invitación de operador pendiente", "Revocar invitación", "¿Revocar la invitación a Sin dato?"],
+  ])("%s sin identidad conserva el título de %s", async (kind, action, title) => {
+    data = { ...platformAccountDetailFixture({ kind, state: kind === "Persona suspendida" ? "Suspendida" : "Activa" }), displayName: null, primaryEmail: null, soleOwnerOrganizations: [] };
+    const user = userEvent.setup(); const { container } = open();
+    await screen.findByRole("heading", { name: "Sin dato", level: 1 });
+    if (["Reactivar", "Cerrar sesiones", "Cambiar permisos"].includes(action)) await user.click(screen.getByRole("button", { name: action }));
+    else await menu(user, action);
+    expect(await screen.findByRole("dialog", { name: title })).toBeVisible();
+    if (action === "Dar de baja") await screen.findByRole("textbox", { name: "Motivo" });
+    expect(await axe(container)).toHaveNoViolations();
+  });
+  it.each([
+    ["es-AR", false, "Sin dato", "Acciones de Sin dato", "Suspender", "¿Suspender la cuenta de Sin dato?", "Suspendimos la cuenta de Sin dato.", "Motivo", "Migas de pan"],
+    ["en-US", false, "No data", "Actions for No data", "Suspend", "Suspend the account for No data?", "We suspended the account for No data.", "Reason", "Breadcrumb"],
+    ["es-AR", true, "Sin dato", "Acciones de Sin dato", "Suspender", "¿Suspender la cuenta de Sin dato?", "Suspendimos la cuenta de Sin dato.", "Motivo", "Migas de pan"],
+    ["en-US", true, "No data", "Actions for No data", "Suspend", "Suspend the account for No data?", "We suspended the account for No data.", "Reason", "Breadcrumb"],
+  ] as const)("Phone principal sin identidad: %s móvil=%s conserva título, acciones y aviso", async (culture, phone, empty, actions, suspend, title, notice, reasonLabel, breadcrumbs) => {
+    if (phone) asPhone();
+    data = { ...data, displayName: null, primaryEmail: null, loginMethods: [
+      { ...data.loginMethods[1], type: "Phone", maskedValue: "•••• 4521", isPrimary: true, canSignIn: true },
+      { ...data.loginMethods[2], isPrimary: false },
+    ] };
+    server.use(http.post("/api/platform/accounts/:id/suspend", () => new HttpResponse(null, { status: 204 })));
+    const user = userEvent.setup(); const { container, queryClient } = open();
+    await screen.findByRole("heading", { name: "Sin dato", level: 1 });
+    if (culture === "en-US") await act(async () => { queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture }); });
+    expect(await screen.findByRole("heading", { name: empty, level: 1 })).toBeVisible();
+    if (!phone) expect(screen.getByRole("navigation", { name: breadcrumbs })).toHaveTextContent(empty);
+    const trigger = screen.getByRole("button", { name: actions });
+    if (phone) { trigger.focus(); await user.keyboard("{ArrowDown}"); await user.click(await screen.findByRole("menuitem", { name: suspend })); }
+    else await user.click(screen.getByRole("button", { name: suspend }));
+    expect(screen.getByRole("dialog", { name: title })).toBeVisible();
+    await user.type(screen.getByRole("textbox", { name: reasonLabel }), "Revisión");
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: suspend }));
+    expect(await screen.findByText(notice)).toBeVisible();
+    expect(screen.getByText("•••• 4521")).toBeVisible();
+    expect(container).not.toHaveTextContent("+5491112344521");
+    expect(await axe(container)).toHaveNoViolations();
+  });
   it("banda, métodos enmascarados, grupos con cantidad y axe", async () => {
     const { container } = open();
     expect(await screen.findByRole("heading", { name: "Lucía Fernández", level: 1 })).toBeVisible();

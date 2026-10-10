@@ -19,7 +19,7 @@ import { FormField } from "@/shared/ui/FormField";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 import { Textarea } from "@/shared/ui/textarea";
 import { changeOperatorPermissions } from "../api/operators";
-import { accountName } from "../columns";
+import { accountLabel } from "../columns";
 import { operatorInvitationError } from "../errors";
 
 function sameRequest(previous: ChangePlatformOperatorRequest, next: ChangePlatformOperatorRequest) {
@@ -63,7 +63,7 @@ export function OperatorPermissionsDialog({ account, returnFocusTo, onClose, onS
   const busy = useIsMutating({ predicate: (mutation) => mutation.meta?.operatorPermissions === operationId }) > 0;
   const submit = form.handleSubmit((values) => { setFailure(undefined); save.mutate({ ...values, version: account.operatorVersion }); });
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}><DialogContent onCloseAutoFocus={restoreFocus}>
-    <DialogHeader><DialogTitle>{t("platformAccounts:operator.changeTitle", { name: accountName(account) })}</DialogTitle></DialogHeader>
+    <DialogHeader><DialogTitle>{t("platformAccounts:operator.changeTitle", { name: accountLabel(account, t) })}</DialogTitle></DialogHeader>
     <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col"><DialogBody>
       <FormField label={t("platformAccounts:invite.permissions")} error={form.formState.errors.permissions?.message}>
         <MultiSelect options={platformPermissions.map((value) => ({ value, label: t(`platformAccounts:permissions.${value}.name`), description: t(`platformAccounts:permissions.${value}.description`) }))}

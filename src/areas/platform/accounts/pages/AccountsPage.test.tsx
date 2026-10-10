@@ -36,6 +36,24 @@ beforeEach(async () => {
   server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list())), http.get("/api/platform/accounts/filter-counts", () => HttpResponse.json(counts)), http.get("/api/platform/accounts/lucia", () => HttpResponse.json(detail)));
 });
 describe("Cuentas de Plataforma", () => {
+  it.each([false, true])("cuenta sin nombre ni correo: móvil=%s conserva vacío accesible, menú, confirmación y aviso", async (phone) => {
+    if (phone) asPhone();
+    server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list([{ ...person, displayName: null, primaryEmail: null }]))),
+      http.post("/api/platform/accounts/lucia/suspend", () => new HttpResponse(null, { status: 204 })));
+    const user = userEvent.setup(); const { container } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });
+    const empty = await screen.findByRole("img", { name: "Sin dato" });
+    expect(empty).toHaveTextContent("—");
+    expect(empty.closest("a")).toHaveAttribute("href", "/plataforma/cuentas/lucia");
+    if (phone) {
+      await user.click(screen.getByRole("button", { name: "Acciones de Sin dato" }));
+      expect(screen.getByRole("dialog", { name: "Sin dato" })).toBeVisible();
+      await user.click(screen.getByRole("menuitem", { name: "Suspender" }));
+    } else await action(user, "Suspender", "Sin dato");
+    expect(screen.getByRole("dialog", { name: "¿Suspender la cuenta de Sin dato?" })).toBeVisible();
+    await reason(user, "Suspender");
+    expect(await screen.findByText("Suspendimos la cuenta de Sin dato.")).toBeVisible();
+    expect(await axe(container)).toHaveNoViolations();
+  });
   it("carga y ordena por Cuenta con el campo name admitido por el contrato", async () => {
     const user = userEvent.setup(); const sorts: string[] = [];
     server.use(http.get("/api/platform/accounts/paged", ({ request }) => {

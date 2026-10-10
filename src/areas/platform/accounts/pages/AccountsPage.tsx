@@ -22,7 +22,7 @@ import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { accountCountsQueryKey, accountQueryKey, accountsQueryKey, accountsQueryRoot, fetchAccountCounts, fetchAccounts, type AccountsQuery } from "../api/accounts";
 import { resendOperatorInvitation } from "../api/operators";
-import { accountName, accountPhoneRow, createAccountColumns, isOperatorInvitation } from "../columns";
+import { accountLabel, accountPhoneRow, createAccountColumns, isOperatorInvitation } from "../columns";
 import { AccountDeletionDialog, AccountReasonDialog, RevokeInvitationDialog, type AccountConfirmation as Confirmation } from "../components/AccountDialogs";
 import { InviteOperatorDialog } from "../components/InviteOperatorDialog";
 import { accountStateConflictCodes } from "../errors";
@@ -57,8 +57,8 @@ function AccountActions({ account, self, canManage, canInvite, route, onConfirm 
   const busy = useIsMutating({ predicate: (mutation) => mutation.meta?.operatorResend === operationId }) > 0;
   if (self || account.state === "PendingDeletion" || account.state === "Deleted") return null;
   const confirm = (action: Confirmation["action"], trigger: HTMLElement | null) => onConfirm({ account, action, trigger, route });
-  return <RowActions label={t("rowActions", { name: accountName(account) })} title={accountName(account)} actions={[
-    { label: t("actions.resend"), accessibleName: t("actions.resend"), icon: RotateCw, hidden: !canInvite || !invitation || busy, onSelect: () => resend.mutate({ id: account.id, name: accountName(account) }) },
+  return <RowActions label={t("rowActions", { name: accountLabel(account, t) })} title={accountLabel(account, t)} actions={[
+    { label: t("actions.resend"), accessibleName: t("actions.resend"), icon: RotateCw, hidden: !canInvite || !invitation || busy, onSelect: () => resend.mutate({ id: account.id, name: accountLabel(account, t) }) },
     { label: t("actions.revoke-sessions"), accessibleName: t("actions.revoke-sessions"), icon: LogOutIcon, hidden: !canManage || invitation, onSelect: (trigger) => confirm("revoke-sessions", trigger) },
     { label: t("actions.reactivate"), accessibleName: t("actions.reactivate"), icon: Power, hidden: !canManage || account.state !== "Suspended", onSelect: (trigger) => confirm("reactivate", trigger) },
     { label: t("actions.revoke"), accessibleName: t("actions.revoke"), icon: CloseIcon, destructive: true, hidden: !canInvite || !invitation || busy, onSelect: (trigger) => confirm("revoke", trigger) },
@@ -98,7 +98,7 @@ export function AccountsPage() {
   const close = () => setConfirmation((current) => current === activeConfirmation ? null : current);
   const success = (detail: PlatformAccountDetailResponse | undefined) => {
     if (!activeConfirmation) return;
-    const name = accountName(activeConfirmation.account); const action = activeConfirmation.action;
+    const name = accountLabel(activeConfirmation.account, t); const action = activeConfirmation.action;
     if (action === "deletion") {
       if (detail) client.setQueryData(accountQueryKey(detail.id), detail);
       toast.success(t(detail?.deletion?.scheduledForUtc ? "platformAccounts:messages.deletion" : "platformAccounts:messages.deletedWithoutDate", { name, date: detail?.deletion?.scheduledForUtc ? format.formatDate(detail.deletion.scheduledForUtc) : "" }));

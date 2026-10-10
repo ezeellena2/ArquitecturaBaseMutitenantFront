@@ -13,7 +13,7 @@ import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, Dia
 import { FormError } from "@/shared/ui/FormError";
 import { accountQueryKey, accountsQueryRoot, changeAccount, fetchAccount, type AccountAction } from "../api/accounts";
 import { revokeOperatorInvitation } from "../api/operators";
-import { accountName } from "../columns";
+import { accountLabel } from "../columns";
 import { accountActionError, accountStateConflictCodes } from "../errors";
 
 export interface AccountConfirmation { account: Pick<PlatformAccountResponse, "id" | "displayName" | "primaryEmail">; action: AccountAction | "revoke"; trigger: HTMLElement | null; route: string }
@@ -42,7 +42,7 @@ export function AccountReasonDialog({ confirmation, blockedReason, onLastAdmin, 
       throw error;
     }
   }, { meta: { handlesError: true }, sameOperation: (previous, next) => previous.id === next.id && previous.action === next.action && previous.reason === next.reason });
-  return <ReasonDialog key={blockedReason ?? "enabled"} title={t(`confirm.${confirmation.action}.title`, { name: accountName(confirmation.account) })} description={t(`confirm.${confirmation.action}.description`)}
+  return <ReasonDialog key={blockedReason ?? "enabled"} title={t(`confirm.${confirmation.action}.title`, { name: accountLabel(confirmation.account, t) })} description={t(`confirm.${confirmation.action}.description`)}
     confirmLabel={t(`confirm.${confirmation.action}.button`)} pendingLabel={t(`confirm.${confirmation.action}.pending`)} destructive={confirmation.action !== "reactivate"}
     blockedReason={blockedReason} returnFocusTo={confirmation.trigger} queryRoot={accountsQueryRoot} stateConflictCodes={accountStateConflictCodes} onClose={onClose}
     mutationFn={(values) => action.mutateAsync({ id: confirmation.account.id, action: confirmation.action === "revoke" ? "revoke-sessions" : confirmation.action, reason: values.reason })}
@@ -57,7 +57,7 @@ export function AccountDeletionDialog({ confirmation, onClose, onSuccess }: { co
   // La apertura exige GET exitoso; relecturas posteriores conservan formulario y rechazo.
   if (!openingVerified && account.isFetchedAfterMount && account.isSuccess && !account.isFetching) setOpeningVerified(true);
   if (!openingVerified || !account.data) return <Dialog open onOpenChange={(open) => { if (!open) close(); }}><DialogContent size="sm" showCloseButton={false} onCloseAutoFocus={restoreFocus}>
-    <DialogHeader><DialogTitle>{t("platformAccounts:confirm.deletion.title", { name: accountName(confirmation.account) })}</DialogTitle></DialogHeader>
+    <DialogHeader><DialogTitle>{t("platformAccounts:confirm.deletion.title", { name: accountLabel(confirmation.account, t) })}</DialogTitle></DialogHeader>
     <DialogBody><DialogDescription>{t("platformAccounts:confirm.deletion.description")}</DialogDescription>{account.isError ? <FormError message={apiErrorMessage(account.error, t)} /> : <span role="status">{t("common:states.loading")}</span>}</DialogBody>
     <DialogFooter><Button variant="outline" onClick={close}>{t("common:actions.cancel")}</Button>{account.isError ? <Button variant="outline" onClick={() => { void account.refetch(); }}>{t("common:actions.retry")}</Button> : <Button variant="destructive" disabled>{t("platformAccounts:actions.deletion")}</Button>}</DialogFooter>
   </DialogContent></Dialog>;
@@ -79,7 +79,7 @@ export function RevokeInvitationDialog({ confirmation, onClose, onSuccess }: { c
     }
   }, onSuccess: () => { if (active.current) { onSuccess(); close(); } }, onError: (error) => { if (active.current) fail(error); } });
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}><DialogContent size="sm" showCloseButton={false} onCloseAutoFocus={restoreFocus}>
-    <DialogHeader><DialogTitle>{t("platformAccounts:confirm.revoke.title", { name: accountName(confirmation.account) })}</DialogTitle></DialogHeader>
+    <DialogHeader><DialogTitle>{t("platformAccounts:confirm.revoke.title", { name: accountLabel(confirmation.account, t) })}</DialogTitle></DialogHeader>
     <DialogBody><DialogDescription>{t("platformAccounts:confirm.revoke.description")}</DialogDescription><FormError message={actionErrorMessage(failure, t)} /></DialogBody>
     <DialogFooter><Button variant="outline" onClick={close}>{t("common:actions.cancel")}</Button><Button variant="destructive" pending={revoke.isPending} pendingLabel={t("platformAccounts:confirm.revoke.pending")} onClick={() => { clear(); revoke.mutate(); }}>{t("platformAccounts:confirm.revoke.button")}</Button></DialogFooter>
   </DialogContent></Dialog>;

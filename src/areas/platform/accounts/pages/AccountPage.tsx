@@ -24,7 +24,7 @@ import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { accountQueryKey, accountsQueryRoot, fetchAccount, type AccountAction } from "../api/accounts";
 import { resendOperatorInvitation } from "../api/operators";
-import { accountName, accountStateTones, isOperatorInvitation } from "../columns";
+import { accountLabel, accountStateTones, isOperatorInvitation } from "../columns";
 import { AccountDeletionDialog, AccountReasonDialog, RevokeInvitationDialog, type AccountConfirmation } from "../components/AccountDialogs";
 import { OperatorPermissionsDialog } from "../components/OperatorPermissionsDialog";
 import { RemoveOperatorDialog } from "../components/RemoveOperatorDialog";
@@ -49,7 +49,7 @@ function AccountDetail({ id }: { id: string }) {
   const canManage = canPlatform("platform.accounts.manage"); const canOperators = canPlatform("platform.operators.manage"); const canAudit = canPlatform("platform.audit.read");
   const query = useQuery({ queryKey: accountQueryKey(id), queryFn: () => fetchAccount(id), enabled: Boolean(id) && canPlatform("platform.accounts.read"), meta: { silent: true, blocksView: true } });
   const [written, setWritten] = useState<OwnOperatorWrite>();
-  useBreadcrumbLeaf(query.data ? accountName(query.data) : undefined);
+  useBreadcrumbLeaf(query.data ? accountLabel(query.data, t) : undefined);
   const back = { to: "/plataforma/cuentas", label: t("platformAccounts:detail.back") };
   if (query.isPending) return <Page icon={UsersIcon} title={t("platformAccounts:detail.loading")} backTo={back}><span role="status">{t("common:states.loading")}</span></Page>;
   if (!query.data) return isNotFoundError(query.error) ? <NotFoundPage homePath="/plataforma" screen={t("platformAccounts:detail.title")} back={back} />
@@ -74,7 +74,7 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const operationId = useId(); const active = useRef(true);
   useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
-  const invitation = isOperatorInvitation(data); const operator = data.kind === "Operator"; const name = accountName(data);
+  const invitation = isOperatorInvitation(data); const operator = data.kind === "Operator"; const name = accountLabel(data, t);
   const mutable = !self && !["PendingDeletion", "Deleted"].includes(data.state);
   const canResend = mutable && canOperators && invitation;
   useEffect(() => client.getMutationCache().subscribe((event) => {
