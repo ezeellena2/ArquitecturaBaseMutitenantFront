@@ -18,7 +18,7 @@ vi.mock("./navigation/personal", async () => {
 vi.mock("@/auth/useCurrentUser", () => ({ useCurrentUser: () => ({ data: { features: session.features,
   effectivePermissions: { platform: [], organization: [], companies: {} } } }) }));
 vi.mock("@/tenancy/useProfiles", () => ({ initials: (name: string) => name.charAt(0), useProfiles: () => ({
-  name: "Ana", nameLabel: "Ana", email: "ana@example.com", access: "consumer", profiles: [], signOut: vi.fn(), status: null,
+  name: "Ana", nameLabel: "Ana", email: "ana@example.com", detail: "ana@example.com", avatarInitials: "A", avatarMuted: false, access: "consumer", profiles: [], signOut: vi.fn(), status: null,
 }) }));
 
 beforeAll(async () => { await configureI18n([{ code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true }]); });

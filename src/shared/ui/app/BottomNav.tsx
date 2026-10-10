@@ -11,6 +11,7 @@ export interface BottomNavItem {
   icon?: ReactNode;
   /** «Más» lleva la inicial de la persona en lugar de un ícono. */
   avatar?: string;
+  avatarMuted?: boolean;
   active: boolean;
 }
 
@@ -23,7 +24,7 @@ export function BottomNav({ label, items }: { label: string; items: readonly Bot
         className={cn("flex flex-col items-center gap-1 text-[11.5px] font-medium text-[var(--t2)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]", item.active && "font-semibold text-[var(--marca-tx)]")}>
         <span aria-hidden="true" className={cn("relative inline-flex h-[30px] w-14 items-center justify-center rounded-[15px]", item.active && "bg-[var(--marca-t)]")}>
           {item.avatar
-            ? <Avatar size="nav" initials={item.avatar} className={item.active ? "shadow-[0_0_0_2px_var(--lado-activo),0_0_0_4px_var(--marca)]" : undefined} />
+            ? <Avatar size="nav" initials={item.avatar} muted={item.avatarMuted} className={item.active ? "shadow-[0_0_0_2px_var(--lado-activo),0_0_0_4px_var(--marca)]" : undefined} />
             : item.icon ?? null}
         </span>
         {item.label}

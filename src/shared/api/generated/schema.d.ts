@@ -17847,6 +17847,11 @@ export interface components {
             moduleCapabilities?: components["schemas"]["ModuleCapabilityResponse"][];
             firstName?: null | string;
             lastName?: null | string;
+            /**
+             * @description Phone principal global verificado, enmascarado con PersonalDataMask (solo los últimos cuatro dígitos). Null si el principal es Email/Google, está pendiente o la cuenta fue eliminada. El canal apagado o un país cerrado a nuevas altas no ocultan esta identidad.
+             * @example •••• 4521
+             */
+            maskedPrimaryPhone?: null | string;
             /** @description País de la organización empresarial activa, desde su cultura del catálogo; no es la región personal. */
             organizationCountryCode?: null | string;
             /** Format: uint32 */

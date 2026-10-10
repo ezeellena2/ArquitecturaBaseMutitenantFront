@@ -13,7 +13,7 @@ import { initials, useProfiles } from "./useProfiles";
 /** El menú usa la sesión global, nunca los datos de la organización publicada. */
 function MobilePublicAccessMenu() {
   const { t } = useTranslation(["common", "storefront"]);
-  const { account, name, nameLabel, email, access, profiles, signOut, status, accountHref } = useProfiles();
+  const { account, nameLabel, detail, avatarInitials, avatarMuted, access, profiles, signOut, status, accountHref } = useProfiles();
   const [open, setOpen] = useState(false);
   if (!account) return null;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
@@ -23,7 +23,7 @@ function MobilePublicAccessMenu() {
   return <Sheet open={open} onOpenChange={setOpen}>
     <SheetTrigger asChild>
       <button type="button" aria-label={t("storefront:menu.account")} className="inline-flex items-center justify-center rounded-full border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
-        <Avatar initials={initials(name).slice(0, 1)} size="small" />
+        <Avatar initials={avatarInitials} muted={avatarMuted} size="small" />
       </button>
     </SheetTrigger>
     {/* M-Pagina-Publica: la cuenta abre una hoja inferior con la identidad, perfiles, Mi cuenta y Salir, sin ✕. */}
@@ -31,10 +31,10 @@ function MobilePublicAccessMenu() {
       className="rounded-t-[16px] [&_[data-slot=dialog-handle]]:h-1">
       <SheetTitle className="sr-only">{t("accessMenu.menuFor", { name: nameLabel })}</SheetTitle>
       <div className="flex items-center gap-3 px-3 py-2.5">
-        <Avatar initials={initials(name).slice(0, 1)} size="medium" className="text-[14px]" />
+        <Avatar initials={avatarInitials} muted={avatarMuted} size="medium" className="text-[14px]" />
         <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
           <span className="truncate text-[14px] font-semibold text-[var(--t1)]">{nameLabel}</span>
-          {email ? <span className="truncate text-[12.5px] text-[var(--t3)]">{email}</span> : null}
+          {detail ? <span className="truncate text-[12.5px] text-[var(--t3)]">{detail}</span> : null}
         </span>
       </div>
       <div className="flex flex-col px-2 pt-1.5 pb-[calc(10px+env(safe-area-inset-bottom))]">

@@ -30,6 +30,18 @@ function renderPlatformMore(account: MeResponse = visualOperator, path = "/plata
 
 // Tableros M-Mas-Personal y M-WA-Menu: «Más» junta quién sos, tus perfiles, Administración, Mi cuenta y Salir.
 describe("Más en el teléfono", () => {
+  it("Phone principal identifica Más y su barra móvil con raya apagada, sin correo de respaldo", async () => {
+    server.use(meHandlerFor({ ...consumerWithoutOrganizations, displayName: null, email: "respaldo@example.test", maskedPrimaryPhone: "•••• 4521" }));
+    const router = createMemoryRouter(routes, { initialEntries: ["/mas"] });
+    const client = createQueryClient({ queries: { retry: false }, mutations: { retry: false } });
+    const { container } = render(<AppProviders client={client} authContext={fixtureAuth("consumer-empty")}><RouterProvider router={router} /></AppProviders>);
+    expect(await screen.findByText("•••• 4521")).toBeVisible();
+    expect(screen.queryByText("respaldo@example.test")).not.toBeInTheDocument();
+    const avatars = container.querySelectorAll("[data-slot='avatar']");
+    expect(avatars).toHaveLength(2);
+    for (const avatar of avatars) { expect(avatar).toHaveTextContent("—"); expect(avatar).toHaveClass("bg-[var(--s3)]"); }
+    expect(screen.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("href", "/cuenta");
+  });
   it.each([consumerWithoutOrganizations, businessUser])("sin nombre ni correo principal conserva la identidad vacía y los perfiles de $access", async (account) => {
     server.use(meHandlerFor({ ...account, displayName: null, email: null }));
     const router = createMemoryRouter(routes, { initialEntries: ["/mas"] });
@@ -37,7 +49,7 @@ describe("Más en el teléfono", () => {
     const auth = fixtureAuth(account.access === "consumer" ? "consumer-empty" : "business-admin");
     const { container } = render(<AppProviders client={client} authContext={auth}><RouterProvider router={router} /></AppProviders>);
     expect(await screen.findByText("Sin dato")).toBeVisible();
-    expect(container.querySelector("[data-slot='avatar']")).toBeEmptyDOMElement();
+    expect(container.querySelector("[data-slot='avatar']")).toHaveTextContent("—");
     expect(within(screen.getByRole("list", { name: "Perfiles" })).getByText("Personal")).toBeVisible();
     expect(screen.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("href", "/cuenta");
     expect(screen.getByRole("button", { name: "Salir" })).toBeVisible();

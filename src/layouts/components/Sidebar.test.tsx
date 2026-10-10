@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
+import { accountIdentity } from "@/auth/accountIdentity";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { configureI18n } from "@/shared/i18n";
@@ -14,11 +15,20 @@ beforeAll(async () => {
 });
 
 describe("Sidebar", () => {
+  it("Phone principal con correo de respaldo conserva máscara y raya apagada en el lateral", () => {
+    const { container } = render(<MemoryRouter><Sidebar navigation={personalNavigation}
+      account={accountIdentity({ displayName: null, email: "respaldo@example.test", maskedPrimaryPhone: "•••• 4521" })} context={null} collapsed={false}
+      administrationOpen={false} onToggleAdministration={vi.fn()} onToggleCollapsed={vi.fn()} /></MemoryRouter>);
+    expect(screen.getByText("•••• 4521")).toBeVisible();
+    expect(screen.queryByText("respaldo@example.test")).not.toBeInTheDocument();
+    const avatar = container.querySelector("[data-slot='avatar']");
+    expect(avatar).toHaveTextContent("—"); expect(avatar).toHaveClass("bg-[var(--s3)]");
+  });
   it.each([personalNavigation, businessNavigation])("sin identidad muestra Sin dato sin inventar una inicial", (navigation) => {
-    const { container } = render(<MemoryRouter><Sidebar navigation={navigation} account={{ name: "", email: null }} context={null} collapsed={false}
+    const { container } = render(<MemoryRouter><Sidebar navigation={navigation} account={accountIdentity({ displayName: null, email: null })} context={null} collapsed={false}
       administrationOpen={false} onToggleAdministration={vi.fn()} onToggleCollapsed={vi.fn()} /></MemoryRouter>);
     expect(screen.getByText("Sin dato")).toBeVisible();
-    expect(container.querySelector("[data-slot='avatar']")).toBeEmptyDOMElement();
+    expect(container.querySelector("[data-slot='avatar']")).toHaveTextContent("—");
   });
 
   it("en Plataforma Gestión queda arriba y Administración al pie, sin WhatsApp", async () => {
@@ -45,7 +55,7 @@ describe("Sidebar", () => {
     const onToggleAdministration = vi.fn();
     const onToggleCollapsed = vi.fn();
     const { container } = render(<MemoryRouter initialEntries={["/org"]}>
-      <Sidebar navigation={businessNavigation} account={{ name: "Ana", email: "ana@example.com" }} context={{ title: "Empresa A", detail: "Organización" }} collapsed={false} administrationOpen={false} onToggleAdministration={onToggleAdministration} onToggleCollapsed={onToggleCollapsed} />
+      <Sidebar navigation={businessNavigation} account={accountIdentity({ displayName: "Ana", email: "ana@example.com" })} context={{ title: "Empresa A", detail: "Organización" }} collapsed={false} administrationOpen={false} onToggleAdministration={onToggleAdministration} onToggleCollapsed={onToggleCollapsed} />
     </MemoryRouter>);
     expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-[232px]");
     expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");

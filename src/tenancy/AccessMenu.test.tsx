@@ -41,6 +41,31 @@ function setup(account: MeResponse, fetchAccount = false) {
 }
 
 describe("AccessMenu", () => {
+  it("con nombre y Phone principal conserva inicial del nombre y muestra la máscara como contacto", async () => {
+    await configureI18n(referenceDataFixture().cultures, "es-AR");
+    const { user } = setup({ ...consumerWithoutOrganizations, displayName: "Lucía Fernández", email: "respaldo@example.test", maskedPrimaryPhone: "•••• 4521" }, true);
+    const trigger = await screen.findByRole("button", { name: "Lucía Fernández, Personal" });
+    expect(trigger.querySelector("[data-slot='avatar']")).toHaveTextContent("L");
+    trigger.focus(); await user.keyboard("{Enter}");
+    const menu = screen.getByRole("menu");
+    expect(within(menu).getByText("Lucía Fernández")).toBeVisible();
+    expect(within(menu).getByText("•••• 4521")).toBeVisible();
+    expect(within(menu).queryByText("respaldo@example.test")).not.toBeInTheDocument();
+  });
+  it.each([consumerWithoutOrganizations, businessUser])("Phone principal con correo de respaldo identifica el menú sin inventar inicial (%s)", async (account) => {
+    await configureI18n(referenceDataFixture().cultures, "es-AR");
+    const mask = "•••• 4521";
+    const { user } = setup({ ...account, displayName: null, email: "respaldo@example.test", maskedPrimaryPhone: mask }, true);
+    const active = account.access === "consumer" ? "Personal" : "Empresa A";
+    const trigger = await screen.findByRole("button", { name: `${mask}, ${active}` });
+    expect(trigger.querySelector("[data-slot='avatar']")).toHaveTextContent("—");
+    expect(trigger.querySelector("[data-slot='avatar']")).toHaveClass("bg-[var(--s3)]");
+    trigger.focus(); await user.keyboard("{Enter}");
+    const menu = screen.getByRole("menu");
+    expect(within(menu).getByText(mask)).toBeVisible();
+    expect(within(menu).queryByText("respaldo@example.test")).not.toBeInTheDocument();
+    expect(menu.querySelector("[data-slot='avatar']")).toHaveTextContent("—");
+  });
   it.each([
     [consumerWithoutOrganizations, "es-AR", "Sin dato", "Personal"],
     [businessUser, "es-AR", "Sin dato", "Empresa A"],
@@ -52,17 +77,17 @@ describe("AccessMenu", () => {
     const record = ({ request }: { request: Request }) => { requests.push(new URL(request.url).pathname); };
     server.events.on("request:start", record);
     try {
-      // /api/me no expone Phone: una cuenta con ese método principal trae ambos datos nulos.
+      // Sin nombre, correo ni máscara recibida se conserva el vacío accesible.
       const { user } = setup({ ...account, displayName: null, email: null }, true);
       const trigger = await screen.findByRole("button", { name: `${label}, ${activeName}` });
       expect(within(trigger).getByText(label)).toBeVisible();
-      expect(trigger.querySelector("[data-slot='avatar']")).toBeEmptyDOMElement();
+      expect(trigger.querySelector("[data-slot='avatar']")).toHaveTextContent("—");
       trigger.focus();
       await user.keyboard("{Enter}");
       const menu = screen.getByRole("menu", { name: `${label}, ${activeName}` });
       expect(menu).toHaveAttribute("aria-label", culture === "es-AR" ? `Menú de ${label}` : `${label}'s menu`);
       expect(within(menu).getByText(label)).toBeVisible();
-      expect(menu.querySelector("[data-slot='avatar']")).toBeEmptyDOMElement();
+      expect(menu.querySelector("[data-slot='avatar']")).toHaveTextContent("—");
       expect(within(menu).getAllByRole("menuitemradio")).toHaveLength(account.access === "consumer" ? 1 : 2);
       expect(requests).toEqual(["/api/me"]);
       expect(await axe(document.body, { rules: { region: { enabled: false } } })).toHaveNoViolations();

@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
+import type { AccountIdentity } from "@/auth/accountIdentity";
 import { Avatar } from "@/shared/ui/Avatar";
 import { BrandMark } from "@/shared/ui/BrandMark";
 import type { NavigationConfig } from "../navigation/types";
@@ -8,7 +9,7 @@ import { menuLineClass, menuRowClass, panelEdgeButtonClass } from "./menuRow";
 
 export interface SidebarProps {
   navigation: NavigationConfig;
-  account: { name: string; email: string | null } | null;
+  account: AccountIdentity | null;
   context: { title: string; detail: string } | null;
   collapsed: boolean;
   managementOpen?: boolean;
@@ -66,10 +67,10 @@ export function Sidebar({ navigation, account, context, collapsed, managementOpe
         </button>
       </div> : null}
     </nav>
-    {/* «Criterio · Menús»: tu nombre en 13 y negrita y el correo en gris de 12, al lado de tu inicial. */}
+    {/* «Criterio · Menús»: identidad en 13 y negrita, contacto en gris de 12 y avatar de la cuenta global. */}
     {account ? <div className="flex items-center gap-2.5 border-t border-[var(--lado-borde)] px-3.5 py-2.5">
-      <Avatar initials={account.name.charAt(0).toUpperCase()} />
-      {showLabels ? <span className="flex min-w-0 flex-col leading-[1.3]"><span className="truncate text-[13px] font-bold text-[var(--t1)]">{account.name || t("format:emptyLabel")}</span>{account.email ? <span className="truncate text-[12px] text-[var(--t3)]">{account.email}</span> : null}</span> : null}
+      <Avatar initials={account.avatarInitials} muted={account.avatarMuted} />
+      {showLabels ? <span className="flex min-w-0 flex-col leading-[1.3]"><span className="truncate text-[13px] font-bold text-[var(--t1)]">{account.name || t("format:emptyLabel")}</span>{account.detail ? <span className="truncate text-[12px] text-[var(--t3)]">{account.detail}</span> : null}</span> : null}
     </div> : null}
   </aside>;
 }

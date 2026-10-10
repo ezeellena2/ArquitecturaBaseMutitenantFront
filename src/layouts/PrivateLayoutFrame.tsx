@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { Outlet, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
+import { accountIdentity } from "@/auth/accountIdentity";
 import { usePermissions } from "@/auth/usePermissions";
 import { useIsSigningOut } from "@/auth/signOutStatus";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
@@ -48,8 +49,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   const hideActiveSection = useCallback((hidden: boolean) => setActiveSectionHidden(hidden), []);
   const [homeMarked, setHomeMarked] = useState(false);
   const markHome = useCallback((marked: boolean) => setHomeMarked(marked), []);
-  const name = user?.displayName || user?.email || "";
-  const account = user ? { name, email: user.email ?? null } : null;
+  const account = user ? accountIdentity(user) : null;
   const organization = activeOrganization(user);
   const context = scope === "personal" ? { title: t("accessMenu.personal"), detail: t("accessMenu.personalDetail") }
     : scope === "business" && organization ? { title: organization.name, detail: t("layout.sidebar.organization") }
@@ -88,7 +88,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
         ...(bottomSections?.map(({ link, icon: Icon }) => ({
           key: link.path, label: t(link.labelKey), to: link.path, icon: <Icon className="size-6" />, active: (link === bottomSection?.link || (link === home && onHome)) && !activeSectionHidden,
         })) ?? (home ? [{ key: "home", label: t(home.labelKey), to: home.path, icon: <AppHomeIcon className="size-6" />, active: onHome && !activeSectionHidden }] : [])),
-        { key: "more", label: t("navigation.more"), to: navigation.moreTo, avatar: name.charAt(0).toUpperCase() || undefined, active: !(bottomSections ? bottomSection || onHome : onHome) && !activeSectionHidden },
+        { key: "more", label: t("navigation.more"), to: navigation.moreTo, avatar: account?.avatarInitials, avatarMuted: account?.avatarMuted, active: !(bottomSections ? bottomSection || onHome : onHome) && !activeSectionHidden },
       ]} /> : null}
     </div>
   </AppChromeProvider>;

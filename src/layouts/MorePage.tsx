@@ -22,7 +22,7 @@ export function MorePage() {
   const { t } = useTranslation();
   const phone = useMediaQuery("(max-width: 767px)");
   const { data: user } = useCurrentUser();
-  const { name, nameLabel, email, access, profiles, signOut, status } = useProfiles();
+  const { nameLabel, detail, avatarInitials, avatarMuted, access, profiles, signOut, status } = useProfiles();
   const composedNavigation = useNavigation(access ?? "consumer");
   const permissions = usePermissions();
   const navigation = visibleNavigation(composedNavigation, permissions);
@@ -40,10 +40,10 @@ export function MorePage() {
   return <div className="flex min-h-full flex-col bg-[var(--s2)]">
     <AppBar title={t("navigation.more")} subtitle={subtitle} />
     <div className="flex items-center gap-3.5 px-5 pt-2 pb-1">
-      <Avatar size="profile" initials={name.charAt(0).toUpperCase()} />
+      <Avatar size="profile" initials={avatarInitials} muted={avatarMuted} />
       <span className="flex min-w-0 flex-col leading-[normal]">
         <span className="truncate text-[18px] font-semibold text-[var(--t1)]">{nameLabel}</span>
-        {email ? <span className="truncate text-[13.5px] text-[var(--t3)]">{email}</span> : null}
+        {detail ? <span className="truncate text-[13.5px] text-[var(--t3)]">{detail}</span> : null}
       </span>
     </div>
 

@@ -3,6 +3,7 @@ import { useAuth } from "react-oidc-context";
 import { useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
+import { accountIdentity } from "@/auth/accountIdentity";
 import { useSignOut } from "@/auth/useSignOut";
 import { SessionStatusPage } from "@/auth/SessionStatusPage";
 import { useAccess } from "./useAccess";
@@ -45,7 +46,8 @@ export function useProfiles() {
   const switching = useSwitchAccess({ mainSite: storefront });
   const accountHref = storefront ? mainSiteUrl(accountPagePaths.account) : accountPagePaths.account;
   const [targetName, setTargetName] = useState("");
-  const name = account?.displayName || account?.email || "";
+  const identity = accountIdentity(account);
+  const { name } = identity;
   const nameLabel = name || t("format:emptyLabel");
   const personal = t("accessMenu.personal");
 
@@ -80,5 +82,5 @@ export function useProfiles() {
     } : undefined} />
       : null;
 
-  return { account, name, nameLabel, email: account?.email ?? null, access, profiles, signOut, status, accountHref };
+  return { account, ...identity, nameLabel, email: account?.email ?? null, access, profiles, signOut, status, accountHref };
 }
