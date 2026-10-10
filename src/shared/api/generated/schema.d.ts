@@ -18286,6 +18286,11 @@ export interface components {
             /** Format: uint32 */
             operatorVersion?: null | number;
             lastStateChange?: null | components["schemas"]["PlatformAccountStateChangeResponse"];
+            /**
+             * @description Phone principal global verificado, enmascarado con PersonalDataMask (solo los últimos cuatro dígitos). Null si el principal es Email/Google, está pendiente o la cuenta fue eliminada. El canal apagado o un país cerrado a nuevas altas no ocultan esta identidad.
+             * @example •••• 4521
+             */
+            maskedPrimaryPhone?: null | string;
         };
         PlatformAccountFilterCounts: {
             /** Format: int32 */
@@ -18347,6 +18352,11 @@ export interface components {
             lastSignInMethod?: null | components["schemas"]["LoginAuditMethod"];
             /** Format: date-time */
             invitationExpiresAtUtc?: null | string;
+            /**
+             * @description Phone principal global verificado, enmascarado con PersonalDataMask (solo los últimos cuatro dígitos). Null si el principal es Email/Google, está pendiente o la cuenta fue eliminada. El canal apagado o un país cerrado a nuevas altas no ocultan esta identidad.
+             * @example •••• 4521
+             */
+            maskedPrimaryPhone?: null | string;
         };
         /**
          * @description Estado que ve Plataforma. NeedsRecovery se deriva: cuenta Active sin ningún método que sirva para ingresar;

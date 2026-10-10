@@ -13,8 +13,8 @@ import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 
 export const accountStateTones = defineStatusTones("PlatformAccountState", { Active: "success", Suspended: "warning", NeedsRecovery: "danger", PendingDeletion: "warning", Deleted: "neutral", Invited: "pending", InvitationExpired: "warning" });
 export const accountPath = (id: string) => `/plataforma/cuentas/${encodeURIComponent(id)}`;
-export const accountName = (account: Pick<PlatformAccountResponse, "displayName" | "primaryEmail">) => account.displayName || account.primaryEmail || "";
-export const accountLabel = (account: Pick<PlatformAccountResponse, "displayName" | "primaryEmail">, t: TFunction) => accountName(account) || t("format:emptyLabel");
+export const accountName = (account: Pick<PlatformAccountResponse, "displayName" | "maskedPrimaryPhone" | "primaryEmail">) => account.displayName || account.maskedPrimaryPhone || account.primaryEmail || "";
+export const accountLabel = (account: Pick<PlatformAccountResponse, "displayName" | "maskedPrimaryPhone" | "primaryEmail">, t: TFunction) => accountName(account) || t("format:emptyLabel");
 export const isOperatorInvitation = (account: Pick<PlatformAccountResponse, "state">) => account.state === "Invited" || account.state === "InvitationExpired";
 function profiles(account: PlatformAccountResponse, t: TFunction): ReactNode {
   if (account.state === "Deleted") return <EmptyValue />;
@@ -28,13 +28,13 @@ export function accountPhoneRow(account: PlatformAccountResponse, t: TFunction, 
   return <ListRow key={account.id} to={accountPath(account.id)}
     leading={<Avatar size="row" muted={!named} initials={named || invitation ? accountName(account).trim().charAt(0).toUpperCase() : "—"} />}
     title={accountName(account) || <EmptyValue />} meta={invitation ? undefined : <DateText value={account.lastSignInAtUtc} kind="relative" />}
-    lines={[named ? account.primaryEmail || "" : invitation ? t("platformAccounts:profiles.operator") : "", status]} trailing={trailing} />;
+    lines={[named ? account.maskedPrimaryPhone || account.primaryEmail || "" : invitation ? t("platformAccounts:profiles.operator") : "", status]} trailing={trailing} />;
 }
 export function createAccountColumns(t: TFunction): Column<PlatformAccountResponse>[] {
   return [
     { id: "name", header: t("platformAccounts:columns.account"), type: "custom", mobile: "primary", sortable: true,
       cell: (account) => <Link className={`block truncate hover:underline ${account.displayName ? "font-medium text-[var(--t1)]" : "text-[var(--t3)]"}`} to={accountPath(account.id)}>{accountName(account) || <EmptyValue />}</Link>,
-      detail: (account) => account.displayName ? account.primaryEmail || null : null },
+      detail: (account) => account.displayName ? account.maskedPrimaryPhone || account.primaryEmail || null : null },
     { id: "profiles", header: t("platformAccounts:columns.profiles"), type: "custom", cell: (account) => profiles(account, t) },
     { id: "lastSignInAtUtc", header: t("platformAccounts:columns.lastSignIn"), type: "custom",
       cell: (account) => isOperatorInvitation(account) ? t("platformAccounts:columns.never") : <DateText value={account.lastSignInAtUtc} kind="relative" />,

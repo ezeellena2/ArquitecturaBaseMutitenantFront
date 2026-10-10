@@ -19,7 +19,7 @@ let data: Detail;
 let reads: number;
 const open = () => renderRouteWithProviders(`/plataforma/cuentas/${data.id}`, { as: "platform-operator" });
 async function menu(user: ReturnType<typeof userEvent.setup>, label: string) {
-  const trigger = await screen.findByRole("button", { name: `Acciones de ${data.displayName || data.primaryEmail || "Sin dato"}` });
+  const trigger = await screen.findByRole("button", { name: `Acciones de ${data.displayName || data.maskedPrimaryPhone || data.primaryEmail || "Sin dato"}` });
   trigger.focus(); await user.keyboard("{ArrowDown}"); await user.click(await screen.findByRole("menuitem", { name: label }));
 }
 async function reason(user: ReturnType<typeof userEvent.setup>, label: string) {
@@ -54,19 +54,19 @@ describe("Ficha de Cuenta de Plataforma", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
   it.each([
-    ["es-AR", false, "Sin dato", "Acciones de Sin dato", "Suspender", "¿Suspender la cuenta de Sin dato?", "Suspendimos la cuenta de Sin dato.", "Motivo", "Migas de pan"],
-    ["en-US", false, "No data", "Actions for No data", "Suspend", "Suspend the account for No data?", "We suspended the account for No data.", "Reason", "Breadcrumb"],
-    ["es-AR", true, "Sin dato", "Acciones de Sin dato", "Suspender", "¿Suspender la cuenta de Sin dato?", "Suspendimos la cuenta de Sin dato.", "Motivo", "Migas de pan"],
-    ["en-US", true, "No data", "Actions for No data", "Suspend", "Suspend the account for No data?", "We suspended the account for No data.", "Reason", "Breadcrumb"],
-  ] as const)("Phone principal sin identidad: %s móvil=%s conserva título, acciones y aviso", async (culture, phone, empty, actions, suspend, title, notice, reasonLabel, breadcrumbs) => {
+    ["es-AR", false, "•••• 4521", "Acciones de •••• 4521", "Suspender", "¿Suspender la cuenta de •••• 4521?", "Suspendimos la cuenta de •••• 4521.", "Motivo", "Migas de pan"],
+    ["en-US", false, "•••• 4521", "Actions for •••• 4521", "Suspend", "Suspend the account for •••• 4521?", "We suspended the account for •••• 4521.", "Reason", "Breadcrumb"],
+    ["es-AR", true, "•••• 4521", "Acciones de •••• 4521", "Suspender", "¿Suspender la cuenta de •••• 4521?", "Suspendimos la cuenta de •••• 4521.", "Motivo", "Migas de pan"],
+    ["en-US", true, "•••• 4521", "Actions for •••• 4521", "Suspend", "Suspend the account for •••• 4521?", "We suspended the account for •••• 4521.", "Reason", "Breadcrumb"],
+  ] as const)("Phone principal sin nombre: %s móvil=%s identifica título, acciones y aviso", async (culture, phone, empty, actions, suspend, title, notice, reasonLabel, breadcrumbs) => {
     if (phone) asPhone();
-    data = { ...data, displayName: null, primaryEmail: null, loginMethods: [
+    data = { ...data, displayName: null, primaryEmail: "respaldo@example.test", maskedPrimaryPhone: "•••• 4521", loginMethods: [
       { ...data.loginMethods[1], type: "Phone", maskedValue: "•••• 4521", isPrimary: true, canSignIn: true },
       { ...data.loginMethods[2], isPrimary: false },
     ] };
     server.use(http.post("/api/platform/accounts/:id/suspend", () => new HttpResponse(null, { status: 204 })));
     const user = userEvent.setup(); const { container, queryClient } = open();
-    await screen.findByRole("heading", { name: "Sin dato", level: 1 });
+    await screen.findByRole("heading", { name: "•••• 4521", level: 1 });
     if (culture === "en-US") await act(async () => { queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture }); });
     expect(await screen.findByRole("heading", { name: empty, level: 1 })).toBeVisible();
     if (!phone) expect(screen.getByRole("navigation", { name: breadcrumbs })).toHaveTextContent(empty);
@@ -77,7 +77,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
     await user.type(screen.getByRole("textbox", { name: reasonLabel }), "Revisión");
     await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: suspend }));
     expect(await screen.findByText(notice)).toBeVisible();
-    expect(screen.getByText("•••• 4521")).toBeVisible();
+    expect(within(screen.getByRole("tabpanel")).getByText("•••• 4521")).toBeVisible();
     expect(container).not.toHaveTextContent("+5491112344521");
     expect(await axe(container)).toHaveNoViolations();
   });

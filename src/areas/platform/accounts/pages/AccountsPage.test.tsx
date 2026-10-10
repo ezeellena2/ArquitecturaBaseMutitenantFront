@@ -36,6 +36,31 @@ beforeEach(async () => {
   server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list())), http.get("/api/platform/accounts/filter-counts", () => HttpResponse.json(counts)), http.get("/api/platform/accounts/lucia", () => HttpResponse.json(detail)));
 });
 describe("Cuentas de Plataforma", () => {
+  it.each([false, true])("Phone principal con correo de respaldo: móvil=%s identifica fila, acciones y aviso con la máscara", async (phone) => {
+    if (phone) asPhone();
+    const mask = "•••• 4521";
+    server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list([{ ...person, displayName: null, primaryEmail: "respaldo@example.test", maskedPrimaryPhone: mask }]))),
+      http.post("/api/platform/accounts/lucia/suspend", () => new HttpResponse(null, { status: 204 })));
+    const user = userEvent.setup(); const { container } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });
+    expect(await screen.findByRole("link", { name: phone ? /•••• 4521/u : mask })).toHaveAttribute("href", "/plataforma/cuentas/lucia");
+    expect(screen.queryByText("respaldo@example.test")).not.toBeInTheDocument();
+    if (phone) {
+      expect(container.querySelector("[data-slot='avatar']")).toHaveTextContent("—");
+      await user.click(screen.getByRole("button", { name: `Acciones de ${mask}` }));
+      await user.click(screen.getByRole("menuitem", { name: "Suspender" }));
+    } else await action(user, "Suspender", mask);
+    expect(screen.getByRole("dialog", { name: `¿Suspender la cuenta de ${mask}?` })).toBeVisible();
+    await reason(user, "Suspender");
+    expect(await screen.findByText(`Suspendimos la cuenta de ${mask}.`)).toBeVisible();
+  });
+  it.each([false, true])("Phone principal con nombre: móvil=%s conserva el nombre y muestra la máscara como contacto", async (phone) => {
+    if (phone) asPhone();
+    server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list([{ ...person, maskedPrimaryPhone: "•••• 4521" }]))));
+    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });
+    expect(await screen.findByRole("link", { name: phone ? /Lucía Fernández/u : "Lucía Fernández" })).toBeVisible();
+    expect(screen.getByText("•••• 4521")).toBeVisible();
+    expect(screen.queryByText(person.primaryEmail!)).not.toBeInTheDocument();
+  });
   it.each([false, true])("cuenta sin nombre ni correo: móvil=%s conserva vacío accesible, menú, confirmación y aviso", async (phone) => {
     if (phone) asPhone();
     server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list([{ ...person, displayName: null, primaryEmail: null }]))),
