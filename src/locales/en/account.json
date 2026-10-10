@@ -74,7 +74,7 @@
   "googleEmailNotVerified": "Your Google account does not have a verified email.",
   "phoneNumber": "Number",
   "verifyPhoneTitle": "Verify your WhatsApp",
-  "phoneSentHint": "We sent a code to {{value}}. It expires in 10 minutes.",
+  "phoneSentHint": "We sent a code to {{value}}.",
   "phoneAdded": "We added {{value}}. You can now sign in with your WhatsApp.",
   "removePhoneTitle": "Remove this WhatsApp?",
   "primaryPhoneTitle": "Make this WhatsApp primary?",

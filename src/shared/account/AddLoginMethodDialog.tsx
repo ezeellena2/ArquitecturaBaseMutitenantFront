@@ -30,7 +30,6 @@ import { useAppChrome } from "@/shared/ui/app/AppChrome";
 
 interface Props { open: boolean; onOpenChange: (open: boolean) => void; onComplete: () => void; method?: AccountLoginMethod }
 const codeLength = 6;
-const codeLifetimeSeconds = 10 * 60;
 
 function destinationSchema(t: TFunction) {
   return z.discriminatedUnion("type", [
@@ -70,7 +69,6 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
   const type = useWatch({ control: form.control, name: "type" });
   const retry = useRetryAfterCountdown();
   const resend = useCountdown(0);
-  const expiry = useCountdown(0);
   const revision = useRef(0);
   const alive = useRef(true);
   const started = useRef(false);
@@ -95,7 +93,6 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
     { meta: { handlesError: true }, sameOperation: (a, b) => a.revision === b.revision && a.methodId === b.methodId && a.code === b.code });
   const busy = request.isPending || verify.isPending;
   const phone = method?.type === "Phone" || (step?.destination?.type ?? type) === "phone";
-  const expired = step !== null && !expiry.isRunning;
   function current(operation: { revision: number }) { return alive.current && operation.revision === revision.current; }
   function edit() { revision.current++; form.clearErrors(); setFailure(null); }
   function close() { alive.current = false; revision.current++; onOpenChange(false); }
@@ -122,7 +119,7 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
         revision.current++;
         setStep({ ...operation, revision: revision.current, methodId: result.methodId });
         codeForm.reset({ code: "" });
-        resend.restart(result.resendAfterSeconds); expiry.restart(codeLifetimeSeconds);
+        resend.restart(result.resendAfterSeconds);
       },
       onError: (error) => { if (current(operation)) sendRejected(error); },
     });
@@ -135,7 +132,7 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
     }
   });
   function confirm(values: CodeForm) {
-    if (!step?.methodId || expired) return;
+    if (!step?.methodId) return;
     setFailure(null);
     const operation = { revision: revision.current, methodId: step.methodId, code: values.code };
     verify.mutate(operation, {
@@ -168,7 +165,7 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
         <DialogBody>
           {step ? <>
             <DialogDescription id="method-code-hint">{hint}</DialogDescription>
-            <OtpInput length={codeLength} value={code.field.value} label={t("common:code.label")} autoFocus disabled={busy || expired} error={expired ? undefined : codeForm.formState.errors.code?.message}
+            <OtpInput length={codeLength} value={code.field.value} label={t("common:code.label")} autoFocus disabled={busy} error={codeForm.formState.errors.code?.message}
               aria-describedby="method-code-hint" onChange={(value) => { revision.current++; code.field.onChange(value); codeForm.clearErrors("code"); setFailure(null); }} />
             {phone ? <p className="text-xs text-[var(--t3)]">{t("common:code.whatsappNotice")}</p> : null}
             {isPhone ? resendAction : null}
@@ -184,7 +181,7 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
               <EmailField name={field.name} ref={field.ref} value={field.value ?? ""} onChange={(value) => { edit(); field.onChange(value); }} onBlur={field.onBlur} disabled={busy} />
             </FormField>} />}
           </>}
-          <FormError message={failure ?? (expired ? t("account:codeExpired") : null)} />
+          <FormError message={failure} />
         </DialogBody>
         <DialogFooter>
           {!isPhone ? resendAction : null}

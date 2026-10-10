@@ -8,6 +8,7 @@ import { server } from "@/test/mocks/server";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { AddLoginMethodDialog } from "./AddLoginMethodDialog";
 import type { AddLoginMethodRequest, LoginMethodCodeResponse, VerifyLoginMethodRequest } from "@/shared/api/types";
+import type { ProblemDetails } from "@/shared/api/problemDetails";
 import { axe } from "vitest-axe";
 
 it("agrega WhatsApp con país/número nacional, un solo código y destino enmascarado", async () => {
@@ -32,7 +33,7 @@ it("agrega WhatsApp con país/número nacional, un solo código y destino enmasc
   const dialog = await screen.findByRole("dialog", { name: "Verificar tu WhatsApp" });
   expect(dialog).toHaveTextContent("•••• 4521");
   expect(dialog).not.toHaveTextContent("5555");
-  expect(dialog).toHaveTextContent("Vence en 10 minutos.");
+  expect(dialog).toHaveAccessibleDescription("Te mandamos un código a •••• 4521.");
   expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toBeDisabled();
   await user.type(screen.getByRole("textbox", { name: "Código 1" }), "123456");
   await user.click(screen.getByRole("button", { name: "Verificar" }));
@@ -220,27 +221,108 @@ it("Phone OTP conserva clave en 5xx, cambia con código nuevo y ubica el vencido
   expect(keys[2]).not.toBe(keys[1]);
 });
 
-it("vence a los diez minutos al volver a la pestaña, sin reenviar automáticamente", async () => {
+it.each(["Email", "Phone"] as const)("verifica %s después de once minutos locales si la API acepta, sin reenviar automáticamente", async (type) => {
   const user = userEvent.setup(); enableWhatsApp();
   const resend = vi.fn();
   const verify = vi.fn();
-  server.use(http.post("/api/me/login-methods", () => HttpResponse.json({ methodId: "phone", resendAfterSeconds: 60 })),
-    http.post("/api/me/login-methods/phone/code", () => { resend(); return HttpResponse.json({ methodId: "phone", resendAfterSeconds: 60 }); }),
-    http.post("/api/me/login-methods/phone/verify", () => { verify(); return new HttpResponse(null, { status: 204 }); }));
-  renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} />);
-  await chooseWhatsApp(user); await user.click(screen.getByRole("button", { name: "Enviar código" }));
+  const complete = vi.fn(); const close = vi.fn();
+  server.use(http.post<never, never, LoginMethodCodeResponse>("/api/me/login-methods/pending/code", () => { resend(); return HttpResponse.json({ methodId: "pending", resendAfterSeconds: 60 }); }),
+    http.post<never, VerifyLoginMethodRequest>("/api/me/login-methods/pending/verify", async ({ request }) => {
+      verify(await request.json(), request.headers.get("Idempotency-Key"));
+      return new HttpResponse(null, { status: 204 });
+    }));
+  renderWithProviders(<AddLoginMethodDialog open onOpenChange={close} onComplete={complete} method={{ id: "pending", type, value: type === "Phone" ? "+5491155554521" : "nuevo@example.test", isVerified: false, isPrimary: false, canRemove: true, canMakePrimary: false }} />);
   await screen.findByRole("textbox", { name: "Código 1" });
   await user.type(screen.getByRole("textbox", { name: "Código 1" }), "123456");
-  const now = Date.now(); const clock = vi.spyOn(Date, "now").mockReturnValue(now + 601_000);
+  const now = Date.now(); const clock = vi.spyOn(Date, "now").mockReturnValue(now + 660_000);
   try {
     act(() => window.dispatchEvent(new Event("focus")));
-    expect(screen.getByRole("alert")).toHaveTextContent("El código venció. Pedí uno nuevo.");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Código 1" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Verificar" })).toBeEnabled();
-    await user.click(screen.getByRole("button", { name: "Verificar" }));
-    expect(screen.getByRole("alert")).toHaveTextContent("El código venció. Pedí uno nuevo.");
     expect(screen.getByRole("button", { name: "Reenviar código" })).toBeEnabled();
-    expect(resend).not.toHaveBeenCalled();
-    expect(verify).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Verificar" }));
+    await waitFor(() => expect(complete).toHaveBeenCalledOnce());
+    expect(close).toHaveBeenCalledExactlyOnceWith(false);
+    expect(resend).toHaveBeenCalledOnce();
+    expect(verify).toHaveBeenCalledExactlyOnceWith({ code: "123456" }, expect.any(String));
+  } finally { clock.mockRestore(); }
+});
+
+it.each([0, 660_000])("muestra Expired de la API tras %i ms locales y conserva el reenvío manual con su espera", async (elapsed) => {
+  const user = userEvent.setup(); enableWhatsApp();
+  const verifies: VerifyLoginMethodRequest[] = []; const sends: string[] = []; const complete = vi.fn();
+  server.use(http.post<never, never, LoginMethodCodeResponse>("/api/me/login-methods/pending/code", ({ request }) => {
+    sends.push(request.headers.get("Idempotency-Key")!);
+    return HttpResponse.json({ methodId: "pending", resendAfterSeconds: 60 });
+  }), http.post<never, VerifyLoginMethodRequest>("/api/me/login-methods/pending/verify", async ({ request }) => {
+    verifies.push(await request.json());
+    return HttpResponse.json({ code: "Auth.LoginCode.Expired", detail: "El código venció." }, { status: 400 });
+  }));
+  renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={complete} method={{ id: "pending", type: "Phone", value: "+5491155554521", isVerified: false, isPrimary: false, canRemove: true, canMakePrimary: false }} />);
+  const first = await screen.findByRole("textbox", { name: "Código 1" }); await user.type(first, "123456");
+  const now = Date.now(); const clock = vi.spyOn(Date, "now").mockReturnValue(now + elapsed);
+  try {
+    act(() => window.dispatchEvent(new Event("focus")));
+    await user.click(screen.getByRole("button", { name: "Verificar" }));
+    const error = await screen.findByRole("alert");
+    expect(error).toHaveTextContent(/^El código venció\.$/);
+    expect(screen.getAllByRole("alert")).toEqual([error]);
+    expect(screen.getByRole("group", { name: "Código" }).nextElementSibling).not.toBe(error);
+    expect(verifies).toEqual([{ code: "123456" }]); expect(complete).not.toHaveBeenCalled();
+    expect(first).toBeEnabled(); expect(first).toHaveValue("1"); expect(first).not.toHaveAttribute("aria-invalid");
+    if (elapsed === 0) expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toBeDisabled();
+    clock.mockReturnValue(now + elapsed + 60_000);
+    act(() => window.dispatchEvent(new Event("focus")));
+    expect(sends).toHaveLength(1);
+    await user.click(screen.getByRole("button", { name: "Reenviar código" }));
+    await waitFor(() => expect(first).toHaveValue(""));
+    expect(sends).toHaveLength(2); expect(sends[0]).not.toBe(sends[1]);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toBeDisabled();
+  } finally { clock.mockRestore(); }
+});
+
+it("describe el código WhatsApp en inglés sin prometer duración ni revelar el destino", async () => {
+  await changeCulture("en-US");
+  server.use(http.post<never, never, LoginMethodCodeResponse>("/api/me/login-methods/pending/code", () => HttpResponse.json({ methodId: "pending", resendAfterSeconds: 60 })));
+  renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} method={{ id: "pending", type: "Phone", value: "+5491155554521", isVerified: false, isPrimary: false, canRemove: true, canMakePrimary: false }} />);
+  const code = await screen.findByRole("group", { name: "Code" });
+  expect(code).toHaveAccessibleDescription("We sent a code to •••• 4521.");
+  expect(screen.getByRole("dialog")).toHaveAccessibleDescription("We sent a code to •••• 4521.");
+  expect(screen.getByRole("dialog")).not.toHaveTextContent("5555");
+});
+
+it("respeta Retry-After tras once minutos sin reenviar solo, conserva OTP y bloquea mientras envía", async () => {
+  const user = userEvent.setup(); const keys: string[] = []; let release!: () => void;
+  server.use(http.post<never, never, LoginMethodCodeResponse | ProblemDetails>("/api/me/login-methods/pending/code", async ({ request }) => {
+    keys.push(request.headers.get("Idempotency-Key")!);
+    if (keys.length === 2) return HttpResponse.json({ code: "Auth.LoginCode.ResendTooSoon", detail: "Esperá antes de pedir otro código." }, { status: 429, headers: { "Retry-After": "90" } });
+    if (keys.length === 3) await new Promise<void>((done) => { release = done; });
+    return HttpResponse.json({ methodId: "pending", resendAfterSeconds: 60 });
+  }));
+  renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} method={{ id: "pending", type: "Phone", value: "+5491155554521", isVerified: false, isPrimary: false, canRemove: true, canMakePrimary: false }} />);
+  const first = await screen.findByRole("textbox", { name: "Código 1" }); await user.type(first, "123456");
+  const now = Date.now(); const clock = vi.spyOn(Date, "now").mockReturnValue(now + 660_000);
+  try {
+    act(() => window.dispatchEvent(new Event("focus")));
+    await user.click(screen.getByRole("button", { name: "Reenviar código" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Esperá antes de pedir otro código.");
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: "Reintentá en 1:30" })).toHaveLength(2);
+    for (const button of screen.getAllByRole("button", { name: "Reintentá en 1:30" })) expect(button).toBeDisabled();
+    expect(first).toBeEnabled(); expect(first).toHaveValue("1");
+    clock.mockReturnValue(now + 750_000); act(() => window.dispatchEvent(new Event("focus")));
+    expect(keys).toHaveLength(2);
+    await user.click(screen.getByRole("button", { name: "Reenviar código" }));
+    await waitFor(() => expect(keys).toHaveLength(3));
+    expect(first).toBeDisabled(); expect(first).toHaveValue("1");
+    expect(screen.getByRole("button", { name: "Verificando…" })).toBeDisabled();
+    expect(keys[2]).not.toBe(keys[1]);
+    await act(async () => { release(); });
+    await waitFor(() => expect(first).toBeEnabled());
+    expect(first).toHaveValue(""); expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reenviar en 60 s" })).toBeDisabled();
   } finally { clock.mockRestore(); }
 });
 
@@ -294,7 +376,7 @@ it("Phone OTP inválido conserva la máscara y el error sólo bajo el código", 
   await user.click(screen.getByRole("button", { name: "Verificar" }));
   expect(await screen.findByRole("alert")).toHaveTextContent("El código no es válido.");
   expect(first).toHaveAttribute("aria-invalid", "true");
-  expect(screen.getByRole("group", { name: "Código" })).toHaveAccessibleDescription("Te mandamos un código a •••• 4521. Vence en 10 minutos. El código no es válido.");
+  expect(screen.getByRole("group", { name: "Código" })).toHaveAccessibleDescription("Te mandamos un código a •••• 4521. El código no es válido.");
 });
 
 it("un error de campo mixto conserva phone específico antes del fallback por código", async () => {
@@ -311,7 +393,7 @@ it.each([
   { kind: "5xx", message: "Algo salió mal. Probá de nuevo en un rato.", failure: () => HttpResponse.json({ code: "General.Unexpected" }, { status: 500 }), sameKey: true },
   { kind: "red", message: "No pudimos conectarnos. Revisá tu conexión.", failure: () => HttpResponse.error(), sameKey: true },
   { kind: "negocio", message: "El canal no está disponible.", failure: () => HttpResponse.json({ code: "Auth.LoginMethod.ChannelUnavailable", detail: "El canal no está disponible." }, { status: 400 }), sameKey: false },
-])("muestra el fallo de reenvío %s después de vencer sin perder OTP ni el estado vencido", async ({ message, failure, sameKey }) => {
+])("muestra el fallo de reenvío %s después de once minutos locales sin perder OTP ni operación", async ({ message, failure, sameKey }) => {
   const user = userEvent.setup(); enableWhatsApp(); const keys: string[] = [];
   server.use(http.post("/api/me/login-methods", () => HttpResponse.json({ methodId: "phone", resendAfterSeconds: 60 })),
     http.post("/api/me/login-methods/phone/code", ({ request }) => {
@@ -321,16 +403,17 @@ it.each([
   renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} />);
   await chooseWhatsApp(user); await user.click(screen.getByRole("button", { name: "Enviar código" }));
   const first = await screen.findByRole("textbox", { name: "Código 1" }); await user.type(first, "123456");
-  const clock = vi.spyOn(Date, "now").mockReturnValue(Date.now() + 601_000);
+  const clock = vi.spyOn(Date, "now").mockReturnValue(Date.now() + 660_000);
   try {
     act(() => window.dispatchEvent(new Event("focus")));
-    expect(screen.getByRole("alert")).toHaveTextContent("El código venció. Pedí uno nuevo.");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     for (let index = 0; index < 2; index++) {
       await user.click(screen.getByRole("button", { name: "Reenviar código" }));
       await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent(message));
       expect(screen.getAllByRole("alert")).toHaveLength(1);
       expect(screen.getByRole("button", { name: "Verificar" })).toBeEnabled();
-      expect(first).toBeDisabled(); expect(first).toHaveValue("1");
+      expect(first).toBeEnabled(); expect(first).toHaveValue("1");
+      expect(screen.getByRole("dialog")).toHaveTextContent("•••• 4521");
     }
     expect(keys[0] === keys[1]).toBe(sameKey);
     await user.click(screen.getByRole("button", { name: "Reenviar código" }));
