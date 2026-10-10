@@ -56,6 +56,7 @@
     "remove": "Quitar {{name}}",
     "tooMany": "Podés adjuntar hasta 5 archivos.",
     "tooLarge": "El archivo pesa más de 10 MB.",
+    "tooLargeNamed": "{{name}} pesa más de 10 MB.",
     "invalidType": "Adjuntá imágenes PNG, JPEG o WebP, o archivos PDF."
   },
   "message": {

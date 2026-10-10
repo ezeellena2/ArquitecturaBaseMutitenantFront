@@ -5,7 +5,7 @@ import type {
   AssistantQuickResponse,
   AssistantAttachmentSummaryResponse, AssistantConversationSummaryResponse, AssistantLinkResponse,
 } from "@/shared/api/types";
-import { galleryImage, galleryPdf, type GalleryUploadFile } from "./galleryUploadFiles.ts";
+import { galleryImage, galleryPdf, galleryPdfTooLarge, type GalleryUploadFile } from "./galleryUploadFiles.ts";
 import { currentUsers } from "./mocks/currentUsers.ts";
 import type { CurrentUserFixture } from "./mocks/currentUsers.ts";
 import { referenceDataFixture } from "./mocks/handlers.ts";
@@ -147,9 +147,10 @@ function createChatScenario(board: string, state: string): GalleryApp | undefine
     case "Con adjuntos": case "Adjunto de más de 10 MB":
       history = { items: [galleryConversation.conversation], hasMore: false };
       app.actions = [{ type: "upload", label: "Adjuntar", exact: true, files: [galleryImage] },
-        { type: "upload", label: "Adjuntar", exact: true, files: [{ ...galleryPdf, ...(state === "Adjunto de más de 10 MB" ? { byteLength: 10 * 1024 * 1024 + 1 } : {}) }] }];
-      app.readySelector = state === "Con adjuntos" ? 'button[aria-label="Quitar planilla-ventas.pdf"]' : '[role="alert"]';
-      if (state !== "Con adjuntos") app.readyText = "El archivo pesa más de 10 MB.";
+        { type: "upload", label: "Adjuntar", exact: true, files: [state === "Adjunto de más de 10 MB" ? galleryPdfTooLarge : galleryPdf] }];
+      app.readySelector = state === "Con adjuntos" ? 'button[aria-label="Quitar planilla-ventas.pdf"]'
+        : 'form:has(input[type="file"][aria-invalid="true"]):has(button[aria-label="Quitar captura-usuarios.png"]) li[aria-describedby]:has(button[aria-label="Quitar planilla-ventas.pdf"])';
+      if (state !== "Con adjuntos") app.readyTexts = ["captura-usuarios.png", "planilla-ventas.pdf", "240 KB", "14,8 MB", "planilla-ventas.pdf pesa más de 10 MB."];
       break;
     case "Historial plegado": selectConversation(); app.actions.push(click("Ocultar las conversaciones")); app.readySelector = 'button[aria-label="Mostrar las conversaciones"][aria-expanded="false"]'; break;
     case "Historial":
@@ -223,8 +224,6 @@ function createChatScenario(board: string, state: string): GalleryApp | undefine
 export function chatScenario(board: string, state: string): GalleryApp | undefined {
   // El lienzo exige Ver uso. RegisteredAssistant todavía no entrega onUsage (T13).
   if (state === "Tope del mes") return undefined;
-  // La fuente conserva el PDF inválido con chip rojo/peso/nombre. La UI actual lo rechaza.
-  if (state === "Adjunto de más de 10 MB") return undefined;
   return createChatScenario(board, state);
 }
 
@@ -233,7 +232,7 @@ export function galleryMonthlyLimitProbe(board: string): GalleryApp {
   return createChatScenario(board, "Tope del mes")!;
 }
 
-// Valida el rechazo cliente existente; no representa el chip rojo exigido por la fuente.
+// Probe de validación cliente; la escena ahora conserva el adjunto inválido de la fuente.
 export function galleryOversizedAttachmentProbe(board: string): GalleryApp {
   return createChatScenario(board, "Adjunto de más de 10 MB")!;
 }
@@ -289,7 +288,7 @@ export function galleryOpenStreamProbe(board: string, state: "Consultando" | "Es
       title, isSaved: saved,
     })), hasMore: false,
   });
-  const attachment: AssistantAttachmentSummaryResponse = { id: "gallery-pdf", fileName: galleryPdf.name, mediaType: galleryPdf.mimeType, byteLength: 1258291, version: 1 };
+  const attachment: AssistantAttachmentSummaryResponse = { id: "gallery-pdf", fileName: galleryPdf.name, mediaType: galleryPdf.mimeType, byteLength: galleryPdf.byteLength, version: 1 };
   const admittedVersion = scope === "business" ? 4 : 3;
   const pending: AssistantConversationResponse = { ...initial, conversation: { ...initial.conversation, version: admittedVersion }, activeTurnId: "gallery-turn",
     messages: { items: [...initial.messages.items,

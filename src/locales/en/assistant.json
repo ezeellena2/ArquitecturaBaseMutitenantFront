@@ -56,6 +56,7 @@
     "remove": "Remove {{name}}",
     "tooMany": "You can attach up to 5 files.",
     "tooLarge": "The file is larger than 10 MB.",
+    "tooLargeNamed": "{{name}} is larger than 10 MB.",
     "invalidType": "Attach PNG, JPEG or WebP images, or PDF files."
   },
   "message": {

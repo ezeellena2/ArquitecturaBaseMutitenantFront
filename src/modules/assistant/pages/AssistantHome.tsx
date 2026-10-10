@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { flushSync } from "react-dom";
 import { Trans, useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
@@ -78,6 +78,9 @@ function AssistantSession(props: AssistantHomeProps) {
   useLayoutEffect(() => { dialogRef.current = dialog; }, [dialog]);
   const [files, setFiles] = useState<PendingAssistantFile[]>([]);
   const [fileError, setFileError] = useState<string | null>(null);
+  const fileErrorId = useId();
+  const invalidFiles = files.filter((item) => item.invalid);
+  const hasAttachmentError = invalidFiles.length > 0 || !!fileError;
   const runtime = useAssistantRuntime({ scope, conversationId: selectedId, enabled: true });
   const latest = useRef(runtime);
   useLayoutEffect(() => { latest.current = runtime; });
@@ -147,6 +150,9 @@ function AssistantSession(props: AssistantHomeProps) {
     }, selectedId);
   }
   async function send(text: string): Promise<boolean> {
+    const issue = validateAssistantFiles(files.map((item) => item.file), 0);
+    if (issue) { setFileError(invalidFiles.length ? null : t(`attachments.${issue}`)); return false; }
+    setFileError(null);
     let id = selectedId;
     let created = false;
     let delivered = false;
@@ -284,8 +290,16 @@ function AssistantSession(props: AssistantHomeProps) {
   const canViewUsage = scope.access === "business" ? props.hasPermission("assistant.configure") : scope.access === "platform" && props.hasPermission("platform.assistant.read");
   const history = <ConversationList scope={scope} lifetime={operations.lifetime} enabled={operations.active} selectedId={selectedId} retentionDays={state.retentionDays} onNew={() => select(null)} onSelect={select} actions={actions}
     onActions={phone ? (conversation) => { setHistoryOpen(false); setPhoneActions({ title: conversation.title ?? null, items: actions(conversation) }); } : undefined} />;
-  const composer = <AttachmentComposer key={generation} files={files} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} disabled={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} pending={busy} canStop={runtime.canStop}
-    onFiles={(chosen) => { const issue = validateAssistantFiles(chosen, files.length); setFileError(issue ? t(`attachments.${issue}`) : null); if (!issue) setFiles((previous) => [...previous, ...chosen.map((file) => ({ file, id: crypto.randomUUID() }))]); }}
+  const composer = <AttachmentComposer key={generation} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} disabled={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} pending={busy} canStop={runtime.canStop}
+    onFiles={(chosen) => {
+      const issue = validateAssistantFiles(chosen, files.length);
+      // El exceso permitido queda local para corregirlo; no admite un MIME
+      // rechazado que la prioridad tooLarge de la validación de lote ocultó.
+      const retainOversized = issue === "tooLarge" && chosen.every((file) => (assistantAttachmentTypes as readonly string[]).includes(file.type));
+      setFileError(issue && !retainOversized ? t(`attachments.${issue}`) : null);
+      if (!issue || retainOversized) setFiles((previous) => [...previous, ...chosen.map((file): PendingAssistantFile => ({ file, id: crypto.randomUUID(),
+        ...(validateAssistantFiles([file], 0) === "tooLarge" ? { invalid: "tooLarge" } : {}) }))]);
+    }}
     onRemove={removeFile} onSend={send} onStop={() => { void runtime.stop().catch(() => undefined); }} />;
   const queries = <QuickQueries scope={scope} queries={state.quickQueries} disabled={busy || notice} onSelect={quick} />;
   return <div className="relative flex min-h-0 flex-1 overflow-hidden text-[var(--t1)]">
@@ -304,7 +318,8 @@ function AssistantSession(props: AssistantHomeProps) {
         {selectedId || phone ? <div className="mx-auto flex w-full max-w-[824px] flex-col gap-3 px-5 pb-4 md:px-8">{limited ? <LimitReached monthly={code === "Assistant.Limit.MonthlyReached"} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer}</div> : null}
       </>}
       {state.remainingMessages != null && state.remainingMessages > 0 && state.remainingMessages <= 10 ? <p className="pb-3 text-center text-sm text-[var(--t2)]"><Trans ns="assistant" i18nKey="limit.remaining" components={{ remaining: <NumberText value={state.remainingMessages} /> }} /></p> : null}
-      {fileError ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{fileError}</p> : null}
+      {hasAttachmentError ? <p id={fileErrorId} role="alert" className="px-5 pb-3 text-[var(--peligro)]">{fileError ? <span className="block">{fileError}</span> : null}{invalidFiles.map(({ id, file }) =>
+        <span key={id} id={`${fileErrorId}-${id}`} className="block">{t("attachments.tooLargeNamed", { name: file.name })}</span>)}</p> : null}
       {actionError && !dialog && !notice ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{actionError}</p> : null}
       {runtimeError ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{runtimeError}</p> : null}
       {runtime.error instanceof ApiError && runtime.error.isNetworkError ? <Button variant="link" onClick={() => { void runtime.retryNetwork().catch(() => undefined); }}>{t("retry")}</Button> : null}

@@ -20,10 +20,14 @@ test("completa bloquea y selección parcial nunca declara galería completa", as
   const manifest = await buildManifest();
   assert.equal(manifest.cases.filter((entry) => entry.group === "configuracion").length, 22);
   assert.ok(manifest.pending.some((entry) => entry.group === "uso"));
-  assert.equal(manifest.cases.length, 101);
-  assert.equal(manifest.pending.length, 28);
-  assert.equal(manifest.cases.filter((entry) => entry.group === "chat").length, 79);
-  assert.deepEqual([...new Set(manifest.pending.filter((entry) => entry.group === "chat").map((entry) => entry.state))].sort(), ["Adjunto de más de 10 MB", "Consultando", "Escribiendo", "Tope del mes"]);
+  assert.equal(manifest.cases.length, 104);
+  assert.equal(manifest.pending.length, 25);
+  assert.equal(manifest.cases.filter((entry) => entry.group === "chat").length, 82);
+  assert.deepEqual([...new Set(manifest.pending.filter((entry) => entry.group === "chat").map((entry) => entry.state))].sort(), ["Consultando", "Escribiendo", "Tope del mes"]);
+  const oversized = manifest.cases.filter((entry) => entry.state === "Adjunto de más de 10 MB");
+  assert.equal(oversized.length, 3);
+  assert.ok(oversized.every((entry) => entry.viewport.width === 1440 && entry.app.readyTexts.includes("planilla-ventas.pdf pesa más de 10 MB.")
+    && entry.app.actions.flatMap((action) => action.type === "upload" ? action.files : []).map((file) => file.byteLength).join(",") === "240000,14800000"));
   assert.throws(() => selectCases(manifest), /pendientes/);
   const selection = selectCases(manifest, { groups: ["configuracion"] });
   assert.equal(selection.cases.length, 22);

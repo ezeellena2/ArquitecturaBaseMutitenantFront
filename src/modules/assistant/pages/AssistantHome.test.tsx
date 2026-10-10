@@ -187,6 +187,106 @@ describe("interfaz del asistente", () => {
     expect(screen.queryByAltText("foto.png")).not.toBeInTheDocument();
   });
 
+  it("retiene el PDF excesivo, impide toda escritura y permite enviar el PNG al quitarlo", async () => {
+    const nativeForm = await new Request("http://localhost/form", { method: "POST", headers: { "content-type": "multipart/form-data; boundary=test" }, body: "--test--\r\n" }).formData();
+    vi.stubGlobal("FormData", nativeForm.constructor);
+    vi.stubGlobal("File", FetchFile);
+    const app = setup();
+    const uploads: { name: string; size: number; version: string; key: string | null }[] = [];
+    let version = 1;
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.json({ ...detail(), conversation: { ...detail().conversation, version } })),
+      http.post("/api/organization/assistant/conversations/chat/attachments", async ({ request }) => {
+        const body = await request.formData();
+        const file = body.get("file") as File;
+        uploads.push({ name: file.name, size: file.size, version: String(body.get("conversationVersion")), key: request.headers.get("Idempotency-Key") });
+        version = 4;
+        const attachment: AssistantAttachmentSummaryResponse = { id: "png", fileName: file.name, mediaType: file.type, byteLength: file.size, version: 999 };
+        return HttpResponse.json(attachment);
+      }));
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    const input = screen.getByLabelText("Adjuntar", { selector: "input" });
+    const png = new File(["png"], "captura.png", { type: "image/png" });
+    const pdf = new File([new Uint8Array(10 * 1024 * 1024 + 1)], "planilla.pdf", { type: "application/pdf" });
+    await app.user.upload(input, [png, pdf]);
+    const removePdf = screen.getByRole("button", { name: "Quitar planilla.pdf" });
+    expect(screen.getByRole("button", { name: "Quitar captura.png" })).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("planilla.pdf pesa más de 10 MB.");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(removePdf.closest("li")).toHaveAccessibleDescription("planilla.pdf pesa más de 10 MB.");
+    expect(screen.getByRole("button", { name: "Enviar" })).toBeEnabled();
+    expect(await axe(app.container)).toHaveNoViolations();
+    await app.user.type(screen.getByRole("textbox", { name: "Tu consulta" }), "Leé la captura");
+    await app.user.click(screen.getByRole("button", { name: "Enviar" }));
+    expect(app.created()).toBe(0);
+    expect(uploads).toEqual([]);
+    expect(app.requests).toEqual([]);
+    await app.user.upload(input, new File(["pdf"], "otra.pdf", { type: "application/pdf" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("planilla.pdf pesa más de 10 MB.");
+    await app.user.click(screen.getByRole("button", { name: "Quitar otra.pdf" }));
+    await app.user.click(removePdf);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(input).not.toHaveAttribute("aria-invalid", "true");
+    await app.user.click(screen.getByRole("button", { name: "Enviar" }));
+    await waitFor(() => expect(app.requests).toHaveLength(1));
+    expect(app.created()).toBe(1);
+    expect(uploads).toEqual([{ name: "captura.png", size: 3, version: "1", key: expect.any(String) }]);
+    expect(app.requests[0]).toEqual({ text: "Leé la captura", attachmentIds: ["png"], conversationVersion: 4 });
+  });
+
+  it("acepta exactamente 10 MiB, conserva el máximo de cinco y limpia inválidos al cambiar de conversación", async () => {
+    const app = setup();
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    const input = screen.getByLabelText("Adjuntar", { selector: "input" });
+    await app.user.upload(input, new File([new Uint8Array(10 * 1024 * 1024)], "limite.pdf", { type: "application/pdf" }));
+    expect(screen.getByRole("button", { name: "Quitar limite.pdf" })).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    await app.user.upload(input, Array.from({ length: 4 }, (_, i) => new File(["pdf"], `${i}.pdf`, { type: "application/pdf" })));
+    await app.user.upload(input, new File([new Uint8Array(10 * 1024 * 1024 + 1)], "sexto.pdf", { type: "application/pdf" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("Podés adjuntar hasta 5 archivos.");
+    expect(screen.queryByRole("button", { name: "Quitar sexto.pdf" })).not.toBeInTheDocument();
+    await app.user.click(screen.getByRole("button", { name: "Nueva conversación" }));
+    await app.user.upload(screen.getByLabelText("Adjuntar", { selector: "input" }), [new File(["png"], "privada.png", { type: "image/png" }), new File([new Uint8Array(10 * 1024 * 1024 + 1)], "privado.pdf", { type: "application/pdf" })]);
+    expect(screen.getByRole("alert")).toHaveTextContent("privado.pdf");
+    await app.user.upload(screen.getByLabelText("Adjuntar", { selector: "input" }), new File([new Uint8Array(10 * 1024 * 1024 + 1)], "otro-privado.pdf", { type: "application/pdf" }));
+    expect(screen.getByRole("button", { name: "Quitar otro-privado.pdf" }).closest("li")).toHaveAccessibleDescription("otro-privado.pdf pesa más de 10 MB.");
+    await app.user.click(screen.getByRole("button", { name: "Quitar privado.pdf" }));
+    expect(screen.getByRole("alert")).toHaveTextContent(/^otro-privado\.pdf pesa más de 10 MB\.$/u);
+    await app.user.click(screen.getByRole("button", { name: "Nueva conversación" }));
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Quitar privado.pdf" })).not.toBeInTheDocument();
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:private");
+    expect(app.created()).toBe(0);
+  });
+
+  it("no retiene MIME rechazados aunque el exceso oculte invalidType en la validación del lote", async () => {
+    const app = setup();
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    await userEvent.setup({ applyAccept: false }).upload(screen.getByLabelText("Adjuntar", { selector: "input" }), [
+      new File(["png"], "permitido.png", { type: "image/png" }),
+      new File([new Uint8Array(10 * 1024 * 1024 + 1)], "rechazado.exe", { type: "application/octet-stream" }),
+    ]);
+    expect(screen.getByRole("alert")).toHaveTextContent("El archivo pesa más de 10 MB.");
+    expect(screen.queryByRole("button", { name: "Quitar rechazado.exe" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Quitar permitido.png" })).not.toBeInTheDocument();
+    expect(app.created()).toBe(0);
+    expect(app.requests).toEqual([]);
+  });
+
+  it("conserva el aviso de máximo cinco además del error nombrado del inválido retenido", async () => {
+    const app = setup();
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    const input = screen.getByLabelText("Adjuntar", { selector: "input" });
+    await app.user.upload(input, [new File([new Uint8Array(10 * 1024 * 1024 + 1)], "excesivo.pdf", { type: "application/pdf" }),
+      ...Array.from({ length: 4 }, (_, i) => new File(["pdf"], `${i}.pdf`, { type: "application/pdf" }))]);
+    await app.user.upload(input, new File(["pdf"], "sexto.pdf", { type: "application/pdf" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("Podés adjuntar hasta 5 archivos.");
+    expect(screen.getByRole("alert")).toHaveTextContent("excesivo.pdf pesa más de 10 MB.");
+    expect(screen.queryByRole("button", { name: "Quitar sexto.pdf" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Quitar excesivo.pdf" }).closest("li")).toHaveAccessibleDescription("excesivo.pdf pesa más de 10 MB.");
+    expect(app.created()).toBe(0);
+    expect(app.requests).toEqual([]);
+  });
+
   it("renombrar conserva la versión original aunque el historial cambie mientras se edita", async () => {
     const app = setup();
     app.changeDetail(detail());

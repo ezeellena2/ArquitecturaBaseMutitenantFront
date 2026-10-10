@@ -12,9 +12,9 @@ import { decodeAssistantStream } from "@/modules/assistant/api/stream";
 import { fixtureAuth } from "./mocks/authContext";
 import { server } from "./mocks/server";
 import { asPhone } from "./utils/phone";
-import { galleryUploadBytes } from "./galleryUploadFiles";
+import { galleryImage, galleryPdf, galleryPdfTooLarge, galleryUploadBytes } from "./galleryUploadFiles";
 import type { AssistantAttachmentSummaryResponse, AssistantConversationResponse } from "@/shared/api/types";
-import { chatScenario, configurationScenario, galleryConversation, galleryMe, galleryMonthlyLimitProbe, galleryOversizedAttachmentProbe, galleryOpenStreamProbe, galleryStream, galleryStreamEvents, type GalleryApp } from "./etapa8bVisualFixtures";
+import { chatScenario, configurationScenario, galleryConversation, galleryMe, galleryMonthlyLimitProbe, galleryOpenStreamProbe, galleryStream, galleryStreamEvents, type GalleryApp } from "./etapa8bVisualFixtures";
 import type { AssistantTurnState } from "@/modules/assistant/runtime/assistantTurnState";
 
 beforeAll(async () => { await import("@/modules/assistant/settings/OrganizationAssistantSettingsPage"); await import("@/modules/assistant/settings/PlatformAssistantSettingsPage"); await import("@/modules/assistant/pages/RegisteredAssistant"); });
@@ -275,13 +275,32 @@ it.each(["Asistente-Org", "M-Asistente-Personal"])("%s conserva adjuntos en el c
   } finally { restore(); }
 });
 
-it("un PDF mayor a 10 MiB muestra validación cliente sin subirlo", async () => {
-  expect(chatScenario("Asistente-Org", "Adjunto de más de 10 MB")).toBeUndefined();
-  const app = galleryOversizedAttachmentProbe("Asistente-Org"); const mounted = mount(app);
+it("la escena de PDF excesivo conserva ambos adjuntos y la alerta nombrada sin subirlos", async () => {
+  const app = chatScenario("Asistente-Org", "Adjunto de más de 10 MB")!; const mounted = mount(app);
   await actions(app, mounted.user);
-  expect(screen.getByRole("alert")).toHaveTextContent("El archivo pesa más de 10 MB.");
-  expect(screen.queryByRole("button", { name: "Quitar planilla-ventas.pdf" })).not.toBeInTheDocument();
+  expect(screen.getByRole("alert")).toHaveTextContent("planilla-ventas.pdf pesa más de 10 MB.");
+  expect(screen.getByRole("button", { name: "Quitar captura-usuarios.png" })).toBeVisible();
+  const pdfChip = screen.getByRole("button", { name: "Quitar planilla-ventas.pdf" }).closest("li")!;
+  expect(pdfChip).toHaveAccessibleDescription("planilla-ventas.pdf pesa más de 10 MB.");
+  expect(within(pdfChip).getByText("14,8 MB")).toBeVisible();
+  expect(screen.getByText("240 KB")).toBeVisible();
+  expect(screen.getByRole("button", { name: "Enviar" })).toBeEnabled();
   expect(mounted.calls.some((call) => call.startsWith("POST"))).toBe(false);
+});
+
+it("los archivos ficticios conservan bytes reales y formatos decimales de la fuente", () => {
+  expect(galleryImage.byteLength).toBe(240_000);
+  expect(galleryPdf.byteLength).toBe(1_200_000);
+  expect(galleryPdfTooLarge.byteLength).toBe(14_800_000);
+  for (const file of [galleryImage, galleryPdf, galleryPdfTooLarge]) {
+    const bytes = galleryUploadBytes(file);
+    expect(new File([bytes], file.name, { type: file.mimeType }).size).toBe(file.byteLength);
+    if (file.mimeType === "application/pdf") {
+      const pdf = new TextDecoder().decode(bytes);
+      expect(pdf).toMatch(/^%PDF-1\.4/u);
+      expect(pdf).toMatch(/%%EOF\n +$/u);
+    } else expect([...bytes.slice(0, 8)]).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
+  }
 });
 
 it.each(["Detenida", "Falló la respuesta"])("%s viene del DTO durable y deja el SDK terminal", async (state) => {
@@ -366,7 +385,7 @@ it("Enviar sube el PDF por multipart, relee la versión y usa el id de adjunto",
   const path = "/api/organization/assistant/conversations/gallery-chat";
   const empty: AssistantConversationResponse = { ...galleryConversation, messages: { items: [], hasMore: false } };
   const uploaded: AssistantConversationResponse = { ...empty, conversation: { ...empty.conversation, version: 3 } };
-  const attachment: AssistantAttachmentSummaryResponse = { id: "gallery-pdf", fileName: "planilla-ventas.pdf", mediaType: "application/pdf", byteLength: 1258291, version: 1 };
+  const attachment: AssistantAttachmentSummaryResponse = { id: "gallery-pdf", fileName: galleryPdf.name, mediaType: galleryPdf.mimeType, byteLength: galleryPdf.byteLength, version: 1 };
   const final: AssistantConversationResponse = { ...galleryConversation, conversation: { ...galleryConversation.conversation, version: 4 }, messages: { items: [
     { ...galleryConversation.messages.items[0], attachments: [attachment] }, galleryConversation.messages.items[1],
   ], hasMore: false } };
@@ -394,6 +413,6 @@ it("Enviar sube el PDF por multipart, relee la versión y usa el id de adjunto",
   await mounted.user.click(screen.getByRole("button", { name: "Enviar" }));
   expect(await screen.findByText("de prueba", { selector: "strong" })).toBeVisible();
   expect(uploadedVersion).toBe("2");
-  expect(uploadedFile).toMatchObject({ name: "planilla-ventas.pdf", type: "application/pdf", size: 1258291 });
+  expect(uploadedFile).toMatchObject({ name: galleryPdf.name, type: galleryPdf.mimeType, size: galleryPdf.byteLength });
   expect(sent).toEqual({ text: "Cuántos usuarios hay", attachmentIds: ["gallery-pdf"], conversationVersion: 3 });
 });
