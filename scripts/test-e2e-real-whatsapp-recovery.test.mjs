@@ -1,11 +1,37 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { chromium } from "playwright";
-import { newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
+import { decideAfterRecoveryNotice, newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 
 const request = { id: "approve-target", previousMethodType: "Phone", newMethodType: "Phone", previousMethod: "•••• 7880", newMethod: "•••• 7882", status: "Pending" };
 const other = { ...request, id: "reject-other", newMethod: "•••• 7884" };
 const previous = "+5491134567880", next = "+5491134567882";
+
+test("el aviso real y su repetición preceden a la decisión con la misma versión leída", async () => {
+  const calls = []; let invoked = 0;
+  const pending = { id: "pending", version: 123, status: "Pending" };
+  const result = await decideAfterRecoveryNotice(async (kind, body) => {
+    calls.push({ kind, body });
+    return { marked: true, queuedNotices: invoked++ === 0 ? 2 : 0, beforeVersion: 123, afterVersion: 123 };
+  }, pending, async (version) => { calls.push({ version }); return "decided"; });
+  assert.equal(result, "decided");
+  assert.deepEqual(calls, [{ kind: "recoveryNotice", body: { recoveryId: "pending" } }, { kind: "recoveryNotice", body: { recoveryId: "pending" } }, { version: 123 }]);
+  assert.equal(pending.version, 123);
+});
+
+for (const [label, first, second] of [
+  ["sin marca", { marked: false }],
+  ["sin aviso encolado", { queuedNotices: 0 }],
+  ["versión anterior ajena", { beforeVersion: 124 }],
+  ["versión cambiada", { afterVersion: 124 }],
+  ["repetición duplica avisos", {}, { queuedNotices: 1 }],
+  ["repetición cambia versión", {}, { afterVersion: 124 }],
+]) test(`no decide si ${label}`, async () => {
+  let invoked = 0; let decided = false;
+  await assert.rejects(decideAfterRecoveryNotice(async () => ({ marked: true, queuedNotices: invoked++ === 0 ? 1 : 0, beforeVersion: 123, afterVersion: 123, ...(invoked === 1 ? first : second) }),
+    { id: "pending", version: 123, status: "Pending" }, async () => { decided = true; }));
+  assert.equal(decided, false);
+});
 
 test("selecciona un único pedido por ambos Phone enmascarados y rechaza ambigüedad", () => {
   assert.equal(selectRecovery([other, request], previous, next), request);

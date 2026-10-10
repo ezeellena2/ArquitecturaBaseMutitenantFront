@@ -1,4 +1,20 @@
+import assert from "node:assert/strict";
 import { newCaseContext } from "./test-e2e-real-case.mjs";
+
+/** Conserva el formulario leído: el servicio real marca el aviso antes de decidir, sin GET ni rebase. */
+export async function decideAfterRecoveryNotice(fixture, pending, decide) {
+  assert.equal(pending.status, "Pending");
+  const version = pending.version;
+  for (const repeat of [false, true]) {
+    const notice = await fixture("recoveryNotice", { recoveryId: pending.id });
+    assert.equal(notice.marked, true);
+    assert.equal(notice.beforeVersion, version);
+    assert.equal(notice.afterVersion, version);
+    assert.ok(Number.isInteger(notice.queuedNotices));
+    assert.ok(repeat ? notice.queuedNotices === 0 : notice.queuedNotices > 0);
+  }
+  return decide(version);
+}
 
 /** Correlaciona la respuesta observada, sin depender del nombre ni del orden de los pedidos. */
 export function selectRecovery(items, previous, next) {

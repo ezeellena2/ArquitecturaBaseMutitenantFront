@@ -7,7 +7,7 @@ import { chromium } from "playwright";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { caseDelay, newCaseContext, runCase } from "./test-e2e-real-case.mjs";
 import { fixtureProtocol } from "./test-e2e-real-whatsapp-ipc.mjs";
-import { newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
+import { decideAfterRecoveryNotice, newPlatformContext, recoveryRow, selectRecovery, waitForPlatformSession } from "./test-e2e-real-whatsapp-recovery.mjs";
 import { reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
 import { openPlatformSettings, reloadPlatformSettings, restorableSettings, savePlatformSettings, withRestoredSettings } from "./test-e2e-real-whatsapp-settings.mjs";
 
@@ -85,6 +85,7 @@ async function recovery(page, previous, next, scenario) {
   ], () => page.getByRole("button", { name: "Verificar", exact: true }).click());
   assert.equal(verified.status(), 204); assert.equal(submitted.status(), 202);
   await page.getByRole("heading", { name: "Recibimos tu pedido", exact: true }).waitFor();
+  return fixture;
 }
 async function platformLogin(page, scenario) {
   const fixture = await begin(scenario, "+5491134567899");
@@ -101,7 +102,7 @@ async function platformLogin(page, scenario) {
     detail("esperar Plataforma después de aceptar términos");
   });
 }
-async function reviewRecovery(page, previous, next, action) {
+async function reviewRecovery(page, previous, next, action, fixture) {
   const mobile = page.viewportSize().width === 390;
   detail("abrir lista de recuperaciones");
   let [response] = await responsesForAction(page, [(reply) => pathname(reply) === "/api/platform/recoveries/paged"],
@@ -124,8 +125,19 @@ async function reviewRecovery(page, previous, next, action) {
   const dialog = page.getByRole("dialog", { name: "Revisar el pedido", exact: true });
   detail("completar motivo humano");
   await dialog.getByRole("textbox", { name: /Motivo/ }).fill("Verificación humana del recorrido aislado.");
-  detail("confirmar decisión humana");
-  await clickHttp(page, dialog.getByRole("button", { name: action === "approve" ? "Aprobar" : "Rechazar", exact: true }), `/api/platform/recoveries/${pedido.id}/${action}`, 200);
+  detail("aviso real con formulario abierto y repetición sin duplicar");
+  const endpoint = `/api/platform/recoveries/${pedido.id}/${action}`;
+  let decisions = 0;
+  const countDecision = (request) => { if (new URL(request.url()).pathname === endpoint && request.method() === "POST") decisions++; };
+  page.on("request", countDecision);
+  try {
+    await decideAfterRecoveryNotice(fixture, pedido, async (version) => {
+      detail("confirmar decisión con versión original sin recarga");
+      const decision = await clickHttp(page, dialog.getByRole("button", { name: action === "approve" ? "Aprobar" : "Rechazar", exact: true }), endpoint, 200);
+      assert.equal(decision.request().postDataJSON().version, version);
+      assert.equal(decisions, 1);
+    });
+  } finally { page.off("request", countDecision); }
   await dialog.waitFor({ state: "hidden" });
   detail("leer decisión persistida después de F5");
   const persisted = await reloadResponse(page,
@@ -133,6 +145,92 @@ async function reviewRecovery(page, previous, next, action) {
   const resolved = (await persisted.json()).items.find((item) => item.id === pedido.id);
   assert.equal(resolved?.status, action === "approve" ? "Approved" : "Rejected");
   await recoveryRow(page, resolved).getByText(action === "approve" ? "Aprobado" : "Rechazado", { exact: true }).waitFor();
+}
+
+async function mutedAvatar(scope) {
+  const avatar = scope.locator("[data-slot='avatar']").first();
+  await avatar.waitFor(); assert.equal(await avatar.textContent(), "—");
+  assert.ok((await avatar.getAttribute("class")).split(/\s+/).includes("bg-[var(--s3)]"));
+}
+
+async function phoneAccountIdentity(page, width, phone, email, access = "consumer", organization = "Personal") {
+  // Sólo observa GET iniciados por F5 de la UI. Nada de fetch paralelo ni identidad construida en Front.
+  const response = await reloadResponse(page, (reply) => pathname(reply) === "/api/me");
+  assert.equal(response.status(), 200); const me = await response.json();
+  assert.equal(me.access, access); assert.equal(me.displayName, null);
+  assert.ok(typeof me.maskedPrimaryPhone === "string" && me.maskedPrimaryPhone.endsWith(phone.slice(-4)));
+  const mask = me.maskedPrimaryPhone;
+  if (width === 390) {
+    await page.getByRole("navigation", { name: "Secciones" }).getByRole("link", { name: "Más", exact: true }).click();
+    await page.getByText(mask, { exact: true }).waitFor();
+    if (email) assert.equal(await page.getByText(email, { exact: true }).count(), 0);
+    await mutedAvatar(page.getByRole("link", { name: "Más", exact: true }));
+    await mutedAvatar(page.getByRole("main"));
+  } else {
+    const trigger = page.getByRole("button", { name: `${mask}, ${organization}`, exact: true });
+    await trigger.waitFor(); await mutedAvatar(trigger);
+    const sidebar = page.getByRole("complementary", { name: "Navegación principal" });
+    await sidebar.getByText(mask, { exact: true }).waitFor(); await mutedAvatar(sidebar);
+    if (email) assert.equal(await sidebar.getByText(email, { exact: true }).count(), 0);
+    await trigger.click(); const menu = page.getByRole("menu");
+    await menu.getByText(mask, { exact: true }).waitFor(); await mutedAvatar(menu);
+    if (email) assert.equal(await menu.getByText(email, { exact: true }).count(), 0);
+    await page.keyboard.press("Escape"); await menu.waitFor({ state: "hidden" });
+  }
+  return { id: me.id, mask, email };
+}
+
+async function addBackupEmail(page, phone, width) {
+  const email = `e8-backup-${width}@example.test`;
+  const fixture = await begin(`backup-email-${width}`, phone);
+  await page.goto(`${base}/cuenta`);
+  await page.getByRole("button", { name: "Agregar correo o teléfono", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("button", { name: "Correo", exact: true }).click();
+  await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
+  const sent = await clickHttp(page, dialog.getByRole("button", { name: "Enviar código", exact: true }), "/api/me/login-methods", 202);
+  const methodId = (await sent.json()).methodId;
+  await fillOtp(dialog, (await fixture("methodEmailCode", { email, methodId })).proof);
+  await clickHttp(page, dialog.getByRole("button", { name: "Verificar", exact: true }), `/api/me/login-methods/${methodId}/verify`, 204);
+  await dialog.waitFor({ state: "hidden" });
+  const response = await reloadResponse(page, (reply) => pathname(reply) === "/api/me/login-methods");
+  assert.equal(response.status(), 200); const { methods } = await response.json();
+  const backup = methods.find((method) => method.id === methodId);
+  assert.equal(backup?.type, "Email"); assert.equal(backup.value, email); assert.equal(backup.isVerified, true); assert.equal(backup.isPrimary, false);
+  const principal = methods.find((method) => method.isPrimary);
+  assert.equal(principal?.type, "Phone"); assert.equal(principal.value, phone); assert.equal(principal.isVerified, true);
+  await page.getByRole("list", { name: "Cómo entrás", exact: true }).getByText(email, { exact: true }).waitFor();
+  return phoneAccountIdentity(page, width, phone, email);
+}
+
+async function platformPhoneAccount(page, phone, identity) {
+  let [response] = await responsesForAction(page, [(reply) => pathname(reply) === "/api/platform/accounts/paged"], () => page.goto(`${base}/plataforma/cuentas`));
+  await page.getByRole("heading", { name: "Cuentas", exact: true }).waitFor();
+  [response] = await responsesForAction(page,
+    [(reply) => pathname(reply) === "/api/platform/accounts/paged" && new URL(reply.url()).searchParams.get("search") === phone],
+    () => page.getByRole("searchbox", { name: "Buscar por nombre, correo o teléfono", exact: true }).fill(phone));
+  assert.equal(response.status(), 200);
+  const item = (await response.json()).items.find((account) => account.id === identity.id);
+  assert.ok(item); assert.equal(item.displayName, null); assert.equal(item.maskedPrimaryPhone, identity.mask);
+  const endpoint = `/api/platform/accounts/${identity.id}`;
+  const link = page.getByRole("link").and(page.locator(`a[href='/plataforma/cuentas/${identity.id}']`));
+  const row = page.getByRole(page.viewportSize().width === 390 ? "listitem" : "row").filter({ has: link });
+  await row.waitFor(); assert.equal(await row.count(), 1);
+  await row.getByText(identity.mask, { exact: true }).waitFor();
+  assert.equal(await row.getByText(identity.email, { exact: true }).count(), 0);
+  await row.getByRole("button", { name: `Acciones de ${identity.mask}`, exact: true }).waitFor();
+  const [detailResponse] = await responsesForAction(page, [(reply) => pathname(reply) === endpoint], () => link.click());
+  assert.equal(detailResponse.status(), 200); const account = await detailResponse.json();
+  assert.equal(account.id, identity.id); assert.equal(account.displayName, null); assert.equal(account.maskedPrimaryPhone, identity.mask);
+  const principal = account.loginMethods.find((method) => method.isPrimary);
+  assert.equal(principal?.type, "Phone"); assert.equal(principal.maskedValue, identity.mask);
+  const backup = account.loginMethods.find((method) => method.type === "Email" && !method.isPrimary);
+  assert.ok(backup?.verifiedAtUtc); assert.equal(backup.canSignIn, true);
+  await page.getByRole("heading", { name: identity.mask, exact: true }).waitFor();
+  await page.getByRole("list", { name: "Métodos de ingreso", exact: true }).getByText(backup.maskedValue, { exact: true }).waitFor();
+  const persisted = await reloadResponse(page, (reply) => pathname(reply) === endpoint);
+  assert.equal(persisted.status(), 200); assert.equal((await persisted.json()).maskedPrimaryPhone, identity.mask);
+  await page.getByRole("heading", { name: identity.mask, exact: true }).waitFor();
 }
 function observe(page) {
   const oidc = []; const calls = [];
@@ -264,7 +362,11 @@ async function journey(width, index) {
     await page.getByRole("dialog").waitFor({ state: "hidden" });
   }
   assert.equal(observed.calls.slice(methodStart).filter((call) => call.method === "POST" && /login-code|\/code$/.test(call.path)).length, 0);
-  pass(`principal/quitar sin OTP ${width}`); await signout(page, width);
+  pass(`principal/quitar sin OTP ${width}`);
+  start(`correo de respaldo con Phone principal ${width}`);
+  const phoneIdentity = await addBackupEmail(page, phone, width);
+  pass(`correo respaldo UI OTP real y Phone principal en Me menu lateral Mas F5 ${width}`);
+  await signout(page, width);
 
   start(`registro ocupado hacia ingreso Persona ${width}`); await loginFromRegistration(page, phone, "consumer", width, "Personal", observed); await signout(page, width);
   start(`bot webhook y enlace ${width}`); const link = await botLink(phone, `bot-${width}`);
@@ -310,18 +412,20 @@ async function journey(width, index) {
   assert.equal((await occupiedRecovery.json()).code, "Platform.AccountRecovery.PhoneMethodInUse");
   await page.getByText("Ese número ya es de otra cuenta.", { exact: true }).waitFor(); pass(`errores sin cuenta/ocupado/recuperación ${width}`);
 
-  start(`recuperación asistida Phone ${width}`); await recovery(page, phone, recovered, `recovery-approve-${width}`); pass(`solicitud recuperación Phone/OTP ${width}`);
+  start(`recuperación asistida Phone ${width}`); const approval = await recovery(page, phone, recovered, `recovery-approve-${width}`); pass(`solicitud recuperación Phone/OTP ${width}`);
   const operatorContext = await newPlatformContext(browser, width);
   const operator = await operatorContext.newPage(); operator.setDefaultTimeout(30_000); observe(operator);
   await platformLogin(operator, `operator-${width}`);
-  start(`aprobar recuperación Phone ${width}`); await reviewRecovery(operator, phone, recovered, "approve");
+  start(`Cuentas Phone con correo de respaldo ${width}`); await platformPhoneAccount(operator, phone, phoneIdentity);
+  pass(`Cuentas lista ficha acciones Phone principal con correo respaldo GET F5 ${width}`);
+  start(`aprobar recuperación Phone ${width}`); await reviewRecovery(operator, phone, recovered, "approve", approval);
   await login(page, recovered, "consumer", `recovered-login-${width}`); await authenticated(page, width); await page.reload(); await authenticated(page, width);
   await page.goto(`${base}/cuenta`); await page.getByRole("button", { name: new RegExp(`^Acciones de.*${recovered.slice(-4)}`) }).waitFor();
-  pass(`aprobación humana Phone persistida/ingreso/F5 ${width}`); await signout(page, width);
-  start(`rechazar recuperación Phone ${width}`); await recovery(page, phone, rejected, `recovery-reject-${width}`); await reviewRecovery(operator, phone, rejected, "reject");
+  pass(`aprobación humana Phone persistida aviso sin rebase ingreso/F5 ${width}`); await signout(page, width);
+  start(`rechazar recuperación Phone ${width}`); const rejection = await recovery(page, phone, rejected, `recovery-reject-${width}`); await reviewRecovery(operator, phone, rejected, "reject", rejection);
   await begin(`rejected-login-${width}`, rejected); await page.goto(`${base}/login`); await whatsapp(page, rejected);
   await clickHttp(page, page.getByRole("button", { name: "Enviar código", exact: true }), "/api/auth/login-code", 400);
-  await page.getByText("No hay una cuenta con ese número.", { exact: true }).waitFor(); pass(`rechazo humano Phone persistido/sin ingreso ${width}`);
+  await page.getByText("No hay una cuenta con ese número.", { exact: true }).waitFor(); pass(`rechazo humano Phone persistido aviso sin rebase sin ingreso ${width}`);
 
   await withRestoredSettings({
     read: async () => {
@@ -357,7 +461,9 @@ async function journey(width, index) {
       await page.getByRole("textbox", { name: "Primera empresa", exact: true }).fill(`${orgName} Centro`); await page.getByText("Disponible", { exact: true }).waitFor();
       const created = await clickHttp(page, page.getByRole("button", { name: "Crear organización", exact: true }), "/api/auth/business-signup", 200); assert.equal((await created.json()).requiresApproval, false);
       await page.getByRole("button", { name: `Entrar a ${orgName}`, exact: true }).click(); await page.waitForURL((url) => url.pathname === "/org");
-      await authenticated(page, width, orgName); await page.reload(); await authenticated(page, width, orgName); pass(`registro empresarial con personas cerrado/OIDC/F5 ${width}`); await signout(page, width, orgName);
+      await authenticated(page, width, orgName); await page.reload(); await authenticated(page, width, orgName);
+      await phoneAccountIdentity(page, width, businessPhone, null, "business", orgName);
+      pass(`registro empresarial con personas cerrado/OIDC/F5 ${width}`); await signout(page, width, orgName);
       start(`registro existente hacia ingreso Empresa ${width}`); await loginFromRegistration(page, businessPhone, "business", width, orgName, observed); await signout(page, width, orgName);
     },
   });
