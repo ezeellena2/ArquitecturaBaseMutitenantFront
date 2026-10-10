@@ -17,7 +17,7 @@ export const businessRoutes = {
   company: { path: "/org/empresas/:companyId", permission: "companies.read", companyPermission: "company.members.read" },
   settings: { path: "/org/configuracion", permission: "settings.read", labelKey: "navigation.settings", icon: SlidersHorizontalIcon },
   publicPage: { path: "/org/pagina", permission: "publicpage.manage", labelKey: "navigation.publicPage", icon: GlobeIcon },
-  audit: { path: "/org/auditoria", permission: "audit.read", labelKey: "navigation.audit", icon: ClipboardIcon },
+  audit: { path: "/org/auditoria", permission: "audit.read", labelKey: "navigation.audit", icon: ClipboardIcon, afterModuleGroups: true },
 } as const satisfies Record<string, AppRoute>;
 
 export const businessNavigation: NavigationConfig = {

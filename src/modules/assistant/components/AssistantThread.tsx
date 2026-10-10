@@ -11,6 +11,7 @@ import { resolveAssistantLink, type AssistantLinkContext } from "../lib/assistan
 import { ToolStatus } from "./ToolStatus";
 import type { AssistantTurnState } from "../runtime/assistantTurnState";
 import { assistantStreamErrorMessage } from "../errors";
+import { AssistantRetryButton } from "./AssistantRetryButton";
 
 interface MessageContextValue {
   turn: AssistantTurnState | null;
@@ -20,6 +21,7 @@ interface MessageContextValue {
   canOpenLink?: (routeKey: AssistantRouteKey) => boolean;
   pending: boolean;
   onDownload: (attachment: AssistantAttachmentSummaryResponse) => void;
+  retry?: { messageId: string; retryAfter?: number | null; onRetry: () => void };
 }
 const MessageContext = createContext<MessageContextValue | null>(null);
 function MarkdownPart() {
@@ -51,6 +53,7 @@ function Message() {
         : target?.organizationId ? <Button key={index} variant="link" onClick={() => context.links.onOpenOrganization?.(target.organizationId!)}>{t(target.labelKey, { name: target.organizationName })}</Button> : null;
     })}
     {status?.type === "incomplete" ? <p role={streamError ? "alert" : "status"} className="text-sm text-[var(--t2)]">{status.reason === "cancelled" ? t("status.stopped") : streamError ? assistantStreamErrorMessage(streamError, t) : t("status.failed")}</p> : null}
+    {context.retry?.messageId === id ? <AssistantRetryButton key={context.turn?.start?.turnId ?? id} retryAfter={context.retry.retryAfter} pending={context.pending} onRetry={context.retry.onRetry} /> : null}
     {role === "assistant" && status?.type !== "running" ? <AssistantMessageActions message={durable} pending={context.pending} /> : null}
     </div>
   </MessagePrimitive.Root>;

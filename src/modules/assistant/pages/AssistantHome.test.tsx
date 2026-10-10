@@ -81,7 +81,7 @@ describe("interfaz del asistente", () => {
   });
   it("usa los topes de State antes de crear o subir y muestra tamaño y cantidad actuales", async () => {
     const app = setup({ ...state, maxAttachments: 1, maxAttachmentBytes: 500_000 });
-    const add = await screen.findByRole("button", { name: "Adjuntar" });
+    const add = await screen.findByRole("button", { name: "Adjuntar imágenes o PDF" });
     await waitFor(() => expect(add).toHaveAttribute("title", "Imágenes o PDF, hasta 500 KB y 1 por consulta"));
     const input = app.container.querySelector<HTMLInputElement>('input[type="file"]')!;
     const first = new File(["pdf"], "a.pdf", { type: "application/pdf" });
@@ -106,6 +106,12 @@ describe("interfaz del asistente", () => {
     await screen.findByRole("textbox", { name: "Tu consulta" });
     await act(async () => { await changeCulture(culture); });
     expect(await screen.findByText((_, element) => element?.tagName === "P" && element.textContent === text)).toBeVisible();
+  });
+  it("el saldo de bienvenida queda debajo de la caja y antes de consultas fijas", async () => {
+    setup({ ...state, remainingMessages: 1 });
+    const remaining = await screen.findByText((_, element) => element?.tagName === "P" && element.textContent === "Te queda 1 consulta hoy.");
+    const quick = screen.getByRole("button", { name: "Usuarios activos" });
+    expect(remaining.compareDocumentPosition(quick) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
   it("un detalle 404 vuelve a bienvenida, avisa y relee historial sin dejar Inicio atrapado", async () => {
     const app = setup();
@@ -141,16 +147,18 @@ describe("interfaz del asistente", () => {
     const assistant = within(screen.getByRole("region", { name: "Asistente" }));
     expect(assistant.getAllByText(text)).toHaveLength(1);
     expect(assistant.queryByRole("button", { name: "Reintentar" }) !== null).toBe(retry);
+    if (retry) expect(assistant.getByRole("button", { name: "Reintentar" }).parentElement).toBe(assistant.getByText(text).parentElement);
     expect(assistant.queryByText("private-report")).not.toBeInTheDocument();
     expect(assistant.queryByText(code)).not.toBeInTheDocument();
     if (code !== "Assistant.Provider.Unavailable") expect(assistant.queryByText("El asistente no responde ahora.")).not.toBeInTheDocument();
   });
   it("el 429 mensual muestra el tope sin el aviso global de muchos pedidos", async () => {
     const app = setup();
+    app.rerenderAssistant({ ...props, organizationName: "Gamma S.R.L." });
     server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => HttpResponse.json({ code: "Assistant.Limit.MonthlyReached", detail: "Llegaste al tope del mes." }, { status: 429 })));
     await app.user.type(await screen.findByRole("textbox", { name: "Tu consulta" }), "Consulta");
     await app.user.click(screen.getByRole("button", { name: "Enviar" }));
-    await screen.findByText("La organización llegó al tope del mes del asistente.");
+    await screen.findByText("Gamma S.R.L. llegó al tope del mes del asistente.");
     expect(screen.queryByText("Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos.")).not.toBeInTheDocument();
   });
   it.each(["send", "stop"] as const)("el 5xx de %s se muestra una sola vez en el asistente", async (action) => {
@@ -184,7 +192,7 @@ describe("interfaz del asistente", () => {
         return HttpResponse.json({ turnId: "turn", message: response, conversationVersion: 2, usage: { inputTokens: 1, outputTokens: 1, cacheReadTokens: 0, cacheWriteTokens: 0, cost: { amount: 0, currency: "USD" }, remainingMessages: 39 } } satisfies AssistantTurnResultResponse);
       }));
     await screen.findByRole("textbox", { name: "Tu consulta" });
-    await app.user.upload(screen.getByLabelText("Adjuntar", { selector: "input" }), new File(["pdf"], "uno.pdf", { type: "application/pdf" }));
+    await app.user.upload(screen.getByLabelText("Adjuntar imágenes o PDF", { selector: "input" }), new File(["pdf"], "uno.pdf", { type: "application/pdf" }));
     await app.user.type(screen.getByRole("textbox", { name: "Tu consulta" }), "Consulta original");
     await app.user.click(screen.getByRole("button", { name: "Enviar" }));
     await screen.findByText("La consulta es demasiado larga.");
@@ -367,7 +375,7 @@ describe("interfaz del asistente", () => {
         return HttpResponse.json(attachment);
       }));
     await screen.findByRole("textbox", { name: "Tu consulta" });
-    const input = screen.getByLabelText("Adjuntar", { selector: "input" });
+    const input = screen.getByLabelText("Adjuntar imágenes o PDF", { selector: "input" });
     await app.user.upload(input, [new File(["pdf"], "uno.pdf", { type: "application/pdf" }), new File(["pdf"], "dos.pdf", { type: "application/pdf" })]);
     await app.user.type(screen.getByRole("textbox", { name: "Tu consulta" }), "Leé los archivos");
     await app.user.click(screen.getByRole("button", { name: "Enviar" }));
@@ -381,7 +389,7 @@ describe("interfaz del asistente", () => {
   it("limita adjuntos temprano y revoca la vista previa al quitar y al limpiar Query", async () => {
     const app = setup();
     await screen.findByRole("textbox", { name: "Tu consulta" });
-    const input = screen.getByLabelText("Adjuntar", { selector: "input" });
+    const input = screen.getByLabelText("Adjuntar imágenes o PDF", { selector: "input" });
     const file = new File(["image"], "foto.png", { type: "image/png" });
     await app.user.upload(input, file);
     expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
@@ -410,7 +418,7 @@ describe("interfaz del asistente", () => {
         return HttpResponse.json(attachment);
       }));
     await screen.findByRole("textbox", { name: "Tu consulta" });
-    const input = screen.getByLabelText("Adjuntar", { selector: "input" });
+    const input = screen.getByLabelText("Adjuntar imágenes o PDF", { selector: "input" });
     const png = new File(["png"], "captura.png", { type: "image/png" });
     const pdf = new File([new Uint8Array(10 * 1024 * 1024 + 1)], "planilla.pdf", { type: "application/pdf" });
     await app.user.upload(input, [png, pdf]);
@@ -443,7 +451,7 @@ describe("interfaz del asistente", () => {
   it("acepta exactamente 10 MiB, conserva el máximo de cinco y limpia inválidos al cambiar de conversación", async () => {
     const app = setup();
     await screen.findByRole("textbox", { name: "Tu consulta" });
-    const input = screen.getByLabelText("Adjuntar", { selector: "input" });
+    const input = screen.getByLabelText("Adjuntar imágenes o PDF", { selector: "input" });
     await app.user.upload(input, new File([new Uint8Array(10 * 1024 * 1024)], "limite.pdf", { type: "application/pdf" }));
     expect(screen.getByRole("button", { name: "Quitar limite.pdf" })).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -452,9 +460,9 @@ describe("interfaz del asistente", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("Podés adjuntar hasta 5 archivos.");
     expect(screen.queryByRole("button", { name: "Quitar sexto.pdf" })).not.toBeInTheDocument();
     await app.user.click(screen.getByRole("button", { name: "Nueva conversación" }));
-    await app.user.upload(screen.getByLabelText("Adjuntar", { selector: "input" }), [new File(["png"], "privada.png", { type: "image/png" }), new File([new Uint8Array(10 * 1024 * 1024 + 1)], "privado.pdf", { type: "application/pdf" })]);
+    await app.user.upload(screen.getByLabelText("Adjuntar imágenes o PDF", { selector: "input" }), [new File(["png"], "privada.png", { type: "image/png" }), new File([new Uint8Array(10 * 1024 * 1024 + 1)], "privado.pdf", { type: "application/pdf" })]);
     expect(screen.getByRole("alert")).toHaveTextContent("privado.pdf");
-    await app.user.upload(screen.getByLabelText("Adjuntar", { selector: "input" }), new File([new Uint8Array(10 * 1024 * 1024 + 1)], "otro-privado.pdf", { type: "application/pdf" }));
+    await app.user.upload(screen.getByLabelText("Adjuntar imágenes o PDF", { selector: "input" }), new File([new Uint8Array(10 * 1024 * 1024 + 1)], "otro-privado.pdf", { type: "application/pdf" }));
     expect(screen.getByRole("button", { name: "Quitar otro-privado.pdf" }).closest("li")).toHaveAccessibleDescription("otro-privado.pdf pesa más de 10,5 MB.");
     await app.user.click(screen.getByRole("button", { name: "Quitar privado.pdf" }));
     expect(screen.getByRole("alert")).toHaveTextContent(/^otro-privado\.pdf pesa más de 10,5 MB\.$/u);
@@ -468,7 +476,7 @@ describe("interfaz del asistente", () => {
   it("no retiene MIME rechazados aunque el exceso oculte invalidType en la validación del lote", async () => {
     const app = setup();
     await screen.findByRole("textbox", { name: "Tu consulta" });
-    await userEvent.setup({ applyAccept: false }).upload(screen.getByLabelText("Adjuntar", { selector: "input" }), [
+    await userEvent.setup({ applyAccept: false }).upload(screen.getByLabelText("Adjuntar imágenes o PDF", { selector: "input" }), [
       new File(["png"], "permitido.png", { type: "image/png" }),
       new File([new Uint8Array(10 * 1024 * 1024 + 1)], "rechazado.exe", { type: "application/octet-stream" }),
     ]);
@@ -482,7 +490,7 @@ describe("interfaz del asistente", () => {
   it("conserva el aviso de máximo cinco además del error nombrado del inválido retenido", async () => {
     const app = setup();
     await screen.findByRole("textbox", { name: "Tu consulta" });
-    const input = screen.getByLabelText("Adjuntar", { selector: "input" });
+    const input = screen.getByLabelText("Adjuntar imágenes o PDF", { selector: "input" });
     await app.user.upload(input, [new File([new Uint8Array(10 * 1024 * 1024 + 1)], "excesivo.pdf", { type: "application/pdf" }),
       ...Array.from({ length: 4 }, (_, i) => new File(["pdf"], `${i}.pdf`, { type: "application/pdf" }))]);
     await app.user.upload(input, new File(["pdf"], "sexto.pdf", { type: "application/pdf" }));
@@ -586,7 +594,7 @@ describe("interfaz del asistente", () => {
     if (historical) await app.user.click(await screen.findByRole("button", { name: "Mi consulta" }));
     else {
       await app.user.type(await screen.findByRole("textbox", { name: "Tu consulta" }), "Leé mis adjuntos");
-      await app.user.upload(screen.getByLabelText("Adjuntar", { selector: "input" }), [new File(["pdf"], "planilla.pdf", { type: "application/pdf" }), new File(["png"], "captura.png", { type: "image/png" })]);
+      await app.user.upload(screen.getByLabelText("Adjuntar imágenes o PDF", { selector: "input" }), [new File(["pdf"], "planilla.pdf", { type: "application/pdf" }), new File(["png"], "captura.png", { type: "image/png" })]);
       await app.user.click(screen.getByRole("button", { name: "Enviar" }));
     }
     await app.user.click(await screen.findByRole("button", { name: "Reintentar" }));

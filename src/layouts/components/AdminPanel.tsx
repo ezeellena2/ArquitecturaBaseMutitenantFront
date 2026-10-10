@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
 import { findAdministrationEntry } from "../navigation/administration";
-import type { NavigationLink, NavigationPanel } from "../navigation/types";
+import type { NavigationLink, NavigationPanel, NavigationSection } from "../navigation/types";
 import { menuGroupClass, menuLineClass, menuRowClass, panelEdgeButtonClass } from "./menuRow";
 
 // «Criterio · Menús» (lienzo v102): las mismas opciones del menú lateral, con la sección en la que estás en blanco. Un
@@ -18,15 +18,13 @@ export function AdminPanel({ panel, open, onClose, currentLink }: { panel: Navig
   // El marco resuelve la opción sobre ambos paneles: al abrir otro a mano, ninguna opción de ese panel está activa.
   const activeLink = currentLink === undefined ? findAdministrationEntry(panel, pathname)?.link : currentLink;
   const sections = panel.sections ?? [];
+  const coreSections = sections.filter((section) => !section.moreGroup);
+  const moduleSections = sections.filter((section) => section.moreGroup);
+  const links = panel.links.filter((entry) => !entry.afterModuleGroups);
+  const closingLinks = panel.links.filter((entry) => entry.afterModuleGroups);
   const byHand = toggled.pathname === pathname ? toggled.sections : {};
 
-  return <nav aria-label={t(panel.labelKey)} className="relative flex h-full w-[232px] shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--panel)]">
-    <div className="flex h-[52px] items-center border-b border-[var(--lado-borde)] px-3.5 text-[14px] font-bold text-[var(--t1)]">{t(panel.labelKey)}</div>
-    <button type="button" aria-label={t("layout.sidebar.closePanel", { name: t(panel.labelKey) })} onClick={onClose} className={panelEdgeButtonClass}>
-      <ChevronLeft size={18} strokeWidth={1.75} aria-hidden="true" />
-    </button>
-    <ul className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-2.5">
-      {sections.map((section, index) => {
+  const renderSection = (section: NavigationSection, index: number) => {
         const here = activeLink != null && section.links.includes(activeLink);
         const expanded = here && (byHand[section.labelKey] ?? true);
         const label = <><section.icon className="size-[18px] shrink-0" /><span className="flex-1">{t(section.labelKey)}</span>
@@ -42,8 +40,22 @@ export function AdminPanel({ panel, open, onClose, currentLink }: { panel: Navig
             </li>)}
           </ul> : null}
         </li>;
-      })}
-      {panel.links.map((entry, index) => <li key={entry.labelKey} className={menuLineClass(sections.length + index)}>
+      };
+
+  return <nav aria-label={t(panel.labelKey)} className="relative flex h-full w-[232px] shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--panel)]">
+    <div className="flex h-[52px] items-center border-b border-[var(--lado-borde)] px-3.5 text-[14px] font-bold text-[var(--t1)]">{t(panel.labelKey)}</div>
+    <button type="button" aria-label={t("layout.sidebar.closePanel", { name: t(panel.labelKey) })} onClick={onClose} className={panelEdgeButtonClass}>
+      <ChevronLeft size={18} strokeWidth={1.75} aria-hidden="true" />
+    </button>
+    <ul className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-2.5">
+      {coreSections.map(renderSection)}
+      {links.map((entry, index) => <li key={entry.labelKey} className={menuLineClass(coreSections.length + index)}>
+        <Link to={entry.path} aria-current={entry === activeLink ? "page" : undefined} className={menuRowClass(entry === activeLink)}>
+          <entry.icon className="size-[18px] shrink-0" />{t(entry.labelKey)}
+        </Link>
+      </li>)}
+      {moduleSections.map((section, index) => renderSection(section, coreSections.length + links.length + index))}
+      {closingLinks.map((entry, index) => <li key={entry.labelKey} className={menuLineClass(coreSections.length + links.length + moduleSections.length + index)}>
         <Link to={entry.path} aria-current={entry === activeLink ? "page" : undefined} className={menuRowClass(entry === activeLink)}>
           <entry.icon className="size-[18px] shrink-0" />{t(entry.labelKey)}
         </Link>

@@ -13,5 +13,5 @@ export function PersonalHomePage() {
   const { phone } = useAppChrome();
   const notice = data?.needsPersonalLoginMethod ? <PersonalLoginMethodNotice className="mx-4 mt-2" /> : null;
   const original = <Page icon={HomeIcon} title={t("home.title")} phoneBody="flush">{notice}</Page>;
-  return phone ? original : <ModuleHome access="consumer" fallback={original} banner={notice} />;
+  return phone ? original : <ModuleHome access="consumer" fallback={original}>{notice}</ModuleHome>;
 }

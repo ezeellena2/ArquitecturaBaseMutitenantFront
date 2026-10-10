@@ -36,7 +36,8 @@
     "configure": "Review settings"
   },
   "limit": {
-    "monthly": "The organization reached its monthly assistant limit.",
+    "monthly": "{{organization}} reached its monthly assistant limit.",
+    "organization": "The organization",
     "daily": "You reached today’s limit of <count/> queries. It resets at <reset/>.",
     "remaining_one": "You have <remaining/> query left today.",
     "remaining_other": "You have <remaining/> queries left today.",
@@ -66,7 +67,7 @@
     "organization": "your organization"
   },
   "attachments": {
-    "add": "Attach",
+    "add": "Attach images or PDF",
     "remove": "Remove {{name}}",
     "hint": "Images or PDF, up to {{size}} and {{maxFiles}} per query",
     "tooMany_one": "You can attach up to {{maxFiles}} file.",

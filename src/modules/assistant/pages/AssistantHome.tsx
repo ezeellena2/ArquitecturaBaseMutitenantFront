@@ -37,7 +37,6 @@ import { ConversationDialog, type ConversationDialogState } from "../components/
 import { LimitReached } from "../components/LimitReached";
 import { NotConfigured } from "../components/NotConfigured";
 import { QuickQueries } from "../components/QuickQueries";
-import { AssistantRetryButton } from "../components/AssistantRetryButton";
 import { assistantStreamErrorMessage, canRetryAssistantFailure } from "../errors";
 
 export interface AssistantHomeProps {
@@ -389,7 +388,7 @@ function AssistantSession(props: AssistantHomeProps) {
   const history = <ConversationList scope={scope} lifetime={operations.lifetime} enabled={operations.active} selectedId={selectedId} retentionDays={state.retentionDays} onNew={() => select(null)} onSelect={select} actions={actions}
     onRetentionInfo={() => { setHistoryOpen(false); setRetentionOpen(true); }}
     onActions={phone ? (conversation) => { setHistoryOpen(false); setPhoneActions({ title: conversation.title ?? null, items: actions(conversation) }); } : undefined} />;
-  const composer = <AttachmentComposer key={generation} limits={state} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} pending={busy} canStop={runtime.canStop}
+  const composer = <><AttachmentComposer key={generation} limits={state} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} pending={busy} canStop={runtime.canStop}
     onFiles={(chosen) => {
       const issue = validateAssistantFiles(chosen, files.length, state);
       // El exceso permitido queda local para corregirlo; no admite un MIME
@@ -398,7 +397,11 @@ function AssistantSession(props: AssistantHomeProps) {
       setFileError(issue && !retainOversized ? t(`attachments.${issue}`, { count: state.maxAttachments, maxFiles: format.formatInteger(state.maxAttachments), size: format.formatFileSize(state.maxAttachmentBytes) }) : null);
       if (!issue || retainOversized) for (const file of chosen) void runtime.runtime.thread.composer.addAttachment(file).catch(() => undefined);
     }}
-    onStop={() => { void runtime.stop().catch(() => undefined); }} />;
+    onStop={() => { void runtime.stop().catch(() => undefined); }} />
+      {state.remainingMessages != null && state.remainingMessages > 0 && state.remainingMessages <= 10 ? <p className="pb-3 text-center text-sm text-[var(--t2)]"><Trans ns="assistant" i18nKey="limit.remaining" count={state.remainingMessages} components={{ remaining: <NumberText value={state.remainingMessages} /> }} /></p> : null}
+      {hasAttachmentError ? <p id={fileErrorId} role="alert" className="px-5 pb-3 text-[var(--peligro)]">{fileError ? <span className="block">{fileError}</span> : null}{invalidFiles.map(({ id, file }) =>
+        <span key={id} id={`${fileErrorId}-${id}`} className="block">{t("attachments.tooLargeNamed", { name: file.name, size: format.formatFileSize(state.maxAttachmentBytes) })}</span>)}</p> : null}
+    </>;
   const queries = <QuickQueries scope={scope} queries={state.quickQueries} disabled={busy || notice} onSelect={quick} />;
   return <AssistantRuntimeProvider runtime={runtime.runtime}><div className="relative flex min-h-0 flex-1 overflow-hidden text-[var(--t1)]">
     {!phone ? <aside aria-label={t("history.title")} className={`${collapsed ? "w-14" : "w-[264px]"} shrink-0 border-r border-[var(--borde)] bg-[var(--lado-activo)]`}>
@@ -410,16 +413,12 @@ function AssistantSession(props: AssistantHomeProps) {
       {phone ? <><AppBarTools placement="leading"><AppIconButton ref={historyTrigger} label={t("history.title")} onClick={() => setHistoryOpen(true)}><Menu className="size-[22px]" /></AppIconButton></AppBarTools><AppBarTools><AppIconButton label={t("history.new")} onClick={() => select(null)}><SquarePen className="size-[22px]" /></AppIconButton></AppBarTools></> : null}
       {!configured ? <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5"><NotConfigured canConfigure={state.canConfigure} onConfigure={props.onConfigure} />{props.children}</div></div> : <>
         {selectedId ? <AssistantThread turn={runtime.turn} turnPending={runtime.isPending} messages={runtime.messages} links={{ scope, hasPermission: props.hasPermission, organizationIds: props.organizationIds, organizationNames: props.organizationNames, onOpenOrganization: props.onOpenOrganization }} canOpenLink={props.canOpenLink} pending={busy}
-          onDownload={download} /> : <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5"><div className="mb-1 flex items-center justify-center gap-3 max-md:flex-col"><span className="flex size-9 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><Sparkles className="size-5" aria-hidden="true" /></span><h2 className="text-center text-[26px] font-semibold">{t("welcome")}</h2></div>{props.welcome}{!phone ? limited ? <LimitReached monthly={code === "Assistant.Limit.MonthlyReached"} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer : null}{queries}{props.children}</div></div>}
-        {selectedId || phone ? <div className="mx-auto flex w-full max-w-[824px] flex-col gap-3 px-5 pb-4 md:px-8">{limited ? <LimitReached monthly={code === "Assistant.Limit.MonthlyReached"} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer}</div> : null}
+          onDownload={download} retry={runtime.messages.at(-1)?.status === "Failed" && runtime.canSend && canRetryAssistantFailure(runtime.turn?.error) ? { messageId: runtime.messages.at(-1)!.id, retryAfter: runtime.turn?.error?.retryAfter, onRetry: retryFailed } : undefined} /> : <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5"><div className="mb-1 flex items-center justify-center gap-3 max-md:flex-col"><span className="flex size-9 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><Sparkles className="size-5" aria-hidden="true" /></span><h2 className="text-center text-[26px] font-semibold">{t("welcome")}</h2></div>{props.welcome}{!phone ? limited ? <LimitReached organizationName={props.organizationName} monthly={code === "Assistant.Limit.MonthlyReached"} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer : null}{queries}{props.children}</div></div>}
+        {selectedId || phone ? <div className="mx-auto flex w-full max-w-[824px] flex-col gap-3 px-5 pb-4 md:px-8">{limited ? <LimitReached organizationName={props.organizationName} monthly={code === "Assistant.Limit.MonthlyReached"} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer}</div> : null}
       </>}
-      {state.remainingMessages != null && state.remainingMessages > 0 && state.remainingMessages <= 10 ? <p className="pb-3 text-center text-sm text-[var(--t2)]"><Trans ns="assistant" i18nKey="limit.remaining" count={state.remainingMessages} components={{ remaining: <NumberText value={state.remainingMessages} /> }} /></p> : null}
-      {hasAttachmentError ? <p id={fileErrorId} role="alert" className="px-5 pb-3 text-[var(--peligro)]">{fileError ? <span className="block">{fileError}</span> : null}{invalidFiles.map(({ id, file }) =>
-        <span key={id} id={`${fileErrorId}-${id}`} className="block">{t("attachments.tooLargeNamed", { name: file.name, size: format.formatFileSize(state.maxAttachmentBytes) })}</span>)}</p> : null}
       {actionError && !dialog && !notice ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{actionError}</p> : null}
       {runtimeError ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{runtimeError}</p> : null}
       {runtime.error instanceof ApiError && runtime.error.isNetworkError ? <Button variant="link" onClick={() => { void runtime.retryNetwork().catch(() => undefined); }}>{t("retry")}</Button> : null}
-      {runtime.messages.at(-1)?.status === "Failed" && runtime.canSend && canRetryAssistantFailure(runtime.turn?.error) ? <AssistantRetryButton key={runtime.turn?.start?.turnId ?? runtime.messages.at(-1)?.id} retryAfter={runtime.turn?.error?.retryAfter} pending={busy} onRetry={retryFailed} /> : null}
     </section>
     {phone && historyOpen && !notice ? <Dialog open onOpenChange={setHistoryOpen}><DialogContent aria-describedby={undefined} onCloseAutoFocus={restoreHistory}><DialogHeader><DialogTitle>{t("history.title")}</DialogTitle></DialogHeader><DialogBody>{history}</DialogBody></DialogContent></Dialog> : null}
     {phone && phoneActions && !notice ? <Dialog open onOpenChange={(open) => { if (!open) setPhoneActions(null); }}><DialogContent size="sm" aria-describedby={undefined} onCloseAutoFocus={restoreActions}>

@@ -47,5 +47,6 @@ export function BusinessHomePage() {
     </div> : null}
   </>;
   const original = <Page icon={HomeIcon} title={t("common:home.title")} summary={organizationName}>{content}</Page>;
-  return phone ? original : <ModuleHome access="business" fallback={original}>{content}</ModuleHome>;
+  const moduleContent = organization ? <div className="flex flex-col gap-5"><ToResolve rows={rows} /><AreaCards organization={organization} /></div> : content;
+  return phone ? original : <ModuleHome access="business" fallback={original}>{moduleContent}</ModuleHome>;
 }

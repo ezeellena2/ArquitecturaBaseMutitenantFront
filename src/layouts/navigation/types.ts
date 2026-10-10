@@ -17,6 +17,8 @@ export interface AppRoute {
   labelKey?: string;
   /** En «Más» del teléfono, si el tablero la nombra más corto (M-WA-Menu: «Roles»). */
   phoneLabelKey?: string;
+  /** Fila de cierre del panel, después de los grupos aportados por módulos. */
+  afterModuleGroups?: boolean;
   icon?: IconComponent;
 }
 
@@ -37,7 +39,7 @@ export interface NavigationSection {
   labelKey: string;
   icon: IconComponent;
   links: readonly NavigationLink[];
-  /** En Más, un grupo propio con título; el núcleo conserva sus filas de Administración. */
+  /** Grupo propio de módulo: con título en Más y al final de Administración. */
   moreGroup?: boolean;
 }
 

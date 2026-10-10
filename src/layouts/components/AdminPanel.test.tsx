@@ -16,6 +16,17 @@ beforeAll(async () => {
 });
 
 describe("AdminPanel", () => {
+  it("conserva grupos del núcleo, luego el módulo y la fila de cierre del tablero", () => {
+    const core = businessNavigation.administration!;
+    const panel: NavigationPanel = { ...core, sections: [...core.sections ?? [],
+      { labelKey: "assistant:title", icon: Shield, moreGroup: true, links: [{ path: "/org/asistente/configuracion", labelKey: "assistant:settings.title", icon: Shield }] }] };
+    render(<MemoryRouter initialEntries={["/org/auditoria"]}><AdminPanel panel={panel} open onClose={vi.fn()} /></MemoryRouter>);
+    const links = within(screen.getByRole("navigation", { name: "Administración" })).getAllByRole("link");
+    expect(links.at(0)).toHaveTextContent("Gestión de usuarios");
+    expect(links.at(-2)).toHaveTextContent("Asistente");
+    expect(links.at(-1)).toHaveTextContent("Auditoría");
+    expect(screen.getByRole("link", { name: "Página pública" }).compareDocumentPosition(links.at(-2)!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
   it("el panel Gestión tiene su propio cierre y marca Cuentas al abrir su ficha", async () => {
     const onClose = vi.fn();
     render(<MemoryRouter initialEntries={["/plataforma/cuentas/ana"]}><AdminPanel panel={platformNavigation.management ?? null} open onClose={onClose} /></MemoryRouter>);

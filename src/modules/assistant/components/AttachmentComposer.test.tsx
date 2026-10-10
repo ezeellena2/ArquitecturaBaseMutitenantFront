@@ -35,7 +35,7 @@ describe("disponibilidad y espera del compositor", () => {
     expect(send).toBeDisabled();
     expect(within(send).queryByText("Guardando…")).not.toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Tu consulta" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Adjuntar" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Adjuntar imágenes o PDF" })).toBeDisabled();
   });
 
   it("espera real anuncia el pendiente y Detener conserva su propia acción", async () => {

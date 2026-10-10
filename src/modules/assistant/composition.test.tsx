@@ -121,8 +121,9 @@ describe("composición real de accesos e inicios", () => {
     const app = mount("/", { ...personal, needsPersonalLoginMethod: true });
     await screen.findByRole("textbox", { name: "Tu consulta" });
     const notice = screen.getByText("Agregá un correo personal o tu WhatsApp para no perder tu cuenta si dejás la empresa.");
+    expect(screen.getByRole("textbox", { name: "Tu consulta" }).compareDocumentPosition(notice) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     await app.user.click(await screen.findByRole("button", { name: "Consulta previa" }));
-    expect(notice).toBeVisible();
+    expect(notice).not.toBeInTheDocument();
     expect(await axe(app.container)).toHaveNoViolations();
     act(() => app.client.setQueryData(currentUserQueryKey, { ...personal, features: [] }));
     await waitFor(() => expect(screen.queryByRole("textbox", { name: "Tu consulta" })).not.toBeInTheDocument());
@@ -235,6 +236,7 @@ describe("composición real de accesos e inicios", () => {
     const cards = await screen.findByRole("navigation", { name: "Áreas de la organización" });
     expect(within(cards).getByRole("link", { name: /^Usuarios/ })).toHaveTextContent("11 usuarios");
     expect(screen.getByText("Nada para resolver")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Para resolver" }).compareDocumentPosition(cards) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(within(screen.getByRole("complementary", { name: "Navegación principal" })).queryByRole("link", { name: "Asistente" })).not.toBeInTheDocument();
   });
   it.each(["Active", "Suspended"] as const)("el enlace personal a organización %s cambia sólo al click mediante profiles/select", async (status) => {

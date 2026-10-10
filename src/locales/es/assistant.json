@@ -36,7 +36,8 @@
     "configure": "Revisar configuración"
   },
   "limit": {
-    "monthly": "La organización llegó al tope del mes del asistente.",
+    "monthly": "{{organization}} llegó al tope del mes del asistente.",
+    "organization": "La organización",
     "daily": "Llegaste a las <count/> consultas de hoy. Se renuevan a las <reset/>.",
     "remaining_one": "Te queda <remaining/> consulta hoy.",
     "remaining_other": "Te quedan <remaining/> consultas hoy.",
@@ -66,7 +67,7 @@
     "organization": "tu organización"
   },
   "attachments": {
-    "add": "Adjuntar",
+    "add": "Adjuntar imágenes o PDF",
     "remove": "Quitar {{name}}",
     "hint": "Imágenes o PDF, hasta {{size}} y {{maxFiles}} por consulta",
     "tooMany_one": "Podés adjuntar hasta {{maxFiles}} archivo.",
