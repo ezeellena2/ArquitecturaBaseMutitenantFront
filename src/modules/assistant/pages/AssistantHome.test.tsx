@@ -44,6 +44,39 @@ beforeEach(() => { Element.prototype.scrollTo = vi.fn(); URL.createObjectURL = v
 afterEach(() => { resetHttpClient(); vi.unstubAllGlobals(); });
 
 describe("interfaz del asistente", () => {
+  it("un rechazo antes de la admisión conserva texto y adjunto subido para corregir sin volver a subir", async () => {
+    const nativeForm = await new Request("http://localhost/form", { method: "POST", headers: { "content-type": "multipart/form-data; boundary=test" }, body: "--test--\r\n" }).formData();
+    vi.stubGlobal("FormData", nativeForm.constructor); vi.stubGlobal("File", FetchFile);
+    const app = setup();
+    let uploads = 0;
+    const bodies: SendAssistantMessageRequest[] = [];
+    const keys: Array<string | null> = [];
+    server.use(http.post("/api/organization/assistant/conversations/chat/attachments", () => { uploads++; return HttpResponse.json({ id: "upload", fileName: "uno.pdf", mediaType: "application/pdf", byteLength: 3, version: 9 } satisfies AssistantAttachmentSummaryResponse); }),
+      http.post("/api/organization/assistant/conversations/chat/messages", async ({ request }) => {
+        const body = await request.json() as SendAssistantMessageRequest; bodies.push(body); keys.push(request.headers.get("Idempotency-Key"));
+        if (bodies.length === 1) return HttpResponse.json({ code: "Assistant.Provider.ContextTooLarge", detail: "La consulta es demasiado larga." }, { status: 400 });
+        const response = message("a", "assistant", "Corregida");
+        app.changeDetail({ ...detail(), conversation: { ...detail().conversation, version: 2 }, messages: { items: [message("u", "user", body.text ?? ""), response], hasMore: false } });
+        return HttpResponse.json({ turnId: "turn", message: response, conversationVersion: 2, usage: { inputTokens: 1, outputTokens: 1, cacheReadTokens: 0, cacheWriteTokens: 0, cost: { amount: 0, currency: "USD" }, remainingMessages: 39 } } satisfies AssistantTurnResultResponse);
+      }));
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    await app.user.upload(screen.getByLabelText("Adjuntar", { selector: "input" }), new File(["pdf"], "uno.pdf", { type: "application/pdf" }));
+    await app.user.type(screen.getByRole("textbox", { name: "Tu consulta" }), "Consulta original");
+    await app.user.click(screen.getByRole("button", { name: "Enviar" }));
+    await screen.findByText("La consulta es demasiado larga.");
+    const input = screen.getByRole("textbox", { name: "Tu consulta" });
+    await waitFor(() => expect(input).toHaveValue("Consulta original"));
+    expect(screen.getByRole("button", { name: "Quitar uno.pdf" })).toBeVisible();
+    expect(Object.values(app.queryClient.getQueryData<Record<string, AssistantAttachmentSummaryResponse>>(["assistant", "business", "org", "user", "pendingAttachments", "chat"]) ?? {})).toEqual([expect.objectContaining({ id: "upload" })]);
+    await app.user.clear(input); await app.user.type(input, "Consulta corregida");
+    await app.user.click(screen.getByRole("button", { name: "Enviar" }));
+    await screen.findByText("Corregida");
+    expect(uploads).toBe(1);
+    expect(app.created()).toBe(1);
+    expect(bodies).toEqual([{ text: "Consulta original", attachmentIds: ["upload"], conversationVersion: 1 }, { text: "Consulta corregida", attachmentIds: ["upload"], conversationVersion: 1 }]);
+    expect(new Set(keys).size).toBe(2);
+    expect(input).toHaveValue("");
+  });
   it("el runtime conserva el borrador cuando falla preparar la conversación", async () => {
     const app = setup();
     let attempts = 0;

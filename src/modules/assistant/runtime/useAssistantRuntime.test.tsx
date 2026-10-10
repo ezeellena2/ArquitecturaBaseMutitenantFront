@@ -56,6 +56,36 @@ const start = { turnId: "turn", userMessageId: "u", assistantMessageId: "a", con
 afterEach(() => { vi.useRealTimers(); resetHttpClient(); });
 
 describe("páginas cronológicas del runtime", () => {
+  it("notifica la admisión al recibir 2xx antes de start y no la repite al reconciliar", async () => {
+    const hook = setup();
+    const live = stream();
+    const admitted = vi.fn();
+    server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => new HttpResponse(live.body, { headers: { "Content-Type": "text/event-stream" } })));
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    let sending!: ReturnType<typeof hook.result.current.send>;
+    act(() => { sending = hook.result.current.send({ text: "Consulta", conversationVersion: 3 }, admitted); });
+    await waitFor(() => expect(admitted).toHaveBeenCalledOnce());
+    expect(hook.result.current.turn?.start).toBeUndefined();
+    hook.setDurable(conversation([message("u", "user"), terminal.message]));
+    act(() => { live.event("start", start); live.event("done", terminal); live.close(); });
+    await act(async () => { await sending; });
+    expect(admitted).toHaveBeenCalledOnce();
+  });
+  it("una respuesta tardía tras clear no admite ni limpia el borrador de otro dueño", async () => {
+    const hook = setup();
+    const gate = deferred<void>();
+    const admitted = vi.fn();
+    let requests = 0;
+    server.use(http.post("/api/organization/assistant/conversations/chat/messages", async () => { requests++; await gate.promise; return HttpResponse.json(terminal); }));
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    let sending!: Promise<unknown>;
+    act(() => { sending = hook.result.current.send({ text: "Privada", conversationVersion: 3 }, admitted).catch(() => undefined); });
+    await waitFor(() => expect(requests).toBe(1));
+    act(() => hook.client.clear());
+    await act(async () => { gate.resolve(); await sending; });
+    expect(admitted).not.toHaveBeenCalled();
+    expect(hook.result.current.messages).toEqual([]);
+  });
   it("refrescar Estado conserva el bloqueo mensual HTTP sin recuperación autorizada", async () => {
     const hook = setup();
     server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => HttpResponse.json({ code: "Assistant.Limit.MonthlyReached" }, { status: 429 })));

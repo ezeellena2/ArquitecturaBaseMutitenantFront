@@ -205,13 +205,22 @@ function AssistantSession(props: AssistantHomeProps) {
         }
         context.assertActive();
         if (!delivered) {
-          delivered = true;
           const request: SendAssistantMessageRequest = { text, attachmentIds: uploads.flatMap((item) => item.attachmentId ? [item.attachmentId] : []), conversationVersion: current.conversation.version };
-          changeFiles([]);
-          client.removeQueries({ queryKey: pendingKey(id), exact: true });
+          const sentIds = new Set(chosen.map((item) => item.id));
           // El envío tiene su propio Retry inmutable en el runtime. El Retry de
           // preparar/adjuntar jamás vuelve a emitir un mensaje ya entregado.
-          try { await latest.current.send(request); }
+          try { await latest.current.send(request, () => {
+            context.assertActive();
+            delivered = true;
+            changeFiles(filesRef.current.filter((item) => !sentIds.has(item.id)));
+            client.removeQueries({ queryKey: pendingKey(id!), exact: true });
+            // Retry de red pudo devolver el borrador al SDK. La admisión quita
+            // sólo esa consulta; conserva cualquier edición/archivo posterior.
+            const composer = latest.current.runtime.thread.composer;
+            if (composer.getState().text.trim() === text) composer.setText("");
+            const attachments = composer.getState().attachments;
+            for (let index = attachments.length - 1; index >= 0; index--) if (sentIds.has(attachments[index]!.id)) void composer.getAttachmentByIndex(index).remove().catch(() => undefined);
+          }); }
           catch { context.assertActive(); return; }
           context.assertActive();
         }

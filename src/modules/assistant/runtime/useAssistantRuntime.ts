@@ -73,14 +73,19 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
   const readerRef = useRef<{ controller: AbortController; operation: SendOperation } | null>(null);
   const lastOperation = useRef<SendOperation | null>(null);
   const flightRef = useRef<SendOperation | null>(null);
+  // Los callbacks de UI no van en variables de MutationCache; vencen con su
+  // dueño y sólo sobreviven un error de red para el Retry del mismo POST.
+  const admissions = useRef(new Map<string, { lifetime: AssistantLifetime; callback: () => void }>());
   const reconciliationControllers = useRef(new Set<AbortController>());
   const stopBeforeStart = useRef<{ resolve: () => void; reject: (error: unknown) => void } | null>(null);
   const owner = useMemo(() => ({ lifetime, id: globalThis.crypto.randomUUID() }), [lifetime]).id;
   useEffect(() => {
+    const ownedAdmissions = admissions.current;
     if (enabled) lifetime.attach();
     else lifetime.close();
     return () => {
       lifetime.close();
+      for (const [id, admission] of ownedAdmissions) if (admission.lifetime === lifetime) ownedAdmissions.delete(id);
       client.removeQueries({ queryKey: turnKey, exact: true });
       client.removeQueries({ queryKey: messagesKey, exact: true });
       const privateDetail = client.getQueryCache().find({ queryKey: detailKey, exact: true });
@@ -93,6 +98,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
   }, [client, lifetime, turnKey, detailKey, messagesKey, root, conversationId, enabled]);
   useEffect(() => {
     if (active) return;
+    admissions.current.clear();
     lastOperation.current = null;
     flightRef.current = null;
     readerRef.current = null;
@@ -255,8 +261,13 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
     let admitted = false;
     try {
       const response = await sendAssistantMessageResponse(operation.scope, operation.conversationId, operation.request, operation.idempotencyKey, controller.signal);
+      controller.signal.throwIfAborted();
+      operation.lifetime.assertActive();
       admitted = true;
       operation.admitted = true;
+      const admission = admissions.current.get(operation.operationId);
+      admissions.current.delete(operation.operationId);
+      admission?.callback();
       for await (const event of decodeAssistantStream(response, controller.signal)) {
         controller.signal.throwIfAborted();
         operation.lifetime.assertActive();
@@ -272,6 +283,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
       reconciliation.signal.throwIfAborted();
       operation.lifetime.assertActive();
       if (!admitted) {
+        if (!(error instanceof ApiError) || !error.isNetworkError) admissions.current.delete(operation.operationId);
         const current = client.getQueryData<AssistantTurnState>(turnKey);
         if (current) client.setQueryData(turnKey, { ...current, phase: "Failed" });
         operation.lifetime.release(reconciliation);
@@ -312,13 +324,15 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
     && state.data.remainingMessages !== 0 && !pendingMutations && !isAssistantTurnPending(turn)
     && !durablePending && !blockedCode;
 
-  const send = (request: SendAssistantMessageRequest) => {
+  const send = (request: SendAssistantMessageRequest, onAdmitted?: () => void) => {
     if (!lifetime.getSnapshot() || !canSend || !conversationId || flightRef.current?.lifetime === lifetime) return Promise.reject(new ApiError(409, { code: "Assistant.Runtime.SendDisabled" }));
     const operation: SendOperation = {
       operationId: globalThis.crypto.randomUUID(), scope: identity, conversationId, lifetime,
       request: { ...request, attachmentIds: request.attachmentIds ? [...request.attachmentIds] : request.attachmentIds },
     };
     lastOperation.current = operation;
+    admissions.current.clear();
+    if (onAdmitted) admissions.current.set(operation.operationId, { lifetime, callback: onAdmitted });
     for (const controller of reconciliationControllers.current) controller.abort();
     flightRef.current = operation;
     stopMutation.reset();
