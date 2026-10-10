@@ -46,6 +46,39 @@ beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); a
 afterEach(() => { resetHttpClient(); vi.unstubAllGlobals(); });
 
 describe("interfaz del asistente", () => {
+  it("State fallido usa la pantalla común, sin detalle privado, y reintenta por UI", async () => {
+    const app = setup();
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    let calls = 0;
+    server.use(http.get("/api/organization/assistant", () => ++calls === 1 ? HttpResponse.json({ code: "General.PrivateFailure", detail: "provider secret", traceId: "private-trace" }, { status: 503 }) : HttpResponse.json(state)));
+    await act(async () => { await app.queryClient.invalidateQueries({ queryKey: ["assistant", "business", "org", "user", "state"] }); });
+    expect(await screen.findByRole("heading", { name: "No pudimos abrir esta pantalla" })).toBeVisible();
+    expect(screen.queryByText(/provider secret|private-trace|General.PrivateFailure/)).not.toBeInTheDocument();
+    await userEvent.setup().click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(await screen.findByRole("textbox", { name: "Tu consulta" })).toBeEnabled();
+    expect(calls).toBe(2);
+  });
+  it("primera vez muestra un solo vacío de historial sin encabezados de grupos", async () => {
+    setup();
+    expect(await screen.findByText("Todavía no hay conversaciones")).toBeVisible();
+    expect(screen.queryByRole("heading", { name: "Guardadas" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Recientes" })).not.toBeInTheDocument();
+  });
+  it.each([false, true])("la ayuda de retención usa botón accesible y una sola hoja; teléfono %s", async (phone) => {
+    const app = setup(state, phone);
+    app.changeDetail(detail());
+    await screen.findByRole("textbox", { name: "Tu consulta" });
+    if (phone) await app.user.click(screen.getByRole("button", { name: "Conversaciones" }));
+    const info = await screen.findByRole("button", { name: "Se borran solas a los 30 días sin actividad. Las guardadas no vencen." });
+    info.focus();
+    await app.user.keyboard("{Enter}");
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByRole("heading", { name: "Recientes" })).toBeVisible();
+    expect(within(dialog).getByText("Se borran solas a los 30 días sin actividad. Las guardadas no vencen.")).toBeVisible();
+    await app.user.click(within(dialog).getByRole("button", { name: "Entendido" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(phone ? screen.getByRole("button", { name: "Conversaciones" }) : info).toHaveFocus();
+  });
   it("usa los topes de State antes de crear o subir y muestra tamaño y cantidad actuales", async () => {
     const app = setup({ ...state, maxAttachments: 1, maxAttachmentBytes: 500_000 });
     const add = await screen.findByRole("button", { name: "Adjuntar" });

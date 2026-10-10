@@ -5,7 +5,8 @@ import type { AssistantConversationSummaryResponse } from "@/shared/api/types";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { Button } from "@/shared/ui/button";
 import { RowActions, type RowAction } from "@/shared/ui/RowActions";
-import { InfoIcon, MoreVerticalIcon } from "@/shared/ui/icons";
+import { MoreVerticalIcon } from "@/shared/ui/icons";
+import { InfoButton } from "@/shared/ui/InfoButton";
 import { useFormat } from "@/shared/format/useFormat";
 import { assistantConversationsQueryKey, fetchAssistantConversations, type AssistantScope } from "../api/assistant";
 import type { AssistantLifetime } from "../runtime/assistantLifetime";
@@ -14,6 +15,7 @@ export interface ConversationListProps {
   scope: AssistantScope; lifetime: AssistantLifetime; enabled: boolean; selectedId: string | null; retentionDays: number;
   onSelect: (id: string) => void; onNew: () => void; actions: (conversation: AssistantConversationSummaryResponse) => readonly RowAction[];
   onActions?: (conversation: AssistantConversationSummaryResponse) => void;
+  onRetentionInfo: () => void;
 }
 function useConversationGroup(props: ConversationListProps, saved: boolean) {
   return useInfiniteQuery({
@@ -37,7 +39,7 @@ function Group({ saved, query, ...props }: ConversationListProps & { saved: bool
   const format = useFormat();
   return <section className="flex flex-col gap-1">
     <h2 className="flex items-center gap-1.5 px-2.5 pt-3.5 pb-1.5 text-[12.5px] font-semibold text-[var(--t3)]">{t(saved ? "history.saved" : "history.recent")}
-      {!saved ? <span role="img" tabIndex={0} aria-label={t("history.retention", { days: format.formatInteger(props.retentionDays) })} title={t("history.retention", { days: format.formatInteger(props.retentionDays) })}><InfoIcon className="size-3.5" /></span> : null}
+      {!saved ? <InfoButton label={t("history.retention", { days: format.formatInteger(props.retentionDays) })} onClick={props.onRetentionInfo} /> : null}
     </h2>
     <ThreadListPrimitive.Items>{({ threadListItem }) => {
       const conversation = query.data?.pages.flatMap((page) => page.items).find((item) => item.id === threadListItem.id);
@@ -68,6 +70,7 @@ export function ConversationList(props: ConversationListProps) {
   } } });
   return <AssistantRuntimeProvider runtime={runtime}><ThreadListPrimitive.Root className="flex min-h-0 flex-col overflow-auto p-3">
     <ThreadListPrimitive.New asChild><Button variant="outline">{t("history.new")}</Button></ThreadListPrimitive.New>
-    <Group {...props} query={saved} saved /><Group {...props} query={recent} saved={false} />
+    {saved.isSuccess && recent.isSuccess && conversations.length === 0 ? <p className="px-2.5 py-4 text-[13.5px] text-[var(--t3)]">{t("history.empty")}</p>
+      : <><Group {...props} query={saved} saved /><Group {...props} query={recent} saved={false} /></>}
   </ThreadListPrimitive.Root></AssistantRuntimeProvider>;
 }

@@ -9,7 +9,7 @@ import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
 import { toastError } from "@/shared/ui/sonner";
 import { Button } from "@/shared/ui/button";
 import type { RowAction } from "@/shared/ui/RowActions";
-import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { AppBarTools } from "@/shared/ui/app/AppBarTools";
 import { AppIconButton } from "@/shared/ui/app/AppBar";
@@ -18,6 +18,7 @@ import { NumberText } from "@/shared/ui/format/NumberText";
 import { useFormat } from "@/shared/format/useFormat";
 import { ForbiddenPage } from "@/shared/ui/ForbiddenPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
+import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { ChevronLeftIcon, CopyIcon, PencilIcon, TrashIcon } from "@/shared/ui/icons";
 import { homeOf } from "@/tenancy/access";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
@@ -75,9 +76,11 @@ function AssistantSession(props: AssistantHomeProps) {
   const [generation, setGeneration] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [retentionOpen, setRetentionOpen] = useState(false);
   const [phoneActions, setPhoneActions] = useState<{ title: string | null; items: RowAction[] } | null>(null);
   const historyTrigger = useRef<HTMLButtonElement>(null);
   const restoreHistory = useRestoreFocusOnClose(historyOpen, historyTrigger);
+  const restoreRetention = useRestoreFocusOnClose(retentionOpen, historyTrigger);
   const restoreActions = useRestoreFocusOnClose(!!phoneActions, historyTrigger);
   const [dialog, setDialog] = useState<ConversationDialogState | null>(null);
   const dialogRef = useRef(dialog);
@@ -136,6 +139,7 @@ function AssistantSession(props: AssistantHomeProps) {
     changeFiles([]);
     setFileError(null);
     setHistoryOpen(false);
+    setRetentionOpen(false);
     setPhoneActions(null);
     setDialog(null);
     client.removeQueries({ queryKey: [...root, "pendingAttachments"] });
@@ -370,7 +374,7 @@ function AssistantSession(props: AssistantHomeProps) {
   const error = runtime.state.error ?? runtime.detail.error;
   if (error instanceof ApiError && error.status === 403) return <ForbiddenPage homePath={homeOf(scope.access)} />;
   if (error instanceof ApiError && error.status === 404) return <NotFoundPage homePath={homeOf(scope.access)} />;
-  if (error) return <div role="alert"><p>{apiErrorMessage(error, t)}</p><Button onClick={() => { void runtime.state.refetch(); if (selectedId) void runtime.detail.refetch(); }}>{t("retry")}</Button></div>;
+  if (error) return <LoadErrorPage screen={t("title")} onRetry={() => { void runtime.state.refetch(); if (selectedId) void runtime.detail.refetch(); }} />;
   if (!state) return <p role="status">{t("loading")}</p>;
   const code = runtime.blockedCode ?? (operations.error instanceof ApiError ? operations.error.code : null);
   const configured = state.configured && code !== "Assistant.Settings.NotConfigured";
@@ -383,6 +387,7 @@ function AssistantSession(props: AssistantHomeProps) {
       : runtime.turn?.start ? null : assistantStreamErrorMessage(runtime.error, t) : null;
   const canViewUsage = scope.access === "business" ? props.hasPermission("assistant.configure") : scope.access === "platform" && props.hasPermission("platform.assistant.read");
   const history = <ConversationList scope={scope} lifetime={operations.lifetime} enabled={operations.active} selectedId={selectedId} retentionDays={state.retentionDays} onNew={() => select(null)} onSelect={select} actions={actions}
+    onRetentionInfo={() => { setHistoryOpen(false); setRetentionOpen(true); }}
     onActions={phone ? (conversation) => { setHistoryOpen(false); setPhoneActions({ title: conversation.title ?? null, items: actions(conversation) }); } : undefined} />;
   const composer = <AttachmentComposer key={generation} limits={state} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} pending={busy} canStop={runtime.canStop}
     onFiles={(chosen) => {
@@ -417,11 +422,16 @@ function AssistantSession(props: AssistantHomeProps) {
       {runtime.messages.at(-1)?.status === "Failed" && runtime.canSend && canRetryAssistantFailure(runtime.turn?.error) ? <AssistantRetryButton key={runtime.turn?.start?.turnId ?? runtime.messages.at(-1)?.id} retryAfter={runtime.turn?.error?.retryAfter} pending={busy} onRetry={retryFailed} /> : null}
     </section>
     {phone && historyOpen && !notice ? <Dialog open onOpenChange={setHistoryOpen}><DialogContent aria-describedby={undefined} onCloseAutoFocus={restoreHistory}><DialogHeader><DialogTitle>{t("history.title")}</DialogTitle></DialogHeader><DialogBody>{history}</DialogBody></DialogContent></Dialog> : null}
-    {phone && phoneActions && !notice ? <Dialog open onOpenChange={(open) => { if (!open) setPhoneActions(null); }}><DialogContent size="sm" showCloseButton={false} aria-describedby={undefined} onCloseAutoFocus={restoreActions}>
+    {phone && phoneActions && !notice ? <Dialog open onOpenChange={(open) => { if (!open) setPhoneActions(null); }}><DialogContent size="sm" aria-describedby={undefined} onCloseAutoFocus={restoreActions}>
       <DialogHeader><DialogTitle>{phoneActions.title ?? t("history.untitled")}</DialogTitle></DialogHeader>
       <div role="menu" className="flex flex-col pb-5">{phoneActions.items.map((action) => <button key={action.label} type="button" role="menuitem" aria-label={action.accessibleName}
         className={`min-h-[54px] border-t border-[var(--borde)] px-5 text-left text-[16.5px] ${"destructive" in action && action.destructive ? "text-[var(--peligro)]" : "text-[var(--t1)]"}`}
         onClick={() => { setPhoneActions(null); action.onSelect(historyTrigger.current); }}>{action.label}</button>)}</div>
+    </DialogContent></Dialog> : null}
+    {retentionOpen && !notice ? <Dialog open onOpenChange={setRetentionOpen}><DialogContent size="sm" onCloseAutoFocus={restoreRetention}>
+      <DialogHeader><DialogTitle>{t("history.recent")}</DialogTitle></DialogHeader>
+      <DialogBody><DialogDescription>{t("history.retention", { days: format.formatInteger(state.retentionDays) })}</DialogDescription></DialogBody>
+      <DialogFooter><Button onClick={() => setRetentionOpen(false)}>{t("common:notice.understood")}</Button></DialogFooter>
     </DialogContent></Dialog> : null}
     {notice ? <AssistantNotice pending={operations.pending} error={actionError} onAccept={acceptNotice} onPrivacy={props.onPrivacy} /> : null}
     {dialog && !notice ? <ConversationDialog value={dialog} pending={operations.pending} error={actionError} onClose={closeDialog} onConfirm={confirmDialog} /> : null}
