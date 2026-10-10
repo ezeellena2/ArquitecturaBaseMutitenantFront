@@ -158,6 +158,7 @@ describe("catálogo y configuración de plataforma", () => {
     const app = mountSettings(platformManager, catalogPath);
     const add = await screen.findByRole("button", { name: "Agregar modelo" }); await app.user.click(add);
     const dialog = await screen.findByRole("dialog", { name: "Agregar modelo" });
+    expect(within(dialog).getByRole("button", { name: "Agregar modelo" })).toBeEnabled();
     fireEvent.change(within(dialog).getByRole("textbox", { name: "Nombre" }), { target: { value: "Nuevo modelo" } });
     fireEvent.change(within(dialog).getByRole("textbox", { name: "ID" }), { target: { value: "new-model" } });
     const input = within(dialog).getByRole("textbox", { name: "Precio de entrada por millón" });
@@ -190,6 +191,41 @@ describe("catálogo y configuración de plataforma", () => {
     await app.user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
     await act(async () => { await expect(mutation.execute(mutation.state.variables)).rejects.toMatchObject({ name: "AbortError" }); }); expect(wire).toHaveLength(1);
     expect(screen.getAllByText("USD 0,13")).not.toHaveLength(0);
+  });
+  it("editar se apaga sólo sin cambios y anuncia el guardado HTTP pendiente sin duplicarlo", async () => {
+    const wire: UpdateAssistantModelRequest[] = [];
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    server.use(http.put(`/api/platform/assistant/models/${firstModel.id}`, async ({ request }) => {
+      wire.push(await request.json() as UpdateAssistantModelRequest);
+      await gate;
+      return HttpResponse.json({ version: 4 });
+    }));
+    const app = mountSettings(platformManager, catalogPath);
+    (await screen.findByRole("button", { name: `Acciones de ${firstModel.name}` })).focus();
+    await app.user.keyboard("{Enter}");
+    await app.user.click(await screen.findByRole("menuitem", { name: `Editar ${firstModel.name}` }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar modelo" });
+    const name = within(dialog).getByRole("textbox", { name: "Nombre" });
+    const save = within(dialog).getByRole("button", { name: "Guardar cambios" });
+    expect(save).toBeDisabled();
+    fireEvent.change(name, { target: { value: "Nombre nuevo" } });
+    expect(save).toBeEnabled();
+    fireEvent.change(name, { target: { value: firstModel.name } });
+    expect(save).toBeDisabled();
+    fireEvent.change(name, { target: { value: "Nombre nuevo" } });
+    await app.user.click(save);
+    try {
+      await waitFor(() => expect(wire).toHaveLength(1));
+      const saving = within(dialog).getByRole("button", { name: "Guardando…" });
+      expect(saving).toBeDisabled();
+      await app.user.click(saving);
+      expect(wire).toHaveLength(1);
+      expect(name).toHaveValue("Nombre nuevo");
+    } finally {
+      await act(async () => { release(); await gate; });
+    }
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
   it("la pestaña vive en URL y protege el borrador antes de abandonarlo", async () => {
     const app = mountSettings(platformManager);

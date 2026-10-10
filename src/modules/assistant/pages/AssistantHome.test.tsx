@@ -59,6 +59,9 @@ describe("interfaz del asistente", () => {
     server.use(http.post("/api/organization/assistant/notice", async ({ request }) => { noticeBody = await request.json(); app.changeState(state); return new HttpResponse(null, { status: 204 }); }));
     const dialog = await screen.findByRole("dialog");
     expect(screen.getByRole("button", { name: "Usuarios activos", hidden: true })).toBeDisabled();
+    const unavailableSend = screen.getByRole("button", { name: "Enviar", hidden: true });
+    expect(unavailableSend).toBeDisabled();
+    expect(within(unavailableSend).queryByText("Guardando…")).not.toBeInTheDocument();
     await app.user.click(within(dialog).getByRole("button", { name: "Entendido" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(noticeBody).toEqual({ noticeVersion: "v1" });
@@ -123,6 +126,9 @@ describe("interfaz del asistente", () => {
     await app.user.type(await screen.findByRole("textbox", { name: "Tu consulta" }), "Privado anterior");
     await app.user.click(screen.getByRole("button", { name: "Enviar" }));
     await waitFor(() => expect(requested).toBe(true));
+    const sending = screen.getByRole("button", { name: "Guardando…" });
+    expect(sending).toBeDisabled();
+    expect(within(sending).getByText("Guardando…")).toBeVisible();
     await app.user.click(screen.getByRole("button", { name: "Nueva conversación" }));
     await act(async () => { release(); await gate; });
     expect(app.requests).toEqual([]);
@@ -216,6 +222,7 @@ describe("interfaz del asistente", () => {
     expect(screen.getByRole("button", { name: "Enviar" })).toBeEnabled();
     expect(await axe(app.container)).toHaveNoViolations();
     await app.user.type(screen.getByRole("textbox", { name: "Tu consulta" }), "Leé la captura");
+    expect(screen.getByRole("button", { name: "Enviar" })).toBeEnabled();
     await app.user.click(screen.getByRole("button", { name: "Enviar" }));
     expect(app.created()).toBe(0);
     expect(uploads).toEqual([]);

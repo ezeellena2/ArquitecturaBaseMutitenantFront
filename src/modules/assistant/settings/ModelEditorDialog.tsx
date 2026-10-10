@@ -73,7 +73,7 @@ export function ModelEditorDialog({ scope, model, currency, trigger, onClose }: 
         </FormField>} />)}
         <Controller control={form.control} name="isActive" render={({ field }) => <CheckboxField label={t("assistant:settings.active")} checked={field.value} onCheckedChange={(value) => { changed(); field.onChange(value); }} />} />
       </div><FormError message={actionErrorMessage(failure, t)} /></DialogBody>
-      <DialogFooter><Button type="button" variant="outline" onClick={close}>{t("common:actions.cancel")}</Button><Button type="submit" disabled={!!model && !form.formState.isDirty} pending={operation.pending}>{t(model ? "assistant:settings.save" : "assistant:settings.addModel")}</Button></DialogFooter>
+      <DialogFooter><Button type="button" variant="outline" onClick={close}>{t("common:actions.cancel")}</Button><Button type="submit" disabled={Boolean(model) && !form.formState.isDirty} pending={operation.pending}>{t(model ? "assistant:settings.save" : "assistant:settings.addModel")}</Button></DialogFooter>
     </form>
   </DialogContent></Dialog>;
 }

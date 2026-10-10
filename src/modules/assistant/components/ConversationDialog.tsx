@@ -15,6 +15,7 @@ export function ConversationDialog({ value, pending, error, onClose, onConfirm }
 }) {
   const { t } = useTranslation("assistant");
   const restore = useRestoreFocusOnClose(true, value.trigger);
+  const rename = value.kind === "rename" ? value.conversation : null;
   const form = useForm({ resolver: zodResolver(z.object({ title: z.string().trim().min(1, t("history.nameRequired")) })), defaultValues: { title: value.conversation.title ?? "" } });
   return <Dialog open onOpenChange={(open) => { if (!open && !pending) onClose(); }}><DialogContent size="sm" showCloseButton={value.kind === "rename"} onCloseAutoFocus={restore}>
     <DialogHeader><DialogTitle>{value.kind === "rename" ? t("history.renameTitle") : t("history.deleteTitle", { title: value.conversation.title ?? t("history.untitled") })}</DialogTitle></DialogHeader>
@@ -23,7 +24,7 @@ export function ConversationDialog({ value, pending, error, onClose, onConfirm }
         {error ? <p role="alert" className="text-[var(--peligro)]">{error}</p> : null}
       </DialogBody>
       <DialogFooter><Button type="button" variant="outline" disabled={pending} onClick={onClose}>{t("cancel")}</Button>
-        <Button type="submit" variant={value.kind === "delete" ? "destructive" : "default"} disabled={pending || value.kind === "rename" && !form.formState.isDirty}>{t(value.kind === "delete" ? "history.delete" : "history.saveChanges")}</Button></DialogFooter>
+        <Button type="submit" variant={value.kind === "delete" ? "destructive" : "default"} disabled={Boolean(rename) && !form.formState.isDirty} pending={pending}>{t(value.kind === "delete" ? "history.delete" : "history.saveChanges")}</Button></DialogFooter>
     </form>
   </DialogContent></Dialog>;
 }

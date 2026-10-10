@@ -24,13 +24,13 @@ function FilePreview({ file }: { file: File }) {
     : file.type === "application/pdf" ? <FileText aria-hidden="true" className="size-5 shrink-0" /> : null;
 }
 
-export function AttachmentComposer({ files, errorId, placeholder, disabled, pending, canStop, onFiles, onRemove, onSend, onStop }: {
+export function AttachmentComposer({ files, errorId, placeholder, unavailable, pending, canStop, onFiles, onRemove, onSend, onStop }: {
   placeholder: string;
   errorId?: string;
-  files: readonly PendingAssistantFile[]; disabled: boolean; pending: boolean; canStop: boolean;
+  files: readonly PendingAssistantFile[]; unavailable: boolean; pending: boolean; canStop: boolean;
   onFiles: (files: File[]) => void; onRemove: (id: string) => void; onSend: (text: string) => Promise<boolean>; onStop: () => void;
 }) {
-  const { t } = useTranslation("assistant");
+  const { t } = useTranslation(["assistant", "common"]);
   const schema = z.object({ text: z.string().trim().min(1, t("composer.required")) });
   const form = useForm({ resolver: zodResolver(schema), defaultValues: { text: "" } });
   const fileInput = useRef<HTMLInputElement>(null);
@@ -40,13 +40,13 @@ export function AttachmentComposer({ files, errorId, placeholder, disabled, pend
       <FilePreview file={file} /><span className="max-w-44 truncate">{file.name}</span><FileSizeText value={file.size} />
       <button type="button" disabled={pending} aria-label={t("attachments.remove", { name: file.name })} onClick={() => onRemove(id)}><CloseIcon className="size-5" /></button>
     </li>)}</ul> : null}
-    <div className="[&_label]:sr-only"><FormField label={t("composer.label")} error={form.formState.errors.text?.message}><Textarea {...form.register("text")} placeholder={placeholder} disabled={disabled || pending} className="min-h-16 resize-none border-0 shadow-none" /></FormField></div>
+    <div className="[&_label]:sr-only"><FormField label={t("composer.label")} error={form.formState.errors.text?.message}><Textarea {...form.register("text")} placeholder={placeholder} disabled={unavailable || pending} className="min-h-16 resize-none border-0 shadow-none" /></FormField></div>
     <div className="flex items-center gap-2">
-      <input ref={fileInput} type="file" multiple accept={assistantAttachmentTypes.join(",")} aria-label={t("attachments.add")} aria-invalid={files.some((item) => item.invalid) || undefined} aria-describedby={errorId} className="sr-only" disabled={disabled || pending}
+      <input ref={fileInput} type="file" multiple accept={assistantAttachmentTypes.join(",")} aria-label={t("attachments.add")} aria-invalid={files.some((item) => item.invalid) || undefined} aria-describedby={errorId} className="sr-only" disabled={unavailable || pending}
         onChange={(event) => { onFiles(Array.from(event.target.files ?? [])); event.target.value = ""; }} />
-      <Button type="button" variant="icon" size="icon" aria-label={t("attachments.add")} disabled={disabled || pending} onClick={() => fileInput.current?.click()}><Paperclip className="size-5" /></Button>
+      <Button type="button" variant="icon" size="icon" aria-label={t("attachments.add")} disabled={unavailable || pending} onClick={() => fileInput.current?.click()}><Paperclip className="size-5" /></Button>
       <span className="flex-1" />
-      {canStop ? <Button type="button" variant="outline" onClick={onStop}>{t("composer.stop")}</Button> : <Button type="submit" disabled={disabled || pending} aria-label={t("composer.send")}><SendIcon className="size-4" /></Button>}
+      {canStop ? <Button type="button" variant="outline" onClick={onStop}>{t("composer.stop")}</Button> : <Button type="submit" disabled={unavailable} pending={pending} aria-label={pending ? t("common:states.saving") : t("composer.send")}><SendIcon className="size-4" /></Button>}
     </div>
   </form>;
 }

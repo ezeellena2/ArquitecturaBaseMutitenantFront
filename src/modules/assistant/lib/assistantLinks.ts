@@ -1,4 +1,5 @@
 import type { AssistantLinkResponse, AssistantRouteKey } from "@/shared/api/types";
+import { homeOf } from "@/tenancy/access";
 import type { AssistantScope } from "../api/assistant";
 
 /** T11 entrega permisos del acceso actual; ninguna URL del proveedor se acepta. */
@@ -16,7 +17,7 @@ const routes: Record<AssistantRouteKey, { access: AssistantScope["access"]; path
   "business.roles": { access: "business", path: "/org/roles", permission: "roles.read", id: "roleId" },
   "business.companies": { access: "business", path: "/org/empresas", permission: "companies.read", id: "companyId" },
   "business.audit": { access: "business", path: "/org/auditoria", permission: "audit.read" },
-  "business.home": { access: "business", path: "/org" },
+  "business.home": { access: "business", path: homeOf("business") },
   "platform.organizations": { access: "platform", path: "/plataforma/organizaciones", permission: "platform.tenants.read", id: "tenantId" },
   "platform.accounts": { access: "platform", path: "/plataforma/cuentas", permission: "platform.accounts.read", id: "userId" },
   "platform.recoveries": { access: "platform", path: "/plataforma/recuperaciones", permission: "platform.recoveries.manage" },

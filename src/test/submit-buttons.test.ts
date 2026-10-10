@@ -13,6 +13,7 @@ const allowed: ReadonlyArray<readonly [RegExp, string, string?]> = [
   [/^!(?:form\.formState\.)?isDirty$/, "«Guardar cambios» sin cambios"],
   [/^(?:Boolean\(\w+\)|mode === "roles") && !(?:form\.formState\.)?isDirty$/, "al editar, sin cambios; al crear, nunca"],
   [/^blocked$/, "un bloqueo de negocio conocido antes de confirmar, explicado en la franja (ReasonDialog)", "shared/platform/ReasonDialog.tsx"],
+  [/^unavailable$/, "disponibilidad externa del asistente, independiente del texto y los adjuntos", "modules/assistant/components/AttachmentComposer.tsx"],
   [/^isPending$/, "la sesión que se está leyendo"],
   [/^!(?:csrf|antiforgery\.data)\?\.requestToken$/, "la protección del envío que se está cargando"],
 ];
@@ -151,6 +152,17 @@ describe("botones de envío («Criterio · Botones»)", () => {
     expect(violations('<Button type="submit" disabled={blocked}>Dar de baja</Button>', "shared/platform/ReasonDialog.tsx")).toEqual([]);
     expect(violations('<Button type="submit" disabled={blocked}>Crear rol</Button>', "areas/business/roles/RoleEditorPage.tsx")).toEqual(["blocked"]);
     expect(violations('<Button type="submit" disabled={blocked || !reason}>Dar de baja</Button>')).toEqual(["blocked || !reason"]);
+  });
+
+  it("admite sólo la disponibilidad externa del compositor en su ruta exacta", () => {
+    const source = '<Button type="submit" disabled={unavailable} pending={pending}>Enviar</Button>';
+    expect(violations(source, "modules/assistant/components/AttachmentComposer.tsx")).toEqual([]);
+    expect(violations(source)).toEqual(["unavailable"]);
+    expect(violations(source, "areas/business/roles/RoleEditorPage.tsx")).toEqual(["unavailable"]);
+  });
+
+  it.each(["unavailable || !text", "unavailable || pending", "!isValid", "!text", "!unavailable", "unavailable && !text", "unavailable || !form.formState.isValid"])("rechaza validación o espera añadida a disponibilidad: %s", (disabled) => {
+    expect(violations(`<Button type="submit" disabled={${disabled}}>Enviar</Button>`, "modules/assistant/components/AttachmentComposer.tsx")).toEqual([disabled]);
   });
 
   it("ningún botón de envío del código se apaga porque falta algo o porque algo está mal", () => {
