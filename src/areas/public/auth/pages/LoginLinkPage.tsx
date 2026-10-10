@@ -12,8 +12,10 @@ import { apiErrorMessage } from "@/shared/api/errorMessage";
 import type { PendingDeletionState } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
+import { initials } from "@/shared/lib/initials";
 import { Button } from "@/shared/ui/button";
 import { Avatar } from "@/shared/ui/Avatar";
+import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { ClockIcon, LockIcon, WhatsAppIcon } from "@/shared/ui/icons";
 import { toastError } from "@/shared/ui/sonner";
 import { homeOf } from "@/tenancy/access";
@@ -109,6 +111,8 @@ export function LoginLinkPage() {
   }
 
   const errorState = proofInvalid ? "invalid" : failure ? loginLinkErrorState(failure) : null;
+  const displayName = preview.data?.displayName?.trim();
+  const maskedPhone = preview.data?.maskedPhone?.trim() ? preview.data.maskedPhone : null;
   const whatsapp = publicWhatsAppUrl(channels.data?.channels.find((channel) => channel.key === "whatsapp")?.contactPhone);
   const loginAction = <Button asChild size="lg" variant="outline"><Link to="/login">{t("loginLink.login")}</Link></Button>;
   return <AuthLayout access="consumer">
@@ -119,7 +123,16 @@ export function LoginLinkPage() {
       : starting ? <div role="status" className="flex flex-col items-center gap-[18px]"><span aria-hidden="true" className="size-8 animate-spin motion-reduce:animate-none rounded-full border-2 border-[var(--borde)] border-t-[var(--marca)]" /><div className="text-center"><h1 className="text-[24px] font-bold">{t("loginLink.startingTitle")}</h1><p className="mt-1.5 text-sm text-[var(--t2)]">{t("loginLink.startingDetail")}</p></div></div>
       : <div className="flex flex-col gap-[22px]">
         <h1 className="text-[24px] leading-[1.2] font-bold tracking-[-0.02em]">{t("loginLink.title")}</h1>
-        {preview.data ? <div><p className="mb-1.5 text-[13px] font-medium">{t("loginLink.as")}</p><div className="flex items-center gap-3 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] p-3"><Avatar size="large" initials={preview.data.displayName?.slice(0, 1) ?? ""} /><div><p className="text-[15px] font-semibold">{preview.data.displayName}</p><p className="text-[13px] text-[var(--t2)]">{preview.data.maskedPhone}</p></div></div></div> : preview.isPending ? <p role="status">{t("common:states.loading")}</p> : null}
+        {preview.data ? <div>
+          <p className="mb-1.5 text-[13px] font-medium">{t("loginLink.as")}</p>
+          <div className="flex items-center gap-3 rounded-[10px] border border-[var(--borde)] bg-[var(--s2)] p-3">
+            <Avatar size="large" muted={!displayName} initials={displayName ? initials(displayName) : "—"} />
+            <div>
+              <p className="text-[15px] font-semibold">{displayName || maskedPhone || <EmptyValue />}</p>
+              {displayName && maskedPhone ? <p className="text-[13px] text-[var(--t2)]">{maskedPhone}</p> : null}
+            </div>
+          </div>
+        </div> : preview.isPending ? <p role="status">{t("common:states.loading")}</p> : null}
         <AuthMessage message={failure ? { text: failure instanceof ApiError && failure.status === 429 ? t("loginLink.tooManyRequests") : apiErrorMessage(failure, t) } : null} />
         <Button size="lg" disabled={retry.isRunning || preview.isPending} onClick={() => { if (preview.data) void continueLogin(); else void runPreview(); }}>{retry.label ?? t(preview.data ? "loginLink.continue" : "common:actions.retry")}</Button>
         <p className="text-center text-[12px] leading-normal text-[var(--t3)]">{t("loginLink.notice")}</p>

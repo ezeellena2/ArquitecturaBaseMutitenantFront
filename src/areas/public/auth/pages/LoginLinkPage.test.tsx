@@ -7,7 +7,7 @@ import { afterEach, beforeAll, beforeEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { AppProviders } from "@/app/providers";
 import { createQueryClient } from "@/shared/api/queryClient";
-import type { CancelAccountDeletionRequest, PreviewLoginLinkRequest, RedeemLoginLinkRequest } from "@/shared/api/types";
+import type { CancelAccountDeletionRequest, LoginLinkPreviewResponse, PreviewLoginLinkRequest, RedeemLoginLinkRequest } from "@/shared/api/types";
 import { configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { consumerWithOrganizations } from "@/test/mocks/currentUsers";
@@ -25,7 +25,7 @@ beforeEach(() => {
   previewCalls.length = 0; redeemCalls.length = 0; events.length = 0; vi.clearAllMocks();
   history.replaceState(null, "", `/login/enlace#t=${token}`);
   server.use(http.get("/api/me", () => HttpResponse.json(consumerWithOrganizations)), http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "whatsapp", countries: ["AR"], contactPhone: "+5491123456789" }] })),
-    http.post<never, PreviewLoginLinkRequest>("/api/auth/login-link/preview", async ({ request }) => { expect(location.hash).toBe(""); previewCalls.push(await request.json()); return HttpResponse.json({ displayName: "Lucía Fernández", maskedPhone: "•••• 4521" }); }),
+    http.post<never, PreviewLoginLinkRequest, LoginLinkPreviewResponse>("/api/auth/login-link/preview", async ({ request }) => { expect(location.hash).toBe(""); previewCalls.push(await request.json()); return HttpResponse.json({ displayName: "Lucía Fernández", maskedPhone: "•••• 4521" }); }),
     http.post<never, RedeemLoginLinkRequest>("/api/auth/login-link/redeem", async ({ request }) => { redeemCalls.push(await request.json()); events.push("redeem"); expect(request.headers.get("Idempotency-Key")).toBeTruthy(); return HttpResponse.json({ access: "consumer" }); }));
 });
 afterEach(() => { history.replaceState(null, "", "/"); vi.useRealTimers(); });
@@ -46,6 +46,61 @@ it("StrictMode hace preview una vez, nunca canjea al abrir, y no lleva token a s
   expect(location.hash).toBe("");
   expect(JSON.stringify(client.getMutationCache().getAll().map((item) => item.state.variables))).not.toContain(token);
   expect(JSON.stringify(storage.mock.calls)).not.toContain(token); storage.mockRestore();
+  expect(await axe(container)).toHaveNoViolations();
+});
+function previewIdentity(response: LoginLinkPreviewResponse) {
+  server.use(http.post<never, PreviewLoginLinkRequest, LoginLinkPreviewResponse>("/api/auth/login-link/preview", async ({ request }) => {
+    expect(location.hash).toBe(""); previewCalls.push(await request.json()); return HttpResponse.json(response);
+  }));
+}
+it("un nombre compuesto conserva nombre y máscara con las dos iniciales comunes", async () => {
+  previewIdentity({ displayName: "maría luisa del Río", maskedPhone: "•••• 4521" });
+  const { container } = show();
+  const name = await screen.findByText("maría luisa del Río");
+  expect(screen.getByText("ML")).toBeVisible();
+  expect(screen.getAllByText("•••• 4521")).toHaveLength(1);
+  expect(name.parentElement?.textContent).toBe("maría luisa del Río•••• 4521");
+  expect(previewCalls).toEqual([{ token }]); expect(redeemCalls).toEqual([]);
+  expect(await axe(container)).toHaveNoViolations();
+});
+it.each([
+  { displayName: null, maskedPhone: "•••• 4521" },
+  { maskedPhone: "•••• 4521" },
+  { displayName: " \t\n ", maskedPhone: "•••• 4521" },
+] satisfies LoginLinkPreviewResponse[])("sin nombre ($displayName) identifica con la máscara una vez y sólo Continuar canjea", async (response) => {
+  previewIdentity(response);
+  const { container } = show();
+  const phone = await screen.findByText("•••• 4521");
+  expect(screen.getAllByText("•••• 4521")).toHaveLength(1);
+  expect(phone.parentElement?.children).toHaveLength(1);
+  expect(screen.getByText("—")).toBeVisible();
+  expect(previewCalls).toEqual([{ token }]); expect(redeemCalls).toEqual([]);
+  expect(removeUser).not.toHaveBeenCalled(); expect(signinRedirect).not.toHaveBeenCalled();
+  expect(await axe(container)).toHaveNoViolations();
+  fireEvent.click(screen.getByRole("button", { name: "Continuar" }));
+  await waitFor(() => expect(signinRedirect).toHaveBeenCalledOnce());
+  expect(redeemCalls).toEqual([{ token, access: "consumer" }]);
+});
+it.each([
+  { displayName: null, maskedPhone: null },
+  {},
+  { displayName: " \t\n ", maskedPhone: " " },
+] satisfies LoginLinkPreviewResponse[])("sin identidad publicada ($displayName) muestra el vacío central accesible sin fila vacía", async (response) => {
+  previewIdentity(response);
+  const { container } = show();
+  const empty = await screen.findByRole("img", { name: "Sin dato" });
+  expect(empty).toHaveTextContent("—");
+  expect(empty.parentElement?.parentElement?.children).toHaveLength(1);
+  expect(screen.getAllByText("—")).toHaveLength(2);
+  expect(previewCalls).toEqual([{ token }]); expect(redeemCalls).toEqual([]);
+  expect(await axe(container)).toHaveNoViolations();
+});
+it("con nombre y sin máscara conserva una sola línea de identificación", async () => {
+  previewIdentity({ displayName: "Lucía Fernández", maskedPhone: null });
+  const { container } = show();
+  const name = await screen.findByText("Lucía Fernández");
+  expect(name.parentElement?.children).toHaveLength(1);
+  expect(screen.getByText("LF")).toBeVisible();
   expect(await axe(container)).toHaveNoViolations();
 });
 it("doble clic canjea una vez y reemplaza sesión previa en orden sin logout ni token en OIDC", async () => {
