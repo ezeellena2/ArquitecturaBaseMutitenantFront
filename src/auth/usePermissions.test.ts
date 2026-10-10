@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { moduleComposition } from "@/app/moduleComposition";
 import type { MeResponse } from "@/shared/api/types";
 import { companyPermissions, organizationPermissions, platformPermissions, permissionsOf } from "./usePermissions";
 
@@ -71,17 +72,23 @@ if (!available) {
 }
 
 describe("códigos de permiso", () => {
-  it.skipIf(!available)("los nueve de Plataforma son los del catálogo del back", () => {
+  it.skipIf(!available)("núcleo y contributors de Plataforma cubren el catálogo completo del back", () => {
     const source = readFileSync(path.join(path.dirname(catalog), "PlatformPermissions.cs"), "utf8");
     const codes = [...source.matchAll(/const string \w+ = "([^"]+)";/g)].map((match) => match[1]);
     expect(platformPermissions).toHaveLength(9);
-    expect([...platformPermissions].sort()).toEqual(codes.sort());
+    const contributed = moduleComposition.flatMap((module) => module.permissions?.platform ?? []);
+    expect([...platformPermissions, ...contributed].sort()).toEqual(codes.sort());
+    expect(contributed.every((code) => code.startsWith("platform."))).toBe(true);
   });
   it.skipIf(!available)("son los mismos que el catálogo de organización y empresa del back", () => {
     const source = readFileSync(catalog, "utf8");
     const codes = [...source.matchAll(/const string (?!ClaimType\b)\w+ = "([^"]+)";/g)].map((match) => match[1]);
 
-    expect([...organizationPermissions, ...companyPermissions].sort()).toEqual(codes.sort());
+    const contributed = moduleComposition.flatMap((module) => module.permissions?.organization ?? []);
+    expect([...organizationPermissions, ...companyPermissions, ...contributed].sort()).toEqual(codes.sort());
+    expect(organizationPermissions).toHaveLength(12);
+    expect(companyPermissions).toHaveLength(2);
+    expect(contributed.every((code) => !code.startsWith("platform.") && !code.startsWith("company."))).toBe(true);
     expect(companyPermissions.every((code) => code.startsWith("company."))).toBe(true);
   });
 });

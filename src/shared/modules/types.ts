@@ -29,6 +29,11 @@ export interface ModuleRoute {
 }
 export interface ModuleRegistration {
   id: string;
+  /** Códigos propios para la paridad del catálogo completo, sin ampliar las uniones del núcleo. */
+  permissions?: {
+    readonly organization: readonly string[];
+    readonly platform: readonly string[];
+  };
   routes: readonly ModuleRoute[];
   home?: { guard: ModuleGuard; Content: ComponentType<ModuleContentProps> };
   organizationUi?: { nameKey: string; guard: ModuleGuard; Content: ComponentType<ModuleOrganizationUiProps> };

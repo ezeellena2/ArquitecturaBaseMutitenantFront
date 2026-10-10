@@ -32,6 +32,10 @@ const settingsNavigation = { labelKey: "assistant:settings.title", icon: Sparkle
 
 export const assistantRegistration: ModuleRegistration = {
   id: "assistant",
+  permissions: {
+    organization: ["assistant.use", "assistant.configure"],
+    platform: ["platform.assistant.use", "platform.assistant.configure", "platform.assistant.read"],
+  },
   organizationUi: { nameKey: "assistant:title", guard: assistantPolicyAccess, Content: OrganizationPolicy },
   home: { guard: chat, Content: Home },
   routes: [
