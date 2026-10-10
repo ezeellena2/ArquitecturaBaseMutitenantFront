@@ -77,7 +77,7 @@ export function AccountPage() {
       {methods.data?.needsPersonalLoginMethod ? <div className="border-b border-[var(--borde)] p-3"><PersonalLoginMethodNotice onAdd={() => setAddOpen(true)} /></div> : null}
       {methods.isPending ? <p className="p-4 text-[13px] text-[var(--t2)]" role="status">{t("states.loading")}</p> : null}
       {methods.error ? <div className="p-4"><FormError message={apiErrorMessage(methods.error, t)} /><Button type="button" onClick={() => { void methods.refetch(); }}>{t("actions.retry")}</Button></div> : null}
-      {methods.data ? <LoginMethodsTable methods={methods.data.methods} canLinkGoogle={methods.data.canLinkGoogle} onAction={(action, method, returnFocus) => { if (action === "verify") setVerifyMethod(method); else setChange({ action, method, returnFocus }); }} /> : null}
+      {methods.data ? <LoginMethodsTable methods={methods.data.methods.filter((method) => method.type !== "Phone" || whatsApp)} canLinkGoogle={methods.data.canLinkGoogle} onAction={(action, method, returnFocus) => { if (action === "verify") setVerifyMethod(method); else setChange({ action, method, returnFocus }); }} /> : null}
     </Section>
     <Section title={t("account:privacy")}>
       <List label={t("account:privacy")}>
@@ -92,7 +92,7 @@ export function AccountPage() {
     </Section>
   </AccountProfileForm>
   {addOpen ? <AddLoginMethodDialog open onOpenChange={(open) => { setAddOpen(open); if (!open) refresh(); }} onComplete={refresh} /> : null}
-  {verifyMethod ? <VerifyLoginMethodDialog method={verifyMethod} open onOpenChange={(open) => { if (!open) { setVerifyMethod(null); refresh(); } }} onComplete={refresh} /> : null}
+  {verifyMethod && (verifyMethod.type !== "Phone" || whatsApp) ? <VerifyLoginMethodDialog method={verifyMethod} open onOpenChange={(open) => { if (!open) { setVerifyMethod(null); refresh(); } }} onComplete={refresh} /> : null}
   {change ? <ChangeLoginMethodDialog {...change} onClose={() => { setChange(null); refresh(); }} onComplete={refresh} /> : null}
   {/* Tablero Cuenta (única Dueña): el aviso importante compartido. */}
   <ImportantNotice open={deletionBlockedOpen} onOpenChange={setDeletionBlockedOpen} title={t("account:deletionBlockedTitle")}

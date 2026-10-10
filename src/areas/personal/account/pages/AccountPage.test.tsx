@@ -10,9 +10,10 @@ import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 import { asPhone } from "@/test/utils/phone";
 import { referenceDataFixture } from "@/test/mocks/handlers";
-import type { AccountLoginMethodsResponse, LoginMethodsResponse } from "@/shared/api/types";
+import type { AccountLoginMethodsResponse, AddLoginMethodRequest, LoginMethodCodeResponse, LoginMethodsResponse } from "@/shared/api/types";
 import type { ProblemDetails } from "@/shared/api/problemDetails";
 import { loginMethodsQueryKey } from "@/shared/account/api/loginChannels";
+import { accountMethodsQueryKey } from "@/shared/account/api/loginMethods";
 
 beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); });
 
@@ -25,14 +26,25 @@ const receivedMethods: AccountLoginMethodsResponse = {
   canLinkGoogle: false, needsPersonalLoginMethod: false, accountDeletionGraceDays: 30, soleOwnerOrganizations: [],
 };
 
-it.each(["pending", "error", "absent"] as const)("muestra los métodos recibidos con capacidades %s sin habilitar altas WhatsApp", async (capabilities) => {
+it.each(["pending", "error", "absent"] as const)("con capacidades %s conserva datos Phone pero presenta sólo Email y Google", async (capabilities) => {
   let release: (() => void) | undefined;
+  let phoneCalls = 0;
+  const emailRequests: AddLoginMethodRequest[] = [];
   server.use(
     http.get("/api/me/login-methods", () => HttpResponse.json<AccountLoginMethodsResponse>(receivedMethods)),
     http.get<never, never, LoginMethodsResponse | ProblemDetails>("/api/auth/methods", async () => {
       if (capabilities === "pending") await new Promise<void>((resolve) => { release = resolve; });
       if (capabilities === "error") return HttpResponse.json<ProblemDetails>({ code: "General.Unexpected" }, { status: 503 });
       return HttpResponse.json<LoginMethodsResponse>({ channels: [{ key: "email", countries: [] }] });
+    }),
+    http.post<never, AddLoginMethodRequest, LoginMethodCodeResponse>("/api/me/login-methods", async ({ request }) => {
+      const body = await request.json();
+      if (body.phone) phoneCalls++; else emailRequests.push(body);
+      return HttpResponse.json({ methodId: "new-email", resendAfterSeconds: 0 }, { status: 202 });
+    }),
+    http.post("/api/me/login-methods/phone/code", () => {
+      phoneCalls++;
+      return HttpResponse.json({ methodId: "phone", resendAfterSeconds: 0 }, { status: 202 });
     }),
   );
   const { queryClient, container } = renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
@@ -43,18 +55,27 @@ it.each(["pending", "error", "absent"] as const)("muestra los métodos recibidos
       expect(queryClient.getQueryState(loginMethodsQueryKey)?.fetchStatus).toBe("fetching");
     }
     const list = await screen.findByRole("list", { name: "Cómo entrás" });
-    expect(within(list).getAllByRole("listitem")).toHaveLength(3);
-    expect(await within(list).findByText("011 15-5555-4521")).toBeVisible();
+    expect(within(list).getAllByRole("listitem")).toHaveLength(2);
+    expect(within(list).queryByText("011 15-5555-4521")).not.toBeInTheDocument();
+    expect(queryClient.getQueryData(accountMethodsQueryKey)).toEqual(receivedMethods);
     const rows = within(list).getAllByRole("listitem");
-    expect(rows[0]).toHaveTextContent("011 15-5555-4521Sin verificar");
-    expect(within(rows[0]!).getByRole("button", { name: "Verificar" })).toBeVisible();
-    expect(rows[1]).toHaveTextContent("ana@example.testPrincipal");
-    expect(within(rows[1]!).queryByRole("button")).not.toBeInTheDocument();
-    expect(rows[2]).toHaveTextContent("Googleana@gmail.com");
-    expect(within(list).getAllByRole("button", { name: "Verificar" })).toHaveLength(1);
+    expect(rows[0]).toHaveTextContent("ana@example.testPrincipal");
+    expect(within(rows[0]!).queryByRole("button")).not.toBeInTheDocument();
+    expect(rows[1]).toHaveTextContent("Googleana@gmail.com");
+    expect(within(list).queryByRole("button", { name: "Verificar" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Agregar correo" })).toBeVisible();
     expect(screen.queryByRole("button", { name: "Agregar correo o teléfono" })).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Agregar correo" }));
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).queryByRole("button", { name: "WhatsApp" })).not.toBeInTheDocument();
+    await user.type(within(dialog).getByRole("textbox", { name: "Correo" }), "nuevo@example.test");
+    await user.click(within(dialog).getByRole("button", { name: "Enviar código" }));
+    expect(await within(dialog).findByRole("textbox", { name: "Código 1" })).toBeVisible();
+    expect(emailRequests).toEqual([{ email: "nuevo@example.test" }]);
+    expect(phoneCalls).toBe(0);
+    expect(queryClient.getQueryData(accountMethodsQueryKey)).toEqual(receivedMethods);
   } finally {
     await act(async () => { release?.(); });
   }
@@ -84,9 +105,13 @@ it("relee la lista tras clear sin depender de capacidades previas en 390 px", as
     await waitFor(() => expect(release).toBeDefined());
     expect(queryClient.getQueryState(loginMethodsQueryKey)?.fetchStatus).toBe("fetching");
     const list = await screen.findByRole("list", { name: "Cómo entrás" });
-    expect(within(list).getAllByRole("listitem")).toHaveLength(3);
-    expect(await within(list).findByText("011 15-5555-4521")).toBeVisible();
+    expect(within(list).getAllByRole("listitem")).toHaveLength(2);
+    expect(within(list).queryByText("011 15-5555-4521")).not.toBeInTheDocument();
+    expect(queryClient.getQueryData(accountMethodsQueryKey)).toEqual(receivedMethods);
     expect(reads).toBe(2);
+    await act(async () => { release?.(); });
+    expect(await within(list).findByText("011 15-5555-4521")).toBeVisible();
+    expect(within(list).getAllByRole("listitem")).toHaveLength(3);
     expect(await axe(container)).toHaveNoViolations();
   } finally {
     await act(async () => { release?.(); });
