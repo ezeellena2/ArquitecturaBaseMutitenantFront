@@ -1,0 +1,120 @@
+{
+  "title": "Asistente",
+  "home": "Inicio",
+  "welcome": "¿Qué querés consultar?",
+  "loading": "Cargando…",
+  "retry": "Reintentar",
+  "cancel": "Cancelar",
+  "quick": {
+    "active_users": "Usuarios activos",
+    "expired_invitations": "Invitaciones vencidas",
+    "owners": "Quiénes son Dueños",
+    "recent_changes": "Últimos cambios",
+    "pending_organizations": "Organizaciones por aprobar",
+    "pending_recoveries": "Recuperaciones pendientes",
+    "today_security": "Seguridad de hoy",
+    "assistant_usage": "Uso del asistente",
+    "my_organizations": "Mis organizaciones",
+    "my_signin": "Cómo entro a mi cuenta",
+    "my_messages": "Mis mensajes con empresas"
+  },
+  "notConfigured": {
+    "title": "El asistente todavía no está configurado",
+    "configure": "Revisar configuración"
+  },
+  "limit": {
+    "monthly": "La organización llegó al tope del mes del asistente.",
+    "daily": "Llegaste a las <count/> consultas de hoy. Se renuevan a las <reset/>.",
+    "remaining": "Te quedan <remaining/> consultas hoy.",
+    "usage": "Ver uso"
+  },
+  "notice": {
+    "title": "Antes de tu primera consulta",
+    "body": "Tus consultas las procesa un proveedor de IA; no subas datos sensibles.",
+    "privacy": "Ver la privacidad",
+    "accept": "Entendido"
+  },
+  "status": {
+    "writing": "Escribiendo…",
+    "consulting": "Consultando…",
+    "stopped": "Detuviste la respuesta.",
+    "failed": "El asistente no responde ahora."
+  },
+  "composer": {
+    "required": "Escribí una consulta.",
+    "label": "Tu consulta",
+    "stop": "Detener",
+    "send": "Enviar",
+    "phonePlaceholder": "Preguntá algo",
+    "businessPlaceholder": "Preguntá lo que quieras sobre {{organization}}",
+    "consumerPlaceholder": "Preguntá sobre tu cuenta y tus organizaciones",
+    "platformPlaceholder": "Preguntá sobre las organizaciones y las cuentas",
+    "organization": "tu organización"
+  },
+  "attachments": {
+    "add": "Adjuntar",
+    "remove": "Quitar {{name}}",
+    "tooMany": "Podés adjuntar hasta 5 archivos.",
+    "tooLarge": "El archivo pesa más de 10 MB.",
+    "invalidType": "Adjuntá imágenes PNG, JPEG o WebP, o archivos PDF."
+  },
+  "message": {
+    "copy": "Copiar",
+    "up": "Me sirvió",
+    "down": "No me sirvió"
+  },
+  "history": {
+    "title": "Conversaciones",
+    "saved": "Guardadas",
+    "recent": "Recientes",
+    "retention": "Se borran solas a los {{days}} días sin actividad. Las guardadas no vencen.",
+    "untitled": "Nueva conversación",
+    "new": "Nueva conversación",
+    "show": "Mostrar las conversaciones",
+    "hide": "Ocultar las conversaciones",
+    "actions": "Acciones de {{title}}",
+    "more": "Cargar más",
+    "nameRequired": "Escribí un nombre.",
+    "renameTitle": "Renombrar la conversación",
+    "deleteTitle": "¿Borrar «{{title}}»?",
+    "deleteBody": "Se borra para siempre, con sus adjuntos.",
+    "name": "Nombre",
+    "delete": "Borrar",
+    "saveChanges": "Guardar cambios",
+    "save": "Guardar",
+    "unsave": "Dejar de guardar",
+    "rename": "Renombrar",
+    "export": {
+      "markdown": "Exportar en Markdown",
+      "pdf": "Exportar en PDF"
+    },
+    "empty": "Todavía no hay conversaciones"
+  },
+  "links": {
+    "business": {
+      "users": "Ver usuarios",
+      "roles": "Ver roles y permisos",
+      "companies": "Ver empresas",
+      "audit": "Ver auditoría",
+      "home": "Ir al inicio"
+    },
+    "platform": {
+      "organizations": "Ver organizaciones",
+      "accounts": "Ver cuentas",
+      "recoveries": "Ver recuperaciones",
+      "audit": "Ver auditoría",
+      "assistant": {
+        "usage": "Ver uso del asistente"
+      }
+    },
+    "personal": {
+      "account": "Ver mi cuenta",
+      "organizations": "Ver mis organizaciones"
+    }
+  },
+  "tools": {
+    "running": "Consultando información…",
+    "complete": "Información consultada",
+    "failed": "No se pudo consultar la información."
+  }
+}

@@ -55,6 +55,99 @@ function stream() {
 const start = { turnId: "turn", userMessageId: "u", assistantMessageId: "a", conversationVersion: 4 };
 afterEach(() => { vi.useRealTimers(); resetHttpClient(); });
 
+describe("páginas cronológicas del runtime", () => {
+  it("refrescar Estado conserva el bloqueo mensual HTTP sin recuperación autorizada", async () => {
+    const hook = setup();
+    server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => HttpResponse.json({ code: "Assistant.Limit.MonthlyReached" }, { status: 429 })));
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    await act(async () => { await hook.result.current.send({ text: "Consulta", conversationVersion: 3 }).catch(() => {}); });
+    await waitFor(() => expect(hook.result.current.blockedCode).toBe("Assistant.Limit.MonthlyReached"));
+    let updatedAt = hook.result.current.state.dataUpdatedAt;
+    await act(async () => { await hook.result.current.refreshState(); });
+    await waitFor(() => expect(hook.result.current.state.dataUpdatedAt).not.toBe(updatedAt));
+    expect(hook.result.current.blockedCode).toBe("Assistant.Limit.MonthlyReached");
+    expect(hook.result.current.canSend).toBe(false);
+    updatedAt = hook.result.current.state.dataUpdatedAt;
+    server.use(http.get("/api/organization/assistant", () => HttpResponse.json({ ...state, retentionDays: 60 })));
+    await act(async () => { await hook.result.current.refreshState(); });
+    await waitFor(() => expect(hook.result.current.state.dataUpdatedAt).not.toBe(updatedAt));
+    expect(hook.result.current.state.data?.retentionDays).toBe(60);
+    expect(hook.result.current.blockedCode).toBe("Assistant.Limit.MonthlyReached");
+    expect(hook.result.current.canSend).toBe(false);
+  });
+
+  it("refrescar Estado libera el bloqueo HTTP del aviso sólo tras confirmar su aceptación", async () => {
+    const hook = setup();
+    server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => HttpResponse.json({ code: "Assistant.Notice.AcceptanceRequired" }, { status: 409 })));
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    await act(async () => { await hook.result.current.send({ text: "Consulta", conversationVersion: 3 }).catch(() => {}); });
+    await waitFor(() => expect(hook.result.current.blockedCode).toBe("Assistant.Notice.AcceptanceRequired"));
+    server.use(http.get("/api/organization/assistant", () => HttpResponse.json({ ...state, noticeAccepted: false })));
+    await act(async () => { await hook.result.current.refreshState(); });
+    expect(hook.result.current.blockedCode).toBe("Assistant.Notice.AcceptanceRequired");
+    server.use(http.get("/api/organization/assistant", () => HttpResponse.json(state)));
+    await act(async () => { await hook.result.current.refreshState(); });
+    await waitFor(() => expect(hook.result.current.blockedCode).toBeNull());
+    expect(hook.result.current.canSend).toBe(true);
+  });
+
+  it("aceptar el aviso y refrescar Estado libera el error durable de aceptación", async () => {
+    const failed = conversation([message("u", "user"), message("a", "assistant", "Failed", "")]);
+    const hook = setup({ ...state, noticeAccepted: false }, false, failed);
+    await waitFor(() => expect(hook.result.current.detail.data).toEqual(failed));
+    act(() => hook.client.setQueryData(["assistant", "business", "org", "user", "turn", "chat"], {
+      conversationId: "chat", request: { text: "Consulta" }, phase: "Failed", text: "", sequence: -1, tools: [],
+      error: { code: "Assistant.Notice.AcceptanceRequired", traceId: "trace", status: "Failed" },
+    }));
+    expect(hook.result.current.blockedCode).toBe("Assistant.Notice.AcceptanceRequired");
+    server.use(http.get("/api/organization/assistant", () => HttpResponse.json(state)));
+    await act(async () => { await hook.result.current.refreshState(); });
+    expect(hook.result.current.blockedCode).toBeNull();
+    expect(hook.result.current.canSend).toBe(true);
+  });
+  it("abre más de 50 mensajes reales, conserva la primera ficha y detiene el último turno", async () => {
+    const first = { ...conversation(Array.from({ length: 50 }, (_, i) => message(`old-${i}`, i % 2 ? "assistant" : "user"))), activeTurnId: "last-turn", messages: { items: Array.from({ length: 50 }, (_, i) => message(`old-${i}`, i % 2 ? "assistant" : "user")), hasMore: true, nextCursor: "page-2" } };
+    const hook = setup(state, false, first);
+    let stopped = false;
+    server.use(http.get("/api/organization/assistant/conversations/chat", ({ request }) => {
+      const cursor = new URL(request.url).searchParams.get("cursor");
+      return HttpResponse.json(cursor ? { ...conversation([message("last-user", "user"), message("last-assistant", "assistant", stopped ? "Stopped" : "Generating", "Última parcial")]), activeTurnId: stopped ? null : "last-turn" }
+        : { ...first, activeTurnId: stopped ? null : "last-turn" });
+    }), http.post("/api/organization/assistant/conversations/chat/turns/last-turn/stop", () => { stopped = true; return new HttpResponse(null, { status: 204 }); }));
+    await waitFor(() => expect(hook.result.current.messages).toHaveLength(52));
+    const expectedIds = [...Array.from({ length: 50 }, (_, i) => `old-${i}`), "last-user", "last-assistant"];
+    const messageIds = hook.result.current.messages.map((item) => item.id);
+    expect(messageIds).toEqual(expectedIds);
+    expect(new Set(messageIds).size).toBe(expectedIds.length);
+    expect(hook.result.current.runtime.thread.getState().messages.map((item) => item.id)).toEqual(expectedIds);
+    expect(hook.result.current.detail.data?.messages.items).toHaveLength(50);
+    expect(hook.result.current.detail.data?.messages.nextCursor).toBe("page-2");
+    expect(hook.result.current.runtime.thread.getState().messages.at(-1)?.id).toBe("last-assistant");
+    expect(hook.result.current.canStop).toBe(true);
+    await act(async () => { await hook.result.current.stop(); });
+    expect(hook.result.current.messages.at(-1)?.status).toBe("Stopped");
+    hook.unmount();
+    expect(hook.client.getQueryCache().getAll().some((query) => query.queryKey.includes("page-2"))).toBe(false);
+  });
+
+  it("clear durante otra página no repuebla la proyección privada", async () => {
+    const response = deferred<AssistantConversationResponse>();
+    const first = { ...conversation([message("old", "user")]), messages: { items: [message("old", "user")], hasMore: true, nextCursor: "next" } };
+    let requested = false;
+    const hook = setup(state, false, first);
+    server.use(http.get("/api/organization/assistant/conversations/chat", async ({ request }) => {
+      if (!new URL(request.url).searchParams.has("cursor")) return HttpResponse.json(first);
+      requested = true; return HttpResponse.json(await response.promise);
+    }));
+    await waitFor(() => expect(requested).toBe(true));
+    act(() => hook.client.clear());
+    await act(async () => { response.resolve(conversation([message("private", "assistant")])); await response.promise; });
+    expect(hook.result.current.messages).toEqual([]);
+    expect(hook.result.current.runtime.thread.getState().messages).toEqual([]);
+    expect(hook.client.getQueryCache().getAll().some((query) => query.state.data !== undefined)).toBe(false);
+  });
+});
+
 describe("Assistant runtime HTTP + Query + SDK", () => {
   it.each(["Generating", "admitted"] as const)("reabre %s con activeTurnId y Stop relee ficha/version y Estado", async (phase) => {
     const initial = { ...conversation(phase === "Generating" ? [message("u", "user"), message("a", "assistant", "Generating", "Parcial")] : [message("u", "user")]), activeTurnId: "durable-turn" };

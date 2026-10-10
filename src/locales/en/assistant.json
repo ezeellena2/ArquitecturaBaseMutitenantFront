@@ -1,0 +1,120 @@
+{
+  "title": "Assistant",
+  "home": "Home",
+  "welcome": "What would you like to ask?",
+  "loading": "Loading…",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "quick": {
+    "active_users": "Active users",
+    "expired_invitations": "Expired invitations",
+    "owners": "Who are the Owners",
+    "recent_changes": "Recent changes",
+    "pending_organizations": "Organizations awaiting approval",
+    "pending_recoveries": "Pending recoveries",
+    "today_security": "Security today",
+    "assistant_usage": "Assistant usage",
+    "my_organizations": "My organizations",
+    "my_signin": "How I sign in",
+    "my_messages": "My messages with businesses"
+  },
+  "notConfigured": {
+    "title": "The assistant is not configured yet",
+    "configure": "Review settings"
+  },
+  "limit": {
+    "monthly": "The organization reached its monthly assistant limit.",
+    "daily": "You reached today’s limit of <count/> queries. It resets at <reset/>.",
+    "remaining": "You have <remaining/> queries left today.",
+    "usage": "View usage"
+  },
+  "notice": {
+    "title": "Before your first query",
+    "body": "Your queries are processed by an AI provider; do not upload sensitive data.",
+    "privacy": "View privacy policy",
+    "accept": "Understood"
+  },
+  "status": {
+    "writing": "Writing…",
+    "consulting": "Checking…",
+    "stopped": "You stopped the response.",
+    "failed": "The assistant is not responding right now."
+  },
+  "composer": {
+    "required": "Enter a query.",
+    "label": "Your query",
+    "stop": "Stop",
+    "send": "Send",
+    "phonePlaceholder": "Ask something",
+    "businessPlaceholder": "Ask anything about {{organization}}",
+    "consumerPlaceholder": "Ask about your account and your organizations",
+    "platformPlaceholder": "Ask about organizations and accounts",
+    "organization": "your organization"
+  },
+  "attachments": {
+    "add": "Attach",
+    "remove": "Remove {{name}}",
+    "tooMany": "You can attach up to 5 files.",
+    "tooLarge": "The file is larger than 10 MB.",
+    "invalidType": "Attach PNG, JPEG or WebP images, or PDF files."
+  },
+  "message": {
+    "copy": "Copy",
+    "up": "Helpful",
+    "down": "Not helpful"
+  },
+  "history": {
+    "title": "Conversations",
+    "saved": "Saved",
+    "recent": "Recent",
+    "retention": "Deleted after {{days}} days without activity. Saved conversations do not expire.",
+    "untitled": "New conversation",
+    "new": "New conversation",
+    "show": "Show conversations",
+    "hide": "Hide conversations",
+    "actions": "Actions for {{title}}",
+    "more": "Load more",
+    "nameRequired": "Enter a name.",
+    "renameTitle": "Rename conversation",
+    "deleteTitle": "Delete “{{title}}”?",
+    "deleteBody": "Permanently deleted, including its attachments.",
+    "name": "Name",
+    "delete": "Delete",
+    "saveChanges": "Save changes",
+    "save": "Save",
+    "unsave": "Unsave",
+    "rename": "Rename",
+    "export": {
+      "markdown": "Export as Markdown",
+      "pdf": "Export as PDF"
+    },
+    "empty": "No conversations yet"
+  },
+  "links": {
+    "business": {
+      "users": "View users",
+      "roles": "View roles and permissions",
+      "companies": "View businesses",
+      "audit": "View audit",
+      "home": "Go home"
+    },
+    "platform": {
+      "organizations": "View organizations",
+      "accounts": "View accounts",
+      "recoveries": "View recoveries",
+      "audit": "View audit",
+      "assistant": {
+        "usage": "View assistant usage"
+      }
+    },
+    "personal": {
+      "account": "View my account",
+      "organizations": "View my organizations"
+    }
+  },
+  "tools": {
+    "running": "Checking information…",
+    "complete": "Information checked",
+    "failed": "Could not check the information."
+  }
+}

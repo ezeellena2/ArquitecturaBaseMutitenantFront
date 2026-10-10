@@ -1,0 +1,14 @@
+import { useTranslation } from "react-i18next";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Button } from "@/shared/ui/button";
+import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
+
+export function AssistantNotice({ pending, error, onAccept, onPrivacy }: { pending: boolean; error: string | null; onAccept: () => void; onPrivacy: () => void }) {
+  const { t } = useTranslation("assistant");
+  const restore = useRestoreFocusOnClose();
+  return <Dialog open><DialogContent size="sm" showCloseButton={false} onEscapeKeyDown={(e) => e.preventDefault()} onCloseAutoFocus={restore}>
+    <DialogHeader><DialogTitle>{t("notice.title")}</DialogTitle></DialogHeader>
+    <DialogBody><DialogDescription>{t("notice.body")}</DialogDescription>{error ? <p role="alert">{error}</p> : null}</DialogBody>
+    <DialogFooter><Button variant="link" onClick={onPrivacy}>{t("notice.privacy")}</Button><Button disabled={pending} onClick={onAccept}>{t("notice.accept")}</Button></DialogFooter>
+  </DialogContent></Dialog>;
+}
