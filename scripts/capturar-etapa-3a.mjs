@@ -145,7 +145,9 @@ export async function startCanvasServer(canvasRoot = defaultCanvas) {
 export async function runAppActions(page, actions = []) {
   for (const action of actions) {
     if (action.type === "fill") {
-      await page.getByRole(action.role, { name: action.name, exact: action.exact ?? false }).fill(action.value);
+      const target = action.label ? page.getByLabel(action.label, { exact: action.exact ?? false })
+        : page.getByRole(action.role, { name: action.name, exact: action.exact ?? false });
+      await target.fill(action.value);
     } else if (action.type === "click") {
       await page.getByRole(action.role, { name: action.name, exact: action.exact ?? false }).click({ force: action.force ?? false });
     } else if (action.type === "press") {
@@ -162,6 +164,8 @@ export async function runAppActions(page, actions = []) {
 }
 
 export async function installApiMocks(context, responses = [], userFixture) {
+  // Sólo el arnés: lecturas antes/después de una acción real, sin modificar DTOs.
+  const completed = new Set();
   await context.route("**/api/**", async (route) => {
     const request = route.request();
     const requestPath = new URL(request.url()).pathname;
@@ -171,14 +175,19 @@ export async function installApiMocks(context, responses = [], userFixture) {
     }
     const requestUrl = new URL(request.url());
     const response = responses.find((item) => item.path === requestPath && item.method === request.method()
+      && (!item.afterResponse || completed.has(`${item.afterResponse.method} ${item.afterResponse.path}`))
       && Object.entries(item.query ?? {}).every(([key, value]) => requestUrl.searchParams.get(key) === value));
     if (response) {
+      if (response.rawBody !== undefined && (typeof response.rawBody !== "string" || !response.contentType)) {
+        throw new Error("rawBody exige texto y contentType explícito en el arnés");
+      }
       await route.fulfill({
         status: response.status,
-        contentType: "application/json",
-        body: JSON.stringify(response.body ?? {}),
+        contentType: response.contentType ?? "application/json",
+        body: response.rawBody ?? JSON.stringify(response.body ?? {}),
         headers: response.headers ?? {},
       });
+      completed.add(`${response.method} ${response.path}`);
       return;
     }
     if (requestPath === "/api/me" && request.method() === "GET" && userFixture) {
