@@ -47,6 +47,7 @@ CATALOGO = [("Claude Fable 5.1", "claude-fable-5-1", "10,00", "50,00", False),
             ("Claude Haiku 5.5", "claude-haiku-5-5", "0,10", "0,50", True)]
 COLS_CAT = "minmax(0, 1.1fr) minmax(0, 0.8fr) minmax(0, 1.1fr) 150px 150px 120px 40px"
 MAS = svg('<path d="M12 5v14"/><path d="M5 12h14"/>', 16, "2")
+FLECHA_AV = svg('<path d="m9.5 5.5 6.5 6.5-6.5 6.5"/>', 16, "2")
 MODELOS = [("opus", "Claude Opus 5.5", "Entrada USD 4 · salida USD 20 por millón de tokens"),
            ("sonnet", "Claude Sonnet 5.5", "Entrada USD 2 · salida USD 10 por millón de tokens"),
            ("haiku", "Claude Haiku 5.5", "Entrada USD 0,10 · salida USD 0,50 por millón de tokens")]
@@ -246,6 +247,48 @@ JS_USO_ORG = """    const tab = this.state.tab ?? (e === 'Por persona' ? 'per' :
     };"""
 ESTADOS_USO_ORG = ["Por día", "Por persona", "Cerca del tope", "Llegó al tope", "Sin uso este mes"]
 
+# El diálogo de agregar o editar un modelo del catálogo, con «Avanzado: datos técnicos» (v116, D26).
+def entrada(rot, var, ph, req=False, din=False, err="", clase=""):
+    """Un campo del diálogo del modelo: el valor sale de `var` y el error, de `err` (debajo del campo)."""
+    q = ' <span class="req">*</span>' if req else ""
+    mal = f" {{{{{err}Clase}}}}" if err else ""
+    if din:
+        c = f'<div class="ct as-din{mal}"><span class="as-pre">USD</span><input type="text" aria-label="{rot}" placeholder="{ph}" value="{{{{{var}}}}}"></div>'
+    else:
+        c = f'<input class="ct{mal}" type="text" aria-label="{rot}" placeholder="{ph}" value="{{{{{var}}}}}">'
+    e = f'<sc-if value="{{{{{err}}}}}" hint-placeholder-val="{{{{no}}}}"><span class="as-err" role="alert">{{{{{err}}}}}</span></sc-if>' if err else ""
+    return f'<div class="w-cmp {clase}"><span class="rt">{rot}{q}</span>{c}{e}</div>'
+
+
+def casilla(texto, var):
+    return f'<label class="as-casilla"><span class="as-chk {{{{{var}}}}}">{TILDE}</span>{texto}</label>'
+
+
+AVANZADO = ('<div class="as-av-sec as-ancho">'
+            '<span class="as-sub">Capacidades</span><div class="as-casillas">'
+            + casilla("Imágenes en los adjuntos", "cImg") + casilla("PDF en los adjuntos", "cPdf") + casilla("Herramientas", "cHer") + '</div>'
+            '<span class="as-sub">Límites</span><div class="as-g2b">'
+            + entrada("Contexto (tokens)", "mCtx", "", req=True) + entrada("Salida máxima (tokens)", "mOut", "", req=True, err="errOut") + '</div>'
+            '<span class="as-sub">Tarifas especiales · por millón de tokens</span><div class="as-g2b">'
+            + entrada("Lectura de caché", "mCacheL", "", din=True) + entrada("Escritura de caché", "mCacheE", "", din=True) + '</div>'
+            '<span class="as-sub">Contexto largo</span><div class="as-g3b">'
+            + entrada("Desde (tokens)", "mLargoDesde", "") + entrada("Entrada por millón", "mLargoEnt", "", din=True)
+            + entrada("Salida por millón", "mLargoSal", "", din=True) + '</div></div>')
+DLG_MODELO = (
+    '<sc-if value="{{dlgModelo}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg as-dlg-mod" role="dialog" aria-modal="true" aria-labelledby="as-mt">'
+    + f'<div class="dlg-h"><h2 id="as-mt">{{{{tituloModelo}}}}</h2><button type="button" class="dlg-x" aria-label="Cerrar" onClick="{{{{cerrarModelo}}}}">{CERRAR}</button></div>'
+    + '<div class="dlg-b as-g2 as-dlg">'
+    + entrada("Nombre", "mNombre", "Claude Opus 5.5", req=True)
+    + campo("Proveedor", "Anthropic", sel=True)
+    + entrada("ID", "mId", "claude-opus-5-5", req=True, clase="as-ancho")
+    + entrada("Precio de entrada por millón", "mEnt", "", req=True, din=True)
+    + entrada("Precio de salida por millón", "mSal", "", req=True, din=True)
+    + casilla("Activo", "cAct")
+    + f'<button type="button" class="as-avz as-ancho" aria-expanded="{{{{avExp}}}}" onClick="{{{{alternarAv}}}}"><span class="as-avz-f">{FLECHA_AV}</span>Avanzado: datos técnicos</button>'
+    + '<sc-if value="{{avAbierto}}" hint-placeholder-val="{{no}}">' + AVANZADO + '</sc-if>'
+    + '</div><div class="dlg-f"><button type="button" class="cb cb-sec" onClick="{{cerrarModelo}}">Cancelar</button>'
+      '<button type="button" class="cb cb-pri" onClick="{{cerrarModelo}}">{{botonModelo}}</button></div></div></div></sc-if>')
+
 # ---------------------------------------------------------------- Plataforma: Configuración
 CONFIG_PLAT = (
     banda("Configuración", '<sc-if value="{{sinClave}}" hint-placeholder-val="{{no}}"><span class="as-sucio">Sin configurar</span></sc-if>' + SUCIO,
@@ -285,22 +328,23 @@ CONFIG_PLAT = (
               f'<span style="display: flex; justify-content: flex-end;"><button type="button" class="ib" aria-label="Acciones de {n}">{KEBAB}</button></span></div>'
               for n, i, e, s, a in CATALOGO)
     + '</div></sc-if></div>'
-    + '<sc-if value="{{dlgModelo}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="as-mt">'
-    + f'<div class="dlg-h"><h2 id="as-mt">Agregar modelo</h2><button type="button" class="dlg-x" aria-label="Cerrar" onClick="{{{{cerrarModelo}}}}">{CERRAR}</button></div>'
-    + '<div class="dlg-b as-g2 as-dlg">'
-      '<div class="w-cmp"><span class="rt">Nombre <span class="req">*</span></span><input class="ct" type="text" aria-label="Nombre" placeholder="Claude Opus 5.5"></div>'
-    + campo("Proveedor", "Anthropic", sel=True)
-    + '<div class="w-cmp as-ancho"><span class="rt">ID <span class="req">*</span></span><input class="ct" type="text" aria-label="ID" placeholder="claude-opus-5-5"></div>'
-      '<div class="w-cmp"><span class="rt">Precio de entrada por millón <span class="req">*</span></span><div class="ct as-din"><span class="as-pre">USD</span><input type="text" aria-label="Precio de entrada por millón"></div></div>'
-      '<div class="w-cmp"><span class="rt">Precio de salida por millón <span class="req">*</span></span><div class="ct as-din"><span class="as-pre">USD</span><input type="text" aria-label="Precio de salida por millón"></div></div>'
-    + f'<label class="as-casilla"><span class="as-chk on">{TILDE}</span>Activo</label>'
-    + '</div><div class="dlg-f"><button type="button" class="cb cb-sec" onClick="{{cerrarModelo}}">Cancelar</button>'
-      '<button type="button" class="cb cb-pri" onClick="{{cerrarModelo}}">Agregar modelo</button></div></div></div></sc-if>')
+    + DLG_MODELO)
 
+# Los datos de ejemplo del diálogo: vacío al agregar y Claude Sonnet 5.5 al editar; el error es un cero de más en la salida máxima.
+MODELO_JS = """    const MODOS = { 'Agregar un modelo': 'nuevo', 'Agregar un modelo: avanzado': 'nuevo-av', 'Editar un modelo': 'editar', 'Editar un modelo: error en un dato técnico': 'error' };
+    const modo = this.state.modo !== undefined ? this.state.modo : (MODOS[e] || null);
+    const av = this.state.av ?? (modo === 'nuevo-av' || modo === 'error' || modo === 'editar');
+    const DATOS = {
+      editar: { n: 'Claude Sonnet 5.5', id: 'claude-sonnet-5-5', ent: '2,00', sal: '10,00', ctx: '1.000.000', out: '128.000', cl: '0,20', ce: '2,50', img: 1, pdf: 1, her: 1 },
+      error: { n: 'Claude Sonnet 5.5', id: 'claude-sonnet-5-5', ent: '2,00', sal: '10,00', ctx: '1.000.000', out: '1.280.000', cl: '0,20', ce: '2,50', img: 1, pdf: 1, her: 1 },
+    };
+    const M = DATOS[modo] || {};
+    const edita = modo === 'editar' || modo === 'error';
+    const tab = this.state.tab ?? (e === 'Catálogo de modelos' || MODOS[e] ? 'cat' : 'gen');
+"""
 JS_CONFIG_PLAT = """    const abierto = this.state.abierto ?? (e === 'Elegir los modelos permitidos');
     const sucio = e === 'Cambios sin guardar';
-    const tab = this.state.tab ?? (['Catálogo de modelos', 'Agregar un modelo'].includes(e) ? 'cat' : 'gen');
-    const dlg = this.state.dlg ?? (e === 'Agregar un modelo');
+""" + MODELO_JS + """    const dlg = !!modo;
 
     return {
       si: true, no: false,
@@ -309,7 +353,14 @@ JS_CONFIG_PLAT = """    const abierto = this.state.abierto ?? (e === 'Elegir los
       selGen: tab === 'gen' ? 'true' : 'false', selCat: tab === 'cat' ? 'true' : 'false',
       verGen: () => this.setState({ tab: 'gen' }), verCat: () => this.setState({ tab: 'cat' }),
       dlgModelo: dlg,
-      agregarModelo: () => this.setState({ dlg: true }), cerrarModelo: () => this.setState({ dlg: false }),
+      tituloModelo: edita ? 'Editar modelo' : 'Agregar modelo',
+      botonModelo: edita ? 'Guardar cambios' : 'Agregar modelo',
+      mNombre: M.n || '', mId: M.id || '', mEnt: M.ent || '', mSal: M.sal || '', mCtx: M.ctx || '', mOut: M.out || '',
+      mCacheL: M.cl || '', mCacheE: M.ce || '', mLargoDesde: '', mLargoEnt: '', mLargoSal: '',
+      cImg: M.img ? 'on' : '', cPdf: M.pdf ? 'on' : '', cHer: M.her ? 'on' : '', cAct: 'on',
+      errOut: modo === 'error' ? 'No puede superar el contexto.' : '', errOutClase: modo === 'error' ? 'mal' : '',
+      avAbierto: av, avExp: av ? 'true' : 'false', alternarAv: () => this.setState({ av: !av }),
+      agregarModelo: () => this.setState({ modo: 'nuevo', av: false }), cerrarModelo: () => this.setState({ modo: null, av: undefined }),
       sinClave: e === 'Sin clave',
       claveGuardada: !['Sin clave', 'Clave rechazada'].includes(e),
       claveNueva: ['Sin clave', 'Clave rechazada'].includes(e),
@@ -326,7 +377,8 @@ JS_CONFIG_PLAT = """    const abierto = this.state.abierto ?? (e === 'Elegir los
       guardar: () => this.setState({ e: 'Configurada', abierto: false }),
     };"""
 ESTADOS_CONFIG_PLAT = ["Configurada", "Elegir los modelos permitidos", "Cambios sin guardar", "Sin clave", "Clave rechazada",
-                       "Catálogo de modelos", "Agregar un modelo"]
+                       "Catálogo de modelos", "Agregar un modelo", "Agregar un modelo: avanzado", "Editar un modelo",
+                       "Editar un modelo: error en un dato técnico"]
 
 # ---------------------------------------------------------------- Plataforma: Uso
 ORGS = [("Grupo Delta", "La de la plataforma", "1.284", "37,40", "p37", "de USD 100"),
@@ -426,6 +478,18 @@ CSS = """.as-g2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0,
 .as-dlg .w-cmp .ct { height: 44px; }
 .as-din input { border: 0; outline: 0; font: inherit; font-size: 14px; color: var(--t1); background: transparent; width: 100%; padding: 0; }
 .dlg .as-casilla { align-self: center; }
+.as-dlg-mod { max-height: calc(100% - 48px); display: flex; flex-direction: column; }
+.as-dlg-mod .dlg-b { overflow: auto; min-height: 0; }
+.as-avz { display: flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 4px; padding: 0; border: 0; border-top: 1px solid var(--borde); background: transparent; font: inherit; font-size: 14px; font-weight: 600; color: var(--t1); cursor: pointer; text-align: left; }
+.as-avz-f { display: inline-flex; color: var(--t2); transition: transform 0.15s; }
+.as-avz[aria-expanded="true"] .as-avz-f { transform: rotate(90deg); }
+.as-av-sec { display: flex; flex-direction: column; gap: 12px; }
+.as-sub { font-size: 14px; font-weight: 600; color: var(--t1); margin-top: 6px; }
+.as-casillas { display: flex; flex-wrap: wrap; gap: 4px 24px; }
+.as-casillas .as-casilla { min-height: 36px; }
+.as-g2b { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 20px; }
+.as-g3b { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 20px; }
+.w-cmp .as-din.mal { border-color: oklch(0.6 0.19 25) !important; }
 """
 
 
@@ -544,12 +608,43 @@ JS_T_USO_ORG = """    const tab = this.state.tab ?? (e === 'Por persona' ? 'per'
       verDia: () => this.setState({ tab: 'dia' }), verPer: () => this.setState({ tab: 'per' }),
     };"""
 
+
+def tentrada(rot, var, ph, req=False, din=False, err=""):
+    q = ' <span class="rq">*</span>' if req else ""
+    mal = f" {{{{{err}Clase}}}}" if err else ""
+    if din:
+        c = f'<div class="ct as-din{mal}"><span class="as-pre">USD</span><span class="as-v">{{{{{var}}}}}</span></div>'
+    else:
+        c = f'<div class="ct{mal}"><span class="as-v">{{{{{var}}}}}</span></div>'
+    e = f'<sc-if value="{{{{{err}}}}}" hint-placeholder-val="{{{{no}}}}"><span class="as-err" role="alert">{{{{{err}}}}}</span></sc-if>' if err else ""
+    return f'<div class="ap-cmp"><span class="rt"><span>{rot}{q}</span></span>{c}{e}</div>'
+
+
+T_HOJA_MODELO = (
+    '<sc-if value="{{dlgModelo}}" hint-placeholder-val="{{no}}"><div class="as-tvelo"></div><div class="as-thoja" role="dialog" aria-label="{{tituloModelo}}">'
+    '<span class="as-tasa"></span>'
+    + f'<div class="as-thc"><h2>{{{{tituloModelo}}}}</h2><button type="button" class="ap-ib" aria-label="Cerrar" onClick="{{{{cerrarModelo}}}}">{CERRAR}</button></div>'
+    + '<div class="as-thb">'
+    + tentrada("Nombre", "mNombre", "", req=True) + tcampo("Proveedor", "Anthropic", sel=True) + tentrada("ID", "mId", "", req=True)
+    + tentrada("Precio de entrada por millón", "mEnt", "", req=True, din=True) + tentrada("Precio de salida por millón", "mSal", "", req=True, din=True)
+    + casilla("Activo", "cAct")
+    + f'<button type="button" class="as-avz" aria-expanded="{{{{avExp}}}}" onClick="{{{{alternarAv}}}}"><span class="as-avz-f">{FLECHA_AV}</span>Avanzado: datos técnicos</button>'
+    + '<sc-if value="{{avAbierto}}" hint-placeholder-val="{{no}}"><div class="as-av-sec">'
+    + '<span class="as-sub">Capacidades</span><div class="as-casillas">' + casilla("Imágenes en los adjuntos", "cImg") + casilla("PDF en los adjuntos", "cPdf") + casilla("Herramientas", "cHer") + '</div>'
+    + '<span class="as-sub">Límites</span>' + tentrada("Contexto (tokens)", "mCtx", "", req=True) + tentrada("Salida máxima (tokens)", "mOut", "", req=True, err="errOut")
+    + '<span class="as-sub">Tarifas especiales · por millón de tokens</span>' + tentrada("Lectura de caché", "mCacheL", "", din=True) + tentrada("Escritura de caché", "mCacheE", "", din=True)
+    + '<span class="as-sub">Contexto largo</span>'
+    + tentrada("Desde (tokens)", "mLargoDesde", "") + tentrada("Entrada por millón", "mLargoEnt", "", din=True) + tentrada("Salida por millón", "mLargoSal", "", din=True)
+    + '</div></sc-if></div>'
+    '<div class="as-thp"><button type="button" class="cb cb-pri" onClick="{{cerrarModelo}}">{{botonModelo}}</button>'
+    '<button type="button" class="cb cb-sec" onClick="{{cerrarModelo}}">Cancelar</button></div></div></sc-if>')
+
 T_CONFIG_PLAT = (
     '<div class="as-tabs as-ttabs" role="tablist"><button type="button" role="tab" class="{{tabGen}}" onClick="{{verGen}}">General</button>'
     '<button type="button" role="tab" class="{{tabCat}}" onClick="{{verCat}}">Catálogo de modelos</button></div>'
     + '<sc-if value="{{enCatalogo}}" hint-placeholder-val="{{no}}">'
     + tlista([(n, f"Anthropic · {i}<br>USD {e} / USD {s} por millón", f'<span class="w-est{"" if a else " off"}">{"Activo" if a else "Inactivo"}</span>') for n, i, e, s, a in CATALOGO])
-    + f'<button type="button" class="cb cb-sec as-tagregar">{MAS} Agregar modelo</button></sc-if>'
+    + f'<button type="button" class="cb cb-sec as-tagregar" onClick="{{{{agregarModelo}}}}">{MAS} Agregar modelo</button></sc-if>'
     + '<sc-if value="{{enGeneral}}" hint-placeholder-val="{{si}}">'
     + tit("Clave y modelo", True) + tcampo("Proveedor", "Anthropic", ro=True)
     + '<sc-if value="{{conClave}}" hint-placeholder-val="{{si}}"><div class="ap-cmp"><span class="rt"><span>Clave de la plataforma <span class="rq">*</span></span></span>'
@@ -562,9 +657,18 @@ T_CONFIG_PLAT = (
     + '<div class="ap-cmp"><span class="rt"><span>Tope del mes por organización</span></span><div class="ct as-din"><span class="as-pre">USD</span><span>100</span></div></div>'
     + tit("Personas y conversaciones")
     + f'<label class="as-casilla"><span class="as-chk on">{TILDE}</span>Las personas pueden usar el asistente</label>'
-    + tcampo("Días sin actividad para borrar una conversación", "30", req=True) + '</sc-if>')
-JS_T_CONFIG_PLAT = """    const tab = this.state.tab ?? (e === 'Catálogo de modelos' ? 'cat' : 'gen');
-    return {
+    + tcampo("Días sin actividad para borrar una conversación", "30", req=True) + '</sc-if>'
+    + T_HOJA_MODELO)
+JS_T_CONFIG_PLAT = MODELO_JS + """    return {
+      dlgModelo: !!modo,
+      tituloModelo: edita ? 'Editar modelo' : 'Agregar modelo',
+      botonModelo: edita ? 'Guardar cambios' : 'Agregar modelo',
+      mNombre: M.n || '', mId: M.id || '', mEnt: M.ent || '', mSal: M.sal || '', mCtx: M.ctx || '', mOut: M.out || '',
+      mCacheL: M.cl || '', mCacheE: M.ce || '', mLargoDesde: '', mLargoEnt: '', mLargoSal: '',
+      cImg: M.img ? 'on' : '', cPdf: M.pdf ? 'on' : '', cHer: M.her ? 'on' : '', cAct: 'on',
+      errOut: modo === 'error' ? 'No puede superar el contexto.' : '', errOutClase: modo === 'error' ? 'mal' : '',
+      avAbierto: av, avExp: av ? 'true' : 'false', alternarAv: () => this.setState({ av: !av }),
+      agregarModelo: () => this.setState({ modo: 'nuevo', av: false }), cerrarModelo: () => this.setState({ modo: null, av: undefined }),
       si: true, no: false, conClave: e !== 'Sin clave', sinClave: e === 'Sin clave', efBajo: 'on', efMedio: '', efAlto: '', nada: () => {},
       enGeneral: tab === 'gen', enCatalogo: tab === 'cat', tabGen: tab === 'gen' ? 'on' : '', tabCat: tab === 'cat' ? 'on' : '',
       verGen: () => this.setState({ tab: 'gen' }), verCat: () => this.setState({ tab: 'cat' }),
@@ -603,6 +707,19 @@ CSS_TEL = CSS + """.ap-cmp .ct.ro { background: var(--s2) !important; color: var
 .as-tkpis b { font-size: 22px; font-weight: 600; }
 .as-tf .as-tf-d .w-est { font-size: 14px; font-weight: 500; }
 .as-tagregar { margin-top: 12px; width: 100%; height: 48px !important; font-size: 16px !important; }
+.as-tvelo { position: absolute; inset: 0; z-index: 30; background: oklch(0.2 0.014 78 / 0.42); }
+.as-thoja { position: absolute; left: 0; right: 0; bottom: 0; z-index: 31; max-height: 88%; display: flex; flex-direction: column; background: #fff; border-radius: 16px 16px 0 0; padding: 6px 0 28px; box-shadow: 0 -8px 24px oklch(0.2 0.014 78 / 0.12); }
+.as-tasa { width: 36px; height: 4px; border-radius: 2px; background: var(--borde2); align-self: center; margin: 4px 0 6px; flex-shrink: 0; }
+.as-thc { display: flex; align-items: center; justify-content: space-between; padding: 2px 8px 8px 20px; }
+.as-thc h2 { margin: 0; font-size: 18px; font-weight: 600; }
+.as-thb { overflow: auto; min-height: 0; padding: 4px 20px 12px; display: flex; flex-direction: column; gap: 14px; }
+.as-thb .as-casilla { align-self: flex-start; }
+.as-thb .as-casillas { flex-direction: column; gap: 0; }
+.as-thb .as-casillas .as-casilla { min-height: 44px; }
+.as-thb .as-avz { font-size: 16px; min-height: 52px; }
+.as-thp { display: flex; flex-direction: column; gap: 10px; padding: 12px 20px 0; border-top: 1px solid var(--borde); }
+.as-thp .cb { width: 100%; height: 48px; font-size: 16px; }
+.ap-cmp .ct.mal { border-color: oklch(0.6 0.19 25) !important; }
 """
 
 
@@ -633,7 +750,8 @@ if pagina_tel("M-Asistente-Uso-Org", "Uso", "Asistente · octubre de 2026", "M-W
               ["Por día", "Por persona", "Cerca del tope"], JS_T_USO_ORG, botones=False):
     hechos.append("M-Asistente-Uso-Org")
 if pagina_tel("M-Plat-Asistente-Config", "Configuración", "Asistente", "M-Mas-Plat.dc.html", T_CONFIG_PLAT,
-              ["Configurada", "Sin clave", "Catálogo de modelos"], JS_T_CONFIG_PLAT, pie_si="enGeneral"):
+              ["Configurada", "Sin clave", "Catálogo de modelos", "Agregar un modelo", "Agregar un modelo: avanzado",
+               "Editar un modelo", "Editar un modelo: error en un dato técnico"], JS_T_CONFIG_PLAT, pie_si="enGeneral"):
     hechos.append("M-Plat-Asistente-Config")
 if pagina_tel("M-Plat-Asistente-Uso", "Uso", "Asistente · octubre de 2026", "M-Mas-Plat.dc.html", T_USO_PLAT,
               ["Por organización"], JS_T_USO_PLAT, botones=False):

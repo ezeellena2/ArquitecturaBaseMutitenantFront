@@ -1,7 +1,7 @@
 """Datos del recorrido de la guía del lienzo: capítulos en el orden en que una persona usa el sistema y, en cada uno, las
 pantallas con sus tableros de compu, de teléfono y los que se abren desde ahí. Una pantalla nueva del lienzo se suma acá."""
 
-VERSION = "versión 115 · 8 de octubre de 2026"
+VERSION = "versión 116 · 10 de octubre de 2026"
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -110,7 +110,7 @@ CAPITULOS = [
          "En la compu, el inicio es el asistente: el historial que se pliega, las consultas fijas, los adjuntos, los topes y lo de hoy como bienvenida. En el teléfono, una pestaña de la barra de abajo."),
         ("asistente-config", "Configuración del asistente", "Administración › Asistente", "no", "8b", ["Asistente-Config-Org", "Plat-Asistente-Config"],
          ["M-Asistente-Config-Org", "M-Plat-Asistente-Config"], [],
-         "Qué clave usa, el modelo con su precio y los topes. En Plataforma, además, los modelos que pueden elegir las organizaciones, las personas y los días para borrar."),
+         "Qué clave usa, el modelo con su precio y los topes. En Plataforma, además, el catálogo de modelos con sus datos técnicos, los modelos que pueden elegir las organizaciones, las personas y los días para borrar."),
         ("asistente-uso", "Uso del asistente", "Administración › Asistente › Uso", "no", "8b", ["Asistente-Uso-Org", "Plat-Asistente-Uso"],
          ["M-Asistente-Uso-Org", "M-Plat-Asistente-Uso"], [],
          "El tope del mes y el uso por día y por persona; en Plataforma, el costo por organización. Nunca el texto de las conversaciones."),

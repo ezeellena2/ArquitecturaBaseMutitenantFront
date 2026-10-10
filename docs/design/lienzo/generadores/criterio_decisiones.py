@@ -6,7 +6,7 @@ import pathlib
 import re
 
 PROJ = pathlib.Path(__file__).resolve().parent.parent  # docs/design/lienzo: los tableros y canvas.json
-ALTO = 7800
+ALTO = 8000
 ANCHO = 2960
 ARCHIVO = "Criterio-Decisiones.dc.html"
 TITULO = "Criterio · Decisiones por pantalla"
@@ -308,6 +308,9 @@ DECISIONES = {
         ("Avisos de la organización por WhatsApp", "", "Aprobada, rechazada, página despublicada y permitido volver a publicar, con el mismo contenido que el correo (0049).", "Dibujada"),
         ("Asistente", "", "«Todavía no tenés mensajes con empresas»; con su clave, un Dueño con correo verificado o «Agregar un correo»; el tope del día dice a qué hora se renueva (0049).", "Dibujada"),
         ("Módulos de una organización", "", "El Asistente se suma; vuelve la fila de prueba de «Módulo B».", "Dibujada"),
+    ],
+    "El usuario · 10/10": [
+        ("Catálogo de modelos: datos técnicos", "", "El diálogo de agregar o editar un modelo suma «Avanzado: datos técnicos», plegado: capacidades, límites y tarifas especiales, con el error debajo del campo; la tabla sigue con sus seis columnas y los modelos de Claude precargados ya los traen (D26).", "Dibujada"),
     ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
