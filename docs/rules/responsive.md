@@ -4,6 +4,8 @@
 
 ## Cómo se hace
 
+Las pestañas copian la distribución móvil del tablero: `PageTabs.phoneColumns: 2` dispone dos por fila y permite filas adicionales (M-Cuenta-Plat). Conserva los grupos autorizados y el teclado de Radix; no se comprimen ni se ocultan grupos para que entren.
+
 | Pieza | ≥ 1024 (computadora) | 768–1023 (tablet) | < 768 (teléfono) |
 |---|---|---|---|
 | Menú lateral y barra de arriba | menú fijo y colapsable; migas y tu menú | menú colapsado a íconos | no hay: arriba va la barra de la app con el título (`AppBar`) y abajo, la barra con «Inicio» y «Más» (`BottomNav`); «Más» (`/mas`) reúne perfiles, Administración, Mi cuenta y Salir |

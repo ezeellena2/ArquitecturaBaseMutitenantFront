@@ -45,6 +45,8 @@ export interface PageTabs {
   value: string;
   onValueChange: (value: string) => void;
   items: readonly PageTab[];
+  /** Grilla móvil de dos columnas cuando el tablero dispone los grupos en filas. */
+  phoneColumns?: 2;
 }
 
 interface PageProps {
@@ -147,7 +149,7 @@ export function Page({
   const groups = tabs?.items.filter((group) => !group.hidden) ?? [];
   const tabbed = tabs && groups.length > 1 ? tabs : undefined;
   const openGroup = groups.some((group) => group.value === tabs?.value) ? tabs?.value : groups[0]?.value;
-  const tabList = tabbed ? <TabsList aria-label={tabbed.label}>
+  const tabList = tabbed ? <TabsList aria-label={tabbed.label} className={tabbed.phoneColumns === 2 ? "max-md:h-auto max-md:grid-flow-row max-md:auto-cols-auto max-md:grid-cols-2" : undefined}>
     {groups.map((group) => <TabsTrigger key={group.value} value={group.value}>
       {group.label}{group.count === undefined ? null : <TabCount>{group.count}</TabCount>}
     </TabsTrigger>)}

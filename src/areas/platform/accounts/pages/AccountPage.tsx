@@ -133,7 +133,7 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
         { label: t("platformAccounts:actions.revoke"), hidden: !canResend || busy, destructive: true, onSelect: (trigger) => open("revoke", trigger) },
         { label: t("platformAccounts:actions.deletion"), hidden: !mutable || !canManage || operator || invitation || Boolean(data.deletion), destructive: true, onSelect: (trigger) => open("deletion", trigger) },
       ] }}
-      tabs={{ label: t("platformAccounts:detail.tabsLabel"), value: tab, onValueChange: setTab, items: [
+      tabs={{ label: t("platformAccounts:detail.tabsLabel"), value: tab, onValueChange: setTab, phoneColumns: 2, items: [
         { value: "methods", label: t("platformAccounts:detail.methods"), count: data.loginMethods.length, hidden: operator, content: <AccountMethodsTab methods={data.loginMethods} /> },
         { value: "organizations", label: t("platformAccounts:detail.organizations"), count: data.organizations.length, hidden: operator, content: <AccountOrganizationsTab organizations={data.organizations} /> },
         { value: "permissions", label: t("platformAccounts:detail.permissions"), count: permissionCount, hidden: !operator, content: <AccountPermissionsTab permissions={data.operatorPermissions ?? []} /> },

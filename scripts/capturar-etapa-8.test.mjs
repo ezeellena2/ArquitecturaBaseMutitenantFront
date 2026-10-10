@@ -5,12 +5,56 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 import { chromium } from "playwright";
+import { build } from "vite";
 import { buildManifest, canvasRevision, expectedServerFailure, prepareCanvasSource } from "./capturar-etapa-8.mjs";
 import { startCanvasServer, validateManifest } from "./capturar-etapa-3a.mjs";
-import { openBoard } from "./capturar-relevamiento.mjs";
+import { openApp, openBoard } from "./capturar-relevamiento.mjs";
 import { writeGallery } from "./generar-galeria-etapa-8.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
+
+test("la ficha móvil de Cuenta usa dos columnas y conserva tres grupos legibles con teclado a 390 px", { timeout: 30_000 }, async () => {
+  const manifest = await buildManifest();
+  const entry = manifest.cases.find((item) => item.id === "n2-ficha-phone-sin-nombre-mobile");
+  assert.ok(entry);
+  const output = mkdtempSync(path.join(root, ".local", "e8-n2-tabs-"));
+  // El bundle de prueba evita el optimizador de dependencias de Vite dev durante la carrera.
+  await build({ root, logLevel: "silent", build: { outDir: output, emptyOutDir: false, rolldownOptions: { input: { visual: path.join(root, "src/test/etapa8VisualApp.html") } } } });
+  const app = await startCanvasServer(output);
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true, channel: "chrome" });
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    context.setDefaultTimeout(10_000);
+    const page = await openApp(context, app.url, entry);
+    const tabs = page.getByRole("tab");
+    assert.equal(await tabs.count(), 3);
+    const boxes = await tabs.evaluateAll((items) => items.map((item) => {
+      const box = item.getBoundingClientRect();
+      const label = document.createRange(); label.selectNodeContents(item);
+      const text = label.getBoundingClientRect();
+      return { left: box.left, right: box.right, top: box.top, bottom: box.bottom, textLeft: text.left, textRight: text.right };
+    }));
+    assert.equal(boxes[0].top, boxes[1].top);
+    assert.ok(boxes[2].top >= boxes[0].bottom);
+    for (const box of boxes) {
+      assert.ok(box.left >= 0 && box.right <= 390);
+      assert.ok(box.textLeft >= box.left && box.textRight <= box.right);
+    }
+    await tabs.nth(0).focus();
+    await page.keyboard.press("ArrowRight");
+    await page.locator('[role="tab"][aria-selected="true"]').filter({ hasText: "Organizaciones" }).waitFor();
+    assert.equal(await tabs.nth(1).getAttribute("aria-selected"), "true");
+    assert.equal(await page.getByRole("tabpanel").isVisible(), true);
+    await page.keyboard.press("ArrowRight");
+    await page.locator('[role="tab"][aria-selected="true"]').filter({ hasText: "Historial de seguridad" }).waitFor();
+    assert.equal(await tabs.nth(2).getAttribute("aria-selected"), "true");
+    assert.equal(await page.getByRole("tabpanel").isVisible(), true);
+  } finally {
+    await browser?.close();
+    await app.close();
+  }
+});
 
 test("los rechazos de ingreso y enlace copian el HTTP publicado sin intentos en vencido o suspendido", async () => {
   const manifest = await buildManifest();
