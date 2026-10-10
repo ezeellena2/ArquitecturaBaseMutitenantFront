@@ -623,6 +623,8 @@ textarea.in2 { height: auto; min-height: 84px; }
 <style data-vuelta="1004-v115">
 .err-acc { align-self: flex-start; font-size: 14px; font-weight: 600; }
 </style>
+<style data-vuelta="1004-v117">
+</style>
 </helmet>
 
 <div class="auth">
@@ -740,7 +742,7 @@ textarea.in2 { height: auto; min-height: 84px; }
         <div style="display: flex; flex-direction: column; gap: 22px;">
           <span class="circulo marca"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg></span>
           <div class="centro"><h1>Verificación en dos pasos</h1><p class="sub">{{subTotp}}</p></div>
-          <sc-if value="{{conApp}}" hint-placeholder-val="{{si}}"><div class="otp {{tot.clase}}" role="group" aria-label="Código"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 1" autocomplete="one-time-code" value="{{tot.d0}}" onChange="{{tot.on0}}" onKeyDown="{{tot.tecla0}}" onPaste="{{tot.pegar}}" disabled="{{no}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 2" autocomplete="off" value="{{tot.d1}}" onChange="{{tot.on1}}" onKeyDown="{{tot.tecla1}}" onPaste="{{tot.pegar}}" disabled="{{no}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 3" autocomplete="off" value="{{tot.d2}}" onChange="{{tot.on2}}" onKeyDown="{{tot.tecla2}}" onPaste="{{tot.pegar}}" disabled="{{no}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 4" autocomplete="off" value="{{tot.d3}}" onChange="{{tot.on3}}" onKeyDown="{{tot.tecla3}}" onPaste="{{tot.pegar}}" disabled="{{no}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 5" autocomplete="off" value="{{tot.d4}}" onChange="{{tot.on4}}" onKeyDown="{{tot.tecla4}}" onPaste="{{tot.pegar}}" disabled="{{no}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 6" autocomplete="off" value="{{tot.d5}}" onChange="{{tot.on5}}" onKeyDown="{{tot.tecla5}}" onPaste="{{tot.pegar}}" disabled="{{no}}"></div></sc-if>
+          <sc-if value="{{conApp}}" hint-placeholder-val="{{si}}"><div class="otp {{tot.clase}}" role="group" aria-label="Código"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 1" autocomplete="one-time-code" value="{{tot.d0}}" onChange="{{tot.on0}}" onKeyDown="{{tot.tecla0}}" onPaste="{{tot.pegar}}" disabled="{{totBloq}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 2" autocomplete="off" value="{{tot.d1}}" onChange="{{tot.on1}}" onKeyDown="{{tot.tecla1}}" onPaste="{{tot.pegar}}" disabled="{{totBloq}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 3" autocomplete="off" value="{{tot.d2}}" onChange="{{tot.on2}}" onKeyDown="{{tot.tecla2}}" onPaste="{{tot.pegar}}" disabled="{{totBloq}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 4" autocomplete="off" value="{{tot.d3}}" onChange="{{tot.on3}}" onKeyDown="{{tot.tecla3}}" onPaste="{{tot.pegar}}" disabled="{{totBloq}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 5" autocomplete="off" value="{{tot.d4}}" onChange="{{tot.on4}}" onKeyDown="{{tot.tecla4}}" onPaste="{{tot.pegar}}" disabled="{{totBloq}}"><input type="text" inputmode="numeric" maxlength="1" aria-label="Código 6" autocomplete="off" value="{{tot.d5}}" onChange="{{tot.on5}}" onKeyDown="{{tot.tecla5}}" onPaste="{{tot.pegar}}" disabled="{{totBloq}}"></div></sc-if>
           <sc-if value="{{conRecuperacion}}" hint-placeholder-val="{{no}}">
             <div class="campo2">
               <label class="et" for="f-rec">Código de recuperación</label>
@@ -752,7 +754,7 @@ textarea.in2 { height: auto; min-height: 84px; }
         </sc-if>
 
           <sc-if value="{{totpEsLink}}" hint-placeholder-val="{{no}}"><a class="b b-pri lg" href="Organizaciones.dc.html">Verificar</a></sc-if>
-          <sc-if value="{{totpEsBoton}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-pri lg" onClick="{{verificarTotp}}">Verificar</button></sc-if>
+          <sc-if value="{{totpEsBoton}}" hint-placeholder-val="{{si}}"><button type="button" class="b b-pri lg" onClick="{{verificarTotp}}" disabled="{{totBloq}}">Verificar</button></sc-if>
           <div class="fila-links"><button type="button" class="lnk" onClick="{{alternarRecuperacion}}">{{textoAlternarRec}}</button></div>
         </div>
       </sc-if>
@@ -825,7 +827,7 @@ textarea.in2 { height: auto; min-height: 84px; }
 </div>
 </x-dc>
 
-<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Correo","WhatsApp","WhatsApp: número sin cuenta","Correo inválido","Correo sin cuenta","Esperá para pedir otro código","Demasiados pedidos","No pudimos entrar con Google","Código enviado","Código enviado por WhatsApp","Código incorrecto","Código vencido","Sin intentos","Cuenta bloqueada","Cuenta suspendida","Operador: segundo factor","Operador: código del autenticador incorrecto","Operador: código de recuperación","Operador: configurar el autenticador","Operador: guardar los códigos","Operador: la cuenta entra por Plataforma","Empresa: la cuenta no está en ninguna empresa","Empresa: acceso deshabilitado","Cuenta con la baja pedida","Tu sesión venció"],"default":"Correo","section":"Estado"},"puerta":{"editor":"enum","options":["Persona","Empresa"],"default":"Persona","section":"Estado"},"cuenta":{"editor":"enum","options":["Lucía (miembro de Grupo Delta)","Beto (sin organizaciones)","Martín (operador de la plataforma)"],"default":"Lucía (miembro de Grupo Delta)","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Correo","WhatsApp","WhatsApp: número sin cuenta","Correo inválido","Correo sin cuenta","Esperá para pedir otro código","Demasiados pedidos","No pudimos entrar con Google","Código enviado","Código enviado por WhatsApp","Código incorrecto","Código vencido","Sin intentos","Cuenta bloqueada","Cuenta suspendida","Operador: segundo factor","Operador: código del autenticador incorrecto","Operador: demasiados códigos incorrectos","Operador: código de recuperación","Operador: código de recuperación incorrecto","Operador: configurar el autenticador","Operador: configurar · código incorrecto","Operador: guardar los códigos","Operador: la cuenta entra por Plataforma","Empresa: la cuenta no está en ninguna empresa","Empresa: acceso deshabilitado","Cuenta con la baja pedida","Tu sesión venció"],"default":"Correo","section":"Estado"},"puerta":{"editor":"enum","options":["Persona","Empresa"],"default":"Persona","section":"Estado"},"cuenta":{"editor":"enum","options":["Lucía (miembro de Grupo Delta)","Beto (sin organizaciones)","Martín (operador de la plataforma)"],"default":"Lucía (miembro de Grupo Delta)","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
 const CUENTAS = {
   // Destino después del código, según la puerta: Persona, al inicio personal; Empresa, al inicio de la organización que eligió la última vez.
   'Lucía (miembro de Grupo Delta)': { id: 'lucia', correo: 'lucia.fernandez@delta.ejemplo.com', tel: '11 5555 4521', Persona: 'Inicio-Personal.dc.html', Empresa: 'Inicio-Org.dc.html' },
@@ -857,8 +859,13 @@ const ESTADOS = {
   'Cuenta suspendida': { paso: 'codigo', cod: COD('918273'), cerrada: true, msj: ['mal', 'Tu cuenta está suspendida.', 'Si creés que es un error, escribinos a soporte@ejemplo.com.'] },
   'Operador: segundo factor': { cuenta: 'Martín (operador de la plataforma)', paso: 'totp' },
   'Operador: código del autenticador incorrecto': { cuenta: 'Martín (operador de la plataforma)', paso: 'totp', tot: COD('120934'), malTot: true, msj: ['mal', 'El código no es válido.', 'Revisá que la hora de tu celular esté bien.'] },
+  // Etapa 9: los códigos del autenticador cuentan para el mismo bloqueo de la cuenta (Identity.Account.LockedOut).
+  'Operador: demasiados códigos incorrectos': { cuenta: 'Martín (operador de la plataforma)', paso: 'totp', tot: COD('774201'), malTot: true, totBloq: true, msj: ['mal', 'Tu cuenta está bloqueada por unos minutos por demasiados intentos fallidos.', 'Probá de nuevo en 15 minutos.'] },
   'Operador: código de recuperación': { cuenta: 'Martín (operador de la plataforma)', paso: 'totp', recuperacion: true },
+  // Cada código de recuperación sirve una sola vez.
+  'Operador: código de recuperación incorrecto': { cuenta: 'Martín (operador de la plataforma)', paso: 'totp', recuperacion: true, rec: 'P4TZ-8WNE', malRec: true, msj: ['mal', 'Ese código no es válido o ya lo usaste.', ''] },
   'Operador: configurar el autenticador': { cuenta: 'Martín (operador de la plataforma)', paso: 'alta' },
+  'Operador: configurar · código incorrecto': { cuenta: 'Martín (operador de la plataforma)', paso: 'alta', alt: COD('551203'), malAlt: true, msj: ['mal', 'El código no es válido.', 'Revisá que la hora de tu celular esté bien.'] },
   'Operador: guardar los códigos': { cuenta: 'Martín (operador de la plataforma)', paso: 'codigos' },
   // Identity.Account.PendingDeletion: el servidor no emite tokens y devuelve la fecha y un cancelTicket (multitenancy §3.2).
   'Cuenta con la baja pedida': { cuenta: 'Lucía (miembro de Grupo Delta)', paso: 'bajaPedida' },
@@ -1089,7 +1096,7 @@ class Component extends DCLogic {
       errCampo: e.errCampo ?? '', errAccion: e.errAccion ?? '', msj: e.msj ?? null, espera: e.espera ?? 0,
       cod: e.cod ?? [...VACIO], mal: !!e.mal, intentos: e.intentos ?? 5, gastado: !!e.gastado, cerrada: !!e.cerrada, reenviarEn: e.reenviarEn ?? 54,
       vencida: !!e.vencida, cancelandoBaja: false,
-      tot: e.tot ?? [...VACIO], malTot: !!e.malTot, recuperacion: !!e.recuperacion, rec: '', alt: [...VACIO], guardados: false,
+      tot: e.tot ?? [...VACIO], malTot: !!e.malTot, recuperacion: !!e.recuperacion, rec: e.rec ?? '', malRec: !!e.malRec, alt: e.alt ?? [...VACIO], malAlt: !!e.malAlt, totBloq: !!e.totBloq, guardados: false,
     };
   }
 
@@ -1236,15 +1243,16 @@ class Component extends DCLogic {
       conRecuperacion: s.recuperacion,
       tot: { ...this.casillas('tot', () => ({ malTot: false, msj: null })), clase: s.malTot ? 'mal' : '' },
       rec: s.rec,
-      onRec: (e) => this.setState({ rec: e.target.value, msj: null }),
-      malRec: '',
+      onRec: (e) => this.setState({ rec: e.target.value, msj: null, malRec: false }),
+      malRec: s.malRec ? 'mal' : '',
+      totBloq: s.totBloq,
       totpEsLink: s.recuperacion ? /^[A-Z0-9]{4}-?[A-Z0-9]{4}$/i.test(s.rec.trim()) : s.tot.join('').length === 6 && !s.malTot,
       totpEsBoton: !(s.recuperacion ? /^[A-Z0-9]{4}-?[A-Z0-9]{4}$/i.test(s.rec.trim()) : s.tot.join('').length === 6 && !s.malTot),
       verificarTotp: () => this.setState({ msj: ['mal', s.recuperacion ? 'Escribí el código de recuperación completo.' : 'Escribí los 6 números del código.', ''] }),
       alternarRecuperacion: () => this.setState({ recuperacion: !s.recuperacion, msj: null, malTot: false }),
       textoAlternarRec: s.recuperacion ? 'Usar la app de autenticación' : 'Usar un código de recuperación',
 
-      alt: { ...this.casillas('alt', () => ({ msj: null })), clase: '' },
+      alt: { ...this.casillas('alt', () => ({ msj: null, malAlt: false })), clase: s.malAlt ? 'mal' : '' },
       activar: () => {
         if (s.alt.join('').length < 6) {
           this.setState({ msj: ['mal', 'Escribí los 6 números que muestra la app.', ''] });

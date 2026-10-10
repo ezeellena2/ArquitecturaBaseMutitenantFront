@@ -517,6 +517,8 @@
 .w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
   content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.87 0.022 75); }
 </style>
+<style data-vuelta="1004-v117">
+</style>
 </helmet>
 
 <div class="doc">
@@ -568,7 +570,7 @@
     <a class="caso" href="Ingreso.dc.html"><span class="t">Código incorrecto</span><span class="d">Muestra los intentos que quedan.</span><span class="c">400 Auth.LoginCode.Invalid</span></a>
     <a class="caso" href="Ingreso.dc.html"><span class="t">Código vencido o ya usado</span><span class="d">Pide uno nuevo.</span><span class="c">400 Auth.LoginCode.Expired · AlreadyUsed</span></a>
     <a class="caso" href="Ingreso.dc.html"><span class="t">Sin intentos</span><span class="d">Verificar queda apagado; se pide otro código.</span><span class="c">400 Auth.LoginCode.TooManyAttempts</span></a>
-    <a class="caso" href="Ingreso.dc.html"><span class="t">Cuenta bloqueada</span><span class="d">10 códigos incorrectos seguidos: 15 minutos.</span><span class="c">429 Auth.Account.LockedOut</span></a>
+    <a class="caso" href="Ingreso.dc.html"><span class="t">Cuenta bloqueada</span><span class="d">10 códigos incorrectos seguidos: 15 minutos.</span><span class="c">429 Identity.Account.LockedOut</span></a>
     <a class="caso" href="Ingreso.dc.html"><span class="t">Cuenta suspendida</span><span class="d">La suspendió la plataforma. Se informa después de un código correcto.</span><span class="c">403 Auth.Account.Suspended</span></a>
     <a class="caso" href="Registro.dc.html"><span class="t">Registro cerrado</span><span class="d">La plataforma cerró el autoregistro. Las invitaciones siguen andando.</span><span class="c">403 Auth.Signup.Closed</span></a>
     <a class="caso" href="Registro-Empresa.dc.html"><span class="t">Alta de empresas cerrada o con aprobación</span><span class="d">Según la configuración de la plataforma.</span><span class="c">BusinessSignup</span></a>
@@ -580,12 +582,13 @@
     <a class="caso" href="Invitacion.dc.html"><span class="t">Invitación para otra persona</span><span class="d">Con la sesión abierta de otra cuenta.</span><span class="c">Invitations.Invitation.WrongAccount</span></a>
     <a class="caso" href="Perfil-Suspendido.dc.html"><span class="t">Organización suspendida</span><span class="d">Se elige otro perfil; el personal sigue andando.</span><span class="c">403 Tenancy.Tenant.Suspended</span></a>
     <a class="caso" href="Ingreso.dc.html"><span class="t">Código del autenticador incorrecto</span><span class="d">Operadores. Puede usar un código de recuperación.</span><span class="c">400 Auth.TwoFactor.Invalid</span></a>
+    <a class="caso" href="Ingreso.dc.html"><span class="t">Demasiados códigos del autenticador</span><span class="d">Operadores. El mismo bloqueo de la cuenta: 15 minutos.</span><span class="c">429 Identity.Account.LockedOut</span></a>
     <a class="caso" href="Error-Org.dc.html"><span class="t">Sin permiso o no existe</span><span class="d">Un recurso de otra organización responde 404, nunca 403.</span><span class="c">403 · 404</span></a>
   </div>
 
   <h2>Lo que nunca se revela</h2>
   <div class="casos" style="grid-template-columns: 1fr 1fr;">
-    <div class="caso"><span class="t">Si un correo tiene cuenta</span><span class="d">Pedir un código responde igual siempre. En el registro, si el correo ya existe, la pantalla es la misma y el correo que llega dice «Ya tenés una cuenta» con un código para entrar.</span></div>
+    <div class="caso"><span class="t">Si un correo es de un operador</span><span class="d">Nada menciona al operador ni a Plataforma antes del código. Recién después, una pantalla privada lo manda a Plataforma (0043).</span></div>
     <div class="caso"><span class="t">Datos de otra organización</span><span class="d">El perfil viaja en el token y lo valida el servidor. Un id de otra organización da 404. Al cambiar de lado se vacía la caché del front.</span></div>
   </div>
 </div>

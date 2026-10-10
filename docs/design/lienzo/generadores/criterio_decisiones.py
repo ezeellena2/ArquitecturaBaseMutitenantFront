@@ -312,6 +312,12 @@ DECISIONES = {
     "El usuario · 10/10": [
         ("Catálogo de modelos: datos técnicos", "", "El diálogo de agregar o editar un modelo suma «Avanzado: datos técnicos», plegado: capacidades, límites y tarifas especiales, con el error debajo del campo; la tabla sigue con sus seis columnas y los modelos de Claude precargados ya los traen (D26).", "Dibujada"),
     ],
+    "La Guía · 10/10": [
+        ("Segundo factor de los operadores", "", "En el ingreso, además del código y del alta del autenticador: el bloqueo por demasiados códigos (el mismo de la cuenta), el código de recuperación que no sirve y el código que no activa el autenticador (Etapa 9).", "Dibujada"),
+        ("Confirmá que sos vos", "", "Antes de una acción sensible de Plataforma, si el último código no es reciente: el código del autenticador en un diálogo (una hoja en el teléfono), con el error debajo y «Usar un código de recuperación». Dibujado al guardar permisos (Etapa 9).", "Dibujada"),
+        ("Restablecer el autenticador", "", "En el ⋮ de un operador, con motivo: cierra sus sesiones y anula sus códigos de recuperación; al volver a entrar, lo configura de nuevo (Etapa 9).", "Dibujada"),
+        ("WhatsApp de atención, al día", "", "Plantillas del sistema: las 16 del catálogo (0049), de a 10; el bot de Plataforma manda el enlace para entrar o registrarse; «Mis mensajes con empresas» muestra las conversaciones; Cargar teléfonos con el panel de Administración vigente (Etapa 11).", "Dibujada"),
+    ],
     "Lo que sigue": [
         ("Nada pendiente", "", "El lienzo dibuja todos los estados que tiene la app de las etapas 1 a 6. Lo que llegue, en la próxima tanda.", "Decidido"),
     ],
