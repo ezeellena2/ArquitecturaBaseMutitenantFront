@@ -13,6 +13,8 @@ import { usePermissions } from "@/auth/usePermissions";
 import type { AppRoute } from "@/layouts/navigation/types";
 import { canOpen } from "@/layouts/navigation/visible";
 import { activeOrganization, homeOf, parseAccess } from "@/tenancy/access";
+import { useModuleHome } from "@/shared/modules/useModules";
+import { PlatformHomePage } from "@/areas/platform/home/pages/PlatformHomePage";
 
 export function HomeRoute() {
   const auth = useAuth();
@@ -28,7 +30,9 @@ export function HomeRoute() {
 export function PlatformHomeRoute({ availableRoutes, pendingPages }: { availableRoutes: readonly AppRoute[]; pendingPages: boolean }) {
   const { data: me } = useCurrentUser();
   const permissions = usePermissions();
+  const moduleHome = useModuleHome("platform");
   if (!me) return null;
+  if (moduleHome) return <PlatformHomePage />;
   const first = availableRoutes.find((route) => canOpen(route, permissions));
   if (!first) return <ForbiddenPage homePath={homeOf("platform")} />;
   // Antes de T21–T23 sólo existe el marco: se conserva su Outlet, sin navegar a una pantalla aún inexistente.

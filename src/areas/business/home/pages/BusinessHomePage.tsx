@@ -5,6 +5,7 @@ import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useFormat } from "@/shared/format/useFormat";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { Page } from "@/shared/ui/Page";
+import { ModuleHome } from "@/shared/modules/ModuleRegistry";
 import { fetchHome, homeQueryKey } from "../api/home";
 import { AreaCards, CompanyCards } from "../components/HomeCards";
 import { PhoneHome } from "../components/PhoneHome";
@@ -34,7 +35,7 @@ export function BusinessHomePage() {
       firstName={currentUser?.displayName?.trim().split(/\s+/)[0] ?? ""} />;
   }
   // Tableros Inicio-Org e Inicio-Miembro (.ini): los bloques del inicio van a 20 uno del otro.
-  return <Page icon={HomeIcon} title={t("common:home.title")} summary={organizationName}>
+  const content = <>
     {organization ? <div className="flex flex-col gap-5">
       <AreaCards organization={organization} />
       <ToResolve rows={rows} />
@@ -44,5 +45,7 @@ export function BusinessHomePage() {
       <CompanyCards companies={home.data.companies} />
       {rows.length > 0 ? <ToResolve rows={rows} byCompany /> : null}
     </div> : null}
-  </Page>;
+  </>;
+  const original = <Page icon={HomeIcon} title={t("common:home.title")} summary={organizationName}>{content}</Page>;
+  return phone ? original : <ModuleHome access="business" fallback={original}>{content}</ModuleHome>;
 }

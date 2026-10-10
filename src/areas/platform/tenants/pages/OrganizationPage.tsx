@@ -22,6 +22,7 @@ import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { homeOf } from "@/tenancy/access";
+import { useModuleHome } from "@/shared/modules/useModules";
 import { changeTenantState, fetchTenant, fetchTenantDomains, fetchTenantFeatures, fetchTenantPublicPage, retryTenantProvisioning, tenantDomainsQueryKey, tenantFeaturesQueryKey, tenantPublicPageQueryKey, tenantQueryKey, tenantsQueryRoot, type TenantAction } from "../api/tenants";
 import { organizationOwners, tenantStatusTones } from "../columns";
 import { isTenantStateConflict, tenantStateConflictCodes } from "../errors";
@@ -63,6 +64,7 @@ function OrganizationDetail({ id }: { id: string }) {
   const { t } = useTranslation(["platformTenants", "common"]);
   const { canPlatform } = usePermissions();
   const { phone } = useAppChrome();
+  const moduleHome = useModuleHome("platform");
   const format = useFormat();
   const client = useQueryClient();
   const canManage = canPlatform("platform.tenants.manage");
@@ -85,7 +87,7 @@ function OrganizationDetail({ id }: { id: string }) {
     client.setQueryData<PlatformTenantDetailResponse>(tenantQueryKey(id), (data) => data ? { ...data, version, status, lastStateChange: null } : data);
   }
   const retry = useIdempotentMutation((data: PlatformTenantDetailResponse, key) => retryTenantProvisioning(data.id, { version: data.version }, key), { sameOperation: (previous, next) => previous.id === next.id && previous.version === next.version });
-  const back = { to: homeOf("platform"), label: t("platformTenants:detail.back") };
+  const back = { to: moduleHome ? "/plataforma/organizaciones" : homeOf("platform"), label: t("platformTenants:detail.back") };
   if (organization.isPending) return <Page icon={BuildingIcon} title={t("platformTenants:detail.loading")} backTo={back}><p role="status" className="p-4 text-[13px] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   if (!organization.data) return isNotFoundError(organization.error)
     ? <NotFoundPage homePath={homeOf("platform")} screen={t("platformTenants:detail.title")} back={back} />

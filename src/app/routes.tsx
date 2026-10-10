@@ -15,12 +15,21 @@ import { SiteLayout } from "@/layouts/SiteLayout";
 import { AppErrorPage } from "@/layouts/AppErrorBoundary";
 import { AppShell } from "@/layouts/AppShell";
 import { businessRoutes } from "@/layouts/navigation/business";
-import { platformNavigation, platformRoutes } from "@/layouts/navigation/platform";
+import { platformNavigation, platformOrganizationsRoute, platformRoutes } from "@/layouts/navigation/platform";
 import type { AppRoute } from "@/layouts/navigation/types";
 import { ForbiddenRoute, HomeRoute, NotFoundRoute, PlatformHomeRoute } from "./RouteViews";
 import { RequirePermission } from "./RequirePermission";
 import { homeOf, loginPathOf } from "@/tenancy/access";
 import { siteOfHost } from "@/tenancy/publicSite";
+import { moduleComposition } from "./moduleComposition";
+import { ModuleRoutePage } from "@/shared/modules/ModuleRegistry";
+import type { ModuleRegistration } from "@/shared/modules/types";
+import type { Access } from "@/tenancy/access";
+
+export function createModulePageRoutes(access: Access, modules: readonly ModuleRegistration[] = moduleComposition): RouteObject[] {
+  return modules.flatMap((module) => module.routes.filter((route) => route.access === access)
+    .map((route) => ({ path: route.path, element: <ModuleRoutePage moduleId={module.id} path={route.path} />, errorElement: <AppErrorPage /> })));
+}
 
 /// La pantalla de una ruta, que se carga recién al entrar.
 function lazyPage<TModule>(load: () => Promise<TModule>, page: (module: TModule) => ComponentType): LazyRouteFunction<RouteObject> {
@@ -81,6 +90,9 @@ export function createPlatformPageRoutes(pages: PlatformPages): RouteObject[] {
       { index: true, ...(pages.organizations ? { lazy: pages.organizations } : { element: <Outlet /> }), errorElement: <AppErrorPage /> },
     ] },
     ...pageRoutes,
+    ...(pages.organizations ? [{ element: <RequirePermission platformPermission={platformOrganizationsRoute.platformPermission} />, children: [
+      { path: platformOrganizationsRoute.path, lazy: pages.organizations, errorElement: <AppErrorPage /> },
+    ] }] : []),
   ];
 }
 
@@ -109,6 +121,9 @@ export const routes: RouteObject[] = [
     { element: <ProtectedRoute />, children: [
       { path: "/aceptar-terminos", lazy: lazyPage(() => import("@/areas/public/legal/pages/AcceptTermsPage"), (page) => page.AcceptTermsPage), errorElement: <AppErrorPage /> },
       { element: <LegalAcceptanceGate />, children: [
+      { element: <AccessRoute access="consumer" />, children: [
+        { element: <PersonalLayout />, children: createModulePageRoutes("consumer") },
+      ] },
       { path: "/cuenta", lazy: lazyPage(() => import("@/areas/personal/account/pages/AccountPage"), (page) => () => <AccountLayout><page.AccountPage /></AccountLayout>), errorElement: <AppErrorPage /> },
       // Tableros M-Mas-Personal y M-WA-Menu: la pestaña «Más» del teléfono, en cualquiera de los accesos.
       { path: "/mas", lazy: lazyPage(() => import("@/layouts/MorePage"), (page) => () => <AccountLayout><page.MorePage /></AccountLayout>), errorElement: <AppErrorPage /> },
@@ -116,11 +131,13 @@ export const routes: RouteObject[] = [
         { path: homeOf("business"), element: <BusinessLayout />, children: [
           { index: true, element: <BusinessHomePage /> },
           ...businessPageRoutes,
+          ...createModulePageRoutes("business"),
         ] },
       ] },
       { element: <AccessRoute access="platform" />, children: [
         { path: homeOf("platform"), element: <PlatformLayout />, children: [
           ...createPlatformPageRoutes(platformPages),
+          ...createModulePageRoutes("platform"),
           { path: platformNavigation.moreTo, lazy: lazyPage(() => import("@/layouts/MorePage"), (page) => page.MorePage), errorElement: <AppErrorPage /> },
         ] },
       ] },

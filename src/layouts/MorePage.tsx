@@ -3,16 +3,15 @@ import { LogOutIcon } from "@/shared/ui/icons";
 import { useTranslation } from "react-i18next";
 import { Navigate, useLocation } from "react-router";
 import { useCurrentUser } from "@/auth/useCurrentUser";
-import { usePermissions } from "@/auth/usePermissions";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { cn } from "@/shared/lib/utils";
 import { AppBar } from "@/shared/ui/app/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { GroupTitle, SettingsGroup, SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { initials, useProfiles } from "@/tenancy/useProfiles";
-import { businessNavigation } from "./navigation/business";
 import { platformNavigation } from "./navigation/platform";
-import { personalNavigation } from "./navigation/personal";
+import { useNavigation } from "./navigation/useNavigation";
+import { usePermissions } from "@/auth/usePermissions";
 import { visibleNavigation } from "./navigation/visible";
 import { activeOrganization, homeOf } from "@/tenancy/access";
 
@@ -23,17 +22,18 @@ export function MorePage() {
   const { t } = useTranslation();
   const phone = useMediaQuery("(max-width: 767px)");
   const { data: user } = useCurrentUser();
-  const permissions = usePermissions();
   const { name, nameLabel, email, access, profiles, signOut, status } = useProfiles();
+  const composedNavigation = useNavigation(access ?? "consumer");
+  const permissions = usePermissions();
+  const navigation = visibleNavigation(composedNavigation, permissions);
   const { pathname } = useLocation();
   if (!phone) return <Navigate to={homeOf(access ?? "consumer")} replace />;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
   if (access === "platform" && pathname === "/mas" && platformNavigation.moreTo) return <Navigate to={platformNavigation.moreTo} replace />;
 
-  const panel = access === "platform" ? visibleNavigation(platformNavigation, permissions).administration
-    : access === "business" ? visibleNavigation(businessNavigation, permissions).administration : null;
+  const panel = navigation.administration;
   const administration = panel ? [...(panel.sections ?? []).flatMap((section) => section.links), ...panel.links] : [];
-  const personalModules = access === "consumer" ? visibleNavigation(personalNavigation, permissions).links.filter((link) => link.feature) : [];
+  const personalModules = navigation.moreLinks ?? [];
   const subtitle = access === "platform" ? t("navigation.platform")
     : access === "business" ? activeOrganization(user)?.name : t("accessMenu.personal");
 

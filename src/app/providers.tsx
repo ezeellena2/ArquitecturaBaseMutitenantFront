@@ -11,6 +11,9 @@ import { Button } from "@/shared/ui/button";
 import { AppAuthProvider } from "@/auth/AuthProvider";
 import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { useCurrentUser } from "@/auth/useCurrentUser";
+import { ModuleRegistryProvider } from "@/shared/modules/ModuleRegistry";
+import type { ModuleRegistration } from "@/shared/modules/types";
+import { moduleComposition } from "./moduleComposition";
 
 function ReferenceDataStartup({ children }: { children: ReactNode }) {
   const { data, isError, refetch } = useReferenceData();
@@ -34,12 +37,12 @@ function ReferenceDataStartup({ children }: { children: ReactNode }) {
   return children;
 }
 
-export function AppProviders({ children, client = queryClient, authContext }: { children: ReactNode; client?: QueryClient; authContext?: AuthContextProps }) {
+export function AppProviders({ children, client = queryClient, authContext, modules = moduleComposition }: { children: ReactNode; client?: QueryClient; authContext?: AuthContextProps; modules?: readonly ModuleRegistration[] }) {
   const content = <QueryClientProvider client={client}>
     <ReferenceDataStartup>
       <FormatProvider>
         <Suspense fallback={null}>
-          {children}
+          <ModuleRegistryProvider value={modules}>{children}</ModuleRegistryProvider>
         </Suspense>
       </FormatProvider>
     </ReferenceDataStartup>

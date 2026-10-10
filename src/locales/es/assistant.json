@@ -109,7 +109,8 @@
     },
     "personal": {
       "account": "Ver mi cuenta",
-      "organizations": "Ver mis organizaciones"
+      "organizations": "Ver mis organizaciones",
+      "organization": "Ver {{name}}"
     }
   },
   "tools": {

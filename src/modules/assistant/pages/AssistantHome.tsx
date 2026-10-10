@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode }
 import { flushSync } from "react-dom";
 import { Trans, useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import type { AssistantAttachmentSummaryResponse, AssistantConversationSummaryResponse, AssistantMessageResponse, SendAssistantMessageRequest } from "@/shared/api/types";
+import type { AssistantAttachmentSummaryResponse, AssistantConversationSummaryResponse, AssistantMessageResponse, AssistantRouteKey, SendAssistantMessageRequest } from "@/shared/api/types";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
 import { Button } from "@/shared/ui/button";
@@ -44,11 +44,13 @@ export interface AssistantHomeProps {
   banner?: ReactNode;
   children?: ReactNode;
   hasPermission: (permission: string) => boolean;
+  canOpenLink?: (routeKey: AssistantRouteKey) => boolean;
   onConfigure?: () => void;
   onUsage?: () => void;
   onPrivacy: () => void;
   organizationName?: string;
   organizationIds?: readonly string[];
+  organizationNames?: Readonly<Record<string, string>>;
   onOpenOrganization?: (id: string) => void;
 }
 
@@ -293,9 +295,9 @@ function AssistantSession(props: AssistantHomeProps) {
     </aside> : null}
     <section aria-label={t("title")} className="flex min-h-0 min-w-0 flex-1 flex-col">
       {props.banner}
-      {phone ? <AppBarTools><AppIconButton ref={historyTrigger} label={t("history.title")} onClick={() => setHistoryOpen(true)}><Menu className="size-[22px]" /></AppIconButton><AppIconButton label={t("history.new")} onClick={() => select(null)}><SquarePen className="size-[22px]" /></AppIconButton></AppBarTools> : null}
+      {phone ? <><AppBarTools placement="leading"><AppIconButton ref={historyTrigger} label={t("history.title")} onClick={() => setHistoryOpen(true)}><Menu className="size-[22px]" /></AppIconButton></AppBarTools><AppBarTools><AppIconButton label={t("history.new")} onClick={() => select(null)}><SquarePen className="size-[22px]" /></AppIconButton></AppBarTools></> : null}
       {!configured ? <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5"><NotConfigured canConfigure={state.canConfigure} onConfigure={props.onConfigure} />{props.children}</div></div> : <>
-        {selectedId ? <AssistantThread runtime={runtime.runtime} messages={runtime.messages} links={{ scope, hasPermission: props.hasPermission, organizationIds: props.organizationIds, onOpenOrganization: props.onOpenOrganization }} pending={busy}
+        {selectedId ? <AssistantThread runtime={runtime.runtime} messages={runtime.messages} links={{ scope, hasPermission: props.hasPermission, organizationIds: props.organizationIds, organizationNames: props.organizationNames, onOpenOrganization: props.onOpenOrganization }} canOpenLink={props.canOpenLink} pending={busy}
           onCopy={(text) => fire(async (context) => { context.assertActive(); await navigator.clipboard.writeText(text); context.assertActive(); }, selectedId)} onFeedback={feedback} onDownload={download}>
           <ToolStatus turn={runtime.turn} pending={runtime.isPending} />
         </AssistantThread> : <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-[760px] flex-col gap-3.5"><div className="mb-1 flex items-center justify-center gap-3 max-md:flex-col"><span className="flex size-9 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><Sparkles className="size-5" aria-hidden="true" /></span><h2 className="text-center text-[26px] font-semibold">{t("welcome")}</h2></div>{props.welcome}{!phone ? limited ? <LimitReached monthly={code === "Assistant.Limit.MonthlyReached"} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : composer : null}{queries}{props.children}</div></div>}

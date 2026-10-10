@@ -1,6 +1,6 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 import { createMemoryRouter, RouterProvider } from "react-router";
@@ -12,13 +12,16 @@ import { fixtureAuth } from "@/test/mocks/authContext";
 import type { MeResponse } from "@/shared/api/types";
 import { currentUsers, platformOperator } from "@/test/mocks/currentUsers";
 import { meHandlerFor } from "@/test/mocks/handlers";
-import { platformRoutes } from "@/layouts/navigation/platform";
+import { platformOrganizationsRoute, platformRoutes } from "@/layouts/navigation/platform";
 import { PlatformLayout } from "@/layouts/PlatformLayout";
 import { ProtectedRoute } from "@/auth/ProtectedRoute";
 import { AccessRoute } from "@/auth/AccessRoute";
 import { LegalAcceptanceGate } from "@/auth/LegalAcceptanceGate";
 import { businessRoutes } from "@/layouts/navigation/business";
 import type { AppRoute } from "@/layouts/navigation/types";
+
+// El import pesado se completa antes del recorrido que verifica la guarda, también en Windows bajo carga.
+beforeAll(async () => { await import("@/areas/business/companies/pages/CompaniesPage"); });
 
 describe("rutas de ingreso 3a", () => {
   it("declara la portada privada con ProtectedRoute y AccessRoute consumer", () => {
@@ -129,7 +132,8 @@ describe("las rutas del marco de Plataforma", () => {
   it("T23d monta Configuración junto a Organizaciones, Cuentas, Recuperaciones, Legales y Auditoría lazy", async () => {
     expect(Object.keys(platformPages)).toEqual(["organizations", "organization", "accounts", "account", "recoveries", "legal", "newLegal", "audit", "settings"]);
     const available = createPlatformPageRoutes(platformPages);
-    expect(available).toHaveLength(9);
+    expect(available).toHaveLength(10);
+    expect(available[9].children?.[0]).toMatchObject({ path: platformOrganizationsRoute.path, lazy: platformPages.organizations });
     expect(available[0].children?.[0]).toMatchObject({ index: true, lazy: platformPages.organizations });
     const page = platformPages.organizations;
     expect(typeof page).toBe("function");
@@ -181,8 +185,8 @@ describe("las rutas del marco de Plataforma", () => {
     expect(pending[0].children).toMatchObject([{ index: true }]);
     expect(pending[0].children?.some((route) => route.lazy || route.path)).toBe(false);
     const paths = createPlatformPageRoutes(platformPages).flatMap((route) => route.children ?? []).filter((route) => route.path).map((route) => route.path);
-    expect(paths).toEqual(Object.keys(platformPages).filter((name) => name !== "organizations")
-      .map((name) => platformRoutes[name as keyof typeof platformRoutes].path));
+    expect(paths).toEqual([...Object.keys(platformPages).filter((name) => name !== "organizations")
+      .map((name) => platformRoutes[name as keyof typeof platformRoutes].path), platformOrganizationsRoute.path]);
   });
 
   it("mientras no existen páginas, un operador autorizado conserva sólo el Outlet del marco", async () => {

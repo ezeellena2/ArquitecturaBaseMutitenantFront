@@ -6,6 +6,8 @@ export interface AssistantLinkContext {
   scope: AssistantScope;
   hasPermission: (permission: string) => boolean;
   organizationIds?: readonly string[];
+  /** Nombres de /api/me, nunca etiquetas suministradas por el modelo. */
+  organizationNames?: Readonly<Record<string, string>>;
   onOpenOrganization?: (id: string) => void;
 }
 
@@ -25,14 +27,15 @@ const routes: Record<AssistantRouteKey, { access: AssistantScope["access"]; path
 };
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export function resolveAssistantLink(link: AssistantLinkResponse, context: AssistantLinkContext): { to?: string; organizationId?: string; labelKey: string } | null {
+export function resolveAssistantLink(link: AssistantLinkResponse, context: AssistantLinkContext): { to?: string; organizationId?: string; organizationName?: string; labelKey: string } | null {
   if (!Object.hasOwn(routes, link.routeKey)) return null;
   const route = routes[link.routeKey];
   if (route.access !== context.scope.access || route.permission && !context.hasPermission(route.permission)) return null;
   if (link.routeKey === "personal.organizations") {
     const tenantId = link.parameters.tenantId;
+    const name = tenantId ? context.organizationNames?.[tenantId] : undefined;
     return tenantId && uuid.test(tenantId) && context.organizationIds?.includes(tenantId) && context.onOpenOrganization
-      ? { organizationId: tenantId, labelKey: "links.personal.organizations" } : null;
+      ? { organizationId: tenantId, ...(name ? { organizationName: name } : {}), labelKey: name ? "links.personal.organization" : "links.personal.organizations" } : null;
   }
   const id = route.id ? link.parameters[route.id] : null;
   if (id && !uuid.test(id)) return null;

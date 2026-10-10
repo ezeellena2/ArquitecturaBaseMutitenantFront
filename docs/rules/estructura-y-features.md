@@ -20,6 +20,16 @@ Las carpetas que la feature no necesita no se crean (`audit/` tiene solo `api/` 
 - Si dos features necesitan lo mismo, se mueve a `shared/` (por ejemplo `shared/account/`, que usan Mi cuenta y el Inicio personal); no se importa de la otra feature.
 - Imports con alias `@/`. `import type` para los tipos.
 
+### Módulos opcionales (E8b)
+
+- Cada módulo en `src/modules/<nombre>/` aporta un `registration.ts` con rutas, navegación e inicio mediante el contrato neutral `shared/modules/types.ts`. Sólo `app/moduleComposition.ts` importa registros concretos; el núcleo, las áreas y los layouts no importan páginas ni APIs de módulos. Quitar esa entrada y su carpeta deja los inicios del núcleo operativos.
+- `ModuleRoutePage` decide desde `/api/me` antes de montar React.lazy: espera la sesión, muestra 404 si no está instalado/habilitado y 403 sin permiso. No usar `route.lazy` para páginas de módulos: React Router lo carga antes de renderizar las guardas padre. AccessRoute y los términos siguen por encima.
+- `useNavigation` compone el mismo manifiesto para el marco y Más; conserva permisos del núcleo y contribuciones independientes. Los permisos propios viven en el registro, sin ampliar los arrays de `auth/usePermissions`. Una ruta sólo aporta un enlace cuando tiene su página real.
+- El inicio de cada área conserva sus consultas y componentes; `ModuleHome` recibe sus bloques y avisos mediante slots. En teléfono conserva Inicio y abre el módulo como segunda sección; hasta cuatro secciones más Más.
+- Plataforma conserva Organizaciones en `/plataforma` sin chat autorizado. Con inicio de módulo usa `/plataforma/organizaciones`; ese alias siempre conserva `platform.tenants.read`. La gestión del asistente se decide por capability instalada + `canConfigure`/`canReadUsage`, independientemente de `available`; Empresa usa feature + `assistant.configure`, independientemente de `assistant.use`.
+- El registro actual del asistente aporta chat e inicio. Configuración y Uso se incorporan con sus páginas T12/T13; el contrato de contribuciones ya admite Administración por permisos independientes, sin publicar rutas vacías.
+- Verifican `shared/modules/boundaries.test.ts`, `ModuleRegistry.test.tsx`, `modules/assistant/navigation.test.ts` y `modules/assistant/composition.test.tsx`.
+
 ## Prohibido
 - `import … from "@/areas/business/users/…"` desde otra feature o área.
 - Componentes definidos dentro de otros.

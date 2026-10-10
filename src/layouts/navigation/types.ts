@@ -48,6 +48,8 @@ export interface BottomNavigationSection {
 
 export interface NavigationConfig {
   links: readonly NavigationLink[];
+  /** Secciones móviles y desborde de la barra, desde la misma composición. */
+  moreLinks?: readonly NavigationLink[];
   /** Un panel de uso diario, arriba: Gestión en Plataforma. Comparte el segundo panel con Administración. */
   management?: NavigationPanel | null;
   administration: NavigationPanel | null;

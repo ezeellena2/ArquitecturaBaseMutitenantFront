@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
 import { AppBar, AppIconButton } from "./app/AppBar";
 import { useAppChrome } from "./app/AppChrome";
-import { AppBarToolsProvider } from "./app/AppBarTools";
+import { AppBarLeadingToolsProvider, AppBarToolsProvider } from "./app/AppBarTools";
 import { Fab } from "./app/Fab";
 import { FixedActions } from "./app/FixedActions";
 import { Button } from "./button";
@@ -114,6 +114,7 @@ export function Page({
 }: PageProps): ReactNode {
   const chrome = useAppChrome();
   const [tools, setTools] = useState<HTMLDivElement | null>(null);
+  const [leadingTools, setLeadingTools] = useState<HTMLDivElement | null>(null);
   // Tablero M-Empresa («Administra solo la empresa»): una pantalla cuyo ‹ vuelve al Inicio es del Inicio, y la barra de
   // abajo lo marca a él y no a «Más».
   const { markHome } = chrome;
@@ -164,6 +165,7 @@ export function Page({
     const back = backTo ?? chrome.parent ?? undefined;
     return withTabs(<div className={cn("flex min-h-full flex-col", phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--lado-activo)]")}>
       <AppBar title={title} back={back} subtitle={phoneSubtitle ?? status ?? chrome.subtitle ?? undefined}
+        leading={<div ref={setLeadingTools} className="flex items-center empty:hidden" />}
         actions={<>
           <div ref={setTools} className="flex items-center" />
           {barAction ? barAction.href
@@ -178,7 +180,7 @@ export function Page({
       {/* M-Avisos (.ap-cuerpo): debajo de un cartel, el cuerpo con margen arranca a 14 y no a 4. Lo decide el cartel que se
           ve: el de useEditPage es siempre un fragmento, vacío si no hay nada que avisar. */}
       <div data-slot="page-banner" className="contents">{banner}</div>
-      <AppBarToolsProvider value={tools}><div className={cn(phoneBodyClasses[phoneBody], phoneBody === "padded" ? "[[data-slot=page-banner]:not(:empty)+&]:pt-3.5" : null)}>{content}</div></AppBarToolsProvider>
+      <AppBarLeadingToolsProvider value={leadingTools}><AppBarToolsProvider value={tools}><div className={cn(phoneBodyClasses[phoneBody], phoneBody === "padded" ? "[[data-slot=page-banner]:not(:empty)+&]:pt-3.5" : null)}>{content}</div></AppBarToolsProvider></AppBarLeadingToolsProvider>
       {fab ? <Fab label={fab.label} onClick={fab.onClick} to={fab.to} /> : actions ? <FixedActions>{actions}</FixedActions> : null}
     </div>);
   }

@@ -1,4 +1,4 @@
-import { AppAccountsIcon, AppOrganizationsIcon, AppRecoveriesIcon, BuildingIcon, ClipboardIcon, DocumentIcon, GridIcon, KeyIcon, ShieldCheckIcon, SlidersHorizontalIcon, UsersIcon } from "@/shared/ui/icons";
+import { AppAccountsIcon, AppHomeIcon, AppOrganizationsIcon, AppRecoveriesIcon, BuildingIcon, ClipboardIcon, DocumentIcon, GridIcon, HomeIcon, KeyIcon, ShieldCheckIcon, SlidersHorizontalIcon, UsersIcon } from "@/shared/ui/icons";
 import { homeOf } from "@/tenancy/access";
 import type { AppRoute, NavigationConfig } from "./types";
 
@@ -14,6 +14,9 @@ export const platformRoutes = {
   audit: { path: "/plataforma/auditoria", platformPermission: "platform.audit.read", labelKey: "navigation.audit", icon: ClipboardIcon },
   settings: { path: "/plataforma/configuracion", platformPermission: "platform.settings.manage", labelKey: "navigation.settings", icon: SlidersHorizontalIcon },
 } as const satisfies Record<string, AppRoute>;
+
+/** El alias funciona también sin módulos, sin cambiar el inicio histórico. */
+export const platformOrganizationsRoute = { ...platformRoutes.organizations, path: "/plataforma/organizaciones" };
 
 export const platformNavigation: NavigationConfig = {
   links: [],
@@ -32,4 +35,17 @@ export const platformNavigation: NavigationConfig = {
     labelKey: "navigation.administration", icon: ShieldCheckIcon,
     links: [platformRoutes.audit, platformRoutes.legal, platformRoutes.settings],
   },
+};
+
+const platformHome = { path: homeOf("platform"), labelKey: "navigation.dashboard", icon: HomeIcon };
+export const platformNavigationWithHome: NavigationConfig = {
+  ...platformNavigation,
+  links: [platformHome],
+  moreLinks: [platformRoutes.recoveries],
+  bottomSections: [
+    { link: platformHome, icon: AppHomeIcon },
+    { link: platformOrganizationsRoute, icon: AppOrganizationsIcon },
+    { link: platformRoutes.accounts, icon: AppAccountsIcon },
+  ],
+  management: { ...platformNavigation.management!, links: [platformOrganizationsRoute, platformRoutes.accounts, platformRoutes.recoveries] },
 };
