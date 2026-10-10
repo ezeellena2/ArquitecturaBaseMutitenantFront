@@ -35,16 +35,15 @@ export function recoveryRow(page, item) {
 /** /plataforma también es la ruta del ingreso; sólo su interfaz privada demuestra que terminó OIDC. */
 export async function waitForPlatformSession(page, submitAcceptance) {
   const terms = page.getByRole("heading", { name: "Actualizamos los términos", exact: true });
-  const home = page.getByRole("heading", { name: "Organizaciones", exact: true });
+  const home = page.viewportSize().width === 390 ? page.getByRole("navigation", { name: "Secciones", exact: true })
+    : page.getByRole("button", { name: /, Plataforma$/ });
   await terms.or(home).first().waitFor();
   if (await terms.isVisible()) {
     await page.getByRole("checkbox", { name: /Leí y acepto/ }).check();
     await submitAcceptance();
     await terms.waitFor({ state: "hidden" });
   }
-  await page.getByRole("heading", { name: "Organizaciones", exact: true }).waitFor();
-  await (page.viewportSize().width === 390 ? page.getByRole("navigation", { name: "Secciones", exact: true })
-    : page.getByRole("button", { name: /, Plataforma$/ })).waitFor();
+  await home.waitFor();
 }
 /** Cada actor conserva su propio navegador aislado, con cierre del recorrido también ante fallos. */
 export function newPlatformContext(browser, width) {

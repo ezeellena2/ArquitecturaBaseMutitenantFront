@@ -63,7 +63,7 @@ for (const width of [1440, 390]) test(`la sesión de Plataforma espera la UI pri
   try {
     const page = await context.newPage();
     await page.setContent(`<h1>Ingresá a Plataforma</h1><button onclick="document.querySelector('#private').hidden=false">Terminar autorización</button>
-      <div id="private" hidden><h1>Organizaciones</h1>${width === 390 ? '<nav aria-label="Secciones"><a href="#">Organizaciones</a></nav>' : '<button>Operador E2E, Plataforma</button>'}</div>`);
+      <div id="private" hidden><h1>Inicio</h1><p role="alert">El asistente todavía no está disponible.</p>${width === 390 ? '<nav aria-label="Secciones"><a href="#">Organizaciones</a></nav>' : '<button>Operador E2E, Plataforma</button>'}</div>`);
     let accepted = false;
     let ready = false; const waiting = waitForPlatformSession(page, () => { accepted = true; }).then(() => { ready = true; });
     await page.evaluate(() => document.title); assert.equal(ready, false);
@@ -79,11 +79,11 @@ for (const width of [1440, 390]) test(`acepta términos por UI antes de esperar 
     await page.setContent(`<h1>Ingresá a Plataforma</h1><button onclick="document.querySelector('#terms').hidden=false">Terminar autorización</button>
       <section id="terms" hidden><h1>Actualizamos los términos</h1><label><input type="checkbox">Leí y acepto los Términos y la Política de privacidad</label>
       <button onclick="if(document.querySelector('input').checked){document.querySelector('#terms').hidden=true;document.querySelector('#private').hidden=false}">Aceptar y seguir</button></section>
-      <div id="private" hidden><h1>Organizaciones</h1>${width === 390 ? '<nav aria-label="Secciones"><a href="#">Organizaciones</a></nav>' : '<button>Operador E2E, Plataforma</button>'}</div>`);
+      <div id="private" hidden><h1>Inicio</h1><p role="alert">El asistente todavía no está disponible.</p>${width === 390 ? '<nav aria-label="Secciones"><a href="#">Organizaciones</a></nav>' : '<button>Operador E2E, Plataforma</button>'}</div>`);
     let submissions = 0; let ready = false;
     const waiting = waitForPlatformSession(page, async () => {
       assert.equal(await page.getByRole("checkbox", { name: /Leí y acepto/ }).isChecked(), true);
-      assert.equal(await page.getByRole("heading", { name: "Organizaciones", exact: true }).isVisible(), false);
+      assert.equal(await page.getByRole("heading", { name: "Inicio", exact: true }).isVisible(), false);
       submissions++; await page.getByRole("button", { name: "Aceptar y seguir", exact: true }).click();
     }).then(() => { ready = true; });
     await page.evaluate(() => document.title); assert.equal(ready, false); assert.equal(submissions, 0);
