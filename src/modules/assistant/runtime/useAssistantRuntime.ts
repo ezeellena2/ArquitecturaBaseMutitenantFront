@@ -4,6 +4,7 @@ import { ExportedMessageRepository, useExternalStoreRuntime, type ThreadMessageL
 import type { AssistantConversationResponse, AssistantMessageResponse, SendAssistantMessageRequest } from "@/shared/api/types";
 import { ApiError } from "@/shared/api/ApiError";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { parseUtcInstant } from "@/shared/time/parseUtcInstant";
 import { assistantConversationQueryKey, assistantQueryKeyRoot, assistantStateQueryKey, fetchAssistantConversation, fetchAssistantState, sendAssistantMessageResponse, stopAssistantTurn, type AssistantScope } from "../api/assistant";
 import { decodeAssistantStream } from "../api/stream";
 import { AssistantLifetime, waitForAssistantTerminal } from "./assistantLifetime";
@@ -30,7 +31,7 @@ interface StopOperation {
 function convertMessage(message: AssistantMessageResponse | ThreadMessageLike): ThreadMessageLike {
   if (!("text" in message)) return message;
   return {
-    id: message.id, role: message.role, content: message.text,
+    id: message.id, role: message.role, content: message.text, createdAt: parseUtcInstant(message.createdAtUtc),
     status: message.role === "assistant" ? sdkStatus(message.status) : undefined,
     metadata: { custom: { durable: message } },
   };
@@ -57,6 +58,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
   const identity = useMemo(() => ({ access: scope.access, tenantId: scope.tenantId, userId: scope.userId }), [scope.access, scope.tenantId, scope.userId]);
   const root = useMemo(() => assistantQueryKeyRoot(identity), [identity]);
   const turnKey = useMemo(() => [...root, "turn", conversationId] as const, [root, conversationId]);
+  const detailKey = useMemo(() => assistantConversationQueryKey(identity, conversationId ?? ""), [identity, conversationId]);
   const lifetime = useMemo(() => new AssistantLifetime(client, [...root, "lifetime", conversationId]), [client, root, conversationId]);
   const active = useSyncExternalStore(lifetime.subscribe, lifetime.getSnapshot, lifetime.getSnapshot) && enabled;
   const subscribeCache = (listener: () => void) => client.getQueryCache().subscribe(listener);
@@ -73,10 +75,14 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
     return () => {
       lifetime.close();
       client.removeQueries({ queryKey: turnKey, exact: true });
+      const privateDetail = client.getQueryCache().find({ queryKey: detailKey, exact: true });
+      // Otro consumidor activo de la misma ficha conserva su caché. El módulo
+      // quita su ficha al salir; no toca otra conversación ni otro scope.
+      if (privateDetail && privateDetail.getObserversCount() <= 1) client.removeQueries({ queryKey: detailKey, exact: true });
       stopBeforeStart.current?.reject(new DOMException("", "AbortError"));
       stopBeforeStart.current = null;
     };
-  }, [client, lifetime, turnKey, enabled]);
+  }, [client, lifetime, turnKey, detailKey, enabled]);
   useEffect(() => {
     if (active) return;
     lastOperation.current = null;
@@ -113,7 +119,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
     meta: { blocksView: true, silent: true },
   });
   const detail = useQuery({
-    queryKey: assistantConversationQueryKey(identity, conversationId ?? ""),
+    queryKey: detailKey,
     enabled: active && conversationId !== null,
     queryFn: ({ signal }) => readDetail(conversationId!, signal),
     refetchInterval: (query) => query.state.data?.messages.items.some((message) => message.status === "Generating") ? 1_000 : false,
@@ -273,7 +279,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
 
   const messages: Array<AssistantMessageResponse | ThreadMessageLike> = (active ? detail.data?.messages.items ?? [] : []).map((message) => {
     if (message.id !== turn?.start?.assistantMessageId || message.status !== "Generating") return message;
-    return { id: message.id, role: message.role, content: turn.text || message.text,
+    return { id: message.id, role: message.role, content: turn.text || message.text, createdAt: parseUtcInstant(message.createdAtUtc),
       status: sdkStatus(isAssistantTurnPending(turn) ? "Generating" : turn.phase === "Stopped" ? "Stopped" : turn.phase === "Failed" ? "Failed" : "Complete"),
       metadata: { custom: { durable: message } } };
   });
@@ -299,7 +305,15 @@ export function useAssistantRuntime({ scope, conversationId, enabled }: Assistan
       await send({ text, attachmentIds: [], conversationVersion: detail.data?.conversation.version });
     },
     onCancel: stop,
+    // Import limpia sólo la proyección del SDK. Nunca acepta escrituras en la API/caché.
+    onImport: () => {},
   });
+  useEffect(() => () => {
+    // API pública: borra repository/export del objeto que ya no tiene UI.
+    // El SDK no ofrece actualizar su última snapshot visible tras desmontar;
+    // disable/scope sí reciben el adapter vacío durante el render montado.
+    runtime.thread.import({ messages: [] });
+  }, [runtime, lifetime, enabled]);
 
   return { runtime, state, detail, turn, canSend,
     canStop: active && isAssistantTurnPending(turn) && (!!turn?.start || turn?.phase === "sending"),

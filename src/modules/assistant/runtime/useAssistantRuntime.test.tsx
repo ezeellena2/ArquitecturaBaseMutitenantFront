@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, QueryObserver } from "@tanstack/react-query";
 import { HttpResponse, http } from "msw";
-import type { PropsWithChildren } from "react";
+import { StrictMode, type PropsWithChildren } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import { server } from "@/test/mocks/server";
 import { resetHttpClient } from "@/shared/api/httpClient";
@@ -33,12 +33,12 @@ function deferred<T>() {
   return { promise, resolve };
 }
 
-function setup(initialState = state) {
+function setup(initialState = state, strict = false) {
   let durable = conversation();
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
   server.use(http.get("/api/organization/assistant", () => HttpResponse.json(initialState)),
     http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.json(durable)));
-  const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={client}>{strict ? <StrictMode>{children}</StrictMode> : children}</QueryClientProvider>;
   const hook = renderHook(({ currentScope = scope, enabled = true }) => useAssistantRuntime({ scope: currentScope, conversationId: "chat", enabled }), {
     wrapper, initialProps: { currentScope: scope, enabled: true },
   });
@@ -54,6 +54,62 @@ const start = { turnId: "turn", userMessageId: "u", assistantMessageId: "a", con
 afterEach(resetHttpClient);
 
 describe("Assistant runtime HTTP + Query + SDK", () => {
+  it("StrictMode y enabled false→true reactivan el mismo scope/id", async () => {
+    const hook = setup(state, true);
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    hook.rerender({ currentScope: scope, enabled: false });
+    expect(hook.result.current.canSend).toBe(false);
+    hook.rerender({ currentScope: scope, enabled: true });
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    hook.unmount();
+  });
+
+  it.each(["disable", "unmount"] as const)("%s borra durable privado y SDK, sin borrar otra conversación", async (action) => {
+    const hook = setup();
+    hook.setDurable(conversation([message("private", "assistant")]));
+    const otherKey = assistantConversationQueryKey(scope, "other-chat");
+    const other = { ...conversation([message("other", "assistant")]), conversation: { ...conversation().conversation, id: "other-chat" } };
+    hook.client.setQueryData(otherKey, other);
+    await waitFor(() => expect(hook.result.current.runtime.thread.getState().messages.map((item) => item.id)).toEqual(["private"]));
+    const runtime = hook.result.current.runtime;
+    act(() => {
+      if (action === "disable") hook.rerender({ currentScope: scope, enabled: false });
+      else hook.unmount();
+    });
+    expect(hook.client.getQueryData(assistantConversationQueryKey(scope, "chat"))).toBeUndefined();
+    expect(hook.client.getQueryData(otherKey)).toEqual(other);
+    expect(runtime.thread.export().messages).toEqual([]);
+    // El SDK publicado limpia export por import, pero no expone reemplazo de la
+    // snapshot del objeto ya desmontado. Con UI montada sí debe estar vacía.
+    if (action === "disable") expect(runtime.thread.getState().messages).toEqual([]);
+    hook.unmount();
+  });
+
+  it("SDK conserva createdAtUtc durable y no la hora cliente", async () => {
+    const hook = setup();
+    hook.setDurable(conversation([message("dated", "assistant")]));
+    await waitFor(() => expect(hook.result.current.runtime.thread.getState().messages).toHaveLength(1));
+    expect(hook.result.current.runtime.thread.getState().messages[0]?.createdAt.toISOString()).toBe("2026-10-09T12:00:00.000Z");
+    hook.unmount();
+  });
+
+  it("unmount preserva una ficha compartida con otro observer activo", async () => {
+    const hook = setup();
+    const durable = conversation([message("shared-private", "assistant")]);
+    hook.setDurable(durable);
+    await waitFor(() => expect(hook.result.current.detail.data).toEqual(durable));
+    const observer = new QueryObserver(hook.client, {
+      queryKey: assistantConversationQueryKey(scope, "chat"), queryFn: async () => durable, staleTime: Infinity,
+    });
+    const unsubscribe = observer.subscribe(() => {});
+    const runtime = hook.result.current.runtime;
+    hook.unmount();
+    expect(hook.client.getQueryData(assistantConversationQueryKey(scope, "chat"))).toEqual(durable);
+    expect(observer.getCurrentResult().data).toEqual(durable);
+    expect(runtime.thread.export().messages).toEqual([]);
+    unsubscribe();
+    observer.destroy();
+  });
   it("mantiene pending después de headers, muestra ids admitidos y termina con datos durables", async () => {
     const source = stream();
     server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => new HttpResponse(source.body, { headers: { "Content-Type": "text/event-stream" } })));
@@ -214,7 +270,7 @@ describe("Assistant runtime HTTP + Query + SDK", () => {
       expect(hook.client.getQueryData(assistantConversationQueryKey(scope, "chat"))).toBeUndefined();
       await waitFor(() => expect(hook.result.current.runtime.thread.export().messages).toEqual([]));
     }
-    else expect(hook.client.getQueryData<AssistantConversationResponse>(assistantConversationQueryKey(scope, "chat"))?.messages.items).toEqual([]);
+    else expect(hook.client.getQueryData(assistantConversationQueryKey(scope, "chat"))).toBeUndefined();
     hook.unmount();
   });
 
@@ -235,6 +291,7 @@ describe("Assistant runtime HTTP + Query + SDK", () => {
     expect(hook.result.current.isPending).toBe(true);
     expect(hook.result.current.canSend).toBe(false);
     expect(hook.result.current.runtime.thread.getState().messages.at(-1)?.content).toEqual([{ type: "text", text: "Parcial" }]);
+    expect(hook.result.current.runtime.thread.getState().messages.at(-1)?.createdAt.toISOString()).toBe("2026-10-09T12:00:00.000Z");
     hook.setDurable(conversation([message("u", "user"), message("a", "assistant", "Failed", "Parcial")]));
     await act(async () => { await hook.result.current.detail.refetch(); await operation; });
     await waitFor(() => expect(hook.result.current.isPending).toBe(false));

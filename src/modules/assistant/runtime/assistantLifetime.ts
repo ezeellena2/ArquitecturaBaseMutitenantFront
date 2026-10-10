@@ -19,12 +19,14 @@ export class AssistantLifetime {
   };
 
   attach(): void {
+    this.unsubscribe?.();
     this.alive = true;
     this.client.getQueryCache().build(this.client, { queryKey: this.key, gcTime: Infinity }).setData(true);
     const sentinel = this.client.getQueryCache().find({ queryKey: this.key, exact: true });
     this.unsubscribe = this.client.getQueryCache().subscribe((event) => {
       if (event.type === "removed" && event.query === sentinel) this.close();
     });
+    for (const listener of this.listeners) listener();
   }
 
   assertActive(): void {
